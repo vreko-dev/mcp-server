@@ -1,0 +1,31 @@
+{
+	"version": "0.2",
+	"language": "en",
+	"words": [
+		"AKIA",
+		"cbuild",
+		"Cooldown",
+		"fumadocs",
+		"hubspot",
+		"keysad",
+		"Marcelle",
+		"matviewname",
+		"modelcontextprotocol",
+		"networkidle",
+		"nonexistentterm",
+		"nuqs",
+		"Nuqs",
+		"orpc",
+		"ORPC",
+		"presigner",
+		"proname",
+		"qoder",
+		"remoteip",
+		"SARIF",
+		"SELFTEST",
+		"Supabase",
+		"tablename",
+		"waitlist"
+	],
+	"ignorePaths": ["node_modules/**", "dist/**", "build/**", ".git/**", ".next/**"]
+}

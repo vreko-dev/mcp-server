@@ -1,0 +1,59 @@
+name: CLI Validation
+
+on:
+    workflow_call:
+    workflow_dispatch:
+
+jobs:
+    validate:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Toolchain setup
+              uses: ./.github/actions/setup-pnpm
+
+            - name: Build shared workspace packages
+              run: |
+                  pnpm --filter @snapback/contracts build
+                  pnpm --filter @snapback/core build
+                  pnpm --filter @snapback/storage build
+
+            - name: Type check
+              run: pnpm --filter ./apps/cli run typecheck
+
+            - name: Lint
+              run: pnpm --filter ./apps/cli run lint
+
+            - name: Unit tests
+              env:
+                  CI: "true"
+              run: pnpm --filter ./apps/cli run test
+
+            - name: Coverage
+              env:
+                  CI: "true"
+              run: pnpm --filter ./apps/cli run test:coverage
+
+            - name: Upload coverage
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: cli-coverage
+                  path: apps/cli/coverage
+                  if-no-files-found: warn
+
+            - name: Build CLI bundle
+              run: pnpm --filter ./apps/cli run build
+
+            - name: Upload build artifact
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: cli-dist
+                  path: apps/cli/dist
+                  if-no-files-found: warn

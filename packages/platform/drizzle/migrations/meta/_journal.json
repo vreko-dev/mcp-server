@@ -1,0 +1,27 @@
+{
+	"version": "7",
+	"dialect": "postgresql",
+	"entries": [
+		{
+			"idx": 0,
+			"version": "7",
+			"when": 1761255314667,
+			"tag": "0001_snapback_core_tables",
+			"breakpoints": true
+		},
+		{
+			"idx": 1,
+			"version": "7",
+			"when": 1762359000658,
+			"tag": "0001_wild_psynapse",
+			"breakpoints": true
+		},
+		{
+			"idx": 2,
+			"version": "7",
+			"when": 1762359500000,
+			"tag": "0003_supabase_extensions",
+			"breakpoints": true
+		}
+	]
+}

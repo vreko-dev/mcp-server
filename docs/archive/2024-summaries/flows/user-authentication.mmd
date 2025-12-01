@@ -1,0 +1,22 @@
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant W as Web Frontend
+    participant A as Auth Service
+    participant P as Platform Service
+    participant D as Database
+
+    U->>W: Enter credentials
+    W->>A: POST /api/auth/login
+    A->>D: Query user credentials
+    D-->>A: User data
+    A->>A: Validate credentials
+    A->>P: Create session
+    P->>D: Store session data
+    D-->>P: Session confirmation
+    P-->>A: Session ID
+    A->>A: Generate JWT
+    A-->>W: JWT token
+    W->>W: Store token
+    W-->>U: Redirect to dashboard
+```

@@ -1,0 +1,177 @@
+---
+title: Analytics & Metrics FAQ
+description: Frequently asked questions about SnapBack's analytics and metrics system
+---
+
+# Analytics & Metrics FAQ
+
+Frequently asked questions about SnapBack's analytics and metrics system.
+
+## General Analytics
+
+### Why does SnapBack collect analytics data?
+
+We collect analytics to:
+- Improve the user experience
+- Measure feature adoption and success
+- Identify and fix issues quickly
+- Understand how developers use our product
+- Optimize performance and reliability
+
+All data collection is opt-in and respects your privacy.
+
+### What data does SnapBack collect?
+
+We collect:
+- **Usage metrics** - Which features you use and how often
+- **Performance data** - Load times, error rates, and responsiveness
+- **Technical information** - VS Code version, operating system, extension version
+- **Interaction data** - How you navigate and use the interface
+
+We do NOT collect:
+- Your source code
+- File contents
+- Personal identification beyond what's necessary for account management
+- Sensitive personal data
+
+### How is my data protected?
+
+All analytics data is:
+- Transmitted over encrypted connections
+- Stored securely with access controls
+- Processed in compliance with GDPR and other privacy regulations
+- Retained only as long as necessary for analysis
+- Subject to your right to deletion
+
+### Can I opt out of analytics collection?
+
+Yes, you can disable analytics collection at any time:
+1. Open VS Code Settings (⌘+, or Ctrl+,)
+2. Search for "SnapBack Analytics"
+3. Uncheck "Enable Analytics"
+
+You can also manage analytics preferences in your SnapBack dashboard account settings.
+
+## Metrics & Measurements
+
+### What is Time to First Value (TTFV)?
+
+TTFV measures how quickly you can achieve your first successful outcome with SnapBack. This typically means creating your first protected snapshot. Our target is p75 ≤ 5 minutes.
+
+### How is onboarding completion measured?
+
+Onboarding completion is measured when you successfully:
+1. Install the VS Code extension
+2. Complete authentication
+3. Create an API key
+4. Create your first snapshot
+
+### What constitutes a "crash" in crash-free sessions?
+
+A crash is any unhandled error that prevents normal operation, including:
+- Extension activation failures
+- Snapshot creation errors
+- API communication failures
+- UI rendering errors
+
+We track both total crashes and crash-free session percentage.
+
+### How does session replay work?
+
+Session replay records:
+- UI interactions and navigation
+- Performance metrics
+- Error occurrences
+- Feature usage patterns
+
+Replay is subject to:
+- Smart sampling to balance insights with privacy
+- Budget limits to control costs
+- Privacy controls to exclude sensitive data
+- User consent requirements
+
+## Retention & Correlation
+
+### What is D7/D30 retention?
+
+- **D7 Retention** - Percentage of users who return within 7 days of first use
+- **D30 Retention** - Percentage of users who return within 30 days of first use
+
+These metrics indicate product stickiness and long-term value delivery.
+
+### How are retention cohorts created?
+
+Retention cohorts are automatically created and maintained in PostHog:
+- D7 Retention cohort
+- D30 Retention cohort
+- Onboarding Completion cohort
+- High Engagement Users cohort
+
+### What is correlation analysis?
+
+Correlation analysis identifies relationships between user behaviors and outcomes:
+- What factors predict successful onboarding?
+- Which behaviors correlate with feature adoption?
+- What early signals indicate churn risk?
+- What characteristics define high-value users?
+
+### How often is correlation analysis updated?
+
+Correlation analysis is updated:
+- Daily for real-time metrics
+- Weekly for behavioral patterns
+- Monthly for long-term trends
+
+You can also run ad-hoc analysis using our CLI tools.
+
+## Privacy & Compliance
+
+### Is SnapBack GDPR compliant?
+
+Yes, SnapBack is fully compliant with GDPR requirements:
+- Explicit consent for data collection
+- Right to access your data
+- Right to delete your data
+- Data portability
+- Privacy by design
+
+### How do I request deletion of my analytics data?
+
+To request deletion of your analytics data:
+1. Contact support@snapback.dev
+2. Include your account email and request type
+3. We'll process your request within 30 days
+
+### Can my organization use SnapBack with strict privacy requirements?
+
+Yes, we offer Enterprise plans with:
+- On-premise deployment options
+- Custom data retention policies
+- Enhanced access controls
+- Dedicated compliance support
+
+## Troubleshooting
+
+### I'm not seeing my data in PostHog
+
+Check that:
+1. Analytics are enabled in your settings
+2. Your PostHog integration is properly configured
+3. Your API key is valid
+4. You've completed the onboarding process
+
+### Retention cohorts aren't updating
+
+Retention cohorts update automatically but may take up to 24 hours. If issues persist:
+1. Verify your PostHog configuration
+2. Check for any API errors in your logs
+3. Contact support for assistance
+
+### Correlation analysis results seem incorrect
+
+Correlation analysis requires sufficient data to be meaningful:
+- New accounts may not have enough data
+- Low-traffic features may show noisy results
+- Seasonal patterns may affect short-term analysis
+
+For persistent issues, please contact our support team.

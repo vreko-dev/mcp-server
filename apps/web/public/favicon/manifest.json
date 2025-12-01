@@ -1,0 +1,26 @@
+{
+	"name": "SnapBack - Developer Automation Platform",
+	"short_name": "SnapBack",
+	"description": "Automation platform for developers with cyberpunk aesthetics",
+	"start_url": "/",
+	"display": "standalone",
+	"background_color": "#000000",
+	"theme_color": "#00FF41",
+	"orientation": "portrait-primary",
+	"icons": [
+		{
+			"src": "/favicon/icon-192.png",
+			"sizes": "192x192",
+			"type": "image/png",
+			"purpose": "any"
+		},
+		{
+			"src": "/favicon/apple-touch-icon.png",
+			"sizes": "512x512",
+			"type": "image/png",
+			"purpose": "any"
+		}
+	],
+	"categories": ["productivity", "developer-tools"],
+	"lang": "en-US"
+}

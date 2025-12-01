@@ -1,0 +1,34 @@
+{
+  "name": "@snapback/perf",
+  "version": "0.0.1",
+  "description": "Performance testing harness with budgets and variance tracking",
+  "dependencies": {},
+  "devDependencies": {
+    "@snapback/tsconfig": "workspace:*",
+    "@types/node": "catalog:",
+    "tsup": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "private": true,
+  "scripts": {
+    "build": "tsup && tsc --emitDeclarationOnly",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "perf": "vitest run --reporter=verbose test/perf.spec.ts",
+    "type-check": "tsc --noEmit"
+  },
+  "types": "./dist/index.d.ts"
+}

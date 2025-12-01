@@ -1,0 +1,65 @@
+# Development Dockerfile for API service with hot reload
+FROM node:20.11.0-alpine AS base
+
+# Install system dependencies
+RUN apk update && apk upgrade
+RUN apk add --no-cache \
+    libc6-compat \
+    openssl \
+    ca-certificates \
+    git
+
+# Enable corepack for pnpm
+RUN corepack enable && corepack prepare pnpm@10.14.0 --activate
+
+# Set work directory
+WORKDIR /app
+
+# Create non-root user
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 apiuser --ingroup nodejs
+
+# ===== PHASE 1: Dependency Resolution =====
+# Copy workspace config
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY turbo.json ./
+
+# Copy ALL package.json files individually for proper workspace resolution
+COPY apps/api/package.json ./apps/api/
+COPY apps/web/package.json ./apps/web/
+COPY apps/docs/package.json ./apps/docs/
+COPY apps/mcp-server/package.json ./apps/mcp-server/
+COPY packages/*/package.json ./packages/*/
+COPY tooling/*/package.json ./tooling/*/
+COPY config/package.json ./config/
+
+# Install all dependencies with cache mounting
+RUN --mount=type=cache,id=pnpm-dev,target=/pnpm/store \
+    pnpm install --no-frozen-lockfile --ignore-scripts
+
+# ===== PHASE 2: Source Code =====
+# Copy source code (node_modules excluded by .dockerignore)
+COPY . .
+
+# Change ownership to non-root user
+RUN chown -R apiuser:nodejs /app
+
+# Switch to non-root user
+USER apiuser
+
+# Generate Drizzle schema
+RUN pnpm --filter @snapback/platform run generate
+
+# Set development environment
+ENV NODE_ENV=development
+ENV PORT=8080
+
+# Expose API port and debugger port
+EXPOSE 8080 9230
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:8080/api/health || exit 1
+
+# Start development server
+CMD ["pnpm", "--filter", "@snapback/api-service", "run", "dev"]

@@ -1,0 +1,393 @@
+---
+title: CLI Documentation
+description: Command-line interface for SnapBack automation and scripting
+---
+
+# CLI Documentation
+
+The SnapBack CLI tool provides powerful automation and scripting capabilities for integrating SnapBack into your development workflow.
+
+<nav className="breadcrumb mb-6">
+  <span>Home</span>
+  <span>/</span>
+  <span>Documentation</span>
+  <span>/</span>
+  <span>CLI</span>
+</nav>
+
+## Installation
+
+Install the SnapBack CLI globally using npm:
+
+```bash
+npm install -g @snapback/cli
+```
+
+Or using yarn:
+
+```bash
+yarn global add @snapback/cli
+```
+
+Verify the installation:
+
+```bash
+snapback --version
+```
+
+## Authentication
+
+Before using the CLI, you'll need to authenticate:
+
+```bash
+# Login with your SnapBack account
+snapback auth login
+
+# Or use an API key
+snapback auth login --api-key YOUR_API_KEY
+```
+
+## Core Commands
+
+### Snapshot Management
+
+#### Create Snapshots
+
+```bash
+# Create a snapshot of a specific file
+snapback snapshot create --file src/index.js
+
+# Create snapshots for all files matching a pattern
+snapback snapshot create --pattern "src/**/*.js"
+
+# Create snapshots for the entire project
+snapback snapshot create --all
+```
+
+#### List Snapshots
+
+```bash
+# List all snapshots
+snapback snapshot list
+
+# List snapshots for a specific file
+snapback snapshot list --file src/index.js
+
+# List snapshots with pagination
+snapback snapshot list --limit 50 --offset 100
+```
+
+#### Restore Snapshots
+
+```bash
+# Restore a specific snapshot
+snapback snapshot restore --id snapshot_12345
+
+# Restore the latest snapshot of a file
+snapback snapshot restore --file src/index.js --latest
+
+# Preview changes before restoring
+snapback snapshot restore --id snapshot_12345 --dry-run
+```
+
+### Session Management
+
+#### Create and Manage Sessions
+
+```bash
+# Create a new session
+snapback session create --name "Implement authentication"
+
+# End the current session
+snapback session end
+
+# List all sessions
+snapback session list
+
+# View session details
+snapback session view --id session_12345
+
+# Restore an entire session
+snapback session restore --id session_12345
+```
+
+#### Session Comparison
+
+```bash
+# Compare two sessions
+snapback session diff --id session_12345 --id session_67890
+
+# Export comparison as HTML
+snapback session diff --id session_12345 --id session_67890 --format html > comparison.html
+```
+
+### Protection Management
+
+#### Set Protection Levels
+
+```bash
+# Set protection level for a file
+snapback protect --file src/config.js --level warn
+
+# Set protection level for files matching a pattern
+snapback protect --pattern "**/*.env" --level block
+
+# List current protection rules
+snapback protect list
+```
+
+### AI Detection
+
+#### Scan for Risks
+
+```bash
+# Scan a specific file
+snapback scan --file src/index.js
+
+# Scan the entire project
+snapback scan --all
+
+# Scan with specific sensitivity
+snapback scan --all --sensitivity high
+```
+
+#### Manage False Positives
+
+```bash
+# Ignore a specific pattern
+snapback ignore add "**/mock-data/**"
+
+# List ignored patterns
+snapback ignore list
+
+# Remove an ignored pattern
+snapback ignore remove "**/mock-data/**"
+```
+
+## Configuration
+
+### Configuration File
+
+Create a `.snapbackconfig` file in your project root:
+
+```json
+{
+  "storage": {
+    "path": "./.snapback",
+    "maxSnapshotsPerFile": 100
+  },
+  "aiDetection": {
+    "sensitivity": "high",
+    "ignorePatterns": [
+      "**/*.test.js",
+      "**/mocks/**"
+    ]
+  },
+  "protection": {
+    "defaultLevel": "warn",
+    "rules": [
+      {
+        "pattern": "**/.env*",
+        "level": "block"
+      },
+      {
+        "pattern": "docs/**",
+        "level": "watch"
+      }
+    ]
+  }
+}
+```
+
+### Environment Variables
+
+Set environment variables for CLI configuration:
+
+```bash
+# Set API key
+export SNAPBACK_API_KEY=your_api_key_here
+
+# Set storage path
+export SNAPBACK_STORAGE_PATH=/custom/storage/path
+
+# Set log level
+export SNAPBACK_LOG_LEVEL=debug
+```
+
+## Automation Examples
+
+### Continuous Integration
+
+Add SnapBack to your CI pipeline:
+
+```yaml
+# .github/workflows/snapback.yml
+name: SnapBack Analysis
+on: [push, pull_request]
+jobs:
+  snapback-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - name: Install SnapBack CLI
+        run: npm install -g @snapback/cli
+      - name: Scan for AI risks
+        run: snapback scan --all --format json > scan-results.json
+      - name: Upload results
+        uses: actions/upload-artifact@v2
+        with:
+          name: snapback-scan-results
+          path: scan-results.json
+```
+
+### Pre-commit Hook
+
+Prevent risky commits with a pre-commit hook:
+
+```bash
+#!/bin/bash
+# .git/hooks/pre-commit
+
+# Scan staged files for AI risks
+snapback scan --staged
+
+# If risks are found, prevent commit
+if [ $? -ne 0 ]; then
+  echo "⚠️  SnapBack detected potential risks. Please review before committing."
+  exit 1
+fi
+
+echo "✅ No risks detected by SnapBack"
+exit 0
+```
+
+### Backup Script
+
+Automate regular backups:
+
+```bash
+#!/bin/bash
+# backup.sh
+
+# Create snapshots for all files
+snapback snapshot create --all
+
+# Clean up old snapshots (keep last 30 days)
+snapback cleanup --keep 30d
+
+# Export snapshot data
+snapback export --output snapshots-$(date +%Y%m%d).json
+
+echo "Backup completed: $(date)"
+```
+
+## Advanced Usage
+
+### Custom Scripts
+
+Create custom automation scripts:
+
+```javascript
+// snapback-automation.js
+const { SnapBack } = require('@snapback/cli');
+
+async function main() {
+  const snapback = new SnapBack({
+    apiKey: process.env.SNAPBACK_API_KEY
+  });
+
+  // Create snapshots for all JavaScript files
+  await snapback.snapshot.create({
+    pattern: '**/*.js'
+  });
+
+  // Scan for AI risks
+  const results = await snapback.scan({
+    all: true,
+    sensitivity: 'high'
+  });
+
+  // Report findings
+  if (results.risks.length > 0) {
+    console.log(`⚠️  Found ${results.risks.length} potential risks:`);
+    results.risks.forEach(risk => {
+      console.log(`  - ${risk.file}:${risk.line} - ${risk.type}`);
+    });
+  } else {
+    console.log('✅ No risks detected');
+  }
+}
+
+main().catch(console.error);
+```
+
+### Integration with Other Tools
+
+Integrate SnapBack with other development tools:
+
+```bash
+# Use with lint-staged
+npx lint-staged
+
+# Then run SnapBack scan
+snapback scan --staged
+```
+
+## Best Practices
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-6">
+  <div className="card">
+    <h4 className="font-bold mb-2">🔄 Regular Snapshots</h4>
+    <p className="text-gray-400">Schedule regular snapshot creation to ensure you always have recent recovery points.</p>
+  </div>
+  
+  <div className="card">
+    <h4 className="font-bold mb-2">🧹 Cleanup Old Data</h4>
+    <p className="text-gray-400">Regularly clean up old snapshots to save storage space while maintaining recent history.</p>
+  </div>
+  
+  <div className="card">
+    <h4 className="font-bold mb-2">🔐 Secure API Keys</h4>
+    <p className="text-gray-400">Never commit API keys to version control. Use environment variables or secure vaults.</p>
+  </div>
+  
+  <div className="card">
+    <h4 className="font-bold mb-2">📊 Monitor Usage</h4>
+    <p className="text-gray-400">Monitor your SnapBack usage to ensure you're getting the most value from the tool.</p>
+  </div>
+</div>
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Command not found**: Ensure the CLI is installed globally and in your PATH
+2. **Authentication errors**: Verify your API key and network connectivity
+3. **Permission denied**: Check that you have write permissions to the storage directory
+
+### Getting Help
+
+```bash
+# Get help for any command
+snapback --help
+snapback snapshot --help
+snapback session --help
+
+# Enable debug logging
+snapback --log-level debug snapshot create --file src/index.js
+```
+
+## Related Documentation
+
+- [Quick Start Guide](/quick-start) - Get up and running quickly
+- [Protection Levels](/protection-levels) - Configure file protection
+- [AI Detection](/ai-detection) - Understand risk analysis
+- [Session Time-Travel](/sessions) - Navigate your coding history
+
+<div className="callout alert-info my-6">
+  <strong>💡 Pro Tip:</strong> Combine the CLI with cron jobs or CI/CD pipelines to automate snapshot creation and risk scanning. This ensures consistent protection without manual intervention.
+</div>

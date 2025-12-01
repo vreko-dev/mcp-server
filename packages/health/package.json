@@ -1,0 +1,31 @@
+{
+  "name": "@snapback/health",
+  "description": "Health check utilities for SnapBack services",
+  "version": "1.0.0",
+  "author": "SnapBack Team",
+  "devDependencies": {
+    "@snapback/tsconfig": "workspace:*",
+    "tsup": "catalog:",
+    "typescript": "catalog:"
+  },
+  "files": [
+    "dist/**"
+  ],
+  "keywords": [
+    "health",
+    "monitoring",
+    "snapback"
+  ],
+  "license": "MIT",
+  "main": "dist/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "biome check .",
+    "type-check": "tsc --noEmit"
+  },
+  "types": "dist/index.d.ts"
+}

@@ -1,0 +1,101 @@
+name: VS Code Extension Validation
+
+on:
+    workflow_call:
+        inputs:
+            run-performance-tests:
+                type: boolean
+                required: false
+                default: false
+            run-storage-tests:
+                type: boolean
+                required: false
+                default: false
+    workflow_dispatch:
+
+jobs:
+    validate:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Toolchain setup
+              uses: ./.github/actions/setup-pnpm
+
+            - name: Build shared workspace packages
+              run: |
+                  pnpm --filter @snapback/contracts build
+                  pnpm --filter @snapback/core build
+                  pnpm --filter @snapback/storage build
+                  pnpm --filter @snapback/telemetry build
+
+            - name: Type check
+              run: pnpm --filter ./apps/vscode run check-types
+
+            - name: Lint sources
+              run: pnpm --filter ./apps/vscode run lint
+
+            - name: Lint manifest
+              run: pnpm --filter ./apps/vscode run lint:manifest
+
+            - name: Unit tests
+              run: pnpm --filter ./apps/vscode run test:unit
+              env:
+                  CI: "true"
+
+            - name: Integration tests
+              run: pnpm --filter ./apps/vscode run test:integration
+              env:
+                  CI: "true"
+
+            - name: Storage tests
+              if: ${{ inputs.run-storage-tests }}
+              run: pnpm --filter ./apps/vscode run test:storage
+              env:
+                  CI: "true"
+
+            - name: Performance tests
+              if: ${{ inputs.run-performance-tests }}
+              run: pnpm --filter ./apps/vscode run test:performance
+              env:
+                  CI: "true"
+
+            - name: Coverage
+              run: pnpm --filter ./apps/vscode run test:coverage
+
+            - name: Upload coverage
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: vscode-coverage
+                  path: apps/vscode/coverage
+                  if-no-files-found: warn
+
+            - name: Build extension bundle
+              run: pnpm --filter ./apps/vscode run compile
+
+            - name: Check bundle size
+              run: pnpm --filter ./apps/vscode run check:bundle-size
+
+            - name: Ensure no production source maps
+              run: |
+                  if [ -f apps/vscode/dist/extension.js.map ]; then
+                    echo "❌ Source map found in production build."
+                    exit 1
+                  fi
+                  echo "✅ No production source maps detected."
+
+            - name: Package VSIX
+              run: pnpm --filter ./apps/vscode run package-vsix
+
+            - name: Upload VSIX artifact
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: snapback-vscode
+                  path: apps/vscode/*.vsix
+                  if-no-files-found: warn

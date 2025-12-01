@@ -1,0 +1,29 @@
+{
+	"repo_root": "/Users/user1/WebstormProjects/SnapBack-Site",
+	"workspace_manager": "pnpm",
+	"frameworks": {
+		"vitest": true,
+		"jest": false,
+		"playwright": true,
+		"cypress": false
+	},
+	"vitest_configs": [
+		"apps/mcp-server/vitest.config.ts",
+		"apps/vscode/vitest.config.mts",
+		"apps/web/vitest.config.ts",
+		"apps/cli/vitest.config.ts",
+		"packages/core/vitest.config.ts",
+		"packages/events/vitest.config.ts",
+		"packages/sdk/vitest.config.ts",
+		"packages/auth/vitest.config.ts",
+		"packages/infrastructure/vitest.config.ts",
+		"packages/api/vitest.config.ts",
+		"packages/github-action/vitest.config.ts",
+		"packages/policy-engine/vitest.config.ts",
+		"packages/auth-mock/vitest.config.ts",
+		"packages/platform/vitest.config.ts",
+		"packages/analytics/vitest.config.ts",
+		"vitest.config.ts"
+	],
+	"playwright_configs": ["apps/vscode/playwright.config.ts", "apps/web/playwright.config.ts"]
+}

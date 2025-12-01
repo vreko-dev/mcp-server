@@ -1,0 +1,566 @@
+{
+	"snapback": {
+		"domains": {
+			"marketing": "https://snapback.dev",
+			"console": "https://console.snapback.dev"
+		},
+		"site": {
+			"name": "SnapBack",
+			"brand": {
+				"primary_color": "#4A7C59",
+				"logo_variant": "{S} snapback hat mark",
+				"tone": ["calm", "confident", "developer-first"]
+			},
+			"pages": {
+				"home": {
+					"id": "home",
+					"path": "/",
+					"title": "SnapBack – Ship faster without fearing your last refactor",
+					"sections": {
+						"hero": {
+							"id": "hero",
+							"type": "video_hero",
+							"content": {
+								"eyebrow": "Private Alpha",
+								"headline": "Code Breaks. Snap Back.",
+								"subheadline": "A VS Code extension that automatically snapshots your workspace so you can experiment freely with AI and restore the last working state in one click.",
+								"founder_story": "Local-first, works offline, no account required. Currently in alpha—help shape the product.",
+								"primary_cta": {
+									"label": "Install for VS Code",
+									"subtext": "Private Alpha · Install the extension",
+									"href": "vscode:extension/MarcelleLabs.snapback-vscode",
+									"analytics_event": "INSTALL_BUTTON_CLICKED"
+								},
+								"secondary_cta": {
+									"label": "Install for Cursor",
+									"href": "cursor:extension/MarcelleLabs.snapback-vscode",
+									"analytics_event": "HERO_CTA_CLICKED_SECONDARY"
+								},
+								"trust_line": "Local-first · Works offline · No account required",
+								"video_caption": "[TODO: 60-second hero video] Real SnapBack session showing Sessions panel → snapshot selection → file restoration → confirmation toast"
+							}
+						},
+						"problem": {
+							"id": "problem",
+							"type": "two_column_story",
+							"content": {
+								"label": "The challenge",
+								"headline": "AI moves fast. So do mistakes.",
+								"body": "Copilot, Claude, Gemini—they suggest code at breakneck speed. Some ideas are gold. Others break everything. Git helps if you commit. Local History helps if it's one file. SnapBack saves you mid-thought.",
+								"timeline_items": [
+									{
+										"title": "AI refactored too much",
+										"description": "Across 20 files in one go. Which change broke it? Not a commit. Not a save. A single AI suggestion.",
+										"screenshot": "/images/git-vs-snapback.webp"
+									},
+									{
+										"title": "Tests were passing. Now they're not.",
+										"description": "Revert to the exact moment before the last suggestion, not the last commit. Get back to green in one click."
+									},
+									{
+										"title": "You don't want to lose the good work.",
+										"description": "Undo is too coarse. Git history is too fragile. You need a safety net that lets you experiment without fear."
+									}
+								],
+								"closing": "SnapBack gives you a way back to the last moment you felt safe. No commits required. Just code and snapshots."
+							}
+						},
+						"how_it_works": {
+							"id": "how_it_works",
+							"type": "bento_steps",
+							"content": {
+								"label": "How it works",
+								"headline": "Simple. Automatic. Local.",
+								"steps": [
+									{
+										"step_number": 1,
+										"title": "Auto snapshots on save",
+										"body": "Every save creates a local restore point. No setup, no new workflow—keep coding as usual while SnapBack quietly tracks your progress.",
+										"tag": "Lightning fast",
+										"screenshot": "[TODO: VS Code status bar showing 'SnapBack: 47 snapshots' with green checkmark]"
+									},
+									{
+										"step_number": 2,
+										"title": "Session timeline & diff",
+										"body": "Scroll through your session and compare snapshots to see exactly what changed. Understand how AI suggestions reshaped your code.",
+										"screenshot": "[TODO: Detection toast notification showing 'Breaking change detected · file-service.ts']"
+									},
+									{
+										"step_number": 3,
+										"title": "One-click restore",
+										"body": "Pick any snapshot, hit restore, and your workspace jumps back to that state in seconds. Recover broken sessions without wrestling with Git.",
+										"screenshot": "[TODO: Command Palette showing SnapBack: Restore menu with 3 recent snapshots]"
+									}
+								],
+								"inline_cta": {
+									"label": "View UI screenshots →",
+									"href": "#demo",
+									"analytics_event": "HERO_CTA_CLICKED_SECONDARY"
+								}
+							}
+						},
+						"interactive_demo": {
+							"id": "interactive_demo",
+							"type": "timeline_demo",
+							"content": {
+								"label": "Session timeline",
+								"headline": "See your coding session as a timeline.",
+								"description": "Every save becomes a snapshot on your session timeline. Scroll back through your AI-assisted session, inspect diffs, and restore any point where things still worked.",
+								"snapshots": [
+									"Auto-save · before AI refactor",
+									"Tests passing · all green",
+									"After AI edit · 17 tests failing",
+									"Manual fix attempt",
+									"SnapBack restore · tests green again"
+								]
+							}
+						},
+						"for_teams": {
+							"id": "for_teams",
+							"type": "metrics",
+							"content": {
+								"label": "Why developers choose SnapBack",
+								"headline": "Zero latency. No vendor lock-in. Just you and your snapshots.",
+								"body": "SnapBack is built for developers who code alone and teams that ship together. Local-first means instant restores, no network calls, and your data always under your control.",
+								"metric_cards": [
+									{
+										"title": "Sub-100ms snapshots",
+										"description": "No editor lag. SnapBack captures your workspace in the background while you keep working."
+									},
+									{
+										"title": "<1s restore time",
+										"description": "Jump back to any point in seconds. Works on monorepos, microservices, and large projects."
+									},
+									{
+										"title": "100% local storage",
+										"description": "Your snapshots live in ~/.snapback. No cloud provider. No subscription required. Just efficient local storage."
+									}
+								]
+							}
+						},
+						"privacy": {
+							"id": "privacy",
+							"type": "trust_panel",
+							"content": {
+								"label": "Privacy first",
+								"headline": "Local-first. Private by design.",
+								"items": [
+									{
+										"title": "Works offline on planes, in tunnels, and on bad Wi-Fi.",
+										"description": "Your snapshots never leave your machine. Instant recovery, zero latency, and no third-party storage—SnapBack works even when you're offline."
+									},
+									{
+										"title": "No source code uploads—snapshots live alongside your project.",
+										"description": "Every snapshot is stored locally in ~/.snapback. No cloud services. No tracking. No hidden syncs. Verify it yourself: ls -la ~/.snapback."
+									},
+									{
+										"title": "Local-only mode means no login required to get protection.",
+										"description": "You don't need an account to use SnapBack. Start protecting your workspace immediately after install, completely offline."
+									}
+								],
+								"footer": "Your code is your responsibility and your asset. SnapBack is transparent about how it handles your work."
+							}
+						},
+						"social_proof": {
+							"id": "social_proof",
+							"type": "testimonials",
+							"content": {
+								"label": "Coming soon",
+								"headline": "Honest feedback from real users.",
+								"logo_row": [],
+								"testimonials": [],
+								"cta": {
+									"label": "Install SnapBack →",
+									"subtext": "Early access to private alpha.",
+									"href": "vscode:extension/MarcelleLabs.snapback-vscode",
+									"analytics_event": "INSTALL_BUTTON_CLICKED"
+								}
+							}
+						},
+						"final_cta": {
+							"id": "final_cta",
+							"type": "cta_band",
+							"content": {
+								"headline": "Install SnapBack for VS Code.",
+								"body": "Start using automatic local snapshots today. Install the extension and take the risk out of AI-assisted coding. We're actively iterating with private alpha teams—your feedback helps shape the roadmap.",
+								"primary_cta": {
+									"label": "Install Extension",
+									"href": "vscode:extension/MarcelleLabs.snapback-vscode",
+									"analytics_event": "INSTALL_BUTTON_CLICKED"
+								}
+							}
+						}
+					}
+				},
+				"product": {
+					"id": "product",
+					"path": "/product",
+					"title": "How SnapBack works",
+					"sections": {
+						"overview": {
+							"id": "overview",
+							"type": "intro",
+							"content": {
+								"headline": "How SnapBack keeps you safe while you code.",
+								"body": "SnapBack is a local-first timeline of your development session.\nIt creates smart snapshots of your workspace at meaningful moments and gives you a fast, precise way to roll back when something goes sideways."
+							}
+						},
+						"triggers": {
+							"id": "triggers",
+							"type": "two_column_list",
+							"content": {
+								"headline": "Smart snapshots, not noisy backups.",
+								"body": "SnapBack isn’t a glorified “auto-save”. It groups changes around events that actually matter to you.",
+								"triggers": [
+									{
+										"title": "File saves",
+										"description": "Lightweight snapshots keyed to the files you touch most."
+									},
+									{
+										"title": "Test runs",
+										"description": "Before and after your test commands, so you can jump back to “all green”."
+									},
+									{
+										"title": "Branch switches & pulls",
+										"description": "Guardrails when you’re juggling multiple workstreams."
+									},
+									{
+										"title": "AI-driven edits",
+										"description": "Capture the state before a large Copilot / Claude / Gemini edit so you can compare outcomes."
+									}
+								]
+							}
+						},
+						"sessions_timeline": {
+							"id": "sessions_timeline",
+							"type": "timeline",
+							"content": {
+								"headline": "Your whole session, as a scrollable timeline.",
+								"body": "SnapBack clusters snapshots into sessions — “Today’s spike”, “API refactor”, “Bug hunt”. Each session keeps your moments in order, so you can scrub back to the one that feels right instead of guessing.",
+								"highlights": [
+									"Semantic labels – “Before auth refactor”, not just “12:03 PM”.",
+									"Filters – Show only snapshots linked to test runs or a specific file.",
+									"Search – Type “refactor” to jump to moments you deliberately marked."
+								]
+							}
+						},
+						"restore_flows": {
+							"id": "restore_flows",
+							"type": "tabs",
+							"content": {
+								"headline": "Restore the way you work.",
+								"tabs": [
+									{
+										"id": "editor",
+										"label": "VS Code",
+										"title": "Command palette first",
+										"body": "Hit `⌘⇧P` / `Ctrl+Shift+P`, type “SnapBack: Restore Snapshot”, pick the moment, and confirm. Your workspace rolls back in one atomic operation."
+									},
+									{
+										"id": "cli",
+										"label": "CLI",
+										"title": "Terminal-friendly",
+										"body": "Use `snapback restore --snapshot <id>` to integrate with your own scripts and workflows."
+									},
+									{
+										"id": "api",
+										"label": "API",
+										"title": "Automation hooks",
+										"body": "Coming soon: programmatic access for custom tooling, bots, and CI helpers."
+									}
+								]
+							}
+						},
+						"architecture": {
+							"id": "architecture",
+							"type": "diagram",
+							"content": {
+								"headline": "Under the hood: boring on purpose.",
+								"body": "SnapBack uses a local SQLite datastore to track snapshots and file states. Restores are applied via a cautious engine that checks for conflicts and never touches untracked files.",
+								"bullets": [
+									"Atomic restores – Either the entire operation succeeds, or nothing changes.",
+									"Conflict awareness – Warns you if a restore would overwrite newer work.",
+									"Audit trail – You can see what changed for every restore operation."
+								]
+							}
+						},
+						"roadmap": {
+							"id": "roadmap",
+							"type": "roadmap_list",
+							"content": {
+								"headline": "What’s coming next",
+								"items": [
+									"Team timelines and shared snapshots",
+									"Deeper test runner integrations",
+									"Smarter labels powered by local AI context"
+								],
+								"ctas": [
+									{
+										"label": "View the public roadmap →",
+										"href": "#roadmap"
+									},
+									{
+										"label": "Join the alpha & shape it →",
+										"href": "/getting-started#alpha"
+									}
+								]
+							}
+						}
+					}
+				},
+				"pricing": {
+					"id": "pricing",
+					"path": "/pricing",
+					"title": "SnapBack Pricing",
+					"sections": {
+						"pricing_overview": {
+							"id": "pricing_overview",
+							"type": "intro",
+							"content": {
+								"headline": "Simple pricing, no tricks.",
+								"body": "Start free as a solo dev. Upgrade when you want to roll it out to your team."
+							}
+						},
+						"plans": {
+							"id": "plans",
+							"type": "pricing_cards",
+							"content": {
+								"toggle_label": "Monthly / Yearly",
+								"plans": [
+									{
+										"id": "solo",
+										"name": "Solo",
+										"tagline": "Best place to start",
+										"price_monthly": 0,
+										"price_yearly": 0,
+										"description": "For individual developers who want a personal safety net.",
+										"features": [
+											"Local snapshots",
+											"VS Code extension",
+											"Basic restore history"
+										],
+										"cta": {
+											"label": "Start free",
+											"href": "/getting-started#install",
+											"analytics_event": "PRICING_CARD_CLICKED"
+										}
+									},
+									{
+										"id": "pro",
+										"name": "Pro",
+										"tagline": "COMING SOON",
+										"price_monthly": 9,
+										"price_yearly": 90,
+										"description": "For people who live in their editor and ship daily.",
+										"features": [
+											"Everything in Free",
+											"Unlimited snapshot history",
+											"Advanced filters & labels",
+											"Priority support / feedback loop"
+										],
+										"cta": {
+											"label": "Join waitlist",
+											"href": "/getting-started#alpha",
+											"analytics_event": "PRICING_CARD_CLICKED"
+										}
+									},
+									{
+										"id": "team",
+										"name": "Team",
+										"tagline": "For org-wide adoption",
+										"price_monthly": null,
+										"price_yearly": null,
+										"description": "For teams that want SnapBack as standard dev tooling.",
+										"features": [
+											"Seat management",
+											"Team-level controls",
+											"Optional organization policies"
+										],
+										"cta": {
+											"label": "Talk to us",
+											"href": "/contact",
+											"analytics_event": "PRICING_CARD_CLICKED"
+										}
+									}
+								]
+							}
+						},
+						"faq": {
+							"id": "faq",
+							"type": "accordion",
+							"content": {
+								"headline": "Questions developers actually ask",
+								"faqs": [
+									{
+										"question": "Will SnapBack upload my source code?",
+										"answer": "No. Snapshots stay local. We only use cloud services for auth, updates, and anonymous telemetry you explicitly opt into."
+									},
+									{
+										"question": "Is this a replacement for git?",
+										"answer": "No. SnapBack sits underneath git and your editor. It’s about sessions and workspace state, not commit history."
+									},
+									{
+										"question": "Does SnapBack slow my editor down?",
+										"answer": "We designed it to be invisible until you need it. Snapshotting is lightweight and tuned for active development."
+									},
+									{
+										"question": "What happens if a restore goes wrong?",
+										"answer": "Every restore is tracked and reversible. If something looks off, you can revert the restore itself."
+									}
+								]
+							}
+						}
+					}
+				},
+				"getting_started": {
+					"id": "getting_started",
+					"path": "/getting-started",
+					"title": "Getting Started with SnapBack",
+					"sections": {
+						"intro": {
+							"id": "intro",
+							"type": "intro",
+							"content": {
+								"headline": "Get SnapBack running in under 5 minutes.",
+								"body": "Follow this quick path to install the extension, run your first experiment, and feel the safety net kick in."
+							}
+						},
+						"install": {
+							"id": "install",
+							"type": "step_list",
+							"content": {
+								"headline": "Install SnapBack",
+								"steps": [
+									{
+										"title": "Install the VS Code extension",
+										"body": "Search for “SnapBack” in the VS Code marketplace, or click the button below.",
+										"cta": {
+											"label": "Open in VS Code",
+											"href": "vscode:extension/MarcelleLabs.snapback-vscode",
+											"analytics_event": "INSTALL_BUTTON_CLICKED"
+										}
+									},
+									{
+										"title": "Connect your account (optional at first)",
+										"body": "Use GitHub / Google / email to link your account for sync and updates."
+									},
+									{
+										"title": "Run a test refactor",
+										"body": "Change something a bit scary in a throwaway file. Then use SnapBack to roll back and feel the safety net kick in."
+									}
+								]
+							}
+						},
+						"first_restore": {
+							"id": "first_restore",
+							"type": "walkthrough",
+							"content": {
+								"headline": "Your first restore, step-by-step.",
+								"steps": [
+									{
+										"title": "Make a change",
+										"body": "Edit a file, run your tests, or let AI rewrite a chunk of code."
+									},
+									{
+										"title": "Open SnapBack",
+										"body": "Press `⌘⇧P` / `Ctrl+Shift+P`, choose “SnapBack: Restore Snapshot”."
+									},
+									{
+										"title": "Pick the moment",
+										"body": "Choose the snapshot labeled “Before refactor”. Confirm. Watch your workspace roll back."
+									}
+								],
+								"closing": "That’s it. From here, SnapBack quietly watches your back while you code."
+							}
+						},
+						"best_practices": {
+							"id": "best_practices",
+							"type": "tips_list",
+							"content": {
+								"headline": "Make SnapBack part of your muscle memory.",
+								"tips": [
+									{
+										"title": "Name important snapshots",
+										"body": "Add little notes like “known-good” to make them easy to find."
+									},
+									{
+										"title": "Restore early, not late",
+										"body": "If something feels off, jump back quickly instead of thrashing."
+									},
+									{
+										"title": "Use it on spikes",
+										"body": "Treat experiments as cheap because getting back is cheap."
+									}
+								]
+							}
+						},
+						"alpha": {
+							"id": "alpha",
+							"type": "cta_band",
+							"content": {
+								"headline": "Help shape SnapBack.",
+								"body": "We’re onboarding early users slowly so we can ship the right things. Tell us how you work and we’ll invite you as we expand.",
+								"primary_cta": {
+									"label": "Apply for alpha access",
+									"href": "/alpha",
+									"analytics_event": "ALPHA_SIGNUP_STARTED"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"analytics_events": {
+			"HERO_VIDEO_PLAYED": {
+				"description": "Hero video started playing",
+				"properties": ["autoplay", "timestamp"]
+			},
+			"HERO_CTA_CLICKED_SECONDARY": {
+				"description": "Hero secondary CTA clicked (watch demo)",
+				"properties": ["cta", "location"]
+			},
+			"INSTALL_BUTTON_CLICKED": {
+				"description": "VS Code install clicked",
+				"properties": ["source_section", "plan"]
+			},
+			"DEMO_SNAPSHOT_SELECTED": {
+				"description": "Snapshot selected in interactive demo",
+				"properties": [
+					"snapshot_id",
+					"snapshot_label",
+					"index",
+					"time_spent_on_demo"
+				]
+			},
+			"DEMO_TIMELINE_DRAGGED": {
+				"description": "Timeline dragged in interactive demo",
+				"properties": ["start_index", "end_index"]
+			},
+			"PRICING_TOGGLE_CHANGED": {
+				"description": "Pricing toggle switched between monthly/yearly",
+				"properties": ["value_before", "value_after"]
+			},
+			"PRICING_CARD_CLICKED": {
+				"description": "User clicked a pricing card CTA",
+				"properties": ["plan_id", "plan_name"]
+			},
+			"ALPHA_SIGNUP_STARTED": {
+				"description": "Alpha signup CTA clicked",
+				"properties": ["source_page", "source_section"]
+			},
+			"ALPHA_SIGNUP_COMPLETED": {
+				"description": "Alpha signup form submitted successfully",
+				"properties": ["source_page", "utm_source"]
+			},
+			"SCROLL_DEPTH": {
+				"description": "Scroll depth reached on key pages",
+				"properties": ["page", "depth_percent"]
+			},
+			"TIME_ON_PAGE": {
+				"description": "Time on page bucketed event",
+				"properties": ["page", "seconds"]
+			}
+		}
+	}
+}

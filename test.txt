@@ -1,0 +1,2 @@
+Testing line break issue
+DATABASE_URL="postgresql://postgres.gjnopifuehuuuhubqajj:Samynn2017cd /Users/user1/WebstormProjects/SnapBack-Site && awk '/DATABASE_URL/ {print NR :  /bin/zsh}' apps/web/.env@aws-0-us-east-1.pooler.supabase.com:5432/postgres"

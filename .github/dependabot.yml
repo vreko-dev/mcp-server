@@ -1,0 +1,80 @@
+version: 2
+updates:
+    - package-ecosystem: "npm"
+      directory: "/"
+      open-pull-requests-limit: 2
+      schedule:
+          interval: "daily"
+      ignore:
+          - dependency-name: "cropperjs"
+            versions: [">1.6.2"]
+      groups:
+          production-dependencies:
+              dependency-type: "production"
+          development-dependencies:
+              dependency-type: "development"
+
+    # VS Code Extension - Higher Priority for Security
+    - package-ecosystem: "npm"
+      directory: "/apps/vscode"
+      schedule:
+          interval: "weekly"
+          day: "monday"
+          time: "03:00"
+      open-pull-requests-limit: 5
+      reviewers:
+          - "security-team"
+      assignees:
+          - "maintainers"
+      labels:
+          - "dependencies"
+          - "security"
+          - "vscode"
+      milestone: "v1.3.0"
+      commit-message:
+          prefix: "chore(vscode):"
+          include: "scope"
+      pull-request-branch-name:
+          separator: "/"
+      groups:
+          # Critical dependencies for VS Code
+          vscode-core:
+              dependency-types:
+                  - "production"
+              patterns:
+                  - "vscode"
+                  - "@types/vscode"
+          # Security-sensitive dependencies
+          security-patches:
+              dependency-types:
+                  - "production"
+              patterns:
+                  - "better-sqlite3"
+                  - "hasha"
+                  - "tweetnacl"
+                  - "conf"
+              update-types:
+                  - "minor"
+                  - "patch"
+          # Storage and data handling
+          data-handling:
+              dependency-types:
+                  - "production"
+              patterns:
+                  - "@snapback/sdk"
+                  - "@snapback/core"
+                  - "@snapback/contracts"
+                  - "better-sqlite3"
+          # Development and testing
+          development:
+              dependency-types:
+                  - "development"
+      allow:
+          - dependency-type: "direct"
+          - dependency-type: "indirect"
+      ignore:
+          # Ignored packages for vscode
+          - dependency-name: "electron-rebuild"
+            versions: [">5.0.0"]
+      versioning-strategy: "increase-if-necessary"
+      rebase-strategy: "auto"

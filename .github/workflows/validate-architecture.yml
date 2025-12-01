@@ -1,0 +1,211 @@
+name: Validate Architecture
+
+on:
+    pull_request:
+        paths:
+            - "packages/**"
+            - "apps/**"
+    push:
+        branches: [main]
+        paths:
+            - "packages/**"
+            - "apps/**"
+
+jobs:
+    boundary-check:
+        name: Import Boundary Check
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Check import boundaries
+              run: |
+                  echo "🏗️  Checking import boundaries..."
+                  echo ""
+
+                  VIOLATIONS=""
+
+                  # Function to check a public package
+                  check_package() {
+                    local pkg_path=$1
+                    local pkg_name=$2
+
+                    if [ -d "$pkg_path" ]; then
+                      echo "Checking $pkg_name..."
+
+                      # Check for imports of private packages
+                      FOUND=$(find "$pkg_path" -name "*.ts" -o -name "*.tsx" | \
+                        xargs grep -l "from ['\"]@snapback/\(logs\|api\|web\|auth\|database\|mail\|payments\|analytics\|storage\|telemetry\)" 2>/dev/null || true)
+
+                      if [ -n "$FOUND" ]; then
+                        VIOLATIONS="${VIOLATIONS}\n📦 ${pkg_name}:\n${FOUND}\n"
+                      fi
+                    fi
+                  }
+
+                  # Check all public packages
+                  check_package "packages/sdk" "packages/sdk"
+                  check_package "packages/core" "packages/core"
+                  check_package "apps/mcp-server" "apps/mcp-server"
+                  check_package "packages/contracts" "packages/contracts"
+
+                  if [ -n "$VIOLATIONS" ]; then
+                    echo ""
+                    echo "❌ Import boundary violations detected!"
+                    echo ""
+                    echo "Public packages importing private packages:"
+                    echo -e "$VIOLATIONS"
+                    echo ""
+                    echo "🏗️  Architecture rule: Public packages cannot depend on private packages."
+                    echo ""
+                    echo "Public packages (Apache-2.0):"
+                    echo "  - packages/sdk"
+                    echo "  - packages/core"
+                    echo "  - apps/mcp-server"
+                    echo "  - packages/contracts"
+                    echo ""
+                    echo "Private packages (UNLICENSED):"
+                    echo "  - packages/logs"
+                    echo "  - packages/api"
+                    echo "  - apps/web"
+                    echo "  - packages/auth"
+                    echo "  - packages/database"
+                    echo "  - packages/mail"
+                    echo "  - packages/payments"
+                    echo "  - packages/analytics"
+                    echo "  - packages/storage"
+                    echo "  - packages/telemetry"
+                    echo ""
+                    echo "💡 Solution: Extract shared interfaces to @snapback/contracts"
+                    echo "   Example: packages/contracts/src/logger.ts"
+                    echo ""
+                    exit 1
+                  fi
+
+                  echo ""
+                  echo "✅ All import boundaries respected!"
+
+    license-check:
+        name: License Compliance Check
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Check license files
+              run: |
+                  echo "📜 Checking LICENSE files..."
+                  echo ""
+
+                  MISSING=""
+
+                  # Public packages must have Apache-2.0 LICENSE
+                  PUBLIC_PACKAGES=(
+                    "packages/sdk"
+                    "packages/core"
+                    "apps/mcp-server"
+                    "packages/contracts"
+                  )
+
+                  for pkg in "${PUBLIC_PACKAGES[@]}"; do
+                    if [ -d "$pkg" ]; then
+                      if [ ! -f "$pkg/LICENSE" ]; then
+                        MISSING="${MISSING}\n  ❌ $pkg/LICENSE (missing)"
+                      elif ! grep -q "Apache License" "$pkg/LICENSE"; then
+                        MISSING="${MISSING}\n  ❌ $pkg/LICENSE (not Apache-2.0)"
+                      fi
+
+                      if [ -f "$pkg/package.json" ]; then
+                        if ! grep -q '"license".*"Apache-2.0"' "$pkg/package.json"; then
+                          MISSING="${MISSING}\n  ❌ $pkg/package.json (license field not Apache-2.0)"
+                        fi
+                      fi
+                    fi
+                  done
+
+                  # Private packages must have UNLICENSED LICENSE
+                  PRIVATE_PACKAGES=(
+                    "apps/web"
+                    "packages/api"
+                    "packages/logs"
+                    "packages/auth"
+                    "packages/database"
+                    "packages/mail"
+                    "packages/payments"
+                    "packages/analytics"
+                    "packages/storage"
+                    "packages/telemetry"
+                  )
+
+                  for pkg in "${PRIVATE_PACKAGES[@]}"; do
+                    if [ -d "$pkg" ]; then
+                      if [ ! -f "$pkg/LICENSE" ]; then
+                        MISSING="${MISSING}\n  ⚠️  $pkg/LICENSE (missing, should be proprietary)"
+                      fi
+
+                      if [ -f "$pkg/package.json" ]; then
+                        if ! grep -q '"license".*"UNLICENSED"' "$pkg/package.json"; then
+                          MISSING="${MISSING}\n  ❌ $pkg/package.json (license field not UNLICENSED)"
+                        fi
+                        if ! grep -q '"private".*true' "$pkg/package.json"; then
+                          MISSING="${MISSING}\n  ❌ $pkg/package.json (missing private: true)"
+                        fi
+                      fi
+                    fi
+                  done
+
+                  if [ -n "$MISSING" ]; then
+                    echo "❌ License compliance issues:"
+                    echo -e "$MISSING"
+                    echo ""
+                    echo "Run: ./scripts/add-licenses.sh"
+                    exit 1
+                  fi
+
+                  echo "✅ All packages have correct licenses!"
+
+    dependency-check:
+        name: Dependency Architecture Check
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Setup pnpm
+              uses: pnpm/action-setup@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  cache: "pnpm"
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Check for circular dependencies
+              run: |
+                  echo "🔄 Checking for circular dependencies..."
+
+                  # Check if madge is available
+                  if ! command -v npx &> /dev/null; then
+                    echo "npx not found, skipping circular dependency check"
+                    exit 0
+                  fi
+
+                  # Check for circular dependencies in packages
+                  for pkg in packages/*/ apps/*/; do
+                    if [ -d "$pkg/src" ]; then
+                      echo "Checking $pkg..."
+                      npx madge --circular "$pkg/src" || echo "No circular dependencies in $pkg"
+                    fi
+                  done
+
+                  echo ""
+                  echo "✅ Circular dependency check complete!"

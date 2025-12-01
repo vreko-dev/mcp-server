@@ -1,0 +1,22 @@
+{
+	"compilerOptions": {
+		"outDir": "./dist-test",
+		"rootDir": "./src",
+		"declaration": true,
+		"emitDeclarationOnly": false,
+		"composite": false,
+		"incremental": false,
+		"esModuleInterop": true,
+		"skipLibCheck": true
+	},
+	"include": ["src/**/*"],
+	"exclude": [
+		"node_modules",
+		"dist",
+		"build",
+		"**/node_modules/@types/glob/**",
+		"**/node_modules/@types/mdx/**",
+		"**/node_modules/minimatch/**",
+		"**/node_modules/zod/**"
+	]
+}

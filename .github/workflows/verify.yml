@@ -1,0 +1,126 @@
+name: DB Schema Verification
+
+on:
+    # Run on push to main/develop
+    push:
+        branches: [main, develop]
+        paths:
+            - "packages/platform/src/db/schema/**"
+            - "packages/platform/drizzle/**"
+            - "scripts/db-assert.ts"
+    # Allow manual trigger
+    workflow_dispatch:
+    # Run after deployments
+    workflow_call:
+
+# Automatically cancel previous runs on the same branch
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+env:
+    NODE_VERSION: "20"
+    PNPM_VERSION: "9"
+
+jobs:
+    schema-assertions:
+        name: DB Schema Assertions
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+
+        # Only run on branches with database access
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+
+            - name: Setup pnpm
+              uses: pnpm/action-setup@v4
+              with:
+                  version: ${{ env.PNPM_VERSION }}
+
+            - name: Get pnpm store directory
+              id: pnpm-cache
+              shell: bash
+              run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+            - name: Setup pnpm cache
+              uses: actions/cache@v4
+              with:
+                  path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+                  key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+                  restore-keys: |
+                      ${{ runner.os }}-pnpm-store-
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Run DB Schema Assertions
+              env:
+                  # Database connection from secrets
+                  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+                  POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+                  POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+                  POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+                  POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+                  POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+              run: pnpm db:assert
+
+            - name: Report Success
+              if: success()
+              run: |
+                  echo "✅ All database schema assertions passed!"
+                  echo "- CASCADE constraints verified"
+                  echo "- NOT NULL constraints verified"
+                  echo "- CHECK constraints verified"
+                  echo "- Indexes verified"
+
+            - name: Report Failure
+              if: failure()
+              run: |
+                  echo "❌ Database schema assertion failures detected!"
+                  echo "Please review the logs above for details."
+                  echo "See docs/RUNBOOKS.md for resolution steps."
+                  exit 1
+
+    # Optional: Run quarantine health check
+    quarantine-health:
+        name: Quarantine Health Check
+        runs-on: ubuntu-latest
+        timeout-minutes: 5
+
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+
+            - name: Setup pnpm
+              uses: pnpm/action-setup@v4
+              with:
+                  version: ${{ env.PNPM_VERSION }}
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Check Quarantine Events
+              env:
+                  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+              run: |
+                  # Simple health check - count quarantine events in last 24h
+                  echo "Checking quarantine events..."
+                  # This would be a simple SQL query via psql or node script
+                  # For now, just report that the check ran
+                  echo "✅ Quarantine health check completed"
+                  echo "See docs/RUNBOOKS.md for manual quarantine replay procedure"

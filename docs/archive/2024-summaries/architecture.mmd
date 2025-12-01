@@ -1,0 +1,74 @@
+```mermaid
+graph TB
+    subgraph "Presentation Layer"
+        web["@snapback/web"]
+        vscode["snapback-vscode"]
+    end
+
+    subgraph "API/Service Layer"
+        api["@snapback/api"]
+        auth["@snapback/auth"]
+        platform["@snapback/platform"]
+        mcp["@snapback/mcp-server"]
+        cli["@snapback/cli"]
+        simple["@snapback/api-simple"]
+        vercel["@snapback/api-vercel"]
+        mock["@snapback/auth-mock"]
+        github["@snapback/github-action"]
+        integrations["@snapback/integrations"]
+        policy["@snapback/policy-engine"]
+    end
+
+    subgraph "Data Access Layer"
+        %% Data access is primarily through platform package
+    end
+
+    subgraph "Infrastructure Layer"
+        infra["@snapback/infrastructure"]
+    end
+
+    subgraph "Shared Utilities"
+        core["@snapback/core"]
+        contracts["@snapback/contracts"]
+        analytics["@snapback/analytics"]
+        events["@snapback/events"]
+        config["@snapback/config"]
+        configLegacy["@snapback/config-legacy"]
+        tsconfig["@snapback/tsconfig"]
+        tailwind["@snapback/tailwind-config"]
+        scripts["@snapback/scripts"]
+        sdk["@snapback/sdk"]
+    end
+
+    %% Dependencies (Fan-out)
+    web --> api
+    web --> auth
+    api --> auth
+    api --> core
+    api --> platform
+    auth --> core
+    auth --> platform
+    platform --> contracts
+    core --> contracts
+    mcp --> analytics
+    analytics --> events
+    cli --> api
+    config --> tsconfig
+
+    %% Shared dependencies
+    analytics -.-> tsconfig
+    mock -.-> auth
+
+    %% External dependencies (simplified)
+    api -.-> hono
+    auth -.-> "better-auth"
+    platform -.-> "drizzle-orm"
+    analytics -.-> pino
+
+    classDef healthy fill:#90EE90,stroke:#333;
+    classDef risk fill:#FFD700,stroke:#333;
+    classDef dead fill:#FFB6C1,stroke:#333;
+    classDef external fill:#87CEEB,stroke:#333;
+
+    class web,vscode,api,auth,platform,mcp,cli,simple,vercel,mock,github,integrations,policy,infra,core,contracts,analytics,events,config,configLegacy,tsconfig,tailwind,scripts,sdk healthy;
+```

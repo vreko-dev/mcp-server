@@ -1,0 +1,20 @@
+name: CI (Redirect to Turborepo CI)
+
+on:
+    push:
+        branches: [main, develop, feat/**]
+    pull_request:
+        branches: [main, develop]
+    workflow_dispatch:
+
+jobs:
+    redirect:
+        name: Redirect to Turborepo CI
+        runs-on: ubuntu-latest
+        steps:
+            - name: Notify about workflow consolidation
+              run: |
+                  echo "⚠️ This workflow has been consolidated into turborepo-ci.yml"
+                  echo "⚠️ Please check the Turborepo CI workflow for test results"
+                  echo "✅ All packages are now tested in the unified workflow"
+                  exit 0

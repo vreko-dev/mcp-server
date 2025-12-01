@@ -1,0 +1,36 @@
+{
+	"extends": "@snapback/tsconfig/package",
+	"compilerOptions": {
+		"outDir": "./dist",
+		"rootDir": "./src",
+		"ignoreDeprecations": "5.0",
+		"paths": {
+			"@/*": ["./src/*"],
+			"@snapback/config": ["../config/src"],
+			"@snapback/*": ["../*/src"],
+			"@config": ["../../config"]
+		},
+		"skipLibCheck": true,
+		"tsBuildInfoFile": "./dist/.tsbuildinfo",
+		"typeRoots": ["./types", "./node_modules/@types"]
+	},
+	"include": ["src/**/*.ts", "types/**/*.d.ts"],
+	"exclude": [
+		"dist",
+		"build",
+		"node_modules",
+		"../*/dist/**",
+		"../../config/dist/**",
+		"tsup.config.ts",
+		"vitest.config.ts",
+		"**/*.test.ts",
+		"**/*.spec.ts"
+	],
+	"references": [
+		{ "path": "../config" },
+		{ "path": "../contracts" },
+		{ "path": "../infrastructure" },
+		{ "path": "../integrations" },
+		{ "path": "../platform" }
+	]
+}

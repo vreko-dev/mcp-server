@@ -1,0 +1,156 @@
+name: Publish VS Code Extension
+
+on:
+    workflow_call:
+        inputs:
+            pre_release:
+                type: boolean
+                required: false
+                default: false
+            target_platforms:
+                type: string
+                required: false
+                default: '["win32-x64","win32-arm64","linux-x64","darwin-x64","darwin-arm64"]'
+    release:
+        types: [published]
+    workflow_dispatch:
+        inputs:
+            pre_release:
+                description: "Publish as pre-release"
+                type: boolean
+                default: false
+            target_platforms:
+                description: 'Target platforms JSON array (e.g., ["win32-x64","linux-x64"])'
+                required: false
+                default: '["win32-x64","win32-arm64","linux-x64","darwin-x64","darwin-arm64"]'
+
+jobs:
+    publish:
+        name: Publish Extension
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Toolchain setup
+              uses: ./.github/actions/setup-pnpm
+              with:
+                  node-version: "20.x"
+                  pnpm-version: "10.14.0"
+
+            - name: Build workspace dependencies
+              run: |
+                  pnpm --filter @snapback/contracts build
+                  pnpm --filter @snapback/core build
+                  pnpm --filter @snapback/storage build
+                  pnpm --filter @snapback/telemetry build
+
+            - name: Pre-publish checks
+              run: |
+                  pnpm --filter ./apps/vscode run check-types
+                  pnpm --filter ./apps/vscode run lint
+                  pnpm --filter ./apps/vscode run lint:manifest
+
+            - name: Run unit tests
+              env:
+                  CI: "true"
+              run: pnpm --filter ./apps/vscode run test:unit
+
+            - name: Run integration tests
+              env:
+                  CI: "true"
+              run: pnpm --filter ./apps/vscode run test:integration
+
+            - name: Run storage tests
+              env:
+                  CI: "true"
+              run: pnpm --filter ./apps/vscode run test:storage
+
+            - name: Build extension
+              run: pnpm --filter ./apps/vscode run compile
+
+            - name: Check bundle size
+              run: pnpm --filter ./apps/vscode run check:bundle-size
+
+            - name: Package extension (no dependencies)
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+              run: pnpm --filter ./apps/vscode run package-vsce-no-deps
+
+            - name: Upload VSIX artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: snapback-vscode-extension
+                  path: apps/vscode/*.vsix
+                  retention-days: 7
+
+            - name: Publish to VS Code Marketplace
+              if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_call'
+              env:
+                  VSCE_PAT: ${{ secrets.VSCE_PAT }}
+                  PRE_RELEASE: ${{ inputs.pre_release && 'true' || github.event.inputs.pre_release || 'false' }}
+              run: |
+                  cd apps/vscode
+                  if [ "${PRE_RELEASE}" = "true" ]; then
+                    npx vsce publish --pre-release --packagePath *.vsix
+                  else
+                    npx vsce publish --packagePath *.vsix
+                  fi
+
+            - name: Publish to Open VSX Registry
+              if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_call'
+              env:
+                  OVSX_PAT: ${{ secrets.OVSX_PAT }}
+              run: |
+                  cd apps/vscode
+                  npx ovsx publish *.vsix
+
+    publish-platform-specific:
+        name: Publish Platform-Specific Extensions
+        runs-on: ubuntu-latest
+        needs: publish
+        if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_call'
+        strategy:
+            matrix:
+                platform: ${{ fromJSON(github.event.inputs.target_platforms || inputs.target_platforms || '["win32-x64","win32-arm64","linux-x64","darwin-x64","darwin-arm64"]') }}
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Toolchain setup
+              uses: ./.github/actions/setup-pnpm
+              with:
+                  node-version: "20.x"
+                  pnpm-version: "10.14.0"
+
+            - name: Build workspace dependencies
+              run: |
+                  pnpm --filter @snapback/contracts build
+                  pnpm --filter @snapback/core build
+                  pnpm --filter @snapback/storage build
+                  pnpm --filter @snapback/telemetry build
+
+            - name: Package platform-specific VSIX
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+              run: pnpm --filter ./apps/vscode run package-vsce-no-deps -- --target ${{ matrix.platform }}
+
+            - name: Publish platform-specific VSIX
+              env:
+                  VSCE_PAT: ${{ secrets.VSCE_PAT }}
+              run: |
+                  cd apps/vscode
+                  npx vsce publish --target ${{ matrix.platform }} --packagePath *.vsix
+
+            - name: Upload platform-specific VSIX artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: snapback-vscode-${{ matrix.platform }}
+                  path: apps/vscode/*.vsix
+                  retention-days: 7

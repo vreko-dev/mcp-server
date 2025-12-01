@@ -1,0 +1,46 @@
+{
+  "name": "@snapback/events",
+  "description": "Event bus for SnapBack inter-process communication",
+  "version": "1.0.0",
+  "author": "SnapBack Team",
+  "dependencies": {
+    "@snapback/config": "workspace:*",
+    "@snapback/contracts": "workspace:*",
+    "@snapback/sdk": "workspace:*",
+    "@types/node": "catalog:",
+    "eventemitter2": "catalog:"
+  },
+  "devDependencies": {
+    "@snapback/tsconfig": "workspace:*",
+    "diff": "catalog:",
+    "tsup": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "communication",
+    "events",
+    "ipc",
+    "snapback"
+  ],
+  "license": "MIT",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsup",
+    "clean": "rm -rf dist && rm -f *.tsbuildinfo",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "type": "module",
+  "types": "dist/index.d.ts"
+}

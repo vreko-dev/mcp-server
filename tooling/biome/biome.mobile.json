@@ -1,0 +1,19 @@
+{
+	"extends": ["./biome.json"],
+	"rules": {
+		"recommended": true,
+		"suspicious": {
+			"noHiddenMobileElements": "error"
+		}
+	},
+	"overrides": [
+		{
+			"include": ["**/*.tsx", "**/*.jsx"],
+			"rules": {
+				"a11y": {
+					"useButtonType": "error"
+				}
+			}
+		}
+	]
+}

@@ -1,0 +1,78 @@
+{
+  "name": "@snapback/integrations",
+  "version": "0.0.0",
+  "dependencies": {
+    "@hubspot/api-client": "catalog:",
+    "@react-email/components": "catalog:",
+    "@react-email/render": "catalog:",
+    "@snapback/config": "workspace:*",
+    "@snapback/contracts": "workspace:*",
+    "@snapback/infrastructure": "workspace:*",
+    "@snapback/platform": "workspace:*",
+    "react": "catalog:",
+    "stripe": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "typescript": "catalog:"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./stripe": {
+      "types": "./dist/stripe/index.d.ts",
+      "default": "./dist/stripe/index.js"
+    },
+    "./stripe/lib/*": {
+      "types": "./dist/stripe/lib/*.d.ts",
+      "default": "./dist/stripe/lib/*.js"
+    },
+    "./stripe/provider": {
+      "types": "./dist/stripe/provider/index.d.ts",
+      "default": "./dist/stripe/provider/index.js"
+    },
+    "./stripe/provider/stripe": {
+      "types": "./dist/stripe/provider/stripe/index.d.ts",
+      "default": "./dist/stripe/provider/stripe/index.js"
+    },
+    "./email": {
+      "types": "./dist/email/index.d.ts",
+      "default": "./dist/email/index.js"
+    },
+    "./hubspot": {
+      "types": "./dist/hubspot/index.d.ts",
+      "default": "./dist/hubspot/index.js"
+    },
+    "./hubspot/lib/*": {
+      "types": "./dist/hubspot/lib/*.d.ts",
+      "default": "./dist/hubspot/lib/*.js"
+    },
+    "./hubspot/provider": {
+      "types": "./dist/hubspot/provider/index.d.ts",
+      "default": "./dist/hubspot/provider/index.js"
+    },
+    "./hubspot/provider/hubspot": {
+      "types": "./dist/hubspot/provider/hubspot/index.d.ts",
+      "default": "./dist/hubspot/provider/hubspot/index.js"
+    },
+    "./communication": {
+      "types": "./dist/communication/index.d.ts",
+      "default": "./dist/communication/index.js"
+    },
+    "./communication/lib/*": {
+      "types": "./dist/communication/lib/*.d.ts",
+      "default": "./dist/communication/lib/*.js"
+    }
+  },
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc --build",
+    "type-check": "tsc --noEmit"
+  },
+  "type": "module",
+  "types": "dist/index.d.ts"
+}

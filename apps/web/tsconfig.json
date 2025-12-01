@@ -1,0 +1,50 @@
+{
+	"extends": "@snapback/tsconfig/app",
+	"compilerOptions": {
+		"types": ["vitest/globals"],
+		"plugins": [
+			{
+				"name": "next"
+			}
+		],
+		"paths": {
+			"@/*": ["./"],
+			"@/orpc/*": ["../apps/api/orpc/*"],
+			"@/modules/*": ["./modules/*"],
+			"@/components/*": ["./components/*"],
+			"@/lib/*": ["./lib/*"],
+			"@/hooks/*": ["./hooks/*"],
+			"@analytics": ["./modules/analytics"],
+			"@analytics/*": ["./modules/analytics/*"],
+			"@marketing/*": ["./modules/marketing/*"],
+			"@saas/*": ["./modules/saas/*"],
+			"@ui/*": ["./modules/ui/*"],
+			"@shared/*": ["./modules/shared/*"],
+			"@legacy-config": ["../../packages/config/src"],
+			".source": ["./.source"],
+			".source/*": ["./.source/*"]
+		}
+	},
+	"include": [
+		"**/*.ts",
+		"**/*.tsx",
+		".source/**/*.ts",
+		"next-env.d.ts",
+		".next/types/**/*.ts",
+		"types/**/*.d.ts"
+	],
+	"exclude": [
+		"node_modules",
+		"dist",
+		"build",
+		"__tests__/**/*",
+		"**/*.test.ts",
+		"**/*.test.tsx",
+		"**/*.spec.ts",
+		"**/*.spec.tsx",
+		"../../apps/api/**/*",
+		"final_launch_polish/**",
+		".next",
+		"services/**/*"
+	]
+}

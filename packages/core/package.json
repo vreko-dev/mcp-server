@@ -1,0 +1,83 @@
+{
+  "name": "@snapback/core",
+  "description": "Core logic for SnapBack",
+  "version": "0.1.1",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "catalog:",
+    "@snapback/config": "workspace:*",
+    "@snapback/contracts": "workspace:*",
+    "@types/esprima": "catalog:",
+    "@typescript-eslint/parser": "catalog:",
+    "async-retry": "catalog:",
+    "bottleneck": "catalog:",
+    "chokidar": "catalog:",
+    "cosmiconfig": "catalog:",
+    "dotenv": "catalog:",
+    "es-toolkit": "catalog:",
+    "esprima": "catalog:",
+    "jscpd": "catalog:",
+    "listr2": "catalog:",
+    "lru-cache": "catalog:",
+    "madge": "catalog:",
+    "mermaid": "catalog:",
+    "opossum": "catalog:",
+    "p-limit": "catalog:",
+    "pino": "catalog:",
+    "piscina": "catalog:",
+    "simple-git": "catalog:",
+    "yargs": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@snapback/tsconfig": "workspace:*",
+    "@types/async-retry": "catalog:",
+    "@types/node": "catalog:",
+    "@types/opossum": "catalog:",
+    "pino-pretty": "catalog:",
+    "tsup": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./mcp": {
+      "types": "./dist/mcp-federation.d.ts",
+      "default": "./dist/mcp-federation.js"
+    },
+    "./mcp-fallbacks": {
+      "types": "./dist/mcp-fallbacks.d.ts",
+      "default": "./dist/mcp-fallbacks.js"
+    },
+    "./risk": {
+      "types": "./dist/risk-analyzer.d.ts",
+      "default": "./dist/risk-analyzer.js"
+    },
+    "./detection": {
+      "types": "./dist/detection/index.d.ts",
+      "default": "./dist/detection/index.js"
+    },
+    "./guardian": {
+      "types": "./dist/guardian.d.ts",
+      "default": "./dist/guardian.js"
+    }
+  },
+  "license": "Apache-2.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsup && tsc --build tsconfig.build.json --force",
+    "check": "biome check .",
+    "format": "biome format --write .",
+    "lint": "biome lint .",
+    "lint:fix": "biome lint --fix .",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "sideEffects": false,
+  "type": "module",
+  "types": "dist/index.d.ts"
+}

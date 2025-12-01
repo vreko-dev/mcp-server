@@ -1,0 +1,220 @@
+---
+title: SSO & SAML
+description: Enterprise SSO implementation guide with SAML and optional SCIM
+---
+
+import { TierBadge } from '@/components/docs/tier-badge';
+
+# SSO & SAML <TierBadge tier="enterprise" />
+
+Enterprise-only Single Sign-On with SAML 2.0 and optional SCIM provisioning.
+
+## Supported Identity Providers
+
+SnapBack supports industry-standard SAML 2.0, compatible with:
+
+- **Okta**
+- **Azure Active Directory** (Microsoft Entra ID)
+- **Google Workspace**
+- **OneLogin**
+- **Auth0**
+- **Any SAML 2.0 compliant IdP**
+
+## SAML Configuration Steps
+
+###Step 1: Generate SAML Metadata from SnapBack
+
+1. Log in to SnapBack Admin Dashboard
+2. Navigate to **Settings → Security → SSO**
+3. Click **Configure SAML**
+4. Download the **Service Provider (SP) metadata XML**
+
+This file contains:
+- Entity ID (unique identifier for SnapBack)
+- Assertion Consumer Service (ACS) URL
+- Single Logout Service (SLS) URL (if supported)
+
+### Step 2: Configure IdP Application
+
+In your identity provider:
+
+1. Create a new SAML 2.0 application
+2. Upload the SP metadata XML from Step 1, OR manually configure:
+   - **ACS URL**: `https://snapback.dev/auth/saml/callback`
+   - **Entity ID**: `https://snapback.dev`
+   - **NameID format**: `EmailAddress` (recommended)
+3. Configure attribute mappings (see below)
+4. Assign users or groups to the application
+
+### Step 3: Upload IdP Metadata to SnapBack
+
+1. Download IdP metadata XML from your identity provider
+2. In SnapBack Admin Dashboard → **SSO Settings**
+3. Click **Upload IdP Metadata**
+4. Upload the XML file
+5. Click **Save**
+
+### Step 4: Map User Attributes
+
+Configure attribute mapping to ensure user data flows correctly:
+
+| SnapBack Attribute | SAML Attribute (Okta) | SAML Attribute (Azure AD) | Required |
+|--------------------|----------------------|---------------------------|----------|
+| Email | `user.email` | `user.mail` | ✓ |
+| First Name | `user.firstName` | `user.givenName` | ✓ |
+| Last Name | `user.lastName` | `user.surname` | ✓ |
+| Groups | `user.groups` | `user.groups` | Optional |
+
+### Step 5: Test with Test User Account
+
+Before rolling out to all users:
+
+1. Create a test user in your IdP
+2. Assign the test user to the SnapBack SAML app
+3. In SnapBack Admin, click **Test SSO**
+4. Log in with test user credentials
+5. Verify user profile data is correct
+
+## SCIM Provisioning (Optional)
+
+Automate user provisioning and deprovisioning with SCIM 2.0.
+
+### Enabling SCIM
+
+1. In SnapBack Admin → **SSO Settings → SCIM**
+2. Click **Enable SCIM Provisioning**
+3. Copy the **SCIM Base URL** and **API Token**
+4. Configure SCIM in your IdP:
+   - **SCIM Base URL**: `https://api.snapback.dev/scim/v2`
+   - **Authentication**: Bearer Token (use API Token from Step 3)
+
+### Supported SCIM Operations
+
+- **User Provisioning**: Automatically create users when assigned to app
+- **User Deprovisioning**: Automatically suspend users when removed from app
+- **User Updates**: Sync profile changes (name, email) from IdP
+- **Group Sync**: Map IdP groups to SnapBack teams (Enterprise feature)
+
+### Testing SCIM
+
+1. Assign a new test user to the app in your IdP
+2. Verify the user appears in SnapBack Admin → **Users** within 5 minutes
+3. Remove the user from the app in your IdP
+4. Verify the user is suspended in SnapBack within 5 minutes
+
+## Attribute Mapping Table
+
+### Required Attributes
+
+| Attribute | Description | Format | Example |
+|-----------|-------------|--------|---------|
+| Email | User's email address (unique identifier) | String | `jane@acme.com` |
+| First Name | User's given name | String | `Jane` |
+| Last Name | User's family name | String | `Doe` |
+
+### Optional Attributes
+
+| Attribute | Description | Format | Example |
+|-----------|-------------|--------|---------|
+| Groups | User's group memberships | Array[String] | `["Engineering", "Admins"]` |
+| Role | User's role in organization | String | `Developer` / `Admin` |
+| Department | User's department | String | `Engineering` |
+
+## Testing Checklist
+
+Before enterprise-wide rollout, verify:
+
+- [ ] New user login successful
+- [ ] User profile attributes mapped correctly (name, email)
+- [ ] Group membership syncs (if using SCIM)
+- [ ] Forced logout works (IdP-initiated logout)
+- [ ] Session timeout respected
+- [ ] MFA enforced (if configured in IdP)
+
+## Rollout Strategy
+
+### Phase 1: Pilot Group (Week 1)
+
+1. Select 5-10 pilot users
+2. Assign to SnapBack SAML app
+3. Monitor for login issues
+4. Gather feedback
+
+### Phase 2: Department Rollout (Week 2)
+
+1. Roll out to one department (e.g., Engineering)
+2. Monitor usage and support tickets
+3. Iterate on any issues
+
+### Phase 3: Full Organization (Week 3+)
+
+1. Assign all users to SnapBack SAML app
+2. Deprecate password-based logins (optional)
+3. Monitor adoption metrics
+
+## Troubleshooting
+
+### Common SAML Assertion Errors
+
+#### Error: "SAML assertion signature invalid"
+
+**Cause**: IdP certificate mismatch or expired
+**Solution**: Re-upload IdP metadata XML with current certificate
+
+#### Error: "NameID not found in SAML response"
+
+**Cause**: NameID format mismatch
+**Solution**: Configure IdP to send NameID as `EmailAddress` format
+
+#### Error: "User not found"
+
+**Cause**: User doesn't exist in SnapBack, or email mismatch
+**Solution**: Enable SCIM provisioning OR manually create user with matching email
+
+#### Error: "SAML response expired"
+
+**Cause**: Clock skew between IdP and SnapBack
+**Solution**: Ensure IdP and SnapBack servers have synchronized time (NTP)
+
+### SCIM Sync Issues
+
+#### Users not provisioning automatically
+
+**Check**:
+1. SCIM Base URL is correct
+2. API Token is valid and not expired
+3. User is assigned to app in IdP
+4. Check IdP logs for SCIM errors
+
+#### Groups not syncing
+
+**Check**:
+1. Group attribute mapping is configured
+2. IdP sends group information in SCIM payload
+3. SnapBack has matching teams (or create automatically)
+
+## Security Best Practices
+
+### IdP Configuration
+
+- **Enforce MFA**: Require multi-factor authentication at IdP level
+- **Session Timeout**: Configure appropriate session timeout (e.g., 8 hours)
+- **IP Restrictions**: Limit access to corporate network (optional)
+- **Certificate Rotation**: Rotate SAML signing certificates annually
+
+### SnapBack Configuration
+
+- **Just-in-Time Provisioning**: Auto-create users on first login (with SCIM disabled)
+- **Role Mapping**: Map IdP groups to SnapBack roles (Admin, Developer, Viewer)
+- **Audit Logging**: Enable immutable audit logs for SSO events
+- **Forced SSO**: Disable password logins after SSO rollout (optional)
+
+## Support
+
+For SSO implementation assistance:
+
+- **Email**: enterprise-support@snapback.dev
+- **Slack Connect**: Request Slack channel during onboarding
+- **Documentation**: This page + IdP-specific guides (coming soon)
+
+Need help with a specific IdP? Contact your account manager for dedicated setup assistance.

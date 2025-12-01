@@ -1,0 +1,7 @@
+title = "snapback-baseline"
+[allowlist]
+description = "Ignore generated & vendor dirs"
+paths = [
+  '''^node_modules/''', '''^dist/''', '''^build/''', '''^.next/''',
+  '''^.qoder-build-cache/''', '''^coverage/''', '''test/fixtures/'''
+]

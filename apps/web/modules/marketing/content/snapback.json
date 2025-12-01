@@ -1,0 +1,282 @@
+{
+	"meta": {
+		"title": "SnapBack - Code Breaks.\nSnap Back.",
+		"description": "Visual protection for every file. AI-aware snapshots. Instant recovery."
+	},
+
+	"hero": {
+		"sequence": [
+			{
+				"type": "terminal",
+				"delay": 0,
+				"content": "$ npm install ai-optimizer --force",
+				"sound": "keypress.mp3"
+			},
+			{
+				"type": "terminal",
+				"delay": 1500,
+				"content": "$ rm -rf src/config",
+				"sound": "keypress.mp3"
+			},
+			{
+				"type": "terminal",
+				"delay": 2500,
+				"content": "$ git push origin main --force",
+				"sound": "error.mp3"
+			},
+			{
+				"type": "counter",
+				"delay": 4000,
+				"start": 0,
+				"end": 12000,
+				"prefix": "$",
+				"duration": 2000
+			},
+			{
+				"type": "text",
+				"delay": 7000,
+				"content": "Never. Again.",
+				"animation": "snapback"
+			}
+		],
+		"cta": {
+			"primary": "Protect Your Code",
+			"secondary": "See How It Works"
+		}
+	},
+
+	"story": {
+		"chapters": [
+			{
+				"id": "incident",
+				"title": "3:47 AM, Tuesday",
+				"content": "AI assistant suggests 'optimizing dependencies'. One click. Package.json rewritten. Build configs corrupted. Production down.",
+				"visual": "code-destruction",
+				"emotion": "panic",
+				"metric": {
+					"value": 12000,
+					"label": "damage"
+				}
+			},
+			{
+				"id": "realization",
+				"title": "The Pattern",
+				"content": "Cursor. Copilot. Windsurf. They all do it. Overeager 'fixes' that cascade into chaos.",
+				"visual": "ai-patterns",
+				"emotion": "understanding",
+				"stat": "73% of developers have lost work to AI"
+			},
+			{
+				"id": "solution",
+				"title": "The Snap Back",
+				"content": "What if every AI action triggered an automatic checkpoint? What if recovery took one click?",
+				"visual": "timeline-restore",
+				"emotion": "relief",
+				"demo": "inline-preview"
+			}
+		]
+	},
+
+	"features": {
+		"core": [
+			{
+				"name": "AI Detection",
+				"description": "Knows when Cursor, Copilot, or Windsurf touches your code",
+				"icon": "radar",
+				"proof": "Detects in <100ms"
+			},
+			{
+				"name": "Instant Snapshots",
+				"description": "Automatic saves before every risky operation",
+				"icon": "shield",
+				"proof": "Zero manual commits"
+			},
+			{
+				"name": "One-Click Recovery",
+				"description": "Restore to any checkpoint instantly",
+				"icon": "rewind",
+				"proof": "Recovery in <2 seconds"
+			}
+		]
+	},
+
+	"social_proof": {
+		"stats": [
+			{ "value": 1847, "label": "Protected Developers" },
+			{ "value": 52000, "label": "Checkpoints Created" },
+			{
+				"value": 3.2,
+				"label": "Million $ Saved",
+				"prefix": "$",
+				"suffix": "M"
+			}
+		],
+		"testimonials": [
+			{
+				"quote": "Saved my entire weekend. AI deleted my webpack config on Friday at 6pm.",
+				"author": "Alex Chen",
+				"role": "Senior Dev @ Stripe",
+				"saved": 8000
+			},
+			{
+				"quote": "I let juniors use AI now. SnapBack has their back.",
+				"author": "Jordan Park",
+				"role": "Team Lead @ Vercel",
+				"saved": 15000
+			}
+		]
+	},
+
+	"pricing": {
+		"header": {
+			"title": "Stop paying for AI mistakes",
+			"description": "Choose protection that scales with your ambition"
+		},
+		"tiers": [
+			{
+				"id": "free",
+				"name": "Core",
+				"price": 0,
+				"unit": "",
+				"description": "Start protecting your code",
+				"highlight": "Get started",
+				"features": {
+					"basic": [
+						"3 manual snapshots/day",
+						"Basic AI detection",
+						"24-hour recovery history",
+						"Protection for critical configs",
+						"Community support"
+					],
+					"limitations": [
+						"No context awareness",
+						"No smart recovery",
+						"Limited to config files"
+					]
+				},
+				"cta": "Start Free",
+				"ctaStyle": "outline"
+			},
+			{
+				"id": "solo",
+				"name": "Solo",
+				"price": 29,
+				"unit": "/month",
+				"description": "For developers who code with AI",
+				"highlight": "Most Popular",
+				"popular": true,
+				"features": {
+					"protection": [
+						"Unlimited automatic snapshots",
+						"Smart AI pattern detection",
+						"30-day recovery history",
+						"All file types protected"
+					],
+					"intelligence": [
+						"🧠 Application Context Map",
+						"📊 Coherence Scoring (23% coherent)",
+						"🔗 Import/Export Impact Analysis",
+						"✅ Type Safety Monitoring"
+					],
+					"recovery": [
+						"Suggested recovery points",
+						"Partial file restoration",
+						"Smart commit messages",
+						"One-click common fixes"
+					]
+				},
+				"savings": "Save 2 hours/week",
+				"cta": "Protect My Code",
+				"ctaStyle": "primary"
+			},
+			{
+				"id": "team",
+				"name": "Team",
+				"price": 79,
+				"unit": "/seat/month",
+				"description": "For teams building with AI",
+				"highlight": "Best for teams",
+				"features": {
+					"everything_solo": ["Everything in Solo, plus:"],
+					"collaboration": [
+						"👥 Shared team snapshots",
+						"🛡️ Blame Protection™",
+						"📈 AI usage analytics",
+						"🔄 Cross-dev coherence checks",
+						"Team dashboard & insights"
+					],
+					"intelligence": [
+						"Architecture enforcement",
+						"Convention checking",
+						"PR safety net",
+						"Team pattern analysis",
+						"Code quality scoring"
+					],
+					"integrations": [
+						"Slack notifications",
+						"Linear/Jira integration",
+						"GitHub/GitLab webhooks",
+						"CI/CD pipeline hooks",
+						"Custom webhook support"
+					]
+				},
+				"savings": "Prevent 3 production incidents/month",
+				"cta": "Start Team Trial",
+				"ctaStyle": "primary"
+			},
+			{
+				"id": "enterprise",
+				"name": "Enterprise",
+				"price": "Custom",
+				"unit": "",
+				"description": "For organizations requiring control",
+				"highlight": "Full control",
+				"features": {
+					"everything_team": ["Everything in Team, plus:"],
+					"compliance": [
+						"SOC2 compliance",
+						"Immutable audit logs",
+						"SSO/SAML integration",
+						"Air-gapped deployment",
+						"Custom retention policies"
+					],
+					"advanced": [
+						"Multi-repo context analysis",
+						"API contract monitoring",
+						"Custom rules engine",
+						"ML-powered predictions",
+						"Advanced team analytics"
+					],
+					"support": [
+						"24/7 dedicated support",
+						"Custom onboarding program",
+						"99.9% SLA guarantees",
+						"Priority feature requests",
+						"Advanced API access"
+					]
+				},
+				"cta": "Contact Sales",
+				"ctaStyle": "outline"
+			}
+		],
+		"trust_signals": {
+			"stats": [
+				{ "value": 1847, "label": "Protected Developers" },
+				{
+					"value": 3.2,
+					"label": "Million $ Saved",
+					"prefix": "$",
+					"suffix": "M"
+				},
+				{ "value": 52000, "label": "Snapshots Created" }
+			],
+			"incentive": "🧢 Pro and Team members get a free SnapBack cap"
+		}
+	},
+
+	"urgency": {
+		"message": "Your next AI coding session starts in:",
+		"countdown": "next_work_day",
+		"subtext": "Will you be protected?"
+	}
+}

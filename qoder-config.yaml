@@ -1,0 +1,292 @@
+version: 1.2
+project: snapback
+agent: QODER
+
+runtime:
+  node_version: "20.x"
+  package_manager: "pnpm"
+  workspace_type: "monorepo"
+  monorepo_packages:
+    - "apps/*"
+    - "packages/*"
+    - "tooling/*"
+    - "config"
+
+context_pinning:
+  files:
+    - "package.json"
+    - "pnpm-lock.yaml"
+    - "pnpm-workspace.yaml"
+    - "turbo.json"
+    - "tsconfig.json"
+    - "tooling/typescript/base.json"
+    - "apps/vscode/package.json"
+    - "apps/vscode/src/extension.ts"
+    - "apps/web/next.config.mjs"
+    - "packages/core/src/index.ts"
+    - "packages/sdk/src/index.ts"
+    - "apps/mcp-server/src/index.ts"
+    - "apps/mcp-server/src/context7/Context7Service.ts"
+  remember_reports:
+    - "reports/explore/**/*"
+    - "reports/review/**/*"
+    - ".changeset/*.md"
+    - "test/.audit-reports/**/*"
+  workspace_rules:
+    - ".qoder/rules/*.md"
+    - "apps/web/.qoder/rules/*.md"
+    - "apps/vscode/.qoder/rules/*.md"
+    - "apps/api/.qoder/rules/*.md"
+    - "apps/mcp-server/.qoder/rules/*.md"
+
+windsurf:
+  allow_gitignore_access: true
+
+mcp:
+  servers:
+    - name: context7
+      url: "mcp://context7"
+      libraries:
+        - "vscode@^1.99.0"
+        - "zod@catalog:"
+        - "posthog-js@catalog:"
+        - "next@catalog:"
+        - "react@catalog:"
+        - "tailwindcss@catalog:"
+        - "@modelcontextprotocol/sdk@catalog:"
+      sources_allowlist:
+        - "code.visualstudio.com"
+        - "github.com/microsoft/vscode-*"
+        - "zod.dev"
+        - "posthog.com"
+        - "nextjs.org"
+        - "react.dev"
+        - "tailwindcss.com"
+        - "context7.com"
+        - "npmjs.com"
+      rate_limit_per_min: 20
+    - name: sequential-thinking
+      url: "mcp://sequentialthinking"
+      use_when:
+        - "threat_model"
+        - "refactor_large"
+        - "perf_hotspot"
+        - "architectural_review"
+        - "dependency_analysis"
+        - "documentation_search"
+      max_steps: 12
+
+policies:
+  incremental_tests: true
+  cache_results: true
+  flake_detection: { retries: 3, report: "test/.flaky-tests.json" }
+  redaction:
+    patterns:
+      - "(?i)(api|token|secret|key|bearer)\\s*[:=]\\s*['\\\"][A-Za-z0-9\\-_\\.]{10,}['\\\"]"
+      - "(?i)authorization:\\s*bearer\\s+[A-Za-z0-9\\._\\-]+"
+      - "(?:https?://)[^\\s]+@[A-Za-z0-9\\.-]+"
+  budgets:
+    activation_p95_ms: 500
+    memory_peak_mb: 200
+    webview_bundle_kb: 300
+    vsix_size_mb: 10
+    docker_build_time_seconds: 300
+    mcp_response_time_ms: 200
+
+vscode_extension:
+  path: "apps/vscode"
+  engine: "^1.95.0"
+  activation_events:
+    - "onStartupFinished"
+    - "onCommand:snapback.*"
+    - "onFileSystem:snapback"
+  contributes_paths:
+    commands: "apps/vscode/package.json#contributes.commands"
+    views:    "apps/vscode/package.json#contributes.views"
+    menus:    "apps/vscode/package.json#contributes.menus"
+  webviews:
+    - id: "snapback.history"
+      html_entry: "apps/vscode/webview-ui/index.html"
+      csp:
+        default_src: "'none'"
+        script_src:  "'nonce-${nonce}'"
+        style_src:   "'nonce-${nonce}'"
+        img_src:     "vscode-resource: https://*.snapback.ai data:"
+        connect_src: "https://*.snapback.ai https://*.posthog.com"
+        frame_ancestors: "'none'"
+      messaging_schema: "reports/explore/webview-messaging.json"
+    - id: "snapback.settings"
+      html_entry: "apps/vscode/webview-ui/settings.html"
+      csp:
+        default_src: "'none'"
+        script_src:  "'nonce-${nonce}'"
+        style_src:   "'nonce-${nonce}'"
+        img_src:     "vscode-resource: https://*.snapback.ai data:"
+        connect_src: "https://*.snapback.ai https://*.posthog.com"
+        frame_ancestors: "'none'"
+      messaging_schema: "reports/explore/webview-settings-messaging.json"
+
+security:
+  egress:
+    proxy_only: true
+    allowed_hosts:
+      - "*.snapback.ai"
+      - "*.posthog.com"
+      - "*.supabase.co"
+      - "context7.com"
+      - "api.context7.com"
+  crypto:
+    snapshot_encryption: "AES-GCM-256"
+    key_storage: "vscode.SecretStorage"
+  rules:
+    signature_verification: true
+    algorithm: "Ed25519"
+    path_hashing: true
+
+telemetry:
+  enabled_default: false
+  require_consent: true
+  proxy_url: "https://telemetry.snapback.ai"
+  schemas_dir: "apps/vscode/telemetry/schemas"
+  redact_fields: ["email","filepath","accessToken", "apiKey", "secret"]
+
+execution:
+  max_parallel_packs: 4
+  isolation:
+    tmp_per_pack: true
+    env_clear: true
+  matrix:
+    tier1: [{ os: "linux", node: "20", vscode: "stable" }]
+    tier2:
+      - { os: "darwin", node: "20", vscode: "stable" }
+      - { os: "win32", node: "20", vscode: "stable" }
+    tier3: "*"
+    fast_fail: true
+
+artifacts:
+  fixture_cache:
+    local_dir: ".fixture-cache"
+    remote: "s3://snapback-ci-cache/fixtures"
+    ttl: "7d"
+  build_outputs:
+    local_dir: ".qoder-build-cache"
+    remote: "s3://snapback-ci-cache/builds"
+    ttl: "3d"
+
+review_voice:
+  severity_scale: ["P0","P1","P2","P3"]
+  template_file: ".github/REVIEW_FINDING_TEMPLATE.md"
+
+# Additional enhancements for Turborepo-specific optimizations
+turbo:
+  tasks:
+    - name: "build"
+      cache: true
+      outputs: ["dist/**", ".next/**"]
+    - name: "test"
+      cache: true
+      depends_on: ["^build"]
+    - name: "lint"
+      cache: true
+      depends_on: ["^lint"]
+    - name: "type-check"
+      cache: true
+      depends_on: ["^type-check"]
+  pipeline:
+    build:
+      depends_on: ["^build"]
+      outputs: ["dist/**", ".next/**"]
+    test:
+      depends_on: ["build"]
+    lint:
+      depends_on: ["^lint"]
+    type-check:
+      depends_on: ["^type-check"]
+
+monorepo:
+  package_discovery:
+    patterns:
+      - "apps/*"
+      - "packages/*"
+      - "tooling/*"
+      - "config"
+  inter_dependencies:
+    - source: "apps/vscode"
+      depends_on: ["packages/core", "packages/sdk", "packages/contracts"]
+    - source: "apps/web"
+      depends_on: ["packages/platform", "packages/auth", "packages/sdk"]
+    - source: "packages/sdk"
+      depends_on: ["packages/core", "packages/contracts"]
+    - source: "apps/mcp-server"
+      depends_on: ["packages/core", "packages/sdk", "packages/contracts", "packages/events"]
+
+# Context7 specific enhancements for better DX
+context7:
+  integration:
+    enabled: true
+    api_key_env_var: "CONTEXT7_API_KEY"
+    api_url: "https://context7.com/api"
+    cache_ttl_search: 3600
+    cache_ttl_docs: 86400
+  tools:
+    - name: "resolve-library-id"
+      description: "Resolve a library or package name into a Context7-compatible library ID"
+      when_to_use:
+        - "When you need documentation for a specific library"
+        - "Before calling get-library-docs"
+        - "To find the correct library ID for a package name"
+    - name: "get-library-docs"
+      description: "Fetch up-to-date documentation for a specific library"
+      when_to_use:
+        - "When you need documentation for a library"
+        - "To understand library APIs and usage patterns"
+        - "For code examples and best practices"
+  performance:
+    max_concurrent_requests: 5
+    timeout_ms: 10000
+    retry_attempts: 3
+    backoff_factor: 2
+
+# Enhanced documentation and code search capabilities
+documentation:
+  sources:
+    - name: "Context7"
+      type: "api"
+      priority: 1
+      features:
+        - "library_resolution"
+        - "documentation_retrieval"
+        - "code_examples"
+    - name: "Local Codebase"
+      type: "filesystem"
+      priority: 2
+      features:
+        - "code_search"
+        - "symbol_lookup"
+        - "implementation_examples"
+    - name: "GitHub"
+      type: "mcp"
+      priority: 3
+      features:
+        - "repository_search"
+        - "issue_lookup"
+        - "pull_request_analysis"
+
+# DX enhancements for better developer experience
+developer_experience:
+  code_suggestions:
+    pre_analysis: true
+    risk_assessment: true
+    dependency_check: true
+  iteration_tracking:
+    enabled: true
+    warning_threshold: 3
+    critical_threshold: 5
+  snapshot_management:
+    auto_create: false
+    manual_trigger: true
+    restore_capability: true
+  performance_monitoring:
+    enabled: true
+    budget_warnings: true
+    optimization_suggestions: true

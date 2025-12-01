@@ -1,0 +1,378 @@
+name: Deploy Production
+
+on:
+  push:
+    branches: [main, production]
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: "20.x"
+  PNPM_VERSION: "10.14.0"
+
+jobs:
+  test:
+    name: Test Suite
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run unit tests
+        run: pnpm test
+        env:
+          CI: true
+
+      - name: Run type check
+        run: pnpm type-check
+
+      - name: Run linter
+        run: pnpm lint
+
+  build-web:
+    name: Build Web App
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build web app
+        run: pnpm --filter @snapback/web build
+        env:
+          NEXT_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}
+          NEXT_PUBLIC_POSTHOG_HOST: ${{ secrets.NEXT_PUBLIC_POSTHOG_HOST }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ secrets.NEXT_PUBLIC_TURNSTILE_SITE_KEY }}
+          TURNSTILE_SECRET_KEY: ${{ secrets.TURNSTILE_SECRET_KEY }}
+          APP_CONFIG_VERSION: ${{ vars.APP_CONFIG_VERSION || '1' }}
+
+      - name: Check bundle size
+        run: |
+          cd apps/web
+
+          # Check if .next directory exists
+          if [ ! -d ".next" ]; then
+            echo "❌ Build output not found"
+            exit 1
+          fi
+
+          echo "📊 Bundle Size Analysis"
+          echo "======================="
+
+          # First Page Load JS (critical metric)
+          FIRST_LOAD_JS=$(du -sh .next/static/chunks/*.js 2>/dev/null | awk '{sum+=$1} END {print sum}' || echo "0")
+
+          # Total build size
+          TOTAL_SIZE=$(du -sh .next 2>/dev/null | awk '{print $1}' || echo "0")
+
+          echo "First Load JS: ${FIRST_LOAD_JS}KB"
+          echo "Total Build: ${TOTAL_SIZE}"
+
+          # Define thresholds (in KB)
+          MAX_FIRST_LOAD_JS=500  # 500KB for first page load
+
+          # Parse first load JS size
+          if [ "$FIRST_LOAD_JS" != "0" ]; then
+            FIRST_LOAD_NUM=$(echo $FIRST_LOAD_JS | sed 's/[^0-9]*//g')
+
+            if [ "$FIRST_LOAD_NUM" -gt "$MAX_FIRST_LOAD_JS" ]; then
+              echo "❌ First Load JS exceeds ${MAX_FIRST_LOAD_JS}KB limit"
+              echo "   Current: ${FIRST_LOAD_NUM}KB"
+              echo "   This will negatively impact page load performance"
+              echo ""
+              echo "💡 Consider:"
+              echo "   - Code splitting with dynamic imports"
+              echo "   - Removing unused dependencies"
+              echo "   - Using Next.js bundle analyzer: ANALYZE=true pnpm build"
+              exit 1
+            else
+              echo "✅ Bundle size within limits"
+              echo "   First Load JS: ${FIRST_LOAD_NUM}KB / ${MAX_FIRST_LOAD_JS}KB"
+            fi
+          fi
+
+          # Output largest chunks for visibility
+          echo ""
+          echo "📦 Largest Chunks:"
+          du -h .next/static/chunks/*.js 2>/dev/null | sort -hr | head -n 5 || echo "No chunks found"
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-build
+          path: apps/web/.next
+          retention-days: 1
+
+  build-api:
+    name: Build API
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build API
+        run: pnpm --filter @snapback/api build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-build
+          path: packages/api/dist
+          retention-days: 1
+
+  deploy-web:
+    name: Deploy to Vercel
+    needs: [build-web]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/production'
+    outputs:
+      deployment-url: ${{ steps.save-vercel-url.outputs.VERCEL_DEPLOYMENT_URL }}
+    environment:
+      name: production
+      url: https://snapback.dev
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: web-build
+          path: apps/web/.next
+
+      - name: Deploy to Vercel
+        id: vercel-deploy
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: "--prod"
+          working-directory: ./apps/web
+
+      - name: Save deployment URL
+        run: |
+          echo "VERCEL_DEPLOYMENT_URL=${{ steps.vercel-deploy.outputs.preview-url }}" >> $GITHUB_OUTPUT
+        id: save-vercel-url
+
+  deploy-api:
+    name: Deploy API to Fly.io
+    needs: [build-api]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/production'
+    outputs:
+      previous-version: ${{ steps.get-fly-version.outputs.CURRENT_FLY_VERSION }}
+      new-version: ${{ steps.save-fly-version.outputs.NEW_FLY_VERSION }}
+    environment:
+      name: production-api
+      url: https://api.snapback.com
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: api-build
+          path: packages/api/dist
+
+      - name: Setup Fly.io CLI
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Get current Fly.io release version (for rollback)
+        id: get-fly-version
+        run: |
+          CURRENT_VERSION=$(flyctl releases --app snapback-api --json | jq -r '.[0].version')
+          echo "CURRENT_FLY_VERSION=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: Deploy to Fly.io
+        id: fly-deploy
+        run: flyctl deploy --remote-only --app snapback-api
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        working-directory: ./packages/api
+
+      - name: Save new Fly.io version
+        id: save-fly-version
+        run: |
+          NEW_VERSION=$(flyctl releases --app snapback-api --json | jq -r '.[0].version')
+          echo "NEW_FLY_VERSION=$NEW_VERSION" >> $GITHUB_OUTPUT
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+  smoke-tests:
+    name: Smoke Tests
+    needs: [deploy-web, deploy-api]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/production'
+    steps:
+      - name: Health check - Web
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" https://snapback.dev/api/health)
+          if [ "$response" != "200" ]; then
+            echo "Web health check failed with status: $response"
+            exit 1
+          fi
+          echo "✅ Web health check passed"
+
+      - name: Health check - API
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" https://api.snapback.com/health)
+          if [ "$response" != "200" ]; then
+            echo "API health check failed with status: $response"
+            exit 1
+          fi
+          echo "✅ API health check passed"
+
+      - name: Waitlist endpoint test
+        run: |
+          response=$(curl -s -X POST https://api.snapback.com/api/waitlist/join \
+            -H "Content-Type: application/json" \
+            -d '{"email":"smoke-test@example.com","editor":"vscode"}')
+
+          if echo "$response" | grep -q "success\|already on waitlist"; then
+            echo "✅ Waitlist endpoint test passed"
+          else
+            echo "❌ Waitlist endpoint test failed"
+            echo "Response: $response"
+            exit 1
+          fi
+
+      - name: Rate limit test
+        run: |
+          # Test rate limiting (should allow first request)
+          response=$(curl -s -o /dev/null -w "%{http_code}" https://api.snapback.com/api/waitlist/getPosition \
+            -H "Content-Type: application/json" \
+            -d '{"email":"smoke-test@example.com"}')
+
+          if [ "$response" == "200" ] || [ "$response" == "404" ]; then
+            echo "✅ Rate limit test passed"
+          else
+            echo "❌ Rate limit test failed with status: $response"
+            exit 1
+          fi
+
+  notify:
+    name: Notify Deployment Status
+    needs: [smoke-tests]
+    runs-on: ubuntu-latest
+    if: always() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/production')
+    steps:
+      - name: Notify success
+        if: needs.smoke-tests.result == 'success'
+        run: |
+          echo "🎉 Deployment successful!"
+          echo "Web: https://snapback.dev"
+          echo "API: https://api.snapback.com"
+          echo "Dashboard: https://console.snapback.com"
+
+      - name: Notify failure
+        if: needs.smoke-tests.result != 'success'
+        run: |
+          echo "❌ Deployment failed or was cancelled"
+          echo "Check the workflow logs for details"
+          exit 1
+
+  rollback:
+    name: Automatic Rollback on Failure
+    needs: [deploy-web, deploy-api, smoke-tests]
+    runs-on: ubuntu-latest
+    if: failure() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/production')
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Vercel CLI
+        run: npm install -g vercel
+
+      - name: Rollback Vercel deployment
+        run: |
+          echo "🔄 Rolling back Vercel deployment..."
+          # Get previous deployment
+          PREVIOUS_DEPLOYMENT=$(vercel ls snapback-web --token ${{ secrets.VERCEL_TOKEN }} | grep READY | head -n 2 | tail -n 1 | awk '{print $1}')
+          if [ -n "$PREVIOUS_DEPLOYMENT" ]; then
+            vercel rollback $PREVIOUS_DEPLOYMENT --token ${{ secrets.VERCEL_TOKEN }} --yes
+            echo "✅ Vercel rolled back to: $PREVIOUS_DEPLOYMENT"
+          else
+            echo "⚠️ No previous Vercel deployment found to rollback to"
+          fi
+        continue-on-error: true
+
+      - name: Setup Fly.io CLI
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Rollback Fly.io deployment
+        run: |
+          echo "🔄 Rolling back Fly.io deployment..."
+          PREVIOUS_VERSION="${{ needs.deploy-api.outputs.previous-version }}"
+          if [ -n "$PREVIOUS_VERSION" ] && [ "$PREVIOUS_VERSION" != "null" ]; then
+            flyctl releases rollback --app snapback-api --version $PREVIOUS_VERSION --yes
+            echo "✅ Fly.io rolled back to version: $PREVIOUS_VERSION"
+          else
+            echo "⚠️ No previous Fly.io version found to rollback to"
+            # Fallback: rollback to previous release
+            flyctl releases rollback --app snapback-api --yes
+          fi
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        continue-on-error: true
+
+      - name: Notify rollback complete
+        run: |
+          echo "🔄 Automatic rollback completed"
+          echo "Previous Fly.io version: ${{ needs.deploy-api.outputs.previous-version }}"
+          echo "Failed version: ${{ needs.deploy-api.outputs.new-version }}"
+          echo ""
+          echo "⚠️ CRITICAL: Investigate smoke test failures immediately!"
+          echo "Check smoke-tests job logs for details"

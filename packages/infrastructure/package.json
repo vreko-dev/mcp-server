@@ -1,0 +1,72 @@
+{
+  "name": "@snapback/infrastructure",
+  "version": "0.1.0",
+  "dependencies": {
+    "@snapback/contracts": "workspace:*",
+    "nanoid": "catalog:",
+    "pino": "catalog:",
+    "posthog-node": "catalog:"
+  },
+  "devDependencies": {
+    "@snapback/tsconfig": "workspace:*",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "diff": "catalog:",
+    "pino-pretty": "catalog:",
+    "posthog-js": "catalog:",
+    "react": "catalog:",
+    "tsup": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./logging/logger": {
+      "types": "./dist/logging/logger.d.ts",
+      "default": "./dist/logging/logger.js"
+    },
+    "./metrics": {
+      "types": "./dist/metrics/index.d.ts",
+      "default": "./dist/metrics/index.js"
+    },
+    "./posthog": {
+      "types": "./dist/posthog/index.d.ts",
+      "default": "./dist/posthog/index.js"
+    },
+    "./posthog/alerts": {
+      "types": "./dist/posthog/alerts.d.ts",
+      "default": "./dist/posthog/alerts.js"
+    },
+    "./posthog/cohorts": {
+      "types": "./dist/posthog/cohorts.d.ts",
+      "default": "./dist/posthog/cohorts.js"
+    },
+    "./posthog/correlation": {
+      "types": "./dist/posthog/correlation.d.ts",
+      "default": "./dist/posthog/correlation.js"
+    },
+    "./tracing": {
+      "types": "./dist/tracing/index.d.ts",
+      "default": "./dist/tracing/index.js"
+    }
+  },
+  "main": "dist/index.js",
+  "private": true,
+  "scripts": {
+    "build": "tsup && tsc --build --force",
+    "check": "biome check .",
+    "format": "biome format --write .",
+    "lint": "biome lint .",
+    "lint:fix": "biome lint --fix .",
+    "postbuild": "test -f dist/index.d.ts && node scripts/patch-dts.cjs || echo 'Warning: Type declarations not fully generated'",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "type": "module",
+  "types": "dist/index.d.ts"
+}

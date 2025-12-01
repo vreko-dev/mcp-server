@@ -1,0 +1,10 @@
+{
+	"extends": "@snapback/tsconfig/base.json",
+	"compilerOptions": {
+		"outDir": "./dist",
+		"rootDir": ".",
+		"tsBuildInfoFile": "./dist/.tsbuildinfo"
+	},
+	"include": ["**/*"],
+	"exclude": ["node_modules", "dist"]
+}

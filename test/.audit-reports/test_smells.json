@@ -1,0 +1,968 @@
+[
+	{
+		"name": "exclusive tests",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/extension.test.ts",
+		"line": 28,
+		"severity": "error",
+		"message": "Found exclusive tests smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/mcp-server/test/server.test.ts",
+		"line": 97,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/mcp-server/test/server.test.ts",
+		"line": 251,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/mcp-server/test/server.test.ts",
+		"line": 291,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/security/security.test.ts",
+		"line": 28,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/security/security.test.ts",
+		"line": 60,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/security/security.test.ts",
+		"line": 246,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/regression/issue-006-debounce.test.ts",
+		"line": 74,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/regression/issue-005-restoring-notification-stuck.test.ts",
+		"line": 46,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/regression/criticalBugs.test.ts",
+		"line": 86,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/performance/stress.performance.test.ts",
+		"line": 59,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/performance/sqlite-storage-performance.test.ts",
+		"line": 29,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/performance/sqlite-storage-performance.test.ts",
+		"line": 62,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/performance/sqlite-storage-performance.test.ts",
+		"line": 98,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/performance/sqlite-storage-performance.test.ts",
+		"line": 144,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/performance/sqlite-storage-performance.test.ts",
+		"line": 168,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/performance/sqlite-storage-performance.test.ts",
+		"line": 187,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/performance/sqlite-storage-performance.test.ts",
+		"line": 218,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/monitoring/storageMonitoring.test.ts",
+		"line": 76,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/welcomeView.test.ts",
+		"line": 27,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/welcomeView.test.ts",
+		"line": 65,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/welcomeView.test.ts",
+		"line": 83,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/welcomeView.test.ts",
+		"line": 107,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/welcomeView.test.ts",
+		"line": 131,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/welcomeView.test.ts",
+		"line": 157,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/timelineProvider.unit.test.ts",
+		"line": 23,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/timelineProvider.unit.test.ts",
+		"line": 39,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/timelineProvider.unit.test.ts",
+		"line": 79,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/telemetryWhitelist.test.ts",
+		"line": 105,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/telemetryWhitelist.test.ts",
+		"line": 160,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/telemetry.test.ts",
+		"line": 49,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/telemetry-whitelist.test.ts",
+		"line": 53,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/storage-layer.spec.ts",
+		"line": 33,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/semanticSnapshotNamer.test.ts",
+		"line": 16,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/semanticSnapshotNamer.test.ts",
+		"line": 354,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/progressTracker.test.ts",
+		"line": 20,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/operationCoordinator.restore.unit.test.ts",
+		"line": 79,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/operationCoordinator.restore.unit.test.ts",
+		"line": 107,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/operationCoordinator.restore.unit.test.ts",
+		"line": 162,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/operationCoordinator.restore.unit.test.ts",
+		"line": 191,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/operationCoordinator.restore.unit.test.ts",
+		"line": 221,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/operationCoordinator.restore.unit.test.ts",
+		"line": 238,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/operationCoordinator.restore.unit.test.ts",
+		"line": 274,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/operationCoordinator.listCheckpoints.test.ts",
+		"line": 49,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/operationCoordinator.listCheckpoints.test.ts",
+		"line": 189,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/memoryEfficientCheckpoint.unit.test.ts",
+		"line": 54,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/memoryEfficientCheckpoint.unit.test.ts",
+		"line": 229,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "exclusive tests",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/extension-integration.test.ts",
+		"line": 31,
+		"severity": "error",
+		"message": "Found exclusive tests smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/conflictResolver.test.ts",
+		"line": 56,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/conflictResolver.test.ts",
+		"line": 373,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/conflictResolver.test.ts",
+		"line": 430,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/conflictResolver.test.ts",
+		"line": 520,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/conflictResolver.test.ts",
+		"line": 544,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/checkpointTimelineProvider.unit.test.ts",
+		"line": 16,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/checkpointTimelineProvider.unit.test.ts",
+		"line": 61,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/checkpointCreation.unit.test.ts",
+		"line": 104,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/checkpointCreation.unit.test.ts",
+		"line": 261,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/checkpointCreation.unit.test.ts",
+		"line": 390,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/autoCheckpoint.unit.test.ts",
+		"line": 91,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/integration/sqliteSnapshotStorage.errors.test.ts",
+		"line": 32,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/integration/sqliteSnapshotStorage.errors.test.ts",
+		"line": 203,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/integration/mcpFederation.stress.test.ts",
+		"line": 30,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/integration/mcpFederation.stress.test.ts",
+		"line": 41,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/integration/mcpFederation.stress.test.ts",
+		"line": 53,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/integration/mcpFederation.stress.test.ts",
+		"line": 70,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/integration/mcpFederation.stress.test.ts",
+		"line": 83,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/integration/mcpFederation.stress.test.ts",
+		"line": 110,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/integration/checkpointWorkflow.real.integration.test.ts",
+		"line": 154,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/utils/UserBehaviorTracker.test.ts",
+		"line": 28,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/utils/UserBehaviorTracker.test.ts",
+		"line": 128,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/utils/UserBehaviorTracker.test.ts",
+		"line": 170,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/utils/UserBehaviorTracker.test.ts",
+		"line": 185,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/utils/UserBehaviorTracker.test.ts",
+		"line": 369,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/utils/UserBehaviorTracker.test.ts",
+		"line": 382,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/utils/ExperienceClassifier.test.ts",
+		"line": 28,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/utils/ExperienceClassifier.test.ts",
+		"line": 291,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/utils/ContextKeyManager.test.ts",
+		"line": 35,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/snapshot/EncryptionIntegration.test.ts",
+		"line": 60,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/services/configFileScanner.test.ts",
+		"line": 42,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/security/comprehensive-security.test.ts",
+		"line": 76,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/storage/sqliteStorageAdapter.test.ts",
+		"line": 48,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/storage/sqliteStorageAdapter.test.ts",
+		"line": 87,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/storage/StreamingCompressionUtil.test.ts",
+		"line": 8,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/storage/CompressionUtil.test.ts",
+		"line": 6,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/packaging/packagingPipeline.test.ts",
+		"line": 7,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/packaging/packagingPipeline.test.ts",
+		"line": 27,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/packaging/packagingPipeline.test.ts",
+		"line": 71,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/packaging/nativeModules.test.ts",
+		"line": 7,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "exclusive tests",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/performance/protectedFileRegistry.test.ts",
+		"line": 93,
+		"severity": "error",
+		"message": "Found exclusive tests smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/manifest/modularPackageJson.test.ts",
+		"line": 6,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/manifest/manifestValidation.test.ts",
+		"line": 7,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/manifest/manifestValidation.test.ts",
+		"line": 86,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/integration/checkpoint-naming-integration.test.ts",
+		"line": 120,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/integration/checkpoint-naming-integration.test.ts",
+		"line": 393,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/integration/checkpoint-naming-integration.test.ts",
+		"line": 420,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/integration/checkpoint-naming-integration.test.ts",
+		"line": 852,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "exclusive tests",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/handlers/saveHandlerPreSave.test.ts",
+		"line": 6,
+		"severity": "error",
+		"message": "Found exclusive tests smell"
+	},
+	{
+		"name": "exclusive tests",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/handlers/saveHandler.test.ts",
+		"line": 6,
+		"severity": "error",
+		"message": "Found exclusive tests smell"
+	},
+	{
+		"name": "exclusive tests",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/extension/ExtensionActivationEdgeCases.test.ts",
+		"line": 15,
+		"severity": "error",
+		"message": "Found exclusive tests smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/error-handling/general-errors.test.ts",
+		"line": 155,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/config/security.comprehensive.test.ts",
+		"line": 21,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/config/security.comprehensive.test.ts",
+		"line": 59,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/config/security.comprehensive.test.ts",
+		"line": 97,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/config/security.comprehensive.test.ts",
+		"line": 149,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/config/security.comprehensive.test.ts",
+		"line": 189,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/config/security.comprehensive.test.ts",
+		"line": 229,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/config/security.comprehensive.test.ts",
+		"line": 271,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/config/resolution.unit.test.ts",
+		"line": 6,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/config/merge-comprehensive.test.ts",
+		"line": 9,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/commands/sessionCommands.test.ts",
+		"line": 61,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/commands/sessionCommands.test.ts",
+		"line": 73,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/commands/sessionCommands.test.ts",
+		"line": 87,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/commands/sessionCommands.test.ts",
+		"line": 138,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/commands/sessionCommands.test.ts",
+		"line": 181,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/commands/sessionCommands.test.ts",
+		"line": 192,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/checkpoint/checkpointNamingStrategy.test.ts",
+		"line": 28,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/checkpoint/checkpointNamingStrategy.test.ts",
+		"line": 605,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/checkpoint/checkpointNamingStrategy.test.ts",
+		"line": 658,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/checkpoint/checkpointNamingStrategy.test.ts",
+		"line": 686,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/checkpoint/checkpointNamingStrategy.test.ts",
+		"line": 712,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/checkpoint/checkpointManager.test.ts",
+		"line": 75,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/checkpoint/checkpointManager.test.ts",
+		"line": 136,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/checkpoint/CheckpointStorageAdapter.test.ts",
+		"line": 26,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/checkpoint/CheckpointStorageAdapter.test.ts",
+		"line": 78,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode/test/unit/checkpoint/CheckpointStorageAdapter.test.ts",
+		"line": 97,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/packages/events/test/eventBus.test.ts",
+		"line": 34,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/packages/contracts/test/snapshot-storage.test.ts",
+		"line": 24,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/packages/core/test/risk-analyzer.test.ts",
+		"line": 33,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/packages/core/test/mcp-federation.test.ts",
+		"line": 5,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/packages/core/test/guardian.test.ts",
+		"line": 12,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/packages/core/test/full-implementation-example.test.ts",
+		"line": 38,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/packages/core/test/file-watching.integration.test.ts",
+		"line": 40,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/packages/core/test/dependency-analyzer.test.ts",
+		"line": 6,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/packages/infrastructure/test/tracing/telemetry-whitelist.test.ts",
+		"line": 9,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/packages/infrastructure/test/tracing/telemetry-whitelist.test.ts",
+		"line": 110,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/packages/infrastructure/test/tracing/telemetry-client.test.ts",
+		"line": 5,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/packages/core/test/detection/mock-replacement.test.ts",
+		"line": 26,
+		"severity": "error",
+		"message": "Found empty test smell"
+	},
+	{
+		"name": "empty test",
+		"file": "/Users/user1/WebstormProjects/SnapBack-Site/packages/core/test/detection/mock-replacement.test.ts",
+		"line": 162,
+		"severity": "error",
+		"message": "Found empty test smell"
+	}
+]

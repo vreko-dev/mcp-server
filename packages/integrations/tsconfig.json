@@ -1,0 +1,19 @@
+{
+	"extends": "@snapback/tsconfig/base.json",
+	"compilerOptions": {
+		"outDir": "./dist",
+		"rootDir": "./src",
+		"composite": true,
+		"jsx": "react-jsx",
+		"skipLibCheck": true,
+		"paths": {},
+		"typeRoots": ["./types", "./node_modules/@types"]
+	},
+	"include": ["src/**/*", "types/**/*.d.ts"],
+	"references": [
+		{ "path": "../config" },
+		{ "path": "../contracts" },
+		{ "path": "../infrastructure" },
+		{ "path": "../platform" }
+	]
+}

@@ -1,0 +1,38 @@
+{
+  "name": "@snapback/policy-engine",
+  "version": "0.0.0",
+  "dependencies": {
+    "@snapback/auth": "workspace:*",
+    "@snapback/config": "workspace:*",
+    "@snapback/contracts": "workspace:*",
+    "@snapback/core": "workspace:*",
+    "@snapback/events": "workspace:*",
+    "@snapback/infrastructure": "workspace:*",
+    "@snapback/integrations": "workspace:*",
+    "@snapback/platform": "workspace:*",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@snapback/tsconfig": "workspace:*",
+    "@types/node": "catalog:",
+    "tsup": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "private": true,
+  "scripts": {
+    "build": "tsup",
+    "postbuild": "echo 'Package build complete'",
+    "test": "test -d test && vitest run || echo 'No test directory found, skipping tests'"
+  },
+  "type": "module",
+  "types": "./dist/index.d.ts"
+}

@@ -1,0 +1,145 @@
+---
+title: Retention & Correlation Analysis
+description: Sophisticated retention and correlation analysis to understand user behavior patterns
+---
+
+# Retention & Correlation Analysis
+
+SnapBack uses sophisticated retention and correlation analysis to help you understand user behavior patterns and optimize your experience.
+
+## Retention Cohorts
+
+We automatically create and maintain several key cohorts in PostHog for retention analysis:
+
+### D7 Retention Cohort
+
+Users who return within 7 days of their first activity. This cohort helps identify early engagement patterns and predicts long-term user retention.
+
+### D30 Retention Cohort
+
+Users who return within 30 days of their first activity. This cohort provides insight into sustained engagement and product stickiness.
+
+### Onboarding Completion Cohort
+
+Users who successfully complete the onboarding process. This cohort helps track the effectiveness of onboarding improvements.
+
+### High Engagement Users Cohort
+
+Users with high engagement patterns (5+ sessions in 7 days). This cohort identifies power users and potential advocates.
+
+## Correlation Analysis
+
+We perform correlation analysis to identify factors that influence key user outcomes:
+
+### Onboarding Completion Factors
+
+Analysis of what influences successful onboarding completion, including:
+- Signup source effectiveness
+- Device and browser compatibility
+- Marketing campaign performance
+- Time to complete onboarding
+- Steps completed
+- Help articles viewed
+
+### Feature Adoption Correlations
+
+Analysis of what drives feature adoption, including:
+- User plan tier
+- Account age and experience
+- Session frequency patterns
+- Support ticket interactions
+- Documentation engagement
+- Community participation
+
+### Churn Risk Indicators
+
+Early warning signs of user disengagement, including:
+- Days since last activity
+- Feature usage decline
+- Support ticket volume
+- Billing issues
+- Plan downgrades
+- Session duration changes
+
+### High Value User Characteristics
+
+Traits of users who upgrade or engage deeply, including:
+- Initial plan selection
+- Signup source quality
+- Feature discovery rate
+- Engagement score
+- Referral activity
+- Content creation
+
+## Using Retention & Correlation Data
+
+### In PostHog
+
+Retention and correlation data is available directly in your PostHog dashboard:
+1. Navigate to the "Cohorts" section to view retention cohorts
+2. Use the "Insights" section to create retention charts
+3. Access correlation analysis through the "Correlation" tab
+
+### In SnapBack Dashboard
+
+Key retention metrics are displayed in your SnapBack dashboard:
+- D7 and D30 retention rates
+- Onboarding completion rate
+- Feature adoption trends
+- Churn risk indicators
+
+## Setting Up Retention Analysis
+
+To set up retention cohorts in PostHog:
+
+```bash
+# Run the setup script
+pnpm setup-posthog-cohorts
+
+# For a dry run to see what would be created
+pnpm setup-posthog-cohorts --dry-run
+
+# Include correlation cohorts
+pnpm setup-posthog-cohorts --correlation
+```
+
+## Running Correlation Analysis
+
+To run correlation analysis:
+
+```bash
+# Run default correlation analysis
+pnpm run-correlation-analysis
+
+# Run specific analysis
+pnpm run-correlation-analysis "Onboarding Completion Factors"
+
+# List available analyses
+pnpm run-correlation-analysis --list
+
+# Dry run to see what would be analyzed
+pnpm run-correlation-analysis --dry-run
+```
+
+## Interpreting Results
+
+### Correlation Coefficients
+
+Correlation values range from -1 to 1:
+- **1.0** - Perfect positive correlation
+- **0.7-0.9** - Strong positive correlation
+- **0.3-0.7** - Moderate positive correlation
+- **0.1-0.3** - Weak positive correlation
+- **0.0** - No correlation
+- **-0.1 to -0.3** - Weak negative correlation
+- **-0.3 to -0.7** - Moderate negative correlation
+- **-0.7 to -0.9** - Strong negative correlation
+- **-1.0** - Perfect negative correlation
+
+### Actionable Insights
+
+Focus on correlations with:
+1. High absolute values (≥ 0.3)
+2. Statistically significant sample sizes
+3. Logical causal relationships
+4. Actionable intervention opportunities

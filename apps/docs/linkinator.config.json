@@ -1,0 +1,6 @@
+{
+	"path": "https://docs.snapback.dev",
+	"recurse": true,
+	"skip": ["https://github.com/.*", "https://discord.gg/.*"],
+	"timeout": 10000
+}

@@ -1,0 +1,74 @@
+---
+title: Analytics & Metrics
+description: Comprehensive analytics and metrics tracking with PostHog
+---
+
+# Analytics & Metrics
+
+SnapBack uses PostHog for comprehensive analytics and metrics tracking to help you understand user behavior, measure success, and optimize your experience.
+
+## Key Metrics
+
+### Time to First Value (TTFV)
+
+TTFV measures how quickly users can achieve their first successful outcome with SnapBack. Our target is p75 ≤ 5 minutes.
+
+**Tracked Events:**
+- `extension_installed` - VS Code extension installation
+- `auth_completed` - Successful authentication
+- `api_key_created` - API key generation
+- `first_snapshot_created` - First code snapshot creation
+
+### Onboarding Completion Rate
+
+We track the percentage of users who successfully complete the onboarding process. Our target is ≥ 70%.
+
+### Crash-free Sessions
+
+The percentage of sessions without critical errors. Our target is ≥ 98%.
+
+### Session Replay Coverage
+
+Percentage of sessions with replay recording enabled, balanced with privacy considerations.
+
+## Activation Funnel
+
+Our activation funnel tracks the critical path to user success:
+
+1. **Extension Installation** - User installs the VS Code extension
+2. **Authentication** - User completes the authentication process
+3. **API Key Creation** - User generates their first API key
+4. **First Snapshot** - User creates their first code snapshot
+
+## Retention Analysis
+
+We track user retention at key intervals:
+
+- **D7 Retention** - Percentage of users who return within 7 days
+- **D30 Retention** - Percentage of users who return within 30 days
+
+Retention cohorts are automatically created in PostHog to track these metrics.
+
+## Correlation Analysis
+
+We analyze correlations between user behaviors and outcomes to identify factors that drive success or indicate risk:
+
+- **Onboarding Completion Factors** - What influences successful onboarding
+- **Feature Adoption Correlations** - What drives feature usage
+- **Churn Risk Indicators** - Early warning signs of user disengagement
+- **High Value User Characteristics** - Traits of users who upgrade or engage deeply
+
+## Privacy & Consent
+
+All analytics are collected with user consent and in compliance with privacy regulations including GDPR. Users can opt out of analytics collection at any time in their settings.
+
+## Alerting
+
+Critical metrics are monitored with automated alerts:
+
+- TTFV degradation alerts
+- Onboarding completion rate drops
+- Crash rate spikes
+- Replay budget monitoring
+
+For technical details about our PostHog implementation, see our [PostHog Implementation Guide](/posthog-implementation).

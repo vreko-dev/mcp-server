@@ -1,0 +1,29 @@
+# Development Dockerfile for SnapBack with better-sqlite3
+# Optimized for local development with native module support
+# Includes all build tools required for compiling better-sqlite3 from source
+
+FROM node:22.19.0-alpine
+
+# Install system dependencies for native module compilation
+# Required for better-sqlite3 and other native modules
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++ \
+    gcc \
+    libc6-compat \
+    ca-certificates \
+    git \
+    curl
+
+# Enable corepack for pnpm
+RUN corepack enable && corepack prepare pnpm@10.14.0 --activate
+
+# Set working directory
+WORKDIR /workspace
+
+# Add a health check script for better-sqlite3
+COPY scripts/check-sqlite.ts /tmp/check-sqlite.ts
+
+# Default command: start a bash shell for development
+CMD ["/bin/sh"]

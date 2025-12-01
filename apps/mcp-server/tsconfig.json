@@ -1,0 +1,22 @@
+{
+	"extends": "../../tsconfig.base.json",
+	"compilerOptions": {
+		"outDir": "dist",
+		"rootDir": "src",
+		"declaration": true,
+		"declarationMap": true,
+		"declarationDir": "dist",
+		"sourceMap": true,
+		"ignoreDeprecations": "5.0",
+		"tsBuildInfoFile": "./dist/.tsbuildinfo",
+		"typeRoots": ["./types", "./node_modules/@types"],
+		"skipLibCheck": true
+	},
+	"include": ["src/**/*.ts", "types/**/*.d.ts"],
+	"exclude": ["node_modules", "dist"],
+	"references": [
+		{ "path": "../../packages/contracts" },
+		{ "path": "../../packages/events" },
+		{ "path": "../../packages/core" }
+	]
+}

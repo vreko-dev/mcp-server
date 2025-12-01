@@ -1,0 +1,278 @@
+"use client";
+import { Check, Star } from "lucide-react";
+import { m } from "motion/react";
+import { useState } from "react";
+
+const Pricing = () => {
+	const [isAnnual, setIsAnnual] = useState(false);
+
+	const plans = [
+		{
+			name: "SnapBack Core",
+			description: "Perfect for individual developers getting started",
+			price: { monthly: 0, annual: 0 },
+			badge: "Free",
+			features: [
+				"Up to 5 automations",
+				"Basic workflow templates",
+				"GitHub integration",
+				"Community support",
+				"Basic observability",
+			],
+			cta: "Start Free",
+			popular: false,
+		},
+		{
+			name: "Solo",
+			description: "For individual professionals and small projects",
+			price: { monthly: 29, annual: 290 },
+			badge: null,
+			features: [
+				"Unlimited automations",
+				"Advanced workflow builder",
+				"All integrations",
+				"Priority support",
+				"Advanced analytics",
+				"Custom templates",
+			],
+			cta: "Start Free Trial",
+			popular: true,
+		},
+		{
+			name: "Team",
+			description: "For growing teams that need collaboration",
+			price: { monthly: 79, annual: 790 },
+			badge: null,
+			features: [
+				"Everything in Solo",
+				"Team collaboration",
+				"Multi-user workspaces",
+				"Role-based permissions",
+				"Team analytics",
+				"Shared templates",
+				"Team onboarding",
+			],
+			cta: "Start Team Trial",
+			popular: false,
+		},
+		{
+			name: "Enterprise",
+			description: "For organizations with complex workflows",
+			price: { monthly: 249, annual: 2490 },
+			badge: null,
+			features: [
+				"Everything in Team",
+				"Enterprise integrations",
+				"SOC2 compliance",
+				"Dedicated support",
+				"Custom onboarding",
+				"SLA guarantees",
+				"Advanced security",
+				"Custom contracts",
+			],
+			cta: "Contact Sales",
+			popular: false,
+		},
+	];
+
+	const handlePlanAction = (planName: string, action: string) => {
+		// Plan action logic would go here (signup, trial, contact)
+		console.log(`${action} clicked for ${planName} plan`);
+	};
+
+	return (
+		<section
+			id="pricing"
+			className="py-20 bg-background"
+			aria-labelledby="pricing-heading"
+		>
+			<div className="container">
+				<div className="text-center mb-16">
+					<h2 id="pricing-heading" className="text-display mb-6">
+						Simple, transparent <span className="text-primary">pricing</span>
+					</h2>
+					<p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
+						Start free, scale as you grow. No hidden fees, no surprise charges.
+					</p>
+				</div>
+
+				{/* Billing Toggle */}
+				<m.div className="flex items-center justify-center mb-12">
+					<fieldset className="flex items-center space-x-4 bg-muted/20 border border-border p-1 rounded-lg">
+						<legend className="sr-only">Choose billing frequency</legend>
+						<label className="flex items-center">
+							<input
+								type="radio"
+								name="billing"
+								value="monthly"
+								checked={!isAnnual}
+								onChange={() => setIsAnnual(false)}
+								className="sr-only"
+							/>
+							<button
+								type="button"
+								onClick={() => setIsAnnual(false)}
+								className={`px-4 py-2 rounded-md transition-all font-mono text-sm focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background ${
+									!isAnnual
+										? "bg-primary text-background border border-primary/50"
+										: "text-muted-foreground hover:text-foreground"
+								}`}
+								aria-pressed={!isAnnual}
+								aria-describedby="monthly-desc"
+							>
+								Monthly
+							</button>
+							<span id="monthly-desc" className="sr-only">
+								Pay monthly with flexible billing
+							</span>
+						</label>
+						<label className="flex items-center">
+							<input
+								type="radio"
+								name="billing"
+								value="annual"
+								checked={isAnnual}
+								onChange={() => setIsAnnual(true)}
+								className="sr-only"
+							/>
+							<button
+								type="button"
+								onClick={() => setIsAnnual(true)}
+								className={`px-4 py-2 rounded-md transition-all font-mono text-sm focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background ${
+									isAnnual
+										? "bg-primary text-background border border-primary/50"
+										: "text-muted-foreground hover:text-foreground"
+								}`}
+								aria-pressed={isAnnual}
+								aria-describedby="annual-desc"
+							>
+								Annual <span className="text-xs text-accent">-20%</span>
+							</button>
+							<span id="annual-desc" className="sr-only">
+								Pay annually and save 20%
+							</span>
+						</label>
+					</fieldset>
+				</m.div>
+
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+					{plans.map((plan, index) => (
+						<article
+							key={plan.name}
+							className={`relative bg-card/50 backdrop-blur-sm border rounded-lg p-6 ${
+								plan.popular
+									? "border-primary shadow-lg shadow-primary/20 ring-2 ring-primary/20"
+									: "border-border hover:border-primary/30"
+							}`}
+							aria-labelledby={`plan-${index}-name`}
+							aria-describedby={`plan-${index}-desc`}
+						>
+							{plan.popular && (
+								<div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+									<div className="bg-gradient-neon text-background px-4 py-1 rounded-full text-sm font-medium border border-primary/50">
+										<Star className="w-4 h-4 inline mr-1" aria-hidden="true" />
+										Most Popular
+									</div>
+								</div>
+							)}
+
+							{plan.badge && (
+								<div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+									<div className="bg-accent text-background px-4 py-1 rounded-full text-sm font-medium border border-accent/50">
+										{plan.badge}
+									</div>
+								</div>
+							)}
+
+							<div className="p-2">
+								<h3
+									id={`plan-${index}-name`}
+									className="text-2xl font-bold mb-2"
+								>
+									{plan.name}
+								</h3>
+								<p
+									id={`plan-${index}-desc`}
+									className="text-muted-foreground mb-6"
+								>
+									{plan.description}
+								</p>
+
+								<div className="mb-8">
+									<div className="flex items-baseline">
+										<span
+											id={`plan-${index}-pricing`}
+											className="text-4xl font-black"
+										>
+											${isAnnual ? plan.price.annual : plan.price.monthly}
+										</span>
+										{plan.price.monthly > 0 && (
+											<span className="text-muted-foreground ml-2">
+												/{isAnnual ? "year" : "month"}
+											</span>
+										)}
+									</div>
+									{isAnnual && plan.price.monthly > 0 && (
+										<div className="text-sm text-muted-foreground">
+											${Math.round(plan.price.annual / 12)}
+											/month billed annually
+										</div>
+									)}
+								</div>
+
+								<button
+									className={`w-full py-3 px-4 rounded-lg font-medium transition-all focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background ${
+										plan.popular ? "btn-neon" : "btn-ghost"
+									}`}
+									onClick={() => handlePlanAction(plan.name, plan.cta)}
+									type="button"
+									aria-describedby={`plan-${index}-action-desc`}
+								>
+									{plan.cta}
+									<span id={`plan-${index}-action-desc`} className="sr-only">
+										{plan.cta} for {plan.name} plan
+									</span>
+								</button>
+
+								<ul
+									className="space-y-4 mt-8"
+									aria-label={`${plan.name} plan features`}
+								>
+									{plan.features.map((feature) => (
+										<li
+											key={`${plan.name}-${feature}`}
+											className="flex items-start space-x-3"
+										>
+											<Check
+												className="h-5 w-5 text-primary flex-shrink-0 mt-0.5"
+												aria-hidden="true"
+											/>
+											<span className="text-sm text-muted-foreground">
+												{feature}
+											</span>
+										</li>
+									))}
+								</ul>
+							</div>
+						</article>
+					))}
+				</div>
+
+				{/* Bracket Divider */}
+				<div
+					className="flex justify-center mt-16"
+					aria-hidden="true"
+					role="presentation"
+				>
+					<div className="flex items-center space-x-4 text-2xl font-mono text-primary/60">
+						<span aria-hidden="true">&#123;</span>
+						<div className="w-16 h-px bg-gradient-neon" />
+						<span aria-hidden="true">&#125;</span>
+					</div>
+				</div>
+			</div>
+		</section>
+	);
+};
+
+export default Pricing;

@@ -1,0 +1,195 @@
+---
+title: Protection Levels
+description: Understand SnapBack's three-tier protection system for granular file-level control
+---
+
+# Protection Levels
+
+SnapBack provides three distinct protection levels that give you granular control over how your files are protected. Each level offers a different balance between protection and workflow flexibility.
+
+## The Traffic Light System
+
+SnapBack uses a traffic light metaphor to make protection levels intuitive and easy to understand:
+
+<div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-8">
+  <div className="card bg-emerald-900/10 border-emerald-500/20">
+    <div className="text-3xl mb-2">🟢</div>
+    <h3 className="text-xl font-bold mb-2">Watch</h3>
+    <p className="text-gray-400 mb-4">Silent auto-snapshots with zero friction. Perfect for files you want to protect without any workflow interruption.</p>
+    <div className="text-sm text-emerald-400">Best for: Configuration files, documentation, assets</div>
+  </div>
+
+  <div className="card bg-yellow-900/10 border-yellow-500/20">
+    <div className="text-3xl mb-2">🟡</div>
+    <h3 className="text-xl font-bold mb-2">Warn</h3>
+    <p className="text-gray-400 mb-4">Confirmation before save. Provides a gentle reminder to think before making changes to important files.</p>
+    <div className="text-sm text-yellow-400">Best for: Source code, critical configuration, production files</div>
+  </div>
+
+  <div className="card bg-red-900/10 border-red-500/20">
+    <div className="text-3xl mb-2">🔴</div>
+    <h3 className="text-xl font-bold mb-2">Block</h3>
+    <p className="text-gray-400 mb-4">Required note (audit trail). Blocks changes until you provide context, creating an audit trail for critical modifications.</p>
+    <div className="text-sm text-red-400">Best for: Secrets, production databases, critical infrastructure</div>
+  </div>
+</div>
+
+## Setting Protection Levels
+
+You can set protection levels in several ways:
+
+### VS Code Extension
+
+1. Right-click any file or folder in the explorer
+2. Select "SnapBack: Set Protection Level"
+3. Choose from Watch, Warn, or Block
+
+```json
+// Example .snapbackprotected file
+{
+  "rules": [
+    {
+      "pattern": "**/*.config.js",
+      "level": "warn"
+    },
+    {
+      "pattern": "**/.env*",
+      "level": "block"
+    },
+    {
+      "pattern": "docs/**",
+      "level": "watch"
+    }
+  ]
+}
+```
+
+### CLI Tool
+
+```bash
+# Set protection level for a specific file
+snapback protect --file src/config.ts --level warn
+
+# Set protection level for all files matching a pattern
+snapback protect --pattern "**/*.env" --level block
+```
+
+## Smart Defaults
+
+SnapBack comes with intelligent defaults that automatically assign appropriate protection levels based on file types and patterns:
+
+<ExpandableSection title="View Default Protection Rules">
+  <ul className="list-disc pl-5 space-y-2">
+    <li>
+      <strong>.env files</strong> - Block (contains secrets)
+    </li>
+    <li>
+      <strong>package.json, package-lock.json</strong> - Warn (critical dependencies)
+    </li>
+    <li>
+      <strong>src/**/*</strong> - Warn (source code)
+    </li>
+    <li>
+      <strong>tests/**/*, *.test.*, *.spec.*</strong> - Watch (test files)
+    </li>
+    <li>
+      <strong>docs/**/*, README.md</strong> - Watch (documentation)
+    </li>
+    <li>
+      <strong>public/**/*, assets/**/*</strong> - Watch (static assets)
+    </li>
+  </ul>
+</ExpandableSection>
+
+## When to Use Each Level
+
+### Watch (🟢)
+Use for files where you want automatic protection without any workflow interruption:
+
+- Documentation files
+- Static assets (images, CSS, etc.)
+- Test files
+- Non-critical configuration
+- Generated files
+
+### Warn (🟡)
+Use for files where you want a gentle reminder to think before making changes:
+
+- Source code files
+- Critical configuration files
+- Build scripts
+- Package manifests
+- CI/CD configuration
+
+### Block (🔴)
+Use for files where changes should be carefully considered and documented:
+
+- Environment files (.env, .env.local, etc.)
+- Production database configuration
+- API keys and secrets
+- Critical infrastructure configuration
+- Files that require audit trails
+
+## Best Practices
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-6">
+  <div className="card">
+    <h4 className="font-bold mb-2">📁 Organize by Sensitivity</h4>
+    <p className="text-gray-400">Group files by sensitivity level and apply protection accordingly. Critical secrets should be blocked, while documentation can be watched.</p>
+  </div>
+
+  <div className="card">
+    <h4 className="font-bold mb-2">🔄 Review Regularly</h4>
+    <p className="text-gray-400">Periodically review your protection levels as your project evolves. What was once safe might become critical.</p>
+  </div>
+
+  <div className="card">
+    <h4 className="font-bold mb-2">👥 Team Consistency</h4>
+    <p className="text-gray-400">Establish team conventions for protection levels to ensure consistent application across your codebase.</p>
+  </div>
+
+  <div className="card">
+    <h4 className="font-bold mb-2">📝 Document Your Rules</h4>
+    <p className="text-gray-400">Add comments to your .snapbackprotected file explaining why certain files have specific protection levels.</p>
+  </div>
+</div>
+
+## Examples
+
+### Environment Files (Block)
+```bash
+# .env.production
+DATABASE_URL=postgresql://user:password@localhost:5432/mydb
+API_SECRET_KEY=super-secret-key
+JWT_SECRET=another-secret-token
+```
+
+### Configuration Files (Warn)
+```javascript
+// webpack.config.js
+module.exports = {
+  entry: './src/index.js',
+  output: {
+    filename: 'bundle.js',
+    path: path.resolve(__dirname, 'dist'),
+  },
+  // Changes to this file can significantly impact build process
+};
+```
+
+### Documentation (Watch)
+```markdown
+# README.md
+This is documentation that can be watched without any protection.
+```
+
+## Related Documentation
+
+- [AI Detection](/docs/ai-detection) - How SnapBack monitors AI coding assistants
+- [Session Time-Travel](/docs/sessions) - Multi-file atomic rollback for AI changes
+- [CLI Documentation](/docs/cli) - Command-line interface for automation
+- [VS Code Extension](/docs/vscode) - IDE integration for real-time protection
+
+<div className="callout alert-info my-6">
+  <strong>💡 Pro Tip:</strong> Start with SnapBack's smart defaults and gradually customize protection levels as you become familiar with your workflow. You can always adjust levels later.
+</div>

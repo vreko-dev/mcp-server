@@ -1,0 +1,48 @@
+{
+  "name": "@snapback/config",
+  "description": "Configuration defaults for SnapBack",
+  "version": "0.1.0",
+  "dependencies": {
+    "@snapback/contracts": "workspace:*",
+    "posthog-node": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "tsup": "catalog:",
+    "typescript": "catalog:"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./defaults": {
+      "types": "./dist/defaults.d.ts",
+      "default": "./dist/defaults.js"
+    },
+    "./env": {
+      "types": "./dist/env.d.ts",
+      "default": "./dist/env.js"
+    },
+    "./subscription-config": {
+      "types": "./dist/subscription-config.d.ts",
+      "default": "./dist/subscription-config.js"
+    },
+    "./utils/*": {
+      "types": "./dist/utils/*.d.ts",
+      "default": "./dist/utils/*.js"
+    }
+  },
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsup && tsc --build --force && node ../../scripts/verify-build.js",
+    "check": "biome check .",
+    "format": "biome format --write .",
+    "lint": "biome lint .",
+    "lint:fix": "biome lint --fix .",
+    "postbuild": "echo 'Build verification completed'",
+    "typecheck": "tsc --noEmit"
+  },
+  "type": "module",
+  "types": "dist/index.d.ts"
+}

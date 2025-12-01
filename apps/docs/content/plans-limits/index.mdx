@@ -1,0 +1,152 @@
+---
+title: Plans & Limits
+description: Canonical source for features, quotas, retention, and support by tier
+showPlanSwitcher: true
+---
+
+# Plans & Limits
+
+The canonical source of truth for SnapBack capabilities across all tiers.
+
+## Feature Comparison
+
+| Feature Category | Free | Solo | Team | Enterprise |
+|-----------------|------|------|------|------------|
+| **Guardian Detection** |
+| Local MCP scan | ✓ | ✓ | ✓ | ✓ |
+| Cloud AI scoring | — | ✓ | ✓ | ✓ |
+| Custom detection rules | — | — | — | ✓ |
+| **Snapshots & Recovery** |
+| Local snapshots | Unlimited* | Unlimited | Unlimited | Unlimited |
+| Cloud backup | — | 5GB | 50GB | 100GB+ |
+| Cloud retention | — | 30 days | 90 days | Custom |
+| Session time-travel | Basic | Full | Full | Full |
+| **Collaboration** |
+| Team members | 1 | 1 | 10 | Unlimited |
+| Shared snapshots | — | — | ✓ | ✓ |
+| Team policies (.snapbackrc) | — | — | ✓ | ✓ |
+| **Security & Compliance** |
+| SSO/SAML | — | — | — | ✓ |
+| SCIM provisioning | — | — | — | ✓ (optional) |
+| Audit logs | — | — | Basic | Immutable |
+| DPA available | — | — | — | ✓ |
+| **Support** |
+| Community forums | ✓ | ✓ | ✓ | ✓ |
+| Email support | — | Email (48h) | Priority (24h) | SLA/CSM |
+
+*Free tier: You control pruning via extension settings. Cloud storage and backup are paid features.
+
+## Tier Details
+
+### Free {#free}
+
+Perfect for individual developers trying SnapBack.
+
+**Key Features:**
+- Unlimited local snapshots (you control retention)
+- Local MCP scan only — no cloud scoring
+- Watch, Warn, Block protection levels
+- Community support
+
+**Limitations:**
+- No cloud backup
+- No cloud-based Guardian AI detection
+- No team collaboration features
+
+[Get Started](/quick-start)
+
+### Solo {#solo}
+
+For individual professionals who need cloud backup and AI-powered risk detection.
+
+**Everything in Free, plus:**
+- 5GB cloud backup storage
+- 30-day cloud retention
+- Cloud-based Guardian AI risk scoring
+- Backend MCP server with API authentication
+- Email support (48h SLA)
+
+**Price:** Starting at $29/month
+
+[Start Free Trial](https://snapback.dev/pricing#solo)
+
+### Team {#team}
+
+For development teams that need collaboration and shared policies.
+
+**Everything in Solo, plus:**
+- 50GB shared cloud storage
+- 90-day cloud retention
+- 10 team seats
+- Shared snapshots across team
+- Team-wide .snapbackrc policies
+- Team usage analytics
+- Priority email support (24h SLA)
+
+**Price:** Starting at $79/month
+
+[Start Team Trial](https://snapback.dev/pricing#team)
+
+### Enterprise {#enterprise}
+
+For organizations requiring enterprise-grade security, compliance, and support.
+
+**Everything in Team, plus:**
+- Unlimited team members
+- 100GB+ cloud storage (scalable)
+- Custom retention policies (365+ days)
+- SSO/SAML integration
+- SCIM provisioning (optional)
+- Organization-wide custom detection rules
+- Immutable audit logs
+- DPA available on request
+- 24/7 dedicated support with named account manager (SLA/CSM)
+- Custom data residency and retention
+- 2-week structured POC program
+
+**Enterprise Add-ons (available via sales):**
+- Extended analytics dashboards
+- Private deployment options
+
+**Price:** Custom pricing
+
+[Contact Sales](https://snapback.dev/contact)
+
+## Frequently Asked Questions
+
+### Can I upgrade or downgrade anytime?
+
+Yes! You can upgrade or downgrade your plan at any time. When upgrading, you'll have immediate access to new features. When downgrading, your data remains safe:
+
+- **Local snapshots**: Always preserved (under your control)
+- **Cloud backups**: Retained for 30 days after downgrade, then deleted
+- **Team data**: Exported before team plan cancellation
+
+### What happens to my data if I cancel?
+
+- **Free tier**: Local snapshots remain on your machine indefinitely
+- **Paid tiers**: Cloud backups are retained for 30 days, then permanently deleted
+- **Export**: Download all your data before cancellation via the dashboard
+
+### Do you offer non-profit or educational discounts?
+
+Yes! We offer 50% discounts for verified non-profit organizations and educational institutions. Contact sales@snapback.dev with proof of status.
+
+### How does the free trial work?
+
+Solo and Team plans include a 14-day free trial. No credit card required. Full access to all features during the trial period.
+
+### Can I use SnapBack offline?
+
+Yes! The core extension and local snapshots work completely offline. Cloud features (Guardian AI detection, cloud backup, team sharing) require internet connectivity.
+
+## Need Help Choosing?
+
+Not sure which plan is right for you? Here's a quick guide:
+
+- **Free**: Trying SnapBack, solo development, no cloud needs
+- **Solo**: Individual professional, need cloud backup + AI detection
+- **Team**: 2-10 developers, need shared policies and team collaboration
+- **Enterprise**: Organization-wide deployment, compliance requirements, SSO/SAML
+
+[Contact us](https://snapback.dev/contact) for a personalized recommendation.

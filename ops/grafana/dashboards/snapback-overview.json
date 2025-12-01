@@ -1,0 +1,152 @@
+{
+	"dashboard": {
+		"id": null,
+		"title": "SnapBack Overview",
+		"tags": ["snapback"],
+		"timezone": "browser",
+		"schemaVersion": 16,
+		"version": 0,
+		"refresh": "10s",
+		"panels": [
+			{
+				"id": 1,
+				"type": "graph",
+				"title": "API Request Rate",
+				"gridPos": {
+					"x": 0,
+					"y": 0,
+					"w": 12,
+					"h": 8
+				},
+				"targets": [
+					{
+						"expr": "rate(http_requests_total[5m])",
+						"legendFormat": "{{method}} {{path}}",
+						"refId": "A"
+					}
+				],
+				"xaxis": {
+					"mode": "time"
+				},
+				"yaxes": [
+					{
+						"format": "reqps",
+						"label": "Requests/sec"
+					},
+					{
+						"format": "short"
+					}
+				]
+			},
+			{
+				"id": 2,
+				"type": "graph",
+				"title": "API Response Time",
+				"gridPos": {
+					"x": 12,
+					"y": 0,
+					"w": 12,
+					"h": 8
+				},
+				"targets": [
+					{
+						"expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))",
+						"legendFormat": "95th percentile",
+						"refId": "A"
+					},
+					{
+						"expr": "histogram_quantile(0.50, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))",
+						"legendFormat": "50th percentile",
+						"refId": "B"
+					}
+				],
+				"xaxis": {
+					"mode": "time"
+				},
+				"yaxes": [
+					{
+						"format": "s",
+						"label": "Response Time"
+					},
+					{
+						"format": "short"
+					}
+				]
+			},
+			{
+				"id": 3,
+				"type": "stat",
+				"title": "Active Snapshots",
+				"gridPos": {
+					"x": 0,
+					"y": 8,
+					"w": 6,
+					"h": 4
+				},
+				"targets": [
+					{
+						"expr": "snapshots_total",
+						"refId": "A"
+					}
+				],
+				"options": {
+					"reduceOptions": {
+						"calcs": ["lastNotNull"]
+					}
+				}
+			},
+			{
+				"id": 4,
+				"type": "stat",
+				"title": "Protected Files",
+				"gridPos": {
+					"x": 6,
+					"y": 8,
+					"w": 6,
+					"h": 4
+				},
+				"targets": [
+					{
+						"expr": "protected_files_total",
+						"refId": "A"
+					}
+				],
+				"options": {
+					"reduceOptions": {
+						"calcs": ["lastNotNull"]
+					}
+				}
+			},
+			{
+				"id": 5,
+				"type": "graph",
+				"title": "Database Connections",
+				"gridPos": {
+					"x": 12,
+					"y": 8,
+					"w": 12,
+					"h": 8
+				},
+				"targets": [
+					{
+						"expr": "db_connections",
+						"legendFormat": "Active Connections",
+						"refId": "A"
+					}
+				],
+				"xaxis": {
+					"mode": "time"
+				},
+				"yaxes": [
+					{
+						"format": "short",
+						"label": "Connections"
+					},
+					{
+						"format": "short"
+					}
+				]
+			}
+		]
+	}
+}

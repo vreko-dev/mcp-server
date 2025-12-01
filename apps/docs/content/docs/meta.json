@@ -1,0 +1,26 @@
+{
+	"title": "Documentation",
+	"pages": [
+		"---Getting Started---",
+		"index",
+		"quick-start",
+		"---Core Concepts---",
+		"protection-levels",
+		"sessions",
+		"sessions-implementation",
+		"ai-detection",
+		"---Capabilities---",
+		"capabilities",
+		"---Integrations---",
+		"cli",
+		"---Analytics & Insights---",
+		"analytics",
+		"analytics-faq",
+		"interpreting-data",
+		"retention-correlation",
+		"privacy",
+		"---Reference---",
+		"performance",
+		"troubleshooting"
+	]
+}

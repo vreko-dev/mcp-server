@@ -1,0 +1,54 @@
+name: Deploy MCP Server
+
+on:
+    workflow_call:
+        inputs:
+            environment:
+                type: string
+                required: false
+                default: staging
+    push:
+        branches: [main]
+        paths:
+            - "apps/mcp-server/**"
+            - "packages/**"
+            - "pnpm-lock.yaml"
+            - ".github/workflows/mcp-validate.yml"
+            - ".github/workflows/deploy-mcp.yml"
+    workflow_dispatch:
+        inputs:
+            environment:
+                description: "Deployment environment (staging|production)"
+                required: true
+                default: staging
+
+jobs:
+    validate:
+        name: Validate MCP Server
+        uses: ./.github/workflows/mcp-validate.yml
+
+    deploy:
+        name: Trigger Render Deployment
+        runs-on: ubuntu-latest
+        needs: validate
+        environment:
+            name: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.environment || (github.event_name == 'workflow_call' && inputs.environment) || (github.ref == 'refs/heads/main' && 'production' || 'staging') }}
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Toolchain setup
+              uses: ./.github/actions/setup-pnpm
+
+            - name: Build MCP server
+              run: pnpm --filter ./apps/mcp-server run build
+
+            - name: Trigger Render deploy
+              env:
+                  RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+              run: |
+                  if [ -z "${RENDER_DEPLOY_HOOK}" ]; then
+                    echo "RENDER_DEPLOY_HOOK secret is not configured."
+                    exit 1
+                  fi
+                  curl -fsSL -X POST "${RENDER_DEPLOY_HOOK}"

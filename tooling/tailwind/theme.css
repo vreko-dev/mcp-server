@@ -1,0 +1,202 @@
+@theme {
+	--color-background: var(--background);
+	--color-foreground: var(--foreground);
+	--color-card: var(--card);
+	--color-card-foreground: var(--card-foreground);
+	--color-popover: var(--popover);
+	--color-popover-foreground: var(--popover-foreground);
+	--color-primary: var(--primary);
+	--color-primary-foreground: var(--primary-foreground);
+	--color-secondary: var(--secondary);
+	--color-secondary-foreground: var(--secondary-foreground);
+	--color-muted: var(--muted);
+	--color-muted-foreground: var(--muted-foreground);
+	--color-accent: var(--accent);
+	--color-accent-foreground: var(--accent-foreground);
+	--color-success: var(--success);
+	--color-success-foreground: var(--success-foreground);
+	--color-destructive: var(--destructive);
+	--color-destructive-foreground: var(--destructive-foreground);
+	--color-border: var(--border);
+	--color-input: var(--input);
+	--color-ring: var(--ring);
+	--color-highlight: var(--highlight);
+	--color-highlight-foreground: var(--highlight-foreground);
+	/* SnapBack Color Palette - Matrix Green with Depth */
+	--color-snapback-50: #e6fff5;
+	--color-snapback-100: #b3ffe0;
+	--color-snapback-200: #66ffc2;
+	--color-snapback-300: #33ffad;
+	--color-snapback-400: #1aff9f;
+	--color-snapback-500: #10b981;
+	--color-snapback-600: #0d9668;
+	--color-snapback-700: #0a7350;
+	--color-snapback-800: #064e34;
+	--color-snapback-900: #022c1e;
+	--color-snapback-glow: rgba(16, 185, 129, 0.4);
+
+	/* Legacy SnapBack Colors */
+	--color-snapback-green: #10b981;
+	--color-snapback-danger: #ef4444;
+	--color-snapback-warning: #ff6b35;
+	--color-snapback-dark: #0a0a0a;
+	--color-snapback-surface: #111111;
+	--color-snapback-border: #27272a;
+
+	/* Terminal/Developer UI Colors */
+	--color-terminal-bg: #0a0a0a;
+	--color-terminal-surface: #111111;
+	--color-terminal-border: #1f1f1f;
+	--color-terminal-text: #e4e4e7;
+	--color-terminal-cursor: #10b981;
+
+	/* Border Radius */
+	--radius-lg: var(--radius);
+	--radius-md: calc(var(--radius) - 2px);
+	--radius-sm: calc(var(--radius) - 4px);
+
+	/* Typography */
+	--font-sans: var(--font-geist-sans);
+	--font-code: "JetBrains Mono", "SF Mono", "Consolas", "Monaco", monospace;
+
+	/* Animations */
+	--animation-accordion-down: accordion-down 0.2s ease-out;
+	--animation-accordion-up: accordion-up 0.2s ease-out;
+	--animation-pulse-glow: pulse-glow 3s ease-in-out infinite;
+	--animation-shimmer: shimmer 2s linear infinite;
+	--animation-scroll: scroll var(--animation-duration, 40s)
+		var(--animation-direction, forwards) linear infinite;
+
+	/* Animation Keyframes */
+	@keyframes accordion-down {
+		from {
+			height: 0;
+		}
+		to {
+			height: var(--radix-accordion-content-height);
+		}
+	}
+	@keyframes accordion-up {
+		from {
+			height: var(--radix-accordion-content-height);
+		}
+		to {
+			height: 0;
+		}
+	}
+	@keyframes pulse-glow {
+		0%,
+		100% {
+			text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+		}
+		50% {
+			text-shadow: 0 0 20px rgba(16, 185, 129, 0.8);
+		}
+	}
+	@keyframes shimmer {
+		from {
+			background-position: 0 0;
+		}
+		to {
+			background-position: -200% 0;
+		}
+	}
+	@keyframes scroll {
+		to {
+			transform: translate(calc(-50% - 0.5rem));
+		}
+	}
+}
+
+@layer base {
+	:root {
+		--border: #e3ebf6;
+		--input: #c7ced8;
+		--ring: #4e6df5;
+		--background: #fafafe;
+		--foreground: #292b35;
+		--primary: #4e6df5;
+		--primary-foreground: #f6f7f9;
+		--secondary: #292b35;
+		--secondary-foreground: #ffffff;
+		--destructive: #ef4444;
+		--destructive-foreground: #ffffff;
+		--success: #39a561;
+		--success-foreground: #ffffff;
+		--muted: #f8fafc;
+		--muted-foreground: #64748b;
+		--accent: #ddddea;
+		--accent-foreground: #292b35;
+		--popover: #ffffff;
+		--popover-foreground: #292b35;
+		--card: #ffffff;
+		--card-foreground: #292b35;
+		--highlight: #e5a158;
+		--highlight-foreground: #ffffff;
+		--snapback-green: #10b981;
+		--snapback-danger: #ef4444;
+		--snapback-warning: #ff6b35;
+		--snapback-dark: #0a0a0a;
+		--snapback-surface: #111111;
+		--snapback-border: #27272a;
+		--radius: 0.75rem;
+
+		/* fumadocs */
+		--fd-banner-height: 4.5rem;
+	}
+
+	.dark {
+		--border: #2b303d;
+		--input: #4c5362;
+		--ring: #5581f7;
+		--background: #0a0a0a; /* Updated to darker background */
+		--foreground: #e9eef3;
+		--primary: #10b981; /* Updated to SnapBack green */
+		--primary-foreground: #091521;
+		--secondary: #e9eef3;
+		--secondary-foreground: #091521;
+		--destructive: #ef4444;
+		--destructive-foreground: #ffffff;
+		--success: #39a561;
+		--success-foreground: #ffffff;
+		--muted: #020817;
+		--muted-foreground: #94a3b8;
+		--accent: #1e293b;
+		--accent-foreground: #f8fafc;
+		--popover: #111111; /* Updated to match elevation system */
+		--popover-foreground: #e9eef3;
+		--card: #111111; /* Updated to match elevation system */
+		--card-foreground: #e9eef3;
+		--highlight: #10b981; /* Updated to SnapBack green */
+		--highlight-foreground: #ffffff;
+		--snapback-green: #10b981;
+		--snapback-danger: #ef4444;
+		--snapback-warning: #ff6b35;
+		--snapback-dark: #0a0a0a;
+		--snapback-surface: #111111;
+		--snapback-border: #27272a;
+	}
+
+	*,
+	::after,
+	::before,
+	::backdrop,
+	::file-selector-button {
+		@apply border-border;
+	}
+}
+
+@utility container {
+	margin-inline: auto;
+	padding-inline: 1.5rem;
+	width: 100%;
+	max-width: var(--container-7xl);
+}
+
+@utility no-scrollbar {
+	&::-webkit-scrollbar {
+		display: none;
+	}
+	-ms-overflow-style: none;
+	scrollbar-width: none;
+}

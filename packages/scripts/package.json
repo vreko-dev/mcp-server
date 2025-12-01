@@ -1,0 +1,27 @@
+{
+  "name": "@snapback/posthog-scripts",
+  "description": "Scripts for SnapBack infrastructure management",
+  "version": "1.0.0",
+  "author": "SnapBack Team",
+  "dependencies": {
+    "@snapback/api-service": "workspace:*",
+    "@snapback/infrastructure": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "tsx": "catalog:"
+  },
+  "keywords": [
+    "alerts",
+    "monitoring",
+    "posthog",
+    "snapback"
+  ],
+  "license": "MIT",
+  "main": "index.js",
+  "scripts": {
+    "setup-posthog-alerts": "tsx src/setup-posthog-alerts.ts",
+    "setup-posthog-alerts:dry-run": "tsx src/setup-posthog-alerts.ts --dry-run",
+    "verify-posthog-setup": "tsx src/verify-posthog-setup.ts"
+  }
+}

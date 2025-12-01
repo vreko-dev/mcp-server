@@ -1,0 +1,150 @@
+[
+	{
+		"path": "/Users/user1/WebstormProjects/SnapBack-Site",
+		"private": true
+	},
+	{
+		"name": "@snapback/cli",
+		"version": "0.1.1",
+		"path": "/Users/user1/WebstormProjects/SnapBack-Site/apps/cli",
+		"private": false
+	},
+	{
+		"name": "@snapback/mcp-server",
+		"version": "0.0.0",
+		"path": "/Users/user1/WebstormProjects/SnapBack-Site/apps/mcp-server",
+		"private": true
+	},
+	{
+		"name": "snapback-vscode",
+		"version": "1.2.5",
+		"path": "/Users/user1/WebstormProjects/SnapBack-Site/apps/vscode",
+		"private": false
+	},
+	{
+		"name": "@snapback/web",
+		"version": "0.0.1",
+		"path": "/Users/user1/WebstormProjects/SnapBack-Site/apps/web",
+		"private": true
+	},
+	{
+		"name": "@snapback/config-legacy",
+		"version": "0.0.0",
+		"path": "/Users/user1/WebstormProjects/SnapBack-Site/config",
+		"private": true
+	},
+	{
+		"name": "@snapback/analytics",
+		"version": "0.0.1",
+		"path": "/Users/user1/WebstormProjects/SnapBack-Site/packages/analytics",
+		"private": true
+	},
+	{
+		"name": "@snapback/api",
+		"version": "0.0.1",
+		"path": "/Users/user1/WebstormProjects/SnapBack-Site/packages/api",
+		"private": false
+	},
+	{
+		"name": "@snapback/api-simple",
+		"version": "0.0.1",
+		"path": "/Users/user1/WebstormProjects/SnapBack-Site/packages/api-simple",
+		"private": false
+	},
+	{
+		"name": "@snapback/api-vercel",
+		"version": "0.0.1",
+		"path": "/Users/user1/WebstormProjects/SnapBack-Site/packages/api-vercel",
+		"private": false
+	},
+	{
+		"name": "@snapback/auth",
+		"version": "0.0.0",
+		"path": "/Users/user1/WebstormProjects/SnapBack-Site/packages/auth",
+		"private": true
+	},
+	{
+		"name": "@snapback/auth-mock",
+		"version": "0.0.1",
+		"path": "/Users/user1/WebstormProjects/SnapBack-Site/packages/auth-mock",
+		"private": false
+	},
+	{
+		"name": "@snapback/config",
+		"version": "0.1.0",
+		"path": "/Users/user1/WebstormProjects/SnapBack-Site/packages/config",
+		"private": false
+	},
+	{
+		"name": "@snapback/contracts",
+		"version": "0.1.0",
+		"path": "/Users/user1/WebstormProjects/SnapBack-Site/packages/contracts",
+		"private": false
+	},
+	{
+		"name": "@snapback/core",
+		"version": "0.1.1",
+		"path": "/Users/user1/WebstormProjects/SnapBack-Site/packages/core",
+		"private": false
+	},
+	{
+		"name": "@snapback/events",
+		"version": "1.0.0",
+		"path": "/Users/user1/WebstormProjects/SnapBack-Site/packages/events",
+		"private": false
+	},
+	{
+		"name": "@snapback/github-action",
+		"version": "0.0.0",
+		"path": "/Users/user1/WebstormProjects/SnapBack-Site/packages/github-action",
+		"private": true
+	},
+	{
+		"name": "@snapback/infrastructure",
+		"version": "0.1.0",
+		"path": "/Users/user1/WebstormProjects/SnapBack-Site/packages/infrastructure",
+		"private": true
+	},
+	{
+		"name": "@snapback/integrations",
+		"version": "0.0.0",
+		"path": "/Users/user1/WebstormProjects/SnapBack-Site/packages/integrations",
+		"private": false
+	},
+	{
+		"name": "@snapback/platform",
+		"version": "0.1.0",
+		"path": "/Users/user1/WebstormProjects/SnapBack-Site/packages/platform",
+		"private": true
+	},
+	{
+		"name": "@snapback/policy-engine",
+		"version": "0.0.0",
+		"path": "/Users/user1/WebstormProjects/SnapBack-Site/packages/policy-engine",
+		"private": true
+	},
+	{
+		"name": "@snapback/sdk",
+		"version": "0.1.0",
+		"path": "/Users/user1/WebstormProjects/SnapBack-Site/packages/sdk",
+		"private": false
+	},
+	{
+		"name": "@snapback/scripts",
+		"version": "0.0.0",
+		"path": "/Users/user1/WebstormProjects/SnapBack-Site/tooling/scripts",
+		"private": true
+	},
+	{
+		"name": "@snapback/tailwind-config",
+		"version": "0.0.0",
+		"path": "/Users/user1/WebstormProjects/SnapBack-Site/tooling/tailwind",
+		"private": true
+	},
+	{
+		"name": "@snapback/tsconfig",
+		"version": "0.0.0",
+		"path": "/Users/user1/WebstormProjects/SnapBack-Site/tooling/typescript",
+		"private": true
+	}
+]

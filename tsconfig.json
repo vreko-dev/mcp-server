@@ -1,0 +1,27 @@
+{
+	"$schema": "https://json.schemastore.org/tsconfig",
+	"files": [],
+	"references": [
+		{ "path": "./apps/cli" },
+		{ "path": "./apps/mcp-server" },
+		{ "path": "./apps/vscode" },
+		{ "path": "./apps/web" },
+		{ "path": "./config" },
+		{ "path": "./packages/analytics" },
+		{ "path": "./apps/api" },
+		{ "path": "./packages/auth" },
+		{ "path": "./packages/auth-mock" },
+		{ "path": "./packages/config" },
+		{ "path": "./packages/contracts" },
+		{ "path": "./packages/core" },
+		{ "path": "./packages/events" },
+		{ "path": "./packages/github-action" },
+		{ "path": "./packages/infrastructure" },
+		{ "path": "./packages/integrations" },
+		{ "path": "./packages/platform" },
+		{ "path": "./packages/policy-engine" },
+		{ "path": "./packages/sdk" },
+		{ "path": "./tooling/scripts" },
+		{ "path": "./tooling/tailwind" }
+	]
+}

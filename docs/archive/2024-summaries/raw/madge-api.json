@@ -1,0 +1,4 @@
+[
+	["../../platform/src/db/schema/postgres.ts", "../../platform/src/db/schema/snapback/device-trials.ts"],
+	["../../platform/src/db/schema/postgres.ts", "../../platform/src/db/schema/snapback/snapshots.ts"]
+]

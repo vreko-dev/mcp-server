@@ -1,0 +1,64 @@
+# Development Dockerfile for Docs with hot reload
+FROM node:20.11.0-alpine AS base
+
+# Install system dependencies
+RUN apk update && apk upgrade
+RUN apk add --no-cache \
+    libc6-compat \
+    openssl \
+    ca-certificates \
+    git
+
+# Enable corepack for pnpm
+RUN corepack enable && corepack prepare pnpm@10.14.0 --activate
+
+# Set work directory
+WORKDIR /app
+
+# Create non-root user
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 docsuser --ingroup nodejs
+
+# ===== PHASE 1: Dependency Resolution =====
+# Copy workspace config
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY turbo.json ./
+
+# Copy ALL package.json files individually for proper workspace resolution
+COPY apps/docs/package.json ./apps/docs/
+COPY apps/api/package.json ./apps/api/
+COPY apps/web/package.json ./apps/web/
+COPY apps/mcp-server/package.json ./apps/mcp-server/
+COPY packages/*/package.json ./packages/*/
+COPY tooling/*/package.json ./tooling/*/
+COPY config/package.json ./config/
+
+# Install all dependencies with cache mounting
+RUN --mount=type=cache,id=pnpm-dev,target=/pnpm/store \
+    pnpm install --no-frozen-lockfile --ignore-scripts
+
+# ===== PHASE 2: Source Code =====
+# Copy source code (node_modules excluded by .dockerignore)
+COPY . .
+
+# Change ownership to non-root user
+RUN chown -R docsuser:nodejs /app
+
+# Switch to non-root user
+USER docsuser
+
+# Set development environment
+ENV NODE_ENV=development
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV CHOKIDAR_USEPOLLING=true
+ENV WATCHPACK_POLLING=true
+
+# Expose docs port and debugger port
+EXPOSE 3000 9232
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:3000 || exit 1
+
+# Start development server
+CMD ["pnpm", "--filter", "@snapback/docs", "run", "dev"]

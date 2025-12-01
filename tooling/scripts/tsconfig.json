@@ -1,0 +1,14 @@
+{
+	"extends": "@snapback/tsconfig/base.json",
+	"compilerOptions": {
+		"ignoreDeprecations": "5.0",
+		"jsx": "preserve",
+		"paths": {
+			"@snapback/*": ["../../packages/*"]
+		},
+		"composite": false,
+		"skipLibCheck": true
+	},
+	"include": ["**/*.ts"],
+	"exclude": ["dist", "build", "node_modules"]
+}

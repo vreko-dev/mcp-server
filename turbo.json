@@ -1,0 +1,70 @@
+{
+	"$schema": "https://turbo.build/schema.json",
+	"globalDependencies": ["**/.env.*local"],
+	"globalEnv": ["*"],
+	"globalPassThroughEnv": ["NODE_OPTIONS"],
+	"tasks": {
+		"build:package": {
+			"outputs": ["apps/vscode/package.json"],
+			"inputs": ["apps/vscode/package.base.json", "apps/vscode/package-contributes/**"]
+		},
+		"build": {
+			"dependsOn": ["build:package", "^generate", "^build"],
+			"outputs": ["dist/**", "*.tsbuildinfo", ".next/**", "!.next/cache/**"],
+			"inputs": [
+				"$TURBO_DEFAULT$",
+				"apps/web/.env.local",
+				"apps/docs/.env.local",
+				"packages/platform/.env.local",
+				"packages/auth/.env.local"
+			]
+		},
+		"type-check": {
+			"dependsOn": ["^type-check"],
+			"inputs": ["$TURBO_DEFAULT$"]
+		},
+		"clean": {
+			"cache": false
+		},
+		"generate": {
+			"cache": false,
+			"inputs": ["$TURBO_DEFAULT$", "packages/platform/.env.local"]
+		},
+		"dev": {
+			"cache": false,
+			"dependsOn": ["^generate"],
+			"persistent": true,
+			"inputs": [
+				"$TURBO_DEFAULT$",
+				"apps/web/.env.local",
+				"apps/docs/.env.local",
+				"packages/platform/.env.local",
+				"packages/auth/.env.local"
+			]
+		},
+		"export": {
+			"outputs": ["out/**"]
+		},
+		"lint": {
+			"dependsOn": ["^lint"],
+			"inputs": ["$TURBO_DEFAULT$"]
+		},
+		"test": {
+			"dependsOn": ["^build"],
+			"inputs": ["$TURBO_DEFAULT$"]
+		},
+		"start": {
+			"cache": false,
+			"dependsOn": ["^generate", "^build"],
+			"persistent": true
+		},
+		"@snapback/docs#build": {
+			"dependsOn": ["^build"],
+			"outputs": [".next/**", "!.next/cache/**"]
+		},
+		"@snapback/docs#dev": {
+			"cache": false,
+			"persistent": true
+		}
+	}
+}

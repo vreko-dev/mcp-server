@@ -1,0 +1,739 @@
+{
+	"analysis_metadata": {
+		"date": "2025-11-14",
+		"repository": "SnapBack Monorepo",
+		"base_path": "/Users/user1/WebstormProjects/SnapBack-Site",
+		"analyst": "Claude Code",
+		"status": "Docker infrastructure exists - needs completion"
+	},
+	"applications": {
+		"deployable": [
+			{
+				"name": "web",
+				"type": "web",
+				"path": "apps/web",
+				"entryPoint": "apps/web/server.js",
+				"buildCommand": "NODE_OPTIONS='--max-old-space-size=8192' next build",
+				"startCommand": "next start",
+				"devCommand": "next dev",
+				"port": 3000,
+				"framework": "Next.js 14",
+				"docker": {
+					"status": "fully_dockerized",
+					"dockerfile": "Dockerfile",
+					"compose_service": "web",
+					"production_ready": true
+				},
+				"dependencies": [
+					"@snapback/auth",
+					"@snapback/config",
+					"@snapback/contracts",
+					"@snapback/core",
+					"@snapback/infrastructure",
+					"@snapback/integrations",
+					"@snapback/platform"
+				],
+				"native_modules": ["@node-rs/argon2", "sharp"],
+				"env_vars_required": ["DATABASE_URL", "BETTER_AUTH_SECRET", "BETTER_AUTH_URL"],
+				"env_vars_optional": [
+					"GITHUB_CLIENT_ID",
+					"GITHUB_CLIENT_SECRET",
+					"GOOGLE_CLIENT_ID",
+					"GOOGLE_CLIENT_SECRET",
+					"STRIPE_SECRET_KEY",
+					"RESEND_API_KEY",
+					"OPENAI_API_KEY",
+					"S3_ACCESS_KEY_ID",
+					"NEXT_PUBLIC_POSTHOG_KEY",
+					"NEXT_PUBLIC_SENTRY_DSN"
+				]
+			},
+			{
+				"name": "api",
+				"type": "api",
+				"path": "apps/api",
+				"entryPoint": "apps/api/dist/server.js",
+				"buildCommand": "tsup",
+				"startCommand": "node dist/server.js",
+				"devCommand": "tsx watch src/server.ts",
+				"port": 3001,
+				"framework": "Hono",
+				"docker": {
+					"status": "fully_dockerized",
+					"dockerfile": "apps/api/Dockerfile",
+					"compose_service": "api",
+					"production_ready": true
+				},
+				"dependencies": [
+					"@snapback/auth",
+					"@snapback/config",
+					"@snapback/contracts",
+					"@snapback/core",
+					"@snapback/events",
+					"@snapback/infrastructure",
+					"@snapback/integrations",
+					"@snapback/platform",
+					"@snapback/policy-engine"
+				],
+				"native_modules": [],
+				"env_vars_required": ["DATABASE_URL", "BETTER_AUTH_SECRET", "REDIS_URL"],
+				"env_vars_optional": [
+					"GITHUB_CLIENT_ID",
+					"STRIPE_SECRET_KEY",
+					"RESEND_API_KEY",
+					"TURNSTILE_SECRET_KEY",
+					"RULES_SIGNING_KEY"
+				]
+			},
+			{
+				"name": "mcp-server",
+				"type": "mcp",
+				"path": "apps/mcp-server",
+				"entryPoint": "apps/mcp-server/dist/index.js",
+				"buildCommand": "tsup --clean",
+				"startCommand": "node dist/index.js",
+				"devCommand": "tsx watch src/index.ts",
+				"port": 3002,
+				"framework": "Express + MCP SDK",
+				"docker": {
+					"status": "partial",
+					"dockerfile": "apps/mcp-server/Dockerfile",
+					"compose_service": null,
+					"production_ready": false,
+					"blocker": "Dockerfile exists but not integrated into docker-compose.yml"
+				},
+				"dependencies": [
+					"@snapback/analytics",
+					"@snapback/auth",
+					"@snapback/config",
+					"@snapback/contracts",
+					"@snapback/core",
+					"@snapback/events",
+					"@snapback/github-action",
+					"@snapback/integrations",
+					"@snapback/policy-engine",
+					"@snapback/sdk"
+				],
+				"native_modules": ["better-sqlite3"],
+				"env_vars_required": [],
+				"env_vars_optional": []
+			},
+			{
+				"name": "cli",
+				"type": "cli",
+				"path": "apps/cli",
+				"entryPoint": "apps/cli/dist/index.js",
+				"buildCommand": "tsup",
+				"startCommand": "node dist/index.js",
+				"devCommand": "tsup --watch",
+				"port": null,
+				"framework": "Commander.js",
+				"docker": {
+					"status": "not_applicable",
+					"dockerfile": null,
+					"compose_service": null,
+					"production_ready": false,
+					"note": "CLI tool - typically used locally, not deployed"
+				},
+				"dependencies": ["@snapback/contracts", "@snapback/core", "@snapback/sdk"],
+				"native_modules": [],
+				"env_vars_required": [],
+				"env_vars_optional": []
+			},
+			{
+				"name": "vscode",
+				"type": "extension",
+				"path": "apps/vscode",
+				"entryPoint": "apps/vscode/dist/extension.js",
+				"buildCommand": "node esbuild.config.cjs --production",
+				"startCommand": null,
+				"devCommand": "node esbuild.config.cjs --watch",
+				"port": null,
+				"framework": "VS Code Extension API",
+				"docker": {
+					"status": "not_applicable",
+					"dockerfile": null,
+					"compose_service": null,
+					"production_ready": false,
+					"note": "Native desktop extension - distributed as VSIX package"
+				},
+				"dependencies": [
+					"@snapback/contracts",
+					"@snapback/core",
+					"@snapback/events",
+					"@snapback/infrastructure",
+					"@snapback/sdk"
+				],
+				"native_modules": ["better-sqlite3"],
+				"env_vars_required": [],
+				"env_vars_optional": ["SNAPBACK_API_BASE_URL"]
+			}
+		],
+		"packages": [
+			{
+				"name": "@snapback/api",
+				"path": "packages/api",
+				"type": "library",
+				"purpose": "ORPC procedures (10 analytics + 1 organization)",
+				"deployable": false
+			},
+			{
+				"name": "@snapback/core",
+				"path": "packages/core",
+				"type": "library",
+				"purpose": "Guardian detection engine + MCP client orchestration",
+				"deployable": false
+			},
+			{
+				"name": "@snapback/sdk",
+				"path": "packages/sdk",
+				"type": "library",
+				"purpose": "Storage clients (LocalStorage, MemoryStorage, SnapshotClient)",
+				"deployable": false
+			},
+			{
+				"name": "@snapback/contracts",
+				"path": "packages/contracts",
+				"type": "library",
+				"purpose": "Shared types, Zod schemas, FeatureManager",
+				"deployable": false
+			},
+			{
+				"name": "@snapback/events",
+				"path": "packages/events",
+				"type": "library",
+				"purpose": "Inter-process event bus (TCP pub/sub, JSON-RPC 2.0)",
+				"deployable": false
+			},
+			{
+				"name": "@snapback/infrastructure",
+				"path": "packages/infrastructure",
+				"type": "library",
+				"purpose": "Logging, metrics, tracing (Pino, Prometheus, OpenTelemetry)",
+				"deployable": false
+			},
+			{
+				"name": "@snapback/platform",
+				"path": "packages/platform",
+				"type": "library",
+				"purpose": "Database layer (Drizzle ORM, PostgreSQL schemas)",
+				"deployable": false
+			},
+			{
+				"name": "@snapback/auth",
+				"path": "packages/auth",
+				"type": "library",
+				"purpose": "Better Auth server instance",
+				"deployable": false
+			},
+			{
+				"name": "@snapback/auth-mock",
+				"path": "packages/auth-mock",
+				"type": "library",
+				"purpose": "Mock authentication for testing",
+				"deployable": false
+			},
+			{
+				"name": "@snapback/config",
+				"path": "packages/config",
+				"type": "library",
+				"purpose": "Centralized configuration defaults",
+				"deployable": false
+			},
+			{
+				"name": "@snapback/analytics",
+				"path": "packages/analytics",
+				"type": "library",
+				"purpose": "Analytics data collection",
+				"deployable": false
+			},
+			{
+				"name": "@snapback/integrations",
+				"path": "packages/integrations",
+				"type": "library",
+				"purpose": "External service integrations",
+				"deployable": false
+			},
+			{
+				"name": "@snapback/policy-engine",
+				"path": "packages/policy-engine",
+				"type": "library",
+				"purpose": "Rule evaluation engine",
+				"deployable": false
+			},
+			{
+				"name": "@snapback/scripts",
+				"path": "packages/scripts",
+				"type": "library",
+				"purpose": "Build and deployment scripts",
+				"deployable": false
+			},
+			{
+				"name": "@snapback/github-action",
+				"path": "packages/github-action",
+				"type": "library",
+				"purpose": "GitHub Actions integration",
+				"deployable": false
+			}
+		]
+	},
+	"database": {
+		"engine": "PostgreSQL",
+		"version": "16",
+		"docker_image": "postgres:16-alpine",
+		"orm": "Drizzle ORM",
+		"migration_system": "drizzle-kit",
+		"migration_path": "packages/platform/src/db/migrations/",
+		"migration_count": 15,
+		"schemas": {
+			"postgres": "Better Auth tables (users, sessions, accounts, etc.)",
+			"snapback": "Application tables (snapshots, sessions, analytics, orgs)"
+		},
+		"migrations": [
+			"0001_rls_policies.sql",
+			"0002_add_subscription_tier_to_user.sql",
+			"0003_create_org_daily_metrics.sql",
+			"0004_create_rule_violations.sql",
+			"0005_add_signing_secret_to_api_key_metadata.sql",
+			"0006_add_referral_code_to_waitlist.sql",
+			"0007_session_summary_fields.sql"
+		],
+		"docker_status": {
+			"containerized": true,
+			"health_check": true,
+			"volume_mounted": true,
+			"migration_automated": false,
+			"blocker": "Migrations require manual execution"
+		},
+		"supabase_services": {
+			"postgresql": {
+				"required": true,
+				"dockerized": true,
+				"status": "replaced_with_docker_postgres"
+			},
+			"storage": {
+				"required": false,
+				"dockerized": false,
+				"status": "uses_s3_compatible_storage"
+			},
+			"auth": {
+				"required": false,
+				"dockerized": false,
+				"status": "uses_better_auth_self_hosted"
+			},
+			"realtime": {
+				"required": false,
+				"dockerized": false,
+				"status": "not_used"
+			},
+			"edge_functions": {
+				"required": false,
+				"dockerized": false,
+				"status": "not_used"
+			}
+		}
+	},
+	"ports": {
+		"production": {
+			"web": 3000,
+			"api": 3001,
+			"mcp_server": 3002,
+			"postgres": 5432,
+			"redis": 6379
+		},
+		"development": {
+			"web": 3000,
+			"api": 3001,
+			"mcp_server": 3002,
+			"postgres": 5432,
+			"redis": 6379,
+			"prisma_studio": 5555,
+			"mailhog_web": 8025,
+			"mailhog_smtp": 1025,
+			"debug": 9229
+		},
+		"conflicts": {
+			"detected": false,
+			"notes": "All ports are standard and unlikely to conflict"
+		}
+	},
+	"external_services": {
+		"critical": [
+			{
+				"name": "PostgreSQL",
+				"status": "dockerized",
+				"required": true,
+				"can_mock": false
+			},
+			{
+				"name": "Redis",
+				"status": "dockerized",
+				"required": false,
+				"can_mock": true,
+				"note": "Optional but recommended for caching"
+			},
+			{
+				"name": "Better Auth",
+				"status": "self_hosted",
+				"required": true,
+				"can_mock": false,
+				"note": "No external dependency - uses PostgreSQL"
+			}
+		],
+		"optional": [
+			{
+				"name": "Stripe",
+				"apps": ["web"],
+				"purpose": "Payments",
+				"can_mock": true,
+				"mock_strategy": "Use test mode keys",
+				"priority": "medium"
+			},
+			{
+				"name": "PostHog",
+				"apps": ["web"],
+				"purpose": "Analytics",
+				"can_mock": true,
+				"mock_strategy": "Disable or self-host PostHog container",
+				"priority": "low"
+			},
+			{
+				"name": "Sentry",
+				"apps": ["web", "api"],
+				"purpose": "Error tracking",
+				"can_mock": true,
+				"mock_strategy": "Disable in development",
+				"priority": "low"
+			},
+			{
+				"name": "Resend",
+				"apps": ["web", "api"],
+				"purpose": "Email delivery",
+				"can_mock": true,
+				"mock_strategy": "Use Mailhog in development (already in docker-compose.dev.yml)",
+				"priority": "medium"
+			},
+			{
+				"name": "GitHub OAuth",
+				"apps": ["web"],
+				"purpose": "Social login",
+				"can_mock": true,
+				"mock_strategy": "Skip in development",
+				"priority": "low"
+			},
+			{
+				"name": "Google OAuth",
+				"apps": ["web"],
+				"purpose": "Social login",
+				"can_mock": true,
+				"mock_strategy": "Skip in development",
+				"priority": "low"
+			},
+			{
+				"name": "OpenAI",
+				"apps": ["api"],
+				"purpose": "AI features",
+				"can_mock": true,
+				"mock_strategy": "Mock API responses",
+				"priority": "medium"
+			},
+			{
+				"name": "HubSpot",
+				"apps": ["web"],
+				"purpose": "CRM integration",
+				"can_mock": true,
+				"mock_strategy": "Skip in development",
+				"priority": "low"
+			},
+			{
+				"name": "S3/Storage",
+				"apps": ["web"],
+				"purpose": "File uploads",
+				"can_mock": true,
+				"mock_strategy": "Use local filesystem or MinIO",
+				"priority": "medium"
+			}
+		]
+	},
+	"native_dependencies": [
+		{
+			"package": "better-sqlite3",
+			"used_by": ["apps/mcp-server", "apps/vscode"],
+			"os_specific": true,
+			"build_required": true,
+			"docker_strategy": "Rebuild for Alpine Linux with python3, make, g++, sqlite-dev",
+			"blocker": true
+		},
+		{
+			"package": "@node-rs/argon2",
+			"used_by": ["apps/web"],
+			"os_specific": true,
+			"build_required": true,
+			"docker_strategy": "Pre-compiled Rust binary works with libc6-compat",
+			"blocker": false
+		},
+		{
+			"package": "esbuild",
+			"used_by": ["apps/vscode"],
+			"os_specific": true,
+			"build_required": false,
+			"docker_strategy": "Pre-compiled binaries included",
+			"blocker": false
+		},
+		{
+			"package": "sharp",
+			"used_by": ["apps/web"],
+			"os_specific": true,
+			"build_required": false,
+			"docker_strategy": "Excluded from Docker build (.dockerignore)",
+			"blocker": false
+		}
+	],
+	"testing": {
+		"framework": "Vitest",
+		"coverage_target": "90%",
+		"types": ["unit", "integration", "e2e", "performance"],
+		"locations": {
+			"integration": "test/integration/",
+			"package_tests": "packages/*/test/",
+			"web_tests": "apps/web/test/",
+			"vscode_tests": "apps/vscode/test/"
+		},
+		"commands": {
+			"all": "pnpm test",
+			"changed": "pnpm test:changed",
+			"coverage": "pnpm test:coverage"
+		},
+		"ci_cd": {
+			"pre_commit_hooks": "lefthook",
+			"commit_format": "conventional commits",
+			"boundary_tests": "API layer isolation tests (5 tests, 100% compliance)"
+		}
+	},
+	"docker_infrastructure": {
+		"status": "partially_complete",
+		"production": {
+			"file": "docker-compose.yml",
+			"services": ["postgres", "redis", "api", "web"],
+			"network": "app-network (172.20.0.0/16)",
+			"volumes": ["postgres_data", "redis_data"],
+			"security": {
+				"non_root_users": true,
+				"health_checks": true,
+				"resource_limits": true,
+				"tmpfs": true,
+				"security_opts": ["no-new-privileges"]
+			}
+		},
+		"development": {
+			"file": "docker-compose.dev.yml",
+			"services": ["postgres", "redis", "web", "prisma-studio", "mailhog"],
+			"features": ["hot_reload", "debugging", "source_mounting"],
+			"profiles": {
+				"default": ["postgres", "redis", "web"],
+				"tools": ["prisma-studio", "mailhog"]
+			}
+		},
+		"dockerfiles": {
+			"web": {
+				"file": "Dockerfile",
+				"stages": ["base", "deps", "pruner", "builder", "runner"],
+				"optimization": ["multi_stage", "layer_caching", "turbo_prune"],
+				"status": "production_ready"
+			},
+			"api": {
+				"file": "apps/api/Dockerfile",
+				"stages": ["base", "deps", "builder", "runner"],
+				"optimization": ["multi_stage", "layer_caching"],
+				"status": "production_ready"
+			},
+			"mcp_server": {
+				"file": "apps/mcp-server/Dockerfile",
+				"status": "exists_but_not_integrated",
+				"blocker": "Not added to docker-compose.yml"
+			},
+			"nginx": {
+				"file": "docker-compose.nginx.yml",
+				"status": "incomplete",
+				"blocker": "Missing SSL, rate limiting, full configuration"
+			}
+		},
+		"missing": [
+			"MCP server service in docker-compose.yml",
+			"Database migration automation",
+			"Environment variable validation",
+			"Complete NGINX reverse proxy",
+			"Monitoring stack (Prometheus, Grafana)",
+			"Backup automation"
+		]
+	},
+	"turborepo": {
+		"config_file": "turbo.json",
+		"tasks": {
+			"build": {
+				"depends_on": ["build:package", "^generate", "^build"],
+				"outputs": ["dist/**", "*.tsbuildinfo", ".next/**"]
+			},
+			"generate": {
+				"cache": false,
+				"required_before_build": true
+			},
+			"dev": {
+				"cache": false,
+				"depends_on": ["^generate"],
+				"persistent": true
+			},
+			"start": {
+				"cache": false,
+				"depends_on": ["^generate", "^build"],
+				"persistent": true
+			}
+		},
+		"docker_integration": {
+			"prune_command": "turbo prune web --docker",
+			"status": "implemented_in_dockerfile"
+		}
+	},
+	"blockers": [
+		{
+			"id": "BLOCKER-001",
+			"title": "Database migrations not automated",
+			"severity": "critical",
+			"component": "database",
+			"description": "Migrations must be run manually - not integrated into Docker startup",
+			"impact": "Fresh deployments will fail without manual intervention",
+			"solution": "Add migration step to Dockerfile or entrypoint script",
+			"estimated_effort": "2 hours"
+		},
+		{
+			"id": "BLOCKER-002",
+			"title": "MCP server not in docker-compose",
+			"severity": "high",
+			"component": "mcp-server",
+			"description": "Dockerfile exists but service not added to docker-compose.yml",
+			"impact": "MCP server cannot be deployed with Docker stack",
+			"solution": "Add mcp-server service to docker-compose.yml with port 3002",
+			"estimated_effort": "1 hour"
+		},
+		{
+			"id": "BLOCKER-003",
+			"title": "better-sqlite3 native dependency",
+			"severity": "high",
+			"component": "mcp-server",
+			"description": "better-sqlite3 requires native compilation for Alpine Linux",
+			"impact": "MCP server will fail to start in Docker",
+			"solution": "Add build tools to Dockerfile and rebuild better-sqlite3",
+			"estimated_effort": "2 hours"
+		},
+		{
+			"id": "BLOCKER-004",
+			"title": "No environment variable validation",
+			"severity": "medium",
+			"component": "all",
+			"description": "Services start without validating required env vars",
+			"impact": "Silent failures, difficult debugging",
+			"solution": "Add startup validation script",
+			"estimated_effort": "3 hours"
+		},
+		{
+			"id": "BLOCKER-005",
+			"title": "NGINX configuration incomplete",
+			"severity": "medium",
+			"component": "nginx",
+			"description": "docker-compose.nginx.yml exists but lacks SSL, rate limiting",
+			"impact": "No reverse proxy for production deployment",
+			"solution": "Complete NGINX configuration with SSL, rate limiting, caching",
+			"estimated_effort": "4 hours"
+		}
+	],
+	"quick_wins": [
+		{
+			"id": "WIN-001",
+			"title": "Web app fully dockerized",
+			"component": "web",
+			"description": "Next.js app with multi-stage build, security hardening, health checks",
+			"deployment_ready": true
+		},
+		{
+			"id": "WIN-002",
+			"title": "API service fully dockerized",
+			"component": "api",
+			"description": "Hono API with optimized build, health endpoint, resource limits",
+			"deployment_ready": true
+		},
+		{
+			"id": "WIN-003",
+			"title": "PostgreSQL with backups",
+			"component": "postgres",
+			"description": "Volume-mounted, health-checked, production-ready",
+			"deployment_ready": true
+		},
+		{
+			"id": "WIN-004",
+			"title": "Redis caching layer",
+			"component": "redis",
+			"description": "Configured with LRU eviction, health checks",
+			"deployment_ready": true
+		},
+		{
+			"id": "WIN-005",
+			"title": "Development environment",
+			"component": "dev",
+			"description": "Hot reload, debugging, Prisma Studio, Mailhog all working",
+			"deployment_ready": true
+		},
+		{
+			"id": "WIN-006",
+			"title": "Security hardening",
+			"component": "all",
+			"description": "Non-root users, tmpfs, resource limits, security options",
+			"deployment_ready": true
+		}
+	],
+	"recommendations": {
+		"critical": [
+			"Automate database migrations in Docker entrypoint",
+			"Add MCP server to docker-compose.yml",
+			"Implement environment variable validation"
+		],
+		"important": [
+			"Complete NGINX reverse proxy configuration",
+			"Add database backup automation",
+			"Implement secrets management (Docker secrets or Vault)",
+			"Add monitoring stack (Prometheus + Grafana)"
+		],
+		"nice_to_have": [
+			"Multi-architecture builds (amd64 + arm64)",
+			"VSCode devcontainer configuration",
+			"Development seed data automation",
+			"CI/CD pipeline integration"
+		]
+	},
+	"deployment_readiness": {
+		"web": {
+			"docker_ready": true,
+			"production_ready": true,
+			"blockers": []
+		},
+		"api": {
+			"docker_ready": true,
+			"production_ready": true,
+			"blockers": []
+		},
+		"mcp_server": {
+			"docker_ready": false,
+			"production_ready": false,
+			"blockers": ["BLOCKER-002", "BLOCKER-003"]
+		},
+		"database": {
+			"docker_ready": true,
+			"production_ready": false,
+			"blockers": ["BLOCKER-001"]
+		},
+		"overall": {
+			"status": "partial",
+			"percentage": 60,
+			"estimated_completion": "1-2 days for blockers, 3-5 days for production hardening"
+		}
+	}
+}

@@ -1,0 +1,31 @@
+{
+	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
+	"extends": ["config:recommended"],
+	"schedule": ["before 5am on Monday"],
+	"labels": ["dependencies", "renovate"],
+	"packageRules": [
+		{
+			"matchDatasources": ["npm"],
+			"matchUpdateTypes": ["minor", "patch"],
+			"automerge": true,
+			"automergeType": "pr",
+			"minimumReleaseAge": "3 days"
+		},
+		{
+			"matchPackageNames": ["@types/**"],
+			"groupName": "TypeScript Definitions"
+		},
+		{
+			"matchPackagePatterns": ["^@aws-sdk/"],
+			"groupName": "AWS SDK"
+		},
+		{
+			"matchPackageNames": ["react", "react-dom"],
+			"groupName": "React"
+		}
+	],
+	"vulnerabilityAlerts": {
+		"labels": ["security", "critical"],
+		"schedule": ["at any time"]
+	}
+}

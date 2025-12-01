@@ -1,0 +1,22 @@
+// lib/icons.ts - Only export used icons
+export {
+	AlertTriangleIcon,
+	ArrowRightIcon,
+	CheckCircleIcon,
+	CheckIcon,
+	ChevronDownIcon,
+	ChevronUpIcon,
+	CodeIcon,
+	CpuIcon,
+	FileIcon,
+	FileTextIcon,
+	GlobeIcon,
+	LayersIcon,
+	LockIcon,
+	RocketIcon,
+	RotateCcwIcon,
+	ShieldCheckIcon,
+	TerminalIcon,
+	UsersIcon,
+	ZapIcon,
+} from "lucide-react";

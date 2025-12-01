@@ -1,0 +1,120 @@
+{
+	"name": "@snapback/platform",
+	"version": "0.1.0",
+	"dependencies": {
+		"@paralleldrive/cuid2": "catalog:",
+		"@sindresorhus/slugify": "catalog:",
+		"@snapback/config": "workspace:*",
+		"@snapback/contracts": "workspace:*",
+		"@snapback/infrastructure": "workspace:*",
+		"@supabase/ssr": "catalog:",
+		"@supabase/supabase-js": "catalog:",
+		"drizzle-orm": "catalog:",
+		"drizzle-zod": "catalog:",
+		"nanoid": "catalog:",
+		"zod": "catalog:"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "catalog:",
+		"@snapback/tsconfig": "workspace:*",
+		"@types/node": "catalog:",
+		"@types/pg": "catalog:",
+		"@vitest/ui": "catalog:",
+		"diff": "catalog:",
+		"dotenv-cli": "catalog:",
+		"drizzle-kit": "catalog:",
+		"happy-dom": "catalog:",
+		"pg": "catalog:",
+		"postgres": "^3.4.7",
+		"tsup": "catalog:",
+		"vitest": "catalog:"
+	},
+	"peerDependencies": {
+		"next": "catalog:"
+	},
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		},
+		"./db/client": {
+			"types": "./dist/db/client.d.ts",
+			"default": "./dist/db/client.js"
+		},
+		"./db/queries": {
+			"types": "./dist/db/queries/index.d.ts",
+			"default": "./dist/db/queries/index.js"
+		},
+		"./db/zod": {
+			"types": "./dist/db/zod.d.ts",
+			"default": "./dist/db/zod.js"
+		},
+		"./db/schema/postgres": {
+			"types": "./dist/db/schema/postgres.d.ts",
+			"default": "./dist/db/schema/postgres.js"
+		},
+		"./db/schema/snapback": {
+			"types": "./dist/db/schema/snapback/index.d.ts",
+			"default": "./dist/db/schema/snapback/index.js"
+		},
+		"./db/adapters/TelemetrySinkDb": {
+			"types": "./dist/db/adapters/TelemetrySinkDb.d.ts",
+			"default": "./dist/db/adapters/TelemetrySinkDb.js"
+		},
+		"./src/db/schema/snapback": "./src/db/schema/snapback/index.ts",
+		"./src/db/schema/postgres": "./src/db/schema/postgres.ts",
+		"./src/client": "./src/client/index.ts"
+	},
+	"main": "dist/index.js",
+	"private": true,
+	"scripts": {
+		"build": "tsup && tsc --build",
+		"check": "biome check .",
+		"clean": "rm -rf dist .tsbuildinfo",
+		"db:generate": "drizzle-kit generate",
+		"db:migrate": "drizzle-kit migrate",
+		"db:push": "drizzle-kit push",
+		"db:studio": "drizzle-kit studio",
+		"format": "biome format --write .",
+		"lint": "biome lint .",
+		"lint:fix": "biome lint --fix .",
+		"postbuild": "test -f dist/index.d.ts || (echo 'Warning: Type declarations not found in dist/ - this package uses src/ directly' && exit 0)",
+		"test": "dotenv -e .env.local -- vitest run",
+		"test:coverage": "vitest run --coverage",
+		"test:watch": "vitest watch",
+		"typecheck": "tsc --noEmit"
+	},
+	"type": "module",
+	"types": "dist/index.d.ts",
+	"typesVersions": {
+		"*": {
+			"db/client": [
+				"./dist/db/client.d.ts"
+			],
+			"db/queries": [
+				"./dist/db/queries/index.d.ts"
+			],
+			"db/zod": [
+				"./dist/db/zod.d.ts"
+			],
+			"db/schema/postgres": [
+				"./dist/db/schema/postgres.d.ts"
+			],
+			"db/schema/snapback": [
+				"./dist/db/schema/snapback/index.d.ts"
+			],
+			"db/adapters/TelemetrySinkDb": [
+				"./dist/db/adapters/TelemetrySinkDb.d.ts"
+			],
+			"src/db/schema/snapback": [
+				"./src/db/schema/snapback/index.ts"
+			],
+			"src/db/schema/postgres": [
+				"./src/db/schema/postgres.ts"
+			],
+			"src/client": [
+				"./src/client/index.ts"
+			]
+		}
+	}
+}

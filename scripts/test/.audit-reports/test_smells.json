@@ -1,0 +1,9 @@
+[
+	{
+		"name": "empty test",
+		"file": "/apps/vscode/test/unit/path-ops.spec.ts",
+		"line": 5,
+		"severity": "error",
+		"message": "Test contains no assertions"
+	}
+]

@@ -1,0 +1,26 @@
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant W as Web Frontend
+    participant A as API Service
+    participant P as Platform Service
+    participant M as MCP Server
+    participant D as Database
+    participant S as Storage
+
+    U->>W: Initiate snapshot
+    W->>A: POST /api/snapshot
+    A->>P: Create snapshot record
+    P->>D: Insert snapshot metadata
+    D-->>P: Snapshot ID
+    P-->>A: Snapshot ID
+    A->>M: Request snapshot creation
+    M->>S: Store snapshot data
+    S-->>M: Storage confirmation
+    M->>P: Update snapshot status
+    P->>D: Update snapshot record
+    D-->>P: Confirmation
+    P-->>A: Updated snapshot
+    A-->>W: Snapshot details
+    W-->>U: Display snapshot confirmation
+```

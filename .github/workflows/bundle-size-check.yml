@@ -1,0 +1,127 @@
+name: Bundle Size Check
+
+on:
+  pull_request:
+    paths:
+      - 'apps/vscode/**'
+      - 'packages/**'
+      - 'pnpm-lock.yaml'
+  push:
+    branches:
+      - main
+      - 'claude/**'
+
+jobs:
+  check-bundle-size:
+    name: Check VSCode Extension Bundle Size
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10.14.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build packages
+        run: pnpm build --filter="@snapback/*" --filter="!@snapback/web"
+
+      - name: Build VSCode extension
+        run: pnpm --filter @snapback/vscode run compile:skip-check
+
+      - name: Check bundle size
+      - name: Verify with size-limit
+        run: pnpm -F snapback-vscode size
+        id: check-size
+        run: |
+          BUNDLE_PATH="apps/vscode/dist/extension.js"
+
+          if [ ! -f "$BUNDLE_PATH" ]; then
+            echo "❌ Bundle file not found: $BUNDLE_PATH"
+            exit 1
+          fi
+
+          SIZE=$(stat -c%s "$BUNDLE_PATH")
+          SIZE_KB=$((SIZE / 1024))
+          SIZE_MB=$(echo "scale=2; $SIZE / 1024 / 1024" | bc)
+
+          MAX_SIZE=2097152  # 2MB in bytes
+          MAX_KB=2048
+
+          echo "bundle_size=$SIZE" >> $GITHUB_OUTPUT
+          echo "bundle_size_kb=$SIZE_KB" >> $GITHUB_OUTPUT
+          echo "bundle_size_mb=$SIZE_MB" >> $GITHUB_OUTPUT
+
+          if [ $SIZE -gt $MAX_SIZE ]; then
+            echo "status=failed" >> $GITHUB_OUTPUT
+            echo "❌ Bundle size check FAILED"
+            echo "   Current: ${SIZE_MB}MB (${SIZE_KB}KB)"
+            echo "   Maximum: 2.00MB (${MAX_KB}KB)"
+            echo "   Overage: $((SIZE_KB - MAX_KB))KB"
+            exit 1
+          else
+            echo "status=passed" >> $GITHUB_OUTPUT
+            PERCENT=$(echo "scale=1; $SIZE_KB * 100 / $MAX_KB" | bc)
+            echo "✅ Bundle size check PASSED"
+            echo "   Current: ${SIZE_MB}MB (${SIZE_KB}KB)"
+            echo "   Maximum: 2.00MB (${MAX_KB}KB)"
+            echo "   Usage: ${PERCENT}%"
+          fi
+
+      - name: Comment on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const status = '${{ steps.check-size.outputs.status }}';
+            const sizeKB = '${{ steps.check-size.outputs.bundle_size_kb }}';
+            const sizeMB = '${{ steps.check-size.outputs.bundle_size_mb }}';
+            const maxKB = 2048;
+            const percent = Math.round((sizeKB / maxKB) * 100);
+
+            const icon = status === 'passed' ? '✅' : '❌';
+            const emoji = status === 'passed' ? '🎉' : '⚠️';
+
+            const body = `## ${icon} Bundle Size Check
+
+            ${emoji} **Status**: ${status === 'passed' ? 'PASSED' : 'FAILED'}
+
+            | Metric | Value |
+            |--------|-------|
+            | Current Size | ${sizeMB}MB (${sizeKB}KB) |
+            | Maximum Size | 2.00MB (2048KB) |
+            | Usage | ${percent}% |
+            | Status | ${status === 'passed' ? '✅ Within budget' : '❌ Exceeds budget'} |
+
+            ${status === 'failed' ? `
+            ### 🔧 Bundle Too Large!
+
+            The bundle exceeds the 2MB budget by **${sizeKB - maxKB}KB**.
+
+            **Quick fixes**:
+            - Add selective exports to \`@snapback/core\`
+            - Lazy load heavy dependencies
+            - Enable advanced minification
+            - Check for accidentally bundled dev dependencies
+
+            See \`ARCHITECTURE_REVIEW_FINDINGS.md\` for details.
+            ` : ''}
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.name,
+              body: body
+            });

@@ -1,0 +1,15 @@
+export { FinalCTA } from "./final-cta";
+export { GitVsSnapback } from "./git-vs-snapback";
+export { HeroSection } from "./hero-section";
+export { HowItWorks } from "./how-it-works";
+export { InteractiveDemo } from "./interactive-demo";
+export { PrivacySection } from "./privacy-section";
+export { ProblemSection } from "./problem-section";
+export { SocialProofSection } from "./social-proof-section";
+export { TeamsSection } from "./teams-section";
+export { TrustBar } from "./trust-bar";
+export { OriginStory } from "./origin-story";
+export { CorePrinciples } from "./core-principles";
+export { Metrics } from "./metrics";
+export { Roadmap } from "./roadmap";
+export { Community } from "./community";

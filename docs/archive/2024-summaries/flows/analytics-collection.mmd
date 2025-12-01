@@ -1,0 +1,14 @@
+```mermaid
+sequenceDiagram
+    participant W as Web Frontend
+    participant A as Analytics Service
+    participant E as Events Service
+    participant S as Storage
+
+    W->>E: Emit user event
+    E->>A: Forward event data
+    A->>A: Process and enrich event
+    A->>S: Store telemetry data
+    S-->>A: Storage confirmation
+    A-->>E: Processing confirmation
+```

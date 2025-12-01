@@ -1,0 +1,31 @@
+{
+	"name": "@snapback/tsconfig",
+	"version": "0.0.0",
+	"devDependencies": {
+		"@biomejs/biome": "catalog:"
+	},
+	"exports": {
+		".": "./base.json",
+		"./base": "./base.json",
+		"./package": "./base.json",
+		"./base.json": "./base.json",
+		"./nextjs.json": "./nextjs.json",
+		"./react-library.json": "./react-library.json",
+		"./app": "./app.json",
+		"./cli": "./cli.json",
+		"./extension": "./extension.json"
+	},
+	"files": [
+		"base.json",
+		"nextjs.json",
+		"react-library.json",
+		"app.json",
+		"cli.json",
+		"extension.json"
+	],
+	"main": "./base.json",
+	"private": true,
+	"publishConfig": {
+		"access": "public"
+	}
+}

@@ -1,0 +1,292 @@
+# Development Docker Compose Configuration
+# Full-stack architecture with subdomain routing, hot reload, and debugging support
+
+services:
+  # ===== DATABASE =====
+  postgres:
+    image: postgres:16-alpine
+    container_name: snapback-postgres
+    env_file:
+      - .env.docker
+      - .env.docker.local # Override with local credentials
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./packages/platform/drizzle/migrations:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - snapback
+
+  # ===== REDIS =====
+  redis:
+    image: redis:7-alpine
+    container_name: snapback-redis
+    command: redis-server --appendonly no --maxmemory 128mb --maxmemory-policy allkeys-lru
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - snapback
+
+  # ===== DATABASE MIGRATIONS =====
+  migrations:
+    image: postgres:16-alpine
+    container_name: snapback-migrations
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - ./packages/platform/drizzle/migrations:/migrations:ro
+      - ./ops/scripts/run-migrations.sh:/run-migrations.sh:ro
+    command: sh /run-migrations.sh
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - snapback
+    restart: "no" # Only run once on startup
+
+  # ===== API (Hono - Fly.io in production) =====
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile.dev
+    container_name: snapback-api
+    env_file:
+      - .env.docker
+      - .env.docker.local # Override with local credentials
+    environment:
+      PORT: 8080
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      REDIS_URL: redis://redis:6379
+      BETTER_AUTH_URL: http://api.snapback.dev:8080
+      # CORS - allow all *.snapback.dev subdomains in dev
+      CORS_ORIGIN: http://snapback.dev:3000,http://console.snapback.dev:3000,http://docs.snapback.dev:3001,http://mcp.snapback.dev:8081
+    ports:
+      - "8080:8080" # api.snapback.dev:8080
+      - "9230:9230" # Debugger
+    volumes:
+      - ./apps/api/src:/app/apps/api/src:cached
+      - ./packages:/app/packages:cached
+      - /app/node_modules
+      - /app/apps/api/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      migrations:
+        condition: service_completed_successfully
+    networks:
+      - snapback
+    restart: unless-stopped
+
+  # ===== MCP SERVER (Fly.io in production) =====
+  mcp:
+    build:
+      context: .
+      dockerfile: apps/mcp-server/Dockerfile.dev
+    container_name: snapback-mcp
+    env_file:
+      - .env.docker
+      - .env.docker.local # Override with local credentials
+    environment:
+      PORT: 8081
+      API_URL: http://api:8080
+      MCP_PUBLIC_URL: http://mcp.snapback.dev:8081
+    ports:
+      - "8081:8081" # mcp.snapback.dev:8081
+      - "9231:9231" # Debugger
+    volumes:
+      - ./apps/mcp-server/src:/app/apps/mcp-server/src:cached
+      - ./packages:/app/packages:cached
+      - /app/node_modules
+      - /app/apps/mcp-server/node_modules
+    depends_on:
+      - api
+    networks:
+      - snapback
+    restart: unless-stopped
+
+  # ===== WEB (Next.js - Vercel in production) =====
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile.dev
+    container_name: snapback-web
+    env_file:
+      - .env.docker
+      - .env.docker.local # Override with local credentials
+    environment:
+      # Client-side (browser) URLs
+      NEXT_PUBLIC_API_URL: http://api.snapback.dev:8080
+      NEXT_PUBLIC_MCP_URL: http://mcp.snapback.dev:8081
+      NEXT_PUBLIC_APP_URL: http://console.snapback.dev:3000
+      NEXT_PUBLIC_SITE_URL: http://snapback.dev:3000
+      NEXT_PUBLIC_ROOT_DOMAIN: snapback.dev
+
+      # Server-side (internal Docker network) URLs
+      API_URL: http://api:8080
+      MCP_URL: http://mcp:8081
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+
+      # Auth
+      BETTER_AUTH_URL: http://api.snapback.dev:8080
+      COOKIE_DOMAIN: .snapback.dev
+
+      # Dev optimizations
+      NODE_ENV: development
+      CHOKIDAR_USEPOLLING: "true"
+      WATCHPACK_POLLING: "true"
+      NEXT_TELEMETRY_DISABLED: 1
+    ports:
+      - "3000:3000" # snapback.dev:3000 + console.snapback.dev:3000
+      - "9229:9229" # Debugger
+    volumes:
+      - ./apps/web:/app/apps/web:cached
+      - ./packages:/app/packages:cached
+      - /app/apps/web/.next
+      - /app/node_modules
+      - /app/apps/web/node_modules
+    depends_on:
+      - api
+    networks:
+      - snapback
+    restart: unless-stopped
+
+  # ===== DOCS (Next.js - Vercel in production) =====
+  docs:
+    build:
+      context: .
+      dockerfile: apps/docs/Dockerfile.dev
+    container_name: snapback-docs
+    env_file:
+      - .env.docker
+      - .env.docker.local # Override with local credentials
+    environment:
+      NEXT_PUBLIC_SITE_URL: http://snapback.dev:3000
+      NEXT_PUBLIC_ROOT_DOMAIN: snapback.dev
+      NEXT_PUBLIC_GOOGLE_ANALYTICS_ID: ${NEXT_PUBLIC_GOOGLE_ANALYTICS_ID}
+      NODE_ENV: development
+      CHOKIDAR_USEPOLLING: "true"
+      WATCHPACK_POLLING: "true"
+      NEXT_TELEMETRY_DISABLED: 1
+    ports:
+      - "3001:3000" # docs.snapback.dev:3001
+      - "9232:9229" # Debugger
+    volumes:
+      - ./apps/docs:/app/apps/docs:cached
+      - ./packages:/app/packages:cached
+      - /app/apps/docs/.next
+      - /app/node_modules
+      - /app/apps/docs/node_modules
+    networks:
+      - snapback
+    restart: unless-stopped
+
+  # ===== MAILHOG (Email Testing) =====
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: snapback-mailhog
+    ports:
+      - "8025:8025" # Web UI: http://localhost:8025
+      - "1025:1025" # SMTP
+    networks:
+      - snapback
+
+  # ===== NGINX (Reverse Proxy for Subdomains) =====
+  nginx:
+    image: nginx:alpine
+    container_name: snapback-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./ops/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - web
+      - docs
+      - api
+      - mcp
+    networks:
+      - snapback
+    restart: unless-stopped
+
+  # ===== PROMETHEUS (Metrics Collection) =====
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: snapback-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./ops/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.console.libraries=/etc/prometheus/console_libraries"
+      - "--web.console.templates=/etc/prometheus/consoles"
+      - "--storage.tsdb.retention.time=200h"
+      - "--web.enable-lifecycle"
+    networks:
+      - snapback
+    restart: unless-stopped
+
+  # ===== GRAFANA (Metrics Visualization) =====
+  grafana:
+    image: grafana/grafana-enterprise
+    container_name: snapback-grafana
+    ports:
+      - "3002:3000"
+    volumes:
+      - ./ops/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./ops/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    networks:
+      - snapback
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+
+  # ===== JAEGER (Distributed Tracing) =====
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: snapback-jaeger
+    ports:
+      - "16686:16686" # UI
+      - "14268:14268" # Accepts Zipkin spans
+      - "6831:6831/udp" # Accepts Jaeger spans
+    environment:
+      - COLLECTOR_ZIPKIN_HOST_PORT=:9411
+    networks:
+      - snapback
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+  prometheus-data:
+  grafana-data:
+
+networks:
+  snapback:
+    driver: bridge

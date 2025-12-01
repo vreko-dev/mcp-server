@@ -1,0 +1,31 @@
+name: Monorepo CI
+
+on:
+    push:
+        branches: [main, dev]
+    pull_request:
+        branches: [main, dev]
+
+jobs:
+    vscode:
+        name: VS Code Extension
+        uses: ./.github/workflows/vscode-validate.yml
+        with:
+            run-performance-tests: true
+            run-storage-tests: true
+
+    web:
+        name: Web App
+        uses: ./.github/workflows/web-validate.yml
+
+    cli:
+        name: CLI
+        uses: ./.github/workflows/cli-validate.yml
+
+    mcp:
+        name: MCP Server
+        uses: ./.github/workflows/mcp-validate.yml
+
+    security:
+        name: Security Scan
+        uses: ./.github/workflows/security-scan.yml

@@ -1,0 +1,201 @@
+name: VS Code Extension - Test Suite
+
+on:
+    workflow_call:
+    push:
+        branches: [main, dev]
+        paths:
+            - "apps/vscode/**"
+            - "packages/core/**"
+            - "packages/storage/**"
+            - "packages/contracts/**"
+            - "packages/telemetry/**"
+            - ".github/workflows/vscode-test.yml"
+    pull_request:
+        branches: [main, dev]
+        paths:
+            - "apps/vscode/**"
+            - "packages/core/**"
+            - "packages/storage/**"
+            - "packages/contracts/**"
+            - "packages/telemetry/**"
+
+jobs:
+    test:
+        name: Test Suite
+        runs-on: ${{ matrix.os }}
+
+        strategy:
+            matrix:
+                os: [ubuntu-latest, windows-latest, macos-latest]
+                node-version: [20.x]
+            fail-fast: false
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Toolchain setup
+              uses: ./.github/actions/setup-pnpm
+              with:
+                  node-version: ${{ matrix.node-version }}
+                  pnpm-version: "10.14.0"
+                  install: "false"
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Build dependencies
+              run: |
+                  pnpm --filter @snapback/contracts build
+                  pnpm --filter @snapback/core build
+                  pnpm --filter @snapback/storage build
+                  pnpm --filter @snapback/telemetry build
+
+            - name: Type check
+              run: pnpm --filter ./apps/vscode run check-types
+
+            - name: Lint
+              run: pnpm --filter ./apps/vscode run lint
+
+            - name: Run unit tests
+              run: pnpm --filter ./apps/vscode run test:unit
+              env:
+                  CI: true
+
+            - name: Run integration tests
+              run: pnpm --filter ./apps/vscode run test:integration
+              env:
+                  CI: true
+
+            - name: Run storage tests
+              run: pnpm --filter ./apps/vscode run test:storage
+              continue-on-error: true # Storage tests are specialized
+
+            - name: Run performance tests
+              run: pnpm --filter ./apps/vscode run test:performance
+              continue-on-error: true # Performance tests may be environment-dependent
+
+            - name: Generate coverage report
+              if: matrix.os == 'ubuntu-latest'
+              run: pnpm --filter ./apps/vscode run test:coverage
+
+            - name: Upload coverage to Codecov
+              if: matrix.os == 'ubuntu-latest'
+              uses: codecov/codecov-action@v4
+              with:
+                  files: ./apps/vscode/coverage/lcov.info
+                  flags: vscode-extension
+                  name: vscode-${{ matrix.node-version }}
+                  fail_ci_if_error: false
+              env:
+                  CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+            - name: Build extension
+              run: pnpm --filter ./apps/vscode run compile
+
+            - name: Check bundle size
+              run: pnpm --filter ./apps/vscode run check:bundle-size
+
+            - name: Verify no source maps in production
+              if: matrix.os == 'ubuntu-latest'
+              run: |
+                  if [ -f apps/vscode/dist/extension.js.map ]; then
+                    echo "❌ Source map found in production build!"
+                    exit 1
+                  fi
+                  echo "✅ No source maps in production build"
+
+            - name: Upload test results
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: test-results-${{ matrix.os }}-${{ matrix.node-version }}
+                  path: |
+                      apps/vscode/coverage/
+                      apps/vscode/test-results/
+                  retention-days: 7
+
+    bundle-analysis:
+        name: Bundle Size Analysis
+        runs-on: ubuntu-latest
+        needs: test
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Toolchain setup
+              uses: ./.github/actions/setup-pnpm
+              with:
+                  pnpm-version: "10.14.0"
+                  node-version: "20.x"
+                  install: "false"
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Build dependencies
+              run: |
+                  pnpm --filter @snapback/contracts build
+                  pnpm --filter @snapback/core build
+                  pnpm --filter @snapback/storage build
+                  pnpm --filter @snapback/telemetry build
+
+            - name: Build extension
+              run: pnpm --filter ./apps/vscode run package
+
+            - name: Analyze bundle size
+              run: pnpm --filter ./apps/vscode run check:bundle-size
+
+            - name: Comment bundle size on PR
+              if: github.event_name == 'pull_request'
+              uses: actions/github-script@v7
+              with:
+                  script: |
+                      const fs = require('fs');
+                      const stats = fs.statSync('apps/vscode/dist/extension.js');
+                      const sizeKB = Math.round(stats.size / 1024);
+                      const sizeMB = (stats.size / 1024 / 1024).toFixed(2);
+                      const maxSizeMB = 1.0;
+
+                      const status = stats.size <= maxSizeMB * 1024 * 1024 ? '✅' : '❌';
+
+                      const body = `## 📦 Bundle Size Report
+
+                      **Extension Bundle**: ${status} ${sizeKB} KB (${sizeMB} MB)
+                      **Limit**: ${maxSizeMB} MB
+                      **Status**: ${stats.size <= maxSizeMB * 1024 * 1024 ? 'PASS' : 'FAIL - Bundle too large!'}
+
+                      ${stats.size > maxSizeMB * 1024 * 1024 ? '⚠️ Bundle size exceeds limit. Please optimize!' : ''}
+                      `;
+
+                      github.rest.issues.createComment({
+                        issue_number: context.issue.number,
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        body: body
+                      });
+
+    quality-gates:
+        name: Quality Gate Summary
+        runs-on: ubuntu-latest
+        needs: [test, bundle-analysis]
+        if: always()
+
+        steps:
+            - name: Check test results
+              run: |
+                  if [ "${{ needs.test.result }}" != "success" ]; then
+                    echo "❌ Tests failed"
+                    exit 1
+                  fi
+
+                  if [ "${{ needs.bundle-analysis.result }}" != "success" ]; then
+                    echo "❌ Bundle analysis failed"
+                    exit 1
+                  fi
+
+                  echo "✅ All quality gates passed"

@@ -1,0 +1,24 @@
+# Dependencies
+node_modules
+.pnpm-store
+
+# Next.js
+.next
+out
+.source
+
+# Environment
+.env.local
+.env.production.local
+.env.development.local
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Lighthouse
+.lighthouseci
+
+# Misc
+.DS_Store
+*.log

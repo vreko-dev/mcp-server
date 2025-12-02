@@ -908,6 +908,9 @@ importers:
       semver:
         specifier: 'catalog:'
         version: 7.6.3
+      uuid:
+        specifier: 'catalog:'
+        version: 13.0.0
       zod:
         specifier: 'catalog:'
         version: 4.1.8
@@ -915,6 +918,9 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 24.5.1
+      '@types/uuid':
+        specifier: ^10.0.0
+        version: 10.0.0
       better-sqlite3:
         specifier: 'catalog:'
         version: 9.6.0
@@ -1121,6 +1127,9 @@ importers:
       '@snapback/github-action':
         specifier: workspace:*
         version: link:../../packages/github-action
+      '@snapback/guardian-lite':
+        specifier: workspace:*
+        version: link:../../packages/guardian-lite
       '@snapback/health':
         specifier: workspace:*
         version: link:../../packages/health
@@ -6748,6 +6757,9 @@ packages:
 
   '@types/use-sync-external-store@0.0.6':
     resolution: {integrity: sha512-zFDAD+tlpf2r4asuHEj0XH6pY6i0g5NeAHPn+15wk3BV6JA69eERFXC1gyGThDkVa1zCyKr5jox1+2LbV/AMLg==}
+
+  '@types/uuid@10.0.0':
+    resolution: {integrity: sha512-7gqG38EyHgyP1S+7+xomFtL+ZNHcKv6DwNaCZmJmo1vgMugyF3TCnXVg4t1uk89mLNwnLtnY3TpOpCOyp1/xHQ==}
 
   '@types/uuid@11.0.0':
     resolution: {integrity: sha512-HVyk8nj2m+jcFRNazzqyVKiZezyhDKrGUA3jlEcg/nZ6Ms+qHwocba1Y/AaVaznJTAM9xpdFSh+ptbNrhOGvZA==}
@@ -18915,6 +18927,8 @@ snapshots:
 
   '@types/use-sync-external-store@0.0.6': {}
 
+  '@types/uuid@10.0.0': {}
+
   '@types/uuid@11.0.0':
     dependencies:
       uuid: 13.0.0
@@ -19066,14 +19080,14 @@ snapshots:
       chai: 5.3.3
       tinyrainbow: 2.0.0
 
-  '@vitest/mocker@3.2.4(msw@2.12.2(@types/node@24.10.1)(typescript@5.9.2))(vite@7.2.4(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.44.1)(tsx@4.20.5)(yaml@2.8.1))':
+  '@vitest/mocker@3.2.4(msw@2.12.2(@types/node@24.10.1)(typescript@5.9.2))(vite@7.2.4(@types/node@24.5.1)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.44.1)(tsx@4.20.5)(yaml@2.8.1))':
     dependencies:
       '@vitest/spy': 3.2.4
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
       msw: 2.12.2(@types/node@24.10.1)(typescript@5.9.2)
-      vite: 7.2.4(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.44.1)(tsx@4.20.5)(yaml@2.8.1)
+      vite: 7.2.4(@types/node@24.5.1)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.44.1)(tsx@4.20.5)(yaml@2.8.1)
 
   '@vitest/mocker@3.2.4(msw@2.12.2(@types/node@24.5.1)(typescript@5.9.2))(vite@7.2.4(@types/node@24.5.1)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.44.1)(tsx@4.20.5)(yaml@2.8.1))':
     dependencies:
@@ -26750,7 +26764,7 @@ snapshots:
     dependencies:
       '@types/chai': 5.2.3
       '@vitest/expect': 3.2.4
-      '@vitest/mocker': 3.2.4(msw@2.12.2(@types/node@24.10.1)(typescript@5.9.2))(vite@7.2.4(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.44.1)(tsx@4.20.5)(yaml@2.8.1))
+      '@vitest/mocker': 3.2.4(msw@2.12.2(@types/node@24.10.1)(typescript@5.9.2))(vite@7.2.4(@types/node@24.5.1)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.44.1)(tsx@4.20.5)(yaml@2.8.1))
       '@vitest/pretty-format': 3.2.4
       '@vitest/runner': 3.2.4
       '@vitest/snapshot': 3.2.4

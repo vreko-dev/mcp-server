@@ -1,4 +1,7 @@
-import type { TelemetrySinkDb } from "@snapback/platform/db/adapters/TelemetrySinkDb";
+import { TelemetrySinkDb } from "@snapback/platform/db/adapters/TelemetrySinkDb";
+
+// Use InstanceType to get the type of TelemetrySinkDb instances
+type TelemetrySink = InstanceType<typeof TelemetrySinkDb>;
 
 export interface IngestEvent {
 	requestId: string;
@@ -22,9 +25,9 @@ export class TelemetryIngestHandler {
 	private batchTimeout: NodeJS.Timeout | null = null;
 	private readonly BATCH_SIZE_LIMIT = 100;
 	private readonly BATCH_TIME_LIMIT_MS = 5000; // 5 seconds
-	private sink: TelemetrySinkDb;
+	private sink: TelemetrySink;
 
-	constructor(sink: TelemetrySinkDb) {
+	constructor(sink: TelemetrySink) {
 		this.sink = sink;
 	}
 

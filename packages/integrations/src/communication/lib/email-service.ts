@@ -1,6 +1,7 @@
 import { logger } from "@snapback/infrastructure";
 import { send as sendResendEmail } from "../../email/provider/resend.js";
 import type { SendEmailParams } from "../../email/types.js";
+import type { PlanTier } from "@snapback/config";
 
 export interface EmailServiceResult {
 	success: boolean;
@@ -42,4 +43,83 @@ export async function sendEmail(params: SendEmailParams): Promise<EmailServiceRe
 			error: error instanceof Error ? error.message : "Unknown error",
 		};
 	}
+}
+
+/**
+ * Send welcome email to new subscriber
+ */
+export async function sendWelcomeEmail(
+	customerId: string,
+	plan: PlanTier,
+	email?: string
+): Promise<void> {
+	if (!email) {
+		logger.warn("Cannot send welcome email: no email address", { customerId });
+		return;
+	}
+
+	await sendEmail({
+		to: email,
+		subject: `Welcome to SnapBack ${plan.charAt(0).toUpperCase() + plan.slice(1)}!`,
+		text: `Thank you for subscribing to SnapBack ${plan}. Your account is now active.`,
+	});
+}
+
+/**
+ * Send cancellation email
+ */
+export async function sendCancellationEmail(
+	customerId: string,
+	email?: string
+): Promise<void> {
+	if (!email) {
+		logger.warn("Cannot send cancellation email: no email address", { customerId });
+		return;
+	}
+
+	await sendEmail({
+		to: email,
+		subject: "SnapBack Subscription Cancelled",
+		text: "Your SnapBack subscription has been cancelled. Your local snapshots remain available.",
+	});
+}
+
+/**
+ * Send payment receipt email
+ */
+export async function sendPaymentReceipt(
+	customerId: string,
+	amount: number,
+	email?: string
+): Promise<void> {
+	if (!email) {
+		logger.warn("Cannot send payment receipt: no email address", { customerId });
+		return;
+	}
+
+	await sendEmail({
+		to: email,
+		subject: "SnapBack Payment Receipt",
+		text: `Your payment of $${(amount / 100).toFixed(2)} has been processed successfully.`,
+	});
+}
+
+/**
+ * Send payment failed email
+ */
+export async function sendPaymentFailedEmail(
+	customerId: string,
+	amount: number,
+	email?: string
+): Promise<void> {
+	if (!email) {
+		logger.warn("Cannot send payment failed email: no email address", { customerId });
+		return;
+	}
+
+	await sendEmail({
+		to: email,
+		subject: "SnapBack Payment Failed",
+		text: `Your payment of $${(amount / 100).toFixed(2)} could not be processed. Please update your payment method.`,
+	});
 }

@@ -1,2 +1,9 @@
-// This file will be populated with exports after the modules are built
-export {};
+// Email service for subscription lifecycle emails
+export {
+	sendEmail,
+	sendWelcomeEmail,
+	sendCancellationEmail,
+	sendPaymentReceipt,
+	sendPaymentFailedEmail,
+	type EmailServiceResult,
+} from "./lib/email-service.js";

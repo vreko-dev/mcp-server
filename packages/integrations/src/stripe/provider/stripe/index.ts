@@ -188,11 +188,15 @@ export const webhookHandler: WebhookHandler = async (req: Request) => {
 						break;
 					}
 
-					// biome-ignore lint/style/noNonNullAssertion: This is a valid case
-					await db?.transaction(async (_tx) => {
-						// Create purchase record for one-time payment
-						// Note: We're using the database transaction here
-					});
+					// biome-ignore lint/style/noNonNullAssertion: Database is initialized in server context
+					if (db) {
+						const dbClient = db as NonNullable<typeof db>;
+						await dbClient.transaction(async (tx) => {
+							// Create purchase record for one-time payment
+							// Note: We're using the database transaction here
+							// tx can be used for transactional queries
+						});
+					}
 				} else {
 					// Handle subscription creation
 					// The subscription will be handled in customer.subscription.created
@@ -211,21 +215,29 @@ export const webhookHandler: WebhookHandler = async (req: Request) => {
 					break;
 				}
 
-				// biome-ignore lint/style/noNonNullAssertion: This is a valid case
-				await db?.transaction(async (_tx) => {
-					// Handle subscription creation/update
-					// Note: We're using the database transaction here
-				});
+				// biome-ignore lint/style/noNonNullAssertion: Database is initialized in server context
+				if (db) {
+					const dbClient = db as NonNullable<typeof db>;
+					await dbClient.transaction(async (tx) => {
+						// Handle subscription creation/update
+						// Note: We're using the database transaction here
+						// tx can be used for transactional queries
+					});
+				}
 				break;
 			}
 			case "customer.subscription.deleted": {
 				const _subscription = event.data.object as Stripe.Subscription;
 
-				// biome-ignore lint/style/noNonNullAssertion: This is a valid case
-				await db?.transaction(async (_tx) => {
-					// Handle subscription cancellation
-					// Note: We're using the database transaction here
-				});
+				// biome-ignore lint/style/noNonNullAssertion: Database is initialized in server context
+				if (db) {
+					const dbClient = db as NonNullable<typeof db>;
+					await dbClient.transaction(async (tx) => {
+						// Handle subscription cancellation
+						// Note: We're using the database transaction here
+						// tx can be used for transactional queries
+					});
+				}
 				break;
 			}
 			case "invoice.payment_succeeded": {

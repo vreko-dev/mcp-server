@@ -1,8 +1,13 @@
 // Stripe (was @snapback/payments)
 
-// Communication Hub
-export * from "./communication/index.js";
-// Email (was @snapback/mail)
+// Communication Hub (lifecycle emails for subscriptions)
+export {
+	sendWelcomeEmail,
+	sendCancellationEmail,
+	sendPaymentReceipt,
+	sendPaymentFailedEmail,
+} from "./communication/index.js";
+// Email (template-based emails)
 export * from "./email/index.js";
 // HubSpot CRM Integration
 export * from "./hubspot/index.js";

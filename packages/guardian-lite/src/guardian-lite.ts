@@ -38,6 +38,36 @@ export class GuardianLite {
 			severity: "high",
 		},
 		{
+			name: "GOOGLE_API_KEY",
+			regex: /AIza[0-9A-Za-z\-_]{35}/,
+			type: "secret",
+			severity: "high",
+		},
+		{
+			name: "GITHUB_TOKEN",
+			regex: /(ghp|gho|ghu|ghs|ghr)_[0-9A-Za-z]{36}|github_pat_[0-9A-Za-z_]{82}/,
+			type: "secret",
+			severity: "high",
+		},
+		{
+			name: "STRIPE_SECRET_KEY",
+			regex: /sk_(live|test)_[0-9a-zA-Z]{24,}/,
+			type: "secret",
+			severity: "high",
+		},
+		{
+			name: "SLACK_TOKEN",
+			regex: /xox[bapsr]-[0-9A-Za-z\-]{10,}/,
+			type: "secret",
+			severity: "high",
+		},
+		{
+			name: "BEARER_TOKEN",
+			regex: /Authorization:\s*Bearer\s+[A-Za-z0-9\-_.]{20,}/i,
+			type: "secret",
+			severity: "high",
+		},
+		{
 			name: "GENERIC_API_KEY",
 			regex: /api[_-]?key[\s:=]*["']?([a-z0-9]{32,})/i,
 			type: "secret",
@@ -45,13 +75,13 @@ export class GuardianLite {
 		},
 		{
 			name: "JWT",
-			regex: /eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/,
+			regex: /eyJ[A-Za-z0-9_-]+?\.[A-Za-z0-9_-]+?\.[A-Za-z0-9_-]+/,
 			type: "secret",
 			severity: "low",
 		},
 		{
-			name: "PRIVATE_KEY",
-			regex: /-----BEGIN (RSA |EC )?PRIVATE KEY-----/,
+			name: "GENERIC_PRIVATE_KEY",
+			regex: /-----BEGIN [A-Z ]*PRIVATE KEY-----/,
 			type: "secret",
 			severity: "high",
 		},
@@ -60,6 +90,24 @@ export class GuardianLite {
 			regex: /(postgres|mysql|mongodb|redis):\/\/[^\s]+/,
 			type: "secret",
 			severity: "high",
+		},
+		{
+			name: "ENV_SECRET_ASSIGNMENT",
+			regex: /^[A-Z0-9_]*(SECRET|TOKEN|PASSWORD|PWD|PASS|API_KEY)[A-Z0-9_]*\s*=\s*.+$/i,
+			type: "secret",
+			severity: "medium",
+		},
+		{
+			name: "NPM_AUTH_TOKEN",
+			regex: /\/\/registry\.npmjs\.org\/.*:_authToken=\s*[A-Za-z0-9\-_]+/,
+			type: "secret",
+			severity: "high",
+		},
+		{
+			name: "INTERNAL_ENV_URL",
+			regex: /https?:\/\/[a-z0-9.-]*(dev|staging|qa|test|internal)[.-][^\/\s'"]+/i,
+			type: "secret",
+			severity: "medium",
 		},
 		// Mocks: Test framework artifacts
 		{
@@ -120,6 +168,19 @@ export class GuardianLite {
 	 */
 	analyze(code: string): AnalysisResult {
 		const startTime = performance.now();
+
+		// Validate input
+		if (!code || typeof code !== "string") {
+			return {
+				riskLevel: "none",
+				confidence: 1.0,
+				issues: [],
+				executionTime: performance.now() - startTime,
+				upgradePrompt: false,
+				recommendations: [],
+			};
+		}
+
 		const issues: Issue[] = [];
 
 		// Find matches for all patterns
@@ -155,20 +216,29 @@ export class GuardianLite {
 	/**
 	 * Find all matches of a regex pattern in code
 	 * Returns line numbers (1-indexed) with matches
+	 * Note: Detects multiple matches per line using global regex
 	 */
 	private findMatches(code: string, regex: RegExp): Array<{ line: number; match: string }> {
 		const matches: Array<{ line: number; match: string }> = [];
 		const lines = code.split("\n");
 
+		// Convert to global regex to find all matches per line
+		const globalRegex = new RegExp(regex.source, "g");
+
 		for (let i = 0; i < lines.length; i++) {
 			const line = lines[i];
-			const match = line.match(regex);
-			if (match) {
+			let match;
+
+			// Use exec() in loop to find all matches on this line
+			while ((match = globalRegex.exec(line)) !== null) {
 				matches.push({
 					line: i + 1, // 1-indexed
 					match: match[0],
 				});
 			}
+
+			// Reset regex lastIndex for next line
+			globalRegex.lastIndex = 0;
 		}
 
 		return matches;
@@ -194,17 +264,29 @@ export class GuardianLite {
 	 * Calculate confidence score (0-1)
 	 * Based on issue count and code length
 	 */
-	private calculateConfidence(issues: Issue[], _lineCount: number): number {
+	private calculateConfidence(issues: Issue[], lineCount: number): number {
+		let base: number;
+
 		if (issues.length === 0) {
-			return 0.95; // High confidence in clean code
+			base = 0.95; // High confidence in clean code
+		} else if (issues.length <= 2) {
+			base = 0.85; // Good confidence with few issues
+		} else if (issues.length <= 5) {
+			base = 0.75; // Medium confidence
+		} else {
+			base = 0.6; // Lower confidence, suggest Pro tier
 		}
-		if (issues.length <= 2) {
-			return 0.85; // Good confidence with few issues
+
+		// Adjust confidence based on file size
+		// Large files with no issues might still have hidden issues
+		if (lineCount > 800) {
+			return Math.max(0, base - 0.1);
 		}
-		if (issues.length <= 5) {
-			return 0.75; // Medium confidence
+		if (lineCount > 200) {
+			return Math.max(0, base - 0.05);
 		}
-		return 0.6; // Lower confidence, suggest Pro tier
+
+		return base;
 	}
 
 	/**

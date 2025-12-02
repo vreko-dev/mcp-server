@@ -114,6 +114,33 @@ describe("GuardianLite - RED Phase Tests", () => {
 			const result = guardian.analyze("const x = 1;");
 			expect(result.recommendations).toHaveLength(0);
 		});
+
+		it("should handle empty string gracefully", () => {
+			const guardian = new GuardianLite();
+			const result = guardian.analyze("");
+
+			expect(result.riskLevel).toBe("none");
+			expect(result.issues).toHaveLength(0);
+			expect(result.confidence).toBe(1.0);
+		});
+
+		it("should handle null input gracefully", () => {
+			const guardian = new GuardianLite();
+			const result = guardian.analyze(null as any);
+
+			expect(result.riskLevel).toBe("none");
+			expect(result.issues).toHaveLength(0);
+			expect(result.confidence).toBe(1.0);
+		});
+
+		it("should handle undefined input gracefully", () => {
+			const guardian = new GuardianLite();
+			const result = guardian.analyze(undefined as any);
+
+			expect(result.riskLevel).toBe("none");
+			expect(result.issues).toHaveLength(0);
+			expect(result.confidence).toBe(1.0);
+		});
 	});
 
 	/**
@@ -233,7 +260,7 @@ MIIEpAIBAAKCAQEA0Z3VS5...`;
 			const result = guardian.analyze(code);
 
 			expect(result.issues.length).toBeGreaterThan(0);
-			const pkeyIssue = result.issues.find((i) => i.pattern === "PRIVATE_KEY");
+			const pkeyIssue = result.issues.find((i) => i.pattern === "GENERIC_PRIVATE_KEY");
 			expect(pkeyIssue).toBeDefined();
 			expect(pkeyIssue?.severity).toBe("high");
 		});
@@ -264,6 +291,149 @@ MIIEpAIBAAKCAQEA0Z3VS5...`;
 
 			expect(result.recommendations.length).toBeGreaterThan(0);
 			expect(result.recommendations.some((r) => r.includes("environment"))).toBe(true);
+		});
+
+		it("should detect multiple secrets on the same line", () => {
+			const guardian = new GuardianLite();
+			// Two AWS keys on same line
+			const code = 'const k1 = "AKIAIOSFODNN7EXAMPLE"; const k2 = "AKIAIOSFODNN7EXAMPLE";';
+			const result = guardian.analyze(code);
+
+			expect(result.issues.length).toBe(2);
+			const awsIssues = result.issues.filter((i) => i.pattern === "AWS_KEY");
+			expect(awsIssues).toHaveLength(2);
+			expect(awsIssues[0].line).toBe(1);
+			expect(awsIssues[1].line).toBe(1); // Both on line 1
+		});
+
+		it("should detect GOOGLE_API_KEY pattern", () => {
+			const guardian = new GuardianLite();
+			const code = 'const apiKey = "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe";';
+			const result = guardian.analyze(code);
+
+			expect(result.issues.length).toBeGreaterThan(0);
+			const googleKeyIssue = result.issues.find((i) => i.pattern === "GOOGLE_API_KEY");
+			expect(googleKeyIssue).toBeDefined();
+			expect(googleKeyIssue?.type).toBe("secret");
+			expect(googleKeyIssue?.severity).toBe("high");
+		});
+
+		it("should detect GITHUB_TOKEN pattern (ghp_ prefix)", () => {
+			const guardian = new GuardianLite();
+			const code = 'const token = "ghp_1234567890abcdefghijklmnopqrstuvwxyz";';
+			const result = guardian.analyze(code);
+
+			expect(result.issues.length).toBeGreaterThan(0);
+			const githubIssue = result.issues.find((i) => i.pattern === "GITHUB_TOKEN");
+			expect(githubIssue).toBeDefined();
+			expect(githubIssue?.severity).toBe("high");
+		});
+
+		it("should detect GITHUB_TOKEN pattern (github_pat_ prefix)", () => {
+			const guardian = new GuardianLite();
+			const code = 'const pat = "github_pat_11AAAAAA0aBcDeFgHiJkLmNoPqRsTuVwXyZ1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmno";';
+			const result = guardian.analyze(code);
+
+			expect(result.issues.length).toBeGreaterThan(0);
+			const githubIssue = result.issues.find((i) => i.pattern === "GITHUB_TOKEN");
+			expect(githubIssue).toBeDefined();
+		});
+
+		it("should detect STRIPE_SECRET_KEY pattern", () => {
+			const guardian = new GuardianLite();
+			const code = 'const stripeKey = "sk_live_51H2abcdefghijklmnopqrstuvwxyz1234567890";';
+			const result = guardian.analyze(code);
+
+			expect(result.issues.length).toBeGreaterThan(0);
+			const stripeIssue = result.issues.find((i) => i.pattern === "STRIPE_SECRET_KEY");
+			expect(stripeIssue).toBeDefined();
+			expect(stripeIssue?.severity).toBe("high");
+		});
+
+		it("should detect SLACK_TOKEN pattern", () => {
+			const guardian = new GuardianLite();
+			const code = 'const slackToken = "xoxb-1234567890-1234567890123-abcdefghijklmnop";';
+			const result = guardian.analyze(code);
+
+			expect(result.issues.length).toBeGreaterThan(0);
+			const slackIssue = result.issues.find((i) => i.pattern === "SLACK_TOKEN");
+			expect(slackIssue).toBeDefined();
+			expect(slackIssue?.severity).toBe("high");
+		});
+
+		it("should detect BEARER_TOKEN in Authorization header", () => {
+			const guardian = new GuardianLite();
+			const code = 'const header = "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9";';
+			const result = guardian.analyze(code);
+
+			expect(result.issues.length).toBeGreaterThan(0);
+			const bearerIssue = result.issues.find((i) => i.pattern === "BEARER_TOKEN");
+			expect(bearerIssue).toBeDefined();
+			expect(bearerIssue?.severity).toBe("high");
+		});
+
+		it("should detect ENV_SECRET_ASSIGNMENT pattern", () => {
+			const guardian = new GuardianLite();
+			const code = 'API_SECRET=super_secret_value_123';
+			const result = guardian.analyze(code);
+
+			expect(result.issues.length).toBeGreaterThan(0);
+			const envSecretIssue = result.issues.find((i) => i.pattern === "ENV_SECRET_ASSIGNMENT");
+			expect(envSecretIssue).toBeDefined();
+			expect(envSecretIssue?.severity).toBe("medium");
+		});
+
+		it("should detect NPM_AUTH_TOKEN pattern", () => {
+			const guardian = new GuardianLite();
+			const code = '//registry.npmjs.org/:_authToken=npm_AbCdEfGhIjKlMnOpQrStUvWxYz1234567890';
+			const result = guardian.analyze(code);
+
+			expect(result.issues.length).toBeGreaterThan(0);
+			const npmIssue = result.issues.find((i) => i.pattern === "NPM_AUTH_TOKEN");
+			expect(npmIssue).toBeDefined();
+			expect(npmIssue?.severity).toBe("high");
+		});
+
+		it("should detect GENERIC_PRIVATE_KEY with broader pattern", () => {
+			const guardian = new GuardianLite();
+			const code = '-----BEGIN OPENSSH PRIVATE KEY-----';
+			const result = guardian.analyze(code);
+
+			expect(result.issues.length).toBeGreaterThan(0);
+			const pkeyIssue = result.issues.find((i) => i.pattern === "GENERIC_PRIVATE_KEY");
+			expect(pkeyIssue).toBeDefined();
+			expect(pkeyIssue?.severity).toBe("high");
+		});
+
+		it("should detect improved JWT pattern (three segments)", () => {
+			const guardian = new GuardianLite();
+			const code = 'const jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U";';
+			const result = guardian.analyze(code);
+
+			expect(result.issues.length).toBeGreaterThan(0);
+			const jwtIssue = result.issues.find((i) => i.pattern === "JWT");
+			expect(jwtIssue).toBeDefined();
+			expect(jwtIssue?.severity).toBe("low");
+		});
+
+		it("should detect INTERNAL_ENV_URL pattern", () => {
+			const guardian = new GuardianLite();
+			const code = 'const apiUrl = "https://api.staging.example.com/v1/users";';
+			const result = guardian.analyze(code);
+
+			expect(result.issues.length).toBeGreaterThan(0);
+			const urlIssue = result.issues.find((i) => i.pattern === "INTERNAL_ENV_URL");
+			expect(urlIssue).toBeDefined();
+			expect(urlIssue?.severity).toBe("medium");
+		});
+
+		it("should NOT flag production URLs as internal", () => {
+			const guardian = new GuardianLite();
+			const code = 'const url = "https://api.example.com/v1/users";';
+			const result = guardian.analyze(code);
+
+			const internalUrlIssues = result.issues.filter((i) => i.pattern === "INTERNAL_ENV_URL");
+			expect(internalUrlIssues).toHaveLength(0);
 		});
 	});
 
@@ -458,6 +628,13 @@ MIIEpAIBAAKCAQEA0Z3VS5...`;
 			const code = "const x = 1;\n".repeat(1000);
 			const result = guardian.analyze(code);
 			expect(result.executionTime).toBeLessThan(50);
+		});
+
+		it("should analyze 5000 lines of code in < 200ms", () => {
+			const guardian = new GuardianLite();
+			const code = "const x = 1;\n".repeat(5000);
+			const result = guardian.analyze(code);
+			expect(result.executionTime).toBeLessThan(200);
 		});
 	});
 });

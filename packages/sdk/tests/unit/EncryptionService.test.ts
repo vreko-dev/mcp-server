@@ -14,7 +14,7 @@
  * - Key rotation safety
  */
 
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import type { EncryptedData } from "../../src/encryption/EncryptionService.js";
 import { EncryptionService } from "../../src/encryption/EncryptionService.js";
 
@@ -28,8 +28,6 @@ describe("EncryptionService", () => {
 	beforeEach(() => {
 		service = new EncryptionService();
 	});
-
-
 
 	// =========================================================================
 	// 1. Encryption Round-Trip Tests
@@ -97,7 +95,7 @@ describe("EncryptionService", () => {
 			// Tamper with the ciphertext by modifying the base64
 			const tampered: EncryptedData = {
 				...encrypted,
-				ciphertext: encrypted.ciphertext.slice(0, -4) + "XXXX",
+				ciphertext: `${encrypted.ciphertext.slice(0, -4)}XXXX`,
 			};
 
 			// Decryption should fail
@@ -111,7 +109,7 @@ describe("EncryptionService", () => {
 			// Tamper with auth tag
 			const tampered: EncryptedData = {
 				...encrypted,
-				authTag: "AAAA" + encrypted.authTag.slice(4),
+				authTag: `AAAA${encrypted.authTag.slice(4)}`,
 			};
 
 			expect(() => service.decrypt(tampered)).toThrow();
@@ -238,7 +236,7 @@ describe("EncryptionService", () => {
 			// Modify auth tag
 			const modified: EncryptedData = {
 				...encrypted,
-				authTag: "AAAA" + encrypted.authTag.slice(4),
+				authTag: `AAAA${encrypted.authTag.slice(4)}`,
 			};
 
 			// Should fail auth tag verification

@@ -5,35 +5,33 @@
  * Enables convenient importing from test files
  */
 
-// Snapshot fixtures
-export {
-	type SnapshotFixture,
-	createSnapshot,
-	createSnapshotWithSecret,
-	createSnapshotWithMocks,
-	createSnapshotWithPhantomDep,
-	createSnapshots,
-	createLargeSnapshot,
-} from "./snapshots.fixture";
-
 // Checkpoint fixtures
 export {
 	type CheckpointFixture,
 	createCheckpoint,
-	createCorruptedCheckpoint,
 	createCheckpointsForFile,
 	createCheckpointTimeline,
 	createCheckpointVariants,
+	createCorruptedCheckpoint,
 } from "./checkpoints.fixture";
-
 // Session fixtures
 export {
-	type SessionFixture,
-	createSession,
 	createCompletedSession,
 	createFailedSession,
-	createSessionWithSnapshots,
+	createSession,
 	createSessions,
-	createSessionVariants,
 	createSessionTimeline,
+	createSessionVariants,
+	createSessionWithSnapshots,
+	type SessionFixture,
 } from "./sessions.fixture";
+// Snapshot fixtures
+export {
+	createLargeSnapshot,
+	createSnapshot,
+	createSnapshots,
+	createSnapshotWithMocks,
+	createSnapshotWithPhantomDep,
+	createSnapshotWithSecret,
+	type SnapshotFixture,
+} from "./snapshots.fixture";

@@ -244,11 +244,9 @@ describe("QoSService", () => {
 			// Fill queue to max
 			const promises: Promise<unknown>[] = [];
 			for (let i = 0; i < 101; i++) {
-				const p = service
-					.enqueue({ ...data, id: i })
-					.catch(() => {
-						// Expected to fail
-					});
+				const p = service.enqueue({ ...data, id: i }).catch(() => {
+					// Expected to fail
+				});
 				promises.push(p);
 			}
 
@@ -330,11 +328,9 @@ describe("QoSService", () => {
 			const promises: Promise<unknown>[] = [];
 
 			for (let i = 0; i < 20; i++) {
-				const p = service
-					.enqueue({ event: "test", id: i })
-					.catch(() => {
-						// Ignore errors
-					});
+				const p = service.enqueue({ event: "test", id: i }).catch(() => {
+					// Ignore errors
+				});
 				promises.push(p);
 			}
 

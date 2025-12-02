@@ -36,7 +36,7 @@ export function expectErr<T, E>(result: { success: boolean; value?: T; error?: E
  */
 export async function waitFor(
 	condition: () => boolean,
-	options?: { timeout?: number; interval?: number }
+	options?: { timeout?: number; interval?: number },
 ): Promise<void> {
 	const timeout = options?.timeout ?? 5000;
 	const interval = options?.interval ?? 50;
@@ -49,9 +49,7 @@ export async function waitFor(
 		await new Promise((resolve) => setTimeout(resolve, interval));
 	}
 
-	throw new Error(
-		`Timeout waiting for condition after ${timeout}ms`
-	);
+	throw new Error(`Timeout waiting for condition after ${timeout}ms`);
 }
 
 /**
@@ -59,7 +57,7 @@ export async function waitFor(
  */
 export async function waitForMockCall(
 	mockFn: { mock: { calls: unknown[][] } },
-	options?: { timeout?: number; interval?: number }
+	options?: { timeout?: number; interval?: number },
 ): Promise<void> {
 	await waitFor(() => mockFn.mock.calls.length > 0, options);
 }
@@ -108,9 +106,7 @@ export function createDeferred<T>(): {
 /**
  * Measure the execution time of a function
  */
-export async function measureTime<T>(
-	fn: () => Promise<T> | T
-): Promise<{ result: T; duration: number }> {
+export async function measureTime<T>(fn: () => Promise<T> | T): Promise<{ result: T; duration: number }> {
 	const startTime = performance.now();
 	const result = await fn();
 	const duration = performance.now() - startTime;
@@ -121,11 +117,7 @@ export async function measureTime<T>(
 /**
  * Assert that an operation completes within a time budget
  */
-export async function expectWithinBudget<T>(
-	fn: () => Promise<T>,
-	budgetMs: number,
-	label?: string
-): Promise<T> {
+export async function expectWithinBudget<T>(fn: () => Promise<T>, budgetMs: number, label?: string): Promise<T> {
 	const { result, duration } = await measureTime(fn);
 
 	expect(duration).toBeLessThan(budgetMs);
@@ -139,9 +131,7 @@ export async function expectWithinBudget<T>(
 /**
  * Collect all error logs from a function execution
  */
-export function captureErrors<T>(
-	fn: () => T | Promise<T>
-): { result: T | Promise<T>; errors: Error[] } {
+export function captureErrors<T>(fn: () => T | Promise<T>): { result: T | Promise<T>; errors: Error[] } {
 	const errors: Error[] = [];
 	const originalError = console.error;
 

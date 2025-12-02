@@ -17,8 +17,8 @@
 import * as os from "node:os";
 import * as path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { BlobStore, BlobStoreError, Result } from "../../src/storage/BlobStore.js";
 import { SessionManager } from "../../src/session/SessionManager.js";
+import type { BlobStore, BlobStoreError, Result } from "../../src/storage/BlobStore.js";
 
 // ============================================================================
 // Mock BlobStore
@@ -94,7 +94,7 @@ function createMockDatabase(): MockDB {
 					if (!changes.has(sessionId)) {
 						changes.set(sessionId, []);
 					}
-					changes.get(sessionId)!.push(params);
+					changes.get(sessionId)?.push(params);
 				}
 			}),
 		}),
@@ -225,7 +225,7 @@ describe("SessionManager", () => {
 				idleMs: 100, // Short timeout for testing
 			});
 
-			const startResult = await manager.start();
+			const _startResult = await manager.start();
 			manager.track(path.join(workspaceRoot, "file1.ts"), "created");
 
 			// Advance timers to trigger idle timeout
@@ -360,7 +360,7 @@ describe("SessionManager", () => {
 				db: mockDb,
 			});
 
-			const startResult = await manager.start();
+			const _startResult = await manager.start();
 			manager.track(path.join(workspaceRoot, "file1.ts"), "created", { size: 100 });
 
 			await manager.finalize();
@@ -400,7 +400,7 @@ describe("SessionManager", () => {
 			});
 
 			// Start first session
-			const session1 = await manager.start();
+			const _session1 = await manager.start();
 			manager.track(path.join(workspaceRoot, "file1.ts"), "created");
 
 			// Start second session (should finalize first)

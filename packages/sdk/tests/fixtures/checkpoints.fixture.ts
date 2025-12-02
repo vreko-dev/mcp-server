@@ -20,11 +20,11 @@ export interface CheckpointFixture {
  * Create a minimal valid checkpoint
  */
 export function createCheckpoint(overrides?: Partial<CheckpointFixture>): CheckpointFixture {
-	const id = overrides?.id ?? "cp-" + Math.random().toString(36).slice(2);
+	const id = overrides?.id ?? `cp-${Math.random().toString(36).slice(2)}`;
 	const filePath = overrides?.filePath ?? "/test/file.ts";
 	const content = overrides?.content ?? "// checkpoint content";
 	const timestamp = overrides?.timestamp ?? Date.now();
-	const hash = overrides?.hash ?? "hash-" + Math.random().toString(36).slice(2);
+	const hash = overrides?.hash ?? `hash-${Math.random().toString(36).slice(2)}`;
 	const version = overrides?.version ?? "1.0.0";
 	const isValid = overrides?.isValid ?? true;
 
@@ -54,35 +54,28 @@ export function createCorruptedCheckpoint(overrides?: Partial<CheckpointFixture>
 /**
  * Create checkpoints for a specific file
  */
-export function createCheckpointsForFile(
-	filePath: string,
-	count: number = 3
-): CheckpointFixture[] {
+export function createCheckpointsForFile(filePath: string, count = 3): CheckpointFixture[] {
 	return Array.from({ length: count }, (_, i) =>
 		createCheckpoint({
 			id: `cp-${filePath.replace(/[^a-z0-9]/gi, "")}-${i}`,
 			filePath,
 			content: `// Checkpoint ${i}\nconst version = ${i};`,
 			timestamp: Date.now() - (count - i) * 1000,
-		})
+		}),
 	);
 }
 
 /**
  * Create checkpoint timeline (multiple checkpoints with realistic timestamps)
  */
-export function createCheckpointTimeline(
-	filePath: string,
-	count: number = 5,
-	intervalMs: number = 60000
-): CheckpointFixture[] {
+export function createCheckpointTimeline(filePath: string, count = 5, intervalMs = 60000): CheckpointFixture[] {
 	return Array.from({ length: count }, (_, i) =>
 		createCheckpoint({
 			id: `cp-${i}`,
 			filePath,
 			content: `// Revision ${i}\nlet revision = ${i};`,
 			timestamp: Date.now() - (count - i - 1) * intervalMs,
-		})
+		}),
 	);
 }
 

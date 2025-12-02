@@ -19,7 +19,7 @@ export interface SessionFixture {
  * Create a minimal active session
  */
 export function createSession(overrides?: Partial<SessionFixture>): SessionFixture {
-	const id = overrides?.id ?? "sess-" + Math.random().toString(36).slice(2);
+	const id = overrides?.id ?? `sess-${Math.random().toString(36).slice(2)}`;
 	const userId = overrides?.userId ?? "user-test";
 	const startTime = overrides?.startTime ?? Date.now();
 	const status = overrides?.status ?? "active";
@@ -78,10 +78,7 @@ export function createFailedSession(overrides?: Partial<SessionFixture>): Sessio
 /**
  * Create a session with multiple snapshots
  */
-export function createSessionWithSnapshots(
-	snapshotCount: number = 5,
-	overrides?: Partial<SessionFixture>
-): SessionFixture {
+export function createSessionWithSnapshots(snapshotCount = 5, overrides?: Partial<SessionFixture>): SessionFixture {
 	const snapshotIds = Array.from({ length: snapshotCount }, (_, i) => `snap-${i}`);
 
 	return createSession({
@@ -93,10 +90,7 @@ export function createSessionWithSnapshots(
 /**
  * Create multiple sessions for batch operations
  */
-export function createSessions(
-	count: number,
-	overrides?: Partial<SessionFixture>
-): SessionFixture[] {
+export function createSessions(count: number, overrides?: Partial<SessionFixture>): SessionFixture[] {
 	return Array.from({ length: count }, (_, i) =>
 		createSession({
 			id: `sess-${i}`,
@@ -104,7 +98,7 @@ export function createSessions(
 			startTime: Date.now() - (count - i) * 60000,
 			snapshotIds: [`snap-${i}-1`, `snap-${i}-2`],
 			...overrides,
-		})
+		}),
 	);
 }
 
@@ -132,7 +126,7 @@ export function createSessionVariants(): Record<string, SessionFixture> {
 /**
  * Create a session timeline (multiple sessions in sequence)
  */
-export function createSessionTimeline(count: number = 3): SessionFixture[] {
+export function createSessionTimeline(count = 3): SessionFixture[] {
 	return Array.from({ length: count }, (_, i) => {
 		const startTime = Date.now() - (count - i) * 60 * 60 * 1000; // Each hour apart
 		const endTime = startTime + 30 * 60 * 1000; // Each 30 minutes long

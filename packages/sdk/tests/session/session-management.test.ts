@@ -1,12 +1,12 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
-	createSession,
 	createCompletedSession,
 	createFailedSession,
-	createSessionWithSnapshots,
+	createSession,
 	createSessions,
-	createSessionVariants,
 	createSessionTimeline,
+	createSessionVariants,
+	createSessionWithSnapshots,
 } from "../fixtures/sessions.fixture";
 import { measureTime } from "../helpers/test-helpers";
 
@@ -219,9 +219,7 @@ describe("@snapback/sdk - Session Management", () => {
 
 			const all = sessionMgr.listSessions();
 
-			expect(all).toContainEqual(
-				expect.objectContaining({ status: "completed" })
-			);
+			expect(all).toContainEqual(expect.objectContaining({ status: "completed" }));
 		});
 
 		it("lists failed sessions", () => {
@@ -231,9 +229,7 @@ describe("@snapback/sdk - Session Management", () => {
 
 			const all = sessionMgr.listSessions();
 
-			expect(all).toContainEqual(
-				expect.objectContaining({ status: "failed" })
-			);
+			expect(all).toContainEqual(expect.objectContaining({ status: "failed" }));
 		});
 
 		it("retrieves session by ID", () => {
@@ -250,8 +246,7 @@ describe("@snapback/sdk - Session Management", () => {
 	describe("Session Timeline & Duration", () => {
 		it("calculates session duration", () => {
 			const session = createCompletedSession();
-			const duration =
-				(session.endTime ?? Date.now()) - session.startTime;
+			const duration = (session.endTime ?? Date.now()) - session.startTime;
 
 			expect(duration).toBeGreaterThan(0);
 		});
@@ -262,9 +257,7 @@ describe("@snapback/sdk - Session Management", () => {
 			expect(timeline).toHaveLength(5);
 
 			for (let i = 0; i < timeline.length - 1; i++) {
-				expect(timeline[i].startTime).toBeLessThanOrEqual(
-					timeline[i + 1].startTime
-				);
+				expect(timeline[i].startTime).toBeLessThanOrEqual(timeline[i + 1].startTime);
 			}
 		});
 
@@ -331,7 +324,7 @@ describe("@snapback/sdk - Session Management", () => {
 			const deletions = sessions.map((session) =>
 				Promise.resolve().then(() => {
 					sessionMgr.deleteSession(session.id);
-				})
+				}),
 			);
 
 			await Promise.all(deletions);
@@ -429,9 +422,7 @@ describe("@snapback/sdk - Session Management", () => {
 			const variants = createSessionVariants();
 
 			expect(variants.longRunningActive.status).toBe("active");
-			expect(variants.longRunningActive.startTime).toBeLessThan(
-				Date.now()
-			);
+			expect(variants.longRunningActive.startTime).toBeLessThan(Date.now());
 		});
 
 		it("handles empty session metadata", () => {

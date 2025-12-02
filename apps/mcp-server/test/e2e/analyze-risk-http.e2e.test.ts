@@ -1,6 +1,6 @@
 import { SnapBackEventBus } from "@snapback/events";
 import { ExtensionClient } from "@snapback/sdk";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, it } from "vitest";
 import { MCPHttpServer } from "../../src/http-server.js";
 
 // Mock the event bus and extension client to prevent connection errors

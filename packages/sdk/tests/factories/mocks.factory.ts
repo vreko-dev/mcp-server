@@ -65,7 +65,7 @@ export function createMockEventBus() {
 			if (!listeners.has(event)) {
 				listeners.set(event, new Set());
 			}
-			listeners.get(event)!.add(listener);
+			listeners.get(event)?.add(listener);
 
 			return () => {
 				listeners.get(event)?.delete(listener);
@@ -114,7 +114,9 @@ export function createMockCacheManager() {
 	return {
 		get: vi.fn((key: string) => {
 			const entry = cache.get(key);
-			if (!entry) return undefined;
+			if (!entry) {
+				return undefined;
+			}
 			if (entry.expiresAt && entry.expiresAt < Date.now()) {
 				cache.delete(key);
 				return undefined;
@@ -228,7 +230,7 @@ export function createMockSnapshotRepository() {
  */
 export function createMockCheckpointManager() {
 	return {
-		createCheckpoint: vi.fn(async () => ({ id: "cp-" + Math.random().toString(36).slice(2) })),
+		createCheckpoint: vi.fn(async () => ({ id: `cp-${Math.random().toString(36).slice(2)}` })),
 		restoreCheckpoint: vi.fn(async () => ""),
 		deleteCheckpoint: vi.fn(async () => {}),
 		listCheckpoints: vi.fn(async () => []),

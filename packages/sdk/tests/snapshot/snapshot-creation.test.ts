@@ -9,15 +9,15 @@
  * - Error handling and recovery
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
+	createLargeSnapshot,
 	createSnapshot,
 	createSnapshots,
-	createLargeSnapshot,
-	createSnapshotWithSecret,
 	createSnapshotWithMocks,
+	createSnapshotWithSecret,
 } from "../fixtures/index.js";
-import { measureTime, delay } from "../helpers/test-helpers.js";
+import { measureTime } from "../helpers/test-helpers.js";
 
 describe("@snapback/sdk - Snapshot Creation", () => {
 	beforeEach(() => {
@@ -54,16 +54,9 @@ describe("@snapback/sdk - Snapshot Creation", () => {
 		});
 
 		it("handles different file paths", () => {
-			const paths = [
-				"/src/app.ts",
-				"/src/types/index.ts",
-				"/test/unit/app.test.ts",
-				"C:\\Users\\test\\file.ts",
-			];
+			const paths = ["/src/app.ts", "/src/types/index.ts", "/test/unit/app.test.ts", "C:\\Users\\test\\file.ts"];
 
-			const snapshots = paths.map((path) =>
-				createSnapshot({ filePath: path })
-			);
+			const snapshots = paths.map((path) => createSnapshot({ filePath: path }));
 
 			snapshots.forEach((snapshot, index) => {
 				expect(snapshot.filePath).toBe(paths[index]);
@@ -253,7 +246,7 @@ describe("@snapback/sdk - Snapshot Creation", () => {
 
 	describe("Content Variations", () => {
 		it("creates snapshots with TypeScript content", () => {
-			const tsContent = `interface User { id: string; name: string; }`;
+			const tsContent = "interface User { id: string; name: string; }";
 			const snapshot = createSnapshot({ content: tsContent });
 
 			expect(snapshot.content).toContain("interface");
@@ -269,7 +262,7 @@ describe("@snapback/sdk - Snapshot Creation", () => {
 		});
 
 		it("creates snapshots with markdown content", () => {
-			const mdContent = `# Title\n## Subtitle\n- Item 1\n- Item 2`;
+			const mdContent = "# Title\n## Subtitle\n- Item 1\n- Item 2";
 			const snapshot = createSnapshot({ content: mdContent });
 
 			expect(snapshot.content).toContain("# Title");
@@ -277,7 +270,7 @@ describe("@snapback/sdk - Snapshot Creation", () => {
 		});
 
 		it("creates snapshots with multiline content", () => {
-			const multiline = `line1\nline2\nline3\nline4`;
+			const multiline = "line1\nline2\nline3\nline4";
 			const snapshot = createSnapshot({ content: multiline });
 
 			const lines = snapshot.content.split("\n");
@@ -327,7 +320,7 @@ describe("@snapback/sdk - Snapshot Creation", () => {
 		});
 
 		it("handles very long file paths", () => {
-			const longPath = "/" + "a/".repeat(100) + "file.ts";
+			const longPath = `/${"a/".repeat(100)}file.ts`;
 			const snapshot = createSnapshot({ filePath: longPath });
 
 			expect(snapshot.filePath).toBe(longPath);

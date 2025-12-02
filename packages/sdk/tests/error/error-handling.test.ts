@@ -1,10 +1,5 @@
-import { describe, it, expect } from "vitest";
-import {
-	expectOk,
-	expectErr,
-	measureTime,
-	delay,
-} from "../helpers/test-helpers";
+import { describe, expect, it } from "vitest";
+import { delay, measureTime } from "../helpers/test-helpers";
 
 describe("@snapback/sdk - Error Handling", () => {
 	describe("Error Type Detection", () => {
@@ -50,7 +45,7 @@ describe("@snapback/sdk - Error Handling", () => {
 				info: "Cache miss on query",
 			};
 
-			Object.entries(errors).forEach(([level, message]) => {
+			Object.entries(errors).forEach(([_level, message]) => {
 				expect(message.length).toBeGreaterThan(0);
 			});
 		});
@@ -98,7 +93,7 @@ describe("@snapback/sdk - Error Handling", () => {
 					success = true;
 					break;
 				}
-				await delay(10 * Math.pow(2, i));
+				await delay(10 * 2 ** i);
 			}
 
 			expect(success).toBe(true);
@@ -111,7 +106,9 @@ describe("@snapback/sdk - Error Handling", () => {
 
 			for (let i = 0; i < maxAttempts; i++) {
 				attempts++;
-				if (i === maxAttempts - 1) break;
+				if (i === maxAttempts - 1) {
+					break;
+				}
 			}
 
 			expect(attempts).toBe(maxAttempts);
@@ -122,7 +119,7 @@ describe("@snapback/sdk - Error Handling", () => {
 			const backoffs: number[] = [];
 
 			for (let i = 0; i < 3; i++) {
-				backoffs.push(baseDelay * Math.pow(2, i));
+				backoffs.push(baseDelay * 2 ** i);
 			}
 
 			expect(backoffs).toEqual([10, 20, 40]);
@@ -200,8 +197,7 @@ describe("@snapback/sdk - Error Handling", () => {
 				timeout: "The operation took too long. Please try again.",
 				network: "Network connection failed. Please check your internet.",
 				auth: "Your session has expired. Please log in again.",
-				permission:
-					"You don't have permission to perform this action.",
+				permission: "You don't have permission to perform this action.",
 				validation: "The data you provided is invalid.",
 			};
 
@@ -227,18 +223,15 @@ describe("@snapback/sdk - Error Handling", () => {
 			const errors = [
 				{
 					message: "File not found",
-					suggestion:
-						"Check that the file exists at the specified path",
+					suggestion: "Check that the file exists at the specified path",
 				},
 				{
 					message: "Permission denied",
-					suggestion:
-						"Ensure you have write access to the target directory",
+					suggestion: "Ensure you have write access to the target directory",
 				},
 				{
 					message: "Network timeout",
-					suggestion:
-						"Check your internet connection and try again",
+					suggestion: "Check your internet connection and try again",
 				},
 			];
 
@@ -279,7 +272,7 @@ describe("@snapback/sdk - Error Handling", () => {
 		});
 
 		it("captures error metadata", () => {
-			const error = new Error("Test error");
+			const _error = new Error("Test error");
 			const metadata = {
 				userId: "user-123",
 				operation: "test",
@@ -295,9 +288,7 @@ describe("@snapback/sdk - Error Handling", () => {
 
 		it("preserves error stack traces", () => {
 			const error = new Error("Original error");
-			const wrappedError = new Error(
-				`Failed operation: ${error.message}`
-			);
+			const wrappedError = new Error(`Failed operation: ${error.message}`);
 
 			expect(wrappedError.message).toContain(error.message);
 		});
@@ -309,10 +300,7 @@ describe("@snapback/sdk - Error Handling", () => {
 				"storage-error": 2,
 			};
 
-			const totalErrors = Object.values(errorGroups).reduce(
-				(a, b) => a + b,
-				0
-			);
+			const totalErrors = Object.values(errorGroups).reduce((a, b) => a + b, 0);
 
 			expect(totalErrors).toBe(10);
 			expect(errorGroups["network-error"]).toBe(5);
@@ -352,7 +340,7 @@ describe("@snapback/sdk - Error Handling", () => {
 
 			const { duration } = await measureTime(async () => {
 				for (let i = 0; i < attempts; i++) {
-					await delay(baseDelay * Math.pow(2, i));
+					await delay(baseDelay * 2 ** i);
 				}
 			});
 
@@ -383,9 +371,7 @@ describe("@snapback/sdk - Error Handling", () => {
 
 			const results = await Promise.allSettled(promises);
 
-			expect(results.filter((r) => r.status === "rejected")).toHaveLength(
-				3
-			);
+			expect(results.filter((r) => r.status === "rejected")).toHaveLength(3);
 		});
 
 		it("isolates error context per operation", () => {
@@ -395,9 +381,7 @@ describe("@snapback/sdk - Error Handling", () => {
 				{ operationId: 3, error: null },
 			];
 
-			expect(
-				contexts.filter((c) => c.error === null)
-			).toHaveLength(2);
+			expect(contexts.filter((c) => c.error === null)).toHaveLength(2);
 		});
 	});
 

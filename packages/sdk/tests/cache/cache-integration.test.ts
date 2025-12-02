@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { measureTime, delay } from "../helpers/test-helpers";
+import { beforeEach, describe, expect, it } from "vitest";
+import { delay, measureTime } from "../helpers/test-helpers";
 
 /**
  * Mock cache implementation for testing
@@ -14,7 +14,9 @@ class MockCache {
 
 	get(key: string): unknown {
 		const entry = this.store.get(key);
-		if (!entry) return undefined;
+		if (!entry) {
+			return undefined;
+		}
 
 		if (entry.expireTime && Date.now() > entry.expireTime) {
 			this.store.delete(key);
@@ -255,7 +257,7 @@ describe("@snapback/sdk - Cache Integration", () => {
 			const promises = Array.from({ length: 100 }, (_, i) =>
 				Promise.resolve().then(() => {
 					cache.set(`key-${i}`, { value: i });
-				})
+				}),
 			);
 
 			await Promise.all(promises);
@@ -271,7 +273,7 @@ describe("@snapback/sdk - Cache Integration", () => {
 			const promises = Array.from({ length: 50 }, (_, i) =>
 				Promise.resolve().then(() => {
 					return cache.get(`key-${i}`);
-				})
+				}),
 			);
 
 			return Promise.all(promises).then((results) => {
@@ -285,11 +287,9 @@ describe("@snapback/sdk - Cache Integration", () => {
 		it("handles mixed concurrent operations", async () => {
 			const operations = [
 				...Array.from({ length: 25 }, (_, i) =>
-					Promise.resolve().then(() => cache.set(`key-${i}`, { value: i }))
+					Promise.resolve().then(() => cache.set(`key-${i}`, { value: i })),
 				),
-				...Array.from({ length: 25 }, (_, i) =>
-					Promise.resolve().then(() => cache.get(`key-${i}`))
-				),
+				...Array.from({ length: 25 }, (_, i) => Promise.resolve().then(() => cache.get(`key-${i}`))),
 			];
 
 			await Promise.all(operations);
@@ -399,17 +399,17 @@ describe("@snapback/sdk - Cache Integration", () => {
 		});
 
 		it("handles NaN values", () => {
-			cache.set("nan", NaN);
+			cache.set("nan", Number.NaN);
 			const result = cache.get("nan");
 			expect(Number.isNaN(result as number)).toBe(true);
 		});
 
 		it("handles infinity values", () => {
-			cache.set("inf", Infinity);
-			cache.set("neginf", -Infinity);
+			cache.set("inf", Number.POSITIVE_INFINITY);
+			cache.set("neginf", Number.NEGATIVE_INFINITY);
 
-			expect(cache.get("inf")).toBe(Infinity);
-			expect(cache.get("neginf")).toBe(-Infinity);
+			expect(cache.get("inf")).toBe(Number.POSITIVE_INFINITY);
+			expect(cache.get("neginf")).toBe(Number.NEGATIVE_INFINITY);
 		});
 
 		it("handles zero values", () => {

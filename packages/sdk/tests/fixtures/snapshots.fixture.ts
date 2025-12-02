@@ -19,11 +19,11 @@ export interface SnapshotFixture {
  * Create a minimal valid snapshot
  */
 export function createSnapshot(overrides?: Partial<SnapshotFixture>): SnapshotFixture {
-	const id = overrides?.id ?? "snap-" + Math.random().toString(36).slice(2);
+	const id = overrides?.id ?? `snap-${Math.random().toString(36).slice(2)}`;
 	const filePath = overrides?.filePath ?? "/test/file.ts";
 	const content = overrides?.content ?? "console.log('test');";
 	const timestamp = overrides?.timestamp ?? Date.now();
-	const hash = overrides?.hash ?? "hash-" + Math.random().toString(36).slice(2);
+	const hash = overrides?.hash ?? `hash-${Math.random().toString(36).slice(2)}`;
 	const version = overrides?.version ?? "1.0.0";
 
 	return {
@@ -76,27 +76,21 @@ export { crypto };`,
 /**
  * Create multiple snapshots for batch operations
  */
-export function createSnapshots(
-	count: number,
-	overrides?: Partial<SnapshotFixture>
-): SnapshotFixture[] {
+export function createSnapshots(count: number, overrides?: Partial<SnapshotFixture>): SnapshotFixture[] {
 	return Array.from({ length: count }, (_, i) =>
 		createSnapshot({
 			id: `snap-${i}`,
 			filePath: `/test/file-${i}.ts`,
 			content: `// File ${i}\nconsole.log('test-${i}');`,
 			...overrides,
-		})
+		}),
 	);
 }
 
 /**
  * Create a large snapshot for performance testing
  */
-export function createLargeSnapshot(
-	sizeKb: number = 100,
-	overrides?: Partial<SnapshotFixture>
-): SnapshotFixture {
+export function createLargeSnapshot(sizeKb = 100, overrides?: Partial<SnapshotFixture>): SnapshotFixture {
 	// Generate content approximately sizeKb
 	const targetSize = sizeKb * 1024;
 	const lineTemplate = "// This is a test line for performance testing\n";

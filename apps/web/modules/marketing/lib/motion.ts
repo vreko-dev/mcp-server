@@ -1,25 +1,43 @@
 "use client";
 
 import type { Transition, Variants } from "motion/react";
+import { useEffect, useState } from "react";
 
-// Detect reduced motion preference
-export const useReducedMotion = () => {
-	if (typeof window === "undefined") {
-		return false;
-	}
-	return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+// Hook: Detect reduced motion preference (SSR-safe)
+export const useReducedMotion = (): boolean => {
+	const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+	useEffect(() => {
+		// Only run in browser
+		if (typeof window === "undefined") {
+			return;
+		}
+
+		const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+		setPrefersReducedMotion(mediaQuery.matches);
+
+		const handleChange = (event: MediaQueryListEvent) => {
+			setPrefersReducedMotion(event.matches);
+		};
+
+		mediaQuery.addEventListener("change", handleChange);
+		return () => mediaQuery.removeEventListener("change", handleChange);
+	}, []);
+
+	return prefersReducedMotion;
 };
 
-// Motion variants factory
-export const createMotionVariants = (options: {
-	from?: Record<string, any>;
-	to?: Record<string, any>;
-	duration?: number;
-	delay?: number;
-	ease?: string | number[];
-}): Variants => {
-	const reducedMotion = useReducedMotion();
-
+// Motion variants factory (use within components with useReducedMotion hook)
+export const createMotionVariants = (
+	reducedMotion: boolean,
+	options: {
+		from?: Record<string, any>;
+		to?: Record<string, any>;
+		duration?: number;
+		delay?: number;
+		ease?: string | number[];
+	},
+): Variants => {
 	return {
 		initial: reducedMotion ? options.to || {} : options.from || {},
 		animate: options.to || {},
@@ -27,14 +45,15 @@ export const createMotionVariants = (options: {
 	};
 };
 
-// Transition factory
-export const createTransition = (options: {
-	duration?: number;
-	delay?: number;
-	ease?: [number, number, number, number];
-}): Transition => {
-	const reducedMotion = useReducedMotion();
-
+// Transition factory (use within components with useReducedMotion hook)
+export const createTransition = (
+	reducedMotion: boolean,
+	options: {
+		duration?: number;
+		delay?: number;
+		ease?: [number, number, number, number];
+	},
+): Transition => {
 	if (reducedMotion) {
 		return { duration: 0 };
 	}

@@ -26,14 +26,17 @@ export function useReducedMotion(): boolean {
 	return prefersReducedMotion;
 }
 
-// Factory: Create accessible transitions
-export function createTransition(options: {
-	duration?: number;
-	delay?: number;
-	ease?: [number, number, number, number];
-}): Transition {
-	const reducedMotion = useReducedMotion();
-
+// Factory: Create accessible transitions (use within components with useReducedMotion hook)
+export function createTransition(
+	reducedMotion: boolean,
+	options: {
+		duration?: number;
+		delay?: number;
+		ease?:
+			| [number, number, number, number]
+			| [number, number, number, number][];
+	},
+): Transition {
 	if (reducedMotion) {
 		return { duration: 0 };
 	}

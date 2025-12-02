@@ -27,6 +27,7 @@
     "build": "tsup && tsc --emitDeclarationOnly",
     "dev": "tsup --watch",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "perf": "vitest run --reporter=verbose test/perf.spec.ts",
     "type-check": "tsc --noEmit"
   },

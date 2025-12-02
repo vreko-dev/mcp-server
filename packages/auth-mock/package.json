@@ -21,7 +21,8 @@
   "private": true,
   "scripts": {
     "build": "tsup",
-    "test": "test -d test && vitest run || echo 'No test directory found, skipping tests'"
+    "test": "test -d test && vitest run || echo 'No test directory found, skipping tests'",
+    "test:coverage": "test -d test && vitest run --coverage || echo 'No test directory found, skipping tests'"
   },
   "type": "module",
   "types": "./dist/index.d.ts"

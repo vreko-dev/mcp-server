@@ -41,14 +41,11 @@ describe("Analyze Risk HTTP E2E Tests", () => {
 		await httpServer.stop();
 	});
 
-	it("should analyze risk via HTTP POST request", async () => {
-		// This is a placeholder test - in a real implementation, we would:
-		// 1. Send a POST request to the analyze-risk endpoint
+	it.skip("should analyze risk via HTTP POST request", async () => {
+		// TODO: Implement real HTTP POST test
+		// 1. Send a POST request to the analyze-risk endpoint with test data
 		// 2. Verify the response contains the expected analysis results
-		// 3. Check that the server properly handles the request
-
-		// For now, we'll just verify the server is running
-		expect(httpServer).toBeDefined();
-		expect(testPort).toBeGreaterThan(3000);
+		// 3. Check that the server properly handles errors gracefully
+		// This test will be implemented when E2E test harness is ready
 	});
 });

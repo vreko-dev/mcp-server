@@ -75,7 +75,7 @@ const pricingTiers: PricingCardData[] = [
 		],
 		cta: {
 			text: "Install Extension",
-			href: "vscode:extension/MarcelleLabs.snapback-vscode",
+			href: "https://marketplace.visualstudio.com/items?itemName=MarcelleLabs.snapback-vscode",
 			variant: "outline",
 		},
 	},

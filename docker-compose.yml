@@ -12,6 +12,8 @@ services:
             POSTGRES_USER: ${POSTGRES_USER:-snapback}
             POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
             PGDATA: /var/lib/postgresql/data/pgdata
+            # Memory optimization for production
+            POSTGRES_INITDB_ARGS: "-c shared_buffers=256MB -c effective_cache_size=512MB -c maintenance_work_mem=64MB -c work_mem=16MB -c max_connections=100"
         volumes:
             - postgres_data:/var/lib/postgresql/data
             - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
@@ -34,6 +36,14 @@ services:
         tmpfs:
             - /tmp
             - /var/run/postgresql
+        deploy:
+            resources:
+                limits:
+                    memory: 1024M
+                    cpus: "1"
+                reservations:
+                    memory: 512M
+                    cpus: "0.5"
 
     # Redis Cache (optional but recommended)
     redis:
@@ -55,6 +65,12 @@ services:
             start_period: 10s
         security_opt:
             - no-new-privileges:true
+        deploy:
+            resources:
+                limits:
+                    memory: 512M
+                reservations:
+                    memory: 256M
 
     # API Service
     api:

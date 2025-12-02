@@ -15,6 +15,7 @@
   "private": true,
   "scripts": {
     "test": "test -d test && vitest run || echo 'No test directory found, skipping tests'",
+    "test:coverage": "test -d test && vitest run --coverage || echo 'No test directory found, skipping tests'",
     "test:int": "test -d test && vitest run --grep '(integration|Integration)' \"test/**/*.{spec,test}.ts\" || echo 'No test directory found, skipping tests'"
   },
   "types": "index.d.ts"

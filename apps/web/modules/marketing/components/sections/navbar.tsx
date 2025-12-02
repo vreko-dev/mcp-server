@@ -275,16 +275,16 @@ const Navbar = () => {
 
 								{/* Login Button - Added to the right side */}
 								<MagneticHover strength={0.3} radius={20}>
-									<Link
-										href="vscode:extension/MarcelleLabs.snapback-vscode"
+									<a
+										href="https://marketplace.visualstudio.com/items?itemName=MarcelleLabs.snapback-vscode"
 										target="_blank"
 										rel="noopener noreferrer"
 										className="px-4 py-2 text-sm font-medium bg-white text-black rounded-lg hover:bg-white/90 transition-all duration-200 relative group"
-										onClick={closeMenu}
+										title="Open VS Code Marketplace (works on all systems)"
 									>
 										Install for VS Code
 										<span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-primary to-secondary scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
-									</Link>
+									</a>
 								</MagneticHover>
 							</div>
 

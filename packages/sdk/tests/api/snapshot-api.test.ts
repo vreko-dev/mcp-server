@@ -298,42 +298,13 @@ describe("Checkpoint API", () => {
 			);
 		});
 
-		it("should handle checkpoint retrieval and listing", async () => {
-			// Create multiple test checkpoints
-			const mockCheckpointsResponse = {
-				json: vi.fn().mockResolvedValue({
-					checkpoints: [
-						{
-							id: "chk-001",
-							name: "Checkpoint 1",
-							timestamp: Date.now() - 3600000,
-							fileCount: 10,
-						},
-						{
-							id: "chk-002",
-							name: "Checkpoint 2",
-							timestamp: Date.now() - 1800000,
-							fileCount: 15,
-						},
-					],
-				}),
-			};
-			mockKyInstance.get.mockReturnValue(mockCheckpointsResponse);
-
-			// Test checkpoint listing functionality
-			// Since we don't have a direct method for this, we'll simulate it
-			// In a real implementation, there would be a method like client.listCheckpoints()
-
-			// For now, we'll test that the API endpoint can be called
-			const mockResponse = {
-				json: vi.fn().mockResolvedValue({
-					checkpointList: ["chk-001", "chk-002"],
-				}),
-			};
-			mockKyInstance.get.mockReturnValue(mockResponse);
-
-			// This is a placeholder test since the client doesn't have a listCheckpoints method yet
-			expect(client).toBeInstanceOf(SnapbackAnalyticsClient);
+		it.skip("should handle checkpoint retrieval and listing", async () => {
+			// TODO: Implement real test for checkpoint listing API
+			// This test requires implementing listCheckpoints() method in SnapbackAnalyticsClient
+			// Once method is available, test:
+			// 1. Create multiple test checkpoints
+			// 2. Call client.listCheckpoints()
+			// 3. Verify response structure and data integrity
 		});
 	});
 });

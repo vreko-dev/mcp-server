@@ -1,6 +1,24 @@
+import type { Metadata } from "next";
 import { ChangelogSection } from "@marketing/changelog/components/ChangelogSection";
 
-export default async function PricingPage() {
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://snapback.dev";
+
+export const metadata: Metadata = {
+	title: "Changelog | SnapBack - Latest Updates & Release Notes",
+	description:
+		"Stay updated with SnapBack releases, feature improvements, bug fixes, and product roadmap. See what's new in AI code protection.",
+	openGraph: {
+		title: "Changelog | SnapBack - Latest Updates",
+		description: "Latest releases and updates to SnapBack AI code protection.",
+		url: `${SITE_URL}/changelog`,
+		type: "website",
+	},
+	alternates: {
+		canonical: `${SITE_URL}/changelog`,
+	},
+};
+
+export default async function ChangelogPage() {
 	return (
 		<div className="container max-w-3xl pt-32 pb-16">
 			<div className="mb-12 text-balance pt-8 text-center">

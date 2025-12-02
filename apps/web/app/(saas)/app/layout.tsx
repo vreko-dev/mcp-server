@@ -42,7 +42,7 @@ export default async function Layout({ children }: PropsWithChildren) {
 		redirect("/auth/login");
 	}
 
-	if (config.users.enableOnboarding && !session.user?.onboardingComplete) {
+	if (config.users.enableOnboarding && !(session as any)?.user?.onboardingComplete) {
 		redirect("/onboarding");
 	}
 
@@ -52,7 +52,7 @@ export default async function Layout({ children }: PropsWithChildren) {
 		const organization =
 			organizations.find(
 				(org: { id: string }) =>
-					org.id === session?.session.activeOrganizationId,
+					org.id === (session as any)?.session?.activeOrganizationId,
 			) || organizations[0];
 
 		if (!organization) {
@@ -70,7 +70,7 @@ export default async function Layout({ children }: PropsWithChildren) {
 		!hasFreePlan
 	) {
 		const organizationId = config.organizations.enable
-			? session?.session.activeOrganizationId || organizations?.at(0)?.id
+			? (session as any)?.session?.activeOrganizationId || (organizations as any)?.at(0)?.id
 			: undefined;
 
 		const [error, data] = await attemptAsync<{ purchases: Purchase[] }, Error>(

@@ -1,62 +1,34 @@
 /**
  * Server-Side Auth Helpers
  *
- * ✅ These functions run in Node.js runtime (not Edge) and can access
- * the database directly for authentication validation.
- *
- * Uses canonical snapbackAuth for unified context extraction supporting:
- * - Session cookies (better-auth)
- * - Bearer tokens
- * - API keys
- * - x-api-key headers
- *
- * Use these in Server Components and Server Actions for secure authentication.
+ * NOTE: These functions are stubbed for frontend-only deployment.
+ * Implement with real @snapback/auth in API service.
  */
 
 "use server";
 
-import { snapbackAuth } from "@snapback/auth";
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";
+
+// Stub type for auth context
+type SnapbackAuthContext = {
+	userId: string;
+	email: string;
+	role: string;
+	emailVerified: boolean;
+	twoFactorEnabled: boolean;
+	passkeyRegistered: boolean;
+};
 
 /**
  * Get current authenticated context (server-side)
  *
- * ✅ SECURITY: Uses canonical snapbackAuth interface
- * ✅ PERFORMANCE: Cached per-request using React cache()
- * ✅ RELIABILITY: No external API calls, direct database access
- *
- * @returns SnapbackAuthContext or null if not authenticated
- *
- * @example
- * ```ts
- * // In Server Component
- * export default async function DashboardPage() {
- *   const auth = await getAuth();
- *
- *   if (!auth) {
- *     redirect('/auth/login');
- *   }
- *
- *   return <Dashboard userId={auth.userId} plan={auth.plan} />;
- * }
- * ```
+ * NOTE: Returns null in frontend-only deployment.
+ * Connect to real API service for authentication.
  */
 export const getAuth = cache(async () => {
-	try {
-		const headersList = await headers();
-		const request = new Request("http://localhost", {
-			headers: headersList,
-		});
-
-		// ✅ Use canonical snapbackAuth interface
-		// Automatically handles: session cookies, Bearer tokens, API keys, x-api-key
-		return await snapbackAuth.getContextFromRequest(request);
-	} catch (error) {
-		console.error("[Auth] Get auth error:", error);
-		return null;
-	}
+	console.warn("[Auth] getAuth() is stubbed - implement with real API");
+	return null as SnapbackAuthContext | null;
 });
 
 /**
@@ -143,30 +115,11 @@ export async function isAuth(): Promise<boolean> {
 
 /**
  * Sign out (server action)
- *
- * @example
- * ```ts
- * <form action={signOut}>
- *   <button type="submit">Sign Out</button>
- * </form>
- * ```
  */
 export async function signOut() {
 	"use server";
-
-	try {
-		const headersList = await headers();
-		const { auth: betterAuth } = await import("@snapback/auth");
-
-		await betterAuth.api.signOut({
-			headers: headersList,
-		});
-
-		redirect("/auth/login");
-	} catch (error) {
-		console.error("[Auth] Sign out error:", error);
-		throw error;
-	}
+	console.warn("[Auth] signOut() is stubbed - implement with real API");
+	redirect("/auth/login");
 }
 
 /**

@@ -45,6 +45,13 @@
 		"../../apps/api/**/*",
 		"final_launch_polish/**",
 		".next",
-		"services/**/*"
+		"services/**/*",
+		"app/(saas)/**/*",
+		"modules/saas/auth/**/*",
+		"modules/saas/payments/**/*",
+		"modules/saas/organizations/**/*",
+		"modules/saas/settings/**/*",
+		"modules/saas/onboarding/**/*",
+		"modules/saas/start/**/*"
 	]
 }

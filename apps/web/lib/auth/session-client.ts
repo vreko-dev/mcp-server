@@ -8,11 +8,31 @@
  * - Auth state change listeners
  */
 
-import type {
-	AuthState,
-	SessionWithUser,
-} from "@snapback/contracts";
-import { isAuthenticated, isLoading } from "@snapback/contracts";
+// Local type definitions (replaces @snapback/contracts)
+type SessionWithUser = {
+	user: {
+		id: string;
+		email: string;
+		name?: string;
+	};
+	session: {
+		id: string;
+		expiresAt: Date;
+	};
+};
+
+type AuthState =
+	| { status: "authenticated"; user: SessionWithUser["user"]; session: SessionWithUser["session"] }
+	| { status: "unauthenticated" }
+	| { status: "loading" };
+
+function isAuthenticated(state: AuthState): state is { status: "authenticated"; user: SessionWithUser["user"]; session: SessionWithUser["session"] } {
+	return state.status === "authenticated";
+}
+
+function isLoading(state: AuthState): state is { status: "loading" } {
+	return state.status === "loading";
+}
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
 const SESSION_KEY = "snapback:session";
@@ -311,9 +331,8 @@ class SessionClient {
 // Export singleton instance
 export const sessionClient = new SessionClient();
 
-// Export type for use in components
+// Export types for use in components
 export type { AuthState, SessionWithUser };
-export { isAuthenticated, isLoading } from "@snapback/contracts";
 
 /**
  * Helper function to check if user is authenticated

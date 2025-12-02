@@ -1,77 +1,35 @@
 import "server-only";
-import { auth } from "@snapback/auth";
-import { headers } from "next/headers";
 import { cache } from "react";
 
-export const getSession = cache(async () => {
-	const session = await auth.api.getSession({
-		headers: await headers(),
-		query: {
-			disableCookieCache: true,
-		},
-	});
+// STUB: @snapback/auth - requires backend API
+// All auth operations are stubbed for frontend-only deployment
 
-	return session;
+export const getSession = cache(async () => {
+	console.warn("[Auth] getSession() is stubbed - requires backend API");
+	return null;
 });
 
-export const getActiveOrganization = cache(async (slug: string) => {
-	try {
-		const activeOrganization = await auth.api.getFullOrganization({
-			query: {
-				organizationSlug: slug,
-			},
-			headers: await headers(),
-		});
-
-		return activeOrganization;
-	} catch {
-		return null;
-	}
+export const getActiveOrganization = cache(async (_slug: string) => {
+	console.warn("[Auth] getActiveOrganization() is stubbed - requires backend API");
+	return null;
 });
 
 export const getOrganizationList = cache(async () => {
-	try {
-		const organizationList = await auth.api.listOrganizations({
-			headers: await headers(),
-		});
-
-		return organizationList;
-	} catch {
-		return [];
-	}
+	console.warn("[Auth] getOrganizationList() is stubbed - requires backend API");
+	return [];
 });
 
 export const getUserAccounts = cache(async () => {
-	try {
-		const userAccounts = await auth.api.listUserAccounts({
-			headers: await headers(),
-		});
-
-		return userAccounts;
-	} catch {
-		return [];
-	}
+	console.warn("[Auth] getUserAccounts() is stubbed - requires backend API");
+	return [];
 });
 
 export const getUserPasskeys = cache(async () => {
-	try {
-		const userPasskeys = await auth.api.listPasskeys({
-			headers: await headers(),
-		});
-
-		return userPasskeys;
-	} catch {
-		return [];
-	}
+	console.warn("[Auth] getUserPasskeys() is stubbed - requires backend API");
+	return [];
 });
 
-export const getInvitation = cache(async (id: string) => {
-	try {
-		return await auth.api.getInvitation({
-			query: { id },
-			headers: await headers(),
-		});
-	} catch {
-		return null;
-	}
+export const getInvitation = cache(async (_id: string) => {
+	console.warn("[Auth] getInvitation() is stubbed - requires backend API");
+	return null;
 });

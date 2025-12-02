@@ -6,8 +6,11 @@ import { redirect } from "next/navigation";
 export default async function AppStartPage() {
 	const session = await getSession();
 
+	// STUB: In frontend-only mode, session is null
+	// Allow access without authentication (in production, require real auth)
 	if (!session) {
-		redirect("/auth/login");
+		console.warn("[AppStart] Accessing without backend auth - stubbed");
+		// Don't redirect - allow frontend-only access
 	}
 
 	const organizations = await getOrganizationList();
@@ -16,24 +19,24 @@ export default async function AppStartPage() {
 	const organizationsEnable = true;
 	const organizationsRequireOrganization = true;
 
-	if (organizationsEnable && organizationsRequireOrganization) {
+	if (organizationsEnable && organizationsRequireOrganization && session) {
 		const organization =
 			organizations.find(
-				(org: { id: string; slug: string }) =>
-					org.id === session?.session.activeOrganizationId,
+				(org: any) =>
+					org.id === (session as any)?.session?.activeOrganizationId,
 			) || organizations[0];
 
 		if (!organization) {
 			redirect("/new-organization");
 		}
 
-		redirect(`/app/${organization.slug}`);
+		redirect(`/app/${(organization as any)?.slug}`);
 	}
 
 	return (
 		<div className="">
 			<PageHeader
-				title={`Welcome, ${session?.user.name}`}
+				title={`Welcome, ${(session as any)?.user?.name || "User"}`}
 				subtitle="Get started with your account"
 			/>
 

@@ -1,38 +1,27 @@
-import { OrganizationInvitationModal } from "@saas/organizations/components/OrganizationInvitationModal";
 import { AuthWrapper } from "@saas/shared/components/AuthWrapper";
-import { auth } from "@snapback/auth";
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { getOrganizationById } from "../../../actions/organizations";
+
+// STUB: @snapback/auth - requires backend API
+// This page requires authentication from the backend API
+// In frontend-only mode, redirect to app dashboard
 
 export default async function OrganizationInvitationPage({
 	params,
 }: {
 	params: Promise<{ invitationId: string }>;
 }) {
-	const { invitationId } = await params;
+	await params; // consume params to avoid unused variable warning
 
-	const invitation = await auth.api.getInvitation({
-		query: {
-			id: invitationId,
-		},
-		headers: await headers(),
-	});
-
-	if (!invitation) {
-		redirect("/app");
-	}
-
-	const organization = await getOrganizationById(invitation.organizationId);
+	// STUB: Cannot process invitation without backend auth
+	// Redirect to dashboard
+	console.warn("[OrganizationInvitation] Stub - requires backend API");
+	redirect("/app");
 
 	return (
 		<AuthWrapper>
-			<OrganizationInvitationModal
-				organizationName={invitation.organizationName}
-				organizationSlug={invitation.organizationSlug}
-				logoUrl={organization?.logo || undefined}
-				invitationId={invitationId}
-			/>
+			<div className="flex items-center justify-center min-h-screen">
+				<p>Organization invitation page requires backend API connection.</p>
+			</div>
 		</AuthWrapper>
 	);
 }

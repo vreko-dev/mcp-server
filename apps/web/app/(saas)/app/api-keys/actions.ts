@@ -1,8 +1,9 @@
 "use server";
 
 import { getSession } from "@saas/auth/lib/server";
-import { createApiKey, listApiKeys, revokeApiKey } from "@snapback/auth";
-import { revalidatePath } from "next/cache";
+
+// STUB: API Key operations require backend API
+// In frontend-only mode, these return empty/stub responses
 
 // ApiKey type matching the auth package's interface
 interface ApiKey {
@@ -26,50 +27,44 @@ interface ApiKey {
 export async function listApiKeysAction(): Promise<Omit<ApiKey, "keyHash">[]> {
 	const session = await getSession();
 
-	if (!session?.user) {
+	if (!(session as any)?.user) {
 		throw new Error("Unauthorized");
 	}
 
-	return await listApiKeys(session.user.id);
+	// STUB: Requires backend API
+	console.warn("[ApiKeys] listApiKeysAction() is stubbed - requires backend API");
+	return [];
 }
 
 /**
  * Create a new API key
  */
 export async function createApiKeyAction(
-	name: string,
-	rateLimit = 100,
+	_name: string,
+	_rateLimit = 100,
 ): Promise<ApiKey & { fullKey: string }> {
 	const session = await getSession();
 
-	if (!session?.user) {
+	if (!(session as any)?.user) {
 		throw new Error("Unauthorized");
 	}
 
-	const result = await createApiKey({
-		userId: session.user.id,
-		name,
-		rateLimit,
-	});
-
-	// Revalidate the page to show the new key
-	revalidatePath("/app/api-keys");
-
-	return result;
+	// STUB: Requires backend API
+	console.warn("[ApiKeys] createApiKeyAction() is stubbed - requires backend API");
+	throw new Error("API key creation requires backend API connection");
 }
 
 /**
  * Revoke an API key
  */
-export async function revokeApiKeyAction(keyId: string): Promise<void> {
+export async function revokeApiKeyAction(_keyId: string): Promise<void> {
 	const session = await getSession();
 
-	if (!session?.user) {
+	if (!(session as any)?.user) {
 		throw new Error("Unauthorized");
 	}
 
-	await revokeApiKey(keyId, session.user.id);
-
-	// Revalidate the page to update the list
-	revalidatePath("/app/api-keys");
+	// STUB: Requires backend API
+	console.warn("[ApiKeys] revokeApiKeyAction() is stubbed - requires backend API");
+	throw new Error("API key revocation requires backend API connection");
 }

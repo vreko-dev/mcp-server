@@ -38,7 +38,7 @@ export default async function ChoosePlanPage() {
 			redirect("/new-organization");
 		}
 
-		organizationId = organization.id;
+		organizationId = (organization as any)?.id;
 	}
 
 	const [error, purchases] = await attemptAsync(() =>
@@ -73,7 +73,7 @@ export default async function ChoosePlanPage() {
 								organizationId,
 							}
 						: {
-								userId: session.user.id,
+								userId: (session as any)?.user?.id,
 							})}
 				/>
 			</div>

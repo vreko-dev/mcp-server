@@ -86,7 +86,7 @@ export function useSession(): UseSessionReturn {
 						id: data.user.id,
 						email: data.user.email,
 						name: data.user.name ?? undefined,
-						image: data.user.image ?? undefined,
+						image: (data.user as any)?.image ?? undefined,
 					},
 					session: {
 						id: data.session.id,

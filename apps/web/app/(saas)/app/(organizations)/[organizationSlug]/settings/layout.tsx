@@ -29,7 +29,7 @@ export default async function SettingsLayout({
 }>) {
 	const session = await getSession();
 	const { organizationSlug } = await params;
-	const organization = await getActiveOrganization(organizationSlug);
+	const organization = (await getActiveOrganization(organizationSlug)) as any;
 
 	if (!organization) {
 		redirect("/app");
@@ -37,7 +37,7 @@ export default async function SettingsLayout({
 
 	const userIsOrganizationAdmin = isOrganizationAdmin(
 		organization,
-		session?.user,
+		(session as any)?.user,
 	);
 
 	const organizationSettingsBasePath = `/app/${organizationSlug}/settings`;

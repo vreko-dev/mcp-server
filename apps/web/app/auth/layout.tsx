@@ -1,4 +1,3 @@
-import { SessionProvider } from "@saas/auth/components/SessionProvider";
 import { AuthWrapper } from "@saas/shared/components/AuthWrapper";
 import { Document } from "@shared/components/Document";
 import { headers } from "next/headers";
@@ -14,9 +13,7 @@ export default async function AuthLayout({ children }: PropsWithChildren) {
 
 	return (
 		<Document locale={locale}>
-			<SessionProvider>
-				{isFullScreenLogin ? children : <AuthWrapper>{children}</AuthWrapper>}
-			</SessionProvider>
+			{isFullScreenLogin ? children : <AuthWrapper>{children}</AuthWrapper>}
 		</Document>
 	);
 }

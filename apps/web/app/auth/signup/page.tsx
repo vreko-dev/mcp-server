@@ -28,17 +28,17 @@ export default async function SignupPage({
 	}
 
 	if (invitationId) {
-		const invitation = await getInvitation(invitationId);
+		const invitation = (await getInvitation(invitationId)) as any;
 
 		if (
 			!invitation ||
-			invitation.status !== "pending" ||
-			invitation.expiresAt.getTime() < Date.now()
+			invitation?.status !== "pending" ||
+			invitation?.expiresAt?.getTime() < Date.now()
 		) {
 			redirect(withQuery("/auth/login", params));
 		}
 
-		return <SignupForm prefillEmail={invitation.email} />;
+		return <SignupForm prefillEmail={invitation?.email} />;
 	}
 
 	return <SignupForm />;

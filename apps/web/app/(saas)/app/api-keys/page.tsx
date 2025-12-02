@@ -9,7 +9,7 @@ import { ApiKeysClient } from "./api-keys-client";
 export default async function ApiKeysPage() {
 	const session = await getSession();
 
-	if (!session?.user) {
+	if (!(session as any)?.user) {
 		redirect("/auth/login?returnTo=/app/api-keys");
 	}
 

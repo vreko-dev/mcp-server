@@ -12,11 +12,11 @@ export default async function DashboardPage() {
 	// Server-side authentication check
 	const session = await getSession();
 
-	if (!session?.user) {
+	if (!(session as any)?.user) {
 		redirect("/auth/login");
 	}
 
-	const user = session.user;
+	const user = (session as any).user;
 
 	// Server-side data fetching - runs in parallel
 	try {

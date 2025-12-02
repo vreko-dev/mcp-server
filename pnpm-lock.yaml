@@ -1478,12 +1478,6 @@ importers:
       '@snapback/api-service':
         specifier: workspace:*
         version: link:../api
-      '@snapback/auth':
-        specifier: workspace:*
-        version: link:../../packages/auth
-      '@snapback/contracts':
-        specifier: workspace:*
-        version: link:../../packages/contracts
       '@snapback/core':
         specifier: workspace:*
         version: link:../../packages/core

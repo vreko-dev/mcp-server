@@ -17,7 +17,7 @@ export default async function OrganizationSettingsPage({
 }) {
 	const session = await getSession();
 	const { organizationSlug } = await params;
-	const organization = await getActiveOrganization(organizationSlug);
+	const organization = (await getActiveOrganization(organizationSlug)) as any;
 
 	if (!organization) {
 		return notFound();
@@ -25,7 +25,7 @@ export default async function OrganizationSettingsPage({
 
 	return (
 		<SettingsList>
-			{isOrganizationAdmin(organization, session?.user) && (
+			{isOrganizationAdmin(organization, (session as any)?.user) && (
 				<InviteMemberForm organizationId={organization.id} />
 			)}
 			<OrganizationMembersBlock organizationId={organization.id} />

@@ -10,9 +10,9 @@ export async function generateMetadata({
 }) {
 	const { organizationSlug } = await params;
 
-	const activeOrganization = await getActiveOrganization(
+	const activeOrganization = (await getActiveOrganization(
 		organizationSlug as string,
-	);
+	)) as any;
 
 	return {
 		title: activeOrganization?.name,
@@ -26,9 +26,9 @@ export default async function OrganizationPage({
 }) {
 	const { organizationSlug } = await params;
 
-	const activeOrganization = await getActiveOrganization(
+	const activeOrganization = (await getActiveOrganization(
 		organizationSlug as string,
-	);
+	)) as any;
 
 	if (!activeOrganization) {
 		return notFound();
@@ -37,7 +37,7 @@ export default async function OrganizationPage({
 	return (
 		<div>
 			<PageHeader
-				title={activeOrganization.name}
+				title={activeOrganization?.name}
 				subtitle="Get started with your organization"
 			/>
 

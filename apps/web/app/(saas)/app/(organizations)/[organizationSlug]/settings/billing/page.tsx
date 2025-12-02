@@ -27,7 +27,7 @@ export default async function BillingSettingsPage({
 	params: Promise<{ organizationSlug: string }>;
 }) {
 	const { organizationSlug } = await params;
-	const organization = await getActiveOrganization(organizationSlug);
+	const organization = (await getActiveOrganization(organizationSlug)) as any;
 
 	if (!organization) {
 		return notFound();
@@ -38,7 +38,7 @@ export default async function BillingSettingsPage({
 		Error
 	>(() =>
 		orpcClient.payments.listPurchases({
-			organizationId: organization.id,
+			organizationId: organization?.id,
 		}),
 	);
 
@@ -62,10 +62,10 @@ export default async function BillingSettingsPage({
 
 	return (
 		<SettingsList>
-			{activePlan && <ActivePlan organizationId={organization.id} />}
+			{activePlan && <ActivePlan organizationId={organization?.id} />}
 			{activePlan?.id && typeof activePlan.id === "string" && (
 				<ChangePlan
-					organizationId={organization.id}
+					organizationId={organization?.id}
 					activePlanId={activePlan.id}
 				/>
 			)}

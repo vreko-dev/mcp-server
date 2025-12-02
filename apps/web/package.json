@@ -36,8 +36,6 @@
 		"@react-email/components": "catalog:",
 		"@sindresorhus/slugify": "catalog:",
 		"@snapback/api-service": "workspace:*",
-		"@snapback/auth": "workspace:*",
-		"@snapback/contracts": "workspace:*",
 		"@snapback/core": "workspace:*",
 		"@snapback/integrations": "workspace:*",
 		"@t3-oss/env-nextjs": "catalog:",

@@ -1,5 +1,5 @@
-import { jsonb, pgTable, text, timestamp, uuid, check, index } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
+import { check, index, jsonb, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { apiKeys } from "./api-keys.js";
 
 export const policyEvaluations = pgTable(
@@ -22,10 +22,7 @@ export const policyEvaluations = pgTable(
 	},
 	(table) => {
 		return {
-			userCreatedAtIndex: index("policy_evaluations_user_created_at_idx").on(
-				table.userId,
-				table.createdAt,
-			),
+			userCreatedAtIndex: index("policy_evaluations_user_created_at_idx").on(table.userId, table.createdAt),
 			apiKeyCreatedAtIndex: index("policy_evaluations_api_key_created_at_idx").on(
 				table.apiKeyId,
 				table.createdAt,

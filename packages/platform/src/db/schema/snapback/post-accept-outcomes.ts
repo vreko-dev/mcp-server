@@ -1,4 +1,4 @@
-import { integer, jsonb, pgTable, text, timestamp, uuid, index } from "drizzle-orm/pg-core";
+import { index, integer, jsonb, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { apiKeys } from "./api-keys.js";
 
 export const postAcceptOutcomes = pgTable(
@@ -19,10 +19,7 @@ export const postAcceptOutcomes = pgTable(
 	},
 	(table) => {
 		return {
-			userCreatedAtIndex: index("post_accept_outcomes_user_created_at_idx").on(
-				table.userId,
-				table.createdAt,
-			),
+			userCreatedAtIndex: index("post_accept_outcomes_user_created_at_idx").on(table.userId, table.createdAt),
 			apiKeyCreatedAtIndex: index("post_accept_outcomes_api_key_created_at_idx").on(
 				table.apiKeyId,
 				table.createdAt,

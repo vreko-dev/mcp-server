@@ -1,14 +1,12 @@
-import { boolean, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { boolean, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
 export const apiKeys = pgTable("api_keys", {
-	id: uuid("id").primaryKey().defaultRandom().notNull(),
+	id: text("id").primaryKey().notNull(),
 	userId: text("user_id").notNull(),
-	name: text("name").notNull(),
-	keyPrefix: text("key_prefix").notNull(),
-	keyHash: text("key_hash").notNull(),
-	expiresAt: timestamp("expires_at"),
-	revokedAt: timestamp("revoked_at"),
-	isRevoked: boolean("is_revoked").default(false),
+	name: text("name"),
+	permissions: text("permissions").array().default([]).notNull(),
+	revoked: boolean("revoked").default(false).notNull(),
+	lastUsedAt: timestamp("last_used_at"),
 	createdAt: timestamp("created_at").defaultNow().notNull(),
-	updatedAt: timestamp("updated_at").defaultNow().notNull(),
+	expiresAt: timestamp("expires_at"),
 });

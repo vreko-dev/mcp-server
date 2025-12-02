@@ -1,5 +1,5 @@
-import { boolean, check, index, integer, pgTable, text, timestamp, uuid, foreignKey } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
+import { boolean, check, foreignKey, index, integer, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { apiKeys } from "./api-keys.js";
 
 export const agentSuggestions = pgTable(
@@ -35,14 +35,8 @@ export const agentSuggestions = pgTable(
 				foreignColumns: [apiKeys.id],
 				name: "agent_suggestions_api_key_id_fk",
 			}).onDelete("cascade"),
-			userCreatedAtIndex: index("agent_suggestions_user_created_at_idx").on(
-				table.userId,
-				table.createdAt,
-			),
-			apiKeyCreatedAtIndex: index("agent_suggestions_api_key_created_at_idx").on(
-				table.apiKeyId,
-				table.createdAt,
-			),
+			userCreatedAtIndex: index("agent_suggestions_user_created_at_idx").on(table.userId, table.createdAt),
+			apiKeyCreatedAtIndex: index("agent_suggestions_api_key_created_at_idx").on(table.apiKeyId, table.createdAt),
 			suggestionTypeCheck: check(
 				"agent_suggestions_suggestion_type_check",
 				sql`suggestion_type IN ('code', 'refactor', 'documentation', 'test', 'optimization', 'security')`,

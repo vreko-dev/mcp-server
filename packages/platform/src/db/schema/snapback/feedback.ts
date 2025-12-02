@@ -1,5 +1,5 @@
-import { integer, jsonb, pgTable, text, timestamp, uuid, check, index } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
+import { check, index, integer, jsonb, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { apiKeys } from "./api-keys.js";
 
 export const feedback = pgTable(
@@ -21,14 +21,8 @@ export const feedback = pgTable(
 	},
 	(table) => {
 		return {
-			userCreatedAtIndex: index("feedback_user_created_at_idx").on(
-				table.userId,
-				table.createdAt,
-			),
-			apiKeyCreatedAtIndex: index("feedback_api_key_created_at_idx").on(
-				table.apiKeyId,
-				table.createdAt,
-			),
+			userCreatedAtIndex: index("feedback_user_created_at_idx").on(table.userId, table.createdAt),
+			apiKeyCreatedAtIndex: index("feedback_api_key_created_at_idx").on(table.apiKeyId, table.createdAt),
 			feedbackTypeCheck: check(
 				"feedback_feedback_type_check",
 				sql`feedback_type IN ('positive', 'negative', 'neutral', 'bug_report')`,

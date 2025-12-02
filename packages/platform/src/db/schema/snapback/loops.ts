@@ -1,5 +1,5 @@
-import { boolean, integer, pgTable, text, timestamp, uuid, check, index } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
+import { boolean, check, index, integer, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { apiKeys } from "./api-keys.js";
 
 export const loops = pgTable(
@@ -22,14 +22,8 @@ export const loops = pgTable(
 	},
 	(table) => {
 		return {
-			userCreatedAtIndex: index("loops_user_created_at_idx").on(
-				table.userId,
-				table.createdAt,
-			),
-			apiKeyCreatedAtIndex: index("loops_api_key_created_at_idx").on(
-				table.apiKeyId,
-				table.createdAt,
-			),
+			userCreatedAtIndex: index("loops_user_created_at_idx").on(table.userId, table.createdAt),
+			apiKeyCreatedAtIndex: index("loops_api_key_created_at_idx").on(table.apiKeyId, table.createdAt),
 			loopTypeCheck: check(
 				"loops_loop_type_check",
 				sql`loop_type IN ('retry', 'recovery', 'optimization', 'validation')`,

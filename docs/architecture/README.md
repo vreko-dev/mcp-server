@@ -257,6 +257,68 @@ For system integrations:
 
 ---
 
-**Last Updated**: November 17, 2025
+## Technical Debt & Architecture Decisions
+
+### Known Architectural Debt (As of November 2025)
+
+**IP Exposure Risk: HIGH** 🔴
+- **~15,000 LOC of proprietary algorithms** currently exposed client-side
+- Advanced risk scoring algorithms in VSCode extension bundle
+- Secret detection patterns and entropy calculations visible in client
+- Policy evaluation logic accessible in browser DevTools
+- Estimated **$500K+ of proprietary R&D** vulnerable to reverse engineering
+
+**Code Duplication: 44%** 🔴
+- 3 implementations of risk scoring across packages
+- 2 implementations of Guardian plugin system
+- Detection logic duplicated between `@snapback/core` and extension
+- **~18,000 LOC** of redundant code
+
+**Dead Packages** ❌
+- `packages/analytics` (101 LOC) - Functionality moved to infrastructure
+- `packages/auth-mock` (98 LOC) - No imports found
+- Consider deletion to reduce maintenance burden
+
+**Data Persistence Fragmentation** 🟡
+- Mixed responsibilities: local SQLite, backend Postgres
+- Inconsistent storage patterns across extension/web/API
+- Missing centralized data access layer
+
+### IP Protection Strategy
+
+**Current Risk Assessment:**
+Core detection algorithms in `@snapback/core` package are bundled into:
+- VSCode extension (full exposure)
+- MCP server (full exposure)
+- Web dashboard (partial exposure via DevTools)
+
+**Mitigation Plan:**
+See [client-server-separation.md](./client-server-separation.md#ip-protection-migration) for detailed migration strategy to move proprietary algorithms to backend services.
+
+**Priority Areas:**
+1. **Guardian Risk Analysis** - Move to `/api/v1/analyze` endpoint
+2. **Secret Detection** - Move to `/api/v1/detect-secrets` endpoint
+3. **Policy Evaluation** - Move to `/api/v1/policy/evaluate` endpoint
+
+### Developer Experience Metrics
+
+**Build Performance:**
+- Full monorepo build: ~45 seconds
+- Package count: 16 packages + 4 apps
+- Type checking: ~12 seconds
+
+**Code Navigation:**
+- Package boundaries unclear in 3 packages
+- Type safety gaps between packages
+- Semantic search required for code discovery
+
+**Improvement Opportunities:**
+- Consolidate overlapping packages
+- Improve package documentation
+- Add architecture decision records (ADRs)
+
+---
+
+**Last Updated**: December 2, 2025
 **Status**: Complete - All functions documented with examples
 **Coverage**: 100% of API key verification system

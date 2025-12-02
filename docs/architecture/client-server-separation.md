@@ -641,8 +641,186 @@ export function Component({ keys }: { keys: ApiKey[] })
 
 ---
 
+## IP Protection Migration
+
+### Background
+
+SnapBack currently has **~15,000 LOC of proprietary detection algorithms** exposed in client-side bundles (VSCode extension, MCP server, web dashboard). This poses a significant IP risk as competitors could reverse-engineer:
+
+- Guardian risk analysis algorithms
+- Secret detection patterns and entropy calculations
+- Mock detection AST analysis logic
+- Policy evaluation rules
+
+### Migration Strategy
+
+**Objective:** Move proprietary algorithms from `@snapback/core` to backend API endpoints while maintaining functionality.
+
+**Target Architecture:**
+
+```
+┌─────────────────────────┐
+│  Client (VSCode/MCP)    │
+│  - Lightweight adapter  │
+│  - API client only      │
+│  - Offline fallback     │
+└────────┬────────────────┘
+         │ HTTPS
+         ↓
+┌─────────────────────────┐
+│  Backend API            │
+│  - Guardian algorithms  │
+│  - Risk scoring         │
+│  - Pattern detection    │
+└─────────────────────────┘
+```
+
+### Migration Endpoints
+
+#### 1. POST /api/v1/analyze
+**Purpose:** Server-side Guardian risk analysis
+
+**Request:**
+```typescript
+interface AnalyzeRequest {
+  code: string;
+  language: string;
+  context?: {
+    filePath: string;
+    gitDiff?: string;
+  };
+}
+```
+
+**Response:**
+```typescript
+interface AnalysisResult {
+  riskLevel: 'none' | 'low' | 'medium' | 'high';
+  confidence: number;
+  findings: Finding[];
+  recommendations: string[];
+}
+```
+
+#### 2. POST /api/v1/detect-secrets
+**Purpose:** Entropy-based secret detection (proprietary patterns)
+
+**Request:**
+```typescript
+interface SecretDetectionRequest {
+  code: string;
+  patterns?: string[]; // Client can request specific checks
+}
+```
+
+**Response:**
+```typescript
+interface SecretDetectionResult {
+  secrets: SecretMatch[];
+  confidence: number;
+}
+```
+
+#### 3. POST /api/v1/policy/evaluate
+**Purpose:** Enterprise policy evaluation (server-side rules)
+
+**Request:**
+```typescript
+interface PolicyEvalRequest {
+  userId: string;
+  organizationId?: string;
+  action: 'save' | 'commit' | 'push';
+  changes: CodeChange[];
+}
+```
+
+**Response:**
+```typescript
+interface PolicyEvalResult {
+  allowed: boolean;
+  violations: PolicyViolation[];
+  recommendations: string[];
+}
+```
+
+### Client Refactoring
+
+**VSCode Extension Changes:**
+```typescript
+// Before: Direct Guardian usage
+import { Guardian } from '@snapback/core';
+const guardian = new Guardian();
+const result = await guardian.analyze(code);
+
+// After: API client
+import { AnalysisClient } from './services/api-client';
+const client = new AnalysisClient(apiKey);
+const result = await client.analyze(code, {
+  offlineFallback: true // Basic pattern matching only
+});
+```
+
+**Offline Fallback:**
+Clients maintain minimal pattern detection (non-proprietary) for offline scenarios:
+- Basic regex patterns (public knowledge)
+- Simple heuristics
+- Clearly labeled as "Limited Mode"
+
+### Migration Phases
+
+**Phase 1: Backend Implementation** (2-3 days)
+- [ ] Create `/api/v1/analyze` endpoint
+- [ ] Create `/api/v1/detect-secrets` endpoint
+- [ ] Create `/api/v1/policy/evaluate` endpoint
+- [ ] Deploy to production
+- [ ] Verify health checks
+
+**Phase 2: Client Refactoring** (2-3 days)
+- [ ] Create API client service in VSCode extension
+- [ ] Remove Guardian package from extension
+- [ ] Implement offline fallback
+- [ ] Update MCP server to proxy to backend
+- [ ] Update CLI to use API
+
+**Phase 3: Verification** (1 day)
+- [ ] E2E tests: Save file analysis
+- [ ] E2E tests: Offline fallback
+- [ ] Bundle size verification (should reduce by ~2MB)
+- [ ] Performance benchmarking
+
+### Benefits
+
+✅ **IP Protection:** Proprietary algorithms stay on server  
+✅ **Smaller Bundles:** Extension size reduced by ~2MB  
+✅ **Centralized Updates:** Algorithm improvements deployed instantly  
+✅ **Enterprise Isolation:** Policy rules never exposed to clients  
+✅ **Offline Capability:** Basic patterns still work without network  
+
+### Risks & Mitigation
+
+**Risk:** Network latency impacts UX  
+**Mitigation:** 
+- Cache common analysis results (1 minute TTL)
+- Optimize API response time (<200ms target)
+- Show progress indicator for slower requests
+
+**Risk:** Offline mode provides degraded experience  
+**Mitigation:**
+- Clearly communicate "Limited Mode" to users
+- Maintain public pattern library for basic checks
+- Prompt users to reconnect for full analysis
+
+**Risk:** API costs increase  
+**Mitigation:**
+- Implement rate limiting per tier
+- Cache analysis for identical code blocks
+- Optimize backend for low latency
+
+---
+
 **Questions or need help?** See examples in:
 
 -   [apps/web/app/(saas)/app/api-keys](<../apps/web/app/(saas)/app/api-keys>) (after implementation)
 -   [lib/resource.ts](../apps/web/lib/resource.ts) (Resource pattern)
 -   [packages/api/modules/apikeys](../packages/api/modules/apikeys) (ORPC procedures)
+-   [IP_PROTECTION_MIGRATION_PLAN.md](../../IP_PROTECTION_MIGRATION_PLAN.md) (detailed task breakdown)

@@ -228,14 +228,14 @@ export default function FeaturesClient() {
 						Install the VS Code extension and start snapshotting in seconds.
 					</p>
 					<div className="flex flex-wrap justify-center gap-4">
-						<Link
-							href="vscode:extension/MarcelleLabs.snapback-vscode"
+						<a
+							href="https://marketplace.visualstudio.com/items?itemName=MarcelleLabs.snapback-vscode"
 							target="_blank"
 							rel="noopener noreferrer"
 							className="px-8 py-4 bg-[#00FF41] hover:bg-[#00FF41]/90 text-black font-bold rounded-xl transition-all text-lg"
 						>
 							Get Started
-						</Link>
+						</a>
 						<Link
 							href="/pricing"
 							className="px-8 py-4 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-white font-medium transition-all text-lg"

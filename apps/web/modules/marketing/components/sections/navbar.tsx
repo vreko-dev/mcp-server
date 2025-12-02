@@ -372,15 +372,15 @@ const Navbar = () => {
 
 							{/* Mobile CTA - Sign In button only */}
 							<div className="pt-4 border-t border-white/10">
-								<Link
-									href="vscode:extension/MarcelleLabs.snapback-vscode"
+								<a
+									href="https://marketplace.visualstudio.com/items?itemName=MarcelleLabs.snapback-vscode"
 									target="_blank"
 									rel="noopener noreferrer"
 									className="w-full px-4 py-3 text-sm font-medium bg-white text-black rounded-lg hover:bg-white/90 transition-all duration-200 block text-center"
 									onClick={closeMenu}
 								>
 									Install Extension
-								</Link>
+								</a>
 							</div>
 						</div>
 					</div>

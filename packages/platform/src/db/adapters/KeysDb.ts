@@ -1,6 +1,6 @@
 import { and, eq, gte } from "drizzle-orm";
 import type { PgDatabase } from "drizzle-orm/pg-core";
-import { apiKeys, apiKeyUsage } from "../schema/snapback/index.js";
+import { apiKeys, apiKeyUsage } from "../schema/snapback/index";
 
 export interface ApiKey {
 	id: string;
@@ -28,17 +28,15 @@ export class KeysDb {
 	/**
 	 * Create a new API key
 	 */
-	async createKey(userId: string, name?: string, _permissions: string[] = [], expiresAt?: Date): Promise<string> {
+	async createKey(userId: string, name?: string, permissions: string[] = [], expiresAt?: Date): Promise<string> {
 		const id = this.generateApiKey();
 
 		await this.db.insert(apiKeys).values({
 			id,
 			userId,
 			name: name || "",
-			keyPrefix: id.substring(0, 16),
-			keyHash: id, // In a real implementation, this would be a hash
+			permissions: permissions,
 			createdAt: new Date(),
-			updatedAt: new Date(),
 			expiresAt,
 		});
 
@@ -68,17 +66,15 @@ export class KeysDb {
 			id: newKeyId,
 			userId: oldKey.userId,
 			name: oldKey.name,
-			keyPrefix: newKeyId.substring(0, 16),
-			keyHash: newKeyId, // In a real implementation, this would be a hash
+			permissions: oldKey.permissions,
 			createdAt: new Date(),
-			updatedAt: new Date(),
 			expiresAt: oldKey.expiresAt,
 		});
 
 		// Revoke the old key
 		await this.db
 			.update(apiKeys)
-			.set({ revokedAt: new Date(), updatedAt: new Date() })
+			.set({ revoked: true })
 			.where(eq(apiKeys.id, oldKeyId));
 
 		return newKeyId;
@@ -90,7 +86,7 @@ export class KeysDb {
 	async revokeKey(keyId: string): Promise<void> {
 		await this.db
 			.update(apiKeys)
-			.set({ revokedAt: new Date(), updatedAt: new Date() })
+			.set({ revoked: true })
 			.where(eq(apiKeys.id, keyId));
 	}
 
@@ -108,7 +104,7 @@ export class KeysDb {
 		if (!key) {
 			return false;
 		}
-		return !key.revokedAt && (!key.expiresAt || key.expiresAt > new Date());
+		return !key.revoked && (!key.expiresAt || key.expiresAt > new Date());
 	}
 
 	/**
@@ -136,8 +132,7 @@ export class KeysDb {
 			await this.db
 				.update(apiKeyUsage)
 				.set({
-					tokensUsed: (existing[0].tokensUsed || 0) + 1,
-					requestTimeMs: (existing[0].requestTimeMs || 0) + 1,
+					requestCount: (existing[0].requestCount || 1) + 1,
 				})
 				.where(eq(apiKeyUsage.id, existing[0].id));
 		} else {
@@ -145,16 +140,14 @@ export class KeysDb {
 			await this.db.insert(apiKeyUsage).values({
 				id: crypto.randomUUID(),
 				apiKeyId: keyId,
-				requestId: crypto.randomUUID(), // This should be the actual request ID
 				endpoint,
-				tokensUsed: 1,
-				requestTimeMs: 1,
+				requestCount: 1,
 				timestamp: new Date(),
 			});
 		}
 
 		// Update last used timestamp on the key
-		await this.db.update(apiKeys).set({ updatedAt: new Date() }).where(eq(apiKeys.id, keyId));
+		await this.db.update(apiKeys).set({ lastUsedAt: new Date() }).where(eq(apiKeys.id, keyId));
 	}
 
 	/**
@@ -175,9 +168,9 @@ export class KeysDb {
 			id: row.id,
 			userId: row.userId,
 			name: row.name || undefined,
-			permissions: [], // This would need to be stored separately in a real implementation
-			revoked: !!row.revokedAt,
-			lastUsedAt: row.updatedAt,
+			permissions: row.permissions || [],
+			revoked: row.revoked,
+			lastUsedAt: row.lastUsedAt || undefined,
 			createdAt: row.createdAt,
 			expiresAt: row.expiresAt || undefined,
 		};

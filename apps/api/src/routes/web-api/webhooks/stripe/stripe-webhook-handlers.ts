@@ -14,8 +14,8 @@ import {
 	sendPaymentFailedEmail,
 	sendPaymentReceipt,
 	sendWelcomeEmail,
-} from "./email-service";
-import { PLAN_PERMISSIONS, type PlanTier } from "./subscription-config";
+} from "@snapback/integrations";
+import { PLAN_PERMISSIONS, type PlanTier } from "@snapback/config";
 
 /**
  * Stripe Webhook Business Logic Handlers
@@ -259,7 +259,6 @@ export async function handleInvoicePaymentSucceeded(
 		await sendPaymentReceipt(
 			invoice.customer as string,
 			invoice.amount_paid || 0,
-			invoice.hosted_invoice_url || undefined,
 			userEmail || undefined,
 		);
 
@@ -294,7 +293,7 @@ export async function handleInvoicePaymentFailed(
 		const userEmail = await getUserEmail(invoice.customer as string);
 		await sendPaymentFailedEmail(
 			invoice.customer as string,
-			invoice.attempt_count || 0,
+			invoice.amount_paid || 0,
 			userEmail || undefined,
 		);
 

@@ -10,6 +10,7 @@
     "@snapback/core": "workspace:*",
     "@snapback/events": "workspace:*",
     "@snapback/github-action": "workspace:*",
+    "@snapback/guardian-lite": "workspace:*",
     "@snapback/health": "workspace:*",
     "@snapback/integrations": "workspace:*",
     "@snapback/policy-engine": "workspace:*",
@@ -54,6 +55,9 @@
   "exports": {
     ".": {
       "import": "./dist/index.js"
+    },
+    "./services/AnalysisRouter": {
+      "import": "./dist/services/AnalysisRouter.js"
     }
   },
   "files": [

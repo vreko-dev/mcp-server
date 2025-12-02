@@ -14,6 +14,7 @@ import { z } from "zod";
 import { authenticate, hasToolAccess } from "./auth.js";
 import { ExtensionIPCClient } from "./client/extension-ipc.js";
 import { SnapBackAPIClient } from "./client/snapback-api.js";
+import { AnalysisRouter } from "./services/AnalysisRouter.js";
 import { Context7Service } from "./context7/index.js";
 import { MCPHttpServer } from "./http-server.js";
 import { CreateSnapshotSchema, createSnapshot } from "./tools/create-snapshot.js";
@@ -124,6 +125,15 @@ export async function startServer(): Promise<{
 	} catch (err) {
 		console.error("[SnapBack MCP] Failed to connect to Extension IPC:", err);
 	}
+
+	// Initialize AnalysisRouter with optional API client
+	const apiClient = process.env.SNAPBACK_API_KEY
+		? new SnapBackAPIClient({
+				baseUrl: process.env.SNAPBACK_API_URL || "https://api.snapback.dev",
+				apiKey: process.env.SNAPBACK_API_KEY,
+			})
+		: undefined;
+	const analysisRouter = new AnalysisRouter(apiClient);
 
 	// Set workspace root for path validation
 	// In a real implementation, this would come from the extension or config

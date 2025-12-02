@@ -15,7 +15,7 @@ Complete documentation of the Better Auth integration with custom API key verifi
   - Security architecture details
   - Usage examples and patterns
   - 31 sections covering all aspects
-  
+
 - **[api-key-verification-quick-ref.md](./api-key-verification-quick-ref.md)** (4.3KB)
   - Quick reference for developers
   - Function signatures at a glance
@@ -137,7 +137,7 @@ import {
 
 ```
 FREE:  [analyze_risk, context_search]
-PRO:   [analyze_risk, create_checkpoint, list_checkpoints, 
+PRO:   [analyze_risk, create_checkpoint, list_checkpoints,
         restore_checkpoint, context_search]
 ADMIN: [All permissions]
 ```

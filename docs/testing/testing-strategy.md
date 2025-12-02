@@ -1,6 +1,6 @@
 # Testing Strategy & Coverage
 
-**Last Updated:** December 2, 2025  
+**Last Updated:** December 2, 2025
 **Status:** Reference document for testing standards
 
 ---
@@ -85,10 +85,10 @@ describe('File Watching Integration', () => {
   it('triggers snapshot on file save', async () => {
     const watcher = createFileWatcher(testDir);
     await watcher.start();
-    
+
     // Trigger file save
     await writeFile(testFile, 'new content');
-    
+
     // Verify snapshot created
     const snapshots = await listSnapshots();
     expect(snapshots).toHaveLength(1);
@@ -345,6 +345,6 @@ pnpm playwright test --debug
 
 ---
 
-**For Test Baseline Data:** See reports/baseline-test-report.md (historical)  
-**For E2E Test Guide:** See [e2e-guide.md](./e2e-guide.md)  
+**For Test Baseline Data:** See reports/baseline-test-report.md (historical)
+**For E2E Test Guide:** See [e2e-guide.md](./e2e-guide.md)
 **For CI/CD Integration:** See `.github/workflows/test.yml`

@@ -1,7 +1,7 @@
 #!/bin/bash
 # Documentation Cleanup Script for SnapBack
 # Removes outdated, duplicate, and temporary documentation files
-# 
+#
 # Usage: ./scripts/cleanup-documentation.sh [--dry-run]
 #
 # SAFE: Creates backup before deletion

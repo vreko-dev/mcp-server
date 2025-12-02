@@ -214,12 +214,12 @@ const result = guardian.analyze(code);
 
 ## Key Features
 
-✅ **Fast**: <50ms for most files  
-✅ **Offline**: No dependencies  
-✅ **Simple**: 15 patterns, no ML  
-✅ **Safe**: No proprietary algorithms  
-✅ **Free**: Bundled with extension  
-✅ **Upgradeable**: Shows Pro tier prompts  
+✅ **Fast**: <50ms for most files
+✅ **Offline**: No dependencies
+✅ **Simple**: 15 patterns, no ML
+✅ **Safe**: No proprietary algorithms
+✅ **Free**: Bundled with extension
+✅ **Upgradeable**: Shows Pro tier prompts
 
 ## Where to Find Code
 

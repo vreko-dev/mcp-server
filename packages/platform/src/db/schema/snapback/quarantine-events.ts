@@ -1,4 +1,5 @@
 import { index, jsonb, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { apiKeys } from "./api-keys.js";
 
 /**
  * Quarantine Events - Dead-letter queue for failed telemetry events
@@ -10,6 +11,9 @@ export const quarantineEvents = pgTable(
 	"quarantine_events",
 	{
 		id: uuid("id").primaryKey().defaultRandom().notNull(),
+		userId: text("user_id"),
+		apiKeyId: text("api_key_id")
+			.references(() => apiKeys.id, { onDelete: "cascade" }),
 		originalEvent: jsonb("original_event").notNull(),
 		errorReason: text("error_reason").notNull(),
 		errorStack: text("error_stack"),
@@ -19,6 +23,14 @@ export const quarantineEvents = pgTable(
 	(table) => {
 		return {
 			attemptedAtIndex: index("quarantine_events_attempted_at_idx").on(table.attemptedAt),
+			userCreatedAtIndex: index("quarantine_events_user_created_at_idx").on(
+				table.userId,
+				table.createdAt,
+			),
+			apiKeyCreatedAtIndex: index("quarantine_events_api_key_created_at_idx").on(
+				table.apiKeyId,
+				table.createdAt,
+			),
 		};
 	},
 );

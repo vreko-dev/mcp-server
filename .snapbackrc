@@ -1,0 +1,250 @@
+{
+  "protection": [
+    {
+      "pattern": "**/package-lock.json",
+      "level": "Protected",
+      "reason": "Lock file - wrong version breaks reproducible Node.js builds"
+    },
+    {
+      "pattern": "**/yarn.lock",
+      "level": "Protected",
+      "reason": "Lock file - ensures reproducible Yarn installs"
+    },
+    {
+      "pattern": "**/pnpm-lock.yaml",
+      "level": "Protected",
+      "reason": "Lock file - critical for pnpm monorepos"
+    },
+    {
+      "pattern": "**/poetry.lock",
+      "level": "Protected",
+      "reason": "Lock file - Python dependency lock"
+    },
+    {
+      "pattern": "**/Cargo.lock",
+      "level": "Protected",
+      "reason": "Lock file - Rust dependency lock"
+    },
+    {
+      "pattern": "**/go.sum",
+      "level": "Protected",
+      "reason": "Lock file - Go module checksums"
+    },
+    {
+      "pattern": "**/Gemfile.lock",
+      "level": "Protected",
+      "reason": "Lock file - Ruby gem dependencies"
+    },
+    {
+      "pattern": "**/composer.lock",
+      "level": "Protected",
+      "reason": "Lock file - PHP composer dependencies"
+    },
+    {
+      "pattern": "**/.env*",
+      "level": "Protected",
+      "reason": "Sensitive environment variables and secrets"
+    },
+    {
+      "pattern": "package.json",
+      "level": "Warning",
+      "reason": "Core Node.js configuration - dependencies and scripts"
+    },
+    {
+      "pattern": "tsconfig.json",
+      "level": "Warning",
+      "reason": "TypeScript compiler configuration"
+    },
+    {
+      "pattern": "Dockerfile",
+      "level": "Warning",
+      "reason": "Container image definition"
+    },
+    {
+      "pattern": "docker-compose.yml",
+      "level": "Warning",
+      "reason": "Multi-container orchestration"
+    },
+    {
+      "pattern": "**/docker-compose.yaml",
+      "level": "Warning",
+      "reason": "Multi-container orchestration (yaml variant)"
+    },
+    {
+      "pattern": "**/*.tf",
+      "level": "Warning",
+      "reason": "Terraform infrastructure definitions"
+    },
+    {
+      "pattern": ".github/workflows/*.yml",
+      "level": "Warning",
+      "reason": "GitHub Actions CI/CD workflows"
+    },
+    {
+      "pattern": ".github/workflows/*.yaml",
+      "level": "Warning",
+      "reason": "GitHub Actions CI/CD workflows (yaml variant)"
+    },
+    {
+      "pattern": "*.md",
+      "level": "Watched",
+      "reason": "Documentation files"
+    },
+    {
+      "pattern": "*.txt",
+      "level": "Watched",
+      "reason": "Text files"
+    },
+    {
+      "pattern": "README*",
+      "level": "Watched",
+      "reason": "README documentation"
+    },
+    {
+      "pattern": "*.json",
+      "level": "Watched",
+      "reason": "JSON configuration files"
+    },
+    {
+      "pattern": ".editorconfig",
+      "level": "Watched",
+      "reason": "Editor configuration"
+    },
+    {
+      "pattern": ".prettierrc*",
+      "level": "Watched",
+      "reason": "Prettier formatting configuration"
+    },
+    {
+      "pattern": ".eslintrc*",
+      "level": "Watched",
+      "reason": "ESLint configuration"
+    },
+    {
+      "pattern": ".babelrc",
+      "level": "Watched",
+      "reason": "Babel transpiler configuration"
+    },
+    {
+      "pattern": ".gitignore",
+      "level": "Warning",
+      "reason": "Git ignore rules"
+    },
+    {
+      "pattern": ".vscode/settings.json",
+      "level": "Watched",
+      "reason": "VS Code settings"
+    },
+    {
+      "pattern": ".idea/**",
+      "level": "Watched",
+      "reason": "IDE configuration directory"
+    },
+    {
+      "pattern": "vite.config.*",
+      "level": "Warning",
+      "reason": "Vite bundler configuration"
+    },
+    {
+      "pattern": "webpack.config.*",
+      "level": "Warning",
+      "reason": "Webpack bundler configuration"
+    },
+    {
+      "pattern": "rollup.config.*",
+      "level": "Warning",
+      "reason": "Rollup bundler configuration"
+    },
+    {
+      "pattern": "esbuild.config.*",
+      "level": "Warning",
+      "reason": "esbuild bundler configuration"
+    },
+    {
+      "pattern": "Makefile",
+      "level": "Watched",
+      "reason": "Make build configuration"
+    },
+    {
+      "pattern": "CMakeLists.txt",
+      "level": "Watched",
+      "reason": "CMake build configuration"
+    },
+    {
+      "pattern": "requirements.txt",
+      "level": "Watched",
+      "reason": "Python dependencies"
+    },
+    {
+      "pattern": "Gemfile",
+      "level": "Warning",
+      "reason": "Ruby gem configuration"
+    },
+    {
+      "pattern": "composer.json",
+      "level": "Warning",
+      "reason": "PHP composer configuration"
+    },
+    {
+      "pattern": "setup.py",
+      "level": "Warning",
+      "reason": "Python package setup"
+    },
+    {
+      "pattern": "pyproject.toml",
+      "level": "Warning",
+      "reason": "Python project configuration"
+    },
+    {
+      "pattern": "pom.xml",
+      "level": "Warning",
+      "reason": "Maven Java build configuration"
+    },
+    {
+      "pattern": "build.gradle*",
+      "level": "Warning",
+      "reason": "Gradle Java build configuration"
+    },
+    {
+      "pattern": "*.csproj",
+      "level": "Warning",
+      "reason": ".NET C# project file"
+    },
+    {
+      "pattern": "go.mod",
+      "level": "Warning",
+      "reason": "Go module definition"
+    },
+    {
+      "pattern": "Cargo.toml",
+      "level": "Warning",
+      "reason": "Rust package configuration"
+    },
+    {
+      "pattern": "bunfig.toml",
+      "level": "Warning",
+      "reason": "Bun runtime configuration"
+    },
+    {
+      "pattern": "*.sln",
+      "level": "Watched",
+      "reason": "Visual Studio solution file"
+    },
+    {
+      "pattern": "kubernetes/*.yaml",
+      "level": "Warning",
+      "reason": "Kubernetes manifests"
+    },
+    {
+      "pattern": "apps/vscode/src/activation/phase2-storage.ts",
+      "level": "Protected"
+    }
+  ],
+  "ignore": [
+    "**/node_modules/**",
+    "**/.git/**",
+    "**/.snapback/**",
+    "**/dist/**",
+    "**/build/**"
+  ]
+}

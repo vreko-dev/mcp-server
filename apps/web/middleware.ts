@@ -79,8 +79,8 @@ export function middleware(req: NextRequest) {
 		return response;
 	}
 
-	// Docs: docs.snapback.dev -> /docs routes
-	if (hostname.startsWith("docs.")) {
+	// Docs: new-docs.snapback.dev -> /docs routes
+	if (hostname.startsWith("new-docs.")) {
 		if (!url.pathname.startsWith("/docs")) {
 			url.pathname = `/docs${url.pathname === "/" ? "" : url.pathname}`;
 			const response = NextResponse.rewrite(url);

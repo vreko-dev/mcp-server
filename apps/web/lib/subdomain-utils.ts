@@ -65,28 +65,28 @@ export function parseSubdomainConfig(
 		};
 	}
 
-	// Production domain (e.g., docs.snapback.dev)
+	// Production domain (e.g., new-docs.snapback.dev)
 	// const rootDomain =
 	// 	process.env.NEXT_PUBLIC_ROOT_DOMAIN || "snapback.dev";
-	if (hostname.startsWith("docs.")) {
-		const mainDomain = hostname.replace("docs.", "");
+	if (hostname.startsWith("new-docs.")) {
+		const mainDomain = hostname.replace("new-docs.", "");
 		return {
-			subdomain: "docs",
+			subdomain: "new-docs",
 			mainDomain,
 			port,
 			homeUrl: `${protocol}://${mainDomain}${port ? `:${port}` : ""}`,
 		};
 	}
 
-	// Vercel preview URLs: docs---branch-name.vercel.app
+	// Vercel preview URLs: new-docs---branch-name.vercel.app
 	if (hostname.includes("---") && hostname.includes(".vercel.app")) {
 		const parts = hostname.split("---");
 		const subdomainPart = parts[0] ?? null;
-		if (subdomainPart === "docs") {
+		if (subdomainPart === "new-docs") {
 			// Main domain without subdomain
 			const mainDomain = hostname.replace(`${subdomainPart}---`, "");
 			return {
-				subdomain: "docs",
+				subdomain: "new-docs",
 				mainDomain,
 				port,
 				homeUrl: `${protocol}://${mainDomain}${port ? `:${port}` : ""}`,

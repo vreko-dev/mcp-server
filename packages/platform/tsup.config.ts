@@ -19,7 +19,7 @@ export default defineConfig({
 		"src/db/adapters/TelemetrySinkDb.ts",
 	],
 	format: ["esm"],
-	dts: { resolve: true },
+	dts: false, // Disable tsup DTS - use tsc for type declarations to avoid pg-types circular dependency
 	clean: true,
 	sourcemap: true,
 	outDir: "dist",

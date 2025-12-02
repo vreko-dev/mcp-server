@@ -62,7 +62,7 @@ export function NavBar() {
 	const docsUrl =
 		process.env.NODE_ENV === "development"
 			? "http://localhost:3001"
-			: "https://docs.snapback.dev";
+			: "https://new-docs.snapback.dev";
 
 	const menuItems = [
 		{

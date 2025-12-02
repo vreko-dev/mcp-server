@@ -163,7 +163,7 @@ export function FAQSection() {
 					<p className="text-zinc-500 mb-4">Still have questions?</p>
 					<div className="flex gap-4 justify-center">
 						<a
-							href="https://docs.snapback.dev"
+							href="https://new-docs.snapback.dev"
 							className="px-6 py-3 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg transition-colors"
 						>
 							Read Documentation

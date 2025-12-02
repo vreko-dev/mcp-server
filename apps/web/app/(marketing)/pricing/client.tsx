@@ -389,7 +389,7 @@ export default function PricingClient() {
 					<p className="text-lg text-gray-300">
 						Got questions? Check our{" "}
 						<Link
-							href="https://docs.snapback.dev"
+							href="https://new-docs.snapback.dev"
 							prefetch={false}
 							className="text-[#00FF41] hover:underline focus:outline-none focus:ring-2 focus:ring-[#00FF41] focus:ring-offset-2 focus:ring-offset-slate-900 rounded"
 						>

@@ -56,7 +56,7 @@ export function DocsFooter() {
 						<ul className="space-y-2.5 text-sm">
 							<li>
 								<a
-									href="https://docs.snapback.dev"
+									href="https://new-docs.snapback.dev"
 									className="text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1.5"
 								>
 									Introduction
@@ -64,7 +64,7 @@ export function DocsFooter() {
 							</li>
 							<li>
 								<a
-									href="https://docs.snapback.dev/getting-started/overview"
+									href="https://new-docs.snapback.dev/getting-started/overview"
 									className="text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1.5"
 								>
 									Getting Started
@@ -72,7 +72,7 @@ export function DocsFooter() {
 							</li>
 							<li>
 								<a
-									href="https://docs.snapback.dev/architecture/overview"
+									href="https://new-docs.snapback.dev/architecture/overview"
 									className="text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1.5"
 								>
 									Architecture
@@ -80,7 +80,7 @@ export function DocsFooter() {
 							</li>
 							<li>
 								<a
-									href="https://docs.snapback.dev/api/overview"
+									href="https://new-docs.snapback.dev/api/overview"
 									className="text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1.5"
 								>
 									API Reference
@@ -196,7 +196,7 @@ export function DocsFooter() {
 							</span>
 							<span className="hidden md:inline">•</span>
 							<a
-								href="https://docs.snapback.dev"
+								href="https://new-docs.snapback.dev"
 								className="hover:text-primary transition-colors"
 							>
 								View all docs

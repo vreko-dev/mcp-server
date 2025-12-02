@@ -21,7 +21,7 @@ export function FooterComplete() {
 				// For production, use the docs subdomain
 				const rootDomain =
 					process.env.NEXT_PUBLIC_ROOT_DOMAIN || "snapback.dev";
-				setDocsUrl(`https://docs.${rootDomain}`);
+				setDocsUrl(`https://new-docs.${rootDomain}`);
 			}
 		}
 	}, []);

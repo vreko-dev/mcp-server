@@ -1,4 +1,5 @@
 import { defineConfig } from "vitest/config";
+import path from "path";
 
 /**
  * Production-grade Vitest configuration with enforced coverage thresholds
@@ -7,6 +8,18 @@ import { defineConfig } from "vitest/config";
  * Tests will fail if coverage drops below thresholds.
  */
 export default defineConfig({
+	resolve: {
+		alias: {
+			// Force imports to resolve to source files, not compiled dist/
+			// This ensures tests use the latest schema definitions
+			"@snapback/platform": path.resolve(__dirname, "packages/platform/src"),
+			"@snapback/contracts": path.resolve(__dirname, "packages/contracts/src"),
+			"@snapback/infrastructure": path.resolve(__dirname, "packages/infrastructure/src"),
+			"@snapback/core": path.resolve(__dirname, "packages/core/src"),
+			"@snapback/events": path.resolve(__dirname, "packages/events/src"),
+			"@snapback/auth": path.resolve(__dirname, "packages/auth/src"),
+		},
+	},
 	test: {
 		// Global settings inherited by all projects
 		globals: true,
@@ -83,5 +96,11 @@ export default defineConfig({
 
 		// Use projects for monorepo
 		projects: ["packages/*", "apps/*"],
+
+		// Force fresh module resolution and isolation
+		deps: {
+			interopDefault: true,
+		},
+		isolate: true,
 	},
 });

@@ -15,9 +15,9 @@ if [ ! -d "$OSS_REPO" ]; then
   exit 1
 fi
 
-# Copy the SDK package
+# Copy the SDK package (excluding node_modules and build artifacts)
 echo "Copying SDK package..."
-cp -r packages/sdk "$OSS_REPO/packages/"
+rsync -av --exclude='node_modules' --exclude='dist' --exclude='.turbo' --exclude='*.tsbuildinfo' packages/sdk/ "$OSS_REPO/packages/sdk/"
 
 # Navigate to the copied package
 cd "$OSS_REPO/packages/sdk"

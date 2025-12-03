@@ -15,9 +15,9 @@ if [ ! -d "$OSS_REPO" ]; then
   exit 1
 fi
 
-# Copy the contracts package
+# Copy the contracts package (excluding node_modules and build artifacts)
 echo "Copying contracts package..."
-cp -r packages/contracts "$OSS_REPO/packages/"
+rsync -av --exclude='node_modules' --exclude='dist' --exclude='.turbo' --exclude='*.tsbuildinfo' packages/contracts/ "$OSS_REPO/packages/contracts/"
 
 # Navigate to the copied package
 cd "$OSS_REPO/packages/contracts"

@@ -15,9 +15,9 @@ if [ ! -d "$OSS_REPO" ]; then
   exit 1
 fi
 
-# Copy the CLI app
+# Copy the CLI app (excluding node_modules and build artifacts)
 echo "Copying CLI app..."
-cp -r apps/cli "$OSS_REPO/apps/"
+rsync -av --exclude='node_modules' --exclude='dist' --exclude='.turbo' --exclude='*.tsbuildinfo' apps/cli/ "$OSS_REPO/apps/cli/"
 
 # Navigate to the copied app
 cd "$OSS_REPO/apps/cli"

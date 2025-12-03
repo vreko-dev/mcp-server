@@ -4,6 +4,9 @@
 		"---Getting Started---",
 		"index",
 		"quick-start",
+		"getting-started/first-restore",
+		"---Understanding SnapBack---",
+		"why-snapback",
 		"---Core Concepts---",
 		"protection-levels",
 		"sessions",
@@ -12,6 +15,7 @@
 		"---Capabilities---",
 		"capabilities",
 		"---Integrations---",
+		"integrations/copilot",
 		"cli",
 		"---Analytics & Insights---",
 		"analytics",
@@ -21,6 +25,8 @@
 		"privacy",
 		"---Reference---",
 		"performance",
-		"troubleshooting"
+		"troubleshooting",
+		"---Help---",
+		"faq"
 	]
 }

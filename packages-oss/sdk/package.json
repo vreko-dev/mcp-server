@@ -1,0 +1,70 @@
+{
+  "name": "@snapback-oss/sdk",
+  "description": "SnapBack SDK for interacting with the SnapBack API",
+  "version": "0.1.0",
+  "author": "SnapBack Team",
+  "license": "Apache-2.0",
+  "main": "dist/index.js",
+  "types": "dist-types/index.d.ts",
+  "type": "module",
+  "dependencies": {
+    "@aws-sdk/client-s3": "catalog:",
+    "@aws-sdk/s3-request-presigner": "catalog:",
+    "@snapback-oss/contracts": "workspace:*",
+    "@snapback-oss/infrastructure": "workspace:*",
+    "ky": "catalog:",
+    "minimatch": "catalog:",
+    "ow": "catalog:",
+    "p-retry": "catalog:",
+    "quick-lru": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "tsup": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist-types/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./storage": {
+      "types": "./dist-types/storage/index.d.ts",
+      "default": "./dist/storage/index.js"
+    },
+    "./session": {
+      "types": "./dist-types/session/index.d.ts",
+      "default": "./dist/session/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "dist-types"
+  ],
+  "keywords": [
+    "api",
+    "client",
+    "sdk",
+    "snapback",
+    "oss"
+  ],
+  "scripts": {
+    "build": "tsup && tsc --emitDeclarationOnly --outDir dist-types -p tsconfig.build.json",
+    "check": "biome check .",
+    "format": "biome format --write .",
+    "lint": "biome lint .",
+    "lint:fix": "biome lint --fix .",
+    "test": "vitest run",
+    "test:api": "vitest run tests/api/",
+    "test:coverage": "vitest run --coverage",
+    "test:coverage:integration": "vitest run tests/integration/ --coverage",
+    "test:coverage:unit": "vitest run tests/ --coverage",
+    "test:e2e": "vitest run tests/e2e/",
+    "test:integration": "vitest run tests/integration/",
+    "test:unit": "vitest run tests/",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  }
+}

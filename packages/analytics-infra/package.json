@@ -1,0 +1,28 @@
+{
+  "name": "@snapback/analytics-infra",
+  "version": "0.1.0",
+  "description": "Internal analytics infrastructure (PostHog, metrics)",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsup && tsc --build",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@snapback-oss/infrastructure": "workspace:*",
+    "@snapback/contracts": "workspace:*",
+    "posthog-node": "catalog:",
+    "pino": "catalog:"
+  },
+  "devDependencies": {
+    "@snapback/tsconfig": "workspace:*",
+    "@types/node": "catalog:",
+    "posthog-js": "catalog:",
+    "tsup": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

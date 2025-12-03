@@ -1,0 +1,80 @@
+/**
+ * Infrastructure Events - Complete Event Taxonomy
+ *
+ * Type-safe event definitions for SnapBack analytics.
+ * Aligned with PostHog best practices and TDD strategy.
+ */
+// ============================================================================
+// EVENT DEFINITIONS
+// ============================================================================
+export const AnalyticsEvents = {
+    // ===== Authentication Events (6) =====
+    AUTH_SIGNUP_COMPLETED: "auth_signup_completed",
+    AUTH_LOGIN_COMPLETED: "auth_login_completed",
+    AUTH_LOGOUT_COMPLETED: "auth_logout_completed",
+    AUTH_EMAIL_VERIFIED: "auth_email_verified",
+    AUTH_PASSWORD_RESET_REQUESTED: "auth_password_reset_requested",
+    AUTH_PASSWORD_RESET_COMPLETED: "auth_password_reset_completed",
+    // ===== Snapshot Events (20) =====
+    SNAPSHOT_CREATED: "snapshot_created",
+    SNAPSHOT_RESTORED: "snapshot_restored",
+    SNAPSHOT_DELETED: "snapshot_deleted",
+    SNAPSHOT_SEARCHED: "snapshot_searched",
+    SNAPSHOT_LIMIT_HIT: "snapshot_limit_hit",
+    SNAPSHOT_AUTO_CREATED: "snapshot_auto_created",
+    SNAPSHOT_SHARED: "snapshot_shared",
+    SNAPSHOT_EXPORTED: "snapshot_exported",
+    SNAPSHOT_VIEWED: "snapshot_viewed",
+    SNAPSHOT_DIFF_VIEWED: "snapshot_diff_viewed",
+    // Removed duplicate snapshot_checkpoint_* events to maintain consistent terminology
+    // ===== Billing/Monetization Events (12) =====
+    BILLING_UPGRADE_PROMPT_SHOWN: "billing_upgrade_prompt_shown",
+    BILLING_UPGRADE_PROMPT_CLICKED: "billing_upgrade_prompt_clicked",
+    BILLING_PRICING_VIEWED: "billing_pricing_viewed",
+    BILLING_CHECKOUT_STARTED: "billing_checkout_started",
+    BILLING_CHECKOUT_COMPLETED: "billing_checkout_completed",
+    BILLING_CHECKOUT_ABANDONED: "billing_checkout_abandoned",
+    BILLING_SUBSCRIPTION_UPGRADED: "billing_subscription_upgraded",
+    BILLING_SUBSCRIPTION_DOWNGRADED: "billing_subscription_downgraded",
+    BILLING_SUBSCRIPTION_CANCELLED: "billing_subscription_cancelled",
+    BILLING_PAYMENT_FAILED: "billing_payment_failed",
+    BILLING_COUPON_APPLIED: "billing_coupon_applied",
+    BILLING_INVOICE_VIEWED: "billing_invoice_viewed",
+    // ===== Extension Events (8) =====
+    EXTENSION_INSTALLED: "extension_installed",
+    EXTENSION_ACTIVATED: "extension_activated",
+    EXTENSION_COMMAND_USED: "extension_command_used",
+    EXTENSION_SETTINGS_CHANGED: "extension_settings_changed",
+    EXTENSION_ERROR_OCCURRED: "extension_error_occurred",
+    EXTENSION_UPDATED: "extension_updated",
+    EXTENSION_UNINSTALLED: "extension_uninstalled",
+    EXTENSION_FEEDBACK_SUBMITTED: "extension_feedback_submitted",
+    // ===== Dashboard Events (8) =====
+    DASHBOARD_VIEWED: "dashboard_viewed",
+    DASHBOARD_API_KEY_CREATED: "dashboard_api_key_created",
+    DASHBOARD_API_KEY_REVOKED: "dashboard_api_key_revoked",
+    DASHBOARD_USAGE_CHART_VIEWED: "dashboard_usage_chart_viewed",
+    DASHBOARD_SETTINGS_UPDATED: "dashboard_settings_updated",
+    DASHBOARD_SEARCH_PERFORMED: "dashboard_search_performed",
+    DASHBOARD_EXPORT_TRIGGERED: "dashboard_export_triggered",
+    DASHBOARD_HELP_ACCESSED: "dashboard_help_accessed",
+    // ===== Team Collaboration Events (6) =====
+    TEAM_CREATED: "team_created",
+    TEAM_MEMBER_INVITED: "team_member_invited",
+    TEAM_MEMBER_JOINED: "team_member_joined",
+    TEAM_SNAPSHOT_SHARED: "team_snapshot_shared",
+    TEAM_SETTINGS_CHANGED: "team_settings_changed",
+    TEAM_MEMBER_REMOVED: "team_member_removed",
+    // ===== AI Features Events (5) =====
+    AI_SUGGESTION_SHOWN: "ai_suggestion_shown",
+    AI_SUGGESTION_ACCEPTED: "ai_suggestion_accepted",
+    AI_SUGGESTION_REJECTED: "ai_suggestion_rejected",
+    AI_RISK_DETECTED: "ai_risk_detected",
+    AI_RISK_PREVENTED: "ai_risk_prevented",
+    // ===== API Usage Events (5) =====
+    API_CALL_MADE: "api_call_made",
+    API_RATE_LIMIT_HIT: "api_rate_limit_hit",
+    API_ERROR_OCCURRED: "api_error_occurred",
+    API_KEY_ROTATED: "api_key_rotated",
+    API_WEBHOOK_CONFIGURED: "api_webhook_configured",
+};

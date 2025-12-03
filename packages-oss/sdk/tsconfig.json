@@ -1,0 +1,11 @@
+{
+	"extends": "@snapback/tsconfig/package",
+	"compilerOptions": {
+		"outDir": "./dist",
+		"rootDir": "./src",
+		"types": [],
+		"tsBuildInfoFile": "./dist/.tsbuildinfo"
+	},
+	"include": ["src/**/*"],
+	"exclude": ["node_modules", "dist", "tests"]
+}

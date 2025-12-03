@@ -257,7 +257,12 @@ function validateSecurityBoundaries(pkg: PackageInfo): string[] {
 
 			// Flag if using vulnerable versions: 19.0, 19.1.0, 19.1.1, 19.2.0
 			if (major === 19) {
-				if ((minor === 0 && patch === 0) || (minor === 1 && patch === 0) || (minor === 1 && patch === 1) || (minor === 2 && patch === 0)) {
+				if (
+					(minor === 0 && patch === 0) ||
+					(minor === 1 && patch === 0) ||
+					(minor === 1 && patch === 1) ||
+					(minor === 2 && patch === 0)
+				) {
 					errors.push(
 						`CVE-2025-55182: React ${reactVersion} is vulnerable to RCE. Upgrade to React 19.0.1, 19.1.2, 19.2.1, or later.`,
 					);
@@ -370,8 +375,13 @@ async function main() {
 		const reactMatch = catalogContent.match(/^\s*react:\s*([0-9.]+)/m);
 		if (reactMatch) {
 			const [, major, minor, patch] = reactMatch[1].match(/([0-9]+)\.([0-9]+)\.([0-9]+)/)?.map(Number) || [];
-			if (major === 19 && ((minor === 0 && patch === 0) || (minor === 1 && patch <= 1) || (minor === 2 && patch === 0))) {
-				console.log(`❌ Catalog: React ${reactMatch[1]} is vulnerable. Update to 19.0.1, 19.1.2, 19.2.1, or later.`);
+			if (
+				major === 19 &&
+				((minor === 0 && patch === 0) || (minor === 1 && patch <= 1) || (minor === 2 && patch === 0))
+			) {
+				console.log(
+					`❌ Catalog: React ${reactMatch[1]} is vulnerable. Update to 19.0.1, 19.1.2, 19.2.1, or later.`,
+				);
 				catalogErrors++;
 			}
 		}

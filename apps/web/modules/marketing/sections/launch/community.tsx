@@ -1,7 +1,8 @@
 "use client";
 
 import { motion as m } from "motion/react";
-import { MessageCircle, BookOpen, Github, Video } from "lucide-react";
+import { useReducedMotion } from "@ui/hooks/use-reduced-motion";
+import { MessageCircle, BookOpen, Github as GithubIcon, Video } from "lucide-react";
 import Link from "next/link";
 
 interface CommunityOption {
@@ -29,7 +30,7 @@ const communityOptions: CommunityOption[] = [
 		cta: "Read the Blog →",
 	},
 	{
-		icon: <Github className="w-6 h-6" />,
+		icon: <GithubIcon className="w-6 h-6" />,
 		title: "GitHub",
 		description:
 			"Open issues, feature requests, and full source transparency",
@@ -46,72 +47,77 @@ const communityOptions: CommunityOption[] = [
 ];
 
 export function Community() {
+	const prefersReducedMotion = useReducedMotion();
+
 	const containerVariants = {
-		hidden: { opacity: 0 },
+		hidden: { opacity: prefersReducedMotion ? 1 : 0 },
 		visible: {
 			opacity: 1,
-			transition: {
-				staggerChildren: 0.15,
-				delayChildren: 0,
-			},
+			transition: prefersReducedMotion
+				? { duration: 0 }
+				: {
+						staggerChildren: 0.15,
+						delayChildren: 0,
+					},
 		},
 	};
 
 	const itemVariants = {
-		hidden: { opacity: 0, y: 20 },
+		hidden: { opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 20 },
 		visible: {
 			opacity: 1,
 			y: 0,
-			transition: { duration: 0.6 },
+			transition: prefersReducedMotion ? { duration: 0 } : { duration: 0.6 },
 		},
 	};
 
 	return (
-		<section className="py-24 bg-[#0A0A0A] relative overflow-hidden">
+		<section className="py-24 bg-background relative overflow-hidden" aria-labelledby="community-heading">
 			<div className="container mx-auto px-4">
-				{/* Header */}
 				<div className="text-center mb-20 space-y-4">
-					<div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-500 text-xs font-medium uppercase tracking-wider">
+					<div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-500 text-caption font-medium uppercase tracking-wider">
 						Build With Us
 					</div>
-					<h2 className="text-3xl lg:text-5xl font-bold text-white">
+					<h2 id="community-heading" className="text-heading-1 font-bold text-foreground">
 						We're Building This in Public
 					</h2>
-					<p className="text-lg text-[#A0A0A0] max-w-2xl mx-auto">
+					<p className="text-body-lg text-muted-foreground max-w-2xl mx-auto">
 						No stealth mode. No surprise launches. Just honest development
 						with community input.
 					</p>
 				</div>
 
-				{/* Community Grid */}
 				<m.div
 					className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto"
 					variants={containerVariants}
 					initial="hidden"
 					whileInView="visible"
 					viewport={{ once: true, margin: "-100px" }}
+					role="list"
 				>
 					{communityOptions.map((option, index) => (
-						<m.div key={index} variants={itemVariants}>
-							<Link href={option.href} target="_blank" rel="noopener">
-								<div className="group p-8 rounded-xl border border-[#262626] bg-[#111111] hover:bg-[#171717] hover:border-[#404040] transition-all h-full flex flex-col gap-4 cursor-pointer">
-									{/* Icon */}
-									<div className="text-[#A0A0A0] group-hover:text-[#10B981] transition-colors">
+						<m.div key={index} variants={itemVariants} role="listitem">
+							<Link
+								href={option.href}
+								target="_blank"
+								rel="noopener noreferrer"
+								className="focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none rounded-xl block"
+								aria-label={`${option.title}: ${option.description}`}
+							>
+								<div className="group p-8 rounded-xl border border-border bg-card hover:bg-card/80 hover:border-border/60 transition-all motion-reduce:transition-none h-full min-h-80 flex flex-col gap-4">
+									<div className="text-muted-foreground group-hover:text-primary transition-colors motion-reduce:transition-none" aria-hidden="true">
 										{option.icon}
 									</div>
 
-									{/* Title */}
-									<h3 className="text-xl font-bold text-white">
+									<h3 className="text-heading-3 font-bold text-foreground">
 										{option.title}
 									</h3>
 
-									{/* Description */}
-									<p className="text-[#A0A0A0] text-sm flex-grow">
+									<p className="text-muted-foreground text-body-sm flex-grow">
 										{option.description}
 									</p>
 
-									{/* CTA */}
-									<div className="text-sm font-medium text-[#10B981] group-hover:text-[#34D399] transition-colors">
+									<div className="text-body-sm font-medium text-primary group-hover:text-primary/80 transition-colors motion-reduce:transition-none">
 										{option.cta}
 									</div>
 								</div>

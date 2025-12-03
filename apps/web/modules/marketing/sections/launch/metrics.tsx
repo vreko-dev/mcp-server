@@ -1,6 +1,7 @@
 "use client";
 
 import { motion as m } from "motion/react";
+import { useReducedMotion } from "@ui/hooks/use-reduced-motion";
 import { useEffect, useState } from "react";
 
 interface MetricCard {
@@ -28,10 +29,10 @@ const metrics: MetricCard[] = [
 ];
 
 export function Metrics() {
+	const prefersReducedMotion = useReducedMotion();
 	const [waitlistCount, setWaitlistCount] = useState("1,247");
 
 	useEffect(() => {
-		// Animate the counter on mount
 		const targetCount = Math.floor(Math.random() * 2000) + 1000;
 		let current = 0;
 		const interval = setInterval(() => {
@@ -47,44 +48,47 @@ export function Metrics() {
 	}, []);
 
 	return (
-		<section className="py-24 bg-[#0A0A0A] relative overflow-hidden">
+		<section className="py-24 bg-background relative overflow-hidden" aria-labelledby="metrics-heading">
 			<div className="container mx-auto px-4">
-				{/* Header */}
 				<div className="text-center mb-16 space-y-4">
-					<div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-500 text-xs font-medium uppercase tracking-wider">
+					<div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-500 text-caption font-medium uppercase tracking-wider">
 						By the Numbers
 					</div>
-					<h2 className="text-3xl lg:text-5xl font-bold text-white">
+					<h2 id="metrics-heading" className="text-heading-1 font-bold text-foreground">
 						Real Numbers, No Fluff
 					</h2>
 				</div>
 
-				{/* Metrics Box */}
 				<m.div
-					initial={{ opacity: 0, scale: 0.95 }}
+					initial={prefersReducedMotion ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.95 }}
 					whileInView={{ opacity: 1, scale: 1 }}
-					transition={{ duration: 0.6 }}
+					transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
 					viewport={{ once: true }}
 					className="max-w-4xl mx-auto"
 				>
-					<div className="border border-[#262626] rounded-xl bg-[#111111] p-8 md:p-12">
-						<div className="grid md:grid-cols-3 gap-8 md:gap-12">
+					<div className="border border-border rounded-xl bg-card p-6 md:p-12">
+						<div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 md:gap-12" role="list">
 							{metrics.map((metric, index) => (
-								<div key={index} className="text-center space-y-3">
-									{/* Value */}
-									<div className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-[#10B981] to-[#34D399] bg-clip-text text-transparent">
-										{metric.value === "[LIVE]"
-											? waitlistCount
-											: metric.value}
+								<div key={index} className="text-center space-y-1 sm:space-y-2 md:space-y-3" role="listitem">
+										<div className="font-bold bg-gradient-to-r from-[#10B981] to-[#34D399] bg-clip-text text-transparent leading-tight" style={{ fontSize: 'clamp(28px, 6vw, 56px)' }} aria-label={`${metric.label}: ${metric.value === "[LIVE]" ? waitlistCount : metric.value}`}>
+										{metric.value === "[LIVE]" ? (
+											waitlistCount
+										) : metric.value === "100%" ? (
+											<>
+												100<span className="text-2xl sm:text-3xl md:text-4xl">%</span>
+											</>
+										) : (
+											<>
+												&lt;200<span className="text-2xl sm:text-3xl md:text-4xl">ms</span>
+											</>
+										)}
 									</div>
 
-									{/* Label */}
-									<h3 className="text-lg font-semibold text-white">
+									<h3 className="text-sm md:text-body-lg font-semibold text-foreground">
 										{metric.label}
 									</h3>
 
-									{/* Description */}
-									<p className="text-sm text-[#A0A0A0]">
+									<p className="text-xs md:text-body-sm text-muted-foreground leading-relaxed">
 										{metric.description}
 									</p>
 								</div>
@@ -93,8 +97,7 @@ export function Metrics() {
 					</div>
 				</m.div>
 
-				{/* Note */}
-				<p className="text-center text-sm text-[#71717A] mt-8">
+				<p className="text-center text-body-sm text-muted-foreground/60 mt-8">
 					The waitlist number is a live count from our database. Real signups,
 					updated daily.
 				</p>

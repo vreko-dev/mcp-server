@@ -114,6 +114,101 @@ test.describe("Marketing Pages - Critical Paths", () => {
 	});
 
 	/**
+	 * GIT VS SNAPBACK SECTION TESTS
+	 * Verify comparison between Git and SnapBack is visible and accurate
+	 */
+	test.describe("Git vs SnapBack Comparison Section", () => {
+		test("git-vs-snapback: section should be visible on home page", async ({
+			page,
+		}) => {
+			await page.goto("/");
+
+			const gitVsSnapbackSection = page.locator(
+				'[data-section="git_vs_snapback"]',
+			);
+			await gitVsSnapbackSection.scrollIntoViewIfNeeded();
+			await expect(gitVsSnapbackSection).toBeVisible();
+		});
+
+		test("git-vs-snapback: should display comparison headline", async ({
+			page,
+		}) => {
+			await page.goto("/");
+
+			const gitVsSnapbackSection = page.locator(
+				'[data-section="git_vs_snapback"]',
+			);
+			await gitVsSnapbackSection.scrollIntoViewIfNeeded();
+
+			const heading = page.getByRole("heading", {
+				name: /git vs snapback: different tools, different jobs/i,
+			});
+			await expect(heading).toBeVisible();
+		});
+
+		test("git-vs-snapback: should display Git comparison card", async ({
+			page,
+		}) => {
+			await page.goto("/");
+
+			const gitVsSnapbackSection = page.locator(
+				'[data-section="git_vs_snapback"]',
+			);
+			await gitVsSnapbackSection.scrollIntoViewIfNeeded();
+
+			const gitHeading = page.getByRole("heading", { name: /^Git$/i });
+			await expect(gitHeading).toBeVisible();
+
+			// Verify comparison aspects are visible
+			await expect(
+				page.getByText(/manual commits when you remember/i),
+			).toBeVisible();
+		});
+
+		test("git-vs-snapback: should display SnapBack comparison card", async ({
+			page,
+		}) => {
+			await page.goto("/");
+
+			const gitVsSnapbackSection = page.locator(
+				'[data-section="git_vs_snapback"]',
+			);
+			await gitVsSnapbackSection.scrollIntoViewIfNeeded();
+
+			const snapbackHeading = page.getByRole("heading", {
+				name: /^SnapBack$/i,
+			});
+			await expect(snapbackHeading).toBeVisible();
+
+			// Verify SnapBack-specific content
+			await expect(
+				page.getByText(/automatic snapshots on save & ai events/i),
+			).toBeVisible();
+		});
+
+		test("git-vs-snapback: should display 'Use Them Together' CTA", async ({
+			page,
+		}) => {
+			await page.goto("/");
+
+			const gitVsSnapbackSection = page.locator(
+				'[data-section="git_vs_snapback"]',
+			);
+			await gitVsSnapbackSection.scrollIntoViewIfNeeded();
+
+			const ctaHeading = page.getByRole("heading", {
+				name: /use them together/i,
+			});
+			await expect(ctaHeading).toBeVisible();
+
+			const ctaText = page.getByText(
+				/git for long-term history.*snapback for instant recovery/i,
+			);
+			await expect(ctaText).toBeVisible();
+		});
+	});
+
+	/**
 	 * HOW IT WORKS SECTION TESTS
 	 * Verify the 3-step explanation is clear and complete
 	 */

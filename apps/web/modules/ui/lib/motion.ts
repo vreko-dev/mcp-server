@@ -1,40 +1,71 @@
+/**
+ * SnapBack Unified Motion System
+ * Single source of truth for all animations and motion
+ *
+ * @deprecated Individual exports - Import from this file directly
+ * Legacy exports maintained for backward compatibility
+ */
+
 "use client";
 
 import type { Transition, Variants } from "motion/react";
-import { useEffect, useState } from "react";
 
-// Hook: Detect reduced motion preference
-export function useReducedMotion(): boolean {
-	const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+// Re-export comprehensive motion config as primary system
+export {
+	SNAP_EASING,
+	SNAP_TRANSITIONS,
+	SNAP_VARIANTS,
+	MOTION_PRESETS,
+	PERFORMANCE_TARGETS,
+	GPU_ACCELERATED_PROPS,
+	EXPENSIVE_PROPS,
+	shouldReduceMotion,
+	isMobileDevice,
+	getOptimizedTransition,
+	createOptimizedMotionProps,
+	type SnapEasing,
+	type SnapTransitions,
+	type SnapVariants,
+	type MotionPresets,
+} from "@marketing/lib/motion-config";
 
-	useEffect(() => {
-		if (typeof window === "undefined") {
-			return;
-		}
+// Re-export useReducedMotion hook
+export { useReducedMotion } from "@ui/hooks/use-reduced-motion";
 
-		const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-		setPrefersReducedMotion(mediaQuery.matches);
+// ===== LEGACY EXPORTS (Deprecated but maintained for compatibility) =====
 
-		const handleChange = (event: MediaQueryListEvent) => {
-			setPrefersReducedMotion(event.matches);
-		};
+/**
+ * @deprecated Use SNAP_TRANSITIONS from motion-config instead
+ * Legacy duration constants - mapped to new system
+ */
+export const DURATION = {
+	instant: 0,
+	fast: 150,    // Maps to SNAP_TRANSITIONS.protect (150ms)
+	normal: 300,  // Base transition duration
+	moderate: 500, // Maps to SNAP_TRANSITIONS.recover (500ms)
+	slow: 800,    // Slow transitions
+} as const;
 
-		mediaQuery.addEventListener("change", handleChange);
-		return () => mediaQuery.removeEventListener("change", handleChange);
-	}, []);
+/**
+ * @deprecated Use SNAP_EASING from motion-config instead
+ * Legacy easing curves - mapped to new system
+ */
+export const EASING = {
+	apple: [0.16, 1, 0.3, 1] as [number, number, number, number],
+	standard: [0.4, 0.0, 0.2, 1] as [number, number, number, number],
+	snapback: [0.34, 1.56, 0.64, 1] as [number, number, number, number], // Use SNAP_EASING.snapBack
+} as const;
 
-	return prefersReducedMotion;
-}
-
-// Factory: Create accessible transitions (use within components with useReducedMotion hook)
+/**
+ * @deprecated Use SNAP_VARIANTS or MOTION_PRESETS instead
+ * Factory: Create accessible transitions
+ */
 export function createTransition(
 	reducedMotion: boolean,
 	options: {
 		duration?: number;
 		delay?: number;
-		ease?:
-			| [number, number, number, number]
-			| [number, number, number, number][];
+		ease?: [number, number, number, number] | [number, number, number, number][];
 	},
 ): Transition {
 	if (reducedMotion) {
@@ -48,49 +79,42 @@ export function createTransition(
 	};
 }
 
-// Preset: Fade in from below
+/**
+ * @deprecated Use SNAP_VARIANTS.pageEntrance or MOTION_PRESETS.slideUp
+ * Legacy variant: Fade in from below
+ */
 export const fadeInUp: Variants = {
 	initial: { opacity: 0, y: 20 },
 	animate: { opacity: 1, y: 0 },
 	exit: { opacity: 0, y: -20 },
 };
 
-// Preset: Scale in
+/**
+ * @deprecated Use SNAP_VARIANTS.modal or MOTION_PRESETS.scaleIn
+ * Legacy variant: Scale in
+ */
 export const scaleIn: Variants = {
 	initial: { scale: 0.95, opacity: 0 },
 	animate: { scale: 1, opacity: 1 },
 	exit: { scale: 0.95, opacity: 0 },
 };
 
-// Preset: Slide in from left
+/**
+ * @deprecated Use SNAP_VARIANTS with custom x values
+ * Legacy variant: Slide in from left
+ */
 export const slideInLeft: Variants = {
 	initial: { x: -20, opacity: 0 },
 	animate: { x: 0, opacity: 1 },
 	exit: { x: -20, opacity: 0 },
 };
 
-// Preset: Slide in from right
+/**
+ * @deprecated Use SNAP_VARIANTS with custom x values
+ * Legacy variant: Slide in from right
+ */
 export const slideInRight: Variants = {
 	initial: { x: 20, opacity: 0 },
 	animate: { x: 0, opacity: 1 },
 	exit: { x: 20, opacity: 0 },
 };
-
-// Constants: Animation durations (milliseconds)
-export const DURATION = {
-	instant: 0,
-	fast: 150,
-	normal: 300,
-	moderate: 500,
-	slow: 800,
-} as const;
-
-// Constants: Easing curves
-export const EASING = {
-	// Apple-style smooth easing
-	apple: [0.16, 1, 0.3, 1] as [number, number, number, number],
-	// Material Design standard
-	standard: [0.4, 0.0, 0.2, 1] as [number, number, number, number],
-	// SnapBack bouncy
-	snapback: [0.34, 1.56, 0.64, 1] as [number, number, number, number],
-} as const;

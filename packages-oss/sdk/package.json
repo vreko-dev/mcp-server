@@ -4,6 +4,14 @@
   "version": "0.1.0",
   "author": "SnapBack Team",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Marcelle-Labs/snapback.dev.git",
+    "directory": "packages-oss/sdk"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "main": "dist/index.js",
   "types": "dist-types/index.d.ts",
   "type": "module",
@@ -20,6 +28,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "catalog:",
     "@types/node": "catalog:",
     "tsup": "catalog:",
     "typescript": "catalog:",

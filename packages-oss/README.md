@@ -4,11 +4,11 @@ This directory contains open-source packages that will be synced to the public `
 
 ## Packages
 
-- **infrastructure** - Generic logging, metrics, and tracing utilities
-- **contracts** - TypeScript types and Zod schemas (filtered from private repo)
-- **sdk** - Client SDK for interacting with SnapBack
-- **config** - Configuration utilities
-- **events** - Event bus implementation
+- [**infrastructure**](./infrastructure/README.md) - Generic logging, metrics, and tracing utilities
+- [**contracts**](./contracts/README.md) - TypeScript types and Zod schemas (filtered from private repo)
+- [**sdk**](./sdk/README.md) - Client SDK for interacting with SnapBack
+- [**config**](./config/README.md) - Configuration utilities
+- [**events**](./events/README.md) - Event bus implementation
 
 ## Development
 

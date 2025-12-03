@@ -1,4 +1,11 @@
 import {
+	type CoreTelemetryEvent,
+	IssueCreatedSchema,
+	SaveAttemptSchema,
+	SessionRestoredSchema,
+	SnapshotCreatedSchema,
+} from "../events/core.js";
+import {
 	type AllowedTelemetryEvent,
 	type OnboardingProtectionAssignedEvent,
 	type RiskDetectedEvent,
@@ -6,13 +13,6 @@ import {
 	type SnapshotCreatedEvent,
 	TELEMETRY_EVENTS,
 } from "./events.js";
-import {
-	type CoreTelemetryEventV1,
-	IssueCreatedSchema,
-	SaveAttemptSchema,
-	SessionRestoredSchema,
-	SnapshotCreatedSchemaV1,
-} from "./events.v1.js";
 
 /**
  * Maps legacy telemetry events to new core events
@@ -27,7 +27,7 @@ export class TelemetryEventMapper {
 	 * @param event The legacy event to map
 	 * @returns The mapped core event or null if no mapping exists
 	 */
-	static mapEvent(event: AllowedTelemetryEvent): CoreTelemetryEventV1 | null {
+	static mapEvent(event: AllowedTelemetryEvent): CoreTelemetryEvent | null {
 		switch (event.event) {
 			case TELEMETRY_EVENTS.ONBOARDING_PROTECTION_ASSIGNED:
 				return TelemetryEventMapper.mapOnboardingProtectionAssigned(event as OnboardingProtectionAssignedEvent);
@@ -69,7 +69,7 @@ export class TelemetryEventMapper {
 	 */
 	private static mapOnboardingProtectionAssigned(
 		event: OnboardingProtectionAssignedEvent,
-	): CoreTelemetryEventV1 | null {
+	): CoreTelemetryEvent | null {
 		try {
 			// Map protection level to our protection enum
 			const protectionMap: Record<string, "watch" | "warn" | "block"> = {
@@ -111,10 +111,10 @@ export class TelemetryEventMapper {
 	/**
 	 * Maps snapshot created event to snapshot created core event
 	 */
-	private static mapSnapshotCreated(event: SnapshotCreatedEvent): CoreTelemetryEventV1 | null {
+	private static mapSnapshotCreated(event: SnapshotCreatedEvent): CoreTelemetryEvent | null {
 		try {
 			// For legacy events, we'll need to generate or use placeholder values for new fields
-			const mappedEvent = SnapshotCreatedSchemaV1.parse({
+			const mappedEvent = SnapshotCreatedSchema.parse({
 				event: "snapshot_created",
 				properties: {
 					session_id: "legacy_session", // Placeholder for legacy events
@@ -137,7 +137,7 @@ export class TelemetryEventMapper {
 	/**
 	 * Maps snapback used event to session restored core event
 	 */
-	private static mapSnapBackUsed(event: SnapBackUsedEvent): CoreTelemetryEventV1 | null {
+	private static mapSnapBackUsed(event: SnapBackUsedEvent): CoreTelemetryEvent | null {
 		try {
 			// For legacy events, we'll need to generate or use placeholder values for new fields
 			const mappedEvent = SessionRestoredSchema.parse({
@@ -161,7 +161,7 @@ export class TelemetryEventMapper {
 	/**
 	 * Maps risk detected event to issue created core event
 	 */
-	private static mapRiskDetected(event: RiskDetectedEvent): CoreTelemetryEventV1 | null {
+	private static mapRiskDetected(event: RiskDetectedEvent): CoreTelemetryEvent | null {
 		try {
 			// Map risk level to severity
 			const severityMap: Record<string, "low" | "medium" | "high" | "critical"> = {
@@ -205,8 +205,8 @@ export class TelemetryEventMapper {
  * @param events Array of legacy events
  * @returns Array of mapped core events
  */
-export function mapLegacyEventsToCore(events: AllowedTelemetryEvent[]): CoreTelemetryEventV1[] {
+export function mapLegacyEventsToCore(events: AllowedTelemetryEvent[]): CoreTelemetryEvent[] {
 	return events
 		.map((event) => TelemetryEventMapper.mapEvent(event))
-		.filter((event): event is CoreTelemetryEventV1 => event !== null);
+		.filter((event): event is CoreTelemetryEvent => event !== null);
 }

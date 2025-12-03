@@ -1,28 +1,42 @@
-export * from "./event-mapper.js";
-export * from "./events.js";
+// Import core event types from canonical source
 export type {
+	AuthApprovalReceivedEvent,
+	AuthBrowserOpenedEvent,
+	AuthCodeEntryEvent,
+	// Diagnostic events types
+	AuthProviderSelectedEvent,
+	CoreTelemetryEvent,
 	CoreTelemetryEventName,
-	CoreTelemetryEventV1,
-	IssueCreatedEventV1,
-	IssueResolvedEventV1,
-	PolicyChangedEventV1,
-	SaveAttemptEventV1,
-	SessionFinalizedEventV1,
-	SessionRestoredEventV1,
-	SnapshotCreatedEventV1,
-} from "./events.v1.js";
+	IssueCreatedEvent,
+	IssueResolvedEvent,
+	PolicyChangedEvent,
+	SaveAttemptEvent,
+	SessionFinalizedEvent,
+	SessionRestoredEvent,
+	SnapshotCreatedEvent,
+	WelcomeActionTriggeredEvent,
+	WelcomeFeatureViewedEvent,
+} from "../events/core.js";
 export {
+	AuthApprovalReceivedSchema,
+	AuthBrowserOpenedSchema,
+	AuthCodeEntrySchema,
+	// Diagnostic event schemas
+	AuthProviderSelectedSchema,
 	CORE_TELEMETRY_EVENTS,
 	CoreEventSchema,
-	getCoreEventValidationError,
+	// Core event schemas
 	IssueCreatedSchema,
 	IssueResolvedSchema,
 	PolicyChangedSchema,
-	// Export v1 events with distinct names
 	SaveAttemptSchema,
 	SessionFinalizedSchema,
 	SessionRestoredSchema,
-	SnapshotCreatedSchemaV1 as SnapshotCreatedSchema,
+	SnapshotCreatedSchema,
 	validateCoreTelemetryEvent,
-} from "./events.v1.js";
+	WelcomeActionTriggeredSchema,
+	WelcomeFeatureViewedSchema,
+} from "../events/core.js";
+export * from "./event-mapper.js";
+export * from "./events.js";
 export * from "./migrate-events.js";

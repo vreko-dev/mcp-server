@@ -94,9 +94,7 @@ describe("RiskAnalyzer", () => {
 
 			const result = await analyzer.analyzeFileChanges(changes);
 
-			expect(result.factors.some((f) => f.includes("package.json") || f.includes("Sensitive"))).toBe(
-				true,
-			);
+			expect(result.factors.some((f) => f.includes("package.json") || f.includes("Sensitive"))).toBe(true);
 		});
 
 		it("should detect .env as sensitive", async () => {
@@ -280,9 +278,7 @@ describe("RiskAnalyzer", () => {
 		});
 
 		it("should not flag low change velocity", async () => {
-			const changes: FileChangeInfo[] = [
-				{ filePath: "file1.ts", content: "a", op: "created" },
-			];
+			const changes: FileChangeInfo[] = [{ filePath: "file1.ts", content: "a", op: "created" }];
 
 			const result = await analyzer.analyzeFileChanges(changes, {
 				changes: 1,
@@ -316,9 +312,7 @@ describe("RiskAnalyzer", () => {
 		});
 
 		it("should return integer-like score for small changes", async () => {
-			const changes: FileChangeInfo[] = [
-				{ filePath: "index.ts", content: "console.log('hi');", op: "created" },
-			];
+			const changes: FileChangeInfo[] = [{ filePath: "index.ts", content: "console.log('hi');", op: "created" }];
 
 			const result = await analyzer.analyzeFileChanges(changes);
 
@@ -410,4 +404,65 @@ describe("RiskAnalyzer", () => {
 		});
 	});
 
-	// =========================================================================\n\t// 9. Risk Factors Tests\n\t// =========================================================================\n\n\tdescribe(\"risk factors\", () => {\n\t\tit(\"should provide human-readable risk factors\", async () => {\n\t\t\tconst changes: FileChangeInfo[] = [\n\t\t\t\t{ filePath: \"package.json\", content: \"{}\", op: \"modified\" },\n\t\t\t\t{\n\t\t\t\t\tfilePath: \"src/index.ts\",\n\t\t\t\t\tcontent: \"const x = 1; const y = 2;\",\n\t\t\t\t\top: \"created\",\n\t\t\t\t},\n\t\t\t];\n\n\t\t\tconst result = await analyzer.analyzeFileChanges(changes);\n\n\t\t\texpect(Array.isArray(result.factors)).toBe(true);\n\t\t\texpect(result.factors.every((f) => typeof f === \"string\")).toBe(true);\n\t\t});\n\n\t\tit(\"should include threat factors when detected\", async () => {\n\t\t\tconst changes: FileChangeInfo[] = [\n\t\t\t\t{\n\t\t\t\t\tfilePath: \"src/db.ts\",\n\t\t\t\t\tcontent: \"SELECT * FROM users WHERE id = \" + \"userId\",\n\t\t\t\t\top: \"created\",\n\t\t\t\t},\n\t\t\t];\n\n\t\t\tconst result = await analyzer.analyzeFileChanges(changes);\n\n\t\t\texpect(result.factors).toBeTruthy();\n\t\t});\n\t});\n\n\t// =========================================================================\n\t// 10. Git Context Integration Tests\n\t// =========================================================================\n\n\tdescribe(\"git context integration\", () => {\n\t\tit(\"should process changes without git context\", async () => {\n\t\t\tconst changes: FileChangeInfo[] = [\n\t\t\t\t{ filePath: \"src/index.ts\", content: \"a\", op: \"created\" },\n\t\t\t];\n\n\t\t\tconst result = await analyzer.analyzeFileChanges(changes);\n\n\t\t\texpect(result.score).toBeGreaterThanOrEqual(0);\n\t\t});\n\n\t\tit(\"should incorporate git context when provided\", async () => {\n\t\t\tconst changes: FileChangeInfo[] = [\n\t\t\t\t{ filePath: \"src/index.ts\", content: \"a\", op: \"created\" },\n\t\t\t];\n\n\t\t\tconst result = await analyzer.analyzeFileChanges(changes, {\n\t\t\t\tchanges: 1,\n\t\t\t\ttotal: 10,\n\t\t\t});\n\n\t\t\texpect(result.score).toBeGreaterThanOrEqual(0);\n\t\t\texpect(result.changeVelocity).toBeDefined();\n\t\t});\n\t});\n});\n
+	// =========================================================================
+	// 9. Risk Factors Tests
+	// =========================================================================
+
+	describe("risk factors", () => {
+		it("should provide human-readable risk factors", async () => {
+			const changes: FileChangeInfo[] = [
+				{ filePath: "package.json", content: "{}", op: "modified" },
+				{
+					filePath: "src/index.ts",
+					content: "const x = 1; const y = 2;",
+					op: "created",
+				},
+			];
+
+			const result = await analyzer.analyzeFileChanges(changes);
+
+			expect(Array.isArray(result.factors)).toBe(true);
+			expect(result.factors.every((f) => typeof f === "string")).toBe(true);
+		});
+
+		it("should include threat factors when detected", async () => {
+			const changes: FileChangeInfo[] = [
+				{
+					filePath: "src/db.ts",
+					content: "SELECT * FROM users WHERE id = " + "userId",
+					op: "created",
+				},
+			];
+
+			const result = await analyzer.analyzeFileChanges(changes);
+
+			expect(result.factors).toBeTruthy();
+		});
+	});
+
+	// =========================================================================
+	// 10. Git Context Integration Tests
+	// =========================================================================
+
+	describe("git context integration", () => {
+		it("should process changes without git context", async () => {
+			const changes: FileChangeInfo[] = [{ filePath: "src/index.ts", content: "a", op: "created" }];
+
+			const result = await analyzer.analyzeFileChanges(changes);
+
+			expect(result.score).toBeGreaterThanOrEqual(0);
+		});
+
+		it("should incorporate git context when provided", async () => {
+			const changes: FileChangeInfo[] = [{ filePath: "src/index.ts", content: "a", op: "created" }];
+
+			const result = await analyzer.analyzeFileChanges(changes, {
+				changes: 1,
+				total: 10,
+			});
+
+			expect(result.score).toBeGreaterThanOrEqual(0);
+			expect(result.changeVelocity).toBeDefined();
+		});
+	});
+});

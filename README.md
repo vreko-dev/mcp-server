@@ -1,6 +1,8 @@
 # SnapBack 🧢 - AI-Aware Code Protection System
 
 [![E2E Tests](https://github.com/Marcelle-Labs/snapback.dev/actions/workflows/e2e.yml/badge.svg)](https://github.com/Marcelle-Labs/snapback.dev/actions/workflows/e2e.yml)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![VS Code Extension](https://img.shields.io/visual-studio-marketplace/v/MarcelleLabs.snapback-vscode)](https://marketplace.visualstudio.com/items?itemName=MarcelleLabs.snapback-vscode)
 
 SnapBack is an AI-aware code protection system that automatically creates intelligent snapshots before AI assistants make changes to your codebase. It provides comprehensive file protection with privacy-first design and supports multiple platforms including VS Code, CLI, and web applications.
 
@@ -122,6 +124,18 @@ Access over 30 commands through VS Code's Command Palette:
 -   [📘 Documentation](https://snapback.dev/docs)
 -   [🚀 Demo](https://snapback.dev)
 -   [🧢 VS Code Extension](https://marketplace.visualstudio.com/items?itemName=MarcelleLabs.snapback-vscode)
+
+## Open Source Packages
+
+The following packages are available as open-source under Apache-2.0 license:
+
+- [`@snapback-oss/sdk`](./packages-oss/sdk) - TypeScript/JavaScript SDK
+- [`@snapback-oss/infrastructure`](./packages-oss/infrastructure) - Generic logging, metrics, and tracing utilities
+- [`@snapback-oss/contracts`](./packages-oss/contracts) - TypeScript types and schemas
+- [`@snapback-oss/config`](./packages-oss/config) - Configuration utilities
+- [`@snapback-oss/events`](./packages-oss/events) - Event bus implementation
+
+See [`packages-oss/README.md`](./packages-oss/README.md) for more information.
 
 ## Architecture Overview
 

@@ -21,7 +21,7 @@ async function analyzeGitChanges() {
 	const analyzer = new RiskAnalyzer();
 
 	// Simulate git changes
-	const changes = {
+	const _changes = {
 		added: [
 			"src/database.ts", // New file with potential SQL injection
 			"src/api-key.ts", // New file that might contain secrets
@@ -88,7 +88,7 @@ async function analyzeGitChanges() {
 }
 
 // Helper function to display risk assessment
-function assessRiskFactors(factors: string[]): string[] {
+function _assessRiskFactors(factors: string[]): string[] {
 	const riskMap: Record<string, string> = {
 		"eval execution": "Dynamic code execution detected",
 		"sql injection": "SQL injection vulnerability pattern",
@@ -167,17 +167,17 @@ async function demonstrateRiskLevels() {
 async function main() {
 	console.log("=".repeat(60));
 	console.log("SnapBack SDK - Risk Analysis Example");
-	console.log("=".repeat(60) + "\n");
+	console.log(`${"=".repeat(60)}\n`);
 
 	// Run first example
-	const result = await analyzeGitChanges();
+	const _result = await analyzeGitChanges();
 
-	console.log("\n" + "=".repeat(60) + "\n");
+	console.log(`\n${"=".repeat(60)}\n`);
 
 	// Run risk level demonstration
 	await demonstrateRiskLevels();
 
-	console.log("\n" + "=".repeat(60));
+	console.log(`\n${"=".repeat(60)}`);
 	console.log("✅ Example Complete");
 	console.log("=".repeat(60));
 }

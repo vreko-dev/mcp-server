@@ -160,7 +160,90 @@ export const PolicyChangedSchema = BaseEventSchema.extend({
 }).openapi("PolicyChangedEvent");
 export type PolicyChangedEvent = z.infer<typeof PolicyChangedSchema>;
 
-// Union type of all core events
+// ============================================================================
+// DIAGNOSTIC TELEMETRY EVENTS (Auth Flow & Welcome Panel Instrumentation)
+// ============================================================================
+
+// 8. auth.provider.selected event - Track OAuth vs Device flow choice
+export const AuthProviderSelectedSchema = BaseEventSchema.extend({
+	event: z.literal("auth.provider.selected"),
+	properties: z.object({
+		provider: z.enum(["oauth", "device_flow"]).openapi({ description: "Authentication provider selected" }),
+		trigger: z
+			.enum(["user_selected", "fallback", "auto"])
+			.openapi({ description: "How the provider was selected" }),
+	}),
+}).openapi("AuthProviderSelectedEvent");
+export type AuthProviderSelectedEvent = z.infer<typeof AuthProviderSelectedSchema>;
+
+// 9. auth.browser.opened event - Track browser launch success
+export const AuthBrowserOpenedSchema = BaseEventSchema.extend({
+	event: z.literal("auth.browser.opened"),
+	properties: z.object({
+		method: z
+			.enum(["external_command", "clipboard", "error"])
+			.openapi({ description: "Method used to open browser" }),
+		success: z.boolean().openapi({ description: "Whether browser was successfully opened" }),
+		error: z.string().optional().openapi({ description: "Error message if browser opening failed" }),
+	}),
+}).openapi("AuthBrowserOpenedEvent");
+export type AuthBrowserOpenedEvent = z.infer<typeof AuthBrowserOpenedSchema>;
+
+// 10. auth.code.entry event - Track device code entry in browser
+export const AuthCodeEntrySchema = BaseEventSchema.extend({
+	event: z.literal("auth.code.entry"),
+	properties: z.object({
+		code_format: z
+			.enum(["valid", "invalid_chars", "wrong_length"])
+			.openapi({ description: "Validity of the entered code format" }),
+		time_to_enter_ms: z.number().openapi({ description: "Time taken to enter the code in milliseconds" }),
+		attempts: z.number().int().min(1).openapi({ description: "Number of attempts to enter the code correctly" }),
+	}),
+}).openapi("AuthCodeEntryEvent");
+export type AuthCodeEntryEvent = z.infer<typeof AuthCodeEntrySchema>;
+
+// 11. auth.approval.received event - Track successful device code approval
+export const AuthApprovalReceivedSchema = BaseEventSchema.extend({
+	event: z.literal("auth.approval.received"),
+	properties: z.object({
+		polling_attempts: z
+			.number()
+			.int()
+			.min(1)
+			.openapi({ description: "Number of polling attempts before approval" }),
+		total_wait_ms: z.number().openapi({ description: "Total time waited for approval in milliseconds" }),
+		device_code_expired: z.boolean().openapi({ description: "Whether the device code had expired" }),
+	}),
+}).openapi("AuthApprovalReceivedEvent");
+export type AuthApprovalReceivedEvent = z.infer<typeof AuthApprovalReceivedSchema>;
+
+// 12. welcome.feature.viewed event - Track feature discovery in welcome panel
+export const WelcomeFeatureViewedSchema = BaseEventSchema.extend({
+	event: z.literal("welcome.feature.viewed"),
+	properties: z.object({
+		feature: z.string().openapi({ description: "Feature name shown in welcome panel", example: "ai_detection" }),
+		position: z.number().int().min(0).openapi({ description: "Position in feature carousel", example: 0 }),
+		trigger: z
+			.enum(["onboarding", "nudge", "manual"])
+			.openapi({ description: "How the welcome panel was triggered" }),
+	}),
+}).openapi("WelcomeFeatureViewedEvent");
+export type WelcomeFeatureViewedEvent = z.infer<typeof WelcomeFeatureViewedSchema>;
+
+// 13. welcome.action.triggered event - Track feature adoption from welcome panel
+export const WelcomeActionTriggeredSchema = BaseEventSchema.extend({
+	event: z.literal("welcome.action.triggered"),
+	properties: z.object({
+		action: z.string().openapi({ description: "Action triggered by user", example: "try_now" }),
+		feature: z.string().openapi({ description: "Feature associated with the action", example: "ai_detection" }),
+		time_viewed_ms: z
+			.number()
+			.openapi({ description: "How long the feature was viewed before action", example: 2500 }),
+	}),
+}).openapi("WelcomeActionTriggeredEvent");
+export type WelcomeActionTriggeredEvent = z.infer<typeof WelcomeActionTriggeredSchema>;
+
+// Union type of all core events (including diagnostic events)
 export type CoreTelemetryEvent =
 	| SaveAttemptEvent
 	| SnapshotCreatedEvent
@@ -168,9 +251,15 @@ export type CoreTelemetryEvent =
 	| IssueCreatedEvent
 	| IssueResolvedEvent
 	| SessionRestoredEvent
-	| PolicyChangedEvent;
+	| PolicyChangedEvent
+	| AuthProviderSelectedEvent
+	| AuthBrowserOpenedEvent
+	| AuthCodeEntryEvent
+	| AuthApprovalReceivedEvent
+	| WelcomeFeatureViewedEvent
+	| WelcomeActionTriggeredEvent;
 
-// Zod schema for validating any core event
+// Zod schema for validating any core event (including diagnostic events)
 export const CoreEventSchema = z.discriminatedUnion("event", [
 	SaveAttemptSchema,
 	SnapshotCreatedSchema,
@@ -179,10 +268,17 @@ export const CoreEventSchema = z.discriminatedUnion("event", [
 	IssueResolvedSchema,
 	SessionRestoredSchema,
 	PolicyChangedSchema,
+	AuthProviderSelectedSchema,
+	AuthBrowserOpenedSchema,
+	AuthCodeEntrySchema,
+	AuthApprovalReceivedSchema,
+	WelcomeFeatureViewedSchema,
+	WelcomeActionTriggeredSchema,
 ]);
 
-// Event name enum for compile-time checking
+// Event name enum for compile-time checking (including diagnostic events)
 export const CORE_TELEMETRY_EVENTS = {
+	// Core events (7)
 	SAVE_ATTEMPT: "save_attempt",
 	SNAPSHOT_CREATED: "snapshot_created",
 	SESSION_FINALIZED: "session_finalized",
@@ -190,6 +286,13 @@ export const CORE_TELEMETRY_EVENTS = {
 	ISSUE_RESOLVED: "issue_resolved",
 	SESSION_RESTORED: "session_restored",
 	POLICY_CHANGED: "policy_changed",
+	// Diagnostic events (6)
+	AUTH_PROVIDER_SELECTED: "auth.provider.selected",
+	AUTH_BROWSER_OPENED: "auth.browser.opened",
+	AUTH_CODE_ENTRY: "auth.code.entry",
+	AUTH_APPROVAL_RECEIVED: "auth.approval.received",
+	WELCOME_FEATURE_VIEWED: "welcome.feature.viewed",
+	WELCOME_ACTION_TRIGGERED: "welcome.action.triggered",
 } as const;
 
 export type CoreTelemetryEventName = (typeof CORE_TELEMETRY_EVENTS)[keyof typeof CORE_TELEMETRY_EVENTS];

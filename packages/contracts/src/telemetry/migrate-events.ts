@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 import { readFileSync, writeFileSync } from "node:fs";
+import type { CoreTelemetryEvent } from "../events/core.js";
 import { mapLegacyEventsToCore, TelemetryEventMapper } from "./event-mapper.js";
 import type { AllowedTelemetryEvent } from "./events.js";
-import type { CoreTelemetryEventV1 } from "./events.v1.js";
 
 /**
  * Migration script to convert legacy telemetry events to core events
@@ -40,7 +40,7 @@ function main() {
 		console.log(`Read ${legacyEvents.length} legacy events from ${inputFile}`);
 
 		// Convert events
-		const coreEvents: CoreTelemetryEventV1[] = [];
+		const coreEvents: CoreTelemetryEvent[] = [];
 		const unmappedEvents: AllowedTelemetryEvent[] = [];
 
 		for (const legacyEvent of legacyEvents) {
@@ -100,6 +100,6 @@ async function migrateLegacyEventsToFile(inputFile: string, outputFile: string):
  * @param legacyEvents Array of legacy events to convert
  * @returns Array of converted core events
  */
-function migrateLegacyEventsToArray(legacyEvents: AllowedTelemetryEvent[]): CoreTelemetryEventV1[] {
+function migrateLegacyEventsToArray(legacyEvents: AllowedTelemetryEvent[]): CoreTelemetryEvent[] {
 	return mapLegacyEventsToCore(legacyEvents);
 }

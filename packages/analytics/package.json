@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "dependencies": {
     "@snapback/contracts": "workspace:*",
+    "@snapback/infrastructure": "workspace:*",
     "@snapback/platform": "workspace:*",
     "drizzle-orm": "catalog:"
   },

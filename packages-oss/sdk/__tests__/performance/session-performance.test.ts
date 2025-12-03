@@ -422,7 +422,9 @@ describe("Session Performance", () => {
 			const putResult = await blobStore.put(content);
 			expect(putResult.ok).toBe(true);
 
-			if (!putResult.ok) return;
+			if (!putResult.ok) {
+				return;
+			}
 
 			const hash = putResult.value;
 

@@ -125,3 +125,24 @@ apps/*/EXECUTION_SUMMARY.md
 apps/*/INTEGRATION_TESTS_SUMMARY.md
 apps/*/EXTENSION_TESTING_SUMMARY.md
 apps/api/MIGRATION_SUMMARY.md
+
+# Temporary text files
+*.txt
+!LICENSE.txt
+!README.txt
+
+# Debug scripts (now in scripts/debug)
+debug-*.js
+debug-*.ts
+debug-*.py
+
+# Temporary test files
+test-*.svg
+test-*.png
+test-*.jpg
+
+# Additional analysis patterns
+*_ANALYSIS.md
+*_AUDIT*.md
+*_REPORT.md
+INVESTIGATION_*.md

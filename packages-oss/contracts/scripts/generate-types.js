@@ -153,9 +153,9 @@ async function generateAll() {
 	const generatedDir = join(__dirname, "../src/generated");
 	try {
 		// Try to create the directory first
-		const { mkdir } = await import("fs/promises");
+		const { mkdir } = await import("node:fs/promises");
 		await mkdir(generatedDir, { recursive: true });
-	} catch (error) {
+	} catch (_error) {
 		// Directory might already exist, which is fine
 	}
 	await generateCoreEventTypes();

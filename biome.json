@@ -50,6 +50,7 @@
 		"experimentalScannerIgnores": [
 			"**/node_modules/**",
 			"**/dist/**",
+			"**/dist-simple/**",
 			"**/.next/**",
 			"**/build/**",
 			"**/.git/**",

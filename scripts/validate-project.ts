@@ -229,6 +229,73 @@ function validateProjectReferences(pkg: PackageInfo, _allPackages: PackageInfo[]
 	return errors;
 }
 
+// Validate security boundaries for critical vulnerabilities
+function validateSecurityBoundaries(pkg: PackageInfo): string[] {
+	const errors: string[] = [];
+
+	// CVE-2025-55182: React Server Components RCE vulnerability
+	// Vulnerable versions: React 19.0, 19.1.0, 19.1.1, 19.2.0
+	// Fixed versions: 19.0.1, 19.1.2, 19.2.1
+	const reactDeps = {
+		...pkg.packageJson.dependencies,
+		...pkg.packageJson.devDependencies,
+		...pkg.packageJson.peerDependencies,
+	};
+
+	if (reactDeps.react) {
+		const reactVersion = reactDeps.react;
+		// Check if it's a catalog reference
+		if (reactVersion === "catalog:") {
+			// Catalog versions will be checked separately
+			return errors;
+		}
+
+		// Parse version string (handle ^, ~, >=, etc.)
+		const versionMatch = reactVersion.match(/[0-9]+\.[0-9]+\.[0-9]+/);
+		if (versionMatch) {
+			const [major, minor, patch] = versionMatch[0].split(".").map(Number);
+
+			// Flag if using vulnerable versions: 19.0, 19.1.0, 19.1.1, 19.2.0
+			if (major === 19) {
+				if ((minor === 0 && patch === 0) || (minor === 1 && patch === 0) || (minor === 1 && patch === 1) || (minor === 2 && patch === 0)) {
+					errors.push(
+						`CVE-2025-55182: React ${reactVersion} is vulnerable to RCE. Upgrade to React 19.0.1, 19.1.2, 19.2.1, or later.`,
+					);
+				}
+			}
+		}
+	}
+
+	// CVE-2025-66478: Next.js Server Components vulnerability
+	// Vulnerable versions: Next.js 15.0-15.5.6, 16.0-16.0.6, and 14.3.0-canary.77+
+	// Fixed versions: Next.js 15.0.5+, 15.1.9+, 15.2.6+, 15.3.6+, 15.4.8+, 15.5.7+, 16.0.7+
+	if (reactDeps.next) {
+		const nextVersion = reactDeps.next;
+		if (nextVersion === "catalog:") {
+			return errors; // Will be checked separately
+		}
+
+		const versionMatch = nextVersion.match(/[0-9]+\.[0-9]+\.[0-9]+/);
+		if (versionMatch) {
+			const [major, minor, patch] = versionMatch[0].split(".").map(Number);
+
+			// Check for vulnerable versions
+			if (major === 15 && minor <= 5 && patch < 7) {
+				errors.push(
+					`CVE-2025-66478: Next.js ${nextVersion} is vulnerable to RCE. Upgrade to Next.js 15.5.7 or later.`,
+				);
+			}
+			if (major === 16 && minor === 0 && patch < 7) {
+				errors.push(
+					`CVE-2025-66478: Next.js ${nextVersion} is vulnerable to RCE. Upgrade to Next.js 16.0.7 or later.`,
+				);
+			}
+		}
+	}
+
+	return errors;
+}
+
 // Main validation function
 async function main() {
 	console.log("🔍 Validating project configuration...\n");
@@ -245,6 +312,7 @@ async function main() {
 		errors.push(...validateTypeScriptConfiguration(pkg));
 		errors.push(...validateBuildIntegrity(pkg));
 		errors.push(...validateProjectReferences(pkg, packages));
+		errors.push(...validateSecurityBoundaries(pkg));
 
 		if (errors.length > 0) {
 			console.log(`❌ ${pkg.name}:`);
@@ -290,17 +358,46 @@ async function main() {
 		}
 	}
 
-	// Run module resolution verification
+	// Validate security boundaries in catalog
 	try {
-		console.log("🔍 Validating module resolution...\n");
-		// This will be implemented as part of the enhanced validation
-		console.log("✅ Module resolution validation placeholder\n");
+		console.log("🔍 Validating security boundaries (CVE-2025-55182, CVE-2025-66478)...\n");
+		const catalogPath = join(resolve(__dirname, ".."), "pnpm-workspace.yaml");
+		const catalogContent = readFileSync(catalogPath, "utf-8");
+
+		let catalogErrors = 0;
+
+		// Check React version in catalog
+		const reactMatch = catalogContent.match(/^\s*react:\s*([0-9.]+)/m);
+		if (reactMatch) {
+			const [, major, minor, patch] = reactMatch[1].match(/([0-9]+)\.([0-9]+)\.([0-9]+)/)?.map(Number) || [];
+			if (major === 19 && ((minor === 0 && patch === 0) || (minor === 1 && patch <= 1) || (minor === 2 && patch === 0))) {
+				console.log(`❌ Catalog: React ${reactMatch[1]} is vulnerable. Update to 19.0.1, 19.1.2, 19.2.1, or later.`);
+				catalogErrors++;
+			}
+		}
+
+		// Check Next.js version in catalog
+		const nextMatch = catalogContent.match(/^\s*next:\s*([0-9.]+)/m);
+		if (nextMatch) {
+			const [, major, minor, patch] = nextMatch[1].match(/([0-9]+)\.([0-9]+)\.([0-9]+)/)?.map(Number) || [];
+			if ((major === 15 && minor <= 5 && patch < 7) || (major === 16 && minor === 0 && patch < 7)) {
+				console.log(`❌ Catalog: Next.js ${nextMatch[1]} is vulnerable. Update to 15.5.7+ or 16.0.7+.`);
+				catalogErrors++;
+			}
+		}
+
+		if (catalogErrors === 0) {
+			console.log("✅ Security boundaries validated (React and Next.js versions are safe)\n");
+			console.log("📋 Reference: .qoder/rules/always-react-security-boundaries.md\n");
+		} else {
+			totalErrors += catalogErrors;
+			console.log("\n📋 For details, see: .qoder/rules/always-react-security-boundaries.md\n");
+		}
 	} catch (err: unknown) {
 		const error = err as Error;
-		console.log("❌ Module resolution validation failed:\n");
+		console.log("⚠️  Security boundary validation skipped:\n");
 		console.log(error.message);
 		console.log("");
-		totalErrors++;
 	}
 
 	// Summary

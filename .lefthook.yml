@@ -95,6 +95,57 @@ pre-commit:
 pre-push:
     parallel: true
     commands:
+        # Security: Validate React and Next.js versions (CVE-2025-55182, CVE-2025-66478)
+        security-boundaries:
+            tags: [security, critical]
+            glob: "pnpm-workspace.yaml"
+            run: |
+                echo "🔒 Validating React/Next.js security boundaries..."
+                # Check React version in catalog
+                REACT_VERSION=$(grep '^\s*react:' pnpm-workspace.yaml | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' || true)
+                if [ -n "$REACT_VERSION" ]; then
+                  MAJOR=$(echo $REACT_VERSION | cut -d. -f1)
+                  MINOR=$(echo $REACT_VERSION | cut -d. -f2)
+                  PATCH=$(echo $REACT_VERSION | cut -d. -f3)
+
+                  # Vulnerable: 19.0.0, 19.1.0, 19.1.1, 19.2.0
+                  if [ "$MAJOR" = "19" ] && [ "$MINOR" = "0" ] && [ "$PATCH" = "0" ]; then
+                    echo "❌ CVE-2025-55182: React $REACT_VERSION is vulnerable! Upgrade to 19.0.1, 19.1.2, or 19.2.1"
+                    exit 1
+                  fi
+                  if [ "$MAJOR" = "19" ] && [ "$MINOR" = "1" ] && ([ "$PATCH" = "0" ] || [ "$PATCH" = "1" ]); then
+                    echo "❌ CVE-2025-55182: React $REACT_VERSION is vulnerable! Upgrade to 19.1.2 or later"
+                    exit 1
+                  fi
+                  if [ "$MAJOR" = "19" ] && [ "$MINOR" = "2" ] && [ "$PATCH" = "0" ]; then
+                    echo "❌ CVE-2025-55182: React $REACT_VERSION is vulnerable! Upgrade to 19.2.1 or later"
+                    exit 1
+                  fi
+                fi
+
+                # Check Next.js version in catalog
+                NEXT_VERSION=$(grep '^\s*next:' pnpm-workspace.yaml | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' || true)
+                if [ -n "$NEXT_VERSION" ]; then
+                  MAJOR=$(echo $NEXT_VERSION | cut -d. -f1)
+                  MINOR=$(echo $NEXT_VERSION | cut -d. -f2)
+                  PATCH=$(echo $NEXT_VERSION | cut -d. -f3)
+
+                  # Vulnerable: 15.x < 15.5.7, 16.0.0-16.0.6
+                  if [ "$MAJOR" = "15" ]; then
+                    if [ "$MINOR" -lt 5 ] || ([ "$MINOR" = "5" ] && [ "$PATCH" -lt 7 ]); then
+                      echo "❌ CVE-2025-66478: Next.js $NEXT_VERSION is vulnerable! Upgrade to 15.5.7 or later"
+                      exit 1
+                    fi
+                  fi
+                  if [ "$MAJOR" = "16" ] && [ "$MINOR" = "0" ] && [ "$PATCH" -lt 7 ]; then
+                    echo "❌ CVE-2025-66478: Next.js $NEXT_VERSION is vulnerable! Upgrade to 16.0.7 or later"
+                    exit 1
+                  fi
+                fi
+
+                echo "✅ React and Next.js versions are secure"
+                echo "📋 Reference: .qoder/rules/always-react-security-boundaries.md"
+
         # Type check only affected packages (10x faster than checking all)
         # Note: Excludes web package (has 320+ pre-existing type errors)
         # Note: Excludes api-service package (has architectural type errors requiring larger refactor)

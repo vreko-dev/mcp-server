@@ -389,13 +389,23 @@ export default function PricingClient() {
 					<p className="text-lg text-gray-300">
 						Got questions? Check our{" "}
 						<Link
-							href="https://new-docs.snapback.dev"
-							prefetch={false}
+							href="https://new-docs.snapback.dev/faq"
+							target="_blank"
+							rel="noopener noreferrer"
 							className="text-[#00FF41] hover:underline focus:outline-none focus:ring-2 focus:ring-[#00FF41] focus:ring-offset-2 focus:ring-offset-slate-900 rounded"
 						>
-							full documentation
+							full FAQ
 						</Link>{" "}
-						or reach out to support.
+						or{" "}
+						<Link
+							href="https://new-docs.snapback.dev"
+							target="_blank"
+							rel="noopener noreferrer"
+							className="text-[#00FF41] hover:underline focus:outline-none focus:ring-2 focus:ring-[#00FF41] focus:ring-offset-2 focus:ring-offset-slate-900 rounded"
+						>
+							documentation
+						</Link>
+						.
 					</p>
 				</m.div>
 
@@ -466,11 +476,12 @@ export default function PricingClient() {
 						Still have questions? Our team is here to help.
 					</p>
 					<Link
-						href="https://docs.snapback.dev"
-						prefetch={false}
+						href="https://new-docs.snapback.dev/faq"
+						target="_blank"
+						rel="noopener noreferrer"
 						className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-white font-medium transition-all focus:outline-none focus:ring-2 focus:ring-[#00FF41] focus:ring-offset-2 focus:ring-offset-slate-900"
 					>
-						Visit Documentation →
+						View All FAQs →
 					</Link>
 				</m.div>
 			</section>

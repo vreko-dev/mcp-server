@@ -1,0 +1,258 @@
+---
+title: Your First Restore - Step-by-Step Guide
+description: Learn how to recover from an AI code change in 2 minutes. Walk through a real scenario with SnapBack.
+---
+
+# Your First Restore
+
+In 2 minutes, you'll recover from a simulated AI mistake and understand how SnapBack saves hours of debugging.
+
+**What you'll learn:**
+- How to trigger a snapshot
+- How to restore your code
+- How to read the diff view
+
+---
+
+## Setup: Create a Test File
+
+### Step 1: Create a new JavaScript file
+
+In VS Code, create a new file called `test-snapback.js`:
+
+```javascript
+// A simple shopping cart calculator
+function calculateTotal(items) {
+  let total = 0;
+
+  for (const item of items) {
+    total += item.price * item.quantity;
+  }
+
+  return total;
+}
+
+// Test data
+const cart = [
+  { name: "Laptop", price: 999, quantity: 1 },
+  { name: "Mouse", price: 25, quantity: 2 },
+  { name: "Keyboard", price: 75, quantity: 1 }
+];
+
+console.log(`Total: $${calculateTotal(cart)}`);
+// Expected: $1123
+```
+
+**Save the file.** ✅ **SnapBack just created your first snapshot.**
+
+You can see it in the SnapBack sidebar:
+```
+📁 test-snapback.js
+  └── Just now (snapshot: v1)
+```
+
+---
+
+### Step 2: Simulate an AI mistake
+
+Now imagine Copilot "optimized" your code. Replace the entire file with this broken version:
+
+```javascript
+// "Refactored" by AI (has a bug!)
+const calculateTotal = (items) =>
+  items.reduce((acc, item) => acc + item.price * item.qty, 0);
+
+// Test data
+const cart = [
+  { name: "Laptop", price: 999, quantity: 1 },
+  { name: "Mouse", price: 25, quantity: 2 },
+  { name: "Keyboard", price: 75, quantity: 1 }
+];
+
+console.log(`Total: $${calculateTotal(cart)}`);
+// Expected: $1123
+// Actual: $0 ❌ (AI renamed 'quantity' to 'qty')
+```
+
+**Save the file.** ✅ **SnapBack captured the change and flagged it as "AI-detected."**
+
+In the sidebar:
+```
+📁 test-snapback.js
+  └── Just now (AI-detected ⚠️)
+  └── 30 seconds ago (snapshot: v1)
+```
+
+Notice the warning badge. SnapBack recognized the risky change pattern.
+
+---
+
+### Step 3: Restore your working code
+
+Time to recover:
+
+1. **Open the SnapBack sidebar**
+   - Click the SnapBack icon in VS Code's activity bar (left sidebar)
+   - Or press `⌘+⇧+X` (or `Ctrl+Shift+X` on Windows)
+
+2. **Find your snapshots**
+   ```
+   📁 test-snapback.js
+      ├── Just now (AI-detected ⚠️) ← The broken version
+      └── 30 seconds ago ✓           ← The working version
+   ```
+
+3. **Click the earlier snapshot** (the working version)
+   - A diff view opens showing what changed
+   - Review the changes to understand what AI broke
+
+4. **Click "Restore"** or press `⌘+Enter`
+   - Your file instantly returns to working code
+   - SnapBack closes the diff view
+
+**Done.** Your working code is back. No manual hunting, no Git history spelunking.
+
+---
+
+## What Just Happened?
+
+### Timeline
+
+| Time | Event | SnapBack Action |
+|------|-------|-----------------|
+| 10:00 | You save working code | Creates snapshot v1 |
+| 10:01 | You accept AI suggestion | Creates snapshot v2, flags as "AI-detected" |
+| 10:02 | You want to undo | 1 click → restored to v1 |
+
+### Key Insights
+
+**1. Automatic snapshots**
+You didn't do anything special. SnapBack captured both saves automatically.
+
+**2. Context awareness**
+SnapBack recognized that v2 looked like AI-generated code. It flagged it without needing you to say "this looks bad."
+
+**3. Non-destructive recovery**
+When you restore v1, v2 isn't deleted. Both versions stay in history. You can compare them later.
+
+---
+
+## Real-World Scenarios
+
+### Scenario 1: Large Refactor Gone Wrong
+
+```javascript
+// Original: Working authentication module
+export function login(email, password) {
+  if (!email || !password) return null;
+  return validateCredentials(email, password);
+}
+
+// AI suggestion: "Use async/await and fetch"
+// But AI forgot to handle errors, changed parameter names, broke types...
+// Result: 47 lines changed, tests fail
+```
+
+**Recovery**: Find the snapshot before you accepted the suggestion. Restore in 2 seconds.
+
+### Scenario 2: "I'll Just Undo with Cmd+Z"
+
+```
+- You accept AI suggestion (changes 8 files)
+- Tests fail
+- You press Cmd+Z
+- Cmd+Z undoes 1 character in 1 file
+- You press Cmd+Z 47 more times
+- 5 minutes later: frustrated
+```
+
+**With SnapBack**: 1 click, all 8 files restored.
+
+### Scenario 3: Multi-File AI Suggestion
+
+```
+Claude suggests: "Refactor this component library"
+You accept it.
+Changes:
+  ├── Button.tsx (broke styling)
+  ├── Input.tsx (changed API)
+  ├── Form.tsx (renamed props)
+  └── utils/validation.ts (logic error)
+
+Your tests catch 2/4 issues. But production might catch the others.
+```
+
+**With SnapBack**: Before you push/deploy, restore all 4 files to before the suggestion. You can carefully apply the good changes and reject the bad ones.
+
+---
+
+## Pro Tips
+
+### Tip 1: Restore Specific Files
+
+You don't always want to restore everything. If AI changed 5 files but only 1 is broken:
+
+1. Open the diff view for the bad snapshot
+2. Click "Restore" next to only the files you need
+3. Leave the good changes in place
+
+### Tip 2: Compare Side-by-Side
+
+Before restoring, study the diff:
+
+```javascript
+// LEFT (your original)
+function calculateTotal(items) {
+  let total = 0;
+  for (const item of items) {
+    total += item.price * item.quantity;
+  }
+  return total;
+}
+
+// RIGHT (AI's version)
+const calculateTotal = (items) =>
+  items.reduce((acc, item) => acc + item.price * item.qty, 0);
+  //                                              ^^^ BUG: qty vs quantity
+```
+
+Understanding what changed teaches you what AI gets wrong.
+
+### Tip 3: Keep Working Snapshots Starred
+
+If you have a snapshot you want to keep around, you can:
+1. Right-click it in the sidebar
+2. Select "Keep snapshot" (or star it)
+
+SnapBack won't auto-delete starred snapshots.
+
+---
+
+## Keyboard Shortcuts
+
+| Action | Mac | Windows/Linux |
+|--------|-----|---------------|
+| **Open SnapBack sidebar** | ⌘+⇧+X | Ctrl+Shift+X |
+| **Restore snapshot** | ⌘+Enter | Ctrl+Enter |
+| **Toggle diff view** | ⌘+\ | Ctrl+\ |
+| **Compare with current** | ⌘+Shift+C | Ctrl+Shift+C |
+
+---
+
+## Next Steps
+
+Great! You understand the basics. Now:
+
+- **[Quick Start Guide →](/quick-start)** – Install SnapBack for real
+- **[How Snapshots Work →](/protection-levels)** – Customize your protection
+- **[AI Detection Explained →](/ai-detection)** – Understand how SnapBack detects risky changes
+
+---
+
+<callout type="success">
+**You just recovered from an AI mistake in seconds instead of hours.**
+
+This is what SnapBack does every day. Ready to protect your real code?
+
+[Install SnapBack Now →](https://snapback.dev)
+</callout>

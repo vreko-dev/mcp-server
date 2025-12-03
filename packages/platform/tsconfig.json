@@ -4,6 +4,7 @@
 		"outDir": "dist",
 		"rootDir": "src",
 		"composite": true,
+		"emitDeclarationOnly": true,
 		"tsBuildInfoFile": ".tsbuildinfo",
 		"typeRoots": ["./types", "./node_modules/@types"]
 	},

@@ -1,15 +1,4 @@
-import {
-	Body,
-	Container,
-	Head,
-	Heading,
-	Hr,
-	Html,
-	Link,
-	Preview,
-	Section,
-	Text,
-} from "@react-email/components";
+import { Body, Container, Head, Heading, Hr, Html, Link, Preview, Section, Text } from "@react-email/components";
 
 interface WelcomeEmailProps {
 	plan: string;
@@ -27,16 +16,14 @@ export default function WelcomeEmail({
 	return (
 		<Html>
 			<Head />
-			<Preview>
-				Welcome to SnapBack {plan}! Your code safety net is ready.
-			</Preview>
+			<Preview>Welcome to SnapBack {plan}! Your code safety net is ready.</Preview>
 			<Body style={main}>
 				<Container style={container}>
 					<Heading style={h1}>🧢 Welcome to SnapBack!</Heading>
 					<Text style={text}>
 						Thanks for subscribing to SnapBack{" "}
-						<strong>{plan.charAt(0).toUpperCase() + plan.slice(1)}</strong>!
-						Your code is now protected with intelligent snapshot technology.
+						<strong>{plan.charAt(0).toUpperCase() + plan.slice(1)}</strong>! Your code is now protected with
+						intelligent snapshot technology.
 					</Text>
 
 					<Section style={featuresSection}>
@@ -96,8 +83,7 @@ export default function WelcomeEmail({
 
 const main = {
 	backgroundColor: "#f6f9fc",
-	fontFamily:
-		'-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
+	fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
 };
 
 const container = {

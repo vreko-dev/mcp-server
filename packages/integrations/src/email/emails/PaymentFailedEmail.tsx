@@ -1,15 +1,4 @@
-import {
-	Body,
-	Container,
-	Head,
-	Heading,
-	Hr,
-	Html,
-	Link,
-	Preview,
-	Section,
-	Text,
-} from "@react-email/components";
+import { Body, Container, Head, Heading, Hr, Html, Link, Preview, Section, Text } from "@react-email/components";
 
 interface PaymentFailedEmailProps {
 	attemptCount: number;
@@ -36,22 +25,17 @@ export default function PaymentFailedEmail({
 			</Preview>
 			<Body style={main}>
 				<Container style={container}>
-					<Heading style={h1}>
-						{isUrgent ? "⚠️ URGENT: " : ""}Payment Failed
-					</Heading>
+					<Heading style={h1}>{isUrgent ? "⚠️ URGENT: " : ""}Payment Failed</Heading>
 					<Text style={text}>
-						We were unable to process your payment for SnapBack. Your
-						subscription benefits are at risk.
+						We were unable to process your payment for SnapBack. Your subscription benefits are at risk.
 					</Text>
 
 					<Section style={isUrgent ? urgentWarningSection : warningSection}>
-						<Text style={isUrgent ? urgentWarningText : warningText}>
-							{warningMessage}
-						</Text>
+						<Text style={isUrgent ? urgentWarningText : warningText}>{warningMessage}</Text>
 						{isUrgent && (
 							<Text style={urgentWarningText}>
-								This is attempt {attemptCount} of 3. After 3 failed attempts,
-								your account will be suspended.
+								This is attempt {attemptCount} of 3. After 3 failed attempts, your account will be
+								suspended.
 							</Text>
 						)}
 					</Section>
@@ -74,8 +58,7 @@ export default function PaymentFailedEmail({
 							<br />
 						</Text>
 						<Text style={text}>
-							Most payment issues can be resolved by updating your payment
-							method or contacting your bank.
+							Most payment issues can be resolved by updating your payment method or contacting your bank.
 						</Text>
 					</Section>
 
@@ -84,8 +67,8 @@ export default function PaymentFailedEmail({
 					<Section style={helpSection}>
 						<Heading style={h2}>Need Help?</Heading>
 						<Text style={text}>
-							If you're experiencing technical difficulties or have questions
-							about your billing, our support team is here to help.
+							If you're experiencing technical difficulties or have questions about your billing, our
+							support team is here to help.
 						</Text>
 						<Text style={text}>
 							<Link href={`mailto:${supportEmail}`} style={link}>
@@ -114,8 +97,7 @@ export default function PaymentFailedEmail({
 
 const main = {
 	backgroundColor: "#f6f9fc",
-	fontFamily:
-		'-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
+	fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
 };
 
 const container = {

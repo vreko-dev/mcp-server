@@ -1,15 +1,4 @@
-import {
-	Body,
-	Container,
-	Head,
-	Heading,
-	Hr,
-	Html,
-	Link,
-	Preview,
-	Section,
-	Text,
-} from "@react-email/components";
+import { Body, Container, Head, Heading, Hr, Html, Link, Preview, Section, Text } from "@react-email/components";
 
 interface CancellationEmailProps {
 	retentionOffer: string;
@@ -27,25 +16,21 @@ export default function CancellationEmail({
 	return (
 		<Html>
 			<Head />
-			<Preview>
-				We're sorry to see you go - Your SnapBack subscription has been canceled
-			</Preview>
+			<Preview>We're sorry to see you go - Your SnapBack subscription has been canceled</Preview>
 			<Body style={main}>
 				<Container style={container}>
 					<Heading style={h1}>We're Sorry to See You Go</Heading>
 					<Text style={text}>
-						Your SnapBack subscription has been successfully canceled. We wanted
-						to take a moment to thank you for trying SnapBack.
+						Your SnapBack subscription has been successfully canceled. We wanted to take a moment to thank
+						you for trying SnapBack.
 					</Text>
 
 					<Section style={infoSection}>
 						<Heading style={h2}>What Happens Next:</Heading>
 						<Text style={text}>
-							• Your subscription benefits will continue until the end of your
-							current billing period
+							• Your subscription benefits will continue until the end of your current billing period
 							<br />• You'll be downgraded to the free tier with 1,000 snapshots
-							<br />• Cloud backup will be disabled (local snapshots are
-							preserved)
+							<br />• Cloud backup will be disabled (local snapshots are preserved)
 							<br />• You can reactivate anytime without losing your data
 						</Text>
 					</Section>
@@ -65,8 +50,8 @@ export default function CancellationEmail({
 					<Section style={feedbackSection}>
 						<Heading style={h2}>We'd Love Your Feedback</Heading>
 						<Text style={text}>
-							Help us improve SnapBack by sharing why you canceled. It only
-							takes 2 minutes and helps us serve developers better.
+							Help us improve SnapBack by sharing why you canceled. It only takes 2 minutes and helps us
+							serve developers better.
 						</Text>
 						<Link href={feedbackUrl} style={feedbackLink}>
 							Share Your Feedback
@@ -92,8 +77,7 @@ export default function CancellationEmail({
 
 const main = {
 	backgroundColor: "#f6f9fc",
-	fontFamily:
-		'-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
+	fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
 };
 
 const container = {

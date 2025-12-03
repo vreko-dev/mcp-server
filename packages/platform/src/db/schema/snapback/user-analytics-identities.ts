@@ -36,12 +36,8 @@ export const userAnalyticsIdentities = pgTable(
 	},
 	(table) => ({
 		userIdIdx: index("user_analytics_identities_user_id_idx").on(table.userId),
-		posthogUserIdIdx: index("user_analytics_identities_posthog_user_id_idx").on(
-			table.posthogUserId,
-		),
-		hubspotContactIdIdx: uniqueIndex("user_analytics_identities_hubspot_contact_id_idx").on(
-			table.hubspotContactId,
-		),
+		posthogUserIdIdx: index("user_analytics_identities_posthog_user_id_idx").on(table.posthogUserId),
+		hubspotContactIdIdx: uniqueIndex("user_analytics_identities_hubspot_contact_id_idx").on(table.hubspotContactId),
 		anonymousIdIdx: index("user_analytics_identities_anonymous_id_idx").on(table.anonymousId),
 	}),
 );

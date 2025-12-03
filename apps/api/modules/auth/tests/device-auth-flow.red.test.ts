@@ -16,7 +16,7 @@
  * @package SnapBack API
  */
 
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
 interface DeviceCodeRequest {
 	client_id: string;

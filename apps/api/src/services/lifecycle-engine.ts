@@ -1,12 +1,7 @@
-import type { PgDatabase } from "drizzle-orm/pg-core";
-import { and, eq } from "drizzle-orm";
-import {
-	userLifecycleState,
-	lifecycleStageEnum,
-	type NewUserLifecycleState,
-	type UserLifecycleState,
-} from "@snapback/platform/db/schema/snapback";
 import { logger } from "@snapback/infrastructure";
+import { type UserLifecycleState, userLifecycleState } from "@snapback/platform/db/schema/snapback";
+import { eq } from "drizzle-orm";
+import type { PgDatabase } from "drizzle-orm/pg-core";
 
 /**
  * Lifecycle stage type extracted from the enum
@@ -193,10 +188,7 @@ export class LifecycleEngine {
 	 */
 	async getUsersByStage(stage: LifecycleStage): Promise<UserLifecycleState[]> {
 		try {
-			const result = await this.db
-				.select()
-				.from(userLifecycleState)
-				.where(eq(userLifecycleState.stage, stage));
+			const result = await this.db.select().from(userLifecycleState).where(eq(userLifecycleState.stage, stage));
 
 			return result;
 		} catch (error) {
@@ -219,7 +211,9 @@ export class LifecycleEngine {
 	): Promise<LifecycleStage | null> {
 		try {
 			const currentState = await this.getUserLifecycleState(userId);
-			if (!currentState) return null;
+			if (!currentState) {
+				return null;
+			}
 
 			const currentStage = currentState.stage as LifecycleStage;
 

@@ -1,9 +1,9 @@
-import type { PgDatabase } from "drizzle-orm/pg-core";
-import { eq } from "drizzle-orm";
-import { deviceAuthCodes } from "@snapback/platform/db/schema/snapback";
-import type { NewDeviceAuthCode, DeviceAuthCode } from "@snapback/platform/db/schema/snapback";
-import { logger } from "@snapback/infrastructure";
 import { createId } from "@paralleldrive/cuid2";
+import { logger } from "@snapback/infrastructure";
+import type { DeviceAuthCode } from "@snapback/platform/db/schema/snapback";
+import { deviceAuthCodes } from "@snapback/platform/db/schema/snapback";
+import { eq } from "drizzle-orm";
+import type { PgDatabase } from "drizzle-orm/pg-core";
 
 /**
  * Device Auth Device Code Response
@@ -53,7 +53,7 @@ export class DeviceAuthHandler {
 	 * VS Code extension calls this first
 	 * Returns device_code, user_code, and verification_uri
 	 */
-	async requestDeviceCode(clientId: string = "vscode-extension"): Promise<DeviceCodeResponse> {
+	async requestDeviceCode(clientId = "vscode-extension"): Promise<DeviceCodeResponse> {
 		try {
 			// Generate codes
 			const deviceCode = this.generateCode(32); // longer for device code
@@ -233,11 +233,7 @@ export class DeviceAuthHandler {
 				.delete(deviceAuthCodes)
 				.where((table) => {
 					// Delete expired and unapproved codes
-					return (
-						table.expiresAt &&
-						new Date(table.expiresAt) < now &&
-						table.approved === "false"
-					);
+					return table.expiresAt && new Date(table.expiresAt) < now && table.approved === "false";
 				})
 				.returning();
 

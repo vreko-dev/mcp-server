@@ -178,7 +178,7 @@ describe.skipIf(!isDatabaseAvailable)("User Metrics Aggregation (RED - Failing T
 			}
 
 			// Insert within 7-day window (should be included)
-			const withinWindow = dates.slice(7).join("','");
+			const _withinWindow = dates.slice(7).join("','");
 			await db.execute(`
 				INSERT INTO user_daily_metrics (user_id, date, snapshots_created, restores_performed, minutes_saved_estimate)
 				VALUES 

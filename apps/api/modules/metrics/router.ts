@@ -1,8 +1,8 @@
-import { z } from "zod";
 import { procedure, router } from "@orpc/server";
-import type { PgDatabase } from "drizzle-orm/pg-core";
-import { MetricsAggregator } from "../../services/metrics-aggregator";
 import { logger } from "@snapback/infrastructure";
+import type { PgDatabase } from "drizzle-orm/pg-core";
+import { z } from "zod";
+import { MetricsAggregator } from "../../services/metrics-aggregator";
 
 /**
  * Metrics Router
@@ -201,9 +201,7 @@ export function createMetricsRouter(db: PgDatabase) {
 					const monthlyRestoreLimit = 50;
 					const aiSessionsLimit = 20;
 
-					const percentageUsed = Math.round(
-						(metrics.snapshots30d / monthlySnapshotLimit) * 100,
-					);
+					const percentageUsed = Math.round((metrics.snapshots30d / monthlySnapshotLimit) * 100);
 
 					return {
 						success: true,

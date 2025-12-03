@@ -1,8 +1,8 @@
-import { z } from "zod";
 import { procedure, router } from "@orpc/server";
-import type { PgDatabase } from "drizzle-orm/pg-core";
-import { DeviceAuthHandler } from "../../services/device-auth-handler";
 import { logger } from "@snapback/infrastructure";
+import type { PgDatabase } from "drizzle-orm/pg-core";
+import { z } from "zod";
+import { DeviceAuthHandler } from "../../services/device-auth-handler";
 
 /**
  * Device Auth Router

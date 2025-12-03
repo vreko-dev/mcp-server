@@ -1,8 +1,8 @@
-import type { PgDatabase } from "drizzle-orm/pg-core";
-import { and, eq, gte, lte, sum } from "drizzle-orm";
-import { userDailyMetrics, userProductMetrics } from "@snapback/platform/db/schema/snapback";
-import type { NewUserDailyMetric, NewUserProductMetric } from "@snapback/platform/db/schema/snapback";
 import { logger } from "@snapback/infrastructure";
+import type { NewUserDailyMetric, NewUserProductMetric } from "@snapback/platform/db/schema/snapback";
+import { userDailyMetrics, userProductMetrics } from "@snapback/platform/db/schema/snapback";
+import { and, eq, gte, lte, sum } from "drizzle-orm";
+import type { PgDatabase } from "drizzle-orm/pg-core";
 
 /**
  * MetricsAggregator
@@ -166,11 +166,7 @@ export class MetricsAggregator {
 	/**
 	 * Get daily metrics for a specific date range
 	 */
-	async getDailyMetricsForRange(
-		userId: string,
-		startDate: Date,
-		endDate: Date,
-	): Promise<NewUserDailyMetric[]> {
+	async getDailyMetricsForRange(userId: string, startDate: Date, endDate: Date): Promise<NewUserDailyMetric[]> {
 		try {
 			const result = await this.db
 				.select()

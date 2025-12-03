@@ -25,10 +25,7 @@ export const userDailyMetrics = pgTable(
 		updatedAt: timestamp("updated_at").notNull().defaultNow(),
 	},
 	(table) => ({
-		userDateUnique: uniqueIndex("user_daily_metrics_user_date_unique").on(
-			table.userId,
-			table.date,
-		),
+		userDateUnique: uniqueIndex("user_daily_metrics_user_date_unique").on(table.userId, table.date),
 		userIdIdx: index("user_daily_metrics_user_id_idx").on(table.userId),
 		dateIdx: index("user_daily_metrics_date_idx").on(table.date),
 	}),

@@ -98,7 +98,6 @@ class ConnectionPool {
 
 let cachedDatabaseConstructor: DatabaseConstructor | null = null;
 let cachedDatabaseError: Error | null = null;
-let sqlJsWarningLogged = false;
 
 const tryLoadBetterSqlite3 = async (): Promise<DatabaseConstructor | null> => {
 	if (cachedDatabaseConstructor) {
@@ -135,130 +134,27 @@ const tryLoadBetterSqlite3 = async (): Promise<DatabaseConstructor | null> => {
 	}
 };
 
-/**
- * Try to load sql.js as a fallback database implementation
- * sql.js is a pure JavaScript SQLite implementation that works in any environment
- */
-const tryLoadSqlJs = async (): Promise<{ constructor: DatabaseConstructor | null; error?: Error }> => {
-	try {
-		// @ts-ignore - sql.js is optional and may not be available
-		const sqlJsModule = await import("sql.js");
-		const initSqlJs = sqlJsModule.default || sqlJsModule;
-
-		if (typeof initSqlJs !== "function") {
-			return {
-				constructor: null,
-				error: new Error("sql.js module does not export a valid init function"),
-			};
-		}
-
-		// Try to find the WASM file location
-		let wasmPath: string | undefined;
-		try {
-			// In bundled/packaged contexts, try to resolve sql.js from node_modules
-			const sqlJsPath = await import.meta.resolve?.("sql.js");
-			if (sqlJsPath) {
-				const url = new URL(sqlJsPath);
-				const dir = url.pathname.split("/").slice(0, -1).join("/");
-				wasmPath = `${dir}/sql-wasm.wasm`;
-			}
-		} catch {
-			// If import.meta.resolve is not available, try alternative approach
-			try {
-				const sqlJsModulePath = require.resolve("sql.js");
-				const path_module = await import("path");
-				const sqlJsDir = path_module.dirname(sqlJsModulePath);
-				wasmPath = path_module.join(sqlJsDir, "sql-wasm.wasm");
-			} catch {
-				// Last resort - use relative path
-				wasmPath = undefined;
-			}
-		}
-
-		// Initialize with locateFile if we found the WASM path
-		const sqlJsConfig = wasmPath
-			? {
-					locateFile: (filename: string) =>
-						filename === "sql-wasm.wasm" ? wasmPath : filename,
-				}
-			: {};
-
-		try {
-			const sqlJsInstance = await initSqlJs(sqlJsConfig);
-
-			if (!sqlJsInstance || !sqlJsInstance.Database) {
-				return {
-					constructor: null,
-					error: new Error(
-						`sql.js initialization returned invalid instance${wasmPath ? " (WASM path: " + wasmPath + ")" : ""}`
-					),
-				};
-			}
-
-			// Return the sql.js Database constructor
-			return { constructor: sqlJsInstance.Database as DatabaseConstructor };
-		} catch (initError) {
-			return {
-				constructor: null,
-				error: initError instanceof Error ? initError : new Error(String(initError)),
-			};
-		}
-	} catch (error) {
-		return {
-			constructor: null,
-			error: error instanceof Error ? error : new Error(String(error)),
-		};
-	}
-};
-
 const isBetterSqlite3Available = async (): Promise<boolean> => (await tryLoadBetterSqlite3()) !== null;
 
 const getBetterSqlite3LoadError = (): Error | null => cachedDatabaseError;
 
-let isUsingSqlJs = false; // Module-level tracker
-
 const requireDatabaseConstructor = async (): Promise<DatabaseConstructor> => {
-	// First try better-sqlite3 (preferred for native performance)
 	const betterSqlite3 = await tryLoadBetterSqlite3();
 	if (betterSqlite3) {
 		return betterSqlite3;
 	}
 
-	// Fallback to sql.js if better-sqlite3 is not available
-	const sqlJsResult = await tryLoadSqlJs();
-	if (sqlJsResult.constructor) {
-		if (!sqlJsWarningLogged) {
-			console.warn(
-				"[StorageBroker] better-sqlite3 not available, falling back to sql.js (pure JavaScript SQLite)"
-			);
-			sqlJsWarningLogged = true;
-		}
-		isUsingSqlJs = true; // Mark that we're using sql.js
-		return sqlJsResult.constructor;
-	}
+	// better-sqlite3 is not available - build detailed error message
+	const errorMessage = cachedDatabaseError
+		? `better-sqlite3: ${cachedDatabaseError.message}`
+		: "better-sqlite3: not installed or not compatible";
 
-	// Neither database implementation is available - build detailed error message
-	const errorParts: string[] = [];
-
-	if (cachedDatabaseError) {
-		errorParts.push(`better-sqlite3: ${cachedDatabaseError.message}`);
-	} else {
-		errorParts.push("better-sqlite3: not installed or not compatible");
-	}
-
-	if (sqlJsResult.error) {
-		errorParts.push(`sql.js: ${sqlJsResult.error.message}`);
-	} else {
-		errorParts.push("sql.js: unknown error");
-	}
-
-	const detailedMessage = `No SQLite implementation available. ${errorParts.join(" | ")}`;
+	const detailedMessage = `No SQLite implementation available. ${errorMessage}`;
 	const error = new StorageConnectionError(detailedMessage);
 
 	// Attach detailed error info for better debugging
 	(error as any).details = {
 		betterSqlite3Error: cachedDatabaseError?.message,
-		sqlJsError: sqlJsResult.error?.message,
 	};
 
 	throw error;
@@ -302,7 +198,6 @@ export class StorageBroker {
 	private operationQueue: QueuedOperation<any>[] = [];
 	private isProcessingQueue = false;
 	private writerId: string;
-	private usingSqlJs = false; // Track which implementation we're using
 
 	constructor(private dbPath: string) {
 		// Generate a unique writer ID for this process
@@ -320,19 +215,14 @@ export class StorageBroker {
 		try {
 			// Create database connection
 			this.db = await createDatabaseInstance(this.dbPath);
-			this.usingSqlJs = isUsingSqlJs;
 
 			// Enable WAL mode for better performance and concurrency
-			// Note: sql.js doesn't support pragma() or WAL mode (in-memory only)
-			if (!this.usingSqlJs && this.db && typeof (this.db as any).pragma === "function") {
+			if (this.db && typeof (this.db as any).pragma === "function") {
 				(this.db as any).pragma("journal_mode = WAL");
 			}
 
 			// Create read connection pool for concurrent reads
-			// Note: sql.js doesn't benefit from connection pooling (in-memory, single-threaded)
-			if (!this.usingSqlJs) {
-				this.readConnectionPool = new ConnectionPool(this.dbPath, undefined, 4);
-			}
+			this.readConnectionPool = new ConnectionPool(this.dbPath, undefined, 4);
 
 			// Run migrations to ensure schema is up to date
 			this.runMigrations();
@@ -349,9 +239,7 @@ export class StorageBroker {
 				const message = error.message;
 				let specificError = "Failed to initialize storage broker";
 
-				if (message.includes("sql.js")) {
-					specificError = `Failed to initialize storage broker: ${message}`;
-				} else if (message.includes("sqlite")) {
+				if (message.includes("sqlite")) {
 					specificError = `Database initialization failed: ${message}`;
 				}
 

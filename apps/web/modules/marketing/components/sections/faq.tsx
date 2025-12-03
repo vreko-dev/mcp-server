@@ -4,6 +4,78 @@ import { m } from "motion/react";
 import type React from "react";
 import { useEffect, useState } from "react";
 
+// FAQ data structured for Schema.org markup
+const faqs = [
+	{
+		question: "How does SnapBack differ from Git?",
+		answer:
+			"Git tracks commits (deliberate saves), while SnapBack captures every save automatically—even before you commit. It's designed for instant restore, not version control. SnapBack is specifically built for protecting against AI coding mistakes, with automatic snapshots before AI assistants like Copilot or Cursor make changes.",
+		keywords: ["git alternative", "vscode snapshot", "automatic code backup"],
+	},
+	{
+		question: "Does SnapBack work with GitHub Copilot and Cursor?",
+		answer:
+			"Yes. SnapBack detects AI activity from GitHub Copilot, Cursor, Claude, Windsurf, and other AI coding assistants. It creates checkpoints automatically before AI-generated changes, giving you instant rollback capability if something breaks.",
+		keywords: [
+			"github copilot safety",
+			"cursor alternative",
+			"ai coding safety",
+		],
+	},
+	{
+		question: "How do I recover code after AI breaks it?",
+		answer:
+			"Open the SnapBack Explorer in VS Code, select your most recent session, click 'Preview Restore' to see what changed, then click 'Restore'. The entire process takes less than 5 seconds and recovers your code instantly.",
+		keywords: [
+			"recover from ai code error",
+			"undo ai changes",
+			"ai broke my code",
+		],
+	},
+	{
+		question: "Is my code stored in the cloud?",
+		answer:
+			"No. SnapBack stores all snapshots locally on your machine. Your code never leaves your computer. This ensures privacy, speed (<50ms overhead), and works offline. For teams, optional cloud backup is available but not required.",
+		keywords: [
+			"local code backup",
+			"privacy focused code tool",
+			"offline code protection",
+		],
+	},
+	{
+		question: "Will SnapBack slow down my editor?",
+		answer:
+			"No. SnapBack adds less than 50ms overhead per save—completely imperceptible. It uses efficient delta compression and runs asynchronously, so your coding experience remains smooth even on large projects.",
+		keywords: ["vscode performance", "fast code backup", "zero latency backup"],
+	},
+	{
+		question: "What is the Guardian feature?",
+		answer:
+			"Guardian is SnapBack's AI-powered code analysis that detects dangerous patterns in real-time: exposed secrets (API keys, passwords), test mocks in production code, and phantom dependencies. It warns you before these issues reach production.",
+		keywords: [
+			"guardian code analysis",
+			"secret detection",
+			"ai code security",
+		],
+	},
+	{
+		question: "Can I use SnapBack for production code?",
+		answer:
+			"Yes. SnapBack is designed for production environments. It helps prevent AI-generated bugs from reaching production by providing instant rollback when AI suggestions break tests, corrupt configs, or introduce security issues.",
+		keywords: [
+			"ai coding for production",
+			"production code safety",
+			"safe ai refactoring",
+		],
+	},
+	{
+		question: "How much storage does SnapBack use?",
+		answer:
+			"SnapBack uses delta compression to store only what changed between snapshots. A typical project with 1,000 files uses ~10-50MB for 100 snapshots. Automatic pruning keeps storage efficient.",
+		keywords: ["vscode storage", "efficient code backup", "local code history"],
+	},
+];
+
 const FAQ = () => {
 	const [openIndex, setOpenIndex] = useState<number | null>(null);
 	const [isMounted, setIsMounted] = useState(false);
@@ -13,38 +85,19 @@ const FAQ = () => {
 		setIsMounted(true);
 	}, []);
 
-	const faqs = [
-		{
-			question: "How does SnapBack identify automation opportunities?",
-			answer:
-				"SnapBack uses advanced pattern recognition to analyze your development workflows, identifying repetitive tasks, bottlenecks, and manual processes that can be automated. It learns from your team's behavior and suggests optimizations based on industry best practices.",
-		},
-		{
-			question: "What integrations are supported?",
-			answer:
-				"SnapBack integrates with all major development tools including GitHub, GitLab, Bitbucket, Slack, Microsoft Teams, Azure DevOps, Jira, n8n, Zapier, and many more. Our REST API also allows custom integrations.",
-		},
-		{
-			question: "Is my data secure with SnapBack?",
-			answer:
-				"Absolutely. SnapBack is SOC2 compliant with end-to-end encryption, zero-trust architecture, and enterprise-grade security. Your code and data never leave your infrastructure unless explicitly configured.",
-		},
-		{
-			question: "How long does it take to see results?",
-			answer:
-				"Most teams see immediate value within the first week. Our smart onboarding identifies quick wins in your current workflows, while deeper automation opportunities are discovered as SnapBack learns your patterns over time.",
-		},
-		{
-			question: "Do I need DevOps expertise to use SnapBack?",
-			answer:
-				"Not at all! SnapBack is designed for developers, not just DevOps experts. Our visual workflow builder and pre-built templates make automation accessible to any developer, regardless of their infrastructure experience.",
-		},
-		{
-			question: "What happens during the beta period?",
-			answer:
-				"Beta users get free access to all Pro features, priority support, and direct input on our roadmap. The beta program helps us refine SnapBack based on real-world usage before our general availability launch.",
-		},
-	];
+	// Generate Schema.org FAQPage structured data
+	const schemaData = {
+		"@context": "https://schema.org",
+		"@type": "FAQPage",
+		mainEntity: faqs.map((faq) => ({
+			"@type": "Question",
+			name: faq.question,
+			acceptedAnswer: {
+				"@type": "Answer",
+				text: faq.answer,
+			},
+		})),
+	};
 
 	const toggleAccordion = (index: number) => {
 		setOpenIndex(openIndex === index ? null : index);
@@ -64,6 +117,11 @@ const FAQ = () => {
 
 	return (
 		<section className="section bg-muted/10" aria-labelledby="faq-heading">
+			{/* Schema markup for AI search engines and featured snippets */}
+			<script
+				type="application/ld+json"
+				dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
+			/>
 			<div className="container">
 				<m.div
 					className="text-center mb-16"
@@ -86,15 +144,15 @@ const FAQ = () => {
 						Got questions? We've got answers. Can't find what you're looking
 						for?{" "}
 						<a
-							href="#docs"
+							href="https://new-docs.snapback.dev/faq"
 							className="text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm"
 							aria-describedby="docs-link-desc"
 						>
-							Check our docs
+							Check our full FAQ
 						</a>{" "}
 						or reach out to our team.
 						<span id="docs-link-desc" className="sr-only">
-							Visit documentation for detailed guides and tutorials
+							Visit full FAQ page for more questions and answers
 						</span>
 					</p>
 				</m.div>

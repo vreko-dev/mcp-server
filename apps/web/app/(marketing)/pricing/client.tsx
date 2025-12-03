@@ -390,8 +390,6 @@ export default function PricingClient() {
 						Got questions? Check our{" "}
 						<Link
 							href="https://new-docs.snapback.dev/faq"
-							target="_blank"
-							rel="noopener noreferrer"
 							className="text-[#00FF41] hover:underline focus:outline-none focus:ring-2 focus:ring-[#00FF41] focus:ring-offset-2 focus:ring-offset-slate-900 rounded"
 						>
 							full FAQ
@@ -399,8 +397,6 @@ export default function PricingClient() {
 						or{" "}
 						<Link
 							href="https://new-docs.snapback.dev"
-							target="_blank"
-							rel="noopener noreferrer"
 							className="text-[#00FF41] hover:underline focus:outline-none focus:ring-2 focus:ring-[#00FF41] focus:ring-offset-2 focus:ring-offset-slate-900 rounded"
 						>
 							documentation

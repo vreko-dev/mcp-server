@@ -80,12 +80,36 @@ export const siteMap: RouteGroup[] = [
 		category: "Resources",
 		routes: [
 			{
-				path: "/docs",
+				path: "https://new-docs.snapback.dev",
 				label: "Documentation",
 				description: "Complete guides, tutorials, and API reference",
 				inFooter: true,
-				external: false,
+				external: true,
 				keywords: ["documentation", "guides", "tutorials", "api reference"],
+			},
+			{
+				path: "https://new-docs.snapback.dev/getting-started/first-restore",
+				label: "Getting Started",
+				description: "Your first restore walkthrough",
+				inFooter: true,
+				external: true,
+				keywords: ["tutorial", "first restore", "getting started"],
+			},
+			{
+				path: "https://new-docs.snapback.dev/why-snapback",
+				label: "Why SnapBack?",
+				description: "Compare to Git, Local History, and backups",
+				inFooter: true,
+				external: true,
+				keywords: ["comparison", "vs git", "why use"],
+			},
+			{
+				path: "https://new-docs.snapback.dev/faq",
+				label: "FAQ",
+				description: "Frequently asked questions",
+				inFooter: true,
+				external: true,
+				keywords: ["faq", "questions", "help"],
 			},
 			{
 				path: "/blog",

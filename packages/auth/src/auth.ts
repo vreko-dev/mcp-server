@@ -8,6 +8,7 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import {
 	admin,
 	apiKey,
+	deviceAuthorization,
 	jwt,
 	magicLink,
 	openAPI,
@@ -171,6 +172,8 @@ export const auth = betterAuth({
 		},
 	},
 	plugins: [
+		// ✅ RFC 8628 Device Authorization Grant Flow (for WSL, Remote SSH, Codespaces)
+		deviceAuthorization(),
 		admin(),
 		apiKey({
 			// ✅ LEVEL 3: Configure API key permissions and rate limiting via better-auth
@@ -187,7 +190,7 @@ export const auth = betterAuth({
 			// Global rate limiting for all API keys
 			rateLimit: {
 				enabled: true,
-				timeWindow: 1000 * 60 * 60 * 24, // 1 day
+				timeWindow: "1 day" as any,
 				maxRequests: 10000, // Default quota per day
 			},
 		}),

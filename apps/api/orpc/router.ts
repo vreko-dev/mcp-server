@@ -6,6 +6,7 @@ import { authRouter } from "../modules/auth/router.js";
 import { contactRouter } from "../modules/contact/router.js";
 import { cooldownsRouter } from "../modules/cooldowns/cooldowns-router.js";
 import { dashboardRouter } from "../modules/dashboard/router.js";
+import { deviceAuthRouter } from "../modules/device-auth/router.js";
 import { extensionRouter } from "../modules/extension/router.js";
 import { featureFlagsRouter } from "../modules/feature-flags/router.js";
 import { feedbackRouter } from "../modules/feedback/router.js";
@@ -35,6 +36,7 @@ export const router = publicProcedure
 		payments: paymentsRouter,
 		apiKeys: apiKeysRouter,
 		auth: authRouter,
+		deviceAuth: deviceAuthRouter,
 		snapshots: snapshotsRouter,
 		storage: storageRouter,
 		dashboard: dashboardRouter,

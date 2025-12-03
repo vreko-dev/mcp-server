@@ -125,6 +125,16 @@ export function HeroSection() {
 						</span>
 					</Link>
 
+					{/* Secondary CTA - Tutorial Link */}
+					<Link
+						href="https://new-docs.snapback.dev/getting-started/first-restore"
+						target="_blank"
+						rel="noopener noreferrer"
+						className="text-white/90 hover:text-white text-sm font-medium underline underline-offset-4 decoration-white/30 hover:decoration-white transition-colors"
+					>
+						New to SnapBack? Try the 5-minute tutorial →
+					</Link>
+
 					{/* Trust Signals */}
 					<div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 px-4 py-2 rounded-[20px] border border-white/20 bg-white/10 backdrop-blur-[10px]">
 						<div className="flex items-center gap-2 text-white/90 font-medium">

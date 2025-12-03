@@ -4,8 +4,8 @@
  *
  * This script generates TypeScript types from Zod schemas and other contract definitions.
  */
-import { writeFile } from "fs/promises";
-import { join } from "path";
+import { writeFile } from "node:fs/promises";
+import { join } from "node:path";
 // Since we're running this as a compiled JS file, we need to adjust the import paths
 // Import our schemas from the compiled output
 import { CORE_TELEMETRY_EVENTS } from "../dist/events/core.js";

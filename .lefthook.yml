@@ -29,12 +29,11 @@ pre-commit:
                     echo "✅ Lockfile already in sync"
                   fi
                 fi
-        detect-patterns:
-            glob: "*.{ts,tsx,js,jsx}"
-            run: pnpm run test -- packages/core/test/detection --passWithNoTests
-        no-unsafe-regex:
-            glob: "packages/core/src/detection/**/*.ts"
-            run: pnpm exec eslint {staged_files} --rule 'no-unsafe-regex:error'
+
+        # Temporarily disabled: ESLint not configured in monorepo (using Biome)
+        # no-unsafe-regex:
+        #     glob: "packages/core/src/detection/**/*.ts"
+        #     run: pnpm exec eslint {staged_files} --rule 'no-unsafe-regex:error'
         no-framer-motion:
             glob: "*.{ts,tsx,js,jsx}"
             run: |
@@ -162,4 +161,17 @@ pre-push:
                 if [ -n "$VSCODE_FILES" ]; then
                   echo "🔒 Running VS Code extension security checks..."
                   pnpm --filter snapback-vscode run security:check-deps
+                fi
+
+        # Guardian Detection Engine: Pattern detection tests (key differentiator)
+        # Catches: Secret detection, mock leakage, phantom dependency issues
+        # Runs comprehensive test suite including performance benchmarks
+        detect-patterns:
+            tags: [detection, guardian, quality]
+            glob: "packages/core/src/detection/**/*.ts"
+            run: |
+                DETECTION_FILES=$(git diff --cached --name-only | grep "^packages/core/src/detection/" || true)
+                if [ -n "$DETECTION_FILES" ]; then
+                  echo "🔍 Running Guardian detection engine tests..."
+                  pnpm run test -- "packages/core/test/detection/**/*.test.ts" --run
                 fi

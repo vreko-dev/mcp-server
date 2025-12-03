@@ -33,7 +33,7 @@ function findPackageJsonFiles(dir) {
 	for (const entry of entries) {
 		const fullPath = path.join(dir, entry.name);
 
-		if (entry.isDirectory() && entry.name !== "node_modules" && entry.name !== ".git") {
+		if (entry.isDirectory() && entry.name !== "node_modules" && entry.name !== ".git" && entry.name !== ".snapback") {
 			packageJsonFiles.push(...findPackageJsonFiles(fullPath));
 		} else if (entry.name === "package.json") {
 			packageJsonFiles.push(fullPath);

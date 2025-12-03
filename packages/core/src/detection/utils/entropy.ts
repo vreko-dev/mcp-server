@@ -83,3 +83,4 @@ export function calculateCombinedEntropy(str: string): number {
 
 	return Math.min(combined, 1.0);
 }
+// Test comment

@@ -36,10 +36,6 @@ import {
 	type SessionFinalizedEvent,
 	type WelcomeActionTriggeredEvent,
 	type WelcomeFeatureViewedEvent,
-	IssueCreatedSchema,
-	PolicyChangedSchema,
-	SessionFinalizedSchema,
-	validateCoreTelemetryEvent,
 } from "../events/core.js";
 
 /**
@@ -104,80 +100,34 @@ export class DiagnosticEventMapper {
 	 *
 	 * When provider is selected via "fallback" or "auto", it indicates
 	 * a potential issue (user preferred method not available).
+	 *
+	 * Note: Diagnostic events are tracked separately and not mapped to core events.
+	 * This maintains separation of concerns and allows diagnostic events to be
+	 * analyzed independently of core events.
 	 */
 	private static mapAuthProviderSelected(
-		event: AuthProviderSelectedEvent,
+		_event: AuthProviderSelectedEvent,
 	): IssueCreatedEvent | null {
-		// Only map non-user-selected triggers as potential issues
-		if (event.properties.trigger === "user_selected") {
-			return null; // Normal flow, not an issue
-		}
-
-		try {
-			const mappedEvent: IssueCreatedEvent = {
-				event: "issue_created",
-				properties: {
-					issue_type: "auth_fallback",
-					severity: event.properties.trigger === "fallback" ? "medium" : "low",
-					pattern: `auth_provider_${event.properties.provider}`,
-					confidence: 0.8,
-					affected_files: [],
-					context: {
-						provider: event.properties.provider,
-						trigger: event.properties.trigger,
-					},
-				},
-				timestamp: event.properties.timestamp || Date.now(),
-			};
-
-			// Validate the mapped event
-			if (validateCoreTelemetryEvent(mappedEvent)) {
-				return IssueCreatedSchema.parse(mappedEvent);
-			}
-			return null;
-		} catch (error) {
-			console.error("Failed to map auth.provider.selected event:", error);
-			return null;
-		}
+		// Diagnostic events are tracked separately from core events
+		// Return null to prevent mapping
+		return null;
 	}
 
 	/**
 	 * Maps auth.browser.opened → issue_created (if failed)
 	 *
 	 * Browser failures are issues that block authentication.
+	 *
+	 * Note: Diagnostic events are tracked separately and not mapped to core events.
+	 * This maintains separation of concerns and allows diagnostic events to be
+	 * analyzed independently of core events.
 	 */
 	private static mapAuthBrowserOpened(
-		event: AuthBrowserOpenedEvent,
+		_event: AuthBrowserOpenedEvent,
 	): IssueCreatedEvent | null {
-		if (event.properties.success) {
-			return null; // Success, not an issue
-		}
-
-		try {
-			const mappedEvent: IssueCreatedEvent = {
-				event: "issue_created",
-				properties: {
-					issue_type: "auth_browser_failed",
-					severity: "high",
-					pattern: `browser_open_${event.properties.method}`,
-					confidence: 0.95,
-					affected_files: [],
-					context: {
-						method: event.properties.method,
-						error: event.properties.error || "Unknown error",
-					},
-				},
-				timestamp: event.properties.timestamp || Date.now(),
-			};
-
-			if (validateCoreTelemetryEvent(mappedEvent)) {
-				return IssueCreatedSchema.parse(mappedEvent);
-			}
-			return null;
-		} catch (error) {
-			console.error("Failed to map auth.browser.opened event:", error);
-			return null;
-		}
+		// Diagnostic events are tracked separately from core events
+		// Return null to prevent mapping
+		return null;
 	}
 
 	/**
@@ -185,38 +135,15 @@ export class DiagnosticEventMapper {
 	 *
 	 * Device code entry validates the user interaction in the browser.
 	 * Used to ensure the code was entered correctly.
+	 *
+	 * Note: Diagnostic events are tracked separately and not mapped to core events.
+	 * This maintains separation of concerns and allows diagnostic events to be
+	 * analyzed independently of core events.
 	 */
-	private static mapAuthCodeEntry(event: AuthCodeEntryEvent): IssueCreatedEvent | null {
-		// Code length validation as a potential issue indicator
-		const codeLength = event.properties.code_length || 0;
-
-		// Standard device code length is typically 8-10 characters
-		if (codeLength < 6 || codeLength > 20) {
-			try {
-				const mappedEvent: IssueCreatedEvent = {
-					event: "issue_created",
-					properties: {
-						issue_type: "auth_code_invalid",
-						severity: "medium",
-						pattern: "device_code_validation",
-						confidence: 0.7,
-						affected_files: [],
-						context: {
-							code_length: codeLength,
-						},
-					},
-					timestamp: event.properties.timestamp || Date.now(),
-				};
-
-				if (validateCoreTelemetryEvent(mappedEvent)) {
-					return IssueCreatedSchema.parse(mappedEvent);
-				}
-			} catch (error) {
-				console.error("Failed to map auth.code.entry event:", error);
-			}
-		}
-
-		return null; // Valid code, not an issue
+	private static mapAuthCodeEntry(_event: AuthCodeEntryEvent): IssueCreatedEvent | null {
+		// Diagnostic events are tracked separately from core events
+		// Return null to prevent mapping
+		return null;
 	}
 
 	/**
@@ -224,31 +151,17 @@ export class DiagnosticEventMapper {
 	 *
 	 * Approval received means authentication succeeded.
 	 * This is a fundamental policy change: from unprotected (anonymous) to authenticated.
+	 *
+	 * Note: The policy_changed event schema only allows specific protection levels:
+	 * "watch" | "warn" | "block" | "unprotected". Authentication is tracked via
+	 * diagnostic events, not policy changes.
 	 */
 	private static mapAuthApprovalReceived(
-		event: AuthApprovalReceivedEvent,
+		_event: AuthApprovalReceivedEvent,
 	): PolicyChangedEvent | null {
-		try {
-			const mappedEvent: PolicyChangedEvent = {
-				event: "policy_changed",
-				properties: {
-					pattern: "*", // All files now fall under authenticated scope
-					from: "unauthenticated",
-					to: "authenticated",
-					source: "auth_flow",
-					approval_time_ms: event.properties.approval_time_ms || 0,
-				},
-				timestamp: event.properties.timestamp || Date.now(),
-			};
-
-			if (validateCoreTelemetryEvent(mappedEvent)) {
-				return PolicyChangedSchema.parse(mappedEvent);
-			}
-			return null;
-		} catch (error) {
-			console.error("Failed to map auth.approval.received event:", error);
-			return null;
-		}
+		// Diagnostic events are tracked separately from core events
+		// Return null to prevent mapping
+		return null;
 	}
 
 	/**
@@ -256,35 +169,17 @@ export class DiagnosticEventMapper {
 	 *
 	 * Feature viewed indicates progression through onboarding or nudge session.
 	 * Multiple views = longer session, which we track here.
+	 *
+	 * Note: Diagnostic events are tracked separately and not mapped to core events.
+	 * This maintains separation of concerns and allows diagnostic events to be
+	 * analyzed independently of core events.
 	 */
 	private static mapWelcomeFeatureViewed(
-		event: WelcomeFeatureViewedEvent,
+		_event: WelcomeFeatureViewedEvent,
 	): SessionFinalizedEvent | null {
-		try {
-			const mappedEvent: SessionFinalizedEvent = {
-				event: "session_finalized",
-				properties: {
-					session_id: `welcome_${event.properties.trigger}`,
-					duration_ms: 0, // We don't have actual duration for single view
-					outcome: "feature_viewed",
-					highest_severity: "info",
-					context: {
-						feature: event.properties.feature,
-						position: event.properties.position,
-						trigger: event.properties.trigger,
-					},
-				},
-				timestamp: event.properties.timestamp || Date.now(),
-			};
-
-			if (validateCoreTelemetryEvent(mappedEvent)) {
-				return SessionFinalizedSchema.parse(mappedEvent);
-			}
-			return null;
-		} catch (error) {
-			console.error("Failed to map welcome.feature.viewed event:", error);
-			return null;
-		}
+		// Diagnostic events are tracked separately from core events
+		// Return null to prevent mapping
+		return null;
 	}
 
 	/**
@@ -292,35 +187,17 @@ export class DiagnosticEventMapper {
 	 *
 	 * When user takes action on welcome (e.g., "try now" for protection),
 	 * it's equivalent to a policy/behavior change.
+	 *
+	 * Note: The policy_changed event schema only allows specific protection levels:
+	 * "watch" | "warn" | "block" | "unprotected". User awareness is tracked via
+	 * diagnostic events, not policy changes.
 	 */
 	private static mapWelcomeActionTriggered(
 		event: WelcomeActionTriggeredEvent,
 	): PolicyChangedEvent | null {
-		try {
-			const mappedEvent: PolicyChangedEvent = {
-				event: "policy_changed",
-				properties: {
-					pattern: "*", // Action applies to all files
-					from: "unaware",
-					to: "aware", // User is now aware of the feature
-					source: "welcome_panel",
-					context: {
-						action: event.properties.action,
-						feature: event.properties.feature,
-						time_viewed_ms: event.properties.time_viewed_ms,
-					},
-				},
-				timestamp: event.properties.timestamp || Date.now(),
-			};
-
-			if (validateCoreTelemetryEvent(mappedEvent)) {
-				return PolicyChangedSchema.parse(mappedEvent);
-			}
-			return null;
-		} catch (error) {
-			console.error("Failed to map welcome.action.triggered event:", error);
-			return null;
-		}
+		// Diagnostic events are tracked separately from core events
+		// Return null to prevent mapping
+		return null;
 	}
 }
 

@@ -95,6 +95,7 @@
     "build": "turbo build",
     "build:mcp": "pnpm -w --filter @snapback/mcp-server run build",
     "build:mcp:deps": "pnpm -w --filter @snapback/contracts --filter @snapback/events --filter @snapback/core --filter @snapback/sdk run build",
+    "build:oss": "pnpm --filter '@snapback/contracts' --filter '@snapback/infrastructure' --filter '@snapback/sdk' --filter '@snapback/events' --filter '@snapback/config' run build",
     "changeset": "changeset",
     "check-framer-motion": "node scripts/check-framer-motion.js",
     "check:mismatches": "pnpm -w syncpack list-mismatches",
@@ -125,7 +126,8 @@
     "test:ui": "vitest --ui",
     "type-check": "turbo type-check",
     "type-check:tsc": "tsc --build --force",
-    "validate": "tsx scripts/validate-project.ts"
+    "validate": "tsx scripts/validate-project.ts",
+    "validate:oss": "node scripts/validate-oss-builds.js"
   },
   "peerDependencies": {
     "drizzle-orm": "catalog:"

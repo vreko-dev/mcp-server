@@ -37,6 +37,7 @@ export {
 	WelcomeActionTriggeredSchema,
 	WelcomeFeatureViewedSchema,
 } from "../events/core.js";
+export * from "./diagnostic-events.js";
 export * from "./event-mapper.js";
 export * from "./events.js";
 export * from "./migrate-events.js";

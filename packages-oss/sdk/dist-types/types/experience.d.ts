@@ -8,19 +8,19 @@
  * Metrics used for experience classification
  */
 export interface ExperienceMetrics {
-	/** Total snapshots created */
-	snapshotsCreated: number;
-	/** Total sessions recorded */
-	sessionsRecorded: number;
-	/** Total protected files */
-	protectedFiles: number;
-	/** Total manual restores performed */
-	manualRestores: number;
-	/** Total AI-assisted sessions */
-	aiAssistedSessions: number;
-	/** Days since first use */
-	daysSinceFirstUse: number;
-	/** Commands used diversity (0-1) */
-	commandDiversity: number;
+    /** Total snapshots created */
+    snapshotsCreated: number;
+    /** Total sessions recorded */
+    sessionsRecorded: number;
+    /** Total protected files */
+    protectedFiles: number;
+    /** Total manual restores performed */
+    manualRestores: number;
+    /** Total AI-assisted sessions */
+    aiAssistedSessions: number;
+    /** Days since first use */
+    daysSinceFirstUse: number;
+    /** Commands used diversity (0-1) */
+    commandDiversity: number;
 }
 //# sourceMappingURL=experience.d.ts.map

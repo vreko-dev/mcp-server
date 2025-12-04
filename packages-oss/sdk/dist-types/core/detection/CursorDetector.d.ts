@@ -14,24 +14,24 @@
  *   Better than false positive (user in VS Code, we claim Cursor detected)
  */
 export interface IEnvironmentProvider {
-	/**
-	 * Returns the application name (e.g., "Cursor", "Visual Studio Code")
-	 */
-	getAppName(): string;
-	/**
-	 * Gets an environment variable value
-	 */
-	getEnvVar(key: string): string | undefined;
+    /**
+     * Returns the application name (e.g., "Cursor", "Visual Studio Code")
+     */
+    getAppName(): string;
+    /**
+     * Gets an environment variable value
+     */
+    getEnvVar(key: string): string | undefined;
 }
 export declare class CursorDetector {
-	private readonly env;
-	constructor(env: IEnvironmentProvider);
-	/**
-	 * Detects Cursor IDE presence via appName heuristic
-	 */
-	detect(): {
-		hasCursor: boolean;
-		confidence: number;
-	};
+    private readonly env;
+    constructor(env: IEnvironmentProvider);
+    /**
+     * Detects Cursor IDE presence via appName heuristic
+     */
+    detect(): {
+        hasCursor: boolean;
+        confidence: number;
+    };
 }
 //# sourceMappingURL=CursorDetector.d.ts.map

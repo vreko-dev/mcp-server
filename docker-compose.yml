@@ -2,7 +2,7 @@
 # Includes web application, API service, PostgreSQL database, and Redis cache
 
 services:
-    # PostgreSQL Database
+    # ===== DATABASE =====
     postgres:
         image: postgres:16-alpine
         container_name: snapback-postgres
@@ -45,7 +45,28 @@ services:
                     memory: 512M
                     cpus: "0.5"
 
-    # Redis Cache (optional but recommended)
+    # ===== DATABASE MIGRATIONS =====
+    migrations:
+        image: postgres:16-alpine
+        container_name: snapback-migrations-prod
+        environment:
+            POSTGRES_HOST: postgres
+            POSTGRES_PORT: 5432
+            POSTGRES_USER: ${POSTGRES_USER:-snapback}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+            POSTGRES_DB: ${POSTGRES_DB:-snapback}
+        volumes:
+            - ./packages/platform/drizzle/migrations:/migrations:ro
+            - ./ops/scripts/run-migrations.sh:/run-migrations.sh:ro
+        command: sh /run-migrations.sh
+        depends_on:
+            postgres:
+                condition: service_healthy
+        networks:
+            - app-network
+        restart: "no"
+
+    # ===== REDIS CACHE =====
     redis:
         image: redis:7-alpine
         container_name: snapback-redis
@@ -72,7 +93,7 @@ services:
                 reservations:
                     memory: 256M
 
-    # API Service
+    # ===== API SERVICE =====
     api:
         build:
             context: .
@@ -113,6 +134,8 @@ services:
         depends_on:
             postgres:
                 condition: service_healthy
+            migrations:
+                condition: service_completed_successfully
             redis:
                 condition: service_healthy
         healthcheck:
@@ -142,7 +165,7 @@ services:
                     memory: 256M
                     cpus: "0.25"
 
-    # Web Application
+    # ===== WEB APPLICATION =====
     web:
         build:
             context: .
@@ -216,9 +239,7 @@ services:
                     memory: 256M
                     cpus: "0.25"
 
-    # ============================================
-    # MCP Server (Model Context Protocol)
-    # ============================================
+    # ===== MCP SERVER (Model Context Protocol) =====
     mcp-server:
         build:
             context: .

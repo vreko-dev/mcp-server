@@ -1,5 +1,6 @@
 import { protectedProcedure } from "../../orpc/procedures";
 import {
+	getMetrics,
 	getAIDetectionStats,
 	getRecentActivity,
 	getSessionMetrics,
@@ -9,6 +10,7 @@ import {
 import { getOrgMetrics } from "./procedures/get-org-metrics";
 
 export const dashboardRouter = protectedProcedure.router({
+	getMetrics,
 	getUserMetrics,
 	getAIDetectionStats,
 	getRecentActivity,

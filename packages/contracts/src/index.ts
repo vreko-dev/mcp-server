@@ -1,6 +1,7 @@
 /// <reference types="react" />
 
 export * from "./analytics.js";
+export * from "./dashboard/metrics.js";
 // Auth contracts (explicit exports to avoid naming conflicts)
 export {
 	AUTH_ERROR_MESSAGES,
@@ -92,3 +93,12 @@ export type {
 // CLI and VSCode extension import SDK directly, not through contracts
 // Web app uses Supabase storage, not local SQLite (better-sqlite3)
 // export { createSnapshotStorage } from "./types/snapshot.js"
+
+// Dashboard exports (for web app metrics display)
+export type {
+	DashboardMetrics,
+	DashboardMetricsError,
+	DashboardMetricsResponse,
+	RecentActivity,
+	AIActivityBreakdown,
+} from "./dashboard/metrics.js"

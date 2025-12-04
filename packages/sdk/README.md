@@ -4,6 +4,18 @@
 
 The SnapBack SDK is a TypeScript/JavaScript client library that enables SnapBack clients (VS Code extension, CLI, MCP Server) to interact with the SnapBack API. The SDK provides a privacy-first approach to metadata transmission, ensuring that only file metadata crosses the wire while keeping all file contents local.
 
+### Two Versions Available
+
+| Package | Access | Use Case | Features |
+|---------|--------|----------|----------|
+| **`@snapback/sdk`** | Private | Internal apps, SnapBack services | Full-featured, proprietary integrations |
+| **`@snapback-oss/sdk`** | Public npm | Community users, OSS projects | Privacy-first, metadata-only, no proprietary features |
+
+**Using SnapBack in your project?** Install the public version:
+```bash
+npm install @snapback-oss/sdk
+```
+
 ## Features
 
 -   **Privacy-First Design**: Only metadata is transmitted, never file contents
@@ -16,16 +28,29 @@ The SnapBack SDK is a TypeScript/JavaScript client library that enables SnapBack
 
 ## Installation
 
+### Using the OSS Package (Recommended for Most Users)
+
 ```bash
-npm install @snapback/sdk
+# For public npm usage
+npm install @snapback-oss/sdk
+
+# Or with pnpm
+pnpm add @snapback-oss/sdk
+
+# Or with yarn
+yarn add @snapback-oss/sdk
 ```
+
+### Using the Private Package
+
+The private `@snapback/sdk` is used internally by SnapBack applications and includes proprietary features. It is not available on npm and requires workspace access.
 
 ## Usage
 
 ### Basic Setup
 
 ```typescript
-import { SnapBackAPIClient } from "@snapback/sdk";
+import { SnapBackAPIClient } from "@snapback-oss/sdk";
 
 const client = new SnapBackAPIClient({
 	endpoint: "https://api.snapback.dev",
@@ -157,14 +182,57 @@ try {
 }
 ```
 
+## Architecture
+
+### OSS vs Private SDK
+
+Both versions share the same core philosophy but differ in scope:
+
+**`@snapback-oss/sdk` includes:**
+- Privacy-first API client
+- Metadata transmission
+- Type-safe interfaces
+- Caching and rate limiting
+- Error handling with fallbacks
+
+**`@snapback/sdk` additionally includes:**
+- Storage adapters (SQLite, PostgreSQL)
+- Advanced authentication methods
+- Subscription/tier management
+- Internal telemetry
+- Platform-specific integrations
+
 ## Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Write tests
-5. Submit a pull request
+Want to contribute to SnapBack? See our [Contributing Guide](/docs/contributing) for:
+
+- Development setup
+- Code style guidelines
+- Testing requirements
+- Pull request process
+- OSS contribution guidelines
+
+### Testing
+
+```bash
+# Run SDK tests
+pnpm test
+
+# Run tests in watch mode
+pnpm test --watch
+
+# Run with coverage
+pnpm test --coverage
+```
 
 ## License
 
 MIT
+
+## Resources
+
+- **Documentation**: [SnapBack Docs](/docs)
+- **GitHub**: [snapback/snapback](https://github.com/snapback/snapback)
+- **NPM**: [@snapback-oss/sdk](https://npmjs.com/package/@snapback-oss/sdk)
+- **Issues**: [Bug reports & feature requests](https://github.com/snapback/snapback/issues)
+- **Discussions**: [Questions & ideas](https://github.com/snapback/snapback/discussions)

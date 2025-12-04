@@ -333,33 +333,48 @@ If this fails, your environment is not ready for SnapBack development.
 
 ### Full-Stack Development (all services)
 
-To set up and run the SnapBack platform locally, follow our comprehensive development guide:
-
-- [Local Development Guide](./docs/local-development.md) - Complete setup instructions
-- [DNS Configuration](./docs/setup/dns-configuration.md) - Configure subdomain routing
-- [Docker Architecture](./docs/architecture/docker.md) - Understand the container setup
-
-#### Quick Start (Full-Stack)
+**🎯 For comprehensive platform debugging and end-to-end testing**, use the holistic Docker setup that runs all services together:
 
 ```bash
-# Clone the repository
-git clone <repository-url>
-cd snapback
+# Setup environment (one-time)
+cp .env.docker.example .env.docker.local
+# Edit .env.docker.local with your settings
 
-# Set up environment
-cp .env.docker.example .env.docker
-# Edit .env.docker with your configuration
+# Start ALL services with debugging tools
+make dev-holistic
 
-# Start development environment
-make dev
+# Wait 30-60 seconds, then access:
+# 🌐 Marketing:   http://snapback.dev:3000
+# 🎛️  Console:     http://console.snapback.dev:3000
+# 📚 Docs:        http://docs.snapback.dev:3001
+# 🔌 API:         http://api.snapback.dev:8080
+# 🤖 MCP:         http://mcp.snapback.dev:8081
+# 📊 Monitoring:  http://localhost:3002 (Grafana)
 ```
 
-Access the services at:
-- Marketing site: http://snapback.dev
-- Console: http://console.snapback.dev
-- Documentation: http://docs.snapback.dev
-- API: http://api.snapback.dev
-- MCP: http://mcp.snapback.dev"}, "old_text": "## Local Development
+**What's included in holistic setup:**
+- ✅ Web, API, MCP Server, CLI Tool, Docs (all containerized)
+- ✅ PostgreSQL + Redis + Mailhog (email testing)
+- ✅ Prometheus + Grafana + Jaeger (monitoring & tracing)
+- ✅ Node.js debuggers on ports 9229-9233
+- ✅ Redis Insight GUI at http://localhost:8001
+
+**Perfect for:**
+- 🐛 Debugging across multiple services simultaneously
+- 🧪 Testing the entire platform end-to-end
+- 📊 Monitoring performance & collecting metrics
+- 👥 Working on the complete system holistically
+
+See:
+- [**Quick Reference Card**](./DOCKER_QUICK_REFERENCE.md) - Fast command lookup
+- [**Complete Holistic Setup Guide**](./docs/HOLISTIC_DOCKER_SETUP.md) - Detailed documentation
+
+---
+
+For comprehensive setup and development guides, see:
+- [Local Development Guide](./docs/local-development.md) - Complete setup instructions
+- [DNS Configuration](./docs/setup/dns-configuration.md) - Configure subdomain routing
+- [Docker Architecture](./docs/architecture/docker.md) - Understand the container setup"}, "old_text": "## Local Development
 
 To set up and run the SnapBack platform locally, follow our comprehensive development guide:
 

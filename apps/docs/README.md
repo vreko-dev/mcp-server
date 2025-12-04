@@ -147,11 +147,31 @@ NODE_ENV=production
 3. Run verification script: `./scripts/verify-docs-migration.sh`
 4. Monitor analytics for 24 hours
 
+## Documentation Content
+
+### For Users
+
+- **Getting Started**: Quick start guides, installation, first steps
+- **Capabilities**: Core features, MCP integration, CLI usage
+- **Analytics**: Understanding snapshots, data interpretation
+- **Reference**: FAQ, troubleshooting, performance
+
+### For Developers
+
+- **Contributing Guide**: Development setup, code style, contribution workflow
+- **Developer Guide**: Technical architecture, package structure, patterns
+- **Architecture**: Monorepo structure, package boundaries, import rules
+
+### For OSS Community
+
+- **Open Source**: Package overview, development, publishing
+- **Security**: Vulnerability reporting, security best practices
+
 ## Content Management
 
 ### Adding New Docs
 
-1. Create MDX file in `app/(docs)/`
+1. Create MDX file in `content/docs/`
 2. Add frontmatter metadata:
    ```mdx
    ---
@@ -163,6 +183,7 @@ NODE_ENV=production
    ```
 3. FumaDocs auto-generates sidebar from file structure
 4. Run `pnpm dev` to preview
+5. Update `content/docs/meta.json` if needed for navigation
 
 ### MDX Components
 

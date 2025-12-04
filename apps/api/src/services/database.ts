@@ -19,11 +19,14 @@ function getDb(): NonNullable<DatabaseClient> {
 
 // Export a proxy that calls getDb() for each property access
 // This maintains backward compatibility while using the getDb pattern
-export const db: NonNullable<DatabaseClient> = new Proxy({} as NonNullable<DatabaseClient>, {
-	get(_, prop) {
-		const database = getDb();
-		return (database as any)[prop];
+export const db: NonNullable<DatabaseClient> = new Proxy(
+	{} as NonNullable<DatabaseClient>,
+	{
+		get(_, prop) {
+			const database = getDb();
+			return (database as any)[prop];
+		},
 	},
-});
+);
 
 export { getDb };

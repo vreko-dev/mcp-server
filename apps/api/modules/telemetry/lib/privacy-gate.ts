@@ -183,7 +183,9 @@ function containsSensitiveData(value: any): boolean {
 /**
  * Filter properties through the privacy gate
  */
-export function filterProperties(properties: Record<string, any> = {}): Record<string, any> {
+export function filterProperties(
+	properties: Record<string, any> = {},
+): Record<string, any> {
 	const filtered: Record<string, any> = {};
 
 	for (const [key, value] of Object.entries(properties)) {
@@ -204,7 +206,9 @@ export function filterProperties(properties: Record<string, any> = {}): Record<s
 			// For arrays, filter each element if it's an object
 			if (Array.isArray(value)) {
 				filtered[key] = value.map((item) =>
-					typeof item === "object" && item !== null ? filterProperties(item) : item,
+					typeof item === "object" && item !== null
+						? filterProperties(item)
+						: item,
 				);
 			} else {
 				filtered[key] = value;

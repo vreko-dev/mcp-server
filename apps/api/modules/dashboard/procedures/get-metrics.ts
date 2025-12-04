@@ -9,14 +9,12 @@
  * Database: Queries snapshots, checkpoints, ai_activities tables
  */
 
-import { ORPCError } from "@orpc/server";
 import {
-	DashboardMetricsSchema,
 	DashboardMetricsErrorSchema,
 	type DashboardMetricsResponse,
+	DashboardMetricsSchema,
 } from "@snapback/contracts";
 import { logger } from "@snapback/infrastructure";
-import { and, count, desc, eq, sql, sum } from "drizzle-orm";
 import { z } from "zod";
 import { protectedProcedure } from "../../../orpc/procedures.js";
 import { getDb } from "../../../src/services/database.js";

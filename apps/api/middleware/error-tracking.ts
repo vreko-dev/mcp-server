@@ -12,7 +12,10 @@ interface ErrorTrackingContext {
 	ipAddress?: string;
 }
 
-export async function errorTrackingMiddleware(context: ErrorTrackingContext, next: () => Promise<any>) {
+export async function errorTrackingMiddleware(
+	context: ErrorTrackingContext,
+	next: () => Promise<any>,
+) {
 	try {
 		// Execute the next middleware/handler
 		const result = await next();

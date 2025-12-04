@@ -198,79 +198,92 @@ const DEFAULT_RULES = {
 	},
 };
 
-export const getRulesBundle = protectedProcedure.input(getRulesBundleSchema).handler(async ({ input, context }) => {
-	const user = context.user;
-	if (!user) {
-		throw new Error("Unauthorized");
-	}
+export const getRulesBundle = protectedProcedure
+	.input(getRulesBundleSchema)
+	.handler(async ({ input, context }) => {
+		const user = context.user;
+		if (!user) {
+			throw new Error("Unauthorized");
+		}
 
-	// Get user's API key to determine subscription tier
-	const db = getDb();
-	if (!db) {
-		throw new Error("Database not available");
-	}
+		// Get user's API key to determine subscription tier
+		const db = getDb();
+		if (!db) {
+			throw new Error("Database not available");
+		}
 
-	const apiKeyResult = await db.select().from(apiKeys).where(eq(apiKeys.userId, user.id)).limit(1);
+		const apiKeyResult = await db
+			.select()
+			.from(apiKeys)
+			.where(eq(apiKeys.userId, user.id))
+			.limit(1);
 
-	if (!apiKeyResult || apiKeyResult.length === 0) {
-		throw new Error("No API key found");
-	}
+		if (!apiKeyResult || apiKeyResult.length === 0) {
+			throw new Error("No API key found");
+		}
 
-	const _apiKey = apiKeyResult[0];
+		const _apiKey = apiKeyResult[0];
 
-	// Get user's subscription tier
-	const subscriptionResult = await db.select().from(subscriptions).where(eq(subscriptions.userId, user.id)).limit(1);
+		// Get user's subscription tier
+		const subscriptionResult = await db
+			.select()
+			.from(subscriptions)
+			.where(eq(subscriptions.userId, user.id))
+			.limit(1);
 
-	const subscription = subscriptionResult && subscriptionResult.length > 0 ? subscriptionResult[0] : null;
+		const subscription =
+			subscriptionResult && subscriptionResult.length > 0
+				? subscriptionResult[0]
+				: null;
 
-	const tier = subscription?.plan || "free";
+		const tier = subscription?.plan || "free";
 
-	// Get tier-specific thresholds
-	const tierThresholds = RULE_THRESHOLDS[tier] || RULE_THRESHOLDS.free;
+		// Get tier-specific thresholds
+		const tierThresholds = RULE_THRESHOLDS[tier] || RULE_THRESHOLDS.free;
 
-	// Get feature flags from FeatureManager
-	// MVP Note: Feature flags are included in the rules bundle (not remote flips)
-	// This allows for consistent feature flagging across all clients without remote calls
-	const featureManager = FeatureManager.getInstance();
-	const userFeatureFlags: Record<string, boolean> = {};
+		// Get feature flags from FeatureManager
+		// MVP Note: Feature flags are included in the rules bundle (not remote flips)
+		// This allows for consistent feature flagging across all clients without remote calls
+		const featureManager = FeatureManager.getInstance();
+		const userFeatureFlags: Record<string, boolean> = {};
 
-	// Add all feature flags to the bundle
-	for (const flag of Object.keys(FEATURE_FLAGS) as FeatureFlag[]) {
-		userFeatureFlags[flag] = featureManager.isEnabled(flag);
-	}
+		// Add all feature flags to the bundle
+		for (const flag of Object.keys(FEATURE_FLAGS) as FeatureFlag[]) {
+			userFeatureFlags[flag] = featureManager.isEnabled(flag);
+		}
 
-	// Create rules bundle with tier-specific configuration and feature flags
-	const rulesBundle = {
-		...DEFAULT_RULES,
-		tier,
-		tierThresholds,
-		featureFlags: userFeatureFlags,
-		timestamp: new Date().toISOString(),
-		version: "1.0.0",
-	};
-
-	// Generate ETag based on bundle content using SHA-256
-	const bundleString = JSON.stringify(rulesBundle);
-	const etag = generateETag(bundleString);
-
-	// Check if client has provided ETag and if it matches
-	if (input.etag && input.etag === etag) {
-		// Return 304 Not Modified if ETag matches
-		return {
-			notModified: true,
-			etag,
+		// Create rules bundle with tier-specific configuration and feature flags
+		const rulesBundle = {
+			...DEFAULT_RULES,
+			tier,
+			tierThresholds,
+			featureFlags: userFeatureFlags,
+			timestamp: new Date().toISOString(),
+			version: "1.0.0",
 		};
-	}
 
-	// Sign the bundle with JWS
-	const signedBundle = await signRulesBundle(rulesBundle);
+		// Generate ETag based on bundle content using SHA-256
+		const bundleString = JSON.stringify(rulesBundle);
+		const etag = generateETag(bundleString);
 
-	return {
-		bundle: signedBundle,
-		etag,
-		tier,
-	};
-});
+		// Check if client has provided ETag and if it matches
+		if (input.etag && input.etag === etag) {
+			// Return 304 Not Modified if ETag matches
+			return {
+				notModified: true,
+				etag,
+			};
+		}
+
+		// Sign the bundle with JWS
+		const signedBundle = await signRulesBundle(rulesBundle);
+
+		return {
+			bundle: signedBundle,
+			etag,
+			tier,
+		};
+	});
 
 // Helper function to generate ETag using SHA-256
 function generateETag(content: string): string {

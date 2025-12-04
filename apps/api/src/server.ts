@@ -12,11 +12,11 @@ import { cors } from "hono/cors";
 import { logger as honoLogger } from "hono/logger";
 import { openApiHandler, rpcHandler } from "@/orpc/handler.js";
 import { router } from "@/orpc/router.js";
-import { createRateLimitMiddleware } from "./middleware/ratelimit.js";
+import { createRateLimitMiddleware } from "./middleware/rate-limit-distributed.js";
 import { requestLoggingMiddleware } from "./middleware/request-logging.js";
 import healthRoute from "./routes/health.js";
-import protectedExamplesRoute from "./routes/protected-examples.js";
 import apiRoutes from "./routes/index.js";
+import protectedExamplesRoute from "./routes/protected-examples.js";
 import { testRoutes } from "./routes/test/index.js";
 
 // Auth handler app - Better Auth expects raw requests with path rewriting
@@ -39,13 +39,16 @@ const authApp: HonoApp = new Hono().all("*", async (c) => {
 	return auth.handler(rewrittenRequest);
 });
 
+// Initialize rate limit middleware
+const rateLimitMiddleware = await createRateLimitMiddleware();
+
 // Create the main API app WITHOUT basePath
 const apiApp: HonoApp = new Hono()
 	// ... existing code ...
 	.route("/api/auth", authApp)
 	// Rate limiting middleware - with optional Redis support
 	// Pass Redis client if available: createRateLimitMiddleware(redisClient)
-	.use("*", createRateLimitMiddleware())
+	.use("*", rateLimitMiddleware)
 	// Request logging middleware
 	.use("*", requestLoggingMiddleware)
 	// Body limit middleware - 10MB max size
@@ -104,12 +107,18 @@ const apiApp: HonoApp = new Hono()
 				}
 
 				// For development, allow localhost with any port
-				if (process.env.NODE_ENV === "development" && origin.startsWith("http://localhost:")) {
+				if (
+					process.env.NODE_ENV === "development" &&
+					origin.startsWith("http://localhost:")
+				) {
 					return origin;
 				}
 
 				// For development, allow all *.snapback.dev subdomains
-				if (process.env.NODE_ENV === "development" && origin.endsWith(".snapback.dev")) {
+				if (
+					process.env.NODE_ENV === "development" &&
+					origin.endsWith(".snapback.dev")
+				) {
 					return origin;
 				}
 
@@ -117,7 +126,11 @@ const apiApp: HonoApp = new Hono()
 			},
 			allowHeaders: ["Content-Type", "Authorization", "X-API-Key"],
 			allowMethods: ["POST", "GET", "OPTIONS", "PUT", "DELETE", "PATCH"],
-			exposeHeaders: ["Content-Length", "X-RateLimit-Remaining", "X-RateLimit-Reset"],
+			exposeHeaders: [
+				"Content-Length",
+				"X-RateLimit-Remaining",
+				"X-RateLimit-Reset",
+			],
 			maxAge: 600,
 			credentials: true,
 		}),

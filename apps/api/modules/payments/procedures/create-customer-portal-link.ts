@@ -39,7 +39,11 @@ export const createCustomerPortalLink = protectedProcedure
 			}
 
 			// Get purchase by ID using Drizzle ORM
-			const purchaseResult = await getDb().select().from(purchase).where(eq(purchase.id, purchaseId)).limit(1);
+			const purchaseResult = await getDb()
+				.select()
+				.from(purchase)
+				.where(eq(purchase.id, purchaseId))
+				.limit(1);
 
 			if (!purchaseResult || purchaseResult.length === 0) {
 				throw new ORPCError("FORBIDDEN");
@@ -56,10 +60,18 @@ export const createCustomerPortalLink = protectedProcedure
 				const membershipResult = await getDb()
 					.select()
 					.from(member)
-					.where(and(eq(member.organizationId, purchaseData.organizationId), eq(member.userId, user.id)))
+					.where(
+						and(
+							eq(member.organizationId, purchaseData.organizationId),
+							eq(member.userId, user.id),
+						),
+					)
 					.limit(1);
 
-				const membership = membershipResult && membershipResult.length > 0 ? membershipResult[0] : null;
+				const membership =
+					membershipResult && membershipResult.length > 0
+						? membershipResult[0]
+						: null;
 
 				if (membership?.role !== "owner") {
 					throw new ORPCError("FORBIDDEN");

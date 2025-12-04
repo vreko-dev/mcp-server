@@ -4,6 +4,7 @@
  */
 
 import { Hono } from "hono";
+
 // TODO: Implement authMiddleware
 // import { authMiddleware } from "../middleware/auth.js";
 
@@ -15,7 +16,11 @@ const workspaceSafety = new Hono();
 interface BlockingIssue {
 	id: string;
 	severity: "high" | "medium" | "low";
-	type: "unprotected_critical_file" | "stale_snapshot" | "automation_failure" | "missing_pre_commit_hook";
+	type:
+		| "unprotected_critical_file"
+		| "stale_snapshot"
+		| "automation_failure"
+		| "missing_pre_commit_hook";
 	message: string;
 	filePath?: string;
 	lastModified?: string;

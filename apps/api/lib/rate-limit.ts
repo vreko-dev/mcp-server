@@ -14,9 +14,14 @@ const BUCKET_CONFIG = {
 	enterprise: { capacity: 5000, refillRate: 33.333 }, // 2000/min
 };
 
-export async function checkRateLimit(userId: string, plan: string, requestCost = 1) {
+export async function checkRateLimit(
+	userId: string,
+	plan: string,
+	requestCost = 1,
+) {
 	const redis = await getRedisClient();
-	const config = BUCKET_CONFIG[plan as keyof typeof BUCKET_CONFIG] || BUCKET_CONFIG.free;
+	const config =
+		BUCKET_CONFIG[plan as keyof typeof BUCKET_CONFIG] || BUCKET_CONFIG.free;
 	const bucketKey = `bucket:${userId}`;
 	const now = Date.now() / 1000; // seconds
 
@@ -56,7 +61,9 @@ export async function checkRateLimit(userId: string, plan: string, requestCost =
 			allowed: true,
 			remaining: Math.floor(bucket.tokens),
 			limit: config.capacity,
-			resetAt: Math.floor(now + (config.capacity - bucket.tokens) / config.refillRate),
+			resetAt: Math.floor(
+				now + (config.capacity - bucket.tokens) / config.refillRate,
+			),
 		};
 	}
 	// Calculate retry time

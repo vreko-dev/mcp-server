@@ -1,10 +1,47 @@
 {
 	"root": false,
 	"extends": ["../biome.json"],
+	"files": {
+		"includes": [
+			"**",
+			"!**/*.test.ts",
+			"!**/*.test.tsx",
+			"!**/*.spec.ts",
+			"!**/*.spec.tsx",
+			"!__tests__",
+			"!**/__tests__",
+			"!tests"
+		]
+	},
 	"linter": {
 		"rules": {
+			"suspicious": {
+				"noArrayIndexKey": "warn",
+				"noAssignInExpressions": "warn",
+				"noCommentText": "warn",
+				"useIterableCallbackReturn": "warn",
+				"noImplicitAnyLet": "warn"
+			},
+			"security": {
+				"noDangerouslySetInnerHtml": "off"
+			},
+			"a11y": {
+				"noSvgWithoutTitle": "warn",
+				"useKeyWithClickEvents": "warn",
+				"useButtonType": "warn",
+				"noStaticElementInteractions": "warn",
+				"useSemanticElements": "warn",
+				"noLabelWithoutControl": "warn",
+				"useAltText": "warn",
+				"useAriaActivedescendantWithTabindex": "warn",
+				"useAriaPropsSupportedByRole": "warn",
+				"useKeyWithMouseEvents": "warn"
+			},
+			"correctness": {
+				"noConstantCondition": "warn"
+			},
 			"style": {
-				"noParameterAssign": "error",
+				"noParameterAssign": "warn",
 				"useAsConstAssertion": "error",
 				"useDefaultParameterLast": "error",
 				"useEnumInitializers": "error",

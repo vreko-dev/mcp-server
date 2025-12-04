@@ -1,6 +1,6 @@
-import { type Context, type Next } from "hono";
+import { randomUUID } from "node:crypto";
 import { logger } from "@snapback/infrastructure";
-import { randomUUID } from "crypto";
+import type { Context, Next } from "hono";
 
 /**
  * Request Logging Middleware
@@ -63,8 +63,8 @@ function isSensitiveHeader(headerName: string): boolean {
 /**
  * Redact sensitive fields in an object
  */
-function redactSensitiveData(
-	obj: Record<string, unknown>
+function _redactSensitiveData(
+	obj: Record<string, unknown>,
 ): Record<string, unknown> {
 	const redacted: Record<string, unknown> = {};
 
@@ -76,9 +76,7 @@ function redactSensitiveData(
 			value !== null &&
 			!Array.isArray(value)
 		) {
-			redacted[key] = redactSensitiveData(
-				value as Record<string, unknown>
-			);
+			redacted[key] = _redactSensitiveData(value as Record<string, unknown>);
 		} else {
 			redacted[key] = value;
 		}
@@ -90,7 +88,9 @@ function redactSensitiveData(
 /**
  * Redact sensitive headers
  */
-function redactHeaders(headers: Record<string, string>): Record<string, string> {
+function _redactHeaders(
+	headers: Record<string, string>,
+): Record<string, string> {
 	const redacted: Record<string, string> = {};
 
 	for (const [key, value] of Object.entries(headers)) {
@@ -125,7 +125,7 @@ function getOrCreateRequestId(c: Context): string {
  */
 export async function requestLoggingMiddleware(
 	c: Context,
-	next: Next
+	next: Next,
 ): Promise<void> {
 	const requestId = getOrCreateRequestId(c);
 	const ip = getClientIp(c);

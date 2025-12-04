@@ -1,4 +1,8 @@
-import { GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import {
+	GetObjectCommand,
+	PutObjectCommand,
+	S3Client,
+} from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { ORPCError } from "@orpc/server";
 import { usageLimits, user } from "@snapback/platform";
@@ -57,7 +61,10 @@ export const storageRouter = {
 
 			// 3. Verify user has cloudBackupEnabled
 			// Check if the property exists before accessing it
-			if ("cloudBackupEnabled" in userRecord && !userRecord.cloudBackupEnabled) {
+			if (
+				"cloudBackupEnabled" in userRecord &&
+				!userRecord.cloudBackupEnabled
+			) {
 				throw new ORPCError("FORBIDDEN", {
 					message: "Cloud backup not enabled for your account",
 				});
@@ -133,7 +140,9 @@ async function getStorageUsage(userId: string) {
 
 	// Get subscription
 	const subscription =
-		userRecord.subscriptions && Array.isArray(userRecord.subscriptions) && userRecord.subscriptions.length > 0
+		userRecord.subscriptions &&
+		Array.isArray(userRecord.subscriptions) &&
+		userRecord.subscriptions.length > 0
 			? userRecord.subscriptions[0]
 			: null;
 

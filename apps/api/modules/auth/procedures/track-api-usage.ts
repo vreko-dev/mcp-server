@@ -27,7 +27,9 @@ export const trackApiUsageProcedure = publicProcedure
 
 		// Always perform a hash comparison to prevent timing attacks
 		// This ensures the function takes the same amount of time regardless of key validity
-		const dummyHash = await hashApiKey("sk_live_00000000000000000000000000000000");
+		const dummyHash = await hashApiKey(
+			"sk_live_00000000000000000000000000000000",
+		);
 
 		// Check format
 		if (!input.apiKey.match(/^sk_(live|test)_[a-zA-Z0-9]{32}$/)) {
@@ -58,7 +60,9 @@ export const trackApiUsageProcedure = publicProcedure
 			.limit(10);
 
 		// Ensure we have an array to iterate over
-		const candidateKeys = Array.isArray(candidateKeysResult) ? candidateKeysResult : [];
+		const candidateKeys = Array.isArray(candidateKeysResult)
+			? candidateKeysResult
+			: [];
 
 		// Find matching key by verifying hash among candidates only
 		let validKey = null;
@@ -98,7 +102,10 @@ export const trackApiUsageProcedure = publicProcedure
 		});
 
 		// Update last used
-		await getDb().update(apiKeys).set({ lastUsedAt: new Date() }).where(eq(apiKeys.id, validKey.id));
+		await getDb()
+			.update(apiKeys)
+			.set({ lastUsedAt: new Date() })
+			.where(eq(apiKeys.id, validKey.id));
 
 		return { success: true };
 	});

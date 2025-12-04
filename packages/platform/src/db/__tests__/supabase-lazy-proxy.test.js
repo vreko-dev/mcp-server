@@ -8,6 +8,8 @@ var __awaiter =
 						resolve(value);
 					});
 		}
+		// biome-ignore lint/suspicious/noAssignInExpressions: Auto-generated TypeScript helper
+		// biome-ignore lint/style/noParameterAssign: Auto-generated TypeScript helper
 		return new (P || (P = Promise))((resolve, reject) => {
 			function fulfilled(value) {
 				try {
@@ -18,7 +20,7 @@ var __awaiter =
 			}
 			function rejected(value) {
 				try {
-					step(generator["throw"](value));
+					step(generator.throw(value));
 				} catch (e) {
 					reject(e);
 				}
@@ -26,6 +28,8 @@ var __awaiter =
 			function step(result) {
 				result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
 			}
+			// biome-ignore lint/suspicious/noAssignInExpressions: Auto-generated TypeScript helper
+			// biome-ignore lint/style/noParameterAssign: Auto-generated TypeScript helper
 			step((generator = generator.apply(thisArg, _arguments || [])).next());
 		});
 	});

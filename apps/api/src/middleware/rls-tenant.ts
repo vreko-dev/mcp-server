@@ -90,7 +90,10 @@ function getOrgIdFromContext(c: Context): string | null {
 /**
  * Verify user has access to organization
  */
-async function verifyOrgAccess(userId: string, orgId: string): Promise<boolean> {
+async function verifyOrgAccess(
+	userId: string,
+	orgId: string,
+): Promise<boolean> {
 	const db = getDb();
 	if (!db) {
 		return false;
@@ -253,7 +256,11 @@ export function getCurrentOrgId(c: Context): string | null {
  * Helper to create RLS-enabled database client
  * Call this at the start of any org-scoped operation
  */
-export async function withOrgContext<T>(orgId: string, userId: string, operation: () => Promise<T>): Promise<T> {
+export async function withOrgContext<T>(
+	orgId: string,
+	userId: string,
+	operation: () => Promise<T>,
+): Promise<T> {
 	await setCurrentOrg(orgId, userId);
 	try {
 		return await operation();

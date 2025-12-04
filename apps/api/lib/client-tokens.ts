@@ -5,7 +5,8 @@ import { getDb } from "../src/services/database";
 
 // Generate a new client token with sbt_ prefix
 export function generateClientToken(): string {
-	const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+	const chars =
+		"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 	const prefix = "sbt_";
 	let result = prefix;
 	for (let i = 0; i < 32; i++) {
@@ -26,7 +27,10 @@ export async function hashClientToken(token: string): Promise<string> {
 }
 
 // Verify a client token against its hash
-export async function verifyClientToken(token: string, tokenHash: string): Promise<boolean> {
+export async function verifyClientToken(
+	token: string,
+	tokenHash: string,
+): Promise<boolean> {
 	return await verify(tokenHash, token);
 }
 
@@ -76,7 +80,10 @@ export async function validateClientToken(token: string): Promise<{
 
 	// Find client token in database (using token preview for initial lookup)
 	const tokenPreview = token.substring(0, 8);
-	const tokens = await getDb().select().from(clientTokens).where(eq(clientTokens.tokenPreview, tokenPreview));
+	const tokens = await getDb()
+		.select()
+		.from(clientTokens)
+		.where(eq(clientTokens.tokenPreview, tokenPreview));
 
 	// Verify the full token using argon2
 	let validToken = null;

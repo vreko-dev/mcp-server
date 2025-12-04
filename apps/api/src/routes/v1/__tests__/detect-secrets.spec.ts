@@ -15,7 +15,9 @@ describe("Secret Detection Service", () => {
 				content: "const awsKey = 'AKIAIOSFODNN7EXAMPLE';",
 			};
 
-			const findings = await (secretDetectionService as any).detectSecretsInFile(file);
+			const findings = await (
+				secretDetectionService as any
+			).detectSecretsInFile(file);
 
 			expect(findings).toHaveLength(1);
 			expect(findings[0].type).toBe("AWS Access Key");
@@ -28,7 +30,9 @@ describe("Secret Detection Service", () => {
 				content: "GITHUB_TOKEN=ghp_abcdefghijklmnopqrstuvwxyz123456",
 			};
 
-			const findings = await (secretDetectionService as any).detectSecretsInFile(file);
+			const findings = await (
+				secretDetectionService as any
+			).detectSecretsInFile(file);
 
 			expect(findings).toHaveLength(1);
 			expect(findings[0].type).toBe("GitHub Token");
@@ -41,7 +45,9 @@ describe("Secret Detection Service", () => {
 				content: "const secret = 'a8F!kL9@mN2#zX7$vB4%';",
 			};
 
-			const findings = await (secretDetectionService as any).detectSecretsInFile(file);
+			const findings = await (
+				secretDetectionService as any
+			).detectSecretsInFile(file);
 
 			expect(findings.length).toBeGreaterThan(0);
 			expect(findings[0].type).toBe("High Entropy String");
@@ -53,7 +59,9 @@ describe("Secret Detection Service", () => {
 				content: "const testKey = 'AKIAIOSFODNN7EXAMPLE'; // test key",
 			};
 
-			const findings = await (secretDetectionService as any).detectSecretsInFile(file);
+			const findings = await (
+				secretDetectionService as any
+			).detectSecretsInFile(file);
 
 			// Should not detect secrets in test files
 			expect(findings).toHaveLength(0);
@@ -96,7 +104,10 @@ describe("Secret Detection Service", () => {
 			};
 
 			// Mock database operations
-			vi.spyOn(secretDetectionService as any, "updateUserSafetyProfile").mockResolvedValue(undefined);
+			vi.spyOn(
+				secretDetectionService as any,
+				"updateUserSafetyProfile",
+			).mockResolvedValue(undefined);
 
 			const result = await secretDetectionService.detectSecrets(request);
 

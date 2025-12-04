@@ -98,7 +98,10 @@ export const ingestEvents = protectedProcedure
 				success: true,
 				eventCount: successCount,
 				eventIds: insertResult.map((r) => r.id),
-				errors: errors.length > 0 ? errors.map((err, idx) => ({ index: idx, error: err })) : undefined,
+				errors:
+					errors.length > 0
+						? errors.map((err, idx) => ({ index: idx, error: err }))
+						: undefined,
 			};
 		} catch (error) {
 			console.error("[Analytics] Ingestion error:", error);

@@ -9,7 +9,10 @@ const getUserFlagsInputSchema = z.object({
 });
 
 // Output schema
-const getUserFlagsOutputSchema = z.record(z.string(), z.union([z.string(), z.number(), z.boolean(), z.null()]));
+const getUserFlagsOutputSchema = z.record(
+	z.string(),
+	z.union([z.string(), z.number(), z.boolean(), z.null()]),
+);
 
 /**
  * Simple hash function for deterministic A/B testing

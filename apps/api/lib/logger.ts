@@ -52,7 +52,12 @@ export const log = {
 		logger.info({ type: "api_request", ...data });
 	},
 
-	featureUsage: (data: { userId: string; feature: string; success: boolean; duration?: number }) => {
+	featureUsage: (data: {
+		userId: string;
+		feature: string;
+		success: boolean;
+		duration?: number;
+	}) => {
 		logger.info({ type: "feature_usage", ...data });
 	},
 
@@ -60,7 +65,11 @@ export const log = {
 		logger.info({ type: "cache_hit", cacheKey, userId });
 	},
 
-	rateLimitHit: (data: { userId: string; limitType: string; retryAfter: number }) => {
+	rateLimitHit: (data: {
+		userId: string;
+		limitType: string;
+		retryAfter: number;
+	}) => {
 		logger.warn({ type: "rate_limit_hit", ...data });
 	},
 

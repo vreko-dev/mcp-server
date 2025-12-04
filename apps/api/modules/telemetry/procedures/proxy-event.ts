@@ -9,7 +9,8 @@ let posthogClient: PostHog | null = null;
 
 function getPostHog(): PostHog {
 	if (!posthogClient) {
-		const posthogKey = process.env.POSTHOG_API_KEY || process.env.NEXT_PUBLIC_POSTHOG_KEY;
+		const posthogKey =
+			process.env.POSTHOG_API_KEY || process.env.NEXT_PUBLIC_POSTHOG_KEY;
 		if (!posthogKey) {
 			throw new Error("PostHog API key not configured");
 		}
@@ -32,34 +33,36 @@ const proxyEventSchema = z.object({
 	version: z.string().optional(),
 });
 
-export const proxyEvent = publicProcedure.input(proxyEventSchema).handler(async ({ input }) => {
-	try {
-		const posthog = getPostHog();
+export const proxyEvent = publicProcedure
+	.input(proxyEventSchema)
+	.handler(async ({ input }) => {
+		try {
+			const posthog = getPostHog();
 
-		// Add context to properties
-		const propertiesWithContext = addContext(input.properties || {}, {
-			userId: input.userId,
-			orgId: input.orgId,
-			version: input.version,
-		});
+			// Add context to properties
+			const propertiesWithContext = addContext(input.properties || {}, {
+				userId: input.userId,
+				orgId: input.orgId,
+				version: input.version,
+			});
 
-		// Filter properties through privacy gate
-		const filteredProperties = filterProperties(propertiesWithContext);
+			// Filter properties through privacy gate
+			const filteredProperties = filterProperties(propertiesWithContext);
 
-		// Capture the event
-		await posthog.capture({
-			distinctId: input.distinctId || input.userId || "anonymous",
-			event: input.event,
-			properties: filteredProperties,
-			timestamp: input.timestamp ? new Date(input.timestamp) : undefined,
-		});
+			// Capture the event
+			await posthog.capture({
+				distinctId: input.distinctId || input.userId || "anonymous",
+				event: input.event,
+				properties: filteredProperties,
+				timestamp: input.timestamp ? new Date(input.timestamp) : undefined,
+			});
 
-		return {
-			success: true,
-			message: "Event proxied successfully",
-		};
-	} catch (error) {
-		logger.error("Failed to proxy event to PostHog", { error, input });
-		throw new Error("Failed to proxy event");
-	}
-});
+			return {
+				success: true,
+				message: "Event proxied successfully",
+			};
+		} catch (error) {
+			logger.error("Failed to proxy event to PostHog", { error, input });
+			throw new Error("Failed to proxy event");
+		}
+	});

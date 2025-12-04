@@ -13,56 +13,66 @@ const getUserMetricsOutputSchema = z.object({
 	aiDetectionRate: z.number(),
 });
 
-export const getUserMetrics = protectedProcedure.output(getUserMetricsOutputSchema).handler(async ({ context }) => {
-	const userId = context.user.id;
+export const getUserMetrics = protectedProcedure
+	.output(getUserMetricsOutputSchema)
+	.handler(async ({ context }) => {
+		const userId = context.user.id;
 
-	try {
-		const db = getDb();
-		if (!db) {
-			return {
+		try {
+			const db = getDb();
+			if (!db) {
+				return {
+					snapshotCount: 0,
+					recoveryCount: 0,
+					filesProtected: 0,
+					aiDetectionRate: 0,
+				};
+			}
+
+			// Optimized single query to get all metrics at once
+			const metrics = await getDb()
+				.select({
+					snapshotCount: count(snapshots.id),
+					recoveryCount: count(
+						sql`CASE WHEN ${snapshots.riskScore} > 0 THEN 1 END`,
+					),
+					filesProtected: sum(snapshots.fileCount),
+					aiCount: count(featureUsage.id),
+				})
+				.from(snapshots)
+				.leftJoin(
+					featureUsage,
+					and(
+						eq(featureUsage.userId, userId),
+						eq(featureUsage.featureCategory, "ai_assistance"),
+					),
+				)
+				.where(eq(snapshots.userId, userId));
+
+			const result = metrics[0] || {
 				snapshotCount: 0,
 				recoveryCount: 0,
 				filesProtected: 0,
-				aiDetectionRate: 0,
+				aiCount: 0,
 			};
+
+			const totalSnapshots = result.snapshotCount || 0;
+			const aiDetectionCount = result.aiCount || 0;
+			const aiDetectionRate =
+				totalSnapshots > 0
+					? Math.round((aiDetectionCount / totalSnapshots) * 100)
+					: 0;
+
+			return {
+				snapshotCount: totalSnapshots,
+				recoveryCount: result.recoveryCount || 0,
+				filesProtected: Number(result.filesProtected) || 0,
+				aiDetectionRate,
+			};
+		} catch (error) {
+			logger.error("Failed to get user metrics", { userId, error });
+			throw new ORPCError("INTERNAL_SERVER_ERROR", {
+				message: "Failed to fetch dashboard metrics",
+			});
 		}
-
-		// Optimized single query to get all metrics at once
-		const metrics = await getDb()
-			.select({
-				snapshotCount: count(snapshots.id),
-				recoveryCount: count(sql`CASE WHEN ${snapshots.riskScore} > 0 THEN 1 END`),
-				filesProtected: sum(snapshots.fileCount),
-				aiCount: count(featureUsage.id),
-			})
-			.from(snapshots)
-			.leftJoin(
-				featureUsage,
-				and(eq(featureUsage.userId, userId), eq(featureUsage.featureCategory, "ai_assistance")),
-			)
-			.where(eq(snapshots.userId, userId));
-
-		const result = metrics[0] || {
-			snapshotCount: 0,
-			recoveryCount: 0,
-			filesProtected: 0,
-			aiCount: 0,
-		};
-
-		const totalSnapshots = result.snapshotCount || 0;
-		const aiDetectionCount = result.aiCount || 0;
-		const aiDetectionRate = totalSnapshots > 0 ? Math.round((aiDetectionCount / totalSnapshots) * 100) : 0;
-
-		return {
-			snapshotCount: totalSnapshots,
-			recoveryCount: result.recoveryCount || 0,
-			filesProtected: Number(result.filesProtected) || 0,
-			aiDetectionRate,
-		};
-	} catch (error) {
-		logger.error("Failed to get user metrics", { userId, error });
-		throw new ORPCError("INTERNAL_SERVER_ERROR", {
-			message: "Failed to fetch dashboard metrics",
-		});
-	}
-});
+	});

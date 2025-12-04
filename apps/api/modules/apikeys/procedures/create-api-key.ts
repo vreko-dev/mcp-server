@@ -33,7 +33,10 @@ export const createApiKey = protectedProcedure
 					.limit(1)
 			: [];
 
-		const tier = userRecord && userRecord.length > 0 ? userRecord[0]?.subscriptionTier || "free" : "free";
+		const tier =
+			userRecord && userRecord.length > 0
+				? userRecord[0]?.subscriptionTier || "free"
+				: "free";
 
 		// Paywall: Free users can't create API keys
 		if (tier === "free") {
@@ -44,15 +47,25 @@ export const createApiKey = protectedProcedure
 
 		// Check subscription limits
 		const subscription = db
-			? (await db?.select().from(subscriptions).where(eq(subscriptions.userId, user.id)).limit(1))?.[0]
+			? (
+					await db
+						?.select()
+						.from(subscriptions)
+						.where(eq(subscriptions.userId, user.id))
+						.limit(1)
+				)?.[0]
 			: undefined;
 
-		const existingKeys = db ? await db.select().from(apiKeys).where(eq(apiKeys.userId, user.id)) : [];
+		const existingKeys = db
+			? await db.select().from(apiKeys).where(eq(apiKeys.userId, user.id))
+			: [];
 
 		// Check key limit based on plan
 		const keyLimit = getKeyLimit(subscription?.plan || "free");
 		if (existingKeys && existingKeys.length >= keyLimit) {
-			throw new Error(`You've reached the limit of ${keyLimit} API keys for your plan`);
+			throw new Error(
+				`You've reached the limit of ${keyLimit} API keys for your plan`,
+			);
 		}
 
 		// Generate new key

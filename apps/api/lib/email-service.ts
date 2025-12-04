@@ -1,9 +1,9 @@
 import { logger } from "@snapback/infrastructure";
 import { Resend } from "resend";
-import CancellationEmail from "../emails/cancellation-email";
-import PaymentFailedEmail from "../emails/payment-failed-email";
-import PaymentReceiptEmail from "../emails/payment-receipt-email";
-import WelcomeEmail from "../emails/welcome-email";
+import CancellationEmail from "../emails/cancellation-email.js";
+import PaymentFailedEmail from "../emails/payment-failed-email.js";
+import PaymentReceiptEmail from "../emails/payment-receipt-email.js";
+import WelcomeEmail from "../emails/welcome-email.js";
 
 /**
  * Email Service for Transactional Emails using Resend
@@ -13,7 +13,9 @@ import WelcomeEmail from "../emails/welcome-email";
 
 // Validate RESEND_API_KEY is configured (will be undefined in development/testing)
 if (!process.env.RESEND_API_KEY && process.env.NODE_ENV === "production") {
-	logger.warn("RESEND_API_KEY is not configured - email functionality will be disabled");
+	logger.warn(
+		"RESEND_API_KEY is not configured - email functionality will be disabled",
+	);
 }
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -56,7 +58,8 @@ export async function sendWelcomeEmail(
 		const emailData = {
 			plan: plan,
 			features: getPlanFeatures(plan),
-			dashboardUrl: process.env.NEXT_PUBLIC_APP_URL || "https://snapback.dev/dashboard",
+			dashboardUrl:
+				process.env.NEXT_PUBLIC_APP_URL || "https://snapback.dev/dashboard",
 			supportEmail: "support@snapback.dev",
 		};
 
@@ -85,7 +88,10 @@ export async function sendWelcomeEmail(
 /**
  * Send a cancellation email when a subscription is canceled
  */
-export async function sendCancellationEmail(customerId: string, userEmail?: string): Promise<void> {
+export async function sendCancellationEmail(
+	customerId: string,
+	userEmail?: string,
+): Promise<void> {
 	try {
 		if (!userEmail) {
 			logger.warn("Cannot send cancellation email - no email address", {
@@ -239,7 +245,9 @@ export async function sendPaymentFailedEmail(
 /**
  * Get features for a plan (for email content)
  */
-function getPlanFeatures(plan: "free" | "solo" | "team" | "enterprise"): string[] {
+function getPlanFeatures(
+	plan: "free" | "solo" | "team" | "enterprise",
+): string[] {
 	switch (plan) {
 		case "enterprise":
 			return [
@@ -262,7 +270,12 @@ function getPlanFeatures(plan: "free" | "solo" | "team" | "enterprise"): string[
 				"Priority support",
 			];
 		case "solo":
-			return ["Unlimited snapshots", "Cloud backup", "Advanced AI detection", "Custom security rules"];
+			return [
+				"Unlimited snapshots",
+				"Cloud backup",
+				"Advanced AI detection",
+				"Custom security rules",
+			];
 		default:
 			return ["50 snapshots per month", "Local storage only"];
 	}

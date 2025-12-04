@@ -1,0 +1,239 @@
+/**
+ * Row-Level Security (RLS) Enforcement Middleware
+ *
+ * Enforces organization-scoped access control:
+ * - Users can only access their own organizations
+ * - Admins can access any organization (with audit logging)
+ * - Prevents cross-organization data leakage
+ *
+ * Applies to all routes with org context: /api/orgs/:orgId/*
+ */
+
+import { logger } from "@snapback/infrastructure";
+import { checkOrgMembership } from "@snapback/platform/db/queries/auth";
+import type { Context, Next } from "hono";
+import type { AuthContext } from "./auth-unified.js";
+
+// ============================================================================
+// Types
+// ============================================================================
+
+interface RLSViolation {
+	userId: string;
+	requestedOrgId: string;
+	userOrgIds: string[];
+	path: string;
+	timestamp: Date;
+}
+
+// ============================================================================
+// Configuration
+// ============================================================================
+
+const RLS_ROUTES = [/^\/api\/v[0-9]+\/orgs\/[^/]+/, /^\/api\/orgs\/[^/]+/];
+
+function isRLSRoute(path: string): boolean {
+	return RLS_ROUTES.some((pattern) => pattern.test(path));
+}
+
+function extractOrgIdFromPath(path: string): string | null {
+	const match = path.match(/\/orgs\/([^/]+)/);
+	return match ? match[1] : null;
+}
+
+// ============================================================================
+// RLS Violation Logging
+// ============================================================================
+
+async function logRLSViolation(violation: RLSViolation): Promise<void> {
+	logger.warn("RLS violation attempted", {
+		userId: violation.userId,
+		requestedOrgId: violation.requestedOrgId,
+		userOrgIds: violation.userOrgIds,
+		path: violation.path,
+		timestamp: violation.timestamp.toISOString(),
+	});
+
+	// TODO: Send to security monitoring/alerting system
+	// - Datadog, Sentry, or custom security dashboard
+	// - Track patterns of RLS bypass attempts
+	// - Alert on repeated violations from same user
+}
+
+// ============================================================================
+// Middleware
+// ============================================================================
+
+/**
+ * Enforce Row-Level Security for organization-scoped routes
+ *
+ * Rules:
+ * - Unauthenticated requests: 401 Unauthorized
+ * - User requests own org: 200 OK (allow)
+ * - User requests other org: 403 Forbidden (deny + log)
+ * - Admin requests any org: 200 OK (allow + audit log)
+ */
+export async function enforceRLS(c: Context, next: Next) {
+	const path = c.req.path;
+
+	// Skip RLS check if not an org-scoped route
+	if (!isRLSRoute(path)) {
+		await next();
+		return;
+	}
+
+	const auth = c.get("auth") as AuthContext | undefined;
+
+	// Unauthenticated requests to org routes are forbidden
+	if (!auth) {
+		logger.warn("Unauthenticated request to org-scoped endpoint", {
+			path,
+			method: c.req.method,
+		});
+
+		return c.json(
+			{
+				code: "unauthenticated",
+				message: "Authentication required for organization access",
+			},
+			401,
+		);
+	}
+
+	// Extract organization ID from path
+	const requestedOrgId = extractOrgIdFromPath(path);
+	if (!requestedOrgId) {
+		logger.error("Could not extract org ID from RLS route", { path });
+
+		return c.json(
+			{
+				code: "bad_request",
+				message: "Invalid organization path",
+			},
+			400,
+		);
+	}
+
+	// Admins can access any organization
+	if (auth.user.role === "admin") {
+		// Audit log admin access to other orgs
+		if (auth.orgIds && !auth.orgIds.includes(requestedOrgId)) {
+			logger.info("Admin accessing organization outside membership", {
+				userId: auth.user.id,
+				requestedOrgId,
+				userOrgIds: auth.orgIds || [],
+				path,
+			});
+		}
+
+		await next();
+		return;
+	}
+
+	// Regular users: check membership
+	const isMember = auth.orgIds?.includes(requestedOrgId) || false;
+
+	if (!isMember) {
+		// Log RLS violation
+		const violation: RLSViolation = {
+			userId: auth.user.id,
+			requestedOrgId,
+			userOrgIds: auth.orgIds || [],
+			path,
+			timestamp: new Date(),
+		};
+
+		await logRLSViolation(violation);
+
+		return c.json(
+			{
+				code: "forbidden",
+				message: "Access to this organization denied",
+			},
+			403,
+		);
+	}
+
+	// User is member of requested org - allow
+	await next();
+}
+
+/**
+ * Optional: Stricter RLS enforcement that also validates resource ownership
+ * Use for sensitive endpoints like /api/orgs/:orgId/members/:userId/delete
+ *
+ * This ensures that not only is the user in the org, but the resource
+ * being accessed actually belongs to that org.
+ */
+export async function enforceResourceRLS(c: Context, next: Next) {
+	const auth = c.get("auth") as AuthContext | undefined;
+
+	if (!auth) {
+		return c.json(
+			{ code: "unauthenticated", message: "Authentication required" },
+			401,
+		);
+	}
+
+	const requestedOrgId = extractOrgIdFromPath(c.req.path);
+
+	if (!requestedOrgId) {
+		return c.json(
+			{ code: "bad_request", message: "Invalid organization path" },
+			400,
+		);
+	}
+
+	// Check membership using database lookup
+	const membership = await checkOrgMembership(auth.user.id, requestedOrgId);
+
+	if (!membership && auth.user.role !== "admin") {
+		const violation: RLSViolation = {
+			userId: auth.user.id,
+			requestedOrgId,
+			userOrgIds: auth.orgIds || [],
+			path: c.req.path,
+			timestamp: new Date(),
+		};
+
+		await logRLSViolation(violation);
+
+		return c.json(
+			{
+				code: "forbidden",
+				message: "Access to this resource denied",
+			},
+			403,
+		);
+	}
+
+	await next();
+}
+
+/**
+ * Inject organization context into request
+ * Useful for handlers that need to reference the current org
+ */
+export async function injectOrgContext(c: Context, next: Next): Promise<void> {
+	const requestedOrgId = extractOrgIdFromPath(c.req.path);
+
+	if (requestedOrgId) {
+		c.set("orgId", requestedOrgId);
+	}
+
+	await next();
+}
+
+/**
+ * Get the current organization ID from context
+ * Safe to call after RLS enforcement middleware
+ */
+export function getCurrentOrgId(c: Context): string | null {
+	return c.get("orgId") || null;
+}
+
+// ============================================================================
+// Exports
+// ============================================================================
+
+export type { RLSViolation };

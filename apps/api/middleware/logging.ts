@@ -13,7 +13,10 @@ interface LoggingContext {
 	ipAddress?: string;
 }
 
-export async function loggingMiddleware(context: LoggingContext, next: () => Promise<any>) {
+export async function loggingMiddleware(
+	context: LoggingContext,
+	next: () => Promise<any>,
+) {
 	const startTime = Date.now();
 
 	// Log request start

@@ -1,102 +1,105 @@
 {
-  "name": "@snapback/api-service",
-  "description": "Standalone API service for SnapBack",
-  "version": "1.0.0",
-  "dependencies": {
-    "@aws-sdk/client-s3": "catalog:",
-    "@aws-sdk/s3-request-presigner": "catalog:",
-    "@hono/auth-js": "catalog:",
-    "@hono/zod-validator": "catalog:",
-    "@hubspot/api-client": "catalog:",
-    "@node-rs/argon2": "catalog:",
-    "@orpc/client": "catalog:",
-    "@orpc/openapi": "catalog:",
-    "@orpc/server": "catalog:",
-    "@orpc/zod": "catalog:",
-    "@scalar/hono-api-reference": "catalog:",
-    "@sentry/node": "catalog:",
-    "@snapback/auth": "workspace:*",
-    "@snapback/config": "workspace:*",
-    "@snapback/contracts": "workspace:*",
-    "@snapback/core": "workspace:*",
-    "@snapback/events": "workspace:*",
-    "@snapback/health": "workspace:*",
-    "@snapback/infrastructure": "workspace:*",
-    "@snapback/integrations": "workspace:*",
-    "@snapback/platform": "workspace:*",
-    "@snapback/policy-engine": "workspace:*",
-    "better-auth": "catalog:",
-    "hono": "catalog:",
-    "jose": "catalog:",
-    "nanoid": "catalog:",
-    "pino": "catalog:",
-    "posthog-node": "catalog:",
-    "semver": "catalog:",
-    "uuid": "catalog:",
-    "zod": "catalog:"
-  },
-  "devDependencies": {
-    "@types/node": "catalog:",
-    "@types/uuid": "^10.0.0",
-    "better-sqlite3": "catalog:",
-    "dotenv-cli": "catalog:",
-    "drizzle-orm": "catalog:",
-    "tsconfig-paths": "^4.2.0",
-    "tsup": "catalog:",
-    "tsx": "catalog:",
-    "typescript": "catalog:",
-    "vitest": "catalog:"
-  },
-  "engines": {
-    "node": ">=18.17.0"
-  },
-  "exports": {
-    ".": {
-      "types": "./dist/server.d.ts",
-      "default": "./dist/server.js"
-    },
-    "./lib/client-tokens": {
-      "types": "./lib/client-tokens.ts",
-      "default": "./lib/client-tokens.ts"
-    },
-    "./orpc/router": {
-      "types": "./orpc/router.ts",
-      "default": "./orpc/router.js"
-    },
-    "./lib/redis-client": {
-      "types": "./dist/lib/redis-client.d.ts",
-      "default": "./dist/lib/redis-client.js"
-    },
-    "./modules/contact/types": {
-      "types": "./dist/modules/contact/types.d.ts",
-      "default": "./dist/modules/contact/types.js"
-    },
-    "./modules/posthog/procedures/setup-alerts": {
-      "types": "./dist/modules/posthog/procedures/setup-alerts.d.ts",
-      "default": "./dist/modules/posthog/procedures/setup-alerts.js"
-    },
-    "./modules/posthog/procedures/run-correlation-analysis": {
-      "types": "./dist/modules/posthog/procedures/run-correlation-analysis.d.ts",
-      "default": "./dist/modules/posthog/procedures/run-correlation-analysis.js"
-    },
-    "./modules/posthog/procedures/setup-cohorts": {
-      "types": "./dist/modules/posthog/procedures/setup-cohorts.d.ts",
-      "default": "./dist/modules/posthog/procedures/setup-cohorts.js"
-    }
-  },
-  "main": "dist/server.js",
-  "scripts": {
-    "dev": "tsx watch --clear-screen=false src/server.ts",
-    "build": "tsup",
-    "start": "node dist/index.js",
-    "clean": "rm -rf dist",
-    "test": "vitest",
-    "test:unit": "vitest run src",
-    "test:integration": "vitest run src/middleware/__tests__/*.integration.test.ts",
-    "test:all": "vitest run",
-    "type-check": "tsc --noEmit",
-    "lint": "biome check .",
-    "lint:fix": "biome check --write ."
-  },
-  "type": "module"
+	"name": "@snapback/api-service",
+	"description": "Standalone API service for SnapBack",
+	"version": "1.0.0",
+	"dependencies": {
+		"@aws-sdk/client-s3": "catalog:",
+		"@aws-sdk/s3-request-presigner": "catalog:",
+		"@hono/auth-js": "catalog:",
+		"@hono/zod-validator": "catalog:",
+		"@hubspot/api-client": "catalog:",
+		"@node-rs/argon2": "catalog:",
+		"@orpc/client": "catalog:",
+		"@orpc/openapi": "catalog:",
+		"@orpc/server": "catalog:",
+		"@orpc/zod": "catalog:",
+		"@scalar/hono-api-reference": "catalog:",
+		"@sentry/node": "catalog:",
+		"@snapback/auth": "workspace:*",
+		"@snapback/config": "workspace:*",
+		"@snapback/contracts": "workspace:*",
+		"@snapback/core": "workspace:*",
+		"@snapback/events": "workspace:*",
+		"@snapback/health": "workspace:*",
+		"@snapback/infrastructure": "workspace:*",
+		"@snapback/integrations": "workspace:*",
+		"@snapback/platform": "workspace:*",
+		"@snapback/policy-engine": "workspace:*",
+		"better-auth": "catalog:",
+		"hono": "catalog:",
+		"jose": "catalog:",
+		"nanoid": "catalog:",
+		"pino": "catalog:",
+		"posthog-node": "catalog:",
+		"react": "catalog:",
+		"resend": "^4.0.0",
+		"semver": "catalog:",
+		"uuid": "catalog:",
+		"zod": "catalog:"
+	},
+	"devDependencies": {
+		"@types/node": "catalog:",
+		"@types/react": "catalog:",
+		"@types/uuid": "^10.0.0",
+		"better-sqlite3": "catalog:",
+		"dotenv-cli": "catalog:",
+		"drizzle-orm": "catalog:",
+		"tsconfig-paths": "^4.2.0",
+		"tsup": "catalog:",
+		"tsx": "catalog:",
+		"typescript": "catalog:",
+		"vitest": "catalog:"
+	},
+	"engines": {
+		"node": ">=18.17.0"
+	},
+	"exports": {
+		".": {
+			"types": "./dist/server.d.ts",
+			"default": "./dist/server.js"
+		},
+		"./lib/client-tokens": {
+			"types": "./lib/client-tokens.ts",
+			"default": "./lib/client-tokens.ts"
+		},
+		"./orpc/router": {
+			"types": "./orpc/router.ts",
+			"default": "./orpc/router.js"
+		},
+		"./lib/redis-client": {
+			"types": "./dist/lib/redis-client.d.ts",
+			"default": "./dist/lib/redis-client.js"
+		},
+		"./modules/contact/types": {
+			"types": "./dist/modules/contact/types.d.ts",
+			"default": "./dist/modules/contact/types.js"
+		},
+		"./modules/posthog/procedures/setup-alerts": {
+			"types": "./dist/modules/posthog/procedures/setup-alerts.d.ts",
+			"default": "./dist/modules/posthog/procedures/setup-alerts.js"
+		},
+		"./modules/posthog/procedures/run-correlation-analysis": {
+			"types": "./dist/modules/posthog/procedures/run-correlation-analysis.d.ts",
+			"default": "./dist/modules/posthog/procedures/run-correlation-analysis.js"
+		},
+		"./modules/posthog/procedures/setup-cohorts": {
+			"types": "./dist/modules/posthog/procedures/setup-cohorts.d.ts",
+			"default": "./dist/modules/posthog/procedures/setup-cohorts.js"
+		}
+	},
+	"main": "dist/server.js",
+	"scripts": {
+		"dev": "tsx watch --clear-screen=false src/server.ts",
+		"build": "tsup",
+		"start": "node dist/index.js",
+		"clean": "rm -rf dist",
+		"test": "vitest",
+		"test:unit": "vitest run src",
+		"test:integration": "vitest run src/middleware/__tests__/*.integration.test.ts",
+		"test:all": "vitest run",
+		"type-check": "tsc --noEmit",
+		"lint": "biome check .",
+		"lint:fix": "biome check --write ."
+	},
+	"type": "module"
 }

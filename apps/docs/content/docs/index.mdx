@@ -1,6 +1,6 @@
 ---
 title: SnapBack Documentation
-description: AI-safe code snapshots with intelligent risk detection and seamless reversal
+description: Undo for the AI era. Restore any file to any moment, instantly. Built for developers using AI coding assistants.
 ---
 
 # SnapBack Documentation
@@ -16,49 +16,100 @@ description: AI-safe code snapshots with intelligent risk detection and seamless
   <span>System Online</span>
 </div>
 
-AI-safe code snapshots with intelligent risk detection and seamless reversal.
+## Undo for the AI Era
+
+Your AI assistant just made 50 changes across 12 files in 30 minutes. Good? Bad? Both?
+
+SnapBack lets you **restore any file to any moment in under 1 second**. No manual undoing. No guilt. Just peace of mind.
+
+## Core Benefits
 
 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-8">
-  <div className="card hover:shadow-lg transition-all duration-300">
-    <h3 className="text-xl font-bold mb-2">🛡️ Protection Levels</h3>
-    <p className="text-gray-400 mb-4">Granular file-level control with Watch, Warn, and Block modes.</p>
-    <p className="text-emerald-400 hover:text-emerald-300 font-medium">[Learn more →](/protection-levels)</p>
+  <div className="card hover:shadow-lg transition-all duration-300 border-l-4" style={{borderColor: 'var(--color-emerald-500, #10B981)'}}>
+    <h3 className="text-xl font-bold mb-2">🎯 Never Lose Work</h3>
+    <p className="text-gray-400 mb-4">Instantly restore any file to any point in time. No manual undoing. No lost code.</p>
+    <p className="text-emerald-400 hover:text-emerald-300 font-medium">[Time-travel guide →](/sessions)</p>
   </div>
 
-  <div className="card hover:shadow-lg transition-all duration-300">
-    <h3 className="text-xl font-bold mb-2">⏱️ Session Rollback</h3>
-    <p className="text-gray-400 mb-4">Multi-file atomic restore for AI changes with time-travel navigation.</p>
-    <p className="text-emerald-400 hover:text-emerald-300 font-medium">[Learn more →](/sessions)</p>
+  <div className="card hover:shadow-lg transition-all duration-300 border-l-4" style={{borderColor: 'var(--color-emerald-500, #10B981)'}}>
+    <h3 className="text-xl font-bold mb-2">⚡ AI-Safe by Default</h3>
+    <p className="text-gray-400 mb-4">Detect risky changes (secrets, bad patterns, phantom deps) before they harm you. 94% accuracy.</p>
+    <p className="text-emerald-400 hover:text-emerald-300 font-medium">[Detection engine →](/ai-detection)</p>
   </div>
 
-  <div className="card hover:shadow-lg transition-all duration-300">
-    <h3 className="text-xl font-bold mb-2">🤖 AI Detection</h3>
-    <p className="text-gray-400 mb-4">94% accuracy risk analysis catching secrets, mocks, and phantom dependencies.</p>
-    <p className="text-emerald-400 hover:text-emerald-300 font-medium">[Learn more →](/ai-detection)</p>
+  <div className="card hover:shadow-lg transition-all duration-300 border-l-4" style={{borderColor: 'var(--color-emerald-500, #10B981)'}}>
+    <h3 className="text-xl font-bold mb-2">🔐 Code Stays Local</h3>
+    <p className="text-gray-400 mb-4">Your code never leaves your machine. Metadata-only transmission for cloud features. Fully optional.</p>
+    <p className="text-emerald-400 hover:text-emerald-300 font-medium">[Privacy details →](/privacy)</p>
+  </div>
+</div>
+
+## Pick Your Path
+
+SnapBack works for solo developers, teams, and enterprises. Choose what matches you:
+
+<div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-8">
+  <div className="card hover:shadow-lg transition-all duration-300" style={{border: '1px solid var(--color-emerald-500, #10B981)'}}>
+    <h3 className="text-lg font-bold mb-2">👨‍💻 Solo Developer</h3>
+    <p className="text-sm text-gray-400 mb-4">Just installed VS Code? Need protection against mistakes?</p>
+    <p className="text-xs text-gray-500 mb-4">⏱️ 5 minutes setup</p>
+    <p className="text-emerald-400 hover:text-emerald-300 font-medium">[Start here →](/quick-start)</p>
+  </div>
+
+  <div className="card hover:shadow-lg transition-all duration-300" style={{border: '1px solid var(--color-emerald-500, #10B981)'}}>
+    <h3 className="text-lg font-bold mb-2">👥 Team Lead</h3>
+    <p className="text-sm text-gray-400 mb-4">Managing code quality? Need audit trails & organization-wide controls?</p>
+    <p className="text-xs text-gray-500 mb-4">📊 Enterprise security</p>
+    <p className="text-emerald-400 hover:text-emerald-300 font-medium">[Team setup →](/enterprise/index)</p>
+  </div>
+
+  <div className="card hover:shadow-lg transition-all duration-300" style={{border: '1px solid var(--color-emerald-500, #10B981)'}}>
+    <h3 className="text-lg font-bold mb-2">🔌 Integration Builder</h3>
+    <p className="text-sm text-gray-400 mb-4">Using our API? Building on SnapBack?</p>
+    <p className="text-xs text-gray-500 mb-4">⚙️ Full reference docs</p>
+    <p className="text-emerald-400 hover:text-emerald-300 font-medium">[API docs →](/api-reference)</p>
   </div>
 </div>
 
-## Getting Started
+## How It Works: The Story
 
-Get SnapBack up and running in your project in under 5 minutes.
+### The Problem: AI Makes Changes You Can't Predict
 
-<div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-6">
-  <div className="card hover:shadow-lg transition-all duration-300">
-    <h3 className="text-lg font-bold mb-2">🔌 VS Code Extension</h3>
-    <p className="text-gray-400 mb-4">Install the SnapBack extension directly from the VS Code marketplace.</p>
-    <p className="text-emerald-400 hover:text-emerald-300 font-medium">[Install guide →](/quick-start)</p>
-  </div>
+You run Cursor or Claude with 15 files open. Your AI assistant works for 30 minutes, changes 12 files, modifies your package.json, and adds a few test utilities.
 
-  <div className="card hover:shadow-lg transition-all duration-300">
-    <h3 className="text-lg font-bold mb-2">💻 CLI Tool</h3>
-    <p className="text-gray-400 mb-4">Use SnapBack from the command line for automation and scripting.</p>
-    <p className="text-emerald-400 hover:text-emerald-300 font-medium">[CLI documentation →](/cli)</p>
-  </div>
-</div>
+**Result:**
+- 9 files look great ✅
+- 3 files have subtle bugs ❌
+- 1 file has a security risk ⚠️
+
+**The challenge:** How do you undo just the 3-4 bad files without losing the good work?
+
+Traditional undo? Doesn't work (undo is per-file, not multi-file). Git? Too slow (commit, push, revert, pull). Manual fix? Hours of work.
+
+### The Solution: Sessions + Time-Travel
+
+SnapBack groups all 12 file changes into one **Session** (automatically, by time). You see all changes at once:
+
+```
+📦 Session: "Claude refactored user auth"
+├─ src/auth.ts          ✅ Keep
+├─ src/user.ts          ❌ Restore
+├─ src/index.ts         ❌ Restore
+├─ tests/auth.test.ts   ✅ Keep
+└─ package.json         ✅ Keep
+
+→ Click "Restore" on bad files → All 3 restored to saved state → 2 seconds
+```
+
+The good work stays. The bad work vanishes.
+
+### Why This Matters for AI
+
+AI makes **multi-file changes at scale**. Your traditional safety nets (git, undo, code review) aren't designed for this speed. SnapBack is.
 
 ## Core Concepts
 
-Understanding how SnapBack protects your code:
+Understanding how SnapBack works:
 
 ### Protection Levels (Canonical Signage)
 

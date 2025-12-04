@@ -9,7 +9,10 @@ const rpcHandlerInstance = new RPCHandler(router);
 const openApiHandlerInstance = new OpenAPIHandler(router);
 
 export const rpcHandler = {
-	handle: async (request: Request, options: { prefix: `/${string}`; context: any }): Promise<FetchHandleResult> => {
+	handle: async (
+		request: Request,
+		options: { prefix: `/${string}`; context: any },
+	): Promise<FetchHandleResult> => {
 		// Log that we received an RPC request
 		logger.info("RPC handler called", {
 			url: request.url,
@@ -39,7 +42,10 @@ export const rpcHandler = {
 };
 
 export const openApiHandler = {
-	handle: async (request: Request, options: { prefix: `/${string}`; context: any }): Promise<FetchHandleResult> => {
+	handle: async (
+		request: Request,
+		options: { prefix: `/${string}`; context: any },
+	): Promise<FetchHandleResult> => {
 		// Log that we received an OpenAPI request
 		logger.info("OpenAPI handler called", {
 			url: request.url,

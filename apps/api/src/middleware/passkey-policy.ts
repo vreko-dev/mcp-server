@@ -10,7 +10,8 @@ import { logger } from "@snapback/infrastructure";
 import type { Context, Next } from "hono";
 
 // Feature flag to enable/disable passkey enforcement
-const PASSKEY_ENFORCE_ALL = process.env.FEATURE_PASSKEY_ENFORCE_ALL === "true" || true;
+const PASSKEY_ENFORCE_ALL =
+	process.env.FEATURE_PASSKEY_ENFORCE_ALL === "true" || true;
 
 /**
  * Middleware to enforce passkey enrollment for sensitive operations
@@ -63,7 +64,8 @@ export async function requirePasskey(c: Context, next: Next) {
 					{
 						error: "Passkey enrollment required",
 						code: "PASSKEY_ENROLLMENT_REQUIRED",
-						message: "You've used TOTP once. Please enroll a passkey for enhanced security.",
+						message:
+							"You've used TOTP once. Please enroll a passkey for enhanced security.",
 						enrollPasskey: true,
 						enrollmentUrl: "/settings/security/passkey/enroll",
 					},
@@ -146,7 +148,10 @@ export async function suggestPasskey(c: Context, next: Next) {
 			if (!passkeys || passkeys.length === 0) {
 				// Add suggestion headers
 				c.header("X-Passkey-Suggestion", "enroll");
-				c.header("X-Passkey-Enrollment-Url", "/settings/security/passkey/enroll");
+				c.header(
+					"X-Passkey-Enrollment-Url",
+					"/settings/security/passkey/enroll",
+				);
 			}
 		} catch (error) {
 			logger.debug("Error checking passkey suggestion", { error, userId });

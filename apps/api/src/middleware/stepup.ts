@@ -138,7 +138,10 @@ export function getStepUpRemainingTime(userId: string): number {
 		return 0;
 	}
 
-	const remaining = Math.max(0, Math.floor((stepUp.validUntil - Date.now()) / 1000));
+	const remaining = Math.max(
+		0,
+		Math.floor((stepUp.validUntil - Date.now()) / 1000),
+	);
 	return remaining;
 }
 

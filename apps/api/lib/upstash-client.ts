@@ -22,7 +22,9 @@ export function initializeUpstashClient(): void {
 	const token = process.env.UPSTASH_REDIS_REST_TOKEN;
 
 	if (!url || !token) {
-		logger.warn("Upstash Redis not configured - rate limiting and caching will be disabled");
+		logger.warn(
+			"Upstash Redis not configured - rate limiting and caching will be disabled",
+		);
 		return;
 	}
 
@@ -62,7 +64,9 @@ async function executeCommand<T = unknown>(command: string[]): Promise<T> {
 	} catch (error) {
 		logger.error("Upstash command failed:", { command, error });
 		// FAIL CLOSED: Throw error instead of returning null
-		throw new Error(`Redis operation failed: ${error instanceof Error ? error.message : "Unknown error"}`);
+		throw new Error(
+			`Redis operation failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+		);
 	}
 }
 
@@ -185,12 +189,17 @@ export async function invalidateSessionCache(userId: string): Promise<void> {
 }
 
 // Waitlist position cache (10s TTL for better coherency)
-export async function getCachedWaitlistPosition(email: string): Promise<number | null> {
+export async function getCachedWaitlistPosition(
+	email: string,
+): Promise<number | null> {
 	const cached = await cacheGet<string>(`waitlist:position:${email}`);
 	return cached ? Number.parseInt(cached, 10) : null;
 }
 
-export async function setCachedWaitlistPosition(email: string, position: number): Promise<void> {
+export async function setCachedWaitlistPosition(
+	email: string,
+	position: number,
+): Promise<void> {
 	// Reduced from 60s to 10s for better coherency
 	await cacheSet(`waitlist:position:${email}`, String(position), 10);
 }

@@ -28,91 +28,99 @@ export interface OrpcContext {
 
 export const publicProcedure = os.$context<OrpcContext>();
 
-export const protectedProcedure = publicProcedure.use(async ({ context, next }) => {
-	try {
-		const auth = await snapbackAuth.requireAuth(context.request);
+export const protectedProcedure = publicProcedure.use(
+	async ({ context, next }) => {
+		try {
+			const auth = await snapbackAuth.requireAuth(context.request);
 
-		return next({
-			context: {
-				...context,
-				auth,
-				user: {
-					id: auth.userId,
-					email: auth.email,
-					role: auth.role,
-					plan: auth.plan,
-					name: auth.name,
-					createdAt: auth.createdAt,
-					orgId: auth.orgId,
-					orgRole: auth.orgRole,
+			return next({
+				context: {
+					...context,
+					auth,
+					user: {
+						id: auth.userId,
+						email: auth.email,
+						role: auth.role,
+						plan: auth.plan,
+						name: auth.name,
+						createdAt: auth.createdAt,
+						orgId: auth.orgId,
+						orgRole: auth.orgRole,
+					},
 				},
-			},
-		});
-	} catch (err) {
-		const error = err as AuthError;
-		throw new ORPCError({
-			code: error.statusCode === 403 ? "FORBIDDEN" : "UNAUTHORIZED",
-			message: error.message,
-		} as any);
-	}
-});
+			});
+		} catch (err) {
+			const error = err as AuthError;
+			throw new ORPCError({
+				code: error.statusCode === 403 ? "FORBIDDEN" : "UNAUTHORIZED",
+				message: error.message,
+			} as any);
+		}
+	},
+);
 
-export const adminProcedure = protectedProcedure.use(async ({ context, next }) => {
-	if (context.user?.role !== "admin") {
-		throw new ORPCError({
-			code: "FORBIDDEN",
-			message: "Admin access required",
-		} as any);
-	}
+export const adminProcedure = protectedProcedure.use(
+	async ({ context, next }) => {
+		if (context.user?.role !== "admin") {
+			throw new ORPCError({
+				code: "FORBIDDEN",
+				message: "Admin access required",
+			} as any);
+		}
 
-	return await next();
-});
+		return await next();
+	},
+);
 
-export const verifiedProcedure = protectedProcedure.use(async ({ context, next }) => {
-	if (!context.auth?.emailVerified) {
-		// ✅ Use proper observability logger
-		logger.warn("Email verification required", {
-			event: "auth_guard_denied",
-			reason: "email_not_verified",
-			userId: context.auth?.userId,
-			email: context.auth?.email,
-			path: context.request.url,
-			guard: "verifiedProcedure",
-		});
+export const verifiedProcedure = protectedProcedure.use(
+	async ({ context, next }) => {
+		if (!context.auth?.emailVerified) {
+			// ✅ Use proper observability logger
+			logger.warn("Email verification required", {
+				event: "auth_guard_denied",
+				reason: "email_not_verified",
+				userId: context.auth?.userId,
+				email: context.auth?.email,
+				path: context.request.url,
+				guard: "verifiedProcedure",
+			});
 
-		throw new ORPCError({
-			code: "FORBIDDEN",
-			message: "Email verification required",
-		} as any);
-	}
+			throw new ORPCError({
+				code: "FORBIDDEN",
+				message: "Email verification required",
+			} as any);
+		}
 
-	return next();
-});
+		return next();
+	},
+);
 
-export const stepUpProtectedProcedure = protectedProcedure.use(async ({ context, next }) => {
-	const { auth } = context;
+export const stepUpProtectedProcedure = protectedProcedure.use(
+	async ({ context, next }) => {
+		const { auth } = context;
 
-	if (!auth?.twoFactorEnabled && !auth?.passkeyRegistered) {
-		// ✅ Use proper observability logger
-		logger.warn("Strong authentication required", {
-			event: "auth_guard_denied",
-			reason: "step_up_required",
-			userId: auth?.userId,
-			email: auth?.email,
-			twoFactorEnabled: auth?.twoFactorEnabled,
-			passkeyRegistered: auth?.passkeyRegistered,
-			path: context.request.url,
-			guard: "stepUpProtectedProcedure",
-		});
+		if (!auth?.twoFactorEnabled && !auth?.passkeyRegistered) {
+			// ✅ Use proper observability logger
+			logger.warn("Strong authentication required", {
+				event: "auth_guard_denied",
+				reason: "step_up_required",
+				userId: auth?.userId,
+				email: auth?.email,
+				twoFactorEnabled: auth?.twoFactorEnabled,
+				passkeyRegistered: auth?.passkeyRegistered,
+				path: context.request.url,
+				guard: "stepUpProtectedProcedure",
+			});
 
-		throw new ORPCError({
-			code: "FORBIDDEN",
-			message: "Strong authentication required",
-		} as any);
-	}
+			throw new ORPCError({
+				code: "FORBIDDEN",
+				message: "Strong authentication required",
+			} as any);
+		}
 
-	return next();
-});
+		return next();
+	},
+);
 
 export const planProtectedProcedure = (requiredPlan: PlanId) =>
 	protectedProcedure.use(async ({ context, next }) => {

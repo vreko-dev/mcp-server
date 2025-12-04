@@ -26,7 +26,8 @@ export function initSentry(): void {
 	Sentry.init({
 		dsn,
 		environment: process.env.NODE_ENV || "development",
-		release: process.env.VERCEL_GIT_COMMIT_SHA || process.env.npm_package_version,
+		release:
+			process.env.VERCEL_GIT_COMMIT_SHA || process.env.npm_package_version,
 
 		// Sample rate for performance monitoring
 		tracesSampleRate: process.env.NODE_ENV === "production" ? 0.1 : 1.0,
@@ -109,7 +110,9 @@ export function captureException(
 	},
 ): void {
 	if (!sentryInitialized) {
-		logger.error("Exception occurred (Sentry not initialized)", { error: error.message });
+		logger.error("Exception occurred (Sentry not initialized)", {
+			error: error.message,
+		});
 		return;
 	}
 
@@ -163,7 +166,11 @@ export function captureMessage(
 /**
  * Add breadcrumb (user action trail)
  */
-export function addBreadcrumb(message: string, category: string, data?: Record<string, any>): void {
+export function addBreadcrumb(
+	message: string,
+	category: string,
+	data?: Record<string, any>,
+): void {
 	if (!sentryInitialized) {
 		return;
 	}

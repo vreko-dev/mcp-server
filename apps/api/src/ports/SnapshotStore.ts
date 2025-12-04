@@ -27,7 +27,11 @@ export interface SnapshotStore {
 	 * @param filter Filter criteria
 	 * @returns Promise that resolves to array of snapshot metadata
 	 */
-	listSnapshots(filter?: { filePath?: string; limit?: number; offset?: number }): Promise<SnapshotMetadata[]>;
+	listSnapshots(filter?: {
+		filePath?: string;
+		limit?: number;
+		offset?: number;
+	}): Promise<SnapshotMetadata[]>;
 
 	/**
 	 * Get snapshot metadata

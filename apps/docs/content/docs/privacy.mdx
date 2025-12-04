@@ -1,21 +1,75 @@
 ---
-title: Analytics Foundation & Privacy
-description: Privacy-first analytics with comprehensive data protection
+title: Privacy & Data Protection - GDPR Rights, Local Storage, Anonymization
+description: Your code stays local. Privacy by default. Full GDPR compliance. Export, anonymize, or delete your data anytime.
 ---
 
-# Analytics Foundation & Privacy
+# Privacy & Data Protection
 
-SnapBack is committed to protecting your privacy while providing valuable analytics to improve our product and your experience.
+**Core principle**: Your code never leaves your machine unless you explicitly choose cloud features. We are privacy-first, privacy-by-default, and fully GDPR compliant.
 
-## Privacy Principles
+## Your Privacy Rights (GDPR)
 
-We follow these core privacy principles:
+You have complete control over your data:
 
-1. **Transparency** - We clearly explain what data we collect and why
-2. **Consent** - You control what data is collected through explicit consent
-3. **Minimization** - We collect only the data necessary for our stated purposes
-4. **Protection** - We implement strong security measures to protect your data
-5. **Retention** - We retain data only as long as necessary
+### Right to Access Your Data
+
+Request a complete export of all your data:
+
+1. Open SnapBack Settings in VS Code
+2. Click "Export My Data"
+3. You'll receive a ZIP file with:
+   - All snapshots you've created
+   - Account information
+   - API keys and sessions
+   - Subscription details
+   - Audit log of all access
+
+[Request data export →](#)
+
+### Right to Erasure ("Right to be Forgotten")
+
+We'll delete all your data permanently:
+
+1. Go to [SnapBack account settings](#)
+2. Scroll to "Danger Zone"
+3. Click "Delete My Account"
+4. Confirm your identity
+5. **All data deleted in <24 hours**
+   - Your snapshots
+   - Your account
+   - Your API keys
+   - Audit logs mentioning you
+
+This includes cascade deletion of dependent records (sessions, subscriptions, API keys).
+
+### Right to Anonymization
+
+We can anonymize your data while keeping historical records:
+
+SnapBack replaces your user ID with a one-way hash (e.g., `anon_a7f3e2b1c9d4e`) in all systems:
+- Analytics
+- Audit logs
+- Performance metrics
+- Error tracking
+
+**Benefit**: You remain privacy-protected in our systems while we keep valuable product data.
+
+[Request anonymization →](#)
+
+### Right to Data Portability
+
+Your data export includes:
+- Raw snapshot files (original format)
+- Metadata (timestamps, file paths)
+- Subscription history
+- API keys (plaintext, one-time export)
+
+Use this to:
+- Migrate to another tool
+- Archive your work
+- Integrate with other services
+
+---
 
 ## Data Collection & Consent
 

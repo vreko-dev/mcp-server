@@ -1,6 +1,6 @@
 # Linting & Code Quality Standards
 
-**Last Updated:** 2025-12-03  
+**Last Updated:** 2025-12-03
 **Applies to:** All TypeScript, JavaScript, and YAML files in SnapBack monorepo
 
 ---

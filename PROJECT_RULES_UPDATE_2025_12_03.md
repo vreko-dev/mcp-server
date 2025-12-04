@@ -1,8 +1,8 @@
 # Project Rules & Standards Update - December 3, 2025
 
-**Date:** 2025-12-03  
-**Scope:** Project-wide code quality, framework patterns, and linting standards  
-**Status:** ✅ Completed and verified  
+**Date:** 2025-12-03
+**Scope:** Project-wide code quality, framework patterns, and linting standards
+**Status:** ✅ Completed and verified
 
 ---
 
@@ -41,9 +41,9 @@ Updated project rules and standards based on architectural insights gained from 
 
 ### 1. ✅ oRPC Framework (metrics-router.ts)
 
-**Issue:** Using `.query()` instead of `.handler()` with invalid Drizzle type parameters  
-**Root Cause:** Confusion between different framework APIs  
-**Solution:** 
+**Issue:** Using `.query()` instead of `.handler()` with invalid Drizzle type parameters
+**Root Cause:** Confusion between different framework APIs
+**Solution:**
 - Changed `.query()` to `.handler()` (correct oRPC method)
 - Removed non-existent `TQueryResult` and `TFullSchema` type imports
 - Used `PgDatabase<any>` for proper type safety
@@ -55,8 +55,8 @@ Updated project rules and standards based on architectural insights gained from 
 
 ### 2. ✅ Rate Limiting Architecture (rate-limit-middleware.ts)
 
-**Issue:** Async rate limiter imported but used synchronously in middleware  
-**Root Cause:** Attempted to use API layer rate limiter (expects 3 params, returns Promise) in Next.js middleware context (synchronous required)  
+**Issue:** Async rate limiter imported but used synchronously in middleware
+**Root Cause:** Attempted to use API layer rate limiter (expects 3 params, returns Promise) in Next.js middleware context (synchronous required)
 **Solution:**
 - Implemented synchronous in-memory rate limiter
 - 10 attempts per 15 minutes per IP
@@ -69,36 +69,36 @@ Updated project rules and standards based on architectural insights gained from 
 
 ### 3. ✅ Drizzle ORM Types (metrics-router.ts)
 
-**Issue:** Invalid type parameters `TQueryResult`, `TFullSchema` causing TypeScript errors  
-**Root Cause:** Typo/confusion about available Drizzle exports  
-**Solution:** Used `PgDatabase<any>` which is standard fallback  
+**Issue:** Invalid type parameters `TQueryResult`, `TFullSchema` causing TypeScript errors
+**Root Cause:** Typo/confusion about available Drizzle exports
+**Solution:** Used `PgDatabase<any>` which is standard fallback
 **Lesson:** Type exports are limited. When uncertain, use `<any>` or check actual exports with IDE.
 
 ---
 
 ### 4. ✅ Import Paths (metrics-router.ts)
 
-**Issue:** Incorrect relative path to MetricsAggregator  
-**Root Cause:** File located in `src/services/` but import path omitted `src/`  
-**Solution:** Fixed path to `../../src/services/metrics-aggregator.js`  
+**Issue:** Incorrect relative path to MetricsAggregator
+**Root Cause:** File located in `src/services/` but import path omitted `src/`
+**Solution:** Fixed path to `../../src/services/metrics-aggregator.js`
 **Lesson:** Use workspace-aware IDE navigation (Ctrl+Click) to verify import paths before committing.
 
 ---
 
 ### 5. ✅ Node.js Module Protocol (vitest.config.ts)
 
-**Issue:** Using legacy `import path from "path"` without node: prefix  
-**Root Cause:** Biome enforces modern Node.js conventions  
-**Solution:** Changed to `import path from "node:path"`  
+**Issue:** Using legacy `import path from "path"` without node: prefix
+**Root Cause:** Biome enforces modern Node.js conventions
+**Solution:** Changed to `import path from "node:path"`
 **Lesson:** All Node.js built-in imports must use `node:` prefix in modern TypeScript.
 
 ---
 
 ### 6. ✅ Unused Variables (middleware-error-handling.test.ts)
 
-**Issue:** 15+ unused parameters in test file  
-**Root Cause:** Test function signatures had parameters not used in implementation  
-**Solution:** Prefixed all unused identifiers with underscore (`_request`, `_data`, etc.)  
+**Issue:** 15+ unused parameters in test file
+**Root Cause:** Test function signatures had parameters not used in implementation
+**Solution:** Prefixed all unused identifiers with underscore (`_request`, `_data`, etc.)
 **Lesson:** Follow linting rules. Underscore prefix is idiomatic TypeScript for intentional non-use.
 
 ---
@@ -244,6 +244,6 @@ Refer to:
 3. Respective framework documentation for API details
 4. ARCHITECTURE.md for system design questions
 
-**Last Updated:** 2025-12-03  
-**Maintained By:** Development Team  
+**Last Updated:** 2025-12-03
+**Maintained By:** Development Team
 **Next Review:** When frameworks are updated or new major patterns emerge

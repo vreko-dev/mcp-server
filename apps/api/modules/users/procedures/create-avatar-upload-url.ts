@@ -7,7 +7,8 @@ export const createAvatarUploadUrl = protectedProcedure
 		path: "/users/avatar-upload-url",
 		tags: ["Users"],
 		summary: "Create avatar upload URL",
-		description: "Create a signed upload URL to upload an avatar image to the storage bucket",
+		description:
+			"Create a signed upload URL to upload an avatar image to the storage bucket",
 	})
 	.handler(async ({ context: { user: _user } }) => {
 		// const path = `${user.id}.png`;

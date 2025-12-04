@@ -10,7 +10,8 @@ let posthogClient: PostHog | null = null;
 
 export function initializePostHog(): void {
 	const apiKey = process.env.NEXT_PUBLIC_POSTHOG_KEY;
-	const host = process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com";
+	const host =
+		process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com";
 
 	if (!apiKey) {
 		logger.warn("PostHog not configured - analytics disabled");
@@ -61,7 +62,10 @@ export async function captureEvent(
 /**
  * Identify user with traits
  */
-export async function identifyUser(distinctId: string, properties?: Record<string, unknown>): Promise<void> {
+export async function identifyUser(
+	distinctId: string,
+	properties?: Record<string, unknown>,
+): Promise<void> {
 	if (!posthogClient) {
 		return;
 	}

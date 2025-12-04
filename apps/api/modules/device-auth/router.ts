@@ -28,8 +28,14 @@ const baseDeviceAuthProcedure = publicProcedure;
  * Used to request initial device code from authorization server
  */
 export const deviceCodeRequestSchema = z.object({
-	client_id: z.string().min(1).describe("Unique identifier of the client making the request"),
-	scope: z.string().optional().describe("Space-separated list of requested scopes"),
+	client_id: z
+		.string()
+		.min(1)
+		.describe("Unique identifier of the client making the request"),
+	scope: z
+		.string()
+		.optional()
+		.describe("Space-separated list of requested scopes"),
 });
 
 /**
@@ -42,14 +48,26 @@ export const deviceCodeResponseSchema = z.object({
 		.string()
 		.regex(/^[A-Z0-9]{4,8}$/)
 		.describe("User-friendly code to display on verification page"),
-	verification_uri: z.string().url().describe("URL where user enters the user code"),
+	verification_uri: z
+		.string()
+		.url()
+		.describe("URL where user enters the user code"),
 	verification_uri_complete: z
 		.string()
 		.url()
 		.optional()
 		.describe("Optional: Pre-filled verification URI with user code"),
-	expires_in: z.number().int().min(600).describe("Seconds until device code expires (minimum 600 = 10 minutes)"),
-	interval: z.number().int().min(5).default(5).describe("Recommended polling interval in seconds (minimum 5)"),
+	expires_in: z
+		.number()
+		.int()
+		.min(600)
+		.describe("Seconds until device code expires (minimum 600 = 10 minutes)"),
+	interval: z
+		.number()
+		.int()
+		.min(5)
+		.default(5)
+		.describe("Recommended polling interval in seconds (minimum 5)"),
 });
 
 /**
@@ -58,8 +76,13 @@ export const deviceCodeResponseSchema = z.object({
  */
 export const deviceTokenPollSchema = z.object({
 	device_code: z.string().min(40).describe("Device code from initial request"),
-	grant_type: z.literal("urn:ietf:params:oauth:grant-type:device_code").describe("RFC 8628 grant type (fixed value)"),
-	client_id: z.string().optional().describe("Client ID (optional for some implementations)"),
+	grant_type: z
+		.literal("urn:ietf:params:oauth:grant-type:device_code")
+		.describe("RFC 8628 grant type (fixed value)"),
+	client_id: z
+		.string()
+		.optional()
+		.describe("Client ID (optional for some implementations)"),
 });
 
 /**
@@ -69,8 +92,16 @@ export const deviceTokenPollSchema = z.object({
 export const deviceTokenResponseSchema = z.object({
 	access_token: z.string().describe("Bearer token for API access"),
 	token_type: z.literal("Bearer").describe("Token authentication method"),
-	expires_in: z.number().int().positive().optional().describe("Token expiration time in seconds"),
-	refresh_token: z.string().optional().describe("Optional refresh token for obtaining new access tokens"),
+	expires_in: z
+		.number()
+		.int()
+		.positive()
+		.optional()
+		.describe("Token expiration time in seconds"),
+	refresh_token: z
+		.string()
+		.optional()
+		.describe("Optional refresh token for obtaining new access tokens"),
 	scope: z.string().optional().describe("Granted scopes (space-separated)"),
 });
 
@@ -100,19 +131,24 @@ export const deviceAuthRouter = {
 		.handler(async ({ input }) => {
 			// Proxy to Better Auth /device/code endpoint
 			// Better Auth handles RFC 8628 compliance internally
-			const response = await fetch("http://localhost:3001/api/auth/device/code", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
+			const response = await fetch(
+				"http://localhost:3001/api/auth/device/code",
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify(input),
 				},
-				body: JSON.stringify(input),
-			});
+			);
 
 			if (!response.ok) {
 				throw new Error(`Device code request failed: ${response.statusText}`);
 			}
 
-			return response.json() as Promise<z.infer<typeof deviceCodeResponseSchema>>;
+			return response.json() as Promise<
+				z.infer<typeof deviceCodeResponseSchema>
+			>;
 		}),
 
 	/**
@@ -126,20 +162,28 @@ export const deviceAuthRouter = {
 		.output(
 			deviceTokenResponseSchema.or(
 				z.object({
-					error: z.enum(["authorization_pending", "slow_down", "expired_token", "invalid_request"]),
+					error: z.enum([
+						"authorization_pending",
+						"slow_down",
+						"expired_token",
+						"invalid_request",
+					]),
 					error_description: z.string().optional(),
 				}),
 			),
 		)
 		.handler(async ({ input }) => {
 			// Proxy to Better Auth /device/token endpoint
-			const response = await fetch("http://localhost:3001/api/auth/device/token", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
+			const response = await fetch(
+				"http://localhost:3001/api/auth/device/token",
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify(input),
 				},
-				body: JSON.stringify(input),
-			});
+			);
 
 			if (!response.ok) {
 				throw new Error(`Token polling failed: ${response.statusText}`);
@@ -148,7 +192,11 @@ export const deviceAuthRouter = {
 			return response.json() as Promise<
 				| z.infer<typeof deviceTokenResponseSchema>
 				| {
-						error: "authorization_pending" | "slow_down" | "expired_token" | "invalid_request";
+						error:
+							| "authorization_pending"
+							| "slow_down"
+							| "expired_token"
+							| "invalid_request";
 						error_description?: string;
 				  }
 			>;

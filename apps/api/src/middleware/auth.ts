@@ -1,5 +1,5 @@
-import { type Context, type Next } from "hono";
 import { logger } from "@snapback/infrastructure";
+import type { Context, Next } from "hono";
 
 /**
  * Authorization Middleware
@@ -113,7 +113,7 @@ function generatePermissions(user: AuthUser): string[] {
 			"admin:write",
 			"admin:delete",
 			"org:manage",
-			"user:manage"
+			"user:manage",
 		);
 	}
 
@@ -122,7 +122,7 @@ function generatePermissions(user: AuthUser): string[] {
 			"snapshot:create",
 			"snapshot:read",
 			"snapshot:update",
-			"snapshot:delete"
+			"snapshot:delete",
 		);
 	}
 
@@ -135,7 +135,7 @@ function generatePermissions(user: AuthUser): string[] {
 		permissions.push(
 			"api:webhook",
 			"api:advanced-analytics",
-			"team:collaboration"
+			"team:collaboration",
 		);
 	}
 
@@ -144,7 +144,7 @@ function generatePermissions(user: AuthUser): string[] {
 			"sso:enabled",
 			"audit:enabled",
 			"compliance:enabled",
-			"support:priority"
+			"support:priority",
 		);
 	}
 
@@ -155,10 +155,7 @@ function generatePermissions(user: AuthUser): string[] {
  * Require authentication middleware
  * Returns 401 if no valid Bearer token provided
  */
-export async function requireAuth(
-	c: Context,
-	next: Next
-): Promise<void> {
+export async function requireAuth(c: Context, next: Next): Promise<void> {
 	const authHeader = c.req.header("Authorization");
 	const token = extractBearerToken(authHeader);
 
@@ -219,7 +216,7 @@ export function requireRole(...roles: AuthUser["role"][]) {
 					message: "Authentication required",
 					statusCode: 401,
 				},
-				401
+				401,
 			);
 			return;
 		}
@@ -233,7 +230,7 @@ export function requireRole(...roles: AuthUser["role"][]) {
 					message: "Invalid or expired authentication token",
 					statusCode: 401,
 				},
-				401
+				401,
 			);
 			return;
 		}
@@ -252,7 +249,7 @@ export function requireRole(...roles: AuthUser["role"][]) {
 					message: `Required role: ${roles.join(" or ")}`,
 					statusCode: 403,
 				},
-				403
+				403,
 			);
 			return;
 		}
@@ -285,7 +282,7 @@ export function requireOrgMembership(paramName: string = "orgId") {
 					message: "Authentication required",
 					statusCode: 401,
 				},
-				401
+				401,
 			);
 			return;
 		}
@@ -299,7 +296,7 @@ export function requireOrgMembership(paramName: string = "orgId") {
 					message: "Invalid or expired authentication token",
 					statusCode: 401,
 				},
-				401
+				401,
 			);
 			return;
 		}
@@ -332,7 +329,7 @@ export function requireOrgMembership(paramName: string = "orgId") {
 					message: "Access to this organization denied",
 					statusCode: 403,
 				},
-				403
+				403,
 			);
 			return;
 		}
@@ -365,7 +362,7 @@ export function requirePlan(...plans: AuthUser["plan"][]) {
 					message: "Authentication required",
 					statusCode: 401,
 				},
-				401
+				401,
 			);
 			return;
 		}
@@ -379,7 +376,7 @@ export function requirePlan(...plans: AuthUser["plan"][]) {
 					message: "Invalid or expired authentication token",
 					statusCode: 401,
 				},
-				401
+				401,
 			);
 			return;
 		}
@@ -398,7 +395,7 @@ export function requirePlan(...plans: AuthUser["plan"][]) {
 					message: `Required plan: ${plans.join(" or ")}`,
 					statusCode: 403,
 				},
-				403
+				403,
 			);
 			return;
 		}

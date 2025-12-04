@@ -1,5 +1,5 @@
-import { type Context } from "hono";
 import { logger } from "@snapback/infrastructure";
+import type { Context } from "hono";
 
 /**
  * Error Handling Middleware
@@ -125,18 +125,17 @@ function categorizeError(error: unknown): {
 	return {
 		code: "server_error",
 		statusCode: 500,
-		message: process.env.NODE_ENV === "production"
-			? "Internal server error"
-			: sanitizeErrorMessage(error.message),
+		message:
+			process.env.NODE_ENV === "production"
+				? "Internal server error"
+				: sanitizeErrorMessage(error.message),
 	};
 }
 
 /**
  * Map HTTP status code to error code
  */
-function mapStatusToCode(
-	statusCode: number
-): ErrorCategory {
+function mapStatusToCode(statusCode: number): ErrorCategory {
 	switch (statusCode) {
 		case 400:
 			return "validation_error";
@@ -167,7 +166,10 @@ function sanitizeErrorMessage(message: string): string {
 	sanitized = sanitized.replace(/pk_[a-z0-9]+/gi, "[API_KEY]");
 
 	// Remove file paths (reduce info leakage)
-	sanitized = sanitized.replace(/\/[a-zA-Z0-9/._-]+\/[a-zA-Z0-9._-]+/g, "[FILE_PATH]");
+	sanitized = sanitized.replace(
+		/\/[a-zA-Z0-9/._-]+\/[a-zA-Z0-9._-]+/g,
+		"[FILE_PATH]",
+	);
 
 	return sanitized;
 }
@@ -200,17 +202,19 @@ export function createErrorHandler() {
 			ip: c.req.header("X-Forwarded-For") || "unknown",
 			userAgent: c.req.header("User-Agent"),
 			// Only log full error message in development
-			fullMessage: process.env.NODE_ENV === "development"
-				? err instanceof Error
-					? err.message
-					: String(err)
-				: undefined,
+			fullMessage:
+				process.env.NODE_ENV === "development"
+					? err instanceof Error
+						? err.message
+						: String(err)
+					: undefined,
 			// Log stack trace in development
-			stack: process.env.NODE_ENV === "development"
-				? err instanceof Error
-					? err.stack
-					: undefined
-				: undefined,
+			stack:
+				process.env.NODE_ENV === "development"
+					? err instanceof Error
+						? err.stack
+						: undefined
+					: undefined,
 		});
 
 		// Build error response
@@ -235,7 +239,7 @@ export function createErrorHandler() {
 export class APIError extends Error {
 	constructor(
 		message: string,
-		readonly statusCode: number = 500
+		readonly statusCode: number = 500,
 	) {
 		super(message);
 		this.name = "APIError";

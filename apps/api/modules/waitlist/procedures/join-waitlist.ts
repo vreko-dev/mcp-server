@@ -8,7 +8,13 @@ import { captureWaitlistEvent } from "../../../lib/posthog-server";
 import { setCachedWaitlistPosition } from "../../../lib/upstash-client";
 import { publicProcedure } from "../../../orpc/procedures";
 import { getDb } from "../../../src/services/database";
-import { createAuditLog, hashEmail, sanitizeMetadata, sanitizeString, verifyTurnstileToken } from "./helpers";
+import {
+	createAuditLog,
+	hashEmail,
+	sanitizeMetadata,
+	sanitizeString,
+	verifyTurnstileToken,
+} from "./helpers";
 
 // Zod schema for validation
 const joinWaitlistSchema = z.object({
@@ -47,13 +53,25 @@ export const joinWaitlist = publicProcedure
 			});
 		}
 
-		const { email, githubUsername, editor, language, teamSize, referralCode, turnstileToken, metadata } = input;
+		const {
+			email,
+			githubUsername,
+			editor,
+			language,
+			teamSize,
+			referralCode,
+			turnstileToken,
+			metadata,
+		} = input;
 
 		// Verify Turnstile token first (bot protection)
 		const remoteIP =
 			(context as any).request?.headers?.get("x-forwarded-for") ||
 			(context as any).request?.headers?.get("x-real-ip");
-		const isTurnstileValid = await verifyTurnstileToken(turnstileToken, remoteIP || undefined);
+		const isTurnstileValid = await verifyTurnstileToken(
+			turnstileToken,
+			remoteIP || undefined,
+		);
 
 		if (!isTurnstileValid) {
 			logger.warn("Turnstile verification failed for waitlist join", {
@@ -61,7 +79,8 @@ export const joinWaitlist = publicProcedure
 			});
 			return {
 				success: false,
-				error: "Security verification failed. Please try again or refresh the page.",
+				error:
+					"Security verification failed. Please try again or refresh the page.",
 			};
 		}
 
@@ -76,7 +95,8 @@ export const joinWaitlist = publicProcedure
 				// Generic error - don't confirm email exists
 				return {
 					success: false,
-					error: "Unable to join waitlist at this time. Please try again later or contact support.",
+					error:
+						"Unable to join waitlist at this time. Please try again later or contact support.",
 				};
 			}
 
@@ -153,9 +173,11 @@ export const joinWaitlist = publicProcedure
 			}
 
 			// Cache the position
-			await setCachedWaitlistPosition(email, entry.queuePosition).catch((err) => {
-				logger.warn("Failed to cache position", { error: err });
-			});
+			await setCachedWaitlistPosition(email, entry.queuePosition).catch(
+				(err) => {
+					logger.warn("Failed to cache position", { error: err });
+				},
+			);
 
 			// Capture PostHog event with hashed email for PII protection
 			await captureWaitlistEvent(hashEmail(email), "waitlist_joined", {
@@ -186,7 +208,8 @@ export const joinWaitlist = publicProcedure
 			// Generic error - don't leak internal details
 			return {
 				success: false,
-				error: "An error occurred while joining the waitlist. Please try again later.",
+				error:
+					"An error occurred while joining the waitlist. Please try again later.",
 			};
 		}
 	});

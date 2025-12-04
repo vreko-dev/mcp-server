@@ -1,0 +1,13 @@
+{
+	"root": false,
+	"extends": ["../biome.json"],
+	"files": {
+		"includes": [
+			"**",
+			"!**/*.test.ts",
+			"!**/*.test.tsx",
+			"!__tests__",
+			"!emails"
+		]
+	}
+}

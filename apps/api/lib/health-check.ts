@@ -27,7 +27,9 @@ const startTime = Date.now();
  */
 async function checkDatabase(): Promise<"healthy" | "unhealthy"> {
 	try {
-		const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("Database check timeout")), 2000));
+		const timeout = new Promise((_, reject) =>
+			setTimeout(() => reject(new Error("Database check timeout")), 2000),
+		);
 
 		const dbInstance = getDb();
 		if (!dbInstance) {
@@ -86,7 +88,11 @@ async function checkS3(): Promise<"healthy" | "unhealthy" | undefined> {
  * Perform health check
  */
 export async function performHealthCheck(): Promise<HealthCheckResult> {
-	const [database, redis, s3] = await Promise.all([checkDatabase(), checkRedis(), checkS3()]);
+	const [database, redis, s3] = await Promise.all([
+		checkDatabase(),
+		checkRedis(),
+		checkS3(),
+	]);
 
 	// Determine overall status
 	let status: "healthy" | "degraded" | "unhealthy" = "healthy";

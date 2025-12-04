@@ -84,6 +84,67 @@ SnapBack uses the following sub-processors to deliver our service:
 
 [View complete subprocessors list →](/subprocessors)
 
+## Audit Logging (Enterprise Feature)
+
+### Immutable Audit Trails
+
+Enterprise customers get complete audit logs of all sensitive operations for compliance and forensic investigation:
+
+**What's Logged:**
+- User authentication (login, MFA, session creation)
+- API access (API key usage, token generation)
+- Snapshot operations (create, restore, delete)
+- Sensitive file modifications
+- Permission changes and role assignments
+- Account modifications (password changes, email updates)
+- Administrative actions (user management, settings changes)
+- Failed security checks and alerts
+
+### Accessing Your Audit Logs
+
+**Dashboard:**
+1. Go to Settings → Security → Audit Logs
+2. Filter by action, user, date range
+3. Export as CSV or JSON for compliance reporting
+
+**API:**
+```typescript
+// Query audit logs programmatically
+const response = await fetch(
+  "https://api.snapback.dev/api/audit-logs?action=restore&days=30",
+  { headers: { "Authorization": "Bearer api-key" } }
+);
+
+const logs = await response.json();
+// Each log contains: timestamp, user, action, resource, status, IP address, user agent
+```
+
+### Compliance Use Cases
+
+**Security Investigation:**
+- Who accessed this snapshot at 2023-03-15 10:45 UTC?
+- Did any user restore snapshots outside normal hours?
+- Which API keys were used and when?
+
+**Access Verification:**
+- Prove user authorization for specific actions
+- Demonstrate multi-layer security (authentication → authorization → audit)
+- Show no unauthorized access attempts
+
+**Regulatory Compliance:**
+- GDPR Article 32: "Logging of access to personal data"
+- SOC 2 CC6.1: "Logical access controls"
+- HIPAA: Comprehensive audit logging for PHI access
+- PCI DSS Requirement 10: "Logging and monitoring all access"
+
+### Audit Log Retention
+
+- **Team Tier**: 90 days
+- **Enterprise Tier**: 365+ days (custom configurable)
+- **Export Anytime**: Download full audit logs for archival
+
+---
+
 ## Compliance & Certifications
 
 ### Current Compliance

@@ -67,7 +67,11 @@ app.post("/analyze", zValidator("json", analyzeSchema), async (c) => {
 			return c.json({ error: "Database not available" }, 500);
 		}
 
-		const apiKeyResult = await db.select().from(apiKeys).where(eq(apiKeys.key, apiKeyHeader)).limit(1);
+		const apiKeyResult = await db
+			.select()
+			.from(apiKeys)
+			.where(eq(apiKeys.key, apiKeyHeader))
+			.limit(1);
 
 		if (!apiKeyResult || apiKeyResult.length === 0) {
 			return c.json({ error: "Invalid API key" }, 401);
@@ -104,7 +108,10 @@ app.post("/analyze", zValidator("json", analyzeSchema), async (c) => {
 		const result = await guardianService.analyze(analysisRequest);
 
 		// Update API key last used timestamp
-		await db.update(apiKeys).set({ lastUsedAt: new Date() }).where(eq(apiKeys.id, apiKey.id));
+		await db
+			.update(apiKeys)
+			.set({ lastUsedAt: new Date() })
+			.where(eq(apiKeys.id, apiKey.id));
 
 		return c.json(result);
 	} catch (error) {

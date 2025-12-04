@@ -1,14 +1,14 @@
-import { Hono } from "hono";
 import { logger } from "@snapback/infrastructure";
+import { Hono } from "hono";
+import { z } from "zod";
 import {
+	getAuthContext,
 	requireAuth,
-	requireRole,
 	requireOrgMembership,
 	requirePlan,
-	getAuthContext,
+	requireRole,
 } from "../middleware/auth.js";
-import { validateBody, validateQuery } from "../middleware/validation.js";
-import { z } from "zod";
+import { validateBody } from "../middleware/validation.js";
 
 /**
  * Protected Route Examples
@@ -58,7 +58,7 @@ router.get("/users/profile", requireAuth, async (c) => {
 				success: false,
 				error: "Authentication context missing",
 			},
-			401
+			401,
 		);
 	}
 
@@ -174,33 +174,29 @@ router.delete("/admin/users/:id", requireRole("admin"), async (c) => {
  * Protected: Org membership required (or admin)
  * Demonstrates: Organization-based access control
  */
-router.get(
-	"/org/:orgId/members",
-	requireOrgMembership("orgId"),
-	async (c) => {
-		const orgId = c.req.param("orgId");
-		const auth = getAuthContext(c);
+router.get("/org/:orgId/members", requireOrgMembership("orgId"), async (c) => {
+	const orgId = c.req.param("orgId");
+	const auth = getAuthContext(c);
 
-		logger.info("Org members accessed", {
-			orgId,
-			userId: auth?.user.id,
-			userOrg: auth?.user.orgId,
-		});
+	logger.info("Org members accessed", {
+		orgId,
+		userId: auth?.user.id,
+		userOrg: auth?.user.orgId,
+	});
 
-		const members = [
-			{ id: "user-1", email: "user1@org.com", role: "admin" },
-			{ id: "user-2", email: "user2@org.com", role: "user" },
-			{ id: "user-3", email: "user3@org.com", role: "viewer" },
-		];
+	const members = [
+		{ id: "user-1", email: "user1@org.com", role: "admin" },
+		{ id: "user-2", email: "user2@org.com", role: "user" },
+		{ id: "user-3", email: "user3@org.com", role: "viewer" },
+	];
 
-		return c.json({
-			success: true,
-			organization: orgId,
-			members,
-			memberCount: members.length,
-		});
-	}
-);
+	return c.json({
+		success: true,
+		organization: orgId,
+		members,
+		memberCount: members.length,
+	});
+});
 
 /**
  * POST /api/org/:orgId/settings
@@ -238,7 +234,7 @@ router.post(
 			organization: orgId,
 			settings,
 		});
-	}
+	},
 );
 
 // ============================================================================
@@ -295,7 +291,7 @@ router.post(
 			success: true,
 			data: analytics,
 		});
-	}
+	},
 );
 
 /**
@@ -330,7 +326,7 @@ router.post("/export-data", requirePlan("pro", "enterprise"), async (c) => {
 	return c.json({
 		success: true,
 		message: "Export job queued",
-		exportId: "export-" + Date.now(),
+		exportId: `export-${Date.now()}`,
 		format: options.format,
 		estimatedSize: "250MB",
 		estimatedTime: "2-5 minutes",
@@ -377,33 +373,29 @@ const bulkInviteSchema = z.object({
 	message: z.string().optional(),
 });
 
-router.post(
-	"/admin/bulk-invite",
-	requireRole("admin"),
-	async (c) => {
-		// First validate request
-		const validationResult = await validateBody(c, bulkInviteSchema);
+router.post("/admin/bulk-invite", requireRole("admin"), async (c) => {
+	// First validate request
+	const validationResult = await validateBody(c, bulkInviteSchema);
 
-		if (!validationResult.success) {
-			return c.json(validationResult.error, 400);
-		}
-
-		const auth = getAuthContext(c);
-		const { emails, role, message } = validationResult.value;
-
-		logger.info("Bulk invite initiated", {
-			adminId: auth?.user.id,
-			emailCount: emails.length,
-			role,
-		});
-
-		return c.json({
-			success: true,
-			message: `Invites sent to ${emails.length} users`,
-			emailsSent: emails,
-			role,
-		});
+	if (!validationResult.success) {
+		return c.json(validationResult.error, 400);
 	}
-);
+
+	const auth = getAuthContext(c);
+	const { emails, role, message } = validationResult.value;
+
+	logger.info("Bulk invite initiated", {
+		adminId: auth?.user.id,
+		emailCount: emails.length,
+		role,
+	});
+
+	return c.json({
+		success: true,
+		message: `Invites sent to ${emails.length} users`,
+		emailsSent: emails,
+		role,
+	});
+});
 
 export default router;

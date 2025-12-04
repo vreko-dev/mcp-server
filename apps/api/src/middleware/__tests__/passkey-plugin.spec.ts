@@ -116,7 +116,9 @@ describe("Passkey Plugin Integration (RED PHASE)", () => {
 			};
 
 			expect(enrollmentResponse.backupCodes).toHaveLength(3);
-			expect(enrollmentResponse.backupCodes[0]).toMatch(/^\d{4}-\d{4}-\d{2}[A-Z0-9]{2}$/);
+			expect(enrollmentResponse.backupCodes[0]).toMatch(
+				/^\d{4}-\d{4}-\d{2}[A-Z0-9]{2}$/,
+			);
 		});
 	});
 
@@ -220,7 +222,7 @@ describe("Passkey Enforcement Middleware", () => {
 
 		it("should allow request when user has passkeys", async () => {
 			// User has passkeys, middleware allows through
-			const session = {
+			const _session = {
 				user: { id: "user-123" },
 			};
 
@@ -260,7 +262,9 @@ describe("Passkey Enforcement Middleware", () => {
 				headers: {},
 			};
 
-			expect(Object.keys(response.headers)).not.toContain("X-Passkey-Suggestion");
+			expect(Object.keys(response.headers)).not.toContain(
+				"X-Passkey-Suggestion",
+			);
 		});
 	});
 });

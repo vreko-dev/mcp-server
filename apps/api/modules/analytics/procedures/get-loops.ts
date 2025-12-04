@@ -11,7 +11,8 @@ export const getLoops = protectedProcedure
 		path: "/analytics/loops",
 		tags: ["Analytics"],
 		summary: "Get loops with filtering",
-		description: "Retrieve loop telemetry data with optional filtering by user, API key, session, and date range",
+		description:
+			"Retrieve loop telemetry data with optional filtering by user, API key, session, and date range",
 	})
 	.input(TelemetryQueryOptionsSchema)
 	.handler(async ({ input, context: _context }) => {

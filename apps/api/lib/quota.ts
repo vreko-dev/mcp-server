@@ -1,16 +1,28 @@
-import { apiKeys, apiUsage, subscriptions, usageLimits } from "@snapback/platform";
+import {
+	apiKeys,
+	apiUsage,
+	subscriptions,
+	usageLimits,
+} from "@snapback/platform";
 import { and, eq, gte, lte } from "drizzle-orm";
 import { getDb } from "../src/services/database";
 
 // Usage quota enforcement
-export async function enforceQuotas(userId: string, type: "snapshot" | "storage" | "api") {
+export async function enforceQuotas(
+	userId: string,
+	type: "snapshot" | "storage" | "api",
+) {
 	// Check if database is available and capture reference
 	const db = getDb();
 	if (!db) {
 		throw new Error("Database not available");
 	}
 
-	const subscriptionResult = await db.select().from(subscriptions).where(eq(subscriptions.userId, userId)).limit(1);
+	const subscriptionResult = await db
+		.select()
+		.from(subscriptions)
+		.where(eq(subscriptions.userId, userId))
+		.limit(1);
 
 	if (!subscriptionResult || subscriptionResult.length === 0) {
 		throw new Error("Subscription not found");
@@ -60,7 +72,9 @@ export async function enforceQuotas(userId: string, type: "snapshot" | "storage"
 			.select({ id: apiUsage.id })
 			.from(apiUsage)
 			.innerJoin(apiKeys, eq(apiKeys.id, apiUsage.apiKeyId))
-			.where(and(eq(apiKeys.userId, userId), gte(apiUsage.timestamp, startOfHour)));
+			.where(
+				and(eq(apiKeys.userId, userId), gte(apiUsage.timestamp, startOfHour)),
+			);
 
 		currentUsage = usage ? usage.length : 0;
 	} else {
@@ -77,7 +91,8 @@ export async function enforceQuotas(userId: string, type: "snapshot" | "storage"
 			)
 			.limit(1);
 
-		const limitRecord = limitRecordResult.length > 0 ? limitRecordResult[0] : null;
+		const limitRecord =
+			limitRecordResult.length > 0 ? limitRecordResult[0] : null;
 
 		if (limitRecord) {
 			if (type === "snapshot") {
@@ -98,7 +113,11 @@ export async function enforceQuotas(userId: string, type: "snapshot" | "storage"
 }
 
 // Update usage limits after an operation
-export async function updateUsageLimits(subscriptionId: string, type: "snapshot" | "storage", amount: number) {
+export async function updateUsageLimits(
+	subscriptionId: string,
+	type: "snapshot" | "storage",
+	amount: number,
+) {
 	// Check if database is available and capture reference
 	const db = getDb();
 	if (!db) {
@@ -112,10 +131,16 @@ export async function updateUsageLimits(subscriptionId: string, type: "snapshot"
 	const limitRecordResult = await db
 		.select()
 		.from(usageLimits)
-		.where(and(eq(usageLimits.subscriptionId, subscriptionId), eq(usageLimits.month, startOfMonth)))
+		.where(
+			and(
+				eq(usageLimits.subscriptionId, subscriptionId),
+				eq(usageLimits.month, startOfMonth),
+			),
+		)
 		.limit(1);
 
-	const limitRecord = limitRecordResult.length > 0 ? limitRecordResult[0] : null;
+	const limitRecord =
+		limitRecordResult.length > 0 ? limitRecordResult[0] : null;
 
 	if (limitRecord) {
 		// Update existing record

@@ -53,68 +53,84 @@ const restoreSnapshotSchema = z.object({
 });
 
 // POST /snapshots/create
-app.post("/snapshots/create", zValidator("json", createSnapshotSchema), async (c) => {
-	try {
-		const requestData = c.req.valid("json");
+app.post(
+	"/snapshots/create",
+	zValidator("json", createSnapshotSchema),
+	async (c) => {
+		try {
+			const requestData = c.req.valid("json");
 
-		// Generate snapshot ID (cryptographically secure)
-		const snapshotId = `snap-${randomUUID()}`;
+			// Generate snapshot ID (cryptographically secure)
+			const snapshotId = `snap-${randomUUID()}`;
 
-		// Create metadata
-		const metadata = {
-			id: snapshotId,
-			timestamp: Date.now(),
-			filePath: requestData.filePath,
-			reason: requestData.reason,
-			source: requestData.source,
-			size: requestData.content.length,
-			hash: calculateHash(requestData.content),
-		};
+			// Create metadata
+			const metadata = {
+				id: snapshotId,
+				timestamp: Date.now(),
+				filePath: requestData.filePath,
+				reason: requestData.reason,
+				source: requestData.source,
+				size: requestData.content.length,
+				hash: calculateHash(requestData.content),
+			};
 
-		// Store snapshot
-		snapshotStore.set(snapshotId, {
-			metadata,
-			content: requestData.content,
-		});
+			// Store snapshot
+			snapshotStore.set(snapshotId, {
+				metadata,
+				content: requestData.content,
+			});
 
-		return c.json(metadata, 201);
-	} catch (error) {
-		log.error(error as Error, { context: "Create snapshot" });
-		return c.json(
-			{
-				error: error instanceof Error ? error.message : "Failed to create snapshot",
-			},
-			500,
-		);
-	}
-});
+			return c.json(metadata, 201);
+		} catch (error) {
+			log.error(error as Error, { context: "Create snapshot" });
+			return c.json(
+				{
+					error:
+						error instanceof Error
+							? error.message
+							: "Failed to create snapshot",
+				},
+				500,
+			);
+		}
+	},
+);
 
 // GET /snapshots/list
-app.get("/snapshots/list", zValidator("query", listSnapshotsSchema), async (c) => {
-	try {
-		const { filePath, limit = 100, offset = 0 } = c.req.valid("query");
+app.get(
+	"/snapshots/list",
+	zValidator("query", listSnapshotsSchema),
+	async (c) => {
+		try {
+			const { filePath, limit = 100, offset = 0 } = c.req.valid("query");
 
-		// Filter snapshots
-		let snapshots = Array.from(snapshotStore.values()).map((item) => item.metadata);
+			// Filter snapshots
+			let snapshots = Array.from(snapshotStore.values()).map(
+				(item) => item.metadata,
+			);
 
-		if (filePath) {
-			snapshots = snapshots.filter((snapshot) => snapshot.filePath === filePath);
+			if (filePath) {
+				snapshots = snapshots.filter(
+					(snapshot) => snapshot.filePath === filePath,
+				);
+			}
+
+			// Apply pagination
+			snapshots = snapshots.slice(offset, offset + limit);
+
+			return c.json(snapshots, 200);
+		} catch (error) {
+			log.error(error as Error, { context: "List snapshots" });
+			return c.json(
+				{
+					error:
+						error instanceof Error ? error.message : "Failed to list snapshots",
+				},
+				500,
+			);
 		}
-
-		// Apply pagination
-		snapshots = snapshots.slice(offset, offset + limit);
-
-		return c.json(snapshots, 200);
-	} catch (error) {
-		log.error(error as Error, { context: "List snapshots" });
-		return c.json(
-			{
-				error: error instanceof Error ? error.message : "Failed to list snapshots",
-			},
-			500,
-		);
-	}
-});
+	},
+);
 
 // GET /snapshots/:id
 app.get("/snapshots/:id", async (c) => {
@@ -131,7 +147,8 @@ app.get("/snapshots/:id", async (c) => {
 		log.error(error as Error, { context: "Get snapshot" });
 		return c.json(
 			{
-				error: error instanceof Error ? error.message : "Failed to get snapshot",
+				error:
+					error instanceof Error ? error.message : "Failed to get snapshot",
 			},
 			500,
 		);
@@ -153,7 +170,10 @@ app.get("/snapshots/:id/content", async (c) => {
 		log.error(error as Error, { context: "Get snapshot content" });
 		return c.json(
 			{
-				error: error instanceof Error ? error.message : "Failed to get snapshot content",
+				error:
+					error instanceof Error
+						? error.message
+						: "Failed to get snapshot content",
 			},
 			500,
 		);
@@ -161,26 +181,33 @@ app.get("/snapshots/:id/content", async (c) => {
 });
 
 // POST /snapshots/restore
-app.post("/snapshots/restore", zValidator("json", restoreSnapshotSchema), async (c) => {
-	try {
-		const requestData = c.req.valid("json");
+app.post(
+	"/snapshots/restore",
+	zValidator("json", restoreSnapshotSchema),
+	async (c) => {
+		try {
+			const requestData = c.req.valid("json");
 
-		const snapshot = snapshotStore.get(requestData.snapshotId);
-		if (!snapshot) {
-			return c.json({ error: "Snapshot not found" }, 404);
+			const snapshot = snapshotStore.get(requestData.snapshotId);
+			if (!snapshot) {
+				return c.json({ error: "Snapshot not found" }, 404);
+			}
+
+			return c.text(snapshot.content, 200);
+		} catch (error) {
+			log.error(error as Error, { context: "Restore snapshot" });
+			return c.json(
+				{
+					error:
+						error instanceof Error
+							? error.message
+							: "Failed to restore snapshot",
+				},
+				500,
+			);
 		}
-
-		return c.text(snapshot.content, 200);
-	} catch (error) {
-		log.error(error as Error, { context: "Restore snapshot" });
-		return c.json(
-			{
-				error: error instanceof Error ? error.message : "Failed to restore snapshot",
-			},
-			500,
-		);
-	}
-});
+	},
+);
 
 // DELETE /snapshots/:id
 app.delete("/snapshots/:id", async (c) => {
@@ -198,7 +225,8 @@ app.delete("/snapshots/:id", async (c) => {
 		log.error(error as Error, { context: "Delete snapshot" });
 		return c.json(
 			{
-				error: error instanceof Error ? error.message : "Failed to delete snapshot",
+				error:
+					error instanceof Error ? error.message : "Failed to delete snapshot",
 			},
 			500,
 		);

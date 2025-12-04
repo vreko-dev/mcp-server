@@ -18,7 +18,9 @@ export interface HubSpotContactProperties {
  * @param properties Contact properties to create/update
  * @returns HubSpot contact ID or null if failed
  */
-export async function createOrUpdateHubSpotContact(properties: HubSpotContactProperties): Promise<string | null> {
+export async function createOrUpdateHubSpotContact(
+	properties: HubSpotContactProperties,
+): Promise<string | null> {
 	if (!process.env.HUBSPOT_ACCESS_TOKEN) {
 		logger.warn("HubSpot access token not configured, skipping sync");
 		return null;
@@ -50,7 +52,12 @@ export async function createOrUpdateHubSpotContact(properties: HubSpotContactPro
 		return response.id;
 	} catch (error: unknown) {
 		// Handle duplicate email error (contact already exists)
-		if (error && typeof error === "object" && "statusCode" in error && error.statusCode === 409) {
+		if (
+			error &&
+			typeof error === "object" &&
+			"statusCode" in error &&
+			error.statusCode === 409
+		) {
 			try {
 				// Contact exists, update it instead
 				// Simplified approach - just log and return null for now
@@ -74,7 +81,10 @@ export async function createOrUpdateHubSpotContact(properties: HubSpotContactPro
  * @param contactId HubSpot contact ID
  * @param listId HubSpot list ID
  */
-export async function addContactToList(contactId: string, listId: string): Promise<boolean> {
+export async function addContactToList(
+	contactId: string,
+	listId: string,
+): Promise<boolean> {
 	if (!process.env.HUBSPOT_ACCESS_TOKEN) {
 		logger.warn("HubSpot access token not configured, skipping list add");
 		return false;

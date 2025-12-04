@@ -109,7 +109,9 @@ export const getOrgMetrics = protectedProcedure
 			return {
 				totalIncidentsDetected: Number(result.totalIncidentsDetected) || 0,
 				totalIncidentsPrevented: Number(result.totalIncidentsPrevented) || 0,
-				avgTimeToRestoreMs: result.avgTimeToRestoreMs ? Number(result.avgTimeToRestoreMs) : null,
+				avgTimeToRestoreMs: result.avgTimeToRestoreMs
+					? Number(result.avgTimeToRestoreMs)
+					: null,
 				totalSnapshotsCreated: Number(result.totalSnapshotsCreated) || 0,
 				totalSnapshotsRestored: Number(result.totalSnapshotsRestored) || 0,
 				totalBytesSaved: Number(result.totalBytesSaved) || 0,

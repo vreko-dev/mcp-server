@@ -1,4 +1,8 @@
-import { checkDatabaseConnection, checkRedisConnection, createHealthCheck } from "@snapback/health";
+import {
+	checkDatabaseConnection,
+	checkRedisConnection,
+	createHealthCheck,
+} from "@snapback/health";
 import { logger } from "@snapback/infrastructure";
 import { Hono } from "hono";
 
@@ -117,7 +121,7 @@ app.get("/", async (c) => {
 				timestamp: new Date().toISOString(),
 				uptime: process.uptime(),
 			},
-			statusCode
+			statusCode,
 		);
 	} catch (err) {
 		logger.error("Health check failed", {
@@ -130,7 +134,7 @@ app.get("/", async (c) => {
 				timestamp: new Date().toISOString(),
 				message: "Health check failed",
 			},
-			503
+			503,
 		);
 	}
 });
@@ -149,13 +153,13 @@ app.get("/detailed", async (c) => {
 		});
 
 		return c.json(
-				{
-					status: health.status === "healthy" ? "ok" : "error",
-					timestamp: new Date().toISOString(),
-					uptime: process.uptime(),
-					responseTime,
-				},
-			statusCode
+			{
+				status: health.status === "healthy" ? "ok" : "error",
+				timestamp: new Date().toISOString(),
+				uptime: process.uptime(),
+				responseTime,
+			},
+			statusCode,
 		);
 	} catch (err) {
 		logger.error("Detailed health check failed", {
@@ -168,7 +172,7 @@ app.get("/detailed", async (c) => {
 				timestamp: new Date().toISOString(),
 				message: "Health check failed",
 			},
-			503
+			503,
 		);
 	}
 });
@@ -196,7 +200,7 @@ app.get("/ready", async (c) => {
 					timestamp: new Date().toISOString(),
 					message: "Critical dependencies unavailable",
 				},
-				503
+				503,
 			);
 		}
 
@@ -204,14 +208,14 @@ app.get("/ready", async (c) => {
 			status: "ready",
 			timestamp: new Date().toISOString(),
 		});
-	} catch (err) {
+	} catch (_err) {
 		return c.json(
 			{
 				status: "not_ready",
 				timestamp: new Date().toISOString(),
 				message: "Readiness check failed",
 			},
-			503
+			503,
 		);
 	}
 });

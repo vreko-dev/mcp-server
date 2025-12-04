@@ -35,7 +35,9 @@ export async function createTestUser(
 	});
 
 	if (!response || "error" in response) {
-		throw new Error(`Failed to create test user: ${(response as any)?.error?.message || "Unknown error"}`);
+		throw new Error(
+			`Failed to create test user: ${(response as any)?.error?.message || "Unknown error"}`,
+		);
 	}
 
 	return response;
@@ -59,7 +61,9 @@ export async function getTestSessionToken(
 	});
 
 	if (!response || "error" in response) {
-		throw new Error(`Failed to sign in: ${(response as any)?.error?.message || "Unknown error"}`);
+		throw new Error(
+			`Failed to sign in: ${(response as any)?.error?.message || "Unknown error"}`,
+		);
 	}
 
 	return response.token;
@@ -68,7 +72,10 @@ export async function getTestSessionToken(
 /**
  * Create an expired session for testing expiry handling
  */
-export async function createExpiredSession(auth: ReturnType<typeof betterAuth>, userId: string): Promise<string> {
+export async function createExpiredSession(
+	auth: ReturnType<typeof betterAuth>,
+	userId: string,
+): Promise<string> {
 	// Create a session manually with past expiry
 	const db = (auth as any).options.database;
 	const sessionId = `test-session-${Date.now()}`;

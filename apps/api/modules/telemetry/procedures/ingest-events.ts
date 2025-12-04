@@ -197,7 +197,9 @@ const ALLOWED_EVENTS = [
 ] as const;
 
 // Enhanced validation function that uses both Zod and runtime schema validation
-function validateEventWithSchema(event: z.infer<typeof eventSchema>): event is AllowedTelemetryEvent {
+function validateEventWithSchema(
+	event: z.infer<typeof eventSchema>,
+): event is AllowedTelemetryEvent {
 	// First validate with Zod schema
 	try {
 		eventSchema.parse(event);
@@ -217,7 +219,9 @@ function validateEventWithSchema(event: z.infer<typeof eventSchema>): event is A
 
 const eventSchema = z.object({
 	event: z.enum(ALLOWED_EVENTS), // Strict allowlist
-	properties: z.record(z.string(), z.unknown()).transform(stripSensitiveProperties),
+	properties: z
+		.record(z.string(), z.unknown())
+		.transform(stripSensitiveProperties),
 	timestamp: z.number().optional(),
 });
 
@@ -228,7 +232,9 @@ const ingestEventsSchema = z.object({
 /**
  * Strip sensitive properties before forwarding to PostHog
  */
-function stripSensitiveProperties(props: Record<string, unknown>): Record<string, unknown> {
+function stripSensitiveProperties(
+	props: Record<string, unknown>,
+): Record<string, unknown> {
 	const sanitized: Record<string, unknown> = {};
 
 	// Remove any properties that could contain PII
@@ -244,7 +250,9 @@ function stripSensitiveProperties(props: Record<string, unknown>): Record<string
 }
 
 // Validation function for telemetry events
-function validateTelemetryEvent(event: TelemetryEvent): event is AllowedTelemetryEvent {
+function validateTelemetryEvent(
+	event: TelemetryEvent,
+): event is AllowedTelemetryEvent {
 	const TELEMETRY_EVENTS = {
 		EXTENSION_ACTIVATED: "extension.activated",
 		EXTENSION_DEACTIVATED: "extension.deactivated",
@@ -269,7 +277,9 @@ function validateTelemetryEvent(event: TelemetryEvent): event is AllowedTelemetr
 		case TELEMETRY_EVENTS.EXTENSION_ACTIVATED:
 			return validateExtensionActivatedEvent(event as ExtensionActivatedEvent);
 		case TELEMETRY_EVENTS.EXTENSION_DEACTIVATED:
-			return validateExtensionDeactivatedEvent(event as ExtensionDeactivatedEvent);
+			return validateExtensionDeactivatedEvent(
+				event as ExtensionDeactivatedEvent,
+			);
 		case TELEMETRY_EVENTS.COMMAND_EXECUTION:
 			return validateCommandExecutionEvent(event as CommandExecutionEvent);
 		case TELEMETRY_EVENTS.SNAPSHOT_CREATED:
@@ -287,30 +297,51 @@ function validateTelemetryEvent(event: TelemetryEvent): event is AllowedTelemetr
 		case TELEMETRY_EVENTS.ERROR:
 			return validateErrorEvent(event as ErrorEvent);
 		case TELEMETRY_EVENTS.WALKTHROUGH_STEP_COMPLETED:
-			return validateWalkthroughStepCompletedEvent(event as WalkthroughStepCompletedEvent);
+			return validateWalkthroughStepCompletedEvent(
+				event as WalkthroughStepCompletedEvent,
+			);
 		case TELEMETRY_EVENTS.ONBOARDING_PROTECTION_ASSIGNED:
-			return validateOnboardingProtectionAssignedEvent(event as OnboardingProtectionAssignedEvent);
+			return validateOnboardingProtectionAssignedEvent(
+				event as OnboardingProtectionAssignedEvent,
+			);
 		case TELEMETRY_EVENTS.ONBOARDING_PHASE_PROGRESSED:
-			return validateOnboardingPhaseProgressedEvent(event as OnboardingPhaseProgressedEvent);
+			return validateOnboardingPhaseProgressedEvent(
+				event as OnboardingPhaseProgressedEvent,
+			);
 		case TELEMETRY_EVENTS.ONBOARDING_CONTEXTUAL_PROMPT_SHOWN:
-			return validateOnboardingContextualPromptShownEvent(event as OnboardingContextualPromptShownEvent);
+			return validateOnboardingContextualPromptShownEvent(
+				event as OnboardingContextualPromptShownEvent,
+			);
 		case TELEMETRY_EVENTS.SIGNATURE_VERIFICATION_SUCCESS:
-			return validateSignatureVerificationSuccessEvent(event as SignatureVerificationSuccessEvent);
+			return validateSignatureVerificationSuccessEvent(
+				event as SignatureVerificationSuccessEvent,
+			);
 		case TELEMETRY_EVENTS.SIGNATURE_VERIFICATION_FAILED:
-			return validateSignatureVerificationFailedEvent(event as SignatureVerificationFailedEvent);
+			return validateSignatureVerificationFailedEvent(
+				event as SignatureVerificationFailedEvent,
+			);
 		case TELEMETRY_EVENTS.RULES_CACHED_FALLBACK:
-			return validateRulesCachedFallbackEvent(event as RulesCachedFallbackEvent);
+			return validateRulesCachedFallbackEvent(
+				event as RulesCachedFallbackEvent,
+			);
 		default:
 			return false;
 	}
 }
 
 // Individual validation functions
-function validateExtensionActivatedEvent(event: ExtensionActivatedEvent): boolean {
-	return typeof event.properties.version === "string" && typeof event.properties.vscodeVersion === "string";
+function validateExtensionActivatedEvent(
+	event: ExtensionActivatedEvent,
+): boolean {
+	return (
+		typeof event.properties.version === "string" &&
+		typeof event.properties.vscodeVersion === "string"
+	);
 }
 
-function validateExtensionDeactivatedEvent(event: ExtensionDeactivatedEvent): boolean {
+function validateExtensionDeactivatedEvent(
+	event: ExtensionDeactivatedEvent,
+): boolean {
 	return Object.keys(event.properties).length === 0;
 }
 
@@ -323,7 +354,10 @@ function validateCommandExecutionEvent(event: CommandExecutionEvent): boolean {
 }
 
 function validateSnapshotCreatedEvent(event: SnapshotCreatedEvent): boolean {
-	return typeof event.properties.method === "string" && typeof event.properties.filesCount === "number";
+	return (
+		typeof event.properties.method === "string" &&
+		typeof event.properties.filesCount === "number"
+	);
 }
 
 function validateSnapBackUsedEvent(event: SnapBackUsedEvent): boolean {
@@ -346,10 +380,13 @@ function validateViewActivatedEvent(event: ViewActivatedEvent): boolean {
 	return typeof event.properties.viewId === "string";
 }
 
-function validateNotificationShownEvent(event: NotificationShownEvent): boolean {
+function validateNotificationShownEvent(
+	event: NotificationShownEvent,
+): boolean {
 	return (
 		typeof event.properties.notificationType === "string" &&
-		(event.properties.actionTaken === null || typeof event.properties.actionTaken === "string")
+		(event.properties.actionTaken === null ||
+			typeof event.properties.actionTaken === "string")
 	);
 }
 
@@ -358,14 +395,24 @@ function validateFeatureUsedEvent(event: FeatureUsedEvent): boolean {
 }
 
 function validateErrorEvent(event: ErrorEvent): boolean {
-	return typeof event.properties.errorType === "string" && typeof event.properties.errorMessage === "string";
+	return (
+		typeof event.properties.errorType === "string" &&
+		typeof event.properties.errorMessage === "string"
+	);
 }
 
-function validateWalkthroughStepCompletedEvent(event: WalkthroughStepCompletedEvent): boolean {
-	return typeof event.properties.stepId === "string" && typeof event.properties.stepTitle === "string";
+function validateWalkthroughStepCompletedEvent(
+	event: WalkthroughStepCompletedEvent,
+): boolean {
+	return (
+		typeof event.properties.stepId === "string" &&
+		typeof event.properties.stepTitle === "string"
+	);
 }
 
-function validateOnboardingProtectionAssignedEvent(event: OnboardingProtectionAssignedEvent): boolean {
+function validateOnboardingProtectionAssignedEvent(
+	event: OnboardingProtectionAssignedEvent,
+): boolean {
 	return (
 		typeof event.properties.level === "string" &&
 		typeof event.properties.trigger === "string" &&
@@ -374,7 +421,9 @@ function validateOnboardingProtectionAssignedEvent(event: OnboardingProtectionAs
 	);
 }
 
-function validateOnboardingPhaseProgressedEvent(event: OnboardingPhaseProgressedEvent): boolean {
+function validateOnboardingPhaseProgressedEvent(
+	event: OnboardingPhaseProgressedEvent,
+): boolean {
 	return (
 		typeof event.properties.phase === "number" &&
 		typeof event.properties.trigger === "string" &&
@@ -382,22 +431,31 @@ function validateOnboardingPhaseProgressedEvent(event: OnboardingPhaseProgressed
 	);
 }
 
-function validateOnboardingContextualPromptShownEvent(event: OnboardingContextualPromptShownEvent): boolean {
+function validateOnboardingContextualPromptShownEvent(
+	event: OnboardingContextualPromptShownEvent,
+): boolean {
 	return (
 		typeof event.properties.promptType === "string" &&
-		(event.properties.actionTaken === null || typeof event.properties.actionTaken === "string")
+		(event.properties.actionTaken === null ||
+			typeof event.properties.actionTaken === "string")
 	);
 }
 
-function validateSignatureVerificationSuccessEvent(event: SignatureVerificationSuccessEvent): boolean {
+function validateSignatureVerificationSuccessEvent(
+	event: SignatureVerificationSuccessEvent,
+): boolean {
 	return Object.keys(event.properties).length === 0;
 }
 
-function validateSignatureVerificationFailedEvent(event: SignatureVerificationFailedEvent): boolean {
+function validateSignatureVerificationFailedEvent(
+	event: SignatureVerificationFailedEvent,
+): boolean {
 	return Object.keys(event.properties).length === 0;
 }
 
-function validateRulesCachedFallbackEvent(event: RulesCachedFallbackEvent): boolean {
+function validateRulesCachedFallbackEvent(
+	event: RulesCachedFallbackEvent,
+): boolean {
 	return Object.keys(event.properties).length === 0;
 }
 
@@ -412,7 +470,9 @@ export const ingestEvents = publicProcedure
 			const validEvents = input.events.filter(validateEventWithSchema);
 
 			// Log any invalid events
-			const invalidEvents = input.events.filter((event) => !validateEventWithSchema(event));
+			const invalidEvents = input.events.filter(
+				(event) => !validateEventWithSchema(event),
+			);
 			if (invalidEvents.length > 0) {
 				console.warn("Invalid telemetry events detected:", invalidEvents);
 			}

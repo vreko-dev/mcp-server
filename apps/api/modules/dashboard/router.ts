@@ -1,7 +1,7 @@
 import { protectedProcedure } from "../../orpc/procedures";
 import {
-	getMetrics,
 	getAIDetectionStats,
+	getMetrics,
 	getRecentActivity,
 	getSessionMetrics,
 	getSubscriptionData,

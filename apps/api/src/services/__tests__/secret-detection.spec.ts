@@ -31,8 +31,11 @@ describe("SecretDetectionService", () => {
 				confidence: 0.5,
 			};
 
-			const highScore = service.calculateRiskScoreForFinding(highSeverityFinding);
-			const mediumScore = service.calculateRiskScoreForFinding(mediumSeverityFinding);
+			const highScore =
+				service.calculateRiskScoreForFinding(highSeverityFinding);
+			const mediumScore = service.calculateRiskScoreForFinding(
+				mediumSeverityFinding,
+			);
 			const lowScore = service.calculateRiskScoreForFinding(lowSeverityFinding);
 
 			expect(highScore).toBeGreaterThan(mediumScore);
@@ -44,9 +47,15 @@ describe("SecretDetectionService", () => {
 		it("should identify test/example patterns", () => {
 			const service: any = secretDetectionService;
 
-			expect(service.isLikelyTestOrExample("const key = 'test123';")).toBe(true);
-			expect(service.isLikelyTestOrExample("EXAMPLE_API_KEY=abc123")).toBe(true);
-			expect(service.isLikelyTestOrExample("const realKey = 'AKIA123456789';")).toBe(false);
+			expect(service.isLikelyTestOrExample("const key = 'test123';")).toBe(
+				true,
+			);
+			expect(service.isLikelyTestOrExample("EXAMPLE_API_KEY=abc123")).toBe(
+				true,
+			);
+			expect(
+				service.isLikelyTestOrExample("const realKey = 'AKIA123456789';"),
+			).toBe(false);
 		});
 	});
 
@@ -59,7 +68,10 @@ describe("SecretDetectionService", () => {
 			};
 
 			// Mock database operations
-			vi.spyOn(secretDetectionService as any, "updateUserSafetyProfile").mockResolvedValue(undefined);
+			vi.spyOn(
+				secretDetectionService as any,
+				"updateUserSafetyProfile",
+			).mockResolvedValue(undefined);
 
 			const result = await secretDetectionService.detectSecrets(request);
 
@@ -82,7 +94,10 @@ describe("SecretDetectionService", () => {
 			};
 
 			// Mock database operations
-			vi.spyOn(secretDetectionService as any, "updateUserSafetyProfile").mockResolvedValue(undefined);
+			vi.spyOn(
+				secretDetectionService as any,
+				"updateUserSafetyProfile",
+			).mockResolvedValue(undefined);
 
 			const result = await secretDetectionService.detectSecrets(request);
 

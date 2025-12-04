@@ -1,5 +1,10 @@
 import { protectedProcedure } from "../../orpc/procedures";
-import { deleteMyData, exportMyData, getRetentionInfo, updatePreferences } from "./procedures";
+import {
+	deleteMyData,
+	exportMyData,
+	getRetentionInfo,
+	updatePreferences,
+} from "./procedures";
 
 export const privacyRouter = protectedProcedure.router({
 	"my-data": exportMyData,

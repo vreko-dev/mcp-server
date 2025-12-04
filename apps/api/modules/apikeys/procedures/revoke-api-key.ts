@@ -23,7 +23,11 @@ export const revokeApiKey = protectedProcedure
 		}
 
 		const result = isDatabaseAvailable()
-			? await getDb().select().from(apiKeys).where(eq(apiKeys.id, input.id)).limit(1)
+			? await getDb()
+					.select()
+					.from(apiKeys)
+					.where(eq(apiKeys.id, input.id))
+					.limit(1)
 			: [];
 
 		const key = result && result.length > 0 ? result[0] : undefined;
@@ -37,10 +41,15 @@ export const revokeApiKey = protectedProcedure
 		}
 
 		const updateResult = isDatabaseAvailable()
-			? await getDb().update(apiKeys).set({ revokedAt: new Date() }).where(eq(apiKeys.id, input.id)).returning()
+			? await getDb()
+					.update(apiKeys)
+					.set({ revokedAt: new Date() })
+					.where(eq(apiKeys.id, input.id))
+					.returning()
 			: [];
 
-		const updated = updateResult && updateResult.length > 0 ? updateResult[0] : undefined;
+		const updated =
+			updateResult && updateResult.length > 0 ? updateResult[0] : undefined;
 
 		if (!updated) {
 			throw new Error("Key not found");

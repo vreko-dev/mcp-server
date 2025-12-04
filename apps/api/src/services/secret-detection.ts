@@ -1,5 +1,10 @@
 import { createId as cuid } from "@paralleldrive/cuid2";
-import { analysisEvents, apiKeys, ruleViolations, userSafetyProfiles } from "@snapback/platform";
+import {
+	analysisEvents,
+	apiKeys,
+	ruleViolations,
+	userSafetyProfiles,
+} from "@snapback/platform";
 import { SecretDetector } from "@snapback/policy-engine";
 import { eq } from "drizzle-orm";
 import { getDb } from "./database";
@@ -52,14 +57,20 @@ export class SecretDetectionService {
 	/**
 	 * Detect secrets in code changes using advanced algorithms
 	 */
-	async detectSecrets(request: SecretDetectionRequest): Promise<SecretDetectionResult> {
+	async detectSecrets(
+		request: SecretDetectionRequest,
+	): Promise<SecretDetectionResult> {
 		const detectionId = cuid();
 		const startTime = Date.now();
 		const db = getDb();
 
 		try {
 			// Get user's API key to check permissions
-			const apiKeyResult = await db.select().from(apiKeys).where(eq(apiKeys.id, request.apiKeyId)).limit(1);
+			const apiKeyResult = await db
+				.select()
+				.from(apiKeys)
+				.where(eq(apiKeys.id, request.apiKeyId))
+				.limit(1);
 
 			if (!apiKeyResult || apiKeyResult.length === 0) {
 				throw new Error("Invalid API key");
@@ -108,7 +119,10 @@ export class SecretDetectionService {
 						lineNumber: finding.line,
 						column: finding.column,
 						match: finding.snippet,
-						confidence: this.calculateConfidence(finding.severity, finding.entropy),
+						confidence: this.calculateConfidence(
+							finding.severity,
+							finding.entropy,
+						),
 						remediation: this.getRemediation(finding.type),
 					};
 					findings.push(apiFinding);
@@ -129,9 +143,15 @@ export class SecretDetectionService {
 			// Generate recommendations
 			const recommendations: string[] = [];
 			if (findings.length > 0) {
-				recommendations.push("Review all detected secrets and rotate them immediately");
-				recommendations.push("Use environment variables or secure vaults for sensitive data");
-				recommendations.push("Implement pre-commit hooks to prevent secret exposure");
+				recommendations.push(
+					"Review all detected secrets and rotate them immediately",
+				);
+				recommendations.push(
+					"Use environment variables or secure vaults for sensitive data",
+				);
+				recommendations.push(
+					"Implement pre-commit hooks to prevent secret exposure",
+				);
 			}
 
 			// Generate summary
@@ -234,7 +254,9 @@ export class SecretDetectionService {
 	/**
 	 * Map policy-engine severity to API severity
 	 */
-	private mapSeverity(severity: "low" | "medium" | "high" | "critical"): "low" | "medium" | "high" {
+	private mapSeverity(
+		severity: "low" | "medium" | "high" | "critical",
+	): "low" | "medium" | "high" {
 		if (severity === "critical") {
 			return "high";
 		}
@@ -244,7 +266,10 @@ export class SecretDetectionService {
 	/**
 	 * Calculate confidence based on severity and entropy
 	 */
-	private calculateConfidence(severity: "low" | "medium" | "high" | "critical", entropy?: number): number {
+	private calculateConfidence(
+		severity: "low" | "medium" | "high" | "critical",
+		entropy?: number,
+	): number {
 		const baseSeverityConfidence = {
 			critical: 0.95,
 			high: 0.9,
@@ -267,19 +292,28 @@ export class SecretDetectionService {
 	 */
 	private getRemediation(type: string): string {
 		const remediationMap: Record<string, string> = {
-			"AWS Access Key": "Rotate the AWS access key and use IAM roles instead when possible",
+			"AWS Access Key":
+				"Rotate the AWS access key and use IAM roles instead when possible",
 			"AWS Secret Key": "Rotate the AWS secret key immediately",
-			"GitHub Token": "Revoke the GitHub token and generate a new one with minimal permissions",
+			"GitHub Token":
+				"Revoke the GitHub token and generate a new one with minimal permissions",
 			"Stripe API Key": "Rotate the Stripe API key immediately",
-			"Generic API Key": "Verify if this is a real API key and rotate it if necessary",
-			"Private Key Header": "Remove the private key and rotate the corresponding public key",
+			"Generic API Key":
+				"Verify if this is a real API key and rotate it if necessary",
+			"Private Key Header":
+				"Remove the private key and rotate the corresponding public key",
 			"Bearer Token": "Rotate the bearer token immediately",
-			"Password Assignment": "Use environment variables or secure configuration management instead",
+			"Password Assignment":
+				"Use environment variables or secure configuration management instead",
 			"OAuth Token": "Rotate the OAuth token and review OAuth scopes",
-			"High-Entropy String": "Verify if this is a secret and rotate it if necessary",
+			"High-Entropy String":
+				"Verify if this is a secret and rotate it if necessary",
 		};
 
-		return remediationMap[type] || "Review and rotate if this is a sensitive credential";
+		return (
+			remediationMap[type] ||
+			"Review and rotate if this is a sensitive credential"
+		);
 	}
 
 	/**
@@ -338,7 +372,10 @@ export class SecretDetectionService {
 	/**
 	 * Update user safety profile based on detection results
 	 */
-	private async updateUserSafetyProfile(userId: string, riskScore: number): Promise<void> {
+	private async updateUserSafetyProfile(
+		userId: string,
+		riskScore: number,
+	): Promise<void> {
 		const db = getDb();
 		// Get existing profile or create new one
 		const existingProfile = await db
@@ -351,9 +388,11 @@ export class SecretDetectionService {
 			// Update existing profile
 			const profile = existingProfile[0];
 			const totalAnalyses = profile.totalAnalyses + 1;
-			const totalRiskScore = (profile.averageRiskScore || 0) * profile.totalAnalyses + riskScore;
+			const totalRiskScore =
+				(profile.averageRiskScore || 0) * profile.totalAnalyses + riskScore;
 			const newAverageRiskScore = totalRiskScore / totalAnalyses;
-			const highRiskAnalyses = riskScore >= 70 ? profile.totalBlocked + 1 : profile.totalBlocked;
+			const highRiskAnalyses =
+				riskScore >= 70 ? profile.totalBlocked + 1 : profile.totalBlocked;
 
 			await db
 				.update(userSafetyProfiles)
@@ -381,7 +420,10 @@ export class SecretDetectionService {
 	/**
 	 * Get recent secret detection history for a user
 	 */
-	async getDetectionHistory(userId: string, limit = 10): Promise<(typeof analysisEvents.$inferSelect)[]> {
+	async getDetectionHistory(
+		userId: string,
+		limit = 10,
+	): Promise<(typeof analysisEvents.$inferSelect)[]> {
 		const db = getDb();
 		return await db
 			.select()
@@ -394,8 +436,13 @@ export class SecretDetectionService {
 	/**
 	 * Get findings for a specific detection
 	 */
-	async getFindings(detectionId: string): Promise<(typeof ruleViolations.$inferSelect)[]> {
+	async getFindings(
+		detectionId: string,
+	): Promise<(typeof ruleViolations.$inferSelect)[]> {
 		const db = getDb();
-		return await db.select().from(ruleViolations).where(eq(ruleViolations.id, detectionId));
+		return await db
+			.select()
+			.from(ruleViolations)
+			.where(eq(ruleViolations.id, detectionId));
 	}
 }

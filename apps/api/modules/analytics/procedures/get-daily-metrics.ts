@@ -4,8 +4,18 @@ import { protectedProcedure } from "../../../orpc/procedures";
 import { getDb } from "../../../src/services/database";
 
 const GetDailyMetricsInputSchema = z.object({
-	limit: z.number().int().positive().optional().describe("Maximum number of records to return"),
-	offset: z.number().int().nonnegative().optional().describe("Number of records to skip"),
+	limit: z
+		.number()
+		.int()
+		.positive()
+		.optional()
+		.describe("Maximum number of records to return"),
+	offset: z
+		.number()
+		.int()
+		.nonnegative()
+		.optional()
+		.describe("Number of records to skip"),
 });
 
 export const getDailyMetrics = protectedProcedure
@@ -14,7 +24,8 @@ export const getDailyMetrics = protectedProcedure
 		path: "/analytics/daily-metrics",
 		tags: ["Analytics"],
 		summary: "Get daily metrics",
-		description: "Retrieve aggregated daily metrics from the daily_metrics materialized view",
+		description:
+			"Retrieve aggregated daily metrics from the daily_metrics materialized view",
 	})
 	.input(GetDailyMetricsInputSchema)
 	.handler(async ({ input, context: _context }) => {

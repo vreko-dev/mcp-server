@@ -14,33 +14,40 @@ const submitNPSInputSchema = z.object({
 	timestamp: z.number(),
 });
 
-export const submitNPS = protectedProcedure.input(submitNPSInputSchema).handler(async ({ input, context }) => {
-	const db = getDb();
+export const submitNPS = protectedProcedure
+	.input(submitNPSInputSchema)
+	.handler(async ({ input, context }) => {
+		const db = getDb();
 
-	if (!db) {
-		throw new Error("Database not available");
-	}
+		if (!db) {
+			throw new Error("Database not available");
+		}
 
-	// Calculate NPS category
-	const category = input.score >= 9 ? "promoter" : input.score >= 7 ? "passive" : "detractor";
+		// Calculate NPS category
+		const category =
+			input.score >= 9
+				? "promoter"
+				: input.score >= 7
+					? "passive"
+					: "detractor";
 
-	// Insert into feedback table as NPS type
-	await db.insert(feedback).values({
-		userId: context.user?.id ?? "",
-		apiKeyId: context.auth?.apiKeyId ?? "session-feedback",
-		sessionId: context.auth?.sessionId,
-		feedbackType: "nps",
-		feedbackText: input.reason,
-		rating: input.score,
-		metadata: {
+		// Insert into feedback table as NPS type
+		await db.insert(feedback).values({
+			userId: context.user?.id ?? "",
+			apiKeyId: context.auth?.apiKeyId ?? "session-feedback",
+			sessionId: context.auth?.sessionId,
+			feedbackType: "nps",
+			feedbackText: input.reason,
+			rating: input.score,
+			metadata: {
+				category,
+				userId: input.userId,
+			},
+			timestamp: new Date(input.timestamp),
+		});
+
+		return {
+			success: true,
 			category,
-			userId: input.userId,
-		},
-		timestamp: new Date(input.timestamp),
+		};
 	});
-
-	return {
-		success: true,
-		category,
-	};
-});

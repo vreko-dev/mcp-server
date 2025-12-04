@@ -5,14 +5,21 @@
  */
 
 import { Hono } from "hono";
-import { fastForward, getTimeOffset, resetTime } from "../../test-utils/time-control.js";
+import {
+	fastForward,
+	getTimeOffset,
+	resetTime,
+} from "../../test-utils/time-control.js";
 
 const testRoutes = new Hono();
 
 // Guard: Only allow in test environment
 testRoutes.use("*", async (c, next) => {
 	if (process.env.NODE_ENV !== "test") {
-		return c.json({ error: "Test endpoints are only available in test mode" }, 404);
+		return c.json(
+			{ error: "Test endpoints are only available in test mode" },
+			404,
+		);
 	}
 	await next();
 });

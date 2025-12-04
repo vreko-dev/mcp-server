@@ -58,15 +58,21 @@ export async function closeRedisClient(): Promise<void> {
 // MVP implementation uses Postgres with INSERT ... ON CONFLICT DO UPDATE
 // into monthly usage tables and materialized views instead of Redis
 export async function getRedisClient(): Promise<any> {
-	throw new Error("Redis client not available in MVP - using Postgres counters instead");
+	throw new Error(
+		"Redis client not available in MVP - using Postgres counters instead",
+	);
 }
 
 export async function initializeRedisClient(): Promise<void> {
 	// No-op in MVP - Redis replaced with Postgres counters
-	console.log("Redis initialization skipped in MVP - using Postgres counters instead");
+	console.log(
+		"Redis initialization skipped in MVP - using Postgres counters instead",
+	);
 }
 
 export async function closeRedisClient(): Promise<void> {
 	// No-op in MVP - Redis replaced with Postgres counters
-	console.log("Redis client close skipped in MVP - using Postgres counters instead");
+	console.log(
+		"Redis client close skipped in MVP - using Postgres counters instead",
+	);
 }

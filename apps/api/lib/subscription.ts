@@ -15,7 +15,11 @@ export async function getSubscription(userId: string) {
 		};
 	}
 
-	const result = await db.select().from(subscriptions).where(eq(subscriptions.userId, userId)).limit(1);
+	const result = await db
+		.select()
+		.from(subscriptions)
+		.where(eq(subscriptions.userId, userId))
+		.limit(1);
 
 	if (!result || result.length === 0) {
 		// Return default free plan if no subscription found

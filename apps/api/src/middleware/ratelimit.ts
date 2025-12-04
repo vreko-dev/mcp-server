@@ -1,5 +1,5 @@
-import { type Context, type Next } from "hono";
 import { logger } from "@snapback/infrastructure";
+import type { Context, Next } from "hono";
 
 /**
  * Rate Limiting Middleware with Redis Support
@@ -92,15 +92,10 @@ function getBucket(ip: string): RateLimitBucket {
  */
 function refillTokens(bucket: RateLimitBucket, now: number): void {
 	const elapsedMs = now - bucket.lastRefillTime;
-	const tokensToAdd = Math.floor(
-		elapsedMs / CONFIG.TOKEN_REFILL_INTERVAL_MS
-	);
+	const tokensToAdd = Math.floor(elapsedMs / CONFIG.TOKEN_REFILL_INTERVAL_MS);
 
 	if (tokensToAdd > 0) {
-		bucket.tokens = Math.min(
-			CONFIG.BURST_LIMIT,
-			bucket.tokens + tokensToAdd
-		);
+		bucket.tokens = Math.min(CONFIG.BURST_LIMIT, bucket.tokens + tokensToAdd);
 		bucket.lastRefillTime = now;
 	}
 }
@@ -111,7 +106,7 @@ function refillTokens(bucket: RateLimitBucket, now: number): void {
  */
 function checkRateLimit(
 	bucket: RateLimitBucket,
-	now: number
+	now: number,
 ): [boolean, number, number] {
 	// Refill tokens based on time passed
 	refillTokens(bucket, now);
@@ -132,10 +127,7 @@ function checkRateLimit(
 
 	// Allow request
 	bucket.requestCount++;
-	const remainingTokens = Math.max(
-		0,
-		CONFIG.BURST_LIMIT - bucket.requestCount
-	);
+	const remainingTokens = Math.max(0, CONFIG.BURST_LIMIT - bucket.requestCount);
 	const windowReset = bucket.windowStart + CONFIG.BURST_WINDOW_MS;
 
 	return [true, remainingTokens, windowReset];
@@ -176,7 +168,7 @@ startCleanupTimer();
 async function checkRateLimitWithRedis(
 	clientIp: string,
 	now: number,
-	redisClient?: any
+	redisClient?: any,
 ): Promise<[boolean, number, number]> {
 	if (!redisClient) {
 		// Fallback to in-memory
@@ -220,7 +212,7 @@ async function checkRateLimitWithRedis(
 			key,
 			now,
 			CONFIG.BURST_LIMIT,
-			CONFIG.BURST_WINDOW_MS
+			CONFIG.BURST_WINDOW_MS,
 		);
 
 		return [result[0] === 1, result[1] || 0, result[2] || 0];
@@ -241,7 +233,7 @@ async function checkRateLimitWithRedis(
 export function createRateLimitMiddleware(redisClient?: any) {
 	return async function rateLimitMiddleware(
 		c: Context,
-		next: Next
+		next: Next,
 	): Promise<void> {
 		const path = c.req.path;
 
@@ -293,7 +285,7 @@ export function createRateLimitMiddleware(redisClient?: any) {
 				message: `Rate limit exceeded: ${CONFIG.BURST_LIMIT} requests per ${CONFIG.BURST_WINDOW_MS / 1000} seconds`,
 				retryAfter: resetSeconds,
 			},
-			429
+			429,
 		);
 	};
 }

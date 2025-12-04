@@ -71,7 +71,9 @@ export async function createApiKey(
  * @param id The API key ID
  * @returns The API key object without the actual key value
  */
-export async function getApiKey(id: string): Promise<Omit<ApiKey, "keyHash"> | null> {
+export async function getApiKey(
+	id: string,
+): Promise<Omit<ApiKey, "keyHash"> | null> {
 	const apiKey = apiKeysStore.get(id);
 	if (!apiKey) {
 		return null;
@@ -87,7 +89,9 @@ export async function getApiKey(id: string): Promise<Omit<ApiKey, "keyHash"> | n
  * @param keyValue The API key value
  * @returns The API key object
  */
-export async function getApiKeyByKey(keyValue: string): Promise<Omit<ApiKey, "keyHash"> | null> {
+export async function getApiKeyByKey(
+	keyValue: string,
+): Promise<Omit<ApiKey, "keyHash"> | null> {
 	// Validate key format first
 	if (!keyValue.startsWith("sb_live_")) {
 		return null;

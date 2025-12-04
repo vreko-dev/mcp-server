@@ -85,7 +85,11 @@ describe("JWT Plugin Integration (RED PHASE)", () => {
 			// - CLI: snapback-cli/...
 			// - MCP: claude-mcp/... or snapback-mcp/...
 
-			const toolUserAgents = ["VSCode/1.93.0 SnapBack-VSCode/0.1.0", "snapback-cli/1.0.0", "snapback-mcp/0.1.0"];
+			const toolUserAgents = [
+				"VSCode/1.93.0 SnapBack-VSCode/0.1.0",
+				"snapback-cli/1.0.0",
+				"snapback-mcp/0.1.0",
+			];
 
 			for (const userAgent of toolUserAgents) {
 				expect(userAgent).toBeDefined();
@@ -192,7 +196,7 @@ describe("JWT Middleware Integration", () => {
 		app.use("/protected/*", async (c: Context, next: Next) => {
 			const authHeader = c.req.header("authorization");
 			if (authHeader?.startsWith("Bearer ")) {
-				const token = authHeader.substring(7);
+				const _token = authHeader.substring(7);
 				// Mock verified session
 				c.set("session", {
 					user: {

@@ -61,13 +61,21 @@ async function checkSnapshotLimit(authContext: any): Promise<UsageLimitResult> {
 			const deviceTrialsResult = await db
 				.select()
 				.from(snapbackSchema.deviceTrials)
-				.where(eq(snapbackSchema.deviceTrials.deviceFingerprint, authContext.deviceId));
+				.where(
+					eq(
+						snapbackSchema.deviceTrials.deviceFingerprint,
+						authContext.deviceId,
+					),
+				);
 
 			if (deviceTrialsResult.length > 0) {
 				const deviceTrial = deviceTrialsResult[0];
 
 				// Check if snapshot limit reached
-				if (deviceTrial && deviceTrial.snapshotsUsed >= deviceTrial.snapshotLimit) {
+				if (
+					deviceTrial &&
+					deviceTrial.snapshotsUsed >= deviceTrial.snapshotLimit
+				) {
 					return {
 						allowed: false,
 						limitType: "snapshot",
@@ -109,7 +117,12 @@ async function incrementSnapshotCounter(authContext: any) {
 				.set({
 					snapshotsUsed: sql`${snapbackSchema.deviceTrials.snapshotsUsed} + 1`,
 				})
-				.where(eq(snapbackSchema.deviceTrials.deviceFingerprint, authContext.deviceId));
+				.where(
+					eq(
+						snapbackSchema.deviceTrials.deviceFingerprint,
+						authContext.deviceId,
+					),
+				);
 		} else if (authContext.type === "user") {
 			// For authenticated users, we would update their usage stats
 			// This is a simplified implementation
@@ -132,7 +145,12 @@ async function trackApiCall(authContext: any) {
 				.set({
 					apiCallsUsed: sql`${snapbackSchema.deviceTrials.apiCallsUsed} + 1`,
 				})
-				.where(eq(snapbackSchema.deviceTrials.deviceFingerprint, authContext.deviceId));
+				.where(
+					eq(
+						snapbackSchema.deviceTrials.deviceFingerprint,
+						authContext.deviceId,
+					),
+				);
 		} else if (authContext.type === "user") {
 			// For authenticated users, we would update their usage stats
 			// This is a simplified implementation

@@ -16,12 +16,18 @@ export const exportMyData = protectedProcedure.handler(async ({ context }) => {
 	}
 
 	// 1. Fetch all snapshots
-	const userSnapshotsResult = await db.select().from(snapshots).where(eq(snapshots.userId, user.id));
+	const userSnapshotsResult = await db
+		.select()
+		.from(snapshots)
+		.where(eq(snapshots.userId, user.id));
 
 	const userSnapshots = userSnapshotsResult || [];
 
 	// 2. Fetch API keys (redact actual key values)
-	const userApiKeysResult = await db.select().from(apiKeys).where(eq(apiKeys.userId, user.id));
+	const userApiKeysResult = await db
+		.select()
+		.from(apiKeys)
+		.where(eq(apiKeys.userId, user.id));
 
 	const userApiKeys = userApiKeysResult || [];
 
@@ -33,7 +39,9 @@ export const exportMyData = protectedProcedure.handler(async ({ context }) => {
 		.limit(1);
 
 	const userSubscription =
-		userSubscriptionResult && userSubscriptionResult.length > 0 ? userSubscriptionResult[0] : null;
+		userSubscriptionResult && userSubscriptionResult.length > 0
+			? userSubscriptionResult[0]
+			: null;
 
 	// 4. Build comprehensive export
 	return {

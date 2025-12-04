@@ -1,7 +1,7 @@
 # Framework-Specific Patterns & Best Practices
 
-**Last Updated:** 2025-12-03  
-**Authority:** Architecture & Development Standards  
+**Last Updated:** 2025-12-03
+**Authority:** Architecture & Development Standards
 **Applies to:** `apps/**/*.ts`, `apps/**/*.tsx`, `packages/**/*.ts`, `packages/**/*.tsx`
 
 ---
@@ -590,7 +590,7 @@ Before committing code, verify:
 
 ## Maintenance
 
-**Last Verified:** 2025-12-03  
+**Last Verified:** 2025-12-03
 **Verified Against:** oRPC latest, Drizzle ORM v0.37+, Next.js 15, TypeScript 5.9+
 
 When updating frameworks, revisit these patterns and update documentation accordingly.

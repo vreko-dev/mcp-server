@@ -38,6 +38,70 @@ Enterprise-grade code protection with SSO, compliance, and dedicated support for
 
 [Learn more about Security & Privacy →](/enterprise/security-privacy)
 
+### API Authentication & Authorization
+
+Secure programmatic access to SnapBack:
+
+- **JWT Token Authentication**: OpenID Connect compatible, works with Cursor and other AI editors
+- **API Key Management**: Create, rotate, and revoke API keys with fine-grained permissions
+- **Role-Based Access Control**: Define roles with specific permissions (read snapshots, restore, audit)
+- **Organization Scoping**: Automatic data isolation ensures users only access their org's data
+- **Rate Limiting by Plan**: Prevents abuse while matching your scale:
+  - **Free**: 100 requests/hour
+  - **Team**: 5,000 requests/hour
+  - **Enterprise**: 50,000+ requests/hour (custom)
+
+**Example - Programmatic Snapshot Restore:**
+
+```typescript
+// Authenticate with API key
+const headers = {
+  "Authorization": "Bearer your-api-key",
+  "X-Org-Id": "org_12345"
+};
+
+// Restore snapshot
+const response = await fetch(
+  "https://api.snapback.dev/api/snapshots/snap_xyz/restore",
+  { method: "POST", headers }
+);
+
+const { success, restoredAt } = await response.json();
+```
+
+[Explore API documentation →](/api-reference)
+
+### Usage Quotas & Rate Limiting
+
+Plan-based rate limiting ensures fair use and prevents abuse:
+
+**Request Rate Limits** (per hour):
+- Free: 100 req/hr
+- Team: 5,000 req/hr
+- Enterprise: 50,000 req/hr (customizable)
+
+**Storage Quotas**:
+- Free: 1GB
+- Team: 50GB
+- Enterprise: 100GB+ (custom)
+
+**Snapshot Retention**:
+- Free: 30 days
+- Team: 90 days
+- Enterprise: 365+ days (custom)
+
+**API Key Limits**:
+- Free: 1 API key
+- Team: 10 API keys
+- Enterprise: Unlimited
+
+When you hit a rate limit, you'll receive a 429 response with `X-RateLimit-Remaining` headers so you can:
+- Implement exponential backoff
+- Queue requests for later
+- Upgrade to a higher plan
+
+[See rate limiting guide →](/docs/rate-limiting)
+
 ### SSO & Identity Management
 
 - **SAML/SSO**: Integrate with Okta, Azure AD, Google Workspace, OneLogin, Auth0

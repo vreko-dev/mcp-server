@@ -2,7 +2,10 @@ import { ORPCError } from "@orpc/client";
 import { logger } from "@snapback/infrastructure";
 import { waitlist } from "@snapback/platform";
 import { eq } from "drizzle-orm";
-import { getCachedWaitlistPosition, setCachedWaitlistPosition } from "../../../lib/upstash-client";
+import {
+	getCachedWaitlistPosition,
+	setCachedWaitlistPosition,
+} from "../../../lib/upstash-client";
 import { protectedProcedure } from "../../../orpc/procedures";
 import { getDb } from "../../../src/services/database";
 import { hashEmail } from "./helpers";
@@ -59,9 +62,11 @@ export const getPosition = protectedProcedure
 			}
 
 			// Cache the result with shorter TTL (10s instead of 60s)
-			await setCachedWaitlistPosition(email, entry.queuePosition).catch((err) => {
-				logger.warn("Failed to cache position", { error: err });
-			});
+			await setCachedWaitlistPosition(email, entry.queuePosition).catch(
+				(err) => {
+					logger.warn("Failed to cache position", { error: err });
+				},
+			);
 
 			return {
 				position: entry.queuePosition,

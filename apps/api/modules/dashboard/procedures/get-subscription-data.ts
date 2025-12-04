@@ -54,12 +54,18 @@ export const getSubscriptionData = protectedProcedure
 		}
 
 		// Count snapshots in current billing period
-		const currentPeriodStart = subscription.currentPeriodStart || new Date(Date.now() - 30 * 86400000); // 30 days ago
+		const currentPeriodStart =
+			subscription.currentPeriodStart || new Date(Date.now() - 30 * 86400000); // 30 days ago
 
 		const periodSnapshots = await getDb()
 			.select({ count: count() })
 			.from(snapshots)
-			.where(and(eq(snapshots.userId, userId), gte(snapshots.createdAt, currentPeriodStart)));
+			.where(
+				and(
+					eq(snapshots.userId, userId),
+					gte(snapshots.createdAt, currentPeriodStart),
+				),
+			);
 
 		const snapshotsUsed = periodSnapshots[0]?.count || 0;
 
@@ -69,7 +75,8 @@ export const getSubscriptionData = protectedProcedure
 			snapshotsLimit = null; // Unlimited for paid plans
 		}
 
-		const remaining = snapshotsLimit !== null ? snapshotsLimit - snapshotsUsed : 0;
+		const remaining =
+			snapshotsLimit !== null ? snapshotsLimit - snapshotsUsed : 0;
 		const percentUsed =
 			snapshotsLimit !== null && snapshotsLimit > 0
 				? Math.min(100, Math.round((snapshotsUsed / snapshotsLimit) * 100))
@@ -85,7 +92,12 @@ export const getSubscriptionData = protectedProcedure
 
 		return {
 			plan: subscription.plan as "free" | "solo" | "team" | "enterprise",
-			status: subscription.status as "active" | "canceled" | "past_due" | "trialing" | "paused",
+			status: subscription.status as
+				| "active"
+				| "canceled"
+				| "past_due"
+				| "trialing"
+				| "paused",
 			currentPeriodEnd: subscription.currentPeriodEnd || undefined,
 			trialEnd: subscription.trialEnd || undefined,
 			snapshotsUsed,

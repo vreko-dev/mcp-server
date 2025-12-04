@@ -10,7 +10,8 @@ export const listPurchases = protectedProcedure
 		path: "/payments/purchases",
 		tags: ["Payments"],
 		summary: "Get purchases",
-		description: "Get all purchases of the current user or the provided organization",
+		description:
+			"Get all purchases of the current user or the provided organization",
 	})
 	.input(
 		z.object({
@@ -25,12 +26,18 @@ export const listPurchases = protectedProcedure
 		}
 
 		if (organizationId) {
-			const purchases = await db.select().from(purchase).where(eq(purchase.organizationId, organizationId));
+			const purchases = await db
+				.select()
+				.from(purchase)
+				.where(eq(purchase.organizationId, organizationId));
 
 			return { purchases };
 		}
 
-		const purchases = await db.select().from(purchase).where(eq(purchase.userId, user.id));
+		const purchases = await db
+			.select()
+			.from(purchase)
+			.where(eq(purchase.userId, user.id));
 
 		return { purchases };
 	});

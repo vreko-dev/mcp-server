@@ -1,6 +1,6 @@
-import { type Context } from "hono";
-import { z, type ZodSchema } from "zod";
 import { logger } from "@snapback/infrastructure";
+import type { Context } from "hono";
+import type { ZodSchema, z } from "zod";
 
 /**
  * Validation Middleware
@@ -62,7 +62,7 @@ function parseZodErrors(error: z.ZodError<unknown>): ValidationError[] {
  */
 export async function validateBody<T extends ZodSchema>(
 	c: Context,
-	schema: T
+	schema: T,
 ): Promise<
 	| { success: true; value: z.infer<T> }
 	| { success: false; error: ValidationErrorResponse }
@@ -100,9 +100,7 @@ export async function validateBody<T extends ZodSchema>(
 						{
 							field: "body",
 							message:
-								err instanceof Error
-									? err.message
-									: "Failed to parse JSON",
+								err instanceof Error ? err.message : "Failed to parse JSON",
 						},
 					],
 				},
@@ -160,7 +158,7 @@ export async function validateBody<T extends ZodSchema>(
  */
 export async function validateQuery<T extends ZodSchema>(
 	c: Context,
-	schema: T
+	schema: T,
 ): Promise<
 	| { success: true; value: z.infer<T> }
 	| { success: false; error: ValidationErrorResponse }
@@ -224,7 +222,7 @@ export async function validateQuery<T extends ZodSchema>(
  */
 export async function validateParams<T extends ZodSchema>(
 	c: Context,
-	schema: T
+	schema: T,
 ): Promise<
 	| { success: true; value: z.infer<T> }
 	| { success: false; error: ValidationErrorResponse }
@@ -273,15 +271,12 @@ export async function validateParams<T extends ZodSchema>(
 /**
  * Create a combined validator for body and query
  */
-export async function validateRequest<
-	B extends ZodSchema,
-	Q extends ZodSchema
->(
+export async function validateRequest<B extends ZodSchema, Q extends ZodSchema>(
 	c: Context,
 	schemas: {
 		body?: B;
 		query?: Q;
-	}
+	},
 ): Promise<{
 	body?: z.infer<B>;
 	query?: z.infer<Q>;

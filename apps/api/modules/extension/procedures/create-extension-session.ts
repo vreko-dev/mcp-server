@@ -26,7 +26,10 @@ export const createExtensionSession = protectedProcedure
 
 		// Check if session already exists
 		const existingSession = await getDb()?.query.extensionSessions.findFirst({
-			where: and(eq(extensionSessions.id, input.id), eq(extensionSessions.userId, userId)),
+			where: and(
+				eq(extensionSessions.id, input.id),
+				eq(extensionSessions.userId, userId),
+			),
 		});
 
 		if (existingSession) {

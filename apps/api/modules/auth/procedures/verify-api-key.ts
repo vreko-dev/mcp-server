@@ -24,7 +24,11 @@ export const verifyApiKeyProcedure = publicProcedure
 		// Rate limit validation attempts to prevent brute force attacks
 		// Note: In production, use Redis-based rate limiting
 		const rateLimiter = getValidationRateLimiter();
-		const rateLimitResult = await rateLimiter.checkLimit("global_validation", 100, 60000); // 100 requests per minute
+		const rateLimitResult = await rateLimiter.checkLimit(
+			"global_validation",
+			100,
+			60000,
+		); // 100 requests per minute
 
 		if (!rateLimitResult.allowed) {
 			throw new ORPCError("TOO_MANY_REQUESTS", {
@@ -34,7 +38,9 @@ export const verifyApiKeyProcedure = publicProcedure
 
 		// Always perform a hash comparison to prevent timing attacks
 		// This ensures the function takes the same amount of time regardless of key validity
-		const dummyHash = await hashApiKey("sk_live_00000000000000000000000000000000");
+		const dummyHash = await hashApiKey(
+			"sk_live_00000000000000000000000000000000",
+		);
 
 		// Check format
 		if (!input.apiKey.match(/^sk_(live|test)_[a-zA-Z0-9]{32}$/)) {
@@ -64,7 +70,9 @@ export const verifyApiKeyProcedure = publicProcedure
 			.limit(10);
 
 		// Ensure we have an array to iterate over
-		const candidateKeys = Array.isArray(candidateKeysResult) ? candidateKeysResult : [];
+		const candidateKeys = Array.isArray(candidateKeysResult)
+			? candidateKeysResult
+			: [];
 
 		// Find matching key by verifying hash among candidates only
 		let validKey = null;
@@ -103,7 +111,10 @@ export const verifyApiKeyProcedure = publicProcedure
 		const subscription = subs && subs.length > 0 ? subs[0] : null;
 
 		// Update last used
-		await getDb().update(apiKeys).set({ lastUsedAt: new Date() }).where(eq(apiKeys.id, validKey.id));
+		await getDb()
+			.update(apiKeys)
+			.set({ lastUsedAt: new Date() })
+			.where(eq(apiKeys.id, validKey.id));
 
 		// Determine tier
 		const tier = subscription?.plan || "free";
@@ -127,7 +138,10 @@ export const verifyApiKeyProcedure = publicProcedure
 
 // Add this helper
 function getRateLimitByTier(tier: string) {
-	const limits: Record<string, { requestsPerMinute: number; snapshotsPerMonth: number }> = {
+	const limits: Record<
+		string,
+		{ requestsPerMinute: number; snapshotsPerMonth: number }
+	> = {
 		free: { requestsPerMinute: 10, snapshotsPerMonth: 1000 },
 		solo: { requestsPerMinute: 100, snapshotsPerMonth: 10000 },
 		team: { requestsPerMinute: 500, snapshotsPerMonth: 100000 },

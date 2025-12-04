@@ -1,10 +1,16 @@
 import { createHash } from "node:crypto";
 import { logger } from "@snapback/infrastructure";
-import { type NewWaitlistAuditLog, waitlistAuditLogs } from "@snapback/platform";
+import {
+	type NewWaitlistAuditLog,
+	waitlistAuditLogs,
+} from "@snapback/platform";
 import { getDb } from "../../../src/services/database";
 
 // Sanitize string input to prevent XSS
-export function sanitizeString(input: string | undefined, maxLength = 200): string | undefined {
+export function sanitizeString(
+	input: string | undefined,
+	maxLength = 200,
+): string | undefined {
 	if (!input) {
 		return undefined;
 	}
@@ -17,7 +23,9 @@ export function sanitizeString(input: string | undefined, maxLength = 200): stri
 }
 
 // Sanitize metadata object
-export function sanitizeMetadata(metadata: Record<string, unknown> | undefined): Record<string, string> | undefined {
+export function sanitizeMetadata(
+	metadata: Record<string, unknown> | undefined,
+): Record<string, string> | undefined {
 	if (!metadata) {
 		return undefined;
 	}
@@ -35,32 +43,46 @@ export function sanitizeMetadata(metadata: Record<string, unknown> | undefined):
 
 // Hash email for PII protection
 export function hashEmail(email: string): string {
-	return createHash("sha256").update(email.toLowerCase()).digest("hex").slice(0, 16);
+	return createHash("sha256")
+		.update(email.toLowerCase())
+		.digest("hex")
+		.slice(0, 16);
 }
 
 // Verify Cloudflare Turnstile token
-export async function verifyTurnstileToken(token: string, remoteIP?: string): Promise<boolean> {
+export async function verifyTurnstileToken(
+	token: string,
+	remoteIP?: string,
+): Promise<boolean> {
 	const secret = process.env.TURNSTILE_SECRET_KEY;
 
 	if (!secret) {
-		logger.warn("Turnstile secret not configured - skipping verification in development");
+		logger.warn(
+			"Turnstile secret not configured - skipping verification in development",
+		);
 		return process.env.NODE_ENV === "development"; // Only allow in development
 	}
 
 	try {
-		const response = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
+		const response = await fetch(
+			"https://challenges.cloudflare.com/turnstile/v0/siteverify",
+			{
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					secret,
+					response: token,
+					remoteip: remoteIP,
+				}),
 			},
-			body: JSON.stringify({
-				secret,
-				response: token,
-				remoteip: remoteIP,
-			}),
-		});
+		);
 
-		const data = (await response.json()) as { success: boolean; "error-codes"?: string[] };
+		const data = (await response.json()) as {
+			success: boolean;
+			"error-codes"?: string[];
+		};
 		return data.success === true;
 	} catch (error) {
 		logger.error("Turnstile verification failed", { error });

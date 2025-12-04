@@ -34,9 +34,18 @@ const RATE_LIMITS: Record<Tier, Record<string, RateLimitConfig>> = {
 		default: { maxRequests: 2000, windowMs: 3600000 }, // 2000/hr default
 	},
 	enterprise: {
-		"/api/snapshot/create": { maxRequests: Number.MAX_SAFE_INTEGER, windowMs: 3600000 },
-		"/api/policy/evaluate": { maxRequests: Number.MAX_SAFE_INTEGER, windowMs: 3600000 },
-		"/api/analytics/ingest": { maxRequests: Number.MAX_SAFE_INTEGER, windowMs: 3600000 },
+		"/api/snapshot/create": {
+			maxRequests: Number.MAX_SAFE_INTEGER,
+			windowMs: 3600000,
+		},
+		"/api/policy/evaluate": {
+			maxRequests: Number.MAX_SAFE_INTEGER,
+			windowMs: 3600000,
+		},
+		"/api/analytics/ingest": {
+			maxRequests: Number.MAX_SAFE_INTEGER,
+			windowMs: 3600000,
+		},
 		default: { maxRequests: Number.MAX_SAFE_INTEGER, windowMs: 3600000 },
 	},
 };

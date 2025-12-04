@@ -42,7 +42,7 @@ export function InteractiveDemo() {
 			<div className="flex justify-center mb-8">
 				<m.div
 					animate={{ y: [0, -8, 0] }}
-					transition={{ duration: 2, repeat: Infinity }}
+					transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
 					className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/40 border border-primary text-primary text-sm font-medium shadow-lg shadow-primary/30"
 				>
 					<span className="inline-block w-2 h-2 bg-primary rounded-full animate-pulse" />
@@ -261,7 +261,7 @@ export function InteractiveDemo() {
 												}
 									}
 									transition={
-										isSnapping ? { duration: 0.6 } : { duration: 2, repeat: Infinity }
+										isSnapping ? { duration: 0.6 } : { duration: 2, repeat: Number.POSITIVE_INFINITY }
 									}
 								>
 									{isSnapping ? "Restoring code..." : "Snap Back"}

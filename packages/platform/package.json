@@ -45,6 +45,7 @@
 			"types": "./dist/db/queries/index.d.ts",
 			"default": "./dist/db/queries/index.js"
 		},
+		"./db/queries/auth": "./src/db/queries/auth.ts",
 		"./db/zod": {
 			"types": "./dist/db/zod.d.ts",
 			"default": "./dist/db/zod.js"
@@ -93,6 +94,9 @@
 			],
 			"db/queries": [
 				"./dist/db/queries/index.d.ts"
+			],
+			"db/queries/auth": [
+				"./src/db/queries/auth.ts"
 			],
 			"db/zod": [
 				"./dist/db/zod.d.ts"

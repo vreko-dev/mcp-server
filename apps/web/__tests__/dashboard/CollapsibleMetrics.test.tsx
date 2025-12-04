@@ -2,19 +2,14 @@
  * Collapsible Metrics Component Tests
  * Phase: RED (Test-Driven Development)
  *
- * Tests for CollapsibleMetrics component that displays progressive disclosure
- * of advanced metrics (System Health, Storage, API Activity).
- *
- * Key patterns:
- * - Height animation on expand/collapse
- * - Chevron rotation (0 → 180°)
- * - Content fade transition
- * - Accessibility: ARIA attributes, keyboard navigation
- * - isMounted pattern to ensure visibility
+ * Real failing tests that drive component implementation.
+ * These tests FAIL until CollapsibleMetrics is properly implemented.
  */
 
+import "@testing-library/jest-dom";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, vi } from "vitest";
+import { CollapsibleMetrics } from "../../modules/saas/dashboard/components/CollapsibleMetrics";
 
 // Mock motion/react
 vi.mock("motion/react", () => ({
@@ -36,246 +31,318 @@ vi.mock("motion/react", () => ({
 // Mock lucide-react
 vi.mock("lucide-react", () => ({
 	ChevronDown: ({ className }: any) => (
-		<svg
-			className={className}
-			data-testid="chevron-icon"
-			aria-hidden="true"
-		>
+		<svg className={className} data-testid="chevron-icon" aria-hidden="true">
 			<path />
 		</svg>
 	),
 }));
 
 describe("CollapsibleMetrics", () => {
+	const defaultProps = {
+		title: "System Health",
+		icon: "⚙️",
+		children: <div data-testid="content">System metrics here</div>,
+		defaultOpen: false,
+	};
+
 	describe("Rendering", () => {
-		it("should render container with proper styling", () => {
-			// TODO: Verify CollapsibleMetrics renders with border, rounded-lg, overflow-hidden classes
-			expect(true).toBe(true);
+		it("should render section with proper styling", () => {
+			render(<CollapsibleMetrics {...defaultProps} />);
+			const section = screen.getByRole("region", { name: /System Health/ });
+			expect(section).toBeInTheDocument();
+			expect(section).toHaveClass(
+				"border",
+				"border-slate-700",
+				"rounded-lg",
+				"overflow-hidden",
+				"bg-slate-900/20"
+			);
 		});
 
-		it("should render header button", () => {
-			// TODO: Verify button trigger is rendered
-			expect(true).toBe(true);
+		it("should render button trigger", () => {
+			render(<CollapsibleMetrics {...defaultProps} />);
+			const button = screen.getByRole("button", { name: /System Health/ });
+			expect(button).toBeInTheDocument();
+			expect(button).toHaveAttribute("type", "button");
 		});
 
-		it("should display title text", () => {
-			// TODO: Verify title prop is displayed in button
-			expect(true).toBe(true);
-		});
-
-		it("should display icon when provided", () => {
-			// TODO: Verify icon emoji is rendered
-			expect(true).toBe(true);
-		});
-
-		it("should render without icon when not provided", () => {
-			// TODO: Verify component works with icon={undefined}
-			expect(true).toBe(true);
+		it("should display title and icon", () => {
+			render(<CollapsibleMetrics {...defaultProps} />);
+			expect(screen.getByText("System Health")).toBeInTheDocument();
+			expect(screen.getByText("⚙️")).toBeInTheDocument();
 		});
 
 		it("should render chevron icon", () => {
-			// TODO: Verify ChevronDown from lucide-react is rendered
-			expect(true).toBe(true);
+			render(<CollapsibleMetrics {...defaultProps} />);
+			expect(screen.getByTestId("chevron-icon")).toBeInTheDocument();
 		});
 
 		it("should render children content", () => {
-			// TODO: Verify ReactNode children are rendered
-			expect(true).toBe(true);
+			render(<CollapsibleMetrics {...defaultProps} />);
+			expect(screen.getByTestId("content")).toBeInTheDocument();
 		});
 	});
 
 	describe("Initial State", () => {
-		it("should be collapsed by default", () => {
-			// TODO: Verify component starts with height: 0 and opacity: 0
-			expect(true).toBe(true);
+		it("should start collapsed (height:0, opacity:0)", () => {
+			render(<CollapsibleMetrics {...defaultProps} defaultOpen={false} />);
+			const wrapper = screen.getByTestId("content").closest("[data-testid='motion-div']");
+			expect(wrapper).toHaveAttribute("data-animate", expect.stringContaining('"height":0'));
+			expect(wrapper).toHaveAttribute("data-animate", expect.stringContaining('"opacity":0'));
 		});
 
-		it("should be open when defaultOpen is true", () => {
-			// TODO: Verify component starts with height: auto and opacity: 1 when defaultOpen={true}
-			expect(true).toBe(true);
-		});
-
-		it("should have content hidden initially (height: 0)", () => {
-			// TODO: Verify content wrapper has initial={{ height: 0, opacity: 0 }}
-			expect(true).toBe(true);
-		});
-	});
-
-	describe("Interaction - Click Toggle", () => {
-		it("should expand when clicked while collapsed", () => {
-			// TODO: Verify click handler toggles isOpen state
-			// Content should animate from height: 0 to height: auto
-			expect(true).toBe(true);
-		});
-
-		it("should collapse when clicked while expanded", () => {
-			// TODO: Verify second click collapses
-			// Content should animate from height: auto to height: 0
-			expect(true).toBe(true);
-		});
-
-		it("should toggle multiple times correctly", () => {
-			// TODO: Verify multiple toggles work seamlessly
-			// State should alternate correctly between open/closed
-			expect(true).toBe(true);
+		it("should start open when defaultOpen=true", () => {
+			render(<CollapsibleMetrics {...defaultProps} defaultOpen={true} />);
+			const wrapper = screen.getByTestId("content").closest("[data-testid='motion-div']");
+			expect(wrapper).toHaveAttribute("data-animate", expect.stringContaining('"height":"auto"'));
+			expect(wrapper).toHaveAttribute("data-animate", expect.stringContaining('"opacity":1'));
 		});
 	});
 
-	describe("Animation", () => {
-		it("should animate chevron rotation on open", () => {
-			// TODO: Verify chevron animates rotate: 0 → 180
-			// Uses m.div with animate={{ rotate: isOpen ? 180 : 0 }}
-			expect(true).toBe(true);
+	describe("Toggle Interaction", () => {
+		it("should expand when clicked", async () => {
+			render(<CollapsibleMetrics {...defaultProps} defaultOpen={false} />);
+			const button = screen.getByRole("button");
+
+			fireEvent.click(button);
+
+			await waitFor(() => {
+				const wrapper = screen.getByTestId("content").closest("[data-testid='motion-div']");
+				expect(wrapper).toHaveAttribute("data-animate", expect.stringContaining('"height":"auto"'));
+			});
 		});
 
-		it("should rotate chevron back when closed", () => {
-			// TODO: Verify chevron animates rotate: 180 → 0
-			expect(true).toBe(true);
+		it("should collapse when clicked while open", async () => {
+			render(<CollapsibleMetrics {...defaultProps} defaultOpen={true} />);
+			const button = screen.getByRole("button");
+
+			fireEvent.click(button);
+
+			await waitFor(() => {
+				const wrapper = screen.getByTestId("content").closest("[data-testid='motion-div']");
+				expect(wrapper).toHaveAttribute("data-animate", expect.stringContaining('"height":0'));
+			});
 		});
 
-		it("should have correct transition timing for height animation", () => {
-			// TODO: Verify duration: 0.3, ease: "easeInOut" for height animation
-			expect(true).toBe(true);
+		it("should toggle multiple times correctly", async () => {
+			render(<CollapsibleMetrics {...defaultProps} defaultOpen={false} />);
+			const button = screen.getByRole("button");
+
+			// Open
+			fireEvent.click(button);
+			await waitFor(() => {
+				expect(button).toHaveAttribute("aria-expanded", "true");
+			});
+
+			// Close
+			fireEvent.click(button);
+			await waitFor(() => {
+				expect(button).toHaveAttribute("aria-expanded", "false");
+			});
+
+			// Open again
+			fireEvent.click(button);
+			await waitFor(() => {
+				expect(button).toHaveAttribute("aria-expanded", "true");
+			});
+		});
+	});
+
+	describe("Chevron Animation", () => {
+		it("should rotate chevron 180° on expand", async () => {
+			render(<CollapsibleMetrics {...defaultProps} defaultOpen={false} />);
+			const button = screen.getByRole("button");
+			const chevronMotion = button.querySelector("[data-testid='motion-div']");
+
+			fireEvent.click(button);
+
+			await waitFor(() => {
+				expect(chevronMotion).toHaveAttribute("data-animate", expect.stringContaining('"rotate":180'));
+			});
 		});
 
-		it("should animate content opacity on expand", () => {
-			// TODO: Verify opacity: 0 → 1 when expanded
-			expect(true).toBe(true);
+		it("should rotate chevron back to 0° on collapse", async () => {
+			render(<CollapsibleMetrics {...defaultProps} defaultOpen={true} />);
+			const button = screen.getByRole("button");
+
+			fireEvent.click(button);
+
+			await waitFor(() => {
+				const chevronMotion = button.querySelector("[data-testid='motion-div']");
+				expect(chevronMotion).toHaveAttribute("data-animate", expect.stringContaining('"rotate":0'));
+			});
+		});
+	});
+
+	describe("Content Animation", () => {
+		it("should fade in on expand", async () => {
+			render(<CollapsibleMetrics {...defaultProps} defaultOpen={false} />);
+			const button = screen.getByRole("button");
+
+			fireEvent.click(button);
+
+			await waitFor(() => {
+				const wrapper = screen.getByTestId("content").closest("[data-testid='motion-div']");
+				expect(wrapper).toHaveAttribute("data-animate", expect.stringContaining('"opacity":1'));
+			});
 		});
 
-		it("should have fade transition for opacity", () => {
-			// TODO: Verify opacity fade happens concurrently with height animation
-			expect(true).toBe(true);
+		it("should fade out on collapse", async () => {
+			render(<CollapsibleMetrics {...defaultProps} defaultOpen={true} />);
+			const button = screen.getByRole("button");
+
+			fireEvent.click(button);
+
+			await waitFor(() => {
+				const wrapper = screen.getByTestId("content").closest("[data-testid='motion-div']");
+				expect(wrapper).toHaveAttribute("data-animate", expect.stringContaining('"opacity":0'));
+			});
 		});
 	});
 
 	describe("Accessibility", () => {
-		it("should have button role on trigger", () => {
-			// TODO: Verify button element has type="button"
-			expect(true).toBe(true);
+		it("should use semantic section element", () => {
+			render(<CollapsibleMetrics {...defaultProps} />);
+			const section = screen.getByRole("region");
+			expect(section.tagName).toBe("SECTION");
 		});
 
-		it("should have semantic region for container", () => {
-			// TODO: Verify container uses role="region" for semantic meaning
-			expect(true).toBe(true);
+		it("should have aria-label on section", () => {
+			render(<CollapsibleMetrics {...defaultProps} />);
+			const section = screen.getByRole("region", { name: /System Health/ });
+			expect(section).toHaveAttribute("aria-label", "System Health");
 		});
 
-		it("should support keyboard navigation (Enter/Space)", () => {
-			// TODO: Verify button responds to Enter/Space keys via standard HTML button behavior
-			expect(true).toBe(true);
+		it("should have aria-expanded attribute", () => {
+			render(<CollapsibleMetrics {...defaultProps} defaultOpen={false} />);
+			const button = screen.getByRole("button");
+			expect(button).toHaveAttribute("aria-expanded", "false");
+
+			fireEvent.click(button);
+			expect(button).toHaveAttribute("aria-expanded", "true");
 		});
 
-		it("should have visible chevron icon for visual feedback", () => {
-			// TODO: Verify ChevronDown icon is visible with text-slate-400 color
-			expect(true).toBe(true);
+		it("should have aria-controls link", () => {
+			render(<CollapsibleMetrics {...defaultProps} />);
+			const button = screen.getByRole("button");
+			expect(button).toHaveAttribute("aria-controls");
 		});
 
 		it("should maintain focus after toggle", () => {
-			// TODO: Verify focus remains on button after click
-			expect(true).toBe(true);
+			render(<CollapsibleMetrics {...defaultProps} />);
+			const button = screen.getByRole("button");
+
+			button.focus();
+			fireEvent.click(button);
+
+			expect(document.activeElement).toBe(button);
 		});
 	});
 
 	describe("Content Display", () => {
-		it("should display children when open", () => {
-			// TODO: Verify children are rendered in content area
-			expect(true).toBe(true);
+		it("should render children when expanded", () => {
+			render(<CollapsibleMetrics {...defaultProps} defaultOpen={true} />);
+			expect(screen.getByTestId("content")).toBeInTheDocument();
 		});
 
-		it("should contain children in proper container", () => {
-			// TODO: Verify children are wrapped in px-6 py-4 space-y-3 container
-			expect(true).toBe(true);
+		it("should wrap children in padded container", () => {
+			render(<CollapsibleMetrics {...defaultProps} defaultOpen={true} />);
+			const container = screen.getByTestId("content").parentElement;
+			expect(container).toHaveClass("px-6", "py-4", "space-y-3");
 		});
 
-		it("should render complex children content", () => {
-			// TODO: Verify multiple nested elements in children render correctly
-			expect(true).toBe(true);
-		});
-
-		it("should preserve content state when toggling", () => {
-			// TODO: Verify children remain in DOM during expand/collapse
-			// (They're just visually hidden via height animation)
-			expect(true).toBe(true);
+		it("should support multiple child elements", () => {
+			const multipleChildren = (
+				<>
+					<div data-testid="metric-1">Metric 1</div>
+					<div data-testid="metric-2">Metric 2</div>
+				</>
+			);
+			render(
+				<CollapsibleMetrics {...defaultProps} defaultOpen={true}>
+					{multipleChildren}
+				</CollapsibleMetrics>
+			);
+			expect(screen.getByTestId("metric-1")).toBeInTheDocument();
+			expect(screen.getByTestId("metric-2")).toBeInTheDocument();
 		});
 	});
 
-	describe("Style Classes", () => {
-		it("should have border styling", () => {
-			// TODO: Verify border-slate-700 class on container
-			expect(true).toBe(true);
-		});
-
-		it("should have proper padding on button", () => {
-			// TODO: Verify button has px-6 py-4 padding
-			expect(true).toBe(true);
+	describe("Styling", () => {
+		it("should have border and rounded styling", () => {
+			render(<CollapsibleMetrics {...defaultProps} />);
+			const section = screen.getByRole("region");
+			expect(section).toHaveClass("border", "border-slate-700", "rounded-lg");
 		});
 
 		it("should have hover effect on button", () => {
-			// TODO: Verify hover:bg-slate-800/30 class on button
-			expect(true).toBe(true);
+			render(<CollapsibleMetrics {...defaultProps} />);
+			const button = screen.getByRole("button");
+			expect(button).toHaveClass("hover:bg-slate-800/30");
 		});
 
-		it("should have proper background color", () => {
-			// TODO: Verify bg-slate-900/20 background
-			expect(true).toBe(true);
-		});
-
-		it("should have overflow hidden for animation", () => {
-			// TODO: Verify overflow-hidden on container for height animation
-			expect(true).toBe(true);
+		it("should have proper padding on button", () => {
+			render(<CollapsibleMetrics {...defaultProps} />);
+			const button = screen.getByRole("button");
+			expect(button).toHaveClass("px-6", "py-4");
 		});
 	});
 
-	describe("Edge Cases", () => {
-		it("should handle empty children", () => {
-			// TODO: Verify component renders even with empty child div
-			expect(true).toBe(true);
-		});
+	describe("Multiple Instances", () => {
+		it("should support multiple collapsibles independently", async () => {
+			render(
+				<>
+					<CollapsibleMetrics title="Health" defaultOpen={false}>
+						<div data-testid="health">Health</div>
+					</CollapsibleMetrics>
+					<CollapsibleMetrics title="Storage" defaultOpen={false}>
+						<div data-testid="storage">Storage</div>
+					</CollapsibleMetrics>
+				</>
+			);
 
-		it("should handle very long title", () => {
-			// TODO: Verify long titles display without breaking layout
-			expect(true).toBe(true);
-		});
+			const buttons = screen.getAllByRole("button");
 
-		it("should handle special characters in title", () => {
-			// TODO: Verify special chars (&, [], etc) render correctly
-			expect(true).toBe(true);
-		});
+			// Open first
+			fireEvent.click(buttons[0]);
+			await waitFor(() => {
+				expect(buttons[0]).toHaveAttribute("aria-expanded", "true");
+			});
 
-		it("should handle null icon gracefully", () => {
-			// TODO: Verify conditional rendering when icon={null} or icon={undefined}
-			expect(true).toBe(true);
-		});
-	});
-
-	describe("Integration", () => {
-		it("should work with multiple collapsibles on same page", () => {
-			// TODO: Verify multiple instances can coexist without conflicts
-			// Each should have independent state
-			expect(true).toBe(true);
-		});
-
-		it("should handle independent toggle states", () => {
-			// TODO: Verify clicking one collapsible doesn't affect others
-			// Each maintains its own isOpen state via useState
-			expect(true).toBe(true);
+			// Second should still be closed
+			expect(buttons[1]).toHaveAttribute("aria-expanded", "false");
 		});
 	});
 
 	describe("Type Safety", () => {
-		it("should accept ReactNode as children", () => {
-			// TODO: Verify children prop accepts fragments with multiple elements
-			expect(true).toBe(true);
+		it("should accept string icon", () => {
+			render(<CollapsibleMetrics {...defaultProps} icon="🛡️" />);
+			expect(screen.getByText("🛡️")).toBeInTheDocument();
 		});
 
-		it("should accept string as icon", () => {
-			// TODO: Verify icon prop accepts emoji strings
-			expect(true).toBe(true);
+		it("should accept ReactNode icon", () => {
+			const icon = <span data-testid="custom-icon">✨</span>;
+			render(<CollapsibleMetrics {...defaultProps} icon={icon} />);
+			expect(screen.getByTestId("custom-icon")).toBeInTheDocument();
+		});
+	});
+
+	describe("Edge Cases", () => {
+		it("should handle undefined icon gracefully", () => {
+			render(<CollapsibleMetrics {...defaultProps} icon={undefined} />);
+			expect(screen.getByRole("button")).toBeInTheDocument();
 		});
 
-		it("should accept ReactNode as icon", () => {
-			// TODO: Verify icon prop accepts React elements
-			expect(true).toBe(true);
+		it("should handle long title", () => {
+			const longTitle = "System Health and Performance Metrics Overview";
+			render(<CollapsibleMetrics {...defaultProps} title={longTitle} />);
+			expect(screen.getByText(longTitle)).toBeInTheDocument();
+		});
+
+		it("should handle special characters in title", () => {
+			const specialTitle = "API Activity & Status [Live]";
+			render(<CollapsibleMetrics {...defaultProps} title={specialTitle} />);
+			expect(screen.getByText(specialTitle)).toBeInTheDocument();
 		});
 	});
 });

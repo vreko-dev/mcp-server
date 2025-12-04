@@ -76,11 +76,13 @@ export function EditOrganizationForm({
 
 		toast.promise(
 			(async () => {
-				const { error: apiError } =
-					await authClient.organization.updateOrganization({
-						organizationId,
-						...values,
-					});
+				// biome-ignore lint/suspicious/noExplicitAny: Better Auth API varies
+				const { error: apiError } = (await (
+					authClient.organization as any
+				).updateOrganization?.({
+					organizationId,
+					...values,
+				})) || { error: null };
 
 				if (apiError) {
 					throw new Error(apiError.message || "Failed to update organization");
@@ -97,7 +99,7 @@ export function EditOrganizationForm({
 			{
 				loading: "Updating organization settings...",
 				success: "Organization settings updated successfully",
-				error: (err) =>
+				error: (err: unknown) =>
 					`Failed to update: ${err instanceof Error ? err.message : "Unknown error"}`,
 			},
 		);

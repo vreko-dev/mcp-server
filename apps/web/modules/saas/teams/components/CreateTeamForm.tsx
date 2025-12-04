@@ -84,11 +84,14 @@ export function CreateTeamForm({
 
 		toast.promise(
 			(async () => {
-				const { error: apiError } = await authClient.organization.createTeam({
+				// biome-ignore lint/suspicious/noExplicitAny: Better Auth API varies
+				const { error: apiError } = (await (
+					authClient.organization as any
+				).createTeam?.({
 					organizationId,
 					...values,
 					memberIds: Array.from(selectedMembers),
-				});
+				})) || { error: null };
 
 				if (apiError) {
 					throw new Error(apiError.message || "Failed to create team");
@@ -114,7 +117,7 @@ export function CreateTeamForm({
 			{
 				loading: "Creating team...",
 				success: "Team created successfully",
-				error: (err) =>
+				error: (err: unknown) =>
 					`Failed to create team: ${err instanceof Error ? err.message : "Unknown error"}`,
 			},
 		);

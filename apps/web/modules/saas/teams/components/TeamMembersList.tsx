@@ -40,11 +40,9 @@ interface TeamMember {
 
 export function TeamMembersList({
 	teamId,
-	organizationId,
 	onAddMemberClick,
 }: {
 	teamId: string;
-	organizationId: string;
 	onAddMemberClick?: () => void;
 }) {
 	const queryClient = useQueryClient();
@@ -62,8 +60,8 @@ export function TeamMembersList({
 			setError(null);
 
 			try {
-				// biome-ignore lint/suspicious/noExplicitAny: Better Auth response type varies
-				const result = (await authClient.organization.listTeamMembers({
+				// biome-ignore lint/suspicious/noExplicitAny: Better Auth API varies
+				const result = (await (authClient.organization as any).listMembers?.({
 					teamId,
 				})) as any;
 

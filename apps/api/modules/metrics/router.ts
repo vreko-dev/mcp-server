@@ -1,8 +1,8 @@
-import { procedure, router } from "@orpc/server";
 import { logger } from "@snapback/infrastructure";
 import type { PgDatabase } from "drizzle-orm/pg-core";
 import { z } from "zod";
-import { MetricsAggregator } from "../../services/metrics-aggregator";
+import { publicProcedure } from "../../orpc/procedures.js";
+import { MetricsAggregator } from "../../src/services/metrics-aggregator.js";
 
 /**
  * Metrics Router
@@ -12,43 +12,21 @@ import { MetricsAggregator } from "../../services/metrics-aggregator";
  * - GET /metrics/my-timeline: Get daily metrics timeline
  * - GET /metrics/my-limits: Get usage limits
  */
-export function createMetricsRouter(db: PgDatabase) {
+export function createMetricsRouter(db: PgDatabase<any>) {
 	const aggregator = new MetricsAggregator(db);
 
-	return router({
+	return {
 		/**
 		 * Get current user's aggregated metrics
 		 * Returns lifetime + rolling window stats
 		 */
-		getMyUsage: procedure
+		getMyUsage: publicProcedure
 			.input(
 				z.object({
 					userId: z.string().min(1, "User ID required"),
 				}),
 			)
-			.output(
-				z.object({
-					success: z.boolean(),
-					data: z
-						.object({
-							snapshotsTotal: z.number(),
-							restoresTotal: z.number(),
-							minutesSavedTotal: z.number(),
-							aiSessionsTotal: z.number(),
-							snapshots7d: z.number(),
-							restores7d: z.number(),
-							minutesSaved7d: z.number(),
-							aiSessions7d: z.number(),
-							snapshots30d: z.number(),
-							restores30d: z.number(),
-							lastSnapshotAt: z.date().nullable(),
-							lastRestoreAt: z.date().nullable(),
-						})
-						.nullable(),
-					error: z.string().nullable(),
-				}),
-			)
-			.query(async ({ input }) => {
+			.handler(async ({ input }) => {
 				try {
 					const metrics = await aggregator.getUserLifetimeMetrics(input.userId);
 
@@ -96,7 +74,7 @@ export function createMetricsRouter(db: PgDatabase) {
 		 * Get user's daily metrics timeline
 		 * Returns daily snapshots for charting/visualization
 		 */
-		getMyTimeline: procedure
+		getMyTimeline: publicProcedure
 			.input(
 				z.object({
 					userId: z.string().min(1, "User ID required"),
@@ -104,24 +82,7 @@ export function createMetricsRouter(db: PgDatabase) {
 					endDate: z.string().datetime(),
 				}),
 			)
-			.output(
-				z.object({
-					success: z.boolean(),
-					data: z
-						.array(
-							z.object({
-								date: z.date(),
-								snapshotsCreated: z.number(),
-								snapshotsRestored: z.number(),
-								minutesSavedEstimate: z.number(),
-								aiSessions: z.number(),
-							}),
-						)
-						.nullable(),
-					error: z.string().nullable(),
-				}),
-			)
-			.query(async ({ input }) => {
+			.handler(async ({ input }) => {
 				try {
 					const dailyMetrics = await aggregator.getDailyMetricsForRange(
 						input.userId,
@@ -131,7 +92,7 @@ export function createMetricsRouter(db: PgDatabase) {
 
 					return {
 						success: true,
-						data: dailyMetrics.map((metric) => ({
+						data: dailyMetrics.map((metric: any) => ({
 							date: metric.date as Date,
 							snapshotsCreated: metric.snapshotsCreated,
 							snapshotsRestored: metric.snapshotsRestored,
@@ -158,31 +119,13 @@ export function createMetricsRouter(db: PgDatabase) {
 		 * Get user's usage limits (subscription tier dependent)
 		 * Returns monthly limits and current usage
 		 */
-		getMyUsageLimits: procedure
+		getMyUsageLimits: publicProcedure
 			.input(
 				z.object({
 					userId: z.string().min(1, "User ID required"),
 				}),
 			)
-			.output(
-				z.object({
-					success: z.boolean(),
-					data: z
-						.object({
-							tier: z.enum(["free", "solo", "team", "enterprise"]),
-							monthlySnapshotLimit: z.number(),
-							monthlyRestoreLimit: z.number(),
-							aiSessionsLimit: z.number(),
-							snapshotsUsedThisMonth: z.number(),
-							restoresUsedThisMonth: z.number(),
-							aiSessionsUsedThisMonth: z.number(),
-							percentageUsed: z.number().min(0).max(100),
-						})
-						.nullable(),
-					error: z.string().nullable(),
-				}),
-			)
-			.query(async ({ input }) => {
+			.handler(async ({ input }) => {
 				try {
 					// Placeholder: In real implementation, fetch from user.subscriptionTier
 					// and calculate current month usage
@@ -201,7 +144,7 @@ export function createMetricsRouter(db: PgDatabase) {
 					const monthlyRestoreLimit = 50;
 					const aiSessionsLimit = 20;
 
-					const percentageUsed = Math.round((metrics.snapshots30d / monthlySnapshotLimit) * 100);
+					const percentageUsed = Math.round(((metrics.snapshots30d ?? 0) / monthlySnapshotLimit) * 100);
 
 					return {
 						success: true,
@@ -230,5 +173,5 @@ export function createMetricsRouter(db: PgDatabase) {
 					};
 				}
 			}),
-	});
+	};
 }

@@ -1,5 +1,5 @@
+import path from "node:path";
 import { defineConfig } from "vitest/config";
-import path from "path";
 
 /**
  * Production-grade Vitest configuration with enforced coverage thresholds

@@ -1,25 +1,58 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { checkRateLimit } from "@/lib/rate-limit";
+
+// In-memory rate limit store
+interface RateLimitEntry {
+	attempts: number;
+	resetAt: number;
+}
+
+const rateLimitStore = new Map<string, RateLimitEntry>();
+const MAX_ATTEMPTS = 10;
+const WINDOW_MS = 15 * 60 * 1000; // 15 minutes
 
 /**
- * Rate Limiting Middleware for Authentication Endpoints
- *
- * Protects authentication endpoints from brute-force attacks by limiting
- * the number of attempts per IP address.
- *
- * Usage:
- * Import this middleware in auth API routes and wrap the handler:
- *
- * ```typescript
- * import { withAuthRateLimit } from "./rate-limit-middleware";
- *
- * async function handler(req: NextRequest) {
- *   // Your auth logic here
- * }
- *
- * export const POST = withAuthRateLimit(handler);
- * ```
+ * Synchronous rate limit check for authentication endpoints
  */
+function checkRateLimit(identifier: string): {
+	allowed: boolean;
+	remaining: number;
+	resetAt: number;
+} {
+	const now = Date.now();
+	const entry = rateLimitStore.get(identifier);
+
+	// No entry or expired window - allow and create new entry
+	if (!entry || now > entry.resetAt) {
+		rateLimitStore.set(identifier, {
+			attempts: 1,
+			resetAt: now + WINDOW_MS,
+		});
+
+		return {
+			allowed: true,
+			remaining: MAX_ATTEMPTS - 1,
+			resetAt: now + WINDOW_MS,
+		};
+	}
+
+	// Within window - check if under limit
+	if (entry.attempts < MAX_ATTEMPTS) {
+		entry.attempts++;
+
+		return {
+			allowed: true,
+			remaining: MAX_ATTEMPTS - entry.attempts,
+			resetAt: entry.resetAt,
+		};
+	}
+
+	// Over limit
+	return {
+		allowed: false,
+		remaining: 0,
+		resetAt: entry.resetAt,
+	};
+}
 
 /**
  * Get client identifier for rate limiting
@@ -56,21 +89,17 @@ function getClientIP(request: NextRequest): string {
 	// Last resort: Create identifier from user-agent and accept-language
 	// This prevents all users without IP from sharing the same rate limit
 	const userAgent = request.headers.get("user-agent") || "unknown-ua";
-	const acceptLanguage =
-		request.headers.get("accept-language") || "unknown-lang";
+	const acceptLanguage = request.headers.get("accept-language") || "unknown-lang";
 
 	// Simple hash to create semi-unique identifier
 	const fallbackIdentifier = `fallback:${hashString(userAgent + acceptLanguage)}`;
 
 	// Log warning for monitoring purposes
 	if (process.env.NODE_ENV === "production") {
-		console.warn(
-			"Rate limiting: IP not detectable, using fallback identifier",
-			{
-				userAgent: userAgent.substring(0, 50), // Truncate for privacy
-				timestamp: new Date().toISOString(),
-			},
-		);
+		console.warn("Rate limiting: IP not detectable, using fallback identifier", {
+			userAgent: userAgent.substring(0, 50), // Truncate for privacy
+			timestamp: new Date().toISOString(),
+		});
 	}
 
 	return fallbackIdentifier;
@@ -93,24 +122,21 @@ function hashString(str: string): string {
 /**
  * Higher-order function to wrap auth handlers with rate limiting
  */
-export function withAuthRateLimit(
-	handler: (request: NextRequest) => Promise<Response>,
-) {
+export function withAuthRateLimit(handler: (request: NextRequest) => Promise<Response>) {
 	return async (request: NextRequest): Promise<Response> => {
 		const ip = getClientIP(request);
 		const identifier = `auth:${ip}`;
 
 		// Check rate limit
-		const { allowed, remaining, resetAt } = checkRateLimit(identifier);
+		const limit = checkRateLimit(identifier);
 
-		if (!allowed) {
-			const retryAfterSeconds = Math.ceil((resetAt - Date.now()) / 1000);
+		if (!limit.allowed) {
+			const retryAfterSeconds = Math.ceil((limit.resetAt - Date.now()) / 1000);
 
 			return NextResponse.json(
 				{
 					error: "Too many authentication attempts",
-					message:
-						"You have exceeded the maximum number of login attempts. Please try again later.",
+					message: "You have exceeded the maximum number of login attempts. Please try again later.",
 					retryAfter: retryAfterSeconds,
 				},
 				{
@@ -119,7 +145,7 @@ export function withAuthRateLimit(
 						"Retry-After": retryAfterSeconds.toString(),
 						"X-RateLimit-Limit": "10",
 						"X-RateLimit-Remaining": "0",
-						"X-RateLimit-Reset": resetAt.toString(),
+						"X-RateLimit-Reset": limit.resetAt.toString(),
 					},
 				},
 			);
@@ -131,8 +157,8 @@ export function withAuthRateLimit(
 		// Clone response to add headers
 		const enhancedResponse = new Response(response.body, response);
 		enhancedResponse.headers.set("X-RateLimit-Limit", "10");
-		enhancedResponse.headers.set("X-RateLimit-Remaining", remaining.toString());
-		enhancedResponse.headers.set("X-RateLimit-Reset", resetAt.toString());
+		enhancedResponse.headers.set("X-RateLimit-Remaining", limit.remaining.toString());
+		enhancedResponse.headers.set("X-RateLimit-Reset", limit.resetAt.toString());
 
 		return enhancedResponse;
 	};
@@ -146,16 +172,15 @@ export function checkAuthRateLimit(request: NextRequest): Response | null {
 	const ip = getClientIP(request);
 	const identifier = `auth:${ip}`;
 
-	const { allowed, resetAt } = checkRateLimit(identifier);
+	const limit = checkRateLimit(identifier);
 
-	if (!allowed) {
-		const retryAfterSeconds = Math.ceil((resetAt - Date.now()) / 1000);
+	if (!limit.allowed) {
+		const retryAfterSeconds = Math.ceil((limit.resetAt - Date.now()) / 1000);
 
 		return NextResponse.json(
 			{
 				error: "Too many authentication attempts",
-				message:
-					"You have exceeded the maximum number of login attempts. Please try again later.",
+				message: "You have exceeded the maximum number of login attempts. Please try again later.",
 				retryAfter: retryAfterSeconds,
 			},
 			{
@@ -164,7 +189,7 @@ export function checkAuthRateLimit(request: NextRequest): Response | null {
 					"Retry-After": retryAfterSeconds.toString(),
 					"X-RateLimit-Limit": "10",
 					"X-RateLimit-Remaining": "0",
-					"X-RateLimit-Reset": resetAt.toString(),
+					"X-RateLimit-Reset": limit.resetAt.toString(),
 				},
 			},
 		);

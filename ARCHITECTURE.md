@@ -125,4 +125,7 @@ Update any scripts or workflows that reference the old package names to use the 
 
 ## Developer Documentation
 
-For detailed information about the current architecture and implementation, see the [Canonical Developer Guide](./docs/development/canonical-developer-guide.md).
+For detailed information about the current architecture and implementation, see:
+
+- **[Canonical Developer Guide](./docs/development/canonical-developer-guide.md)** - Core architecture and design decisions
+- **[Framework Patterns & Best Practices](./FRAMEWORK_PATTERNS.md)** - Framework-specific implementation patterns, common pitfalls, and solutions (oRPC, Drizzle ORM, Next.js, rate limiting)

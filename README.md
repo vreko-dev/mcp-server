@@ -419,6 +419,8 @@ The SnapBack platform follows a monorepo architecture with 10 core packages and 
 
 ## Developer Documentation
 
-For developers working on the SnapBack codebase, see our comprehensive canonical developer guide:
+For developers working on the SnapBack codebase, see our comprehensive development guidelines:
 
 - [Canonical Developer Guide](./docs/development/canonical-developer-guide.md) - Complete guide to the current architecture using industry-standard libraries
+- [Linting & Code Quality Standards](./LINTING_STANDARDS.md) - Code formatting, type safety, and pre-commit checks
+- [Framework-Specific Patterns & Best Practices](./FRAMEWORK_PATTERNS.md) - Framework implementation patterns for oRPC, Drizzle ORM, Next.js, and more

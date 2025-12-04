@@ -86,6 +86,24 @@ export const CreateSnapshotArgsSchema = z.object({
 	content: z.string().optional(),
 	files: z.array(z.string()).optional(),
 });
+export type CreateSnapshotArgs = z.infer<typeof CreateSnapshotArgsSchema>;
+
+export const CreateCheckpointArgsSchema = z.object({
+	trigger: z.string().default("manual"),
+	risk: z.number().min(0).max(10).optional(),
+	content: z.string().optional(),
+});
+export type CreateCheckpointArgs = z.infer<typeof CreateCheckpointArgsSchema>;
+
+export const CheckpointSchema = z.object({
+	id: z.string(),
+	timestamp: z.number(),
+	meta: z.object({
+		trigger: z.string().optional(),
+		risk: z.number().optional(),
+	}).optional(),
+});
+export type Checkpoint = z.infer<typeof CheckpointSchema>;
 
 export const AnalyzeRiskArgsSchema = z.object({
 	changes: z.array(DiffChangeSchema),

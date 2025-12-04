@@ -1,8 +1,8 @@
 # SnapBack Phase 2: Dashboard & Growth (TDD-Driven)
 ## Consolidated Action Plan with Docker, SDK, and Package Boundaries
 
-**Status:** Post-Phase 1 (Auth, Telemetry, Welcome panel complete)  
-**Timeline:** 3-4 weeks  
+**Status:** Post-Phase 1 (Auth, Telemetry, Welcome panel complete)
+**Timeline:** 3-4 weeks
 **Architecture:** Subdomain-based (console.snapback.dev), API-first, TDD red-green-refactor
 
 ---
@@ -307,12 +307,12 @@ Pages:
   - Install extension
   - Enter invite code
   - First checkpoint explanation
-  
+
 - /getting-started/install-vscode.mdx (10 min)
   - Step by step: VS Code Marketplace
   - How to enable
   - Troubleshooting
-  
+
 - /getting-started/first-restore.mdx (5 min)
   - Create intentional "disaster"
   - Walk through restore process
@@ -324,12 +324,12 @@ Pages:
 - /how-to/protect-critical-files.mdx
   - Whitelist/blacklist patterns
   - Policy configuration
-  
+
 - /how-to/restore-session.mdx
   - Finding specific checkpoints
   - Preview before restore
   - Rollback entire session
-  
+
 - /how-to/mcp-integration.mdx
   - Claude Desktop setup
   - Verify protection active
@@ -341,11 +341,11 @@ Pages:
 - /concepts/snapshots-checkpoints.mdx
   - Terminology clarification
   - Automatic vs manual
-  
+
 - /concepts/protection-levels.mdx
   - Watch vs Warn vs Block
   - When to use each
-  
+
 - /concepts/guardian-ai.mdx
   - Pattern detection
   - Severity scoring
@@ -419,16 +419,16 @@ For each feature:
 1. RED: Write failing test
    - Component tests in __tests__/ folder
    - API tests in modules/[feature]/__tests__/
-   
+
 2. GREEN: Minimal implementation
    - Make test pass
    - Don't over-engineer
-   
+
 3. REFACTOR: Polish & optimize
    - Extract to components
    - Add error states
    - Performance optimization
-   
+
 4. VERIFY: All tests pass
    - No regressions
    - TypeScript clean

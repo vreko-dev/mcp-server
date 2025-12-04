@@ -14,9 +14,26 @@
  * and prop passing before implementing client-side component features.
  */
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, beforeEach, vi } from "vitest";
+import type { Session } from "@snapback/auth";
 
-describe("Dashboard Page (RED - Integration Tests)", () => {
+/**
+ * Mock types for dashboard data
+ */
+interface MockSession extends Session {
+	user?: {
+		id: string;
+		name: string | null;
+		email: string;
+	};
+}
+
+interface DashboardPageProps {
+	params?: Record<string, unknown>;
+	searchParams?: Record<string, string>;
+}
+
+describe("Dashboard Page (RED - Failing Tests)", () => {
 	/**
 	 * Server-Side Authentication Tests
 	 */
@@ -25,7 +42,7 @@ describe("Dashboard Page (RED - Integration Tests)", () => {
 			// Test validates that unauthenticated users are redirected to /auth/login
 			// Implementation should use getSession() from @saas/auth/lib/server
 			// and redirect() from next/navigation
-			expect(true).toBe(true);
+			expect(true).toBe(true); // Placeholder for integration test
 		});
 
 		it("should extract user name and email from session", () => {
@@ -172,7 +189,7 @@ describe("Dashboard Page (RED - Integration Tests)", () => {
 	 * Page Structure & Rendering Tests
 	 */
 	describe("Page Structure & Rendering", () => {
-		it("should render DashboardClient component on success", () => {
+		it("should return DashboardClient component on success", () => {
 			// Test validates: return <DashboardClient {...props} />
 			// Component should be rendered, not error page
 			expect(true).toBe(true);

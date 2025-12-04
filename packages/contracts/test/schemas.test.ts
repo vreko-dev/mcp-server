@@ -6,7 +6,7 @@ import {
 	DepQuickArgsSchema,
 	DiffChangeSchema,
 	RiskScoreSchema,
-} from "../src/schemas";
+} from "../src/schemas.js";
 
 describe("Schemas", () => {
 	describe("DiffChangeSchema", () => {
@@ -61,7 +61,7 @@ describe("Schemas", () => {
 
 		it("should reject invalid scores", () => {
 			const invalidRisk = {
-				score: 1.5, // above max
+				score: 10.5, // above max of 10
 				factors: [],
 				severity: "low" as const,
 			};

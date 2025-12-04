@@ -120,7 +120,7 @@ export class PolicyEngine {
 				});
 
 				totalFindings += result.findings.length;
-				byDetector["secret"] = result.findings.length;
+				byDetector.secret = result.findings.length;
 			}
 		}
 
@@ -140,7 +140,7 @@ export class PolicyEngine {
 				});
 
 				totalFindings += result.findings.length;
-				byDetector["mock"] = result.findings.length;
+				byDetector.mock = result.findings.length;
 			}
 		}
 

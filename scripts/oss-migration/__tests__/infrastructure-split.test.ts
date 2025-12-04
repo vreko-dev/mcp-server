@@ -5,7 +5,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, } from "node:fs";
 import { join } from "node:path";
 import { execSync } from "node:child_process";
 
@@ -132,7 +132,7 @@ describe("Phase 1: Infrastructure Split", () => {
 
       for (const pkg of packagesToCheck) {
         const pkgPath = join(ROOT_DIR, pkg);
-        if (!existsSync(pkgPath)) continue;
+        if (!existsSync(pkgPath)) { continue; }
 
         try {
           // Search for old infrastructure imports with posthog
@@ -142,7 +142,7 @@ describe("Phase 1: Infrastructure Split", () => {
           );
 
           expect(result.trim()).toBe(""); // Should find nothing
-        } catch (error) {
+        } catch (_error) {
           // OK if directory doesn't exist
         }
       }

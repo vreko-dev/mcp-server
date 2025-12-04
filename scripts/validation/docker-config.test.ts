@@ -14,8 +14,8 @@
  * - docker-compose service dependencies
  */
 
-import fs from "fs";
-import path from "path";
+import fs from "node:fs";
+import path from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
 
 const PROJECT_ROOT = process.cwd();
@@ -67,7 +67,7 @@ function getComposeServicePorts(composePath: string): Record<string, number[]> {
 			const portLines = portMatches[1].match(/- ["']?(\d+):/g) || [];
 			for (const portLine of portLines) {
 				const portNum = Number.parseInt(portLine.replace(/[^\d]/g, ""), 10);
-				if (!isNaN(portNum)) {
+				if (!Number.isNaN(portNum)) {
 					hostPorts.push(portNum);
 				}
 			}
@@ -100,7 +100,7 @@ function parseEnvFile(envPath: string): Record<string, string> {
 
 	for (const line of content.split("\n")) {
 		const trimmed = line.trim();
-		if (!trimmed || trimmed.startsWith("#")) continue;
+		if (!trimmed || trimmed.startsWith("#")) { continue; }
 
 		const [key, ...valueParts] = trimmed.split("=");
 		if (key) {
@@ -165,7 +165,7 @@ describe("Docker Configuration Validation - RED Phase", () => {
 		it("should have valid script names in root Dockerfile", () => {
 			const dockerfilePath = path.join(PROJECT_ROOT, "Dockerfile");
 			const scripts = getDockerfileRunScripts(dockerfilePath);
-			const packageScripts = getPackageScripts(path.join(PROJECT_ROOT, "apps/web/package.json"));
+			const _packageScripts = getPackageScripts(path.join(PROJECT_ROOT, "apps/web/package.json"));
 
 			const validScripts = ["build", "dev", "lint", "type-check"];
 			for (const script of scripts) {
@@ -213,7 +213,7 @@ describe("Docker Configuration Validation - RED Phase", () => {
 
 			for (const dockerfileName of dockerfiles) {
 				const dockerfilePath = path.join(PROJECT_ROOT, dockerfileName);
-				if (!fs.existsSync(dockerfilePath)) continue;
+				if (!fs.existsSync(dockerfilePath)) { continue; }
 
 				const filters = getDockerfilePnpmFilters(dockerfilePath);
 
@@ -278,17 +278,17 @@ describe("Docker Configuration Validation - RED Phase", () => {
 			const envVars = parseEnvFile(envPath);
 
 			// NEXT_PUBLIC_SITE_URL should be localhost:3000 (browser-facing)
-			expect(envVars["NEXT_PUBLIC_SITE_URL"]).toMatch(
+			expect(envVars.NEXT_PUBLIC_SITE_URL).toMatch(
 				/localhost:3000|snapback\.dev|https:\/\//,
 				"NEXT_PUBLIC_SITE_URL must be publicly accessible (localhost:3000 or public domain)",
 			);
-			expect(envVars["NEXT_PUBLIC_SITE_URL"]).not.toMatch(
+			expect(envVars.NEXT_PUBLIC_SITE_URL).not.toMatch(
 				/api:3001/,
 				"NEXT_PUBLIC_SITE_URL must NOT be internal service name (api:3001)",
 			);
 
 			// BETTER_AUTH_URL should be api:3001 (internal)
-			expect(envVars["BETTER_AUTH_URL"]).toMatch(
+			expect(envVars.BETTER_AUTH_URL).toMatch(
 				/http:\/\/api:3001/,
 				"BETTER_AUTH_URL should use internal service name (http://api:3001)",
 			);
@@ -298,12 +298,12 @@ describe("Docker Configuration Validation - RED Phase", () => {
 			const envPath = path.join(PROJECT_ROOT, ".env.docker");
 			const envVars = parseEnvFile(envPath);
 
-			if (envVars["GOOGLE_CLIENT_ID"]) {
-				expect(envVars["GOOGLE_CLIENT_ID"]).toMatch(
+			if (envVars.GOOGLE_CLIENT_ID) {
+				expect(envVars.GOOGLE_CLIENT_ID).toMatch(
 					/\.apps\.googleusercontent\.com/,
 					"GOOGLE_CLIENT_ID should be in format: ...apps.googleusercontent.com",
 				);
-				expect(envVars["GOOGLE_CLIENT_SECRET"]).toBeTruthy(
+				expect(envVars.GOOGLE_CLIENT_SECRET).toBeTruthy(
 					"If GOOGLE_CLIENT_ID is set, GOOGLE_CLIENT_SECRET must also be set",
 				);
 			}
@@ -447,7 +447,7 @@ describe("Docker Configuration Validation - RED Phase", () => {
 			const content = fs.readFileSync(composePath, "utf-8");
 
 			// Check if file references env loading (either via command or configuration)
-			const hasEnvFile = content.match(/env.?file|\.env\.docker|--env-file/);
+			const _hasEnvFile = content.match(/env.?file|\.env\.docker|--env-file/);
 			expect(
 				fs.existsSync(path.join(PROJECT_ROOT, ".env.docker")) || fs.existsSync(path.join(PROJECT_ROOT, ".env")),
 			).toBe(true, ".env.docker or .env file must exist");
@@ -569,7 +569,7 @@ describe("Docker Configuration Validation - RED Phase", () => {
 			// Check for deployment documentation
 			const deploymentDocs = ["DEPLOYMENT.md", "deployment/GUIDE.md", "docs/deployment.md"];
 
-			const hasDeploymentGuide = deploymentDocs.some((doc) => fs.existsSync(path.join(PROJECT_ROOT, doc)));
+			const _hasDeploymentGuide = deploymentDocs.some((doc) => fs.existsSync(path.join(PROJECT_ROOT, doc)));
 
 			// For now, this test documents the requirement
 			// Will pass once documentation is created

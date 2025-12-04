@@ -57,7 +57,7 @@ export class GuardianLite {
 		},
 		{
 			name: "SLACK_TOKEN",
-			regex: /xox[bapsr]-[0-9A-Za-z\-]{10,}/,
+			regex: /xox[bapsr]-[0-9A-Za-z-]{10,}/,
 			type: "secret",
 			severity: "high",
 		},
@@ -105,7 +105,7 @@ export class GuardianLite {
 		},
 		{
 			name: "INTERNAL_ENV_URL",
-			regex: /https?:\/\/[a-z0-9.-]*(dev|staging|qa|test|internal)[.-][^\/\s'"]+/i,
+			regex: /https?:\/\/[a-z0-9.-]*(dev|staging|qa|test|internal)[.-][^/\s'"]+/i,
 			type: "secret",
 			severity: "medium",
 		},

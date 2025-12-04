@@ -3,9 +3,9 @@
  * RED PHASE: Define expected behavior for MCP tools integration
  */
 
-import { existsSync } from "fs";
-import * as fs from "fs/promises";
-import * as path from "path";
+import { existsSync } from "node:fs";
+import * as fs from "node:fs/promises";
+import * as path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { CreateSnapshotSchema, createSnapshot } from "../../src/tools/create-snapshot.js";
 import { listSnapshots } from "../../src/tools/list-snapshots.js";
@@ -21,7 +21,7 @@ describe("MCP Snapshot Tools - Integration with SnapshotStorage", () => {
 		resetStorage();
 		clearRegistry();
 
-		testDir = path.join(process.cwd(), ".test-mcp-" + Date.now());
+		testDir = path.join(process.cwd(), `.test-mcp-${Date.now()}`);
 		workspaceDir = path.join(testDir, "workspace");
 		await fs.mkdir(workspaceDir, { recursive: true });
 
@@ -157,18 +157,18 @@ describe("MCP Snapshot Tools - Integration with SnapshotStorage", () => {
 
 			expect(result.success).toBe(true);
 			expect(result.snapshots).toBeDefined();
-			expect(result.snapshots!.length).toBeGreaterThanOrEqual(2);
+			expect(result.snapshots?.length).toBeGreaterThanOrEqual(2);
 		});
 
 		it("should return snapshots in reverse chronological order", async () => {
-			const snap1 = await createSnapshot({
+			const _snap1 = await createSnapshot({
 				files: [{ path: "old.txt", content: "old" }],
 			});
 
 			// Wait to ensure different timestamp
 			await new Promise((resolve) => setTimeout(resolve, 10));
 
-			const snap2 = await createSnapshot({
+			const _snap2 = await createSnapshot({
 				files: [{ path: "new.txt", content: "new" }],
 			});
 
@@ -191,9 +191,9 @@ describe("MCP Snapshot Tools - Integration with SnapshotStorage", () => {
 			const result = await listSnapshots();
 
 			expect(result.success).toBe(true);
-			expect(result.snapshots!.length).toBeGreaterThan(0);
+			expect(result.snapshots?.length).toBeGreaterThan(0);
 
-			const snapshot = result.snapshots![0];
+			const snapshot = result.snapshots?.[0];
 			expect(snapshot).toHaveProperty("id");
 			expect(snapshot).toHaveProperty("timestamp");
 			expect(snapshot).toHaveProperty("reason");
@@ -217,7 +217,7 @@ describe("MCP Snapshot Tools - Integration with SnapshotStorage", () => {
 			});
 
 			expect(created.success).toBe(true);
-			const snapshotId = created.snapshot!.id;
+			const snapshotId = created.snapshot?.id;
 
 			const result = await restoreSnapshot(snapshotId);
 
@@ -235,7 +235,7 @@ describe("MCP Snapshot Tools - Integration with SnapshotStorage", () => {
 				],
 			});
 
-			const result = await restoreSnapshot(created.snapshot!.id);
+			const result = await restoreSnapshot(created.snapshot?.id);
 
 			expect(result.success).toBe(true);
 			expect(result.snapshot?.content).toHaveLength(2);
@@ -262,7 +262,7 @@ describe("MCP Snapshot Tools - Integration with SnapshotStorage", () => {
 				files: [{ path: "exact.ts", content: originalContent }],
 			});
 
-			const result = await restoreSnapshot(created.snapshot!.id);
+			const result = await restoreSnapshot(created.snapshot?.id);
 
 			expect(result.success).toBe(true);
 			const restoredFile = result.snapshot?.content?.find((f) => f.path === "exact.ts");
@@ -279,7 +279,7 @@ describe("MCP Snapshot Tools - Integration with SnapshotStorage", () => {
 			});
 
 			expect(created.success).toBe(true);
-			const snapshotId = created.snapshot!.id;
+			const snapshotId = created.snapshot?.id;
 
 			// 2. List snapshots
 			const listed = await listSnapshots();
@@ -308,11 +308,11 @@ describe("MCP Snapshot Tools - Integration with SnapshotStorage", () => {
 
 			// List should show both
 			const listed = await listSnapshots();
-			expect(listed.snapshots!.length).toBeGreaterThanOrEqual(2);
+			expect(listed.snapshots?.length).toBeGreaterThanOrEqual(2);
 
 			// Restore each independently
-			const restored1 = await restoreSnapshot(snap1.snapshot!.id);
-			const restored2 = await restoreSnapshot(snap2.snapshot!.id);
+			const restored1 = await restoreSnapshot(snap1.snapshot?.id);
+			const restored2 = await restoreSnapshot(snap2.snapshot?.id);
 
 			expect(restored1.snapshot?.content?.[0].content).toBe("v1");
 			expect(restored2.snapshot?.content?.[0].content).toBe("v2");

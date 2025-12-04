@@ -133,7 +133,7 @@ export async function startServer(): Promise<{
 				apiKey: process.env.SNAPBACK_API_KEY,
 			})
 		: undefined;
-	const analysisRouter = new AnalysisRouter(apiClient);
+	const _analysisRouter = new AnalysisRouter(apiClient);
 
 	// Set workspace root for path validation
 	// In a real implementation, this would come from the extension or config

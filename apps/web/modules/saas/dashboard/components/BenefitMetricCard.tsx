@@ -40,17 +40,17 @@ export function BenefitMetricCard({
 	}, []);
 
 	const colorClasses = {
-		green: "hover:border-snapback-green/50",
-		blue: "hover:border-blue-500/50",
-		amber: "hover:border-amber-500/50",
-		purple: "hover:border-purple-500/50",
+		green: "hover:border-emerald-400/50",
+		blue: "hover:border-sky-300/50",
+		amber: "hover:border-amber-300/50",
+		purple: "hover:border-violet-300/50",
 	};
 
 	const iconColorClasses = {
-		green: "text-snapback-green",
-		blue: "text-blue-400",
-		amber: "text-amber-400",
-		purple: "text-purple-400",
+		green: "text-emerald-400",
+		blue: "text-sky-300",
+		amber: "text-amber-300",
+		purple: "text-violet-300",
 	};
 
 	if (!isMounted) {
@@ -75,7 +75,7 @@ export function BenefitMetricCard({
 							{label}
 						</p>
 						<div className="flex items-baseline gap-2">
-							<span className="text-3xl font-bold text-white">
+							<span className="text-3xl font-bold text-slate-50">
 								{value}
 							</span>
 							{unit && (
@@ -91,8 +91,8 @@ export function BenefitMetricCard({
 							<div
 								className={`text-sm font-medium flex items-center gap-1 ${
 									trend.direction === "up"
-										? "text-snapback-green"
-										: "text-red-400"
+										? "text-emerald-400"
+										: "text-rose-400"
 								}`}
 							>
 								{trend.direction === "up" ? "↑" : "↓"} {trend.amount}
@@ -142,7 +142,7 @@ export function BenefitMetricCard({
 							{label}
 						</p>
 						<div className="flex items-baseline gap-2">
-							<span className="text-3xl font-bold text-white">
+							<span className="text-3xl font-bold text-slate-50">
 								<NumberTicker
 									value={value}
 									className="text-3xl font-bold"
@@ -165,8 +165,8 @@ export function BenefitMetricCard({
 								transition={{ delay: 0.5 }}
 								className={`text-sm font-medium flex items-center gap-1 ${
 									trend.direction === "up"
-										? "text-snapback-green"
-										: "text-red-400"
+										? "text-emerald-400"
+										: "text-rose-400"
 								}`}
 							>
 								{trend.direction === "up" ? "↑" : "↓"} {trend.amount}

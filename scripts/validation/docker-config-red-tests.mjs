@@ -9,9 +9,9 @@
  * Exit code: 0 if all tests pass, non-zero if any fail
  */
 
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -38,12 +38,12 @@ function assert(condition, message) {
 /**
  * Helper: Parse package.json to extract script names
  */
-function getPackageScripts(packagePath) {
+function _getPackageScripts(packagePath) {
 	try {
 		const content = fs.readFileSync(packagePath, "utf-8");
 		const pkg = JSON.parse(content);
 		return pkg.scripts || {};
-	} catch (e) {
+	} catch (_e) {
 		return {};
 	}
 }
@@ -56,7 +56,7 @@ function getDockerfileRunScripts(dockerfilePath) {
 		const content = fs.readFileSync(dockerfilePath, "utf-8");
 		const matches = content.match(/pnpm\s+run\s+([^\s"]+)/g) || [];
 		return matches.map((m) => m.replace("pnpm run ", "")).filter(Boolean);
-	} catch (e) {
+	} catch (_e) {
 		return [];
 	}
 }
@@ -71,7 +71,7 @@ function getDockerfilePnpmFilters(dockerfilePath) {
 		return matches
 			.map((m) => m.replace("pnpm --filter ", ""))
 			.filter((f) => f && !f.match(/^(build|dev|lint|test)$/));
-	} catch (e) {
+	} catch (_e) {
 		return [];
 	}
 }
@@ -97,7 +97,7 @@ function parseEnvFile(envPath) {
 
 		for (const line of content.split("\n")) {
 			const trimmed = line.trim();
-			if (!trimmed || trimmed.startsWith("#")) continue;
+			if (!trimmed || trimmed.startsWith("#")) { continue; }
 
 			const [key, ...valueParts] = trimmed.split("=");
 			if (key) {
@@ -106,7 +106,7 @@ function parseEnvFile(envPath) {
 		}
 
 		return vars;
-	} catch (e) {
+	} catch (_e) {
 		return {};
 	}
 }
@@ -125,8 +125,8 @@ function getWorkspacePackages() {
 			if (fs.existsSync(pkgPath)) {
 				try {
 					const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf-8"));
-					if (pkg.name) packages.push(pkg.name);
-				} catch (e) {}
+					if (pkg.name) { packages.push(pkg.name); }
+				} catch (_e) {}
 			}
 		}
 	}
@@ -139,8 +139,8 @@ function getWorkspacePackages() {
 			if (fs.existsSync(pkgPath)) {
 				try {
 					const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf-8"));
-					if (pkg.name) packages.push(pkg.name);
-				} catch (e) {}
+					if (pkg.name) { packages.push(pkg.name); }
+				} catch (_e) {}
 			}
 		}
 	}
@@ -199,7 +199,7 @@ for (const [name, dockerfilePath] of Object.entries(dockerfiles)) {
 console.log("📦 Testing Package References\n");
 
 for (const [name, dockerfilePath] of Object.entries(dockerfiles)) {
-	if (!fs.existsSync(dockerfilePath)) continue;
+	if (!fs.existsSync(dockerfilePath)) { continue; }
 
 	console.log(`${name}:`);
 	const content = fs.readFileSync(dockerfilePath, "utf-8");
@@ -247,21 +247,21 @@ for (const varName of requiredVars) {
 }
 
 console.log("\nURL separation:");
-if (envVars["NEXT_PUBLIC_SITE_URL"]) {
+if (envVars.NEXT_PUBLIC_SITE_URL) {
 	assert(
-		envVars["NEXT_PUBLIC_SITE_URL"].includes("localhost:3000") ||
-			envVars["NEXT_PUBLIC_SITE_URL"].includes("snapback.dev") ||
-			envVars["NEXT_PUBLIC_SITE_URL"].includes("https://"),
+		envVars.NEXT_PUBLIC_SITE_URL.includes("localhost:3000") ||
+			envVars.NEXT_PUBLIC_SITE_URL.includes("snapback.dev") ||
+			envVars.NEXT_PUBLIC_SITE_URL.includes("https://"),
 		"NEXT_PUBLIC_SITE_URL is publicly accessible (localhost:3000 or domain)",
 	);
 	assert(
-		!envVars["NEXT_PUBLIC_SITE_URL"].includes("api:3001"),
+		!envVars.NEXT_PUBLIC_SITE_URL.includes("api:3001"),
 		"NEXT_PUBLIC_SITE_URL does NOT use internal service name",
 	);
 }
 
-if (envVars["BETTER_AUTH_URL"]) {
-	assert(envVars["BETTER_AUTH_URL"].includes("api:3001"), "BETTER_AUTH_URL uses internal service name (api:3001)");
+if (envVars.BETTER_AUTH_URL) {
+	assert(envVars.BETTER_AUTH_URL.includes("api:3001"), "BETTER_AUTH_URL uses internal service name (api:3001)");
 }
 
 console.log("");
@@ -309,7 +309,7 @@ if (fs.existsSync(composePath)) {
 	console.log("\nPort Configuration:");
 	// Simple port conflict detection
 	const portMatches = content.match(/ports:\s*\n\s*- ["']?(\d+):/g) || [];
-	const ports = portMatches.map((m) => Number.parseInt(m.replace(/[^\d]/g, ""))).filter((p) => !isNaN(p));
+	const ports = portMatches.map((m) => Number.parseInt(m.replace(/[^\d]/g, ""), 10)).filter((p) => !Number.isNaN(p));
 
 	const uniquePorts = new Set(ports);
 	assert(ports.length === uniquePorts.size, `No port conflicts (${ports.length} unique ports)`);

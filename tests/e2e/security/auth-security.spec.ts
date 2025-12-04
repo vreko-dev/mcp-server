@@ -277,7 +277,7 @@ test.describe("Security Features E2E", () => {
 
 			// Should return 403 or empty data due to RLS
 			expect([403, 200]).toContain(orgBResponse.status());
-			if (orgBResponse.status() == 200) {
+			if (orgBResponse.status() === 200) {
 				const orgBData = await orgBResponse.json();
 				expect(orgBData.members || []).toHaveLength(0);
 			}
@@ -409,7 +409,7 @@ test.describe("Security Features E2E", () => {
 			// With tool User-Agent, should attempt to verify JWT (will fail with mock token)
 			expect([401, 200]).toContain(response.status());
 
-			if (response.status() == 401) {
+			if (response.status() === 401) {
 				const body = await response.json();
 				// Should be JWT verification error, not User-Agent error
 				expect(body.code).toMatch(/JWT_INVALID|JWT_EXPIRED/);

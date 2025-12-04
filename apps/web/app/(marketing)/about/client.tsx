@@ -10,7 +10,7 @@ const values = [
 		title: "Developer-First Safety",
 		description:
 			"Every feature designed to protect developers while they ship fast. No friction, just protection.",
-		color: "text-green-400",
+		color: "text-emerald-400",
 	},
 	{
 		icon: Zap,
@@ -97,8 +97,8 @@ export default function AboutClient() {
 							needed a safety net.
 						</p>
 
-						<div className="bg-black/50 border border-[#00FF41]/20 rounded-lg p-6 my-8">
-							<p className="text-[#00FF41] font-semibold mb-2">
+						<div className="bg-black/50 border border-emerald-400/20 rounded-lg p-6 my-8">
+							<p className="text-emerald-400 font-semibold mb-2">
 								The Realization
 							</p>
 							<p className="text-gray-300 leading-relaxed">
@@ -172,10 +172,10 @@ export default function AboutClient() {
 					whileInView={{ opacity: 1, y: 0 }}
 					viewport={{ once: true, margin: "-100px" }}
 					transition={{ duration: 0.6 }}
-					className="bg-gradient-to-r from-[#00FF41]/20 to-[#10B981]/20 border border-[#00FF41]/30 rounded-2xl p-12"
+					className="bg-gradient-to-r from-emerald-400/20 to-emerald-500/20 border border-emerald-400/30 rounded-2xl p-12"
 				>
 					<div className="flex items-start gap-4 mb-6">
-						<Target className="w-8 h-8 text-[#00FF41] flex-shrink-0 mt-1" />
+						<Target className="w-8 h-8 text-emerald-400 flex-shrink-0 mt-1" />
 						<div>
 							<h2 className="text-3xl font-bold text-white mb-2">
 								What's Next
@@ -188,7 +188,7 @@ export default function AboutClient() {
 
 					<div className="space-y-4">
 						<div className="flex items-start gap-3">
-							<span className="text-[#00FF41] mt-1">✓</span>
+							<span className="text-emerald-400 mt-1">✓</span>
 							<div>
 								<h4 className="text-white font-semibold">
 									Q1 2025 - Cloud Sync & Team Features
@@ -199,7 +199,7 @@ export default function AboutClient() {
 							</div>
 						</div>
 						<div className="flex items-start gap-3">
-							<span className="text-[#00FF41] mt-1">→</span>
+							<span className="text-emerald-400 mt-1">→</span>
 							<div>
 								<h4 className="text-white font-semibold">
 									Q2 2025 - Advanced Guardian Detection
@@ -241,14 +241,14 @@ export default function AboutClient() {
 							Want to influence our roadmap?{" "}
 							<Link
 								href="/community"
-								className="text-[#00FF41] hover:underline focus:outline-none focus:ring-2 focus:ring-[#00FF41] focus:ring-offset-2 focus:ring-offset-slate-900 rounded"
+								className="text-emerald-400 hover:underline focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2 focus:ring-offset-slate-900 rounded"
 							>
 								Join our community
 							</Link>{" "}
 							or{" "}
 							<Link
 								href="/blog"
-								className="text-[#00FF41] hover:underline focus:outline-none focus:ring-2 focus:ring-[#00FF41] focus:ring-offset-2 focus:ring-offset-slate-900 rounded"
+								className="text-emerald-400 hover:underline focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2 focus:ring-offset-slate-900 rounded"
 							>
 								read our blog
 							</Link>{" "}
@@ -276,7 +276,7 @@ export default function AboutClient() {
 						SnapBack is developed by{" "}
 						<a
 							href="https://marcellelabs.com"
-							className="text-[#00FF41] hover:underline"
+							className="text-emerald-400 hover:underline"
 							target="_blank"
 							rel="noopener noreferrer"
 						>
@@ -296,7 +296,7 @@ export default function AboutClient() {
 						</Link>
 						<Link
 							href="/community"
-							className="px-6 py-3 bg-[#00FF41] hover:bg-[#00FF41]/90 text-black font-bold rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-[#00FF41] focus:ring-offset-2 focus:ring-offset-slate-900"
+							className="px-6 py-3 bg-emerald-400 hover:bg-emerald-400/90 text-black font-bold rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2 focus:ring-offset-slate-900"
 						>
 							Join Community
 						</Link>
@@ -315,17 +315,19 @@ export default function AboutClient() {
 				>
 					<div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
 						<div>
-							<div className="text-4xl font-bold text-[#00FF41] mb-2">55+</div>
+							<div className="text-4xl font-bold text-emerald-400 mb-2">
+								55+
+							</div>
 							<div className="text-gray-400">Early Alpha Users</div>
 						</div>
 						<div>
-							<div className="text-4xl font-bold text-[#00FF41] mb-2">
+							<div className="text-4xl font-bold text-emerald-400 mb-2">
 								1,000+
 							</div>
 							<div className="text-gray-400">Snapshots Created</div>
 						</div>
 						<div>
-							<div className="text-4xl font-bold text-[#00FF41] mb-2">
+							<div className="text-4xl font-bold text-emerald-400 mb-2">
 								&lt;200ms
 							</div>
 							<div className="text-gray-400">Snapshot Creation Speed</div>

@@ -194,7 +194,7 @@ export const webhookHandler: WebhookHandler = async (req: Request) => {
 					// biome-ignore lint/style/noNonNullAssertion: Database is initialized in server context
 					if (db) {
 						const dbClient = db as NonNullable<typeof db>;
-						await dbClient.transaction(async (tx: any) => {
+						await dbClient.transaction(async (_tx: any) => {
 							// Create purchase record for one-time payment
 							// Note: We're using the database transaction here
 							// tx can be used for transactional queries
@@ -221,7 +221,7 @@ export const webhookHandler: WebhookHandler = async (req: Request) => {
 				// biome-ignore lint/style/noNonNullAssertion: Database is initialized in server context
 				if (db) {
 					const dbClient = db as NonNullable<typeof db>;
-					await dbClient.transaction(async (tx: any) => {
+					await dbClient.transaction(async (_tx: any) => {
 						// Handle subscription creation/update
 						// Note: We're using the database transaction here
 						// tx can be used for transactional queries
@@ -235,7 +235,7 @@ export const webhookHandler: WebhookHandler = async (req: Request) => {
 				// biome-ignore lint/style/noNonNullAssertion: Database is initialized in server context
 				if (db) {
 					const dbClient = db as NonNullable<typeof db>;
-					await dbClient.transaction(async (tx: any) => {
+					await dbClient.transaction(async (_tx: any) => {
 						// Handle subscription cancellation
 						// Note: We're using the database transaction here
 						// tx can be used for transactional queries

@@ -4,7 +4,7 @@
  * Ensures packages-oss/ is set up correctly before proceeding with migration
  */
 
-import { describe, expect, it, beforeAll } from "vitest";
+import { describe, expect, it, } from "vitest";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
@@ -165,7 +165,7 @@ describe("Phase 1: OSS Directory Structure", () => {
 
 describe("Phase 1: Rollback Safety", () => {
   it("should have rollback script", () => {
-    const rollbackPath = join(ROOT_DIR, "scripts/oss-migration/migration-rollback.sh");
+    const _rollbackPath = join(ROOT_DIR, "scripts/oss-migration/migration-rollback.sh");
     // TODO(phase1): Create rollback script
     // expect(existsSync(rollbackPath)).toBe(true);
   });

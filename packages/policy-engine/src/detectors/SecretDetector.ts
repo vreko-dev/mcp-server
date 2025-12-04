@@ -134,7 +134,7 @@ export class SecretDetector {
 	 * Calculate Shannon entropy of a string
 	 */
 	private calculateEntropy(str: string): number {
-		if (str.length === 0) return 0;
+		if (str.length === 0) { return 0; }
 
 		const freq: Record<string, number> = {};
 		for (const char of str) {
@@ -154,7 +154,7 @@ export class SecretDetector {
 	/**
 	 * Detect high-entropy strings that might be secrets
 	 */
-	private detectHighEntropyStrings(cleanedLines: string[], originalLines: string[], findings: SecretFinding[]): void {
+	private detectHighEntropyStrings(cleanedLines: string[], _originalLines: string[], findings: SecretFinding[]): void {
 		const stringPattern = /["']([a-zA-Z0-9+/=_-]{20,})["']/g;
 
 		for (let lineNum = 0; lineNum < cleanedLines.length; lineNum++) {
@@ -255,7 +255,7 @@ export class SecretDetector {
 	 * Calculate overall risk score (0-10)
 	 */
 	private calculateRiskScore(findings: SecretFinding[]): number {
-		if (findings.length === 0) return 0;
+		if (findings.length === 0) { return 0; }
 
 		// Weight by severity
 		const severityWeights = {

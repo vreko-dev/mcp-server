@@ -153,7 +153,7 @@ export class MockDetector {
 	 * Calculate risk score (0-10)
 	 */
 	private calculateRiskScore(findings: MockFinding[]): number {
-		if (findings.length === 0) return 0;
+		if (findings.length === 0) { return 0; }
 
 		const severityWeights = {
 			critical: 10,

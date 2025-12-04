@@ -22,10 +22,10 @@ const defaultProps = {
 
 describe("DashboardHeroCard", () => {
 	describe("Rendering", () => {
-		it("should render hero card container", () => {
+		it("should render hero card with multiple animated sections", () => {
 			render(<DashboardHeroCard {...defaultProps} />);
-			const container = screen.getByTestId("motion-div");
-			expect(container).toBeInTheDocument();
+			const motionDivs = screen.getAllByTestId("motion-div");
+			expect(motionDivs.length).toBeGreaterThan(0);
 		});
 
 		it("should display main headline", () => {
@@ -67,7 +67,7 @@ describe("DashboardHeroCard", () => {
 			expect(headline).toBeVisible();
 		});
 
-		it("should have motion div with whileInView", () => {
+		it("should have motion div with animations", () => {
 			render(<DashboardHeroCard {...defaultProps} />);
 			const motionDivs = screen.getAllByTestId("motion-div");
 			expect(motionDivs.length).toBeGreaterThan(0);

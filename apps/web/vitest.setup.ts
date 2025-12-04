@@ -7,6 +7,15 @@ import { server } from "./tests/msw/server";
  * MSW server lifecycle hooks
  * Ensures all network requests are mocked during tests
  */
+import React from "react";
+
+// Mock UI components
+vi.mock("@ui/components/checkbox", () => ({
+	Checkbox: React.forwardRef((props: any, ref: any) =>
+		React.createElement("input", { type: "checkbox", ref, ...props })
+	),
+}));
+
 beforeAll(() => {
 	server.listen({
 		onUnhandledRequest: "error", // Fail on unmocked requests for test reliability

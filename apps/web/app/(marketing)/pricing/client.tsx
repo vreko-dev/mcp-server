@@ -286,7 +286,7 @@ export default function PricingClient() {
 				>
 					<h1 className="text-5xl lg:text-7xl font-bold tracking-tight text-white mb-6">
 						Simple,{" "}
-						<span className="bg-gradient-to-r from-[#00FF41] to-[#10B981] bg-clip-text text-transparent">
+						<span className="bg-gradient-to-r from-emerald-400 to-emerald-500 bg-clip-text text-transparent">
 							Transparent
 						</span>{" "}
 						Pricing
@@ -315,7 +315,7 @@ export default function PricingClient() {
 									value_after: newValue,
 								});
 							}}
-							className="relative inline-flex h-8 w-14 items-center rounded-full bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-[#00FF41] focus:ring-offset-2 focus:ring-offset-slate-900"
+							className="relative inline-flex h-8 w-14 items-center rounded-full bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2 focus:ring-offset-slate-900"
 							aria-label="Toggle billing cycle"
 						>
 							<span
@@ -328,7 +328,7 @@ export default function PricingClient() {
 							className={`text-sm ${billingCycle === "annual" ? "text-white font-medium" : "text-gray-400"}`}
 						>
 							Annual{" "}
-							<span className="text-[#00FF41] text-xs font-semibold">
+							<span className="text-emerald-400 text-xs font-semibold">
 								(Save 17%)
 							</span>
 						</span>
@@ -359,15 +359,15 @@ export default function PricingClient() {
 				>
 					<div className="flex flex-wrap justify-center gap-8 text-gray-300">
 						<div className="flex items-center gap-2">
-							<span className="text-[#00FF41] text-xl">✓</span>
+							<span className="text-emerald-400 text-xl">✓</span>
 							<span>30-day money-back guarantee</span>
 						</div>
 						<div className="flex items-center gap-2">
-							<span className="text-[#00FF41] text-xl">✓</span>
+							<span className="text-emerald-400 text-xl">✓</span>
 							<span>Cancel anytime</span>
 						</div>
 						<div className="flex items-center gap-2">
-							<span className="text-[#00FF41] text-xl">✓</span>
+							<span className="text-emerald-400 text-xl">✓</span>
 							<span>No credit card for Free plan</span>
 						</div>
 					</div>
@@ -390,14 +390,14 @@ export default function PricingClient() {
 						Got questions? Check our{" "}
 						<Link
 							href="https://new-docs.snapback.dev/faq"
-							className="text-[#00FF41] hover:underline focus:outline-none focus:ring-2 focus:ring-[#00FF41] focus:ring-offset-2 focus:ring-offset-slate-900 rounded"
+							className="text-emerald-400 hover:underline focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2 focus:ring-offset-slate-900 rounded"
 						>
 							full FAQ
 						</Link>{" "}
 						or{" "}
 						<Link
 							href="https://new-docs.snapback.dev"
-							className="text-[#00FF41] hover:underline focus:outline-none focus:ring-2 focus:ring-[#00FF41] focus:ring-offset-2 focus:ring-offset-slate-900 rounded"
+							className="text-emerald-400 hover:underline focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2 focus:ring-offset-slate-900 rounded"
 						>
 							documentation
 						</Link>
@@ -415,12 +415,12 @@ export default function PricingClient() {
 								whileInView={{ opacity: 1, y: 0 }}
 								viewport={{ once: true, margin: "-100px" }}
 								transition={{ duration: 0.5, delay: index * 0.05 }}
-								className="bg-[#0E0E0E] backdrop-blur-sm border border-[#222] rounded-xl hover:border-[#00FF41]/30 transition-all"
+								className="bg-[#0E0E0E] backdrop-blur-sm border border-[#222] rounded-xl hover:border-emerald-400/30 transition-all"
 							>
 								<button
 									type="button"
 									onClick={() => setOpenFaqIndex(isOpen ? null : index)}
-									className="w-full px-6 py-5 text-left flex items-start justify-between gap-4 focus:outline-none focus:ring-2 focus:ring-[#00FF41] focus:ring-offset-2 focus:ring-offset-slate-900 rounded-xl"
+									className="w-full px-6 py-5 text-left flex items-start justify-between gap-4 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2 focus:ring-offset-slate-900 rounded-xl"
 									aria-expanded={isOpen}
 									aria-controls={`faq-answer-${index}`}
 								>
@@ -475,7 +475,7 @@ export default function PricingClient() {
 						href="https://new-docs.snapback.dev/faq"
 						target="_blank"
 						rel="noopener noreferrer"
-						className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-white font-medium transition-all focus:outline-none focus:ring-2 focus:ring-[#00FF41] focus:ring-offset-2 focus:ring-offset-slate-900"
+						className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-white font-medium transition-all focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2 focus:ring-offset-slate-900"
 					>
 						View All FAQs →
 					</Link>
@@ -489,7 +489,7 @@ export default function PricingClient() {
 					whileInView={{ opacity: 1, y: 0 }}
 					viewport={{ once: true, margin: "-100px" }}
 					transition={{ duration: 0.6 }}
-					className="bg-gradient-to-r from-[#00FF41]/20 to-[#10B981]/20 border border-[#00FF41]/30 rounded-2xl p-12 text-center"
+					className="bg-gradient-to-r from-emerald-400/20 to-emerald-500/20 border border-emerald-400/30 rounded-2xl p-12 text-center"
 				>
 					<h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
 						Ready to protect your code?
@@ -503,7 +503,7 @@ export default function PricingClient() {
 							href="https://marketplace.visualstudio.com/items?itemName=MarcelleLabs.snapback-vscode"
 							target="_blank"
 							rel="noopener noreferrer"
-							className="px-8 py-4 bg-[#00FF41] hover:bg-[#00FF41]/90 text-black font-bold rounded-xl transition-all text-lg focus:outline-none focus:ring-2 focus:ring-[#00FF41] focus:ring-offset-2 focus:ring-offset-slate-900"
+							className="px-8 py-4 bg-emerald-400 hover:bg-emerald-400/90 text-black font-bold rounded-xl transition-all text-lg focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2 focus:ring-offset-slate-900"
 						>
 							Install Free Extension
 						</a>

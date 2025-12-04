@@ -19,7 +19,7 @@ export function TierProvider({ children }: { children: React.ReactNode }) {
 
 	useEffect(() => {
 		const saved = typeof window !== "undefined" ? (localStorage.getItem(KEY) as Tier | null) : null;
-		if (saved) setTierState(saved);
+		if (saved) { setTierState(saved); }
 	}, []);
 
 	const setTier = (t: Tier) => {
@@ -46,6 +46,6 @@ export function TierProvider({ children }: { children: React.ReactNode }) {
 
 export const useTier = () => {
 	const ctx = useContext(TierContext);
-	if (!ctx) throw new Error("useTier must be used within TierProvider");
+	if (!ctx) { throw new Error("useTier must be used within TierProvider"); }
 	return ctx;
 };

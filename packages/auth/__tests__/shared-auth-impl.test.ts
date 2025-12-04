@@ -292,7 +292,7 @@ describe("SnapbackAuth Implementation", () => {
 		// 2. First verifyApiKey (Bearer token as API key) returns null
 		// 3. Second getRichSessionFromHeaders (Bearer token as session) returns session
 		mocks.getRichSessionFromHeaders
-			.mockImplementationOnce((headers) => {
+			.mockImplementationOnce((_headers) => {
 				// First call is for cookies (no Authorization header in our request for cookies)
 				return Promise.resolve({ session: null, user: null });
 			})

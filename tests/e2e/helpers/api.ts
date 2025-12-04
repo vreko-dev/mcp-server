@@ -91,7 +91,7 @@ export class ApiClient {
 		};
 
 		if (this.authToken) {
-			headers["Authorization"] = `Bearer ${this.authToken}`;
+			headers.Authorization = `Bearer ${this.authToken}`;
 		}
 
 		return headers;
@@ -104,7 +104,7 @@ export class ApiClient {
 		const contentType = response.headers.get("content-type");
 		let data: any;
 
-		if (contentType && contentType.includes("application/json")) {
+		if (contentType?.includes("application/json")) {
 			data = await response.json();
 		} else {
 			data = await response.text();

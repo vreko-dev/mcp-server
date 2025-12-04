@@ -215,7 +215,7 @@ describe("Diagnostic Telemetry Events - RED Test", () => {
 
 			const expectedFormat = /^[a-z]+\.[a-z]+(\.[a-z]+)?$/;
 
-			Object.entries(EXPECTED_DIAGNOSTIC_EVENTS).forEach(([key, value]) => {
+			Object.entries(EXPECTED_DIAGNOSTIC_EVENTS).forEach(([_key, value]) => {
 				expect(value).toMatch(expectedFormat);
 				expect(value).not.toMatch(/[A-Z]/); // No uppercase
 				expect(value).not.toMatch(/_[a-z]/); // No mixed snake_case
@@ -263,7 +263,7 @@ describe("Diagnostic Telemetry Events - RED Test", () => {
 			];
 
 			originalEvents.forEach((event) => {
-				const key = event.toUpperCase();
+				const _key = event.toUpperCase();
 				// At minimum, the events should be identifiable in some way
 				expect(event).toBeTruthy();
 			});

@@ -331,7 +331,7 @@ export class AnalyticsClient {
 	 * Persist queue to local storage
 	 */
 	private persistQueue(): void {
-		if (typeof window === "undefined" && typeof localStorage === "undefined") return;
+		if (typeof window === "undefined" && typeof localStorage === "undefined") { return; }
 
 		try {
 			localStorage.setItem("snapback_analytics_queue", JSON.stringify(this.queue));
@@ -344,7 +344,7 @@ export class AnalyticsClient {
 	 * Load persisted events from local storage
 	 */
 	private loadPersistedEvents(): void {
-		if (typeof window === "undefined" && typeof localStorage === "undefined") return;
+		if (typeof window === "undefined" && typeof localStorage === "undefined") { return; }
 
 		try {
 			const persisted = localStorage.getItem("snapback_analytics_queue");
@@ -361,7 +361,7 @@ export class AnalyticsClient {
 	 * Clear persisted queue
 	 */
 	private clearPersistedQueue(): void {
-		if (typeof window === "undefined" && typeof localStorage === "undefined") return;
+		if (typeof window === "undefined" && typeof localStorage === "undefined") { return; }
 
 		try {
 			localStorage.removeItem("snapback_analytics_queue");

@@ -308,7 +308,6 @@ export class SarifFormatter {
 				return "error";
 			case "medium":
 				return "warning";
-			case "low":
 			default:
 				return "note";
 		}
@@ -359,7 +358,7 @@ export class SarifFormatter {
 	 * Static method to write SARIF log to file (matches export API)
 	 */
 	static toFile(log: SarifLog, filePath: string): void {
-		const fs = require("fs");
+		const fs = require("node:fs");
 		fs.writeFileSync(filePath, SarifFormatter.toJSON(log), "utf-8");
 	}
 }

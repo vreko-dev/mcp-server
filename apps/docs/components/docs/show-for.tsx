@@ -10,5 +10,5 @@ export function ShowFor({
 }: PropsWithChildren<{ minTier?: Exclude<Tier, "all">; tiers?: Exclude<Tier, "all">[] }>) {
 	const { isAtLeast, isOneOf } = useTier();
 	const ok = minTier ? isAtLeast(minTier) : tiers ? isOneOf(tiers) : true;
-	return ok ? <>{children}</> : null;
+	return ok ? children : null;
 }

@@ -13,7 +13,7 @@ import {
 vi.mock("@snapback/auth", () => ({
 	auth: {
 		apiKey: {
-			verifyKey: vi.fn().mockImplementation((apiKey: string) => {
+			verifyKey: vi.fn().mockImplementation((_apiKey: string) => {
 				// In test mode, we want to trigger the mockAuthFallback
 				// So we'll throw an error to simulate database connection failure
 				throw new Error("DATABASE_URL is not set and no Supabase configuration detected");

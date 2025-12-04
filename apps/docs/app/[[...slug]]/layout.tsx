@@ -21,7 +21,7 @@ export default async function DocsLayoutWrapper({
 
 	// Determine if Plan Switcher should be shown based on path
 	const { slug: slugArray } = await params;
-	const slug = "/" + (slugArray?.join("/") ?? "");
+	const slug = `/${slugArray?.join("/") ?? ""}`;
 	const showSwitcher =
 		slug.startsWith("/capabilities") || slug.startsWith("/guides") || slug.startsWith("/plans-limits");
 

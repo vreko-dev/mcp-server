@@ -18,7 +18,7 @@ var __awaiter =
 			}
 			function rejected(value) {
 				try {
-					step(generator["throw"](value));
+					step(generator.throw(value));
 				} catch (e) {
 					reject(e);
 				}

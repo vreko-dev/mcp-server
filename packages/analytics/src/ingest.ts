@@ -1,4 +1,4 @@
-import { TelemetrySinkDb } from "@snapback/platform/db/adapters/TelemetrySinkDb";
+import type { TelemetrySinkDb } from "@snapback/platform/db/adapters/TelemetrySinkDb";
 
 // Use InstanceType to get the type of TelemetrySinkDb instances
 type TelemetrySink = InstanceType<typeof TelemetrySinkDb>;

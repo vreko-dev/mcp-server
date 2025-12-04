@@ -15,7 +15,7 @@ export function BlogContent({ publishedPosts }: { publishedPosts: Post[] }) {
 			>
 				<h1 className="text-5xl lg:text-7xl font-bold tracking-tight text-white mb-6">
 					Latest{" "}
-					<span className="bg-gradient-to-r from-[#00FF41] to-[#10B981] bg-clip-text text-transparent">
+					<span className="bg-gradient-to-r from-emerald-400 to-emerald-500 bg-clip-text text-transparent">
 						Blog
 					</span>{" "}
 					Posts

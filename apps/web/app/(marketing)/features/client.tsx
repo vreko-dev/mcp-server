@@ -19,8 +19,8 @@ const features = [
 			"Team-wide policy enforcement via .snapbackrc",
 		],
 		docsLink: "/docs/concepts/protection-levels",
-		color: "text-green-400",
-		bgGlow: "from-green-500/20",
+		color: "text-emerald-400",
+		bgGlow: "from-emerald-500/20",
 	},
 	{
 		icon: Clock,
@@ -118,7 +118,7 @@ export default function FeaturesClient() {
 				>
 					<h1 className="text-5xl lg:text-7xl font-bold tracking-tight text-white mb-6">
 						Powerful{" "}
-						<span className="bg-gradient-to-r from-[#00FF41] to-[#10B981] bg-clip-text text-transparent">
+						<span className="bg-gradient-to-r from-emerald-400 to-emerald-500 bg-clip-text text-transparent">
 							Protection
 						</span>{" "}
 						Features
@@ -136,7 +136,7 @@ export default function FeaturesClient() {
 						</Link>
 						<Link
 							href="/pricing"
-							className="px-6 py-3 bg-[#00FF41] hover:bg-[#00FF41]/90 text-black font-medium rounded-xl transition-all"
+							className="px-6 py-3 bg-emerald-400 hover:bg-emerald-400/90 text-black font-medium rounded-xl transition-all"
 						>
 							View Pricing
 						</Link>
@@ -157,7 +157,7 @@ export default function FeaturesClient() {
 							className="group relative"
 						>
 							{/* Card */}
-							<div className="relative bg-[#0E0E0E] backdrop-blur-sm border border-[#222] rounded-2xl p-8 h-full hover:border-[#00FF41]/30 transition-all duration-300">
+							<div className="relative bg-[#0E0E0E] backdrop-blur-sm border border-[#222] rounded-2xl p-8 h-full hover:border-emerald-400/30 transition-all duration-300">
 								{/* Gradient glow effect */}
 								<div
 									className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${feature.bgGlow} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10`}
@@ -193,7 +193,7 @@ export default function FeaturesClient() {
 								<ul className="space-y-3 mb-6">
 									{feature.benefits.map((benefit) => (
 										<li key={benefit} className="flex items-start gap-3">
-											<span className="text-[#00FF41] mt-1">✓</span>
+											<span className="text-emerald-400 mt-1">✓</span>
 											<span className="text-gray-400 text-sm">{benefit}</span>
 										</li>
 									))}
@@ -219,7 +219,7 @@ export default function FeaturesClient() {
 					whileInView={{ opacity: 1, y: 0 }}
 					viewport={{ once: true, margin: "-100px" }}
 					transition={{ duration: 0.6 }}
-					className="bg-gradient-to-r from-[#00FF41]/20 to-[#10B981]/20 border border-[#00FF41]/30 rounded-2xl p-12 text-center"
+					className="bg-gradient-to-r from-emerald-400/20 to-emerald-500/20 border border-emerald-400/30 rounded-2xl p-12 text-center"
 				>
 					<h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
 						Ready to protect your code?
@@ -232,7 +232,7 @@ export default function FeaturesClient() {
 							href="https://marketplace.visualstudio.com/items?itemName=MarcelleLabs.snapback-vscode"
 							target="_blank"
 							rel="noopener noreferrer"
-							className="px-8 py-4 bg-[#00FF41] hover:bg-[#00FF41]/90 text-black font-bold rounded-xl transition-all text-lg"
+							className="px-8 py-4 bg-emerald-400 hover:bg-emerald-400/90 text-black font-bold rounded-xl transition-all text-lg"
 						>
 							Get Started
 						</a>

@@ -34,10 +34,10 @@ const ShimmerButton = forwardRef<HTMLButtonElement, ShimmerButtonProps>(
 				className={cn(
 					"group relative inline-flex items-center justify-center overflow-hidden",
 					"rounded-lg px-6 py-3 cursor-pointer", // Changed from rounded-[--border-radius] to rounded-lg
-					"bg-snapback-green text-black hover:bg-snapback-green/90",
+					"bg-emerald-400 text-black hover:bg-emerald-400/90",
 					"font-medium",
 					"transition-all duration-200",
-					"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-snapback-green focus-visible:ring-offset-2",
+					"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2",
 					className,
 				)}
 				{...props}

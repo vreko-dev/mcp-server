@@ -44,7 +44,7 @@ export interface UserContext {
 
 // Simple Guardian Lite stub for when package is not available
 class StubGuardianLite {
-	analyze(code: string): AnalysisResult {
+	analyze(_code: string): AnalysisResult {
 		return {
 			riskLevel: "low",
 			confidence: 0.5,
@@ -62,7 +62,7 @@ let GuardianLiteClass: any = StubGuardianLite;
 try {
 	const guardianModule = require("@snapback/guardian-lite");
 	GuardianLiteClass = guardianModule.GuardianLite;
-} catch (err) {
+} catch (_err) {
 	console.warn(
 		"[AnalysisRouter] Guardian Lite package not found - using stub. Install with: pnpm add @snapback/guardian-lite",
 	);
@@ -177,7 +177,7 @@ export class AnalysisRouter {
 	/**
 	 * Analyze code using the backend API with circuit breaker protection
 	 */
-	private async analyzeWithAPI(code: string, userContext?: UserContext): Promise<AnalysisResult> {
+	private async analyzeWithAPI(code: string, _userContext?: UserContext): Promise<AnalysisResult> {
 		if (!this.apiClient || !this.circuitBreaker) {
 			return this.guardian.analyze(code);
 		}
@@ -185,7 +185,7 @@ export class AnalysisRouter {
 		try {
 			return await this.circuitBreaker.execute(async () => {
 				// Call backend API
-				const apiResult = await this.apiClient!.analyzeFast({
+				const apiResult = await this.apiClient?.analyzeFast({
 					code,
 					filePath: "analysis.ts",
 					context: {

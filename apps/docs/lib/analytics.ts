@@ -33,7 +33,7 @@ function hasPosthog(): boolean {
 }
 
 export function captureDocsEvent(e: DocsEvent): void {
-	if (!hasPosthog()) return;
+	if (!hasPosthog()) { return; }
 
 	switch (e.name) {
 		case "docs_plan_filter_changed": {

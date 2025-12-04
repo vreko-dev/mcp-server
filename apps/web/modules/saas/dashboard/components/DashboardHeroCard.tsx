@@ -27,9 +27,9 @@ export function DashboardHeroCard({
 	}, []);
 
 	const confidenceColor = {
-		excellent: "text-green-400",
-		good: "text-blue-400",
-		warning: "text-amber-400",
+		excellent: "text-emerald-300",
+		good: "text-sky-200",
+		warning: "text-amber-200",
 	}[confidenceLevel];
 
 	const confidenceEmoji = {
@@ -47,19 +47,19 @@ export function DashboardHeroCard({
 	// Don't render on server to avoid hydration mismatch
 	if (!isMounted) {
 		return (
-			<div className="relative w-full overflow-hidden rounded-2xl border border-snapback-green/30 bg-gradient-to-br from-snapback-green/10 via-slate-900 to-slate-950 p-8 md:p-12">
+			<div className="relative w-full overflow-hidden rounded-2xl border border-emerald-400/40 bg-gradient-to-br from-emerald-500/10 via-slate-900 to-slate-950 p-8 md:p-12">
 				<div className="space-y-8">
 					<div className="mb-8">
-						<div className="text-3xl font-bold text-white mb-1">
+						<div className="text-3xl font-bold text-slate-50 mb-1">
 							You're Protected
 						</div>
-						<p className="text-snapback-green/80 text-sm uppercase tracking-wider">
+						<p className="text-emerald-300/80 text-sm uppercase tracking-wider">
 							This {period}
 						</p>
 					</div>
 
 					<div>
-						<div className="text-6xl font-bold text-snapback-green mb-3">
+						<div className="text-6xl font-bold text-emerald-400 mb-3">
 							{threatsPreventedCount}
 						</div>
 						<p className="text-lg text-slate-300">Security Risks Prevented</p>
@@ -68,10 +68,10 @@ export function DashboardHeroCard({
 						</p>
 					</div>
 
-					<div className="space-y-4 border-t border-snapback-green/20 pt-6">
+					<div className="space-y-4 border-t border-emerald-400/20 pt-6">
 						<div className="flex items-center justify-between">
 							<span className="text-slate-400">Protection Level</span>
-							<span className="text-snapback-green font-bold">
+							<span className="text-emerald-400 font-bold">
 								{protectionLevelPercent}%
 							</span>
 						</div>
@@ -86,7 +86,7 @@ export function DashboardHeroCard({
 					</div>
 
 					<div className="flex flex-wrap gap-3">
-						<button className="px-6 py-2 rounded-lg bg-snapback-green/20 text-snapback-green hover:bg-snapback-green/30 transition-colors font-medium">
+						<button className="px-6 py-2 rounded-lg bg-emerald-400/20 text-emerald-300 hover:bg-emerald-400/30 transition-colors font-medium">
 							View Details
 						</button>
 						<button className="px-6 py-2 rounded-lg bg-slate-700/50 text-slate-300 hover:bg-slate-700 transition-colors font-medium">
@@ -103,7 +103,7 @@ export function DashboardHeroCard({
 			initial={{ opacity: 1, y: 0 }}
 			whileInView={{ opacity: 1, y: 0 }}
 			viewport={{ once: true, margin: "-100px" }}
-			className="relative w-full overflow-hidden rounded-2xl border border-snapback-green/30 bg-gradient-to-br from-snapback-green/10 via-slate-900 to-slate-950 p-8 md:p-12"
+			className="relative w-full overflow-hidden rounded-2xl border border-emerald-400/40 bg-gradient-to-br from-emerald-500/10 via-slate-900 to-slate-950 p-8 md:p-12"
 		>
 			{/* Content */}
 			<div className="relative z-10">
@@ -127,9 +127,9 @@ export function DashboardHeroCard({
 						>
 							🛡️
 						</m.div>
-						<h1 className="text-3xl font-bold text-white">You're Protected</h1>
+						<h1 className="text-3xl font-bold text-slate-50">You're Protected</h1>
 					</div>
-					<p className="text-snapback-green/80 text-sm uppercase tracking-wider">
+					<p className="text-emerald-300/80 text-sm uppercase tracking-wider">
 						This {period}
 					</p>
 				</m.div>
@@ -143,7 +143,7 @@ export function DashboardHeroCard({
 					className="mb-8"
 				>
 					<div className="space-y-3">
-						<div className="text-6xl font-bold text-snapback-green">
+						<div className="text-6xl font-bold text-emerald-400">
 							{threatsPreventedCount}
 						</div>
 						<p className="text-lg text-slate-300">Security Risks Prevented</p>
@@ -159,7 +159,7 @@ export function DashboardHeroCard({
 					whileInView={{ opacity: 1 }}
 					viewport={{ once: true }}
 					transition={{ duration: 0.6, delay: 0.2 }}
-					className="space-y-4 mb-8 border-t border-snapback-green/20 pt-6"
+					className="space-y-4 mb-8 border-t border-emerald-400/20 pt-6"
 				>
 					{/* Protection Level */}
 					<div className="flex items-center justify-between">
@@ -171,10 +171,10 @@ export function DashboardHeroCard({
 									whileInView={{ width: `${protectionLevelPercent}%` }}
 									viewport={{ once: true }}
 									transition={{ duration: 1.5, ease: "easeOut", delay: 0.3 }}
-									className="h-full bg-gradient-to-r from-snapback-green to-emerald-300"
+									className="h-full bg-gradient-to-r from-emerald-400 to-emerald-300"
 								/>
 							</div>
-							<span className="text-snapback-green font-bold">
+							<span className="text-emerald-400 font-bold">
 								{protectionLevelPercent}%
 							</span>
 						</div>
@@ -202,7 +202,7 @@ export function DashboardHeroCard({
 				>
 					<button
 						onClick={onViewDetails}
-						className="px-6 py-2 rounded-lg bg-snapback-green/20 text-snapback-green hover:bg-snapback-green/30 transition-colors font-medium"
+						className="px-6 py-2 rounded-lg bg-emerald-400/20 text-emerald-300 hover:bg-emerald-400/30 transition-colors font-medium"
 					>
 						View Details
 					</button>

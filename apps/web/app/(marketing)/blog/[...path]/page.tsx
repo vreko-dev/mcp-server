@@ -107,7 +107,7 @@ export default async function BlogPostPage(props: { params: Promise<Params> }) {
 								{tags.map((tag: string) => (
 									<span
 										key={tag}
-										className="px-3 py-1 bg-slate-800/50 border border-white/10 rounded-full text-xs font-medium text-[#00FF41]"
+										className="px-3 py-1 bg-slate-800/50 border border-white/10 rounded-full text-xs font-medium text-emerald-400"
 									>
 										{tag}
 									</span>

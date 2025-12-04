@@ -1,5 +1,5 @@
-import { exec } from "child_process";
-import { promisify } from "util";
+import { exec } from "node:child_process";
+import { promisify } from "node:util";
 
 const execAsync = promisify(exec);
 
@@ -39,7 +39,7 @@ export async function waitForServices(timeout = 120000): Promise<void> {
 
 			console.log("Waiting for services to be healthy...");
 			await new Promise((resolve) => setTimeout(resolve, 5000));
-		} catch (error) {
+		} catch (_error) {
 			console.log("Error checking service status, retrying...");
 			await new Promise((resolve) => setTimeout(resolve, 5000));
 		}

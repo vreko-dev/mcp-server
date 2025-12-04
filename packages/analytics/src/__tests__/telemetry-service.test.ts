@@ -74,7 +74,7 @@ describe("CanonicalTelemetryService - RED Tests", () => {
 			expect(() => {
 				// This would throw if not properly initialized
 				// We're testing the pattern, not the actual global state
-				if (!newService) throw new Error("Not initialized");
+				if (!newService) { throw new Error("Not initialized"); }
 			}).not.toThrow();
 		});
 	});
@@ -337,7 +337,7 @@ describe("CanonicalTelemetryService - RED Tests", () => {
 					ai_present: false,
 					ai_burst: false,
 					highest_severity: "low",
-					// @ts-ignore - testing sanitization
+					// @ts-expect-error - testing sanitization
 					apiKey: "sk-abc123xyz",
 					password: "secret123",
 				},

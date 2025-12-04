@@ -109,7 +109,6 @@ const SessionResponseSchema = z.object({
 export class SnapBackAPIClient {
 	private client: KyInstance;
 	private resilience: IPolicy;
-	private config: SnapBackConfig;
 
 	constructor(config: SnapBackConfig) {
 		this.config = config;
@@ -185,7 +184,7 @@ export class SnapBackAPIClient {
 					throw new Error(`API error: ${status} ${statusText}`);
 				}
 				// Handle mock fetch errors that don't have the expected structure
-				if (error.message && error.message.includes("status")) {
+				if (error.message?.includes("status")) {
 					// Try to extract status from message if possible
 					throw error;
 				}

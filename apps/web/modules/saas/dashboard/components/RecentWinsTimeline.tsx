@@ -37,11 +37,11 @@ export function RecentWinsTimeline({
 	const getWinIcon = (type: string) => {
 		switch (type) {
 			case "restore":
-				return <RotateCcw className="w-5 h-5 text-snapback-green" />;
+				return <RotateCcw className="w-5 h-5 text-emerald-400" />;
 			case "prevention":
-				return <AlertCircle className="w-5 h-5 text-amber-500" />;
+				return <AlertCircle className="w-5 h-5 text-amber-300" />;
 			case "threat-detection":
-				return <Zap className="w-5 h-5 text-red-500" />;
+				return <Zap className="w-5 h-5 text-rose-400" />;
 			default:
 				return null;
 		}
@@ -50,24 +50,24 @@ export function RecentWinsTimeline({
 	const getWinColor = (type: string) => {
 		switch (type) {
 			case "restore":
-				return "border-snapback-green/30 bg-snapback-green/5";
+				return "border-emerald-400/30 bg-emerald-500/5";
 			case "prevention":
-				return "border-amber-500/30 bg-amber-500/5";
+				return "border-amber-300/30 bg-amber-300/5";
 			case "threat-detection":
-				return "border-red-500/30 bg-red-500/5";
+				return "border-rose-400/30 bg-rose-500/5";
 			default:
-				return "border-blue-500/30 bg-blue-500/5";
+				return "border-sky-300/30 bg-sky-300/5";
 		}
 	};
 
 	const getSeverityColor = (severity?: string) => {
 		switch (severity) {
 			case "high":
-				return "text-red-400";
+				return "text-rose-400";
 			case "medium":
-				return "text-amber-400";
+				return "text-amber-300";
 			case "low":
-				return "text-green-400";
+				return "text-emerald-400";
 			default:
 				return "text-slate-400";
 		}
@@ -127,7 +127,7 @@ export function RecentWinsTimeline({
 												})}
 											</span>
 											{win.timeSaved && (
-												<span className="text-snapback-green font-semibold">
+												<span className="text-emerald-400 font-semibold">
 													Saved you ~{win.timeSaved}m
 												</span>
 											)}
@@ -210,7 +210,7 @@ export function RecentWinsTimeline({
 												whileInView={{ opacity: 1 }}
 												viewport={{ once: true }}
 												transition={{ delay: 0.2 }}
-												className="text-snapback-green font-semibold"
+												className="text-emerald-400 font-semibold"
 											>
 												Saved you ~{win.timeSaved}m
 											</m.span>

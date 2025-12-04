@@ -14,10 +14,18 @@ import { openApiHandler, rpcHandler } from "@/orpc/handler.js";
 import { router } from "@/orpc/router.js";
 import { createRateLimitMiddleware } from "./middleware/rate-limit-distributed.js";
 import { requestLoggingMiddleware } from "./middleware/request-logging.js";
+import { honoSentryMiddleware, initSentryAPI } from "./middleware/sentry.js";
 import healthRoute from "./routes/health.js";
 import apiRoutes from "./routes/index.js";
 import protectedExamplesRoute from "./routes/protected-examples.js";
 import { testRoutes } from "./routes/test/index.js";
+
+// Initialize Sentry first, before any other code runs
+initSentryAPI({
+	dsn: process.env.SENTRY_DSN,
+	environment: process.env.NODE_ENV || "development",
+	enabled: process.env.DISABLE_SENTRY !== "true",
+});
 
 // Auth handler app - Better Auth expects raw requests with path rewriting
 const authApp: HonoApp = new Hono().all("*", async (c) => {
@@ -44,6 +52,8 @@ const rateLimitMiddleware = await createRateLimitMiddleware();
 
 // Create the main API app WITHOUT basePath
 const apiApp: HonoApp = new Hono()
+	// Sentry error tracking and performance monitoring
+	.use("*", honoSentryMiddleware())
 	// ... existing code ...
 	.route("/api/auth", authApp)
 	// Rate limiting middleware - with optional Redis support

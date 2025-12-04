@@ -2,6 +2,8 @@
   "name": "@snapback/infrastructure",
   "version": "0.1.0",
   "dependencies": {
+    "@sentry/node": "catalog:",
+    "@sentry/profiling-node": "catalog:",
     "@snapback/contracts": "workspace:*",
     "nanoid": "catalog:",
     "pino": "catalog:",
@@ -51,6 +53,10 @@
     "./tracing": {
       "types": "./dist/tracing/index.d.ts",
       "default": "./dist/tracing/index.js"
+    },
+    "./sentry": {
+      "types": "./dist/sentry/index.d.ts",
+      "default": "./dist/sentry/index.js"
     }
   },
   "main": "dist/index.js",

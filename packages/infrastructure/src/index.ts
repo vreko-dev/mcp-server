@@ -50,6 +50,16 @@ export {
 	getCorrelationAnalysis,
 	performCorrelationAnalysis,
 } from "./posthog/correlation.js";
-
+// Sentry Error Tracking
+export {
+	addSentryBreadcrumb,
+	captureError,
+	captureMessage,
+	clearSentryUser,
+	flushSentry,
+	initSentry,
+	setSentryUser,
+	startSentryTransaction,
+} from "./sentry/index.js";
 // Tracing (was @snapback/observability and @snapback/telemetry)
 export * from "./tracing/index.js";

@@ -3,9 +3,9 @@ import { ActivePlan } from "@saas/payments/components/ActivePlan";
 import { ChangePlan } from "@saas/payments/components/ChangePlan";
 import { SettingsList } from "@saas/shared/components/SettingsList";
 import { orpcClient } from "@shared/lib/orpc-client";
-import { createPurchasesHelper } from "@/lib/auth/helpers";
 import { attemptAsync } from "es-toolkit";
 import { notFound } from "next/navigation";
+import { createPurchasesHelper } from "@/lib/auth/helpers";
 
 // TODO: Replace with actual Purchase type from @snapback/contracts
 interface Purchase {

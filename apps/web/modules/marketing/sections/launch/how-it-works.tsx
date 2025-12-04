@@ -4,7 +4,7 @@ import { AnalyticsEvents } from "@analytics";
 import { siteSpec } from "@marketing/config/site-config";
 import { cn } from "@marketing/lib/utils";
 import { BentoGrid, BentoGridItem } from "@ui/components/aceternity/bento-grid";
-import { Save, Zap, RotateCcw } from "lucide-react";
+import { RotateCcw, Save, Zap } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import posthog from "posthog-js";
@@ -46,7 +46,9 @@ export function HowItWorks() {
 										<div className="text-5xl mb-2 text-[var(--snapback-green)] group-hover:scale-110 transition-transform">
 											{step.step_number === 1 && <Save className="w-12 h-12" />}
 											{step.step_number === 2 && <Zap className="w-12 h-12" />}
-											{step.step_number === 3 && <RotateCcw className="w-12 h-12" />}
+											{step.step_number === 3 && (
+												<RotateCcw className="w-12 h-12" />
+											)}
 										</div>
 										{step.tag && (
 											<div className="text-xs text-[#666] bg-[#111] px-2 py-1 rounded border border-[#222]">

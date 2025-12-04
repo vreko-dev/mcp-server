@@ -5,8 +5,8 @@
  * with comprehensive validation and user-friendly error messages.
  */
 
-import { sessionClient } from "./session-client";
 import { validatePassword } from "./password-validation";
+import { sessionClient } from "./session-client";
 
 /**
  * Authentication result types
@@ -53,7 +53,7 @@ function isValidEmail(email: string): boolean {
  * }
  * ```
  */
-	export async function signInWithEmail(
+export async function signInWithEmail(
 	email: string,
 	password: string,
 ): Promise<AuthResult> {
@@ -266,7 +266,8 @@ export async function sendPasswordResetEmail(
 		if (response.error !== null) {
 			return {
 				success: false,
-				error: (response.error as Error).message || "Failed to send reset email",
+				error:
+					(response.error as Error).message || "Failed to send reset email",
 			};
 		}
 
@@ -414,8 +415,7 @@ export function isOrganizationAdmin(
 	if (!organization || !user) return false;
 	const member = organization.members.find((m) => m.userId === user.id);
 	return (
-		["owner", "admin"].includes(member?.role ?? "") ||
-		user.role === "admin"
+		["owner", "admin"].includes(member?.role ?? "") || user.role === "admin"
 	);
 }
 
@@ -426,7 +426,12 @@ export function isOrganizationAdmin(
  * @returns Object with methods to check subscription status and plans
  */
 export function createPurchasesHelper(
-	purchases: Array<{ type: string; status: string; productId?: string; id?: string }>,
+	purchases: Array<{
+		type: string;
+		status: string;
+		productId?: string;
+		id?: string;
+	}>,
 ) {
 	const activePlan = purchases.find((p) => p.type === "SUBSCRIPTION") || null;
 

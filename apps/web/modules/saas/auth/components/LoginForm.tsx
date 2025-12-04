@@ -33,6 +33,7 @@ import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import { withQuery } from "ufo";
 import { z } from "zod";
+import { authConfig } from "../config";
 import {
 	type OAuthProvider,
 	oAuthProviders,
@@ -40,7 +41,6 @@ import {
 import { useSession } from "../hooks/use-session";
 import { LoginModeSwitch } from "./LoginModeSwitch";
 import { SocialSigninButton } from "./SocialSigninButton";
-import { authConfig } from "../config";
 
 const formSchema = z.union([
 	z.object({
@@ -231,15 +231,14 @@ export function LoginForm() {
 
 					<Form {...form}>
 						<form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
-							{authConfig.enableMagicLink &&
-								authConfig.enablePasswordLogin && (
-									<LoginModeSwitch
-										activeMode={signinMode}
-										onChange={(mode) =>
-											form.setValue("mode", mode as typeof signinMode)
-										}
-									/>
-								)}
+							{authConfig.enableMagicLink && authConfig.enablePasswordLogin && (
+								<LoginModeSwitch
+									activeMode={signinMode}
+									onChange={(mode) =>
+										form.setValue("mode", mode as typeof signinMode)
+									}
+								/>
+							)}
 
 							{form.formState.isSubmitted &&
 								form.formState.errors.root?.message && (

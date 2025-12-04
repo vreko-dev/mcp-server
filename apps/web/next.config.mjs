@@ -144,7 +144,7 @@ const nextConfig = {
 			new webpack.IgnorePlugin({
 				resourceRegExp: /^piscina$/,
 				contextRegExp: /./,
-			})
+			}),
 		);
 
 		return config;

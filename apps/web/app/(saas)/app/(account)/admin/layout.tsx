@@ -20,7 +20,9 @@ export default async function AdminLayout({ children }: PropsWithChildren) {
 	// STUB: In frontend-only mode, session is null
 	// Allow access to admin panel (in production, connect to real API for auth)
 	if (!session) {
-		console.warn("[Admin] Accessing admin panel without backend auth - stubbed");
+		console.warn(
+			"[Admin] Accessing admin panel without backend auth - stubbed",
+		);
 		// For now, allow access - in production, redirect to auth/login
 	} else if ((session as any).user?.role !== "admin") {
 		redirect("/app");

@@ -283,8 +283,7 @@ export const SnapBackTerminalUltimate = memo(() => {
 			([entry]) => {
 				// Only trigger when terminal is fully visible (threshold 0.8 = 80% visible)
 				if (
-					entry &&
-					entry.isIntersecting &&
+					entry?.isIntersecting &&
 					entry.intersectionRatio >= intersectionThreshold &&
 					!hasStarted
 				) {

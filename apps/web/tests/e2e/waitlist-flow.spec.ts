@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("Waitlist Flow", () => {
-	const BASE_URL = process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000";
+	const _BASE_URL = process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000";
 	const TEST_EMAIL = `test-${Date.now()}@snapback.dev`;
 
 	test.beforeEach(async ({ page }) => {

@@ -62,7 +62,9 @@ export function ActivePlan({
 								style: "currency",
 								currency: (price as any).currency,
 							}).format((price as any).amount)}
-							{typeof price === "object" && price !== null && "interval" in price ? (
+							{typeof price === "object" &&
+							price !== null &&
+							"interval" in price ? (
 								<span className="font-normal text-xs opacity-60">
 									{" / "}
 									{(price as any).interval === "month"
@@ -70,7 +72,11 @@ export function ActivePlan({
 										: `year${((price as any).intervalCount ?? 1) > 1 ? "s" : ""}`}
 								</span>
 							) : null}
-							{organizationId && typeof price === "object" && price !== null && "seatBased" in price && (price as any).seatBased ? (
+							{organizationId &&
+							typeof price === "object" &&
+							price !== null &&
+							"seatBased" in price &&
+							(price as any).seatBased ? (
 								<span className="font-normal text-xs opacity-60">
 									{" / "}
 									per seat
@@ -80,10 +86,15 @@ export function ActivePlan({
 					) : null}
 				</div>
 
-				{typeof activePlan === "object" && activePlan !== null && "purchaseId" in activePlan && (activePlan as any).purchaseId ? (
+				{typeof activePlan === "object" &&
+				activePlan !== null &&
+				"purchaseId" in activePlan &&
+				(activePlan as any).purchaseId ? (
 					<div className="mt-4 flex justify-end">
 						<div className="flex w-full flex-col flex-wrap gap-2 md:flex-row">
-							<CustomerPortalButton purchaseId={(activePlan as any).purchaseId} />
+							<CustomerPortalButton
+								purchaseId={(activePlan as any).purchaseId}
+							/>
 						</div>
 					</div>
 				) : null}

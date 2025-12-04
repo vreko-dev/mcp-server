@@ -79,7 +79,7 @@ export function useSession(): UseSessionReturn {
 	const loadSession = async () => {
 		try {
 			const data = await getSession();
-			if (data && data.user && data.session) {
+			if (data?.user && data.session) {
 				// Fix the type incompatibility by ensuring proper typing
 				const sessionData: Session = {
 					user: {

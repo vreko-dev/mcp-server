@@ -2,9 +2,9 @@ import { getOrganizationList, getSession } from "@saas/auth/lib/server";
 import { PricingTable } from "@saas/payments/components/PricingTable";
 import { getPurchases } from "@saas/payments/lib/server";
 import { AuthWrapper } from "@saas/shared/components/AuthWrapper";
-import { createPurchasesHelper } from "@/lib/auth/helpers";
 import { attemptAsync } from "es-toolkit";
 import { redirect } from "next/navigation";
+import { createPurchasesHelper } from "@/lib/auth/helpers";
 
 // TODO: Replace with actual config from environment/app settings
 const config = {

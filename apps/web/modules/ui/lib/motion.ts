@@ -12,21 +12,21 @@ import type { Transition, Variants } from "motion/react";
 
 // Re-export comprehensive motion config as primary system
 export {
+	createOptimizedMotionProps,
+	EXPENSIVE_PROPS,
+	GPU_ACCELERATED_PROPS,
+	getOptimizedTransition,
+	isMobileDevice,
+	MOTION_PRESETS,
+	type MotionPresets,
+	PERFORMANCE_TARGETS,
 	SNAP_EASING,
 	SNAP_TRANSITIONS,
 	SNAP_VARIANTS,
-	MOTION_PRESETS,
-	PERFORMANCE_TARGETS,
-	GPU_ACCELERATED_PROPS,
-	EXPENSIVE_PROPS,
-	shouldReduceMotion,
-	isMobileDevice,
-	getOptimizedTransition,
-	createOptimizedMotionProps,
 	type SnapEasing,
 	type SnapTransitions,
 	type SnapVariants,
-	type MotionPresets,
+	shouldReduceMotion,
 } from "@marketing/lib/motion-config";
 
 // Re-export useReducedMotion hook
@@ -40,10 +40,10 @@ export { useReducedMotion } from "@ui/hooks/use-reduced-motion";
  */
 export const DURATION = {
 	instant: 0,
-	fast: 150,    // Maps to SNAP_TRANSITIONS.protect (150ms)
-	normal: 300,  // Base transition duration
+	fast: 150, // Maps to SNAP_TRANSITIONS.protect (150ms)
+	normal: 300, // Base transition duration
 	moderate: 500, // Maps to SNAP_TRANSITIONS.recover (500ms)
-	slow: 800,    // Slow transitions
+	slow: 800, // Slow transitions
 } as const;
 
 /**
@@ -65,7 +65,9 @@ export function createTransition(
 	options: {
 		duration?: number;
 		delay?: number;
-		ease?: [number, number, number, number] | [number, number, number, number][];
+		ease?:
+			| [number, number, number, number]
+			| [number, number, number, number][];
 	},
 ): Transition {
 	if (reducedMotion) {

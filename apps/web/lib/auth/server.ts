@@ -131,7 +131,6 @@ export async function requireVerifiedEmail() {
 	const auth = await requireAuth();
 
 	if (!auth.emailVerified) {
-
 		console.warn("Email verification required", {
 			event: "auth_guard_denied",
 			reason: "email_not_verified",
@@ -158,7 +157,6 @@ export async function requireStepUp(options?: { requirePasskey?: boolean }) {
 	const hasStrongFactor = auth.twoFactorEnabled || options?.requirePasskey;
 
 	if (!hasStrongFactor) {
-
 		console.warn("Step-up authentication required", {
 			event: "auth_guard_denied",
 			reason: "step_up_required",

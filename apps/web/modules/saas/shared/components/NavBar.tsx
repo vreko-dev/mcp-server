@@ -95,22 +95,22 @@ export function NavBar() {
 						</Link>
 
 						{true && !false && (
-								<>
-									<span
-										className={cn("hidden opacity-30 md:block", {
-											"md:hidden": useSidebarLayout,
-										})}
-									>
-										<ChevronRightIcon className="size-4" />
-									</span>
+							<>
+								<span
+									className={cn("hidden opacity-30 md:block", {
+										"md:hidden": useSidebarLayout,
+									})}
+								>
+									<ChevronRightIcon className="size-4" />
+								</span>
 
-									<OrganzationSelect
-										className={cn({
-											"md:-mx-2 md:mt-2": useSidebarLayout,
-										})}
-									/>
-								</>
-							)}
+								<OrganzationSelect
+									className={cn({
+										"md:-mx-2 md:mt-2": useSidebarLayout,
+									})}
+								/>
+							</>
+						)}
 					</div>
 
 					<div

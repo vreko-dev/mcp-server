@@ -1,10 +1,10 @@
 "use client";
 
+import { AnalyticsEvents } from "@analytics";
 import { ShimmerButton } from "@marketing/components/ui/shimmer-button";
 import { siteSpec } from "@marketing/config/site-config";
 import Link from "next/link";
 import posthog from "posthog-js";
-import { AnalyticsEvents } from "@analytics";
 
 export function FinalCTA() {
 	const { final_cta } = siteSpec.pages.home.sections;

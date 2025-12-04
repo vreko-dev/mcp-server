@@ -35,7 +35,7 @@ export function OptimizedTerminal() {
 		// Only start animation when in view
 		const observer = new IntersectionObserver(
 			([entry]) => {
-				if (entry && entry.isIntersecting) {
+				if (entry?.isIntersecting) {
 					setShouldLoad(true);
 				}
 			},

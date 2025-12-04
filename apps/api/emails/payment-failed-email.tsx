@@ -3,9 +3,7 @@
  * Sent when a payment attempt fails
  */
 
-import React from "react";
-
-import React from "react";
+import * as React from "react";
 
 interface PaymentFailedEmailProps {
 	attemptCount: number;

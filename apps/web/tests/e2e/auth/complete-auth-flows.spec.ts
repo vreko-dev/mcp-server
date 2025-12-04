@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("Complete Authentication Flows", () => {
-	const BASE_URL = process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000";
+	const _BASE_URL = process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000";
 	const TEST_EMAIL = `auth-test-${Date.now()}@snapback.dev`;
 	const TEST_PASSWORD = "TestPassword123!";
 

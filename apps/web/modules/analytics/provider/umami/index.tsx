@@ -16,7 +16,7 @@ export function AnalyticsScript() {
 
 		return () => {
 			const element = document.querySelector(
-				'script[data-website-id="' + umamiTrackingId + '"]',
+				`script[data-website-id="${umamiTrackingId}"]`,
 			);
 			if (element) element.remove();
 		};

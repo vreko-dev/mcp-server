@@ -1,7 +1,7 @@
 "use client";
 
-import { motion as m } from "motion/react";
 import { ChevronRight } from "lucide-react";
+import { motion as m } from "motion/react";
 import Link from "next/link";
 
 export function OriginStory() {
@@ -38,9 +38,9 @@ export function OriginStory() {
 						</p>
 
 						<p>
-							By the time we noticed, we'd already saved. Git couldn't help—
-							the AI had made commits. Time Machine was too slow. Three days
-							and $12,000 later, we were back online.
+							By the time we noticed, we'd already saved. Git couldn't help— the
+							AI had made commits. Time Machine was too slow. Three days and
+							$12,000 later, we were back online.
 						</p>
 
 						<p className="text-white font-medium">

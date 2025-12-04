@@ -2,7 +2,7 @@ export default function PricingClient() {
 	const [billingCycle, setBillingCycle] = React.useState<"monthly" | "annual">(
 		"monthly",
 	);
-	const [openFaqIndex, setOpenFaqIndex] = React.useState<number | null>(null);
+	const [_openFaqIndex, _setOpenFaqIndex] = React.useState<number | null>(null);
 	useTimeOnPage("pricing");
 
 	return (

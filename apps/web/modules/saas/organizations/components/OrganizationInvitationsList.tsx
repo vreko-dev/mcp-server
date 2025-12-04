@@ -1,6 +1,5 @@
 "use client";
 
-import { isOrganizationAdmin } from "@/lib/auth/helpers";
 import { useSession } from "@saas/auth/hooks/use-session";
 import {
 	fullOrganizationQueryKey,
@@ -35,6 +34,7 @@ import {
 } from "lucide-react";
 import { useMemo } from "react";
 import { toast } from "sonner";
+import { isOrganizationAdmin } from "@/lib/auth/helpers";
 import { OrganizationRoleSelect } from "./OrganizationRoleSelect";
 export function OrganizationInvitationsList({
 	organizationId,

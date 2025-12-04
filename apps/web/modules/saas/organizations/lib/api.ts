@@ -84,7 +84,10 @@ export const useCreateOrganizationMutation = () => {
 
 			// TODO: Replace with actual auth client when backend is ready
 			// const { error, data } = await authClient.organization.create({ name, slug, metadata });
-			const { error, data }: { error: null; data: null } = { error: null, data: null };
+			const { error, data }: { error: null; data: null } = {
+				error: null,
+				data: null,
+			};
 
 			if (error) {
 				throw error;

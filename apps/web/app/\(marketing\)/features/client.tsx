@@ -1,10 +1,10 @@
 "use client";
 
 import { ComingSoonBadge } from "@marketing/components/ui/coming-soon-badge";
-import { InteractiveFileDemo } from "@/components/demo/InteractiveFileDemo";
 import { AlertTriangle, Brain, Clock, Plug, Shield, Zap } from "lucide-react";
 import { m } from "motion/react";
 import Link from "next/link";
+import { InteractiveFileDemo } from "@/components/demo/InteractiveFileDemo";
 
 const features = [
 	{
@@ -124,7 +124,9 @@ export default function FeaturesClient() {
 						</span>
 					</h1>
 					<p className="text-xl lg:text-2xl text-gray-300 max-w-3xl mx-auto mb-8">
-						Your AI assistant moves fast. SnapBack makes sure it moves <em>safely</em>. Every feature designed to catch what AI misses and undo what AI breaks.
+						Your AI assistant moves fast. SnapBack makes sure it moves{" "}
+						<em>safely</em>. Every feature designed to catch what AI misses and
+						undo what AI breaks.
 					</p>
 					<div className="flex flex-wrap justify-center gap-4">
 						<Link
@@ -152,12 +154,18 @@ export default function FeaturesClient() {
 					transition={{ duration: 0.6 }}
 					className="bg-gradient-to-r from-red-500/10 to-orange-500/10 border border-red-500/20 rounded-2xl p-8 mb-16"
 				>
-					<h2 className="text-2xl font-bold text-white mb-4">The Problem: AI Changes You Can't Control</h2>
+					<h2 className="text-2xl font-bold text-white mb-4">
+						The Problem: AI Changes You Can't Control
+					</h2>
 					<p className="text-gray-300 mb-4">
-						Your Cursor or Claude refactors 8 files in 30 minutes. Three are brilliant. Three have bugs. Two have secrets. You have no way to undo just the broken ones without losing the good work.
+						Your Cursor or Claude refactors 8 files in 30 minutes. Three are
+						brilliant. Three have bugs. Two have secrets. You have no way to
+						undo just the broken ones without losing the good work.
 					</p>
 					<p className="text-gray-300">
-						SnapBack's features below solve this: automatic session grouping, real-time risk detection, granular protection levels, and lightning-fast multi-file undo.
+						SnapBack's features below solve this: automatic session grouping,
+						real-time risk detection, granular protection levels, and
+						lightning-fast multi-file undo.
 					</p>
 				</m.div>
 			</section>
@@ -171,7 +179,9 @@ export default function FeaturesClient() {
 					transition={{ duration: 0.6 }}
 					className="mb-12"
 				>
-					<h2 className="text-2xl font-bold text-white mb-6 text-center">See It In Action</h2>
+					<h2 className="text-2xl font-bold text-white mb-6 text-center">
+						See It In Action
+					</h2>
 					<InteractiveFileDemo />
 				</m.div>
 			</section>
@@ -257,7 +267,8 @@ export default function FeaturesClient() {
 						Ready to protect your code?
 					</h2>
 					<p className="text-xl text-gray-300 mb-8">
-						Install the free VS Code extension. Create your first snapshot in under 1 minute. No config, no credit card, no limits.
+						Install the free VS Code extension. Create your first snapshot in
+						under 1 minute. No config, no credit card, no limits.
 					</p>
 					<div className="flex flex-wrap justify-center gap-4">
 						<a

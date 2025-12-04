@@ -24,7 +24,9 @@ export async function checkAccessibility(page: Page): Promise<void> {
 		.locator("button:empty, button:not(:has-text(*))")
 		.count();
 	if (buttonsWithoutText > 0) {
-		console.warn(`Found ${buttonsWithoutText} buttons without discernible text`);
+		console.warn(
+			`Found ${buttonsWithoutText} buttons without discernible text`,
+		);
 	}
 }
 

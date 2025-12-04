@@ -186,8 +186,8 @@ export function DocsFooter() {
 				<div className="mt-12 pt-8 border-t border-snapback-border/50">
 					<div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
 						<p className="text-xs text-muted-foreground">
-							© {currentYear} {marketingConfig.appName}. Built for developers who trust
-							AI but verify results.
+							© {currentYear} {marketingConfig.appName}. Built for developers
+							who trust AI but verify results.
 						</p>
 						<div className="flex items-center gap-4 text-xs text-muted-foreground">
 							<span className="flex items-center gap-1.5">

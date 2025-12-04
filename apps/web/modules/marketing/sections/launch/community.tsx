@@ -1,8 +1,13 @@
 "use client";
 
-import { motion as m } from "motion/react";
 import { useReducedMotion } from "@ui/hooks/use-reduced-motion";
-import { MessageCircle, BookOpen, Github as GithubIcon, Video } from "lucide-react";
+import {
+	BookOpen,
+	Github as GithubIcon,
+	MessageCircle,
+	Video,
+} from "lucide-react";
+import { motion as m } from "motion/react";
 import Link from "next/link";
 
 interface CommunityOption {
@@ -17,8 +22,7 @@ const communityOptions: CommunityOption[] = [
 	{
 		icon: <MessageCircle className="w-6 h-6" />,
 		title: "Discord",
-		description:
-			"Join 200+ developers discussing AI safety and testing builds",
+		description: "Join 200+ developers discussing AI safety and testing builds",
 		href: "https://discord.gg/snapback",
 		cta: "Join Discord →",
 	},
@@ -32,8 +36,7 @@ const communityOptions: CommunityOption[] = [
 	{
 		icon: <GithubIcon className="w-6 h-6" />,
 		title: "GitHub",
-		description:
-			"Open issues, feature requests, and full source transparency",
+		description: "Open issues, feature requests, and full source transparency",
 		href: "https://github.com/snapback",
 		cta: "View Repository →",
 	},
@@ -63,7 +66,10 @@ export function Community() {
 	};
 
 	const itemVariants = {
-		hidden: { opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 20 },
+		hidden: {
+			opacity: prefersReducedMotion ? 1 : 0,
+			y: prefersReducedMotion ? 0 : 20,
+		},
 		visible: {
 			opacity: 1,
 			y: 0,
@@ -72,18 +78,24 @@ export function Community() {
 	};
 
 	return (
-		<section className="py-24 bg-background relative overflow-hidden" aria-labelledby="community-heading">
+		<section
+			className="py-24 bg-background relative overflow-hidden"
+			aria-labelledby="community-heading"
+		>
 			<div className="container mx-auto px-4">
 				<div className="text-center mb-20 space-y-4">
 					<div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-500 text-caption font-medium uppercase tracking-wider">
 						Build With Us
 					</div>
-					<h2 id="community-heading" className="text-heading-1 font-bold text-foreground">
+					<h2
+						id="community-heading"
+						className="text-heading-1 font-bold text-foreground"
+					>
 						We're Building This in Public
 					</h2>
 					<p className="text-body-lg text-muted-foreground max-w-2xl mx-auto">
-						No stealth mode. No surprise launches. Just honest development
-						with community input.
+						No stealth mode. No surprise launches. Just honest development with
+						community input.
 					</p>
 				</div>
 
@@ -105,7 +117,10 @@ export function Community() {
 								aria-label={`${option.title}: ${option.description}`}
 							>
 								<div className="group p-8 rounded-xl border border-border bg-card hover:bg-card/80 hover:border-border/60 transition-all motion-reduce:transition-none h-full min-h-80 flex flex-col gap-4">
-									<div className="text-muted-foreground group-hover:text-primary transition-colors motion-reduce:transition-none" aria-hidden="true">
+									<div
+										className="text-muted-foreground group-hover:text-primary transition-colors motion-reduce:transition-none"
+										aria-hidden="true"
+									>
 										{option.icon}
 									</div>
 

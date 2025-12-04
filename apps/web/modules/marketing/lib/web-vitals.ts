@@ -1,4 +1,3 @@
-
 // Simplified Web Vitals monitoring without external dependencies
 // Will be enhanced when web-vitals package is properly installed
 

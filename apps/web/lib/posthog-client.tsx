@@ -65,7 +65,7 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
 		// Track pageviews
 		if (pathname && posthog.__loaded) {
 			let url = window.origin + pathname;
-			if (searchParams && searchParams.toString()) {
+			if (searchParams?.toString()) {
 				url += `?${searchParams.toString()}`;
 			}
 			posthog.capture("$pageview", {

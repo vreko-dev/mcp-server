@@ -1,4 +1,3 @@
-
 /**
  * Motion Guard - Prevents future regressions of MotionProvider issues
  *

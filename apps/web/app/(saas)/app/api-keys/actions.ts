@@ -32,7 +32,9 @@ export async function listApiKeysAction(): Promise<Omit<ApiKey, "keyHash">[]> {
 	}
 
 	// STUB: Requires backend API
-	console.warn("[ApiKeys] listApiKeysAction() is stubbed - requires backend API");
+	console.warn(
+		"[ApiKeys] listApiKeysAction() is stubbed - requires backend API",
+	);
 	return [];
 }
 
@@ -50,7 +52,9 @@ export async function createApiKeyAction(
 	}
 
 	// STUB: Requires backend API
-	console.warn("[ApiKeys] createApiKeyAction() is stubbed - requires backend API");
+	console.warn(
+		"[ApiKeys] createApiKeyAction() is stubbed - requires backend API",
+	);
 	throw new Error("API key creation requires backend API connection");
 }
 
@@ -65,6 +69,8 @@ export async function revokeApiKeyAction(_keyId: string): Promise<void> {
 	}
 
 	// STUB: Requires backend API
-	console.warn("[ApiKeys] revokeApiKeyAction() is stubbed - requires backend API");
+	console.warn(
+		"[ApiKeys] revokeApiKeyAction() is stubbed - requires backend API",
+	);
 	throw new Error("API key revocation requires backend API connection");
 }

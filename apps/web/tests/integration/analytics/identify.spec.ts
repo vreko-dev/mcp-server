@@ -26,7 +26,7 @@ describe("PostHog User Identification", () => {
 	});
 
 	it("should identify user after login", () => {
-		const identifySpy = vi.spyOn(posthog, "identify");
+		const _identifySpy = vi.spyOn(posthog, "identify");
 
 		const mockUser = {
 			id: "user123",
@@ -35,7 +35,7 @@ describe("PostHog User Identification", () => {
 			createdAt: new Date("2024-01-01"),
 		};
 
-		const wrapper = ({ children }: { children: ReactNode }) => (
+		const _wrapper = ({ children }: { children: ReactNode }) => (
 			<SessionContext.Provider
 				value={{
 					session: { id: "session123" } as any,
@@ -59,9 +59,9 @@ describe("PostHog User Identification", () => {
 	});
 
 	it("should reset PostHog on logout", () => {
-		const resetSpy = vi.spyOn(posthog, "reset");
+		const _resetSpy = vi.spyOn(posthog, "reset");
 
-		const wrapper = ({ children }: { children: ReactNode }) => (
+		const _wrapper = ({ children }: { children: ReactNode }) => (
 			<SessionContext.Provider
 				value={{
 					session: null,
@@ -81,7 +81,7 @@ describe("PostHog User Identification", () => {
 
 	it("should not identify when PostHog key is missing", () => {
 		delete process.env.NEXT_PUBLIC_POSTHOG_KEY;
-		const identifySpy = vi.spyOn(posthog, "identify");
+		const _identifySpy = vi.spyOn(posthog, "identify");
 
 		const mockUser = {
 			id: "user123",
@@ -90,7 +90,7 @@ describe("PostHog User Identification", () => {
 			createdAt: new Date(),
 		};
 
-		const wrapper = ({ children }: { children: ReactNode }) => (
+		const _wrapper = ({ children }: { children: ReactNode }) => (
 			<SessionContext.Provider
 				value={{
 					session: { id: "session123" } as any,
@@ -109,7 +109,7 @@ describe("PostHog User Identification", () => {
 	});
 
 	it("should update identification when user changes", () => {
-		const identifySpy = vi.spyOn(posthog, "identify");
+		const _identifySpy = vi.spyOn(posthog, "identify");
 
 		const mockUser1 = {
 			id: "user1",
@@ -118,7 +118,7 @@ describe("PostHog User Identification", () => {
 			createdAt: new Date(),
 		};
 
-		const mockUser2 = {
+		const _mockUser2 = {
 			id: "user2",
 			email: "user2@example.com",
 			name: "User Two",
@@ -127,7 +127,7 @@ describe("PostHog User Identification", () => {
 
 		const currentUser = mockUser1;
 
-		const TestWrapper = ({ children }: { children: ReactNode }) => {
+		const _TestWrapper = ({ children }: { children: ReactNode }) => {
 			const [user, setUser] = useState(currentUser);
 
 			useEffect(() => {
@@ -162,17 +162,17 @@ describe("PostHog User Identification", () => {
 	});
 
 	it("should transition from logged in to logged out", () => {
-		const identifySpy = vi.spyOn(posthog, "identify");
-		const resetSpy = vi.spyOn(posthog, "reset");
+		const _identifySpy = vi.spyOn(posthog, "identify");
+		const _resetSpy = vi.spyOn(posthog, "reset");
 
-		const mockUser = {
+		const _mockUser = {
 			id: "user123",
 			email: "test@example.com",
 			name: "Test User",
 			createdAt: new Date(),
 		};
 
-		const Wrapper = ({ children, user }: { children: ReactNode; user: any }) => (
+		const _Wrapper = ({ children, user }: { children: ReactNode; user: any }) => (
 			<SessionContext.Provider
 				value={{
 					session: user ? { id: "session123" } : null,

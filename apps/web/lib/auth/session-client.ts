@@ -22,11 +22,19 @@ type SessionWithUser = {
 };
 
 type AuthState =
-	| { status: "authenticated"; user: SessionWithUser["user"]; session: SessionWithUser["session"] }
+	| {
+			status: "authenticated";
+			user: SessionWithUser["user"];
+			session: SessionWithUser["session"];
+	  }
 	| { status: "unauthenticated" }
 	| { status: "loading" };
 
-function isAuthenticated(state: AuthState): state is { status: "authenticated"; user: SessionWithUser["user"]; session: SessionWithUser["session"] } {
+function isAuthenticated(state: AuthState): state is {
+	status: "authenticated";
+	user: SessionWithUser["user"];
+	session: SessionWithUser["session"];
+} {
 	return state.status === "authenticated";
 }
 
@@ -34,7 +42,8 @@ function isLoading(state: AuthState): state is { status: "loading" } {
 	return state.status === "loading";
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+const API_BASE_URL =
+	process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
 const SESSION_KEY = "snapback:session";
 const SESSION_REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
 
@@ -116,7 +125,10 @@ class SessionClient {
 			});
 
 			if (response.ok) {
-				const data = await response.json() as { user: SessionWithUser["user"]; session: SessionWithUser["session"] };
+				const data = (await response.json()) as {
+					user: SessionWithUser["user"];
+					session: SessionWithUser["session"];
+				};
 				this.sessionData = {
 					user: data.user,
 					session: data.session,
@@ -154,14 +166,14 @@ class SessionClient {
 			});
 
 			if (response.ok) {
-				const data = await response.json() as SessionWithUser;
+				const data = (await response.json()) as SessionWithUser;
 				this.sessionData = data;
 				this.saveToCache();
 				this.notifyListeners();
 				return { success: true };
 			}
 
-			const error = await response.json() as { error: string };
+			const error = (await response.json()) as { error: string };
 			return { success: false, error: error.error || "Sign in failed" };
 		} catch (error) {
 			return {
@@ -190,14 +202,14 @@ class SessionClient {
 			});
 
 			if (response.ok) {
-				const data = await response.json() as SessionWithUser;
+				const data = (await response.json()) as SessionWithUser;
 				this.sessionData = data;
 				this.saveToCache();
 				this.notifyListeners();
 				return { success: true };
 			}
 
-			const error = await response.json() as { error: string };
+			const error = (await response.json()) as { error: string };
 			return { success: false, error: error.error || "Sign up failed" };
 		} catch (error) {
 			return {

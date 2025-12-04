@@ -1,5 +1,4 @@
 "use client";
-import { isOrganizationAdmin } from "@/lib/auth/helpers";
 import { useSession } from "@saas/auth/hooks/use-session";
 import { useOrganizationMemberRoles } from "@saas/organizations/hooks/member-roles";
 import {
@@ -32,6 +31,7 @@ import { Table, TableBody, TableCell, TableRow } from "@ui/components/table";
 import { LogOutIcon, MoreVerticalIcon, TrashIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { isOrganizationAdmin } from "@/lib/auth/helpers";
 import { OrganizationRoleSelect } from "./OrganizationRoleSelect";
 
 export function OrganizationMembersList({

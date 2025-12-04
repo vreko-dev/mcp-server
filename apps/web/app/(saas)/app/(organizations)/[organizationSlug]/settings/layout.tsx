@@ -3,7 +3,6 @@ import { OrganizationLogo } from "@saas/organizations/components/OrganizationLog
 import { SettingsMenu } from "@saas/settings/components/SettingsMenu";
 import { PageHeader } from "@saas/shared/components/PageHeader";
 import { SidebarContentLayout } from "@saas/shared/components/SidebarContentLayout";
-import { isOrganizationAdmin } from "@/lib/auth/helpers";
 import {
 	CreditCardIcon,
 	Settings2Icon,
@@ -12,6 +11,7 @@ import {
 } from "lucide-react";
 import { redirect } from "next/navigation";
 import type { PropsWithChildren } from "react";
+import { isOrganizationAdmin } from "@/lib/auth/helpers";
 
 // TODO: Replace with actual config from environment/app settings
 const config = {

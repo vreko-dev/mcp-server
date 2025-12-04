@@ -1,8 +1,8 @@
 "use client";
 
+import { Clock } from "lucide-react";
 import { motion } from "motion/react";
 import { cn } from "@/modules/ui/lib";
-import { Clock } from "lucide-react";
 
 export type ComingSoonBadgeVariant = "default" | "inline";
 

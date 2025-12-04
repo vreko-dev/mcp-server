@@ -3,7 +3,7 @@
 import { NeonCard } from "@marketing/components/ui";
 import { Check, GitBranch, Lock, Users, Zap } from "lucide-react";
 import { m } from "motion/react";
-import { useRef, useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function GitVsSnapback() {
 	const gitCardRef = useRef(null);
@@ -139,7 +139,9 @@ export function GitVsSnapback() {
 					<m.div
 						ref={snapbackCardRef}
 						initial={{ opacity: 1, x: 0 }}
-						animate={snapbackInView ? { opacity: 1, x: 0 } : { opacity: 1, x: 0 }}
+						animate={
+							snapbackInView ? { opacity: 1, x: 0 } : { opacity: 1, x: 0 }
+						}
 						transition={{ duration: 0.5, delay: 0.1 }}
 					>
 						<NeonCard
@@ -189,7 +191,9 @@ export function GitVsSnapback() {
 				<m.div
 					ref={integrationMsgRef}
 					initial={{ opacity: 1, y: 0 }}
-					animate={integrationMsgInView ? { opacity: 1, y: 0 } : { opacity: 1, y: 0 }}
+					animate={
+						integrationMsgInView ? { opacity: 1, y: 0 } : { opacity: 1, y: 0 }
+					}
 					transition={{ duration: 0.5, delay: 0.2 }}
 					className="mt-20 text-center max-w-2xl mx-auto p-8 rounded-2xl bg-[var(--snapback-green)]/5 border border-[var(--snapback-green)]/20"
 				>

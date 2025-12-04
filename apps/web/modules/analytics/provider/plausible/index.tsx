@@ -16,7 +16,7 @@ export function AnalyticsScript() {
 
 		return () => {
 			const element = document.querySelector(
-				'script[data-domain="' + plausibleUrl + '"]',
+				`script[data-domain="${plausibleUrl}"]`,
 			);
 			if (element) element.remove();
 		};

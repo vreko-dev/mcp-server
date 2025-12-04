@@ -3,9 +3,7 @@
  * Sent when a subscription is canceled
  */
 
-import React from "react";
-
-import React from "react";
+import * as React from "react";
 
 interface CancellationEmailProps {
 	retentionOffer: string;

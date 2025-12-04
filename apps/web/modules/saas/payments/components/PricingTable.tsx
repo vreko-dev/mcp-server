@@ -54,8 +54,8 @@ export function PricingTable({
 			return;
 		}
 
-			const price = plan.prices?.find(
-				(price: any) => price && price.productId === productId,
+		const price = plan.prices?.find(
+			(price: any) => price && price.productId === productId,
 		);
 
 		if (!price) {
@@ -86,7 +86,9 @@ export function PricingTable({
 	);
 
 	const hasSubscriptions = filteredPlans.some(([_, plan]) =>
-		(plan as any).prices?.some((price: any) => price && price.type === "recurring"),
+		(plan as any).prices?.some(
+			(price: any) => price && price.type === "recurring",
+		),
 	);
 
 	return (
@@ -115,7 +117,7 @@ export function PricingTable({
 				{filteredPlans
 					.filter(([planId]) => planId !== activePlanId)
 					.map(([planId, plan]) => {
-			const { isFree, isEnterprise, prices, recommended } = plan as any;
+						const { isFree, isEnterprise, prices, recommended } = plan as any;
 						const planDataEntry = planData[planId as keyof typeof planData];
 
 						// Skip plans that don't have data in planData

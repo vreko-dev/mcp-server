@@ -2,8 +2,8 @@ import { getActiveOrganization, getSession } from "@saas/auth/lib/server";
 import { InviteMemberForm } from "@saas/organizations/components/InviteMemberForm";
 import { OrganizationMembersBlock } from "@saas/organizations/components/OrganizationMembersBlock";
 import { SettingsList } from "@saas/shared/components/SettingsList";
-import { isOrganizationAdmin } from "@/lib/auth/helpers";
 import { notFound } from "next/navigation";
+import { isOrganizationAdmin } from "@/lib/auth/helpers";
 export async function generateMetadata() {
 	return {
 		title: "Members",

@@ -208,7 +208,7 @@ export const useParallax = (speed = 0.5, threshold = 100) => {
 
 		const observer = new IntersectionObserver(
 			([entry]) => {
-				setIsInView(!!(entry && entry.isIntersecting)); // Add null check for entry
+				setIsInView(!!entry?.isIntersecting); // Add null check for entry
 			},
 			{ rootMargin: `${threshold}px` },
 		);
@@ -323,7 +323,7 @@ export const useStaggeredAnimation = (delay = 0.05) => {
 
 		const observer = new IntersectionObserver(
 			([entry]) => {
-				if (entry && entry.isIntersecting) {
+				if (entry?.isIntersecting) {
 					// Add null check for entry
 					setAnimationStarted(true);
 					observer.disconnect();

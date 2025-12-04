@@ -1,7 +1,7 @@
 "use client";
 
-import { memo } from "react";
 import { OAuthCallbackHandler } from "@saas/auth/components/OAuthCallbackHandler";
+import { memo } from "react";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import type {
 	Activity,
@@ -42,22 +42,24 @@ interface DashboardClientProps {
  * - No local state, no effect hooks (pure component)
  */
 export const DashboardClient = memo(function DashboardClient({
-userName,
-userEmail,
-metrics,
-aiStats,
-activity,
-sessionMetrics,
+	userName,
+	userEmail,
+	metrics,
+	aiStats,
+	activity,
+	sessionMetrics,
 }: DashboardClientProps) {
-return (
-<div className="p-8 space-y-8">
+	return (
+		<div className="p-8 space-y-8">
 			{/* OAuth Callback Validation - handles errors and session validation after OAuth redirect */}
 			<OAuthCallbackHandler />
 
 			{/* Dashboard Header */}
 			<div className="mb-8">
 				<h1 className="text-3xl font-bold">Dashboard</h1>
-				<p className="text-muted-foreground mt-2">Welcome back, {userName || userEmail}</p>
+				<p className="text-muted-foreground mt-2">
+					Welcome back, {userName || userEmail}
+				</p>
 			</div>
 
 			{/* Waitlist Position (if user is on waitlist) */}

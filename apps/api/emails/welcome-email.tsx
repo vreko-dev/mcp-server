@@ -3,9 +3,7 @@
  * Sent when a user subscribes to a plan
  */
 
-import React from "react";
-
-import React from "react";
+import * as React from "react";
 
 interface WelcomeEmailProps {
 	plan: string;

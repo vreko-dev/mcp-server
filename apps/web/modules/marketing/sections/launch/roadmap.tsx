@@ -1,7 +1,7 @@
 "use client";
 
-import { motion as m } from "motion/react";
 import { ChevronRight } from "lucide-react";
+import { motion as m } from "motion/react";
 import Link from "next/link";
 
 interface RoadmapPhase {

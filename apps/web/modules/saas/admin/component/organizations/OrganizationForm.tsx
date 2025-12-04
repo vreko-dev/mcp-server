@@ -54,42 +54,46 @@ export function OrganizationForm({
 		},
 	});
 
-	const onSubmit = form.handleSubmit(async ({ name }: OrganizationFormValues) => {
-		try {
-			const org = organization as any;
-			const newOrganization = org
-				? await updateOrganizationMutation.mutateAsync({
-						id: org.id,
-						name,
-						updateSlug: org.name !== name,
-					})
-				: await createOrganizationMutation.mutateAsync({
-						name,
-					});
+	const onSubmit = form.handleSubmit(
+		async ({ name }: OrganizationFormValues) => {
+			try {
+				const org = organization as any;
+				const newOrganization = org
+					? await updateOrganizationMutation.mutateAsync({
+							id: org.id,
+							name,
+							updateSlug: org.name !== name,
+						})
+					: await createOrganizationMutation.mutateAsync({
+							name,
+						});
 
-			if (!newOrganization) {
-				throw new Error("Could not save organization");
+				if (!newOrganization) {
+					throw new Error("Could not save organization");
+				}
+
+				queryClient.setQueryData(
+					fullOrganizationQueryKey(organizationId),
+					newOrganization,
+				);
+
+				// TODO: Re-enable when admin API is available
+				// queryClient.invalidateQueries({
+				// 	queryKey: orpc.admin.organizations.list.key(),
+				// });
+
+				toast.success("Organization saved successfully");
+
+				if (!organization) {
+					router.replace(
+						getAdminPath(`/organizations/${(newOrganization as any).id}`),
+					);
+				}
+			} catch {
+				toast.error("Failed to save organization");
 			}
-
-			queryClient.setQueryData(
-				fullOrganizationQueryKey(organizationId),
-				newOrganization,
-			);
-
-			// TODO: Re-enable when admin API is available
-			// queryClient.invalidateQueries({
-			// 	queryKey: orpc.admin.organizations.list.key(),
-			// });
-
-			toast.success("Organization saved successfully");
-
-			if (!organization) {
-				router.replace(getAdminPath(`/organizations/${(newOrganization as any).id}`));
-			}
-		} catch {
-			toast.error("Failed to save organization");
-		}
-	});
+		},
+	);
 
 	return (
 		<div className="grid grid-cols-1 gap-4">

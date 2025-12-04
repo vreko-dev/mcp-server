@@ -179,7 +179,7 @@ const config: Config = {
 						fontWeight: "400",
 					},
 				],
-				"body": [
+				body: [
 					"1rem",
 					{
 						lineHeight: "1.6",
@@ -194,14 +194,14 @@ const config: Config = {
 					},
 				],
 				// UI text
-				"caption": [
+				caption: [
 					"0.75rem",
 					{
 						lineHeight: "1.4",
 						fontWeight: "500",
 					},
 				],
-				"overline": [
+				overline: [
 					"0.6875rem",
 					{
 						lineHeight: "1.3",

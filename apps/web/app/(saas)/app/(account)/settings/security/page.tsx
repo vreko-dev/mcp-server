@@ -1,9 +1,9 @@
 "use client";
 
+import { authConfig } from "@saas/auth/config";
 import { SettingsList } from "@saas/shared/components/SettingsList";
 import dynamic from "next/dynamic";
 import type { ComponentType } from "react";
-import { authConfig } from "@saas/auth/config";
 
 // Dynamically import security components
 const ActiveSessionsBlock = dynamic(

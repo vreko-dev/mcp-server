@@ -1,9 +1,9 @@
 import { getOrganizationList, getSession } from "@saas/auth/lib/server";
 import { orpcClient } from "@shared/lib/orpc-client";
-import { createPurchasesHelper } from "@/lib/auth/helpers";
 import { attemptAsync } from "es-toolkit";
 import { redirect } from "next/navigation";
 import type { PropsWithChildren } from "react";
+import { createPurchasesHelper } from "@/lib/auth/helpers";
 
 // TODO: Replace with actual config from environment/app settings
 interface Purchase {
@@ -42,7 +42,10 @@ export default async function Layout({ children }: PropsWithChildren) {
 		redirect("/auth/login");
 	}
 
-	if (config.users.enableOnboarding && !(session as any)?.user?.onboardingComplete) {
+	if (
+		config.users.enableOnboarding &&
+		!(session as any)?.user?.onboardingComplete
+	) {
 		redirect("/onboarding");
 	}
 
@@ -70,7 +73,8 @@ export default async function Layout({ children }: PropsWithChildren) {
 		!hasFreePlan
 	) {
 		const organizationId = config.organizations.enable
-			? (session as any)?.session?.activeOrganizationId || (organizations as any)?.at(0)?.id
+			? (session as any)?.session?.activeOrganizationId ||
+				(organizations as any)?.at(0)?.id
 			: undefined;
 
 		const [error, data] = await attemptAsync<{ purchases: Purchase[] }, Error>(

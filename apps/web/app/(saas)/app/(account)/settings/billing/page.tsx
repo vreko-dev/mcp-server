@@ -3,8 +3,8 @@ import { ActivePlan } from "@saas/payments/components/ActivePlan";
 import { ChangePlan } from "@saas/payments/components/ChangePlan";
 import { SettingsList } from "@saas/shared/components/SettingsList";
 import { orpcClient } from "@shared/lib/orpc-client";
-import { createPurchasesHelper } from "@/lib/auth/helpers";
 import { attemptAsync } from "es-toolkit";
+import { createPurchasesHelper } from "@/lib/auth/helpers";
 
 // TODO: Replace with actual Purchase type from @snapback/contracts
 interface Purchase {
@@ -46,7 +46,10 @@ export default async function BillingSettingsPage() {
 		<SettingsList>
 			{activePlan && <ActivePlan />}
 			{activePlan?.id && typeof activePlan.id === "string" && (
-				<ChangePlan userId={(session as any)?.user?.id} activePlanId={activePlan.id} />
+				<ChangePlan
+					userId={(session as any)?.user?.id}
+					activePlanId={activePlan.id}
+				/>
 			)}
 		</SettingsList>
 	);

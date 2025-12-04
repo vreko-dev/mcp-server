@@ -177,40 +177,40 @@ export const PricingCard = ({
 				)}
 
 				{/* Expanded Features */}
-		<AnimatePresence mode="wait">
-			{expanded && (
-				<m.div
-					key="expanded-features"
-					initial={{ height: 0, opacity: 0 }}
-					animate={{ height: "auto", opacity: 1 }}
-					exit={{ height: 0, opacity: 0 }}
-					transition={{
-						duration: 0.3,
-						ease: [0.25, 0.46, 0.45, 0.94],
-					}}
-					className="overflow-hidden mb-4"
-				>
-					<div className="space-y-2 pt-2 border-t border-[#333]">
-						{tier.features.viewMore.map((feature, idx) => (
-							<m.div
-								key={idx}
-								initial={{ opacity: 0, x: -10 }}
-								animate={{ opacity: 1, x: 0 }}
-								transition={{ delay: idx * 0.05 }}
-								className="flex items-start"
-							>
-								<span className="text-[#10B981] mr-2 mt-0.5 flex-shrink-0">
-									{categoryIcons[feature.category] || "✓"}
-								</span>
-								<span className="text-sm text-gray-300">
-									{feature.text}
-								</span>
-							</m.div>
-						))}
-					</div>
-				</m.div>
-			)}
-		</AnimatePresence>
+				<AnimatePresence mode="wait">
+					{expanded && (
+						<m.div
+							key="expanded-features"
+							initial={{ height: 0, opacity: 0 }}
+							animate={{ height: "auto", opacity: 1 }}
+							exit={{ height: 0, opacity: 0 }}
+							transition={{
+								duration: 0.3,
+								ease: [0.25, 0.46, 0.45, 0.94],
+							}}
+							className="overflow-hidden mb-4"
+						>
+							<div className="space-y-2 pt-2 border-t border-[#333]">
+								{tier.features.viewMore.map((feature, idx) => (
+									<m.div
+										key={idx}
+										initial={{ opacity: 0, x: -10 }}
+										animate={{ opacity: 1, x: 0 }}
+										transition={{ delay: idx * 0.05 }}
+										className="flex items-start"
+									>
+										<span className="text-[#10B981] mr-2 mt-0.5 flex-shrink-0">
+											{categoryIcons[feature.category] || "✓"}
+										</span>
+										<span className="text-sm text-gray-300">
+											{feature.text}
+										</span>
+									</m.div>
+								))}
+							</div>
+						</m.div>
+					)}
+				</AnimatePresence>
 
 				{/* Limitations */}
 				{tier.limitations && tier.limitations.length > 0 && (

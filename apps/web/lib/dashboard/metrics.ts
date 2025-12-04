@@ -33,12 +33,12 @@ export interface SubscriptionInfo {
 
 export interface UsageLimits {
 	snapshots: {
-	current: number;
-	limit: number;
+		current: number;
+		limit: number;
 	};
 	storage: {
-	current: number;
-	limit: number;
+		current: number;
+		limit: number;
 	};
 }
 
@@ -135,14 +135,19 @@ export async function fetchSessionMetrics(): Promise<SessionMetrics> {
 	};
 }
 
-export async function getSubscription(_userId?: string): Promise<SubscriptionInfo> {
+export async function getSubscription(
+	_userId?: string,
+): Promise<SubscriptionInfo> {
 	return {
 		planName: "Free",
 		status: "active",
 	};
 }
 
-export async function getUsageLimits(_userId?: string, _plan?: string): Promise<UsageLimits> {
+export async function getUsageLimits(
+	_userId?: string,
+	_plan?: string,
+): Promise<UsageLimits> {
 	return {
 		snapshots: {
 			current: 0,

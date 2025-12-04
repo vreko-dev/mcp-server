@@ -27,7 +27,7 @@ export default async function OnboardingPage() {
 	}
 
 	// STUB: In frontend-only mode, session is null, so always allow onboarding
-	const sessionData = session as any || {};
+	const sessionData = (session as any) || {};
 	if (!config.users.enableOnboarding || sessionData?.user?.onboardingComplete) {
 		redirect("/app");
 	}

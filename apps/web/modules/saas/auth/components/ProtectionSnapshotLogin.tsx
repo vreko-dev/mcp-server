@@ -221,7 +221,7 @@ export default function ProtectionSnapshotLogin() {
 				}));
 				announce(`Error: ${result.error || "OAuth failed"}`, true);
 			}
-		} catch (error) {
+		} catch (_error) {
 			await addTerminalLine("❌ OAuth failed", "error", 50);
 			setState((prev) => ({
 				...prev,
@@ -273,7 +273,7 @@ export default function ProtectionSnapshotLogin() {
 				await addTerminalLine("📧 Check your email", "info", 100);
 				setState((prev) => ({ ...prev, stage: "magic-link-sent" }));
 				announce("Success! Magic link sent to your email.", true);
-			} catch (error) {
+			} catch (_error) {
 				setState((prev) => ({
 					...prev,
 					stage: "error",

@@ -29,12 +29,12 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { withQuery } from "ufo";
 import { z } from "zod";
+import { authConfig } from "../config";
 import {
 	type OAuthProvider,
 	oAuthProviders,
 } from "../constants/oauth-providers";
 import { SocialSigninButton } from "./SocialSigninButton";
-import { authConfig } from "../config";
 
 const formSchema = z.object({
 	email: z.string().email(),

@@ -1,8 +1,8 @@
 import { SignupForm } from "@saas/auth/components/SignupForm";
+import { authConfig } from "@saas/auth/config";
 import { getInvitation } from "@saas/auth/lib/server";
 import { redirect } from "next/navigation";
 import { withQuery } from "ufo";
-import { authConfig } from "@saas/auth/config";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;

@@ -1,10 +1,10 @@
 "use client";
 
+import { ComingSoonBadge } from "@marketing/components/ui/coming-soon-badge";
 import { Button } from "@ui/components/button";
 import { motion } from "motion/react";
 import Link from "next/link";
 import { ProtectiveHover } from "../ui/snap-motion";
-import { ComingSoonBadge } from "@marketing/components/ui/coming-soon-badge";
 
 export function MCPSection() {
 	return (

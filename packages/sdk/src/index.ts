@@ -13,6 +13,13 @@ export {
 	type RiskFactor,
 	type RiskSeverity,
 } from "./analysis/RiskAnalyzer.js";
+export {
+	describeRiskFactor,
+	describeRiskFactors,
+	getStandardRiskFactors,
+	isKnownRiskFactor,
+	RISK_FACTOR_DESCRIPTIONS,
+} from "./analysis/riskFactorDescriptions.js";
 export * from "./cache/lru-cache.js";
 export { ProtectionClient } from "./client/ProtectionClient.js";
 export { SnapshotClient } from "./client/SnapshotClient.js";

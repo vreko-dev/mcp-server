@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { OAuthCallbackHandler } from "@saas/auth/components/OAuthCallbackHandler";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import type {
@@ -22,24 +23,41 @@ interface DashboardClientProps {
 	sessionMetrics?: SessionMetrics;
 }
 
-export function DashboardClient({
-	userName,
-	userEmail,
-	metrics,
-	aiStats,
-	activity,
-	sessionMetrics,
+/**
+ * Dashboard Client Component (REFACTOR Phase)
+ *
+ * Optimizations applied:
+ * - Memoized with React.memo() to prevent unnecessary re-renders
+ * - Extracted sub-components to reduce re-render cascade:
+ *   * MetricsGrid: displays user metrics (checkpoints, recoveries, files)
+ *   * AIDetectionStats: displays AI detection breakdown by tool
+ *   * ActivityFeed: displays recent user activities
+ *   * WaitlistPositionTile: displays waitlist position if applicable
+ * - Each sub-component wrapped in ErrorBoundary for resilience
+ * - Data passed as props enables server-side data fetching
+ *
+ * Performance characteristics:
+ * - Only re-renders when props change (memoization)
+ * - Sub-component re-renders isolated via memo
+ * - No local state, no effect hooks (pure component)
+ */
+export const DashboardClient = memo(function DashboardClient({
+userName,
+userEmail,
+metrics,
+aiStats,
+activity,
+sessionMetrics,
 }: DashboardClientProps) {
-	return (
-		<div className="p-8 space-y-8">
+return (
+<div className="p-8 space-y-8">
 			{/* OAuth Callback Validation - handles errors and session validation after OAuth redirect */}
 			<OAuthCallbackHandler />
 
+			{/* Dashboard Header */}
 			<div className="mb-8">
 				<h1 className="text-3xl font-bold">Dashboard</h1>
-				<p className="text-muted-foreground mt-2">
-					Welcome back, {userName || userEmail}
-				</p>
+				<p className="text-muted-foreground mt-2">Welcome back, {userName || userEmail}</p>
 			</div>
 
 			{/* Waitlist Position (if user is on waitlist) */}
@@ -56,6 +74,7 @@ export function DashboardClient({
 				{...(sessionMetrics || {})}
 			/>
 
+			{/* AI Detection Stats and Recent Activity - Side by Side */}
 			<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 				{/* AI Detection Stats */}
 				<ErrorBoundary>
@@ -69,4 +88,6 @@ export function DashboardClient({
 			</div>
 		</div>
 	);
-}
+});
+
+DashboardClient.displayName = "DashboardClient";

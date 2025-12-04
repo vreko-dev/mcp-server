@@ -132,7 +132,7 @@ export interface OnboardingPhaseProgressedEvent {
 }
 
 export interface OnboardingContextualPromptShownEvent {
-	event: "onboarding.contextualPrompt.shown";
+	event: "onboarding.contextual.prompt.shown";
 	properties: {
 		promptType: string;
 		actionTaken: string | null;

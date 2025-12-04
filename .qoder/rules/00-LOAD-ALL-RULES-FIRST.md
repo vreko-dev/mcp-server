@@ -16,16 +16,18 @@ Automatically discover and read from these directories:
 - `apps/vscode/.qoder/rules/*.md` (VS Code extension rules)
 - Any other app-specific rule directories
 
-**Current rule inventory (9 files):**
+**Current rule inventory (11 files):**
 1. `00-LOAD-ALL-RULES-FIRST.md` (this file)
 2. `always-better-auth-canonical.md` (No custom auth)
 3. `always-monorepo-imports.md` (Workspace-wide imports)
-4. `always-result-type-pattern.md` (Error handling)
-5. `always-typescript-patterns.md` (Type safety patterns)
-6. `decision-logging-observability.md` (Structured logging)
-7. `decision-oauth-multi-service.md` (OAuth architecture)
-8. `files-docker-deployment.md` (Docker/deployment)
-9. `files-testing-vitest.md` (Testing standards)
+4. `always-react-security-boundaries.md` (React/Next.js security)
+5. `always-result-type-pattern.md` (Error handling)
+6. `always-typescript-patterns.md` (Type safety patterns)
+7. `decision-logging-observability.md` (Structured logging)
+8. `decision-oauth-multi-service.md` (OAuth architecture)
+9. `decision-typescript-esm-testing.md` (TypeScript ESM testing patterns)
+10. `files-docker-deployment.md` (Docker/deployment)
+11. `files-testing-vitest.md` (Testing standards)
 
 ### Step 2: Read ALL Files Completely
 
@@ -40,12 +42,14 @@ Automatically discover and read from these directories:
 **Always-On Rules** (apply to every task):
 - `always-better-auth-canonical.md` → All auth goes through `@snapback/auth`
 - `always-monorepo-imports.md` → All cross-package imports use `@snapback/*`
+- `always-react-security-boundaries.md` → React 19.1.2+, Next.js 15.5.7+ (CVE-2025-55182/66478)
 - `always-result-type-pattern.md` → Public APIs use `Result<T, E>`
 - `always-typescript-patterns.md` → Use discriminated unions, const assertions, type guards
 
 **Decision Rules** (apply based on task type):
 - `decision-logging-observability.md` → For critical path operations, request handlers, errors
 - `decision-oauth-multi-service.md` → For OAuth/multi-service setup
+- `decision-typescript-esm-testing.md` → For ESM module mocking, TypeScript test issues
 
 **File-Specific Rules** (apply to specific operations):
 - `files-docker-deployment.md` → For Docker/deployment changes
@@ -55,12 +59,12 @@ Automatically discover and read from these directories:
 
 **Example responses:**
 ```
-Rules loaded (9 total):
-  ✅ Always-on (4): better-auth, imports, result-type, typescript-patterns
-  ✅ Decision (2): logging (request handler), oauth (multi-service context)
-  ✅ File-specific (2): testing (writing unit tests)
+Rules loaded (11 total):
+  ✅ Always-on (5): better-auth, imports, react-security, result-type, typescript-patterns
+  ✅ Decision (3): logging (request handler), oauth (multi-service), typescript-esm (mocking issues)
+  ✅ File-specific (2): testing (writing unit tests), docker (deployment changes)
 
-Applying: All 4 always-on + logging + testing
+Applying: All 5 always-on + logging + testing
 ```
 
 ### Step 5: ONLY THEN Respond to User Query
@@ -98,19 +102,26 @@ With complete rule context available
 - Services receive `userId` from auth layer, never handle auth
 - Plugins: better-auth's JWT, OAuth, 2FA, rate limiting, RBAC
 
-**2. `always-monorepo-imports.md` (271 lines)**
+**2. `always-monorepo-imports.md` (353 lines)**
 - Pattern: All cross-package imports use `@snapback/*`
 - Dependencies: `workspace:*` for internal, `catalog:` for external
 - Module resolution: `bundler` mode in tsconfig
 - Forbidden: Relative paths crossing package boundaries
 
-**3. `always-result-type-pattern.md` (299 lines)**
+**3. `always-react-security-boundaries.md` (352 lines)** ⭐ NEW
+- Enforces: React 19.1.2+, Next.js 15.5.7+ minimum versions
+- Prevents: CVE-2025-55182 (React Server Components RCE)
+- Prevents: CVE-2025-66478 (Next.js Server Components RCE)
+- Validation: `pnpm validate` checks vulnerable versions
+- Status: SnapBack patched as of 2025-12-03
+
+**4. `always-result-type-pattern.md` (456 lines)**
 - Pattern: `Result<T, E>` = `{ success: true; value: T } | { success: false; error: E }`
 - Guards: `isOk()` and `isErr()` for type narrowing
 - Use for: Expected failures, recoverable errors, public APIs
 - Don't use for: Programming errors (throw instead)
 
-**4. `always-typescript-patterns.md` (234 lines)**
+**5. `always-typescript-patterns.md` (313 lines)**
 - Discriminated unions for state machines (Resource<T>)
 - Const assertions instead of enums
 - Type guards with `is` predicate
@@ -119,32 +130,42 @@ With complete rule context available
 
 ### Decision Rules (Task-Dependent)
 
-**5. `decision-logging-observability.md` (469 lines)**
+**6. `decision-logging-observability.md` (469 lines)**
 - When: Critical path operations, request handlers, errors
 - Pattern: `logger.info("message", { structured, data })`
 - Import: `import { logger } from "@snapback/infrastructure"`
 - Auth events: Track via better-auth `databaseHooks`, not custom events
 - Redaction: Automatic for email, password, apiKey, tokens
 
-**6. `decision-oauth-multi-service.md` (470 lines)**
+**7. `decision-oauth-multi-service.md` (470 lines)**
 - When: OAuth setup, multi-service architecture
 - Architecture: API-first (API is canonical auth authority)
 - URLs: `NEXT_PUBLIC_SITE_URL` (public) vs `BETTER_AUTH_URL` (internal)
 - Callback: OAuth callback URL must match Google configuration exactly
 - Validation: Environment variables validated at startup
 
+**8. `decision-typescript-esm-testing.md` (526 lines)** ⭐ NEW
+- When: ESM module mocking issues, TypeScript compilation in tests
+- Problem: `vi.mock()` fails in TypeScript monorepos with circular deps
+- Solution: Use dependency injection pattern instead
+- Pattern: Pass mock dependencies as optional function parameter
+- Prevents: "function is not a function", module hoisting errors
+
 ### File-Specific Rules (Operation-Based)
 
-**7. `files-docker-deployment.md` (377+ lines)**
+**9. `files-docker-deployment.md` (462 lines)**
 - When: Docker setup, deployment changes
-- See: Docker configuration patterns, health checks, entrypoints
+- Pattern: Validate script names, package references, migrations
+- Critical: Database migrations must run before app startup
+- URLs: Distinguish `NEXT_PUBLIC_SITE_URL` (browser) vs `BETTER_AUTH_URL` (internal)
 
-**8. `files-testing-vitest.md` (266+ lines)**
+**10. `files-testing-vitest.md` (438 lines)**
 - When: Writing unit tests
 - Framework: Vitest with vi mocking
 - Pattern: Mock `@snapback/auth`, `logger`, `Result<T, E>`
+- Coverage: Lines 80%, functions 80%, branches 75%, statements 80%
 
-**9. `files-*.md` (other file-specific rules)**
+**11. `files-*.md` (other file-specific rules)**
 - As discovered in `.qoder/rules/*.md`
 
 ---
@@ -156,7 +177,7 @@ When starting work on ANY user query:
 - [ ] NEW session? Load all rules (skip if already loaded, acknowledge)
 - [ ] `list_dir .qoder/rules` → identify all `.md` files
 - [ ] `read_file` each rule completely (don't skim)
-- [ ] Create mental map: Always-on (4) + Decision (2-5) + File-specific (N)
+- [ ] Create mental map: Always-on (5) + Decision (3) + File-specific (3)
 - [ ] Categorize current task → which rules apply?
 - [ ] Acknowledge: "Rules loaded. Applying: [list]"
 - [ ] THEN execute work with full context
@@ -175,9 +196,9 @@ Result: Architectural violations, wrong patterns applied
 
 ✅ **CORRECT: Exhaustive Discovery**
 ```
-AI: `list_dir .qoder/rules` → finds ALL .md files
+AI: `list_dir .qoder/rules` → finds ALL 11 .md files
 AI: `read_file` on EACH file completely
-AI: Mental map of 9 rules categorized by type
+AI: Mental map of 11 rules: 5 always-on + 3 decision + 3 file-specific
 Result: Complete context, consistent patterns
 ```
 
@@ -228,7 +249,7 @@ Result: Complete, correct implementation
 **Acknowledge at start of session:**
 ```
 ✅ Rules loaded from previous context:
-  - All 9 workspace rules available
+  - All 11 workspace rules available (5 always-on + 3 decision + 3 file-specific)
   - Ready to apply to current task
   - Will reload if any uncertainty
 ```
@@ -252,8 +273,8 @@ Result: Complete, correct implementation
 ## Performance Note
 
 **Parallel reads are fast:**
-- 9 files × ~400 lines average = 3600 lines
-- Parallel `read_file` calls take ~5 seconds
+- 11 files × ~385 lines average = 4235 lines
+- Parallel `read_file` calls take ~5-7 seconds
 - Prevents hours of mistakes and rework
 - **Well worth the minimal overhead**
 
@@ -261,9 +282,10 @@ Result: Complete, correct implementation
 
 ## Version History
 
+- **2025-12-04 v2.1:** Added 2 new rules (react-security-boundaries, typescript-esm-testing), updated inventory
 - **2025-11-20 v2.0:** Complete rule categorization, anti-patterns, decision matrix
 - **2025-11-20 v1.0:** Initial rule loading requirement
 
-**Last Updated:** 2025-11-20
+**Last Updated:** 2025-12-04
 **Priority:** 🔴 CRITICAL - Execute first, every time
 **Maintained By:** Architecture team

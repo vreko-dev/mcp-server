@@ -1,5 +1,6 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import { authClient } from "@snapback/auth/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@ui/components/button";
@@ -22,11 +23,10 @@ import {
 import { Input } from "@ui/components/input";
 import { Textarea } from "@ui/components/textarea";
 import { AlertCircleIcon, LoaderIcon, SaveIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 
 const editOrgSchema = z.object({
 	name: z
@@ -126,10 +126,7 @@ export function EditOrganizationForm({
 				)}
 
 				<Form {...form}>
-					<form
-						onSubmit={form.handleSubmit(onSubmit)}
-						className="space-y-6"
-					>
+					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
 						{/* Organization Name */}
 						<FormField
 							control={form.control}
@@ -169,7 +166,8 @@ export function EditOrganizationForm({
 										/>
 									</FormControl>
 									<FormDescription>
-										A brief description of your organization (max 500 characters)
+										A brief description of your organization (max 500
+										characters)
 									</FormDescription>
 									<FormMessage />
 								</FormItem>

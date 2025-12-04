@@ -7,13 +7,13 @@
  * OWASP Standard: A01:2021 – Broken Access Control
  */
 
-import { HTTPException } from "hono/http-exception";
-import type { MiddlewareHandler } from "hono";
 import {
-	validateCSRFToken,
 	type CSRFConfig,
+	validateCSRFToken,
 } from "@snapback/auth/security/csrf-protection";
 import { logger } from "@snapback/infrastructure";
+import type { MiddlewareHandler } from "hono";
+import { HTTPException } from "hono/http-exception";
 
 /**
  * CSRF Protection Middleware Factory

@@ -7,9 +7,9 @@ import { logger } from "@snapback/infrastructure";
 import { webhookHandler as paymentsWebhookHandler } from "@snapback/integrations/stripe/provider/stripe";
 import type { Hono as HonoApp } from "hono";
 import { Hono } from "hono";
-import { HTTPException } from "hono/http-exception";
 import { bodyLimit } from "hono/body-limit";
 import { cors } from "hono/cors";
+import { HTTPException } from "hono/http-exception";
 import { logger as honoLogger } from "hono/logger";
 import { secureHeaders } from "hono/secure-headers";
 import { openApiHandler, rpcHandler } from "@/orpc/handler.js";
@@ -18,9 +18,9 @@ import {
 	adaptiveTurnstile,
 	verifyChallenge,
 } from "./middleware/adaptive-turnstile.js";
-import { rateLimitingMiddleware } from "./middleware/security-rate-limit.js";
-import { csrfProtectionMiddleware } from "./middleware/security-csrf.js";
 import { enforceRLS } from "./middleware/rls-tenant.js";
+import { csrfProtectionMiddleware } from "./middleware/security-csrf.js";
+import { rateLimitingMiddleware } from "./middleware/security-rate-limit.js";
 import { extractAuthContext } from "./middleware/session.js";
 import apiRoutes from "./routes";
 import healthRoute from "./routes/health";

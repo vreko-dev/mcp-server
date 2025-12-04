@@ -10,12 +10,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@ui/components/card";
-import {
-	AlertCircleIcon,
-	CheckIcon,
-	ClockIcon,
-	XIcon,
-} from "lucide-react";
+import { AlertCircleIcon, CheckIcon, ClockIcon, XIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -47,7 +42,8 @@ export function PendingInvitationsCard() {
 
 			try {
 				// biome-ignore lint/suspicious/noExplicitAny: Better Auth response type varies
-				const result = (await authClient.organization.listUserInvitations()) as any;
+				const result =
+					(await authClient.organization.listUserInvitations()) as any;
 
 				// Better Auth returns invitations directly as array or in data property
 				const invitationsList = Array.isArray(result)
@@ -57,9 +53,7 @@ export function PendingInvitationsCard() {
 						: (result?.data?.invitations as Invitation[]) || [];
 
 				if (result?.error) {
-					setError(
-						result.error.message || "Failed to load invitations",
-					);
+					setError(result.error.message || "Failed to load invitations");
 					setInvitations([]);
 					return;
 				}
@@ -69,8 +63,7 @@ export function PendingInvitationsCard() {
 					.filter((inv) => inv.status === "pending")
 					.sort(
 						(a, b) =>
-							new Date(a.expiresAt).getTime() -
-							new Date(b.expiresAt).getTime(),
+							new Date(a.expiresAt).getTime() - new Date(b.expiresAt).getTime(),
 					);
 
 				setInvitations(pending);
@@ -92,19 +85,16 @@ export function PendingInvitationsCard() {
 
 		toast.promise(
 			(async () => {
-				const { data, error } =
-					await authClient.organization.acceptInvitation({
-						invitationId,
-					});
+				const { data, error } = await authClient.organization.acceptInvitation({
+					invitationId,
+				});
 
 				if (error) {
 					throw new Error(error.message || "Failed to accept invitation");
 				}
 
 				// Remove from list
-				setInvitations((prev) =>
-					prev.filter((inv) => inv.id !== invitationId),
-				);
+				setInvitations((prev) => prev.filter((inv) => inv.id !== invitationId));
 
 				// Invalidate related queries
 				queryClient.invalidateQueries({
@@ -112,15 +102,14 @@ export function PendingInvitationsCard() {
 				});
 
 				return data;
-			})()
-		,
-		{
-			loading: "Accepting invitation...",
-			success: "You've successfully joined the organization!",
-			error: (err: unknown) =>
-				`Failed to accept invitation: ${err instanceof Error ? err.message : "Unknown error"}`,
-		},
-	);
+			})(),
+			{
+				loading: "Accepting invitation...",
+				success: "You've successfully joined the organization!",
+				error: (err: unknown) =>
+					`Failed to accept invitation: ${err instanceof Error ? err.message : "Unknown error"}`,
+			},
+		);
 
 		setAcceptingId(null);
 	};
@@ -130,33 +119,29 @@ export function PendingInvitationsCard() {
 
 		toast.promise(
 			(async () => {
-				const { error } =
-					await authClient.organization.rejectInvitation({
-						invitationId,
-					});
+				const { error } = await authClient.organization.rejectInvitation({
+					invitationId,
+				});
 
 				if (error) {
 					throw new Error(error.message || "Failed to reject invitation");
 				}
 
 				// Remove from list
-				setInvitations((prev) =>
-					prev.filter((inv) => inv.id !== invitationId),
-				);
+				setInvitations((prev) => prev.filter((inv) => inv.id !== invitationId));
 
 				// Invalidate related queries
 				queryClient.invalidateQueries({
 					queryKey: ["user-invitations"],
 				});
-			})()
-		,
-		{
-			loading: "Rejecting invitation...",
-			success: "Invitation rejected",
-			error: (err: unknown) =>
-				`Failed to reject invitation: ${err instanceof Error ? err.message : "Unknown error"}`,
-		},
-	);
+			})(),
+			{
+				loading: "Rejecting invitation...",
+				success: "Invitation rejected",
+				error: (err: unknown) =>
+					`Failed to reject invitation: ${err instanceof Error ? err.message : "Unknown error"}`,
+			},
+		);
 
 		setRejectingId(null);
 	};
@@ -174,10 +159,7 @@ export function PendingInvitationsCard() {
 				<CardContent>
 					<div className="space-y-3">
 						{[1, 2].map((i) => (
-							<div
-								key={i}
-								className="h-24 rounded-lg bg-muted animate-pulse"
-							/>
+							<div key={i} className="h-24 rounded-lg bg-muted animate-pulse" />
 						))}
 					</div>
 				</CardContent>
@@ -197,10 +179,7 @@ export function PendingInvitationsCard() {
 					<CardDescription>{error}</CardDescription>
 				</CardHeader>
 				<CardContent>
-					<Button
-						variant="outline"
-						onClick={() => window.location.reload()}
-					>
+					<Button variant="outline" onClick={() => window.location.reload()}>
 						Retry
 					</Button>
 				</CardContent>

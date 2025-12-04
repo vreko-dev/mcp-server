@@ -7,15 +7,15 @@
  * OWASP Standard: A40:2021 – Denial of Service
  */
 
-import { HTTPException } from "hono/http-exception";
-import type { MiddlewareHandler } from "hono";
 import {
-	isRateLimited,
 	authEndpointLimits,
 	globalRateLimitConfig,
+	isRateLimited,
 	type RateLimitConfig,
 } from "@snapback/auth/security/rate-limiting";
 import { logger } from "@snapback/infrastructure";
+import type { MiddlewareHandler } from "hono";
+import { HTTPException } from "hono/http-exception";
 
 /**
  * Rate Limiting Middleware Factory
@@ -54,10 +54,7 @@ export function rateLimitingMiddleware(
 			const result = isRateLimited(ip, config);
 
 			// Set rate limit headers on response
-			c.res.headers.set(
-				"X-RateLimit-Limit",
-				String(config.maxRequests),
-			);
+			c.res.headers.set("X-RateLimit-Limit", String(config.maxRequests));
 			c.res.headers.set(
 				"X-RateLimit-Remaining",
 				String(Math.max(0, result.remaining)),

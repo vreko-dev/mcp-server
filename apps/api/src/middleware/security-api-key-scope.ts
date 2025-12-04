@@ -7,10 +7,10 @@
  * OWASP Standard: A01:2021 – Broken Access Control
  */
 
-import { HTTPException } from "hono/http-exception";
-import type { MiddlewareHandler } from "hono";
 import { validateAPIKeyScope } from "@snapback/auth/security/api-key-security";
 import { logger } from "@snapback/infrastructure";
+import type { MiddlewareHandler } from "hono";
+import { HTTPException } from "hono/http-exception";
 
 /**
  * API Key context stored in Hono context

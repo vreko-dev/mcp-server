@@ -2,14 +2,6 @@
 
 import { authClient } from "@snapback/auth/client";
 import { useQueryClient } from "@tanstack/react-query";
-import { Button } from "@ui/components/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@ui/components/card";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -19,6 +11,14 @@ import {
 	AlertDialogHeader,
 	AlertDialogTitle,
 } from "@ui/components/alert-dialog";
+import { Button } from "@ui/components/button";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@ui/components/card";
 import {
 	Select,
 	SelectContent,
@@ -26,12 +26,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@ui/components/select";
-import {
-	AlertCircleIcon,
-	LoaderIcon,
-	PlusIcon,
-	TrashIcon,
-} from "lucide-react";
+import { AlertCircleIcon, LoaderIcon, PlusIcon, TrashIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -79,10 +74,7 @@ export function TeamMembersList({
 						: (result?.data?.members as TeamMember[]) || [];
 
 				if (result?.error) {
-					setError(
-						result.error.message ||
-							"Failed to load team members",
-					);
+					setError(result.error.message || "Failed to load team members");
 					setMembers([]);
 					return;
 				}
@@ -90,9 +82,7 @@ export function TeamMembersList({
 				setMembers(membersList);
 			} catch (err: unknown) {
 				const message =
-					err instanceof Error
-						? err.message
-						: "Failed to load team members";
+					err instanceof Error ? err.message : "Failed to load team members";
 				setError(message);
 				setMembers([]);
 			} finally {
@@ -108,22 +98,17 @@ export function TeamMembersList({
 
 		toast.promise(
 			(async () => {
-				const { error: apiError } =
-					await authClient.organization.removeMember({
-						organizationId: teamId,
-						memberIdOrEmail: member.id,
-					});
+				const { error: apiError } = await authClient.organization.removeMember({
+					organizationId: teamId,
+					memberIdOrEmail: member.id,
+				});
 
 				if (apiError) {
-					throw new Error(
-						apiError.message || "Failed to remove member",
-					);
+					throw new Error(apiError.message || "Failed to remove member");
 				}
 
 				// Remove from list
-				setMembers((prev) =>
-					prev.filter((m) => m.id !== member.id),
-				);
+				setMembers((prev) => prev.filter((m) => m.id !== member.id));
 
 				// Invalidate cache
 				queryClient.invalidateQueries({
@@ -161,16 +146,12 @@ export function TeamMembersList({
 					});
 
 				if (apiError) {
-					throw new Error(
-						apiError.message || "Failed to update role",
-					);
+					throw new Error(apiError.message || "Failed to update role");
 				}
 
 				// Update in list
 				setMembers((prev) =>
-					prev.map((m) =>
-						m.id === member.id ? { ...m, role: newRole } : m,
-					),
+					prev.map((m) => (m.id === member.id ? { ...m, role: newRole } : m)),
 				);
 
 				// Invalidate cache
@@ -195,17 +176,12 @@ export function TeamMembersList({
 			<Card>
 				<CardHeader>
 					<CardTitle>Team Members</CardTitle>
-					<CardDescription>
-						Manage team members and their roles
-					</CardDescription>
+					<CardDescription>Manage team members and their roles</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<div className="space-y-3">
 						{[1, 2, 3].map((i) => (
-							<div
-								key={i}
-								className="h-16 rounded-lg bg-muted animate-pulse"
-							/>
+							<div key={i} className="h-16 rounded-lg bg-muted animate-pulse" />
 						))}
 					</div>
 				</CardContent>
@@ -225,10 +201,7 @@ export function TeamMembersList({
 					<CardDescription>{error}</CardDescription>
 				</CardHeader>
 				<CardContent>
-					<Button
-						variant="outline"
-						onClick={() => window.location.reload()}
-					>
+					<Button variant="outline" onClick={() => window.location.reload()}>
 						Retry
 					</Button>
 				</CardContent>
@@ -242,9 +215,7 @@ export function TeamMembersList({
 			<Card>
 				<CardHeader>
 					<CardTitle>Team Members</CardTitle>
-					<CardDescription>
-						Manage team members and their roles
-					</CardDescription>
+					<CardDescription>Manage team members and their roles</CardDescription>
 				</CardHeader>
 				<CardContent className="text-center py-8">
 					<p className="text-muted-foreground mb-4">
@@ -271,11 +242,7 @@ export function TeamMembersList({
 							{members.length !== 1 ? "s" : ""} in this team
 						</CardDescription>
 					</div>
-					<Button
-						size="sm"
-						onClick={onAddMemberClick}
-						variant="outline"
-					>
+					<Button size="sm" onClick={onAddMemberClick} variant="outline">
 						<PlusIcon className="size-4 mr-2" />
 						Add Member
 					</Button>
@@ -285,37 +252,21 @@ export function TeamMembersList({
 						<table className="w-full text-sm">
 							<thead className="bg-muted">
 								<tr className="border-b">
-									<th className="text-left p-4 font-semibold">
-										Name
-									</th>
-									<th className="text-left p-4 font-semibold">
-										Email
-									</th>
-									<th className="text-left p-4 font-semibold">
-										Role
-									</th>
-									<th className="text-left p-4 font-semibold">
-										Joined
-									</th>
-									<th className="text-right p-4 font-semibold">
-										Actions
-									</th>
+									<th className="text-left p-4 font-semibold">Name</th>
+									<th className="text-left p-4 font-semibold">Email</th>
+									<th className="text-left p-4 font-semibold">Role</th>
+									<th className="text-left p-4 font-semibold">Joined</th>
+									<th className="text-right p-4 font-semibold">Actions</th>
 								</tr>
 							</thead>
 							<tbody>
 								{members.map((member, idx) => (
 									<tr
 										key={member.id}
-										className={
-											idx !== members.length - 1
-												? "border-b"
-												: ""
-										}
+										className={idx !== members.length - 1 ? "border-b" : ""}
 									>
 										<td className="p-4">
-											<div className="font-medium">
-												{member.name}
-											</div>
+											<div className="font-medium">{member.name}</div>
 										</td>
 										<td className="p-4 text-muted-foreground">
 											{member.email}
@@ -323,54 +274,35 @@ export function TeamMembersList({
 										<td className="p-4">
 											<Select
 												value={member.role}
-												onValueChange={(
-													newRole: string,
-												) =>
+												onValueChange={(newRole: string) =>
 													handleRoleChange(
 														member,
-														newRole as
-															| "owner"
-															| "admin"
-															| "member",
+														newRole as "owner" | "admin" | "member",
 													)
 												}
-												disabled={
-													updatingId === member.id
-												}
+												disabled={updatingId === member.id}
 											>
 												<SelectTrigger className="w-32">
 													<SelectValue />
 												</SelectTrigger>
 												<SelectContent>
-													<SelectItem value="owner">
-														Owner
-													</SelectItem>
-													<SelectItem value="admin">
-														Admin
-													</SelectItem>
-													<SelectItem value="member">
-														Member
-													</SelectItem>
+													<SelectItem value="owner">Owner</SelectItem>
+													<SelectItem value="admin">Admin</SelectItem>
+													<SelectItem value="member">Member</SelectItem>
 												</SelectContent>
 											</Select>
 										</td>
 										<td className="p-4 text-muted-foreground text-xs">
 											{new Intl.DateTimeFormat("en-US", {
 												dateStyle: "medium",
-											}).format(
-												new Date(member.joinedAt),
-											)}
+											}).format(new Date(member.joinedAt))}
 										</td>
 										<td className="p-4 text-right">
 											<Button
 												size="sm"
 												variant="ghost"
-												onClick={() =>
-													setConfirmRemove(member)
-												}
-												disabled={
-													removingId === member.id
-												}
+												onClick={() => setConfirmRemove(member)}
+												disabled={removingId === member.id}
 											>
 												{removingId === member.id ? (
 													<LoaderIcon className="size-4 animate-spin" />
@@ -397,18 +329,14 @@ export function TeamMembersList({
 						<AlertDialogTitle>Remove Member?</AlertDialogTitle>
 						<AlertDialogDescription>
 							Are you sure you want to remove{" "}
-							<span className="font-semibold">
-								{confirmRemove?.name}
-							</span>{" "}
-							from the team? This action cannot be undone.
+							<span className="font-semibold">{confirmRemove?.name}</span> from
+							the team? This action cannot be undone.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<div className="flex gap-3">
 						<AlertDialogCancel>Cancel</AlertDialogCancel>
 						<AlertDialogAction
-							onClick={() =>
-								confirmRemove && handleRemove(confirmRemove)
-							}
+							onClick={() => confirmRemove && handleRemove(confirmRemove)}
 							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
 						>
 							Remove

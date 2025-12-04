@@ -102,7 +102,8 @@ export async function csrfProtectionMiddleware(
 		return c.json(
 			{
 				code: "csrf_token_required",
-				message: "CSRF token required in X-CSRF-Token header or csrf_token query parameter",
+				message:
+					"CSRF token required in X-CSRF-Token header or csrf_token query parameter",
 			},
 			403,
 		);

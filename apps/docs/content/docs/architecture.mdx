@@ -1,0 +1,457 @@
+---
+title: "Architecture"
+description: "SnapBack monorepo architecture, package structure, and design principles"
+---
+
+# SnapBack Architecture
+
+This document describes the high-level architecture of SnapBack, including the monorepo structure, package boundaries, and design principles.
+
+## Overview
+
+SnapBack is organized as a **monorepo** containing multiple applications and packages that work together to provide file protection, snapshot management, and analytics capabilities.
+
+### Key Design Principles
+
+1. **Privacy-First**: Only metadata is transmitted, never file contents
+2. **Type Safety**: Strict TypeScript patterns and validation
+3. **Modular Architecture**: Clear boundaries between packages
+4. **Open Source Strategy**: Public packages for community use
+5. **Scalable**: Supports multiple clients (VS Code, CLI, MCP)
+
+## Monorepo Structure
+
+```
+snapback/
+├── apps/                      # Applications
+│   ├── docs/                  # Documentation site (Next.js)
+│   ├── web/                   # Web dashboard (Next.js)
+│   ├── vscode/                # VS Code extension
+│   ├── mcp-server/            # MCP server
+│   ├── cli/                   # Command-line tool
+│   └── api/                   # Backend API
+├── packages/                  # Private/Internal packages
+│   ├── contracts/             # Type definitions (core + private)
+│   ├── core/                  # Core business logic
+│   ├── sdk/                   # Full-featured SDK
+│   ├── infrastructure/        # Logging, metrics, tracing
+│   ├── events/                # Event bus/pub-sub
+│   ├── platform/              # Platform-specific code
+│   └── auth/                  # Authentication
+├── packages-oss/              # Public open-source packages
+│   ├── contracts/             # Public types (filtered)
+│   ├── sdk/                   # Public SDK
+│   ├── infrastructure/        # Public utilities
+│   ├── config/                # Configuration
+│   └── events/                # Event bus
+├── pnpm-workspace.yaml        # Workspace config (259 dependencies)
+├── turbo.json                 # Build orchestration
+├── tsconfig.base.json         # Base TypeScript config
+├── biome.json                 # Code style rules
+└── vitest.config.ts           # Testing configuration
+```
+
+## Package Layers
+
+SnapBack uses a **layered architecture** with strict dependency rules:
+
+```
+┌─────────────────────────────────┐
+│        Application Layer         │
+│  apps/vscode, apps/web, apps/cli│
+│  - Implement user interfaces     │
+│  - Handle platform-specific code │
+│  - Can import from any package   │
+└──────────────┬──────────────────┘
+               │ depends on
+┌──────────────▼──────────────────┐
+│      Business Logic Layer        │
+│  @snapback/core                 │
+│  @snapback/sdk                  │
+│  - Snapshot management           │
+│  - File protection logic         │
+│  - Can import: contracts,        │
+│                infrastructure,   │
+│                events, auth      │
+└──────────────┬──────────────────┘
+               │ depends on
+┌──────────────▼──────────────────┐
+│       Foundation Layer           │
+│  @snapback/contracts (types)    │
+│  @snapback/infrastructure       │
+│  @snapback/events (pub/sub)     │
+│  @snapback/auth                 │
+│  - Type definitions              │
+│  - Observability                 │
+│  - Event bus                     │
+│  - Authentication                │
+│  - Can import: only other types  │
+└─────────────────────────────────┘
+```
+
+## Core Packages
+
+### Contracts (`@snapback/contracts`)
+
+**Purpose**: Master type definitions and schemas
+
+- **Contents**:
+  - TypeScript type definitions
+  - Zod schemas for validation
+  - Event type definitions
+  - API contracts
+
+- **Features**:
+  - Public and private exports
+  - OpenAPI spec generation
+  - Event definitions for pub/sub
+
+- **Usage**: Imported by all other packages
+
+```typescript
+import type { Snapshot, FileMetadata } from "@snapback/contracts";
+```
+
+### Core (`@snapback/core`)
+
+**Purpose**: Core business logic and algorithms
+
+- **Contents**:
+  - Snapshot management
+  - File protection logic
+  - Risk assessment
+  - Restoration algorithms
+
+- **Features**:
+  - Privacy-first implementation
+  - Type-safe operations
+  - Error handling with Result pattern
+
+- **Usage**: Internal only, not published to npm
+
+### SDK (`@snapback/sdk` and `@snapback-oss/sdk`)
+
+**Purpose**: Client library for API interaction
+
+| Package | Access | Features |
+|---------|--------|----------|
+| `@snapback/sdk` | Private | Full features, storage adapters |
+| `@snapback-oss/sdk` | Public npm | Privacy-first, metadata-only |
+
+Both share the same philosophy but differ in scope and features.
+
+### Infrastructure (`@snapback/infrastructure` and `@snapback-oss/infrastructure`)
+
+**Purpose**: Observability and shared utilities
+
+| Package | Access | Features |
+|---------|--------|----------|
+| `@snapback/infrastructure` | Private | Logging, metrics, PostHog analytics |
+| `@snapback-oss/infrastructure` | Public npm | Logging, basic metrics only |
+
+Key components:
+- **Logging**: Structured JSON logs with Pino
+- **Metrics**: Event-based metrics collection
+- **Tracing**: Distributed tracing support
+
+### Events (`@snapback/events`)
+
+**Purpose**: Event bus for inter-service communication
+
+- **Features**:
+  - Pub/sub pattern
+  - Type-safe event handling
+  - Event replay
+  - Event filtering
+
+- **Events**:
+  - snapshot.created
+  - snapshot.restored
+  - file.protected
+  - risk.detected
+  - And more...
+
+## Applications
+
+### VS Code Extension (`apps/vscode`)
+
+- **Purpose**: File protection and snapshot management in VS Code
+- **Stack**: TypeScript, VS Code API
+- **Dependencies**: @snapback/core, @snapback/sdk, @snapback/infrastructure
+- **Distribution**: VS Code Marketplace
+
+### Web Dashboard (`apps/web`)
+
+- **Purpose**: Analytics and snapshot management UI
+- **Stack**: Next.js, React, TypeScript
+- **Dependencies**: @snapback/core, @snapback/sdk
+- **Distribution**: Hosted at web.snapback.dev
+
+### Documentation (`apps/docs`)
+
+- **Purpose**: User documentation and guides
+- **Stack**: Next.js, FumaDocs, MDX
+- **Contents**: User guides, API docs, contributing guides
+- **Distribution**: Hosted at docs.snapback.dev
+
+### MCP Server (`apps/mcp-server`)
+
+- **Purpose**: Model Context Protocol server for Claude
+- **Stack**: TypeScript, MCP SDK
+- **Dependencies**: @snapback/sdk, @snapback/infrastructure
+- **Distribution**: npm package
+
+### CLI Tool (`apps/cli`)
+
+- **Purpose**: Command-line interface for SnapBack
+- **Stack**: TypeScript, Commander.js
+- **Dependencies**: @snapback/sdk, @snapback/infrastructure
+- **Distribution**: npm package
+
+## Dependency Graph Rules
+
+### Allowed Dependencies
+
+```
+Level 3 (Apps): ✅ Can import from all packages
+  └─ apps/vscode imports @snapback/*
+  └─ apps/web imports @snapback/*
+
+Level 2 (Business Logic): ✅ Can import from foundation
+  └─ @snapback/core imports @snapback/contracts, @snapback/infrastructure
+  └─ @snapback/sdk imports @snapback/contracts, @snapback/infrastructure
+
+Level 1 (Foundation): ❌ Cannot import from higher levels
+  └─ @snapback/contracts (types only)
+  └─ @snapback/infrastructure (utilities)
+  └─ @snapback/events (pub/sub)
+```
+
+### Forbidden Dependencies
+
+```
+❌ Circular dependencies
+   @snapback/core → @snapback/contracts → @snapback/core
+
+❌ Cross-layer imports
+   @snapback/contracts → @snapback/core (contracts are foundation)
+   @snapback/infrastructure → @snapback/core (infrastructure is foundation)
+
+❌ Private to public imports
+   @snapback-oss/sdk → @snapback/core (OSS can't depend on private)
+```
+
+## Build System
+
+### Turborepo Orchestration
+
+SnapBack uses Turborepo for efficient monorepo builds:
+
+```bash
+# Build all packages (respects dependency order)
+pnpm build
+
+# Build specific package and dependencies
+pnpm build --filter @snapback/sdk
+
+# Build only changed packages
+pnpm build --filter '[HEAD^1]'
+```
+
+**Build Order**:
+1. Foundation packages (contracts, infrastructure, events)
+2. Core packages (core, sdk)
+3. Applications (vscode, web, cli, etc.)
+
+### Workspace Configuration
+
+**`pnpm-workspace.yaml`**:
+- Defines all workspace packages
+- Manages 259 shared dependencies
+- Uses catalog system for version management
+
+```yaml
+packages:
+  - 'apps/*'
+  - 'packages/*'
+  - 'packages-oss/*'
+
+catalogs:
+  default:
+    typescript: 5.9.2
+    vitest: 3.2.4
+    pino: 9.5.0
+    # ... 256 more dependencies
+```
+
+## Deployment Architecture
+
+### Applications Deployment
+
+| App | Platform | Environment | Domain |
+|-----|----------|-------------|--------|
+| Web | Vercel | Production | web.snapback.dev |
+| Docs | Vercel | Production | docs.snapback.dev |
+| VS Code | VS Code Marketplace | Public | marketplace.visualstudio.com |
+| CLI | npm | Public | npmjs.com/@snapback/cli |
+| MCP | npm | Public | npmjs.com/@snapback/mcp-server |
+
+### Package Publishing
+
+| Package | Registry | Access | Version |
+|---------|----------|--------|---------|
+| @snapback-oss/sdk | npm | Public | 1.x.x |
+| @snapback-oss/contracts | npm | Public | 1.x.x |
+| @snapback-oss/infrastructure | npm | Public | 1.x.x |
+| Other @snapback-oss/* | npm | Public | 1.x.x |
+
+## Open Source Strategy
+
+### Dual Package Model
+
+SnapBack maintains both private and public versions of some packages:
+
+```
+Private: @snapback/sdk (full features)
+    ↓
+    ├─ Public: @snapback-oss/sdk (privacy-first)
+    └─ Internal: Used by VS Code, CLI, etc.
+
+Private: @snapback/contracts (all types)
+    ↓
+    ├─ Public: @snapback-oss/contracts (filtered)
+    └─ Internal: Used by apps and services
+```
+
+### Synchronization
+
+- **Manual Sync**: Code review and filtering before public release
+- **Build-Time Filtering**: Conditional exports hide private APIs from npm
+- **Source of Truth**: Private packages are master, OSS packages are derived
+
+### Package Boundaries
+
+**OSS Packages Can Include**:
+- ✅ Type definitions
+- ✅ Utility functions
+- ✅ Configuration helpers
+- ✅ Event definitions
+- ✅ Generic infrastructure code
+
+**OSS Packages Cannot Include**:
+- ❌ Proprietary algorithms
+- ❌ Analytics (PostHog integration)
+- ❌ Subscription/tier logic
+- ❌ Database schemas
+- ❌ Internal platform code
+
+## Type Safety
+
+SnapBack uses advanced TypeScript patterns for maximum safety:
+
+### Pattern 1: Discriminated Unions
+
+```typescript
+type Result<T, E> =
+  | { success: true; value: T }
+  | { success: false; error: E };
+```
+
+Enables exhaustive type checking and prevents impossible states.
+
+### Pattern 2: Type Guards
+
+```typescript
+function isSnapshot(value: unknown): value is Snapshot {
+  return /* validation logic */;
+}
+```
+
+Enables runtime type narrowing with compiler support.
+
+### Pattern 3: Const Assertions
+
+```typescript
+const PROTECTION_LEVELS = ["watch", "warn", "block"] as const;
+type ProtectionLevel = typeof PROTECTION_LEVELS[number];
+```
+
+Creates readonly enums without runtime overhead.
+
+## Testing Strategy
+
+### Test Pyramid
+
+```
+        ⬠
+       ╱ ╲
+      ╱   ╲      E2E Tests
+     ╱─────╲     (apps/vscode, apps/web)
+    ╱       ╲
+   ╱────────╮╲
+  ╱          ╲ ╲   Integration Tests
+ ╱────────────╲─╲  (packages/core, packages/sdk)
+╱──────────────╲─╲
+────────────────╲──  Unit Tests
+                     (all packages)
+```
+
+- **Unit Tests**: Individual functions and modules
+- **Integration Tests**: Component interactions
+- **E2E Tests**: Full application workflows
+
+## Performance Optimization
+
+### Monorepo Performance
+
+- **Selective Building**: Only rebuild changed packages
+- **Caching**: Turbo caches build artifacts
+- **Parallel Execution**: Build and test in parallel
+- **Code Splitting**: Packages are independently bundled
+
+### Runtime Performance
+
+- **Lazy Loading**: Import only needed modules
+- **Caching**: Built-in caching in SDK
+- **Batching**: Combine multiple operations
+- **Compression**: Minimize metadata transmission
+
+## Security Considerations
+
+### Type Safety
+
+- Strict TypeScript prevents runtime errors
+- Zod schemas validate all inputs
+- Type guards ensure safe narrowing
+
+### Privacy
+
+- No file contents transmitted
+- Metadata hashing for privacy
+- Data minimization principle
+
+### Authentication
+
+- API key validation
+- Token-based authentication
+- Secure secret management
+
+## Resources
+
+- **Deployment**: See deployment guides for each app
+- **Contributing**: [Contributing Guide](/docs/contributing)
+- **Developer Guide**: [Developer Guide](/docs/developer-guide)
+- **Code Patterns**: [Advanced TypeScript Patterns](https://www.typescriptlang.org/docs/handbook/)
+
+## Future Architecture
+
+### Planned Improvements
+
+1. **Unified Package Model**: Single source, build-time filtering
+2. **Boundary Enforcement**: ESLint rules prevent import violations
+3. **API Versioning**: Support multiple API versions
+4. **Plugin System**: Allow third-party extensions
+
+---
+
+**Have questions?** Check the [FAQ](/docs/faq) or create a [GitHub discussion](https://github.com/snapback/snapback/discussions).

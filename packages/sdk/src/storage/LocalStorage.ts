@@ -87,7 +87,11 @@ export class LocalStorage implements StorageAdapter {
 			const sanitizedFileContents = sanitizeForJSON(snapshot.fileContents || {});
 			const sanitizedMeta = sanitizeForJSON(snapshot.meta || {});
 
-			const stmt = this.db!.prepare(`
+			const db = this.db;
+			if (!db) {
+				throw new Error("Database not initialized");
+			}
+			const stmt = db.prepare(`
         INSERT OR REPLACE INTO snapshots (
           id, timestamp, name, protected, files, file_contents, metadata, content_hash
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -131,7 +135,11 @@ export class LocalStorage implements StorageAdapter {
 	async get(id: string): Promise<Snapshot | null> {
 		await this.ensureInitialized();
 		try {
-			const stmt = this.db!.prepare("SELECT * FROM snapshots WHERE id = ?");
+			const db = this.db;
+			if (!db) {
+				throw new Error("Database not initialized");
+			}
+			const stmt = db.prepare("SELECT * FROM snapshots WHERE id = ?");
 			const row = stmt.get(id) as any;
 
 			if (!row) {
@@ -160,7 +168,11 @@ export class LocalStorage implements StorageAdapter {
 	async getByContentHash(hash: string): Promise<Snapshot | null> {
 		await this.ensureInitialized();
 		try {
-			const stmt = this.db!.prepare("SELECT * FROM snapshots WHERE content_hash = ? LIMIT 1");
+			const db = this.db;
+			if (!db) {
+				throw new Error("Database not initialized");
+			}
+			const stmt = db.prepare("SELECT * FROM snapshots WHERE content_hash = ? LIMIT 1");
 			const row = stmt.get(hash) as any;
 
 			if (!row) {
@@ -194,7 +206,11 @@ export class LocalStorage implements StorageAdapter {
 	async getStoredContentHash(id: string): Promise<string | null> {
 		await this.ensureInitialized();
 		try {
-			const stmt = this.db!.prepare("SELECT content_hash FROM snapshots WHERE id = ?");
+			const db = this.db;
+			if (!db) {
+				throw new Error("Database not initialized");
+			}
+			const stmt = db.prepare("SELECT content_hash FROM snapshots WHERE id = ?");
 			const row = stmt.get(id) as any;
 
 			return row?.content_hash || null;
@@ -259,7 +275,11 @@ export class LocalStorage implements StorageAdapter {
 				params.push(filters.offset);
 			}
 
-			const stmt = this.db!.prepare(query);
+			const db = this.db;
+			if (!db) {
+				throw new Error("Database not initialized");
+			}
+			const stmt = db.prepare(query);
 			const rows = stmt.all(...params) as any[];
 
 			let snapshots = rows.map((row) => this.deserializeSnapshot(row));
@@ -291,7 +311,11 @@ export class LocalStorage implements StorageAdapter {
 	async delete(id: string): Promise<void> {
 		await this.ensureInitialized();
 		try {
-			const stmt = this.db!.prepare("DELETE FROM snapshots WHERE id = ?");
+			const db = this.db;
+			if (!db) {
+				throw new Error("Database not initialized");
+			}
+			const stmt = db.prepare("DELETE FROM snapshots WHERE id = ?");
 			stmt.run(id);
 		} catch (error: any) {
 			if (error.code === "SQLITE_BUSY") {

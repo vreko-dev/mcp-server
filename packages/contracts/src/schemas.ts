@@ -98,10 +98,12 @@ export type CreateCheckpointArgs = z.infer<typeof CreateCheckpointArgsSchema>;
 export const CheckpointSchema = z.object({
 	id: z.string(),
 	timestamp: z.number(),
-	meta: z.object({
-		trigger: z.string().optional(),
-		risk: z.number().optional(),
-	}).optional(),
+	meta: z
+		.object({
+			trigger: z.string().optional(),
+			risk: z.number().optional(),
+		})
+		.optional(),
 });
 export type Checkpoint = z.infer<typeof CheckpointSchema>;
 

@@ -24,7 +24,7 @@ export function PlanSwitcher() {
 		setTier(v);
 	};
 
-	const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+	const onKeyDown = (e: React.KeyboardEvent<HTMLFieldSetElement>) => {
 		const idx = options.findIndex((o) => o.value === tier);
 		const left = idx <= 0 ? options.length - 1 : idx - 1;
 		const right = idx >= options.length - 1 ? 0 : idx + 1;
@@ -33,31 +33,32 @@ export function PlanSwitcher() {
 	};
 
 	return (
-		<div
-			role="radiogroup"
-			aria-label="Filter documentation by plan tier"
-			onKeyDown={onKeyDown}
-			className="flex gap-2 flex-wrap mb-6"
-		>
+		<fieldset className="flex gap-2 flex-wrap mb-6" onKeyDown={onKeyDown}>
+			<legend className="sr-only">Filter documentation by plan tier</legend>
 			{options.map((o) => {
 				const active = o.value === tier;
 				return (
-					<button
-						key={o.value}
-						type="button"
-						role="radio"
-						aria-checked={active}
-						onClick={() => select(o.value)}
-						className={`px-3 py-1 rounded-full border focus:outline-none focus:ring-2 transition-colors ${
-							active
-								? "border-emerald-500 bg-emerald-500/10 ring-emerald-500 text-emerald-400"
-								: "border-slate-600 hover:border-slate-500 text-slate-300 hover:text-slate-200"
-						}`}
-					>
-						{o.label}
-					</button>
+					<label key={o.value} className="inline-flex items-center cursor-pointer">
+						<input
+							type="radio"
+							name="tier-filter"
+							value={o.value}
+							checked={active}
+							onChange={() => select(o.value)}
+							className="sr-only"
+						/>
+						<span
+							className={`px-3 py-1 rounded-full border focus:outline-none focus:ring-2 transition-colors ${
+								active
+									? "border-emerald-500 bg-emerald-500/10 ring-emerald-500 text-emerald-400"
+									: "border-slate-600 hover:border-slate-500 text-slate-300 hover:text-slate-200"
+							}`}
+						>
+							{o.label}
+						</span>
+					</label>
 				);
 			})}
-		</div>
+		</fieldset>
 	);
 }

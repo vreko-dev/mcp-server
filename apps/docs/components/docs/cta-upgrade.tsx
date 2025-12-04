@@ -43,7 +43,9 @@ export function CTAUpgrade({ targetTier, featureName, ctaText }: CTAUpgradeProps
 				strokeWidth="2"
 				strokeLinecap="round"
 				strokeLinejoin="round"
+				aria-hidden="true"
 			>
+				<title>Arrow right icon</title>
 				<path d="M5 12h14" />
 				<path d="m12 5 7 7-7 7" />
 			</svg>

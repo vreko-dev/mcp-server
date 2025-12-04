@@ -88,8 +88,8 @@ export function createDeferred<T>(): {
 	resolve: (value: T) => void;
 	reject: (error: Error) => void;
 } {
-	let resolve: (value: T) => void;
-	let reject: (error: Error) => void;
+	let resolve: ((value: T) => void) | undefined;
+	let reject: ((error: Error) => void) | undefined;
 
 	const promise = new Promise<T>((res, rej) => {
 		resolve = res;

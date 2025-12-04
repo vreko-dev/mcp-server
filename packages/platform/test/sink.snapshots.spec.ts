@@ -124,7 +124,7 @@ describe.skipIf(!isDatabaseAvailable)("AD2: SnapshotStoreDb implementation", () 
 
 	it(`${testId3}: should list snapshots for user with data isolation`, async () => {
 		// Create multiple snapshots for the same user (user-002 is seeded in database)
-		const snapshot1 = await snapshotStore.createSnapshot({
+		await snapshotStore.createSnapshot({
 			userId: "user-002",
 			apiKeyId: "key-002",
 			name: "Snapshot 1",
@@ -133,7 +133,7 @@ describe.skipIf(!isDatabaseAvailable)("AD2: SnapshotStoreDb implementation", () 
 			totalSizeBytes: 100,
 		});
 
-		const snapshot2 = await snapshotStore.createSnapshot({
+		await snapshotStore.createSnapshot({
 			userId: "user-002",
 			apiKeyId: "key-002",
 			name: "Snapshot 2",

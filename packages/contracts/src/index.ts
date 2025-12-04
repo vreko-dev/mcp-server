@@ -1,7 +1,6 @@
 /// <reference types="react" />
 
 export * from "./analytics.js";
-export * from "./dashboard/metrics.js";
 // Auth contracts (explicit exports to avoid naming conflicts)
 export {
 	AUTH_ERROR_MESSAGES,
@@ -52,6 +51,7 @@ export {
 	type UpdateProfileResponse,
 	UpdateProfileResponseSchema,
 } from "./auth/index.js";
+export * from "./dashboard/metrics.js";
 export * from "./eventBus.js";
 export * from "./events/index.js";
 export * from "./exports.js";
@@ -96,9 +96,23 @@ export type {
 
 // Dashboard exports (for web app metrics display)
 export type {
+	AIActivityBreakdown,
 	DashboardMetrics,
 	DashboardMetricsError,
 	DashboardMetricsResponse,
 	RecentActivity,
-	AIActivityBreakdown,
-} from "./dashboard/metrics.js"
+} from "./dashboard/metrics.js";
+export {
+	AI_TOOLS,
+	AIActivityBreakdownSchema,
+	DashboardMetricsErrorSchema,
+	DashboardMetricsResponseSchema,
+	DashboardMetricsSchema,
+	isDashboardMetrics,
+	isDashboardMetricsError,
+	isProtectionActive,
+	isProtectionInactive,
+	PROTECTION_STATUSES,
+	RECENT_ACTIVITY_ACTIONS,
+	RecentActivitySchema,
+} from "./dashboard/metrics.js";

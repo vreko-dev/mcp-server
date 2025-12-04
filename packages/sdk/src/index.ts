@@ -124,6 +124,12 @@ export type {
 	SessionId,
 	SessionManifest,
 } from "./core/session/types.js";
+// Dashboard client exports
+export {
+	createDashboardMetricsClient,
+	type DashboardMetricsClient,
+	type ORPCClient,
+} from "./dashboard/metrics-client.js";
 export { EncryptionService } from "./encryption/EncryptionService.js";
 // Helper exports
 export { analyze, evaluatePolicy, ingestTelemetry } from "./helpers.js";

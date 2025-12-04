@@ -50,17 +50,82 @@ export const DEFAULT_METRICS: DashboardMetrics = {
 	aiDetectionRate: 0,
 };
 
-// TODO: Replace with actual API calls to fetch metrics
+/**
+ * Fetch dashboard metrics from real API endpoint
+ * Falls back to default metrics if API call fails
+ */
 export async function fetchDashboardMetrics(): Promise<DashboardMetrics> {
-	return DEFAULT_METRICS;
+	try {
+		const response = await fetch("/api/dashboard/metrics", {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+
+		if (!response.ok) {
+			console.warn("Failed to fetch dashboard metrics", response.status);
+			return DEFAULT_METRICS;
+		}
+
+		const metrics = (await response.json()) as DashboardMetrics;
+		return metrics;
+	} catch (error) {
+		console.error("Error fetching dashboard metrics:", error);
+		return DEFAULT_METRICS;
+	}
 }
 
+/**
+ * Fetch AI detection stats from real API endpoint
+ * Falls back to empty array if API call fails
+ */
 export async function fetchAIDetectionStats(): Promise<AIDetectionStat[]> {
-	return [];
+	try {
+		const response = await fetch("/api/dashboard/ai-stats", {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+
+		if (!response.ok) {
+			console.warn("Failed to fetch AI detection stats", response.status);
+			return [];
+		}
+
+		const stats = (await response.json()) as AIDetectionStat[];
+		return stats;
+	} catch (error) {
+		console.error("Error fetching AI detection stats:", error);
+		return [];
+	}
 }
 
+/**
+ * Fetch activity feed from real API endpoint
+ * Falls back to empty array if API call fails
+ */
 export async function fetchActivityFeed(): Promise<Activity[]> {
-	return [];
+	try {
+		const response = await fetch("/api/dashboard/activity", {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+
+		if (!response.ok) {
+			console.warn("Failed to fetch activity feed", response.status);
+			return [];
+		}
+
+		const activity = (await response.json()) as Activity[];
+		return activity;
+	} catch (error) {
+		console.error("Error fetching activity feed:", error);
+		return [];
+	}
 }
 
 export async function fetchSessionMetrics(): Promise<SessionMetrics> {

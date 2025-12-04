@@ -1,0 +1,159 @@
+name: Sync OSS Packages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'packages/*/src/public/**'
+      - 'packages/*/oss.ts'
+      - 'dist-oss/**'
+  workflow_dispatch:
+    inputs:
+      packages:
+        description: 'Packages to sync (comma-separated, or "all")'
+        required: false
+        default: 'all'
+
+jobs:
+  build-oss:
+    name: Build OSS Packages
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build OSS packages
+        run: pnpm build:oss
+
+      - name: Validate OSS builds
+        run: pnpm validate:oss
+
+      - name: Upload OSS artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: oss-packages
+          path: dist-oss/
+          retention-days: 7
+
+  sync-contracts:
+    name: Sync Contracts
+    needs: build-oss
+    runs-on: ubuntu-latest
+    if: github.event.inputs.packages == 'all' || contains(github.event.inputs.packages, 'contracts') || github.event_name == 'push'
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: oss-packages
+          path: dist-oss
+
+      - name: Clone public repo
+        run: |
+          git clone https://${{ secrets.OSS_SYNC_TOKEN }}@github.com/snapback-dev/contracts.git public-repo
+
+      - name: Sync files
+        run: |
+          # Copy built package
+          rm -rf public-repo/src public-repo/dist
+          cp -r dist-oss/contracts/* public-repo/
+
+          # Copy README from template
+          cp scripts/oss-templates/contracts-README.md public-repo/README.md
+          cp scripts/oss-templates/CONTRIBUTING.md public-repo/CONTRIBUTING.md
+
+      - name: Commit and push
+        run: |
+          cd public-repo
+          git config user.name "SnapBack Bot"
+          git config user.email "bot@snapback.dev"
+          git add .
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "sync: Update from private repo @ ${{ github.sha }}"
+            git push
+          fi
+
+  sync-infrastructure:
+    name: Sync Infrastructure
+    needs: build-oss
+    runs-on: ubuntu-latest
+    if: github.event.inputs.packages == 'all' || contains(github.event.inputs.packages, 'infrastructure') || github.event_name == 'push'
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: oss-packages
+          path: dist-oss
+
+      - name: Clone public repo
+        run: |
+          git clone https://${{ secrets.OSS_SYNC_TOKEN }}@github.com/snapback-dev/infrastructure.git public-repo
+
+      - name: Sync files
+        run: |
+          rm -rf public-repo/src public-repo/dist
+          cp -r dist-oss/infrastructure/* public-repo/
+          cp scripts/oss-templates/infrastructure-README.md public-repo/README.md
+          cp scripts/oss-templates/CONTRIBUTING.md public-repo/CONTRIBUTING.md
+
+      - name: Commit and push
+        run: |
+          cd public-repo
+          git config user.name "SnapBack Bot"
+          git config user.email "bot@snapback.dev"
+          git add .
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "sync: Update from private repo @ ${{ github.sha }}"
+            git push
+          fi
+
+  sync-sdk:
+    name: Sync SDK
+    needs: build-oss
+    runs-on: ubuntu-latest
+    if: github.event.inputs.packages == 'all' || contains(github.event.inputs.packages, 'sdk') || github.event_name == 'push'
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: oss-packages
+          path: dist-oss
+
+      - name: Clone public repo
+        run: |
+          git clone https://${{ secrets.OSS_SYNC_TOKEN }}@github.com/snapback-dev/sdk.git public-repo
+
+      - name: Sync files
+        run: |
+          rm -rf public-repo/src public-repo/dist
+          cp -r dist-oss/sdk/* public-repo/
+          cp scripts/oss-templates/sdk-README.md public-repo/README.md
+          cp scripts/oss-templates/CONTRIBUTING.md public-repo/CONTRIBUTING.md
+
+      - name: Commit and push
+        run: |
+          cd public-repo
+          git config user.name "SnapBack Bot"
+          git config user.email "bot@snapback.dev"
+          git add .
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "sync: Update from private repo @ ${{ github.sha }}"
+            git push
+          fi

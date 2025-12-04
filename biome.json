@@ -57,7 +57,8 @@
 			"**/tailwind-animate.css",
 			"**/theme.css",
 			"**/package.json",
-			"**/.snapback/**"
+			"**/.snapback/**",
+			"**/packages/sdk/tests/unit/RiskAnalyzer.test.ts"
 		]
 	},
 	"javascript": {

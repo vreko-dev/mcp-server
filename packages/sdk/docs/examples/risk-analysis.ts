@@ -75,6 +75,33 @@ async function analyzeGitChanges() {
 	return true;
 }
 
+/**
+ * Helper function to transform risk factors into human-readable descriptions.
+ * Useful when working with raw factor identifiers that need user-friendly messaging.
+ * 
+ * Example usage:
+ * const rawFactors = ["eval execution", "sql injection"];
+ * const descriptions = assessRiskFactors(rawFactors);
+ * // Returns: ["Dynamic code execution detected...", "SQL injection vulnerability..."]
+ */
+// biome-ignore lint/correctness/noUnusedVariables: Demonstrates factor transformation pattern
+function assessRiskFactors(factors: string[]): string[] {
+	const riskMap: Record<string, string> = {
+		"eval execution": "Dynamic code execution detected - eval() allows runtime code execution",
+		"sql injection": "SQL injection vulnerability pattern - concatenated user input in queries",
+		"command execution": "Dangerous shell command usage - potential OS command injection",
+		"hardcoded secret": "Potential secret/credential found in code - API keys, tokens exposed",
+		"auth bypass": "Authentication bypass pattern - insufficient access control checks",
+		"path traversal": "Directory traversal vulnerability - unrestricted path access",
+		"xss pattern": "Cross-site scripting vulnerability - unsanitized user input in DOM",
+		deserialization: "Unsafe deserialization detected - potential object injection",
+		cryptography: "Weak cryptography usage - deprecated algorithms or insufficient key length",
+		"dependency change": "Dependency version change - verify no breaking changes or vulnerabilities",
+	};
+
+	return factors.map((factor) => riskMap[factor.toLowerCase()] || factor);
+}
+
 // Example with multiple risk levels
 async function demonstrateRiskLevels() {
 	console.log("📈 Demonstrating Different Risk Levels\n");
@@ -135,21 +162,21 @@ async function demonstrateRiskLevels() {
 
 // Run examples
 async function main() {
-	console.log(`${'='.repeat(60)}`);
+	console.log(`${"=".repeat(60)}`);
 	console.log("SnapBack SDK - Risk Analysis Example");
-	console.log(`${'='.repeat(60)}\n`);
+	console.log(`${"=".repeat(60)}\n`);
 
 	// Run first example
 	await analyzeGitChanges();
 
-	console.log(`\n${'='.repeat(60)}\n`);
+	console.log(`\n${"=".repeat(60)}\n`);
 
 	// Run risk level demonstration
 	await demonstrateRiskLevels();
 
-	console.log(`\n${'='.repeat(60)}`);
+	console.log(`\n${"=".repeat(60)}`);
 	console.log("✅ Example Complete");
-	console.log(`${'='.repeat(60)}`);
+	console.log(`${"=".repeat(60)}`);
 }
 
 main().catch(console.error);

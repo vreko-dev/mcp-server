@@ -28,8 +28,12 @@ export function PlanSwitcher() {
 		const idx = options.findIndex((o) => o.value === tier);
 		const left = idx <= 0 ? options.length - 1 : idx - 1;
 		const right = idx >= options.length - 1 ? 0 : idx + 1;
-		if (e.key === "ArrowLeft") select(options[left].value);
-		if (e.key === "ArrowRight") select(options[right].value);
+		if (e.key === "ArrowLeft") {
+			select(options[left].value);
+		}
+		if (e.key === "ArrowRight") {
+			select(options[right].value);
+		}
 	};
 
 	return (

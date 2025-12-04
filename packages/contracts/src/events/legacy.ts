@@ -194,7 +194,7 @@ export const TELEMETRY_EVENTS = {
 	WALKTHROUGH_STEP_COMPLETED: "walkthrough.step.completed",
 	ONBOARDING_PROTECTION_ASSIGNED: "onboarding.protection.assigned",
 	ONBOARDING_PHASE_PROGRESSED: "onboarding.phase.progressed",
-	ONBOARDING_CONTEXTUAL_PROMPT_SHOWN: "onboarding.contextualPrompt.shown",
+	ONBOARDING_CONTEXTUAL_PROMPT_SHOWN: "onboarding.contextual.prompt.shown",
 	SIGNATURE_VERIFICATION_SUCCESS: "signature.verification.success",
 	SIGNATURE_VERIFICATION_FAILED: "signature.verification.failed",
 	RULES_CACHED_FALLBACK: "rules.cached.fallback",

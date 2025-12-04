@@ -28,9 +28,11 @@ var __awaiter =
 			function step(result) {
 				result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
 			}
-			// biome-ignore lint/suspicious/noAssignInExpressions: Auto-generated TypeScript helper
-			// biome-ignore lint/style/noParameterAssign: Auto-generated TypeScript helper
-			step((generator = generator.apply(thisArg, _arguments || [])).next());
+			step(
+				// biome-ignore lint/suspicious/noAssignInExpressions: Auto-generated TypeScript helper - line 38
+				// biome-ignore lint/style/noParameterAssign: Auto-generated TypeScript helper - line 38
+				(generator = generator.apply(thisArg, _arguments || [])).next(),
+			);
 		});
 	});
 

@@ -7,6 +7,7 @@ import { logger } from "@snapback/infrastructure";
 import { webhookHandler as paymentsWebhookHandler } from "@snapback/integrations/stripe/provider/stripe";
 import type { Hono as HonoApp } from "hono";
 import { Hono } from "hono";
+import { HTTPException } from "hono/http-exception";
 import { bodyLimit } from "hono/body-limit";
 import { cors } from "hono/cors";
 import { logger as honoLogger } from "hono/logger";
@@ -17,6 +18,8 @@ import {
 	adaptiveTurnstile,
 	verifyChallenge,
 } from "./middleware/adaptive-turnstile.js";
+import { rateLimitingMiddleware } from "./middleware/security-rate-limit.js";
+import { csrfProtectionMiddleware } from "./middleware/security-csrf.js";
 import { enforceRLS } from "./middleware/rls-tenant.js";
 import { extractAuthContext } from "./middleware/session.js";
 import apiRoutes from "./routes";
@@ -81,6 +84,10 @@ const app: HonoApp = new Hono()
 			credentials: true,
 		}),
 	)
+	// Security: Rate Limiting (reject abusers early)
+	.use("/api/*", rateLimitingMiddleware())
+	// Security: CSRF Protection (validate state-changing requests)
+	.use("/api/*", csrfProtectionMiddleware())
 	// Session extraction (EARLY - before RLS and other middleware)
 	.use("*", extractAuthContext)
 	// RLS enforcement for org-scoped routes
@@ -167,8 +174,58 @@ const app: HonoApp = new Hono()
 		await next();
 	});
 
-// Note: Rate limiting is handled by individual route middlewares
-// See middleware/ratelimit.ts for rate limiting implementation
+// Centralized error handling (LAST - catches all errors)
+// HTTPException errors are handled with structured logging
+// Unexpected errors return 500 with minimal detail
+app.onError((err, c) => {
+	if (err instanceof HTTPException) {
+		// Expected HTTP exception - log as warning
+		const status = err.status;
+		const message = err.message;
+		const cause = err.cause as Record<string, unknown>;
+
+		logger.warn("HTTP exception thrown", {
+			status,
+			message,
+			code: cause?.code,
+			path: c.req.path,
+			method: c.req.method,
+		});
+
+		// Return the proper error response
+		return err.getResponse();
+	}
+
+	// Unexpected error - log as error
+	logger.error("Unhandled error in API", {
+		message: err instanceof Error ? err.message : String(err),
+		stack: err instanceof Error ? err.stack : undefined,
+		path: c.req.path,
+		method: c.req.method,
+	});
+
+	// Return generic 500 error (don't expose internal details)
+	return c.json(
+		{
+			error: "Internal Server Error",
+		},
+		500,
+	);
+});
+
+// Not found handler (FINAL FALLBACK - handles 404s)
+app.notFound((c) => {
+	return c.json(
+		{
+			error: "Route not found",
+			path: c.req.path,
+		},
+		404,
+	);
+});
+
+// Note: Security middleware (rate limiting, CSRF, auth) is registered above
+// See middleware/security-*.ts for implementations
 
 export default app;
 

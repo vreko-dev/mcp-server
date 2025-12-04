@@ -51,6 +51,22 @@
 		"./lib/tier-utils": {
 			"types": "./dist/lib/tier-utils.d.ts",
 			"default": "./dist/lib/tier-utils.js"
+		},
+		"./security/csrf-protection": {
+			"types": "./dist/security/csrf-protection.d.ts",
+			"default": "./dist/security/csrf-protection.js"
+		},
+		"./security/session-security": {
+			"types": "./dist/security/session-security.d.ts",
+			"default": "./dist/security/session-security.js"
+		},
+		"./security/api-key-security": {
+			"types": "./dist/security/api-key-security.d.ts",
+			"default": "./dist/security/api-key-security.js"
+		},
+		"./security/rate-limiting": {
+			"types": "./dist/security/rate-limiting.d.ts",
+			"default": "./dist/security/rate-limiting.js"
 		}
 	},
 	"license": "UNLICENSED",

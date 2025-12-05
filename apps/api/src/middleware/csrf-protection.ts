@@ -53,10 +53,7 @@ function extractCSRFToken(c: Context): string | null {
  *
  * Safe methods (GET, HEAD, OPTIONS) bypass checks
  */
-export async function csrfProtectionMiddleware(
-	c: Context,
-	next: Next,
-): Promise<void> {
+export async function csrfProtectionMiddleware(c: Context, next: Next) {
 	const method = c.req.method.toUpperCase();
 
 	// Safe methods don't need CSRF protection
@@ -164,10 +161,7 @@ export async function csrfProtectionMiddleware(
  * For routes that might receive requests from external sources
  * Returns early if no token, doesn't error
  */
-export async function optionalCSRFProtection(
-	c: Context,
-	next: Next,
-): Promise<void> {
+export async function optionalCSRFProtection(c: Context, next: Next) {
 	const method = c.req.method.toUpperCase();
 
 	// Safe methods skip check

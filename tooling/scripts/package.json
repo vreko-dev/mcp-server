@@ -1,6 +1,6 @@
 {
 	"name": "@snapback/scripts",
-	"version": "0.0.0",
+	"version": "0.0.1",
 	"dependencies": {
 		"@snapback/auth": "workspace:*",
 		"@snapback/config": "workspace:*",

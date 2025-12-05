@@ -36,6 +36,24 @@
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
+  "keywords": [
+    "observability",
+    "telemetry",
+    "logging",
+    "structured-logging",
+    "distributed-tracing",
+    "metrics",
+    "monitoring",
+    "developer-tools",
+    "typescript",
+    "pino",
+    "logger",
+    "tracing",
+    "code-safety",
+    "snapback",
+    "oss",
+    "infrastructure"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",

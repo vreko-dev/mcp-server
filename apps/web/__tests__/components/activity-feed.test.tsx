@@ -107,7 +107,7 @@ describe("ActivityFeed Component", () => {
 
 		// Assert - component should render with scroll capability
 		expect(container).toBeInTheDocument();
-		
+
 		// Verify initial items are rendered
 		expect(screen.getByText(/Activity 1/i)).toBeInTheDocument();
 	});

@@ -17,6 +17,7 @@
   },
   "scripts": {
     "build": "node scripts/build.contracts.mjs",
+    "openapi": "node scripts/generate-openapi.mjs",
     "check": "biome check .",
     "format": "biome format --write .",
     "lint": "biome lint .",
@@ -37,6 +38,24 @@
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
+  "keywords": [
+    "typescript",
+    "types",
+    "contracts",
+    "schemas",
+    "code-safety",
+    "snapback",
+    "oss",
+    "type-definitions",
+    "code-safety-types",
+    "typescript-contracts",
+    "schema-validation",
+    "developer-tools",
+    "interfaces",
+    "zod",
+    "type-safety",
+    "api-contracts"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",

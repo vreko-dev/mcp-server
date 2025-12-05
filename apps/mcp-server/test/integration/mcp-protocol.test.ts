@@ -107,11 +107,11 @@ describe("MCP Protocol Compliance Integration", () => {
 
   beforeEach(async () => {
     vi.clearAllMocks();
-    
+
     // Set required environment variables
     process.env.DATABASE_URL = "postgresql://test:test@localhost:5432/test";
     process.env.SNAPBACK_API_KEY = "test-api-key";
-    
+
     const result = await startServer();
     _server = result.server;
     _transport = result.transport;
@@ -119,7 +119,7 @@ describe("MCP Protocol Compliance Integration", () => {
 
   afterEach(() => {
     vi.resetAllMocks();
-    
+
     // Clean up environment variables
     delete process.env.DATABASE_URL;
     delete process.env.SNAPBACK_API_KEY;
@@ -132,7 +132,7 @@ describe("MCP Protocol Compliance Integration", () => {
       const listHandlerCalls = mockServer.setRequestHandler.mock.calls.filter(
         (call) => call[0] === ListToolsRequestSchema
       );
-      
+
       // THEN: Should have registered list handler
       expect(listHandlerCalls).toHaveLength(1);
       const handler = listHandlerCalls[0][1];
@@ -144,7 +144,7 @@ describe("MCP Protocol Compliance Integration", () => {
       expect(result).toHaveProperty("tools");
       expect(Array.isArray(result.tools)).toBe(true);
       expect(result.tools.length).toBeGreaterThan(0);
-      
+
       // Verify required tool fields
       const firstTool = result.tools[0];
       expect(firstTool).toHaveProperty("name");
@@ -168,7 +168,7 @@ describe("MCP Protocol Compliance Integration", () => {
 
       // THEN: Should include expected tools
       const toolNames = result.tools.map((t: { name: string }) => t.name);
-      
+
       expect(toolNames).toContain("snapback.analyze_risk");
       expect(toolNames).toContain("snapback.check_dependencies");
       expect(toolNames).toContain("snapback.create_snapshot");
@@ -207,7 +207,7 @@ describe("MCP Protocol Compliance Integration", () => {
       expect(result).toHaveProperty("content");
       expect(Array.isArray(result.content)).toBe(true);
       expect(result.content.length).toBeGreaterThan(0);
-      
+
       // Verify content structure
       const firstContent = result.content[0];
       expect(firstContent).toHaveProperty("type");
@@ -297,7 +297,7 @@ describe("MCP Protocol Compliance Integration", () => {
       // THEN: Should return sanitized error
       expect(result.isError).toBe(true);
       expect(result.content[0].text).toContain("Log ID:");
-      
+
       // Verify error has tracking ID for support
       expect(result.content[0].text).toMatch(/Log ID: [a-z0-9_-]+/i);
     });
@@ -308,7 +308,7 @@ describe("MCP Protocol Compliance Integration", () => {
     it("should support STDIO transport", async () => {
       // GIVEN: Server started with STDIO transport
       // WHEN: Checking server connection
-      
+
       // THEN: Should connect to STDIO transport
       expect(mockServer.connect).toHaveBeenCalledWith(mockTransport);
       expect(mockServer.connect).toHaveBeenCalledTimes(1);
@@ -318,13 +318,13 @@ describe("MCP Protocol Compliance Integration", () => {
     it("should register all request handlers before connecting", async () => {
       // GIVEN: Server initialization
       // WHEN: Checking handler registration
-      
+
       // THEN: Handlers should be registered before connection
       const setHandlerCalls = mockServer.setRequestHandler.mock.calls;
       const connectCalls = mockServer.connect.mock.calls;
-      
+
       expect(setHandlerCalls.length).toBeGreaterThan(0);
-      
+
       // All setRequestHandler calls should happen before connect
       // (This is verified by the mock call order)
       expect(connectCalls.length).toBe(1);

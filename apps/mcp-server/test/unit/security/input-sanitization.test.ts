@@ -1,10 +1,10 @@
 /**
  * Input Sanitization Security Tests
- * 
+ *
  * Test ID: MCP-SEC-002
  * Category: Security - Input Validation
  * Coverage Target: 95%
- * 
+ *
  * Tests PII stripping, Zod schema validation, payload size limits,
  * and error message sanitization following test_coverage.md spec.
  */

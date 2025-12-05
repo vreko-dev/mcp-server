@@ -61,7 +61,7 @@ const RISK_PATTERNS = {
     threat: "api_key_exposure",
     recommendation: "Remove hardcoded API keys. Use environment variables instead.",
   },
-  
+
   // Credentials
   password: {
     pattern: /(?:password|passwd|pwd)["\s:=]+[^\s]{8,}/gi,
@@ -222,7 +222,7 @@ export async function analyzeRisk(input: RiskAnalysisInput): Promise<RiskAnalysi
   }
 
   // Calculate average confidence
-  const confidence = patternCount > 0 
+  const confidence = patternCount > 0
     ? Math.min(1, Math.round((totalConfidence / patternCount) * 100) / 100)
     : 0.3; // Low confidence for no patterns
 
@@ -253,7 +253,7 @@ function extractMetadata(diff: string): {
   affectedFiles: number;
 } {
   const lines = diff.split("\n");
-  
+
   let linesAdded = 0;
   let linesRemoved = 0;
   const fileSet = new Set<string>();
@@ -263,7 +263,7 @@ function extractMetadata(diff: string): {
     if (line.startsWith("+") && !line.startsWith("+++")) {
       linesAdded++;
     }
-    
+
     // Count deletions
     if (line.startsWith("-") && !line.startsWith("---")) {
       linesRemoved++;

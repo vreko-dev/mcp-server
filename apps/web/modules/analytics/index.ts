@@ -8,4 +8,4 @@
 export { type AnalyticsEvent, AnalyticsEvents } from "./events";
 
 // Providers
-export { AnalyticsScript, useAnalytics } from "./provider/posthog/index.js";
+export { AnalyticsScript, useAnalytics } from "./provider/posthog/index";

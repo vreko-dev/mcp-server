@@ -23,6 +23,23 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
+  "keywords": [
+    "configuration",
+    "config",
+    "config-management",
+    "environment",
+    "settings",
+    "typescript",
+    "developer-tools",
+    "config-loader",
+    "type-safe",
+    "validation",
+    "code-safety",
+    "snapback",
+    "oss",
+    "env",
+    "dotenv"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",

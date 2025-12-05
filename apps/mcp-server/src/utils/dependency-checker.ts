@@ -239,7 +239,7 @@ function checkVulnerabilities(
 function isVulnerableVersion(version: string, affectedVersions: string): boolean {
   // Remove semver prefixes
   const cleanVersion = version.replace(/^[\^~]/, "");
-  
+
   // Parse affected versions (e.g., "<4.17.21")
   if (affectedVersions.startsWith("<")) {
     const threshold = affectedVersions.substring(1);
@@ -275,7 +275,7 @@ function detectMajorVersionChanges(
   updates: DependencyChange[]
 ): string[] {
   const warnings: string[] = [];
-  
+
   for (const dep of updates) {
     if (!dep.versionBefore || !dep.versionAfter) continue;
 

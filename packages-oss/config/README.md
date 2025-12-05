@@ -6,7 +6,7 @@
 
 **Type-safe configuration management for TypeScript applications**
 
-Part of [SnapBack](https://snapback.dev) - manage configuration for your code safety systems with environment-based config, validation, and zero-downtime updates.
+Part of [SnapBack](https://snapback.dev?utm_source=npm&utm_medium=readme&utm_campaign=config) - manage configuration for your code safety systems with environment-based config, validation, and zero-downtime updates.
 
 ---
 
@@ -14,7 +14,7 @@ Part of [SnapBack](https://snapback.dev) - manage configuration for your code sa
 
 SnapBack is a **code safety platform** that prevents breaking changes through snapshots, file protection, and risk analysis. This config package provides type-safe configuration management for all SnapBack components.
 
-[Learn more about SnapBack →](https://snapback.dev)
+[Learn more about SnapBack →](https://snapback.dev?utm_source=npm&utm_medium=readme&utm_campaign=config)
 
 ---
 
@@ -33,7 +33,7 @@ Type-safe **configuration management** with environment-based overrides, validat
 - Want validated config at runtime
 - Require zero-downtime config updates
 
-[API Reference →](https://docs.snapback.dev/api/config)
+[API Reference →](https://docs.snapback.dev/api/config?utm_source=npm&utm_medium=readme&utm_campaign=config)
 
 ---
 
@@ -70,7 +70,7 @@ console.log(config.get('port'));        // Type: number
 console.log(config.get('database'));    // Type: { host: string; port: number }
 ```
 
-[Configuration guide →](https://docs.snapback.dev/guides/configuration)
+[Configuration guide →](https://docs.snapback.dev/guides/configuration?utm_source=npm&utm_medium=readme&utm_campaign=config)
 
 ---
 
@@ -128,7 +128,7 @@ const config = new ConfigManager(schema, {
 });
 ```
 
-[Environment setup →](https://docs.snapback.dev/guides/config/environments)
+[Environment setup →](https://docs.snapback.dev/guides/config/environments?utm_source=npm&utm_medium=readme&utm_campaign=config)
 
 ### Validation
 
@@ -209,7 +209,7 @@ const config = new ConfigManager(schema, {
 });
 ```
 
-[Configuration sources →](https://docs.snapback.dev/guides/config/sources)
+[Configuration sources →](https://docs.snapback.dev/guides/config/sources?utm_source=npm&utm_medium=readme&utm_campaign=config)
 
 ---
 
@@ -257,19 +257,19 @@ Complete configuration for code safety:
 
 | Package | Purpose | Documentation |
 |---------|---------|---------------|
-| **[@snapback-oss/contracts](https://www.npmjs.com/package/@snapback-oss/contracts)** | TypeScript types | [Docs](https://docs.snapback.dev/api/contracts) |
-| **[@snapback-oss/sdk](https://www.npmjs.com/package/@snapback-oss/sdk)** | Complete SDK | [Docs](https://docs.snapback.dev/api/sdk) |
-| **[@snapback-oss/infrastructure](https://www.npmjs.com/package/@snapback-oss/infrastructure)** | Observability | [Docs](https://docs.snapback.dev/api/infrastructure) |
-| **[@snapback-oss/events](https://www.npmjs.com/package/@snapback-oss/events)** | Event bus | [Docs](https://docs.snapback.dev/api/events) |
-| **[@snapback-oss/config](https://www.npmjs.com/package/@snapback-oss/config)** | Configuration (you are here) | [Docs](https://docs.snapback.dev/api/config) |
+| **[@snapback-oss/contracts](https://www.npmjs.com/package/@snapback-oss/contracts)** | TypeScript types | [Docs](https://docs.snapback.dev/api/contracts?utm_source=npm&utm_medium=readme&utm_campaign=config) |
+| **[@snapback-oss/sdk](https://www.npmjs.com/package/@snapback-oss/sdk)** | Complete SDK | [Docs](https://docs.snapback.dev/api/sdk?utm_source=npm&utm_medium=readme&utm_campaign=config) |
+| **[@snapback-oss/infrastructure](https://www.npmjs.com/package/@snapback-oss/infrastructure)** | Observability | [Docs](https://docs.snapback.dev/api/infrastructure?utm_source=npm&utm_medium=readme&utm_campaign=config) |
+| **[@snapback-oss/events](https://www.npmjs.com/package/@snapback-oss/events)** | Event bus | [Docs](https://docs.snapback.dev/api/events?utm_source=npm&utm_medium=readme&utm_campaign=config) |
+| **[@snapback-oss/config](https://www.npmjs.com/package/@snapback-oss/config)** | Configuration (you are here) | [Docs](https://docs.snapback.dev/api/config?utm_source=npm&utm_medium=readme&utm_campaign=config) |
 
-[Explore the platform →](https://snapback.dev)
+[Explore the platform →](https://snapback.dev?utm_source=npm&utm_medium=readme&utm_campaign=config)
 
 ---
 
 ## Resources
 
-- 🌐 **Website**: [snapback.dev](https://snapback.dev)
+- 🌐 **Website**: [snapback.dev](https://snapback.dev?utm_source=npm&utm_medium=readme&utm_campaign=config)
 - 📖 **Documentation**: [docs.snapback.dev](https://docs.snapback.dev)
 - 🐛 **Report Issues**: [GitHub Issues](https://github.com/snapback-dev/config/issues)
 - 💬 **Get Help**: [hello@snapback.dev](mailto:hello@snapback.dev)
@@ -284,7 +284,7 @@ See our [Contributing Guide](https://github.com/snapback-dev/config/blob/main/CO
 
 ## License
 
-Apache-2.0 © [SnapBack](https://snapback.dev)
+Apache-2.0 © [SnapBack](https://snapback.dev?utm_source=npm&utm_medium=readme&utm_campaign=config)
 
 **Commercial use allowed** • See [LICENSE](https://github.com/snapback-dev/config/blob/main/LICENSE)
 
@@ -292,7 +292,7 @@ Apache-2.0 © [SnapBack](https://snapback.dev)
 
 <div align="center">
 
-**[snapback.dev](https://snapback.dev)** • **[Documentation](https://docs.snapback.dev)** • **[@snapbackdev](https://twitter.com/snapbackdev)**
+**[snapback.dev](https://snapback.dev?utm_source=npm&utm_medium=readme&utm_campaign=config)** • **[Documentation](https://docs.snapback.dev)** • **[@snapbackdev](https://twitter.com/snapbackdev)**
 
 Made with ❤️ for developers who ship with confidence
 

@@ -6,7 +6,7 @@
 
 **Production-grade observability toolkit for TypeScript applications**
 
-Part of [SnapBack](https://snapback.dev) - structured logging, distributed tracing, and performance monitoring to help you understand what's happening in your code safety systems.
+Part of [SnapBack](https://snapback.dev?utm_source=npm&utm_medium=readme&utm_campaign=infrastructure) - structured logging, distributed tracing, and performance monitoring to help you understand what's happening in your code safety systems.
 
 ---
 
@@ -14,7 +14,7 @@ Part of [SnapBack](https://snapback.dev) - structured logging, distributed traci
 
 SnapBack is a **code safety platform** that prevents breaking changes in your codebase through snapshots, file protection, and risk analysis. This infrastructure package provides the observability tools needed to monitor and debug these safety systems in production.
 
-[Learn more about SnapBack →](https://snapback.dev)
+[Learn more about SnapBack →](https://snapback.dev?utm_source=npm&utm_medium=readme&utm_campaign=infrastructure)
 
 ---
 
@@ -33,7 +33,7 @@ Production-ready **logging and telemetry** infrastructure for TypeScript applica
 - Want distributed tracing support
 - Require vendor-agnostic observability
 
-[API Reference →](https://docs.snapback.dev/api/infrastructure)
+[API Reference →](https://docs.snapback.dev/api/infrastructure?utm_source=npm&utm_medium=readme&utm_campaign=infrastructure)
 
 ---
 
@@ -69,7 +69,7 @@ logger.error('Payment failed', {
 });
 ```
 
-[Logging guide →](https://docs.snapback.dev/guides/logging)
+[Logging guide →](https://docs.snapback.dev/guides/logging?utm_source=npm&utm_medium=readme&utm_campaign=infrastructure)
 
 ---
 
@@ -132,7 +132,7 @@ try {
 }
 ```
 
-[Tracing guide →](https://docs.snapback.dev/guides/tracing)
+[Tracing guide →](https://docs.snapback.dev/guides/tracing?utm_source=npm&utm_medium=readme&utm_campaign=infrastructure)
 
 ### Performance Monitoring
 
@@ -221,14 +221,14 @@ Part of the complete code safety platform:
 | **[@snapback-oss/events](https://www.npmjs.com/package/@snapback-oss/events)** | Event bus | [Docs](https://docs.snapback.dev/api/events) |
 | **[@snapback-oss/config](https://www.npmjs.com/package/@snapback-oss/config)** | Configuration | [Docs](https://docs.snapback.dev/api/config) |
 
-[Explore the platform →](https://snapback.dev)
+[Explore the platform →](https://snapback.dev?utm_source=npm&utm_medium=readme&utm_campaign=infrastructure)
 
 ---
 
 ## Resources
 
-- 🌐 **Website**: [snapback.dev](https://snapback.dev)
-- 📖 **Documentation**: [docs.snapback.dev](https://docs.snapback.dev)
+- 🌐 **Website**: [snapback.dev](https://snapback.dev?utm_source=npm&utm_medium=readme&utm_campaign=infrastructure)
+- 📖 **Documentation**: [docs.snapback.dev](https://docs.snapback.dev?utm_source=npm&utm_medium=readme&utm_campaign=infrastructure)
 - 🐛 **Report Issues**: [GitHub Issues](https://github.com/snapback-dev/infrastructure/issues)
 - 💬 **Get Help**: [hello@snapback.dev](mailto:hello@snapback.dev)
 
@@ -250,7 +250,7 @@ Apache-2.0 © [SnapBack](https://snapback.dev)
 
 <div align="center">
 
-**[snapback.dev](https://snapback.dev)** • **[Documentation](https://docs.snapback.dev)** • **[@snapbackdev](https://twitter.com/snapbackdev)**
+**[snapback.dev](https://snapback.dev?utm_source=npm&utm_medium=readme&utm_campaign=infrastructure)** • **[Documentation](https://docs.snapback.dev?utm_source=npm&utm_medium=readme&utm_campaign=infrastructure)** • **[@snapbackdev](https://twitter.com/snapbackdev)**
 
 Made with ❤️ for developers who ship with confidence
 

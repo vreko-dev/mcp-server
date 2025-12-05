@@ -1,10 +1,10 @@
 /**
  * WEB-INT-AUTH-FLOW-001
  * Authentication Flow Integration Tests
- * 
+ *
  * Tests OAuth redirects, session cookie management, and error handling
  * per test_coverage.md lines 638-644
- * 
+ *
  * Test Pattern: Integration tests using MSW for OAuth mocking
  * Coverage: GitHub/Google OAuth, session management, error scenarios
  */

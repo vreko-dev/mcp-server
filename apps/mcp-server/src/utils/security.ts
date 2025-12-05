@@ -65,13 +65,13 @@ function trackSecurityViolation(violationType: string, details: Record<string, a
  * @param workspaceRoot Workspace root directory
  * @returns Validated absolute path within workspace
  * @throws SecurityError if path is outside workspace or malicious
- * 
+ *
  * @example
  * ```ts
  * // Valid path within workspace
  * const safe = validateFilePath('src/index.ts', '/workspace');
  * // => '/workspace/src/index.ts'
- * 
+ *
  * // Path traversal attack blocked
  * validateFilePath('../../../etc/passwd', '/workspace');
  * // => throws SecurityError
@@ -124,7 +124,7 @@ export function validateFilePath(filePath: string, workspaceRoot: string): strin
 		const unixSegments = normalized.split('/');
 		const windowsSegments = normalized.split('\\');
 		const allSegments = [...unixSegments, ...windowsSegments];
-			
+
 		if (allSegments.some((seg) => seg === "..")) {
 			const violationDetails = {
 				filePath: normalized.substring(0, 100),
@@ -163,7 +163,7 @@ export function validateFilePath(filePath: string, workspaceRoot: string): strin
 			realPath = fs.realpathSync(absolutePath);
 		} catch (_error: unknown) {
 			const error = _error as Error;
-				
+
 			// Handle circular symlinks (ELOOP error)
 			if (error.message && error.message.includes('ELOOP')) {
 				const violationDetails = {
@@ -173,7 +173,7 @@ export function validateFilePath(filePath: string, workspaceRoot: string): strin
 				trackSecurityViolation('path_validation_failed', violationDetails);
 				throw new SecurityError('Circular symlink detected');
 			}
-				
+
 			// File doesn't exist - validate parent directory instead
 			const parentDir = path.dirname(absolutePath);
 

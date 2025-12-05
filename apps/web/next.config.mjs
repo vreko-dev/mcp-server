@@ -44,6 +44,8 @@ const nextConfig = {
 			"@react-email/components",
 		],
 	},
+	// Enable standalone output for Docker optimization
+	output: "standalone",
 	// Security headers
 	async headers() {
 		const isDev = process.env.NODE_ENV === "development";

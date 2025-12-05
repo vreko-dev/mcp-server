@@ -10,7 +10,7 @@ import type { SnapshotManager } from "@snapback/sdk";
  * Tests the checkpoint listing tool (Pro tier feature):
  * - Returns snapshots sorted by timestamp (newest first)
  * - Filters by date range
- * - Filters by trigger type  
+ * - Filters by trigger type
  * - Paginates large result sets
  * - Returns empty array when none exist
  *

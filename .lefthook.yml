@@ -123,6 +123,33 @@ pre-commit:
 pre-push:
     parallel: true
     commands:
+        # Pre-publish safety check (only on main branch)
+        pre-publish-safety:
+            tags: [publish, safety]
+            run: |
+                CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+                if [ "$CURRENT_BRANCH" = "main" ] || [ "$CURRENT_BRANCH" = "master" ]; then
+                  # Check for pending changesets before push to main
+                  if [ -d ".changeset" ]; then
+                    CHANGESETS=$(find .changeset -name '*.md' -not -name 'README.md' | wc -l | tr -d ' ')
+                    if [ "$CHANGESETS" -gt 0 ]; then
+                      echo "⚠️  Pending changesets detected ($CHANGESETS files)"
+                      echo "   Run pre-publish before pushing to main:"
+                      echo "   pnpm pre-publish:dry-run"
+                      echo ""
+                      echo "   To skip: git push --no-verify"
+                      exit 1
+                    fi
+                  fi
+                  
+                  # Check for incomplete pre-publish state
+                  if [ -f ".pre-publish-state.json" ]; then
+                    echo "❌ Incomplete pre-publish detected!"
+                    echo "   Resume: pnpm pre-publish --resume"
+                    echo "   Or clean: rm .pre-publish-state.json"
+                    exit 1
+                  fi
+                fi
         # Security: Validate React and Next.js versions (CVE-2025-55182, CVE-2025-66478)
         security-boundaries:
             tags: [security, critical]

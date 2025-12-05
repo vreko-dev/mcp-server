@@ -26,8 +26,13 @@ export function ShareDialog({
 	linesRecovered,
 }: ShareDialogProps) {
 	const [copied, setCopied] = useState(false);
+	const { trackEvent } = useAnalytics();
 
-	const shareText = `Just recovered ${linesRecovered} lines of code with @SnapBackDev. \n\nIf you're using AI coding tools, you need this foundation. 🛡️\n\n#VSCode #AI #Coding`;
+	const shareText = `Just recovered ${linesRecovered} lines of code with @SnapBackDev. 
+
+If you're using AI coding tools, you need this foundation. 🛡️
+
+#VSCode #AI #Coding`;
 
 	// In a real app, this would be a dynamic link to the OG image page associated with a specific recovery ID
 	// For now, we'll link to the homepage
@@ -100,6 +105,10 @@ export function ShareDialog({
 						{copied ? "Copied" : "Copy Text"}
 					</Button>
 				</DialogFooter>
+			</DialogContent>
+		</Dialog>
+	);
+}
 			</DialogContent>
 		</Dialog>
 	);

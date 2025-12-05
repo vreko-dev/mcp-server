@@ -1,6 +1,6 @@
 {
 	"name": "@snapback/web",
-	"version": "0.0.1",
+	"version": "0.1.0",
 	"dependencies": {
 		"@ai-sdk/react": "catalog:",
 		"@arcjet/next": "1.0.0-beta.15",
@@ -140,9 +140,12 @@
 	"private": true,
 	"scripts": {
 		"build": "NODE_OPTIONS='--max-old-space-size=8192' next build",
-		"dev": "next dev",
-		"dev:subdomain": "next dev",
+		"dev": "next dev --turbopack",
+		"dev:subdomain": "next dev --turbopack",
 		"lint": "biome lint .",
-		"type-check": "tsc --noEmit"
+		"type-check": "tsc --noEmit",
+		"docker-build": "docker build -t snapback-web:${GIT_SHA:-latest} -f apps/web/Dockerfile.prod .",
+		"docker-build:dev": "docker build -t snapback-web:dev -f apps/web/Dockerfile.dev .",
+		"deploy": "vercel deploy --prod"
 	}
 }

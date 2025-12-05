@@ -49,7 +49,7 @@ describe("restoreCheckpoint Tool (Pro Tier)", () => {
     it("should retrieve correct snapshot content", async () => {
       // GIVEN: Valid snapshot ID
       const snapshotId = "sha256_restore123";
-      
+
       const mockSnapshot = {
         id: snapshotId,
         timestamp: 1701234567000,
@@ -83,7 +83,7 @@ describe("restoreCheckpoint Tool (Pro Tier)", () => {
     it("should return all files in snapshot", async () => {
       // GIVEN: Snapshot with multiple files
       const snapshotId = "sha256_multifile";
-      
+
       const mockSnapshot = {
         id: snapshotId,
         timestamp: 1701234567000,
@@ -124,7 +124,7 @@ describe("restoreCheckpoint Tool (Pro Tier)", () => {
     it("should handle missing snapshot gracefully", async () => {
       // GIVEN: Non-existent snapshot ID
       const snapshotId = "sha256_notfound";
-      
+
       mockGet.mockResolvedValue(null);
 
       // WHEN: Restoring snapshot
@@ -140,7 +140,7 @@ describe("restoreCheckpoint Tool (Pro Tier)", () => {
     it("should handle restore failures gracefully", async () => {
       // GIVEN: Snapshot exists but restore fails
       const snapshotId = "sha256_restorefail";
-      
+
       const mockSnapshot = {
         id: snapshotId,
         timestamp: 1701234567000,
@@ -169,7 +169,7 @@ describe("restoreCheckpoint Tool (Pro Tier)", () => {
     it("should handle manager errors", async () => {
       // GIVEN: Manager throws error
       const snapshotId = "sha256_error";
-      
+
       mockGet.mockRejectedValue(new Error("Database connection failed"));
 
       // WHEN: Restoring snapshot
@@ -184,7 +184,7 @@ describe("restoreCheckpoint Tool (Pro Tier)", () => {
     it("should include snapshot metadata in successful restore", async () => {
       // GIVEN: Valid snapshot with metadata
       const snapshotId = "sha256_withmeta";
-      
+
       const mockSnapshot = {
         id: snapshotId,
         timestamp: 1701234567890,
@@ -222,7 +222,7 @@ describe("restoreCheckpoint Tool (Pro Tier)", () => {
       // GIVEN: Snapshot and target path
       const snapshotId = "sha256_target";
       const targetPath = "/tmp/restore";
-      
+
       const mockSnapshot = {
         id: snapshotId,
         timestamp: 1701234567000,

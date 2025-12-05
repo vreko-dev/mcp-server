@@ -1,0 +1,108 @@
+# Production Multi-stage Dockerfile for SnapBack Web (Next.js 16 + Turbopack)
+# Optimized with Turborepo Pruning for minimal build context
+#
+# Build: docker build -f apps/web/Dockerfile.prod -t snapback-web:latest .
+# Run:   docker run -p 3000:3000 snapback-web:latest
+
+# ================================
+# Base Stage
+# ================================
+FROM node:20.11.0-alpine AS base
+
+# Install system dependencies and security updates
+RUN apk update && apk upgrade && \
+    apk add --no-cache \
+    libc6-compat \
+    openssl \
+    ca-certificates \
+    dumb-init
+
+# Enable corepack for pnpm
+RUN corepack enable && corepack prepare pnpm@10.14.0 --activate
+
+WORKDIR /app
+
+# Create non-root user for security
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs --ingroup nodejs
+
+# ================================
+# Pruner Stage - Use turbo prune
+# ================================
+FROM base AS pruner
+
+# Install turbo globally
+RUN npm install -g turbo@2.3.4
+
+# Copy entire monorepo
+COPY . .
+
+# Prune the workspace for web app only
+# This creates a minimal subset in /app/out/
+RUN turbo prune @snapback/web --docker
+
+# ================================
+# Deps Stage - Install dependencies
+# ================================
+FROM base AS deps
+
+# Copy pruned lockfile and package.json files
+COPY --from=pruner /app/out/json/ .
+COPY --from=pruner /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
+
+# Install dependencies (Next.js requires dev deps for build)
+RUN --mount=type=cache,id=pnpm-web,target=/pnpm/store \
+    pnpm install --frozen-lockfile --ignore-scripts
+
+# ================================
+# Builder Stage - Build Next.js app
+# ================================
+FROM base AS builder
+
+# Copy node_modules from deps stage
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/apps/web/node_modules ./apps/web/node_modules
+
+# Copy pruned source code
+COPY --from=pruner /app/out/full/ .
+
+# Set production environment
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Build using Turborepo with Next.js 16 + Turbopack
+RUN pnpm turbo run build --filter=@snapback/web
+
+# ================================
+# Runner Stage - Final production image
+# ================================
+FROM base AS runner
+
+# Set production environment
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+WORKDIR /app
+
+# Copy public assets
+COPY --from=builder --chown=nextjs:nodejs /app/apps/web/public ./apps/web/public
+
+# Copy Next.js production build
+COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/static ./apps/web/.next/static
+
+# Switch to non-root user
+USER nextjs
+
+# Expose the port
+EXPOSE 3000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1
+
+# Start Next.js server with dumb-init
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
+CMD ["node", "apps/web/server.js"]

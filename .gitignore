@@ -146,3 +146,13 @@ test-*.jpg
 *_AUDIT*.md
 *_REPORT.md
 INVESTIGATION_*.md
+
+# Automated file archive (cleanup before publish)
+.archive/
+
+# Pre-publish automation state and backups
+.pre-publish-state.json
+.pre-publish-backup/
+
+# OSS version overrides
+.version-overrides.json

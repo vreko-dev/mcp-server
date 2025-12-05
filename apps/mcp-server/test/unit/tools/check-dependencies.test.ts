@@ -237,7 +237,7 @@ describe("checkDependencies Tool", () => {
 
       // THEN: Should warn about major version change
       expect(result.warnings.length).toBeGreaterThan(0);
-      const majorVersionWarning = result.warnings.find(w => 
+      const majorVersionWarning = result.warnings.find(w =>
         w.toLowerCase().includes("major") && w.toLowerCase().includes("react")
       );
       expect(majorVersionWarning).toBeDefined();
@@ -291,7 +291,7 @@ describe("checkDependencies Tool", () => {
 
       // THEN: Should track dependency types correctly
       const allDeps = [...result.added, ...result.updated];
-      
+
       const expressDep = allDeps.find(d => d.name === "express");
       expect(expressDep?.type).toBe("dependencies");
 

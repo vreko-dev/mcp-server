@@ -37,10 +37,11 @@ export interface MergeOptions {
 	overrideProvenance?: string;
 }
 
-/**
- * Valid protection levels
- */
-const VALID_PROTECTION_LEVELS = ["Watched", "Warning", "Protected"] as const;
+import { isProtectionLevel, legacyToCanonical } from "@snapback/contracts";
+
+// Legacy protection levels for backward compatibility with config files
+const LEGACY_PROTECTION_LEVELS = ["Watched", "Warning", "Protected"] as const;
+type LegacyProtectionLevel = typeof LEGACY_PROTECTION_LEVELS[number];
 
 /**
  * SnapBackRCParser - Parses and validates .snapbackrc configuration files
@@ -154,8 +155,12 @@ export class SnapBackRCParser {
 
 		if (!rule.level) {
 			errors.push(`${prefix}: level is required`);
-		} else if (!VALID_PROTECTION_LEVELS.includes(rule.level)) {
-			errors.push(`${prefix}: level must be one of ${VALID_PROTECTION_LEVELS.join(", ")} (got "${rule.level}")`);
+		} else if (!LEGACY_PROTECTION_LEVELS.includes(rule.level as LegacyProtectionLevel)) {
+			// Convert legacy to canonical for validation
+			const canonicalLevel = legacyToCanonical(rule.level as LegacyProtectionLevel);
+			if (!isProtectionLevel(canonicalLevel)) {
+				errors.push(`${prefix}: level must be one of ${LEGACY_PROTECTION_LEVELS.join(", ")} or canonical levels (got "${rule.level}")`);
+			}
 		}
 
 		// Validate optional fields
@@ -191,9 +196,13 @@ export class SnapBackRCParser {
 
 		if (
 			settings.defaultProtectionLevel !== undefined &&
-			!VALID_PROTECTION_LEVELS.includes(settings.defaultProtectionLevel)
+			!LEGACY_PROTECTION_LEVELS.includes(settings.defaultProtectionLevel as LegacyProtectionLevel)
 		) {
-			errors.push(`settings.defaultProtectionLevel must be one of ${VALID_PROTECTION_LEVELS.join(", ")}`);
+			// Convert legacy to canonical for validation
+			const canonicalLevel = legacyToCanonical(settings.defaultProtectionLevel as LegacyProtectionLevel);
+			if (!isProtectionLevel(canonicalLevel)) {
+				errors.push(`settings.defaultProtectionLevel must be one of ${LEGACY_PROTECTION_LEVELS.join(", ")} or canonical levels`);
+			}
 		}
 
 		if (
@@ -231,9 +240,13 @@ export class SnapBackRCParser {
 
 		if (
 			policies.minimumProtectionLevel !== undefined &&
-			!VALID_PROTECTION_LEVELS.includes(policies.minimumProtectionLevel)
+			!LEGACY_PROTECTION_LEVELS.includes(policies.minimumProtectionLevel as LegacyProtectionLevel)
 		) {
-			errors.push(`policies.minimumProtectionLevel must be one of ${VALID_PROTECTION_LEVELS.join(", ")}`);
+			// Convert legacy to canonical for validation
+			const canonicalLevel = legacyToCanonical(policies.minimumProtectionLevel as LegacyProtectionLevel);
+			if (!isProtectionLevel(canonicalLevel)) {
+				errors.push(`policies.minimumProtectionLevel must be one of ${LEGACY_PROTECTION_LEVELS.join(", ")} or canonical levels`);
+			}
 		}
 
 		return errors;

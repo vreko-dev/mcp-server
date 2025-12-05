@@ -1,5 +1,5 @@
 {
-  "name": "@snapback/config",
+  "name": "@snapback-oss/config",
   "version": "0.1.2",
   "description": "Type-safe configuration management for TypeScript applications - environment-based config with validation and zero-downtime updates",
   "main": "dist/index.js",

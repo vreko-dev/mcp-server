@@ -230,8 +230,8 @@ async function checkLockoutDatabase(email: string): Promise<LockoutStatus> {
 		// Query lockout attempts from a dedicated table
 		// Schema: CREATE TABLE auth_lockout (email TEXT PRIMARY KEY, attempts INT, locked_until TIMESTAMP)
 		const result = await db.execute(sql`
-			SELECT attempts, locked_until 
-			FROM auth_lockout 
+			SELECT attempts, locked_until
+			FROM auth_lockout
 			WHERE email = ${email}
 			AND locked_until > NOW()
 		`);

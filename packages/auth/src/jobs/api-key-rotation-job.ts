@@ -69,7 +69,7 @@ export async function findStaleApiKeys(
 
 		// Query: Find active keys older than threshold with no expiration
 		const result = await db.execute(sql`
-			SELECT 
+			SELECT
 				k.id,
 				k.key_prefix,
 				k.user_id,
@@ -130,8 +130,8 @@ export async function shouldSendReminder(keyId: string): Promise<boolean> {
 
 		// Check last reminder timestamp
 		const result = await db.execute(sql`
-			SELECT last_reminder_sent_at 
-			FROM api_key_rotation_reminders 
+			SELECT last_reminder_sent_at
+			FROM api_key_rotation_reminders
 			WHERE key_id = ${keyId}
 		`);
 
@@ -181,7 +181,7 @@ async function recordReminderSent(
 		await db.execute(sql`
 			INSERT INTO api_key_rotation_reminders (key_id, last_reminder_sent_at)
 			VALUES (${keyId}, ${new Date(timestamp).toISOString()})
-			ON CONFLICT (key_id) 
+			ON CONFLICT (key_id)
 			DO UPDATE SET last_reminder_sent_at = ${new Date(timestamp).toISOString()}
 		`);
 	} catch (error) {
@@ -210,11 +210,11 @@ export async function sendRotationReminder(key: StaleApiKey): Promise<void> {
 			<h1>Time to Rotate Your API Key</h1>
 			<p>Hi there,</p>
 			<p>
-				Your API key <strong>${key.keyPrefix}...</strong> 
+				Your API key <strong>${key.keyPrefix}...</strong>
 				${key.name ? `(${key.name})` : ""} was created <strong>${ageInDays} days ago</strong>.
 			</p>
 			<p>
-				For security best practices, we recommend rotating API keys every 
+				For security best practices, we recommend rotating API keys every
 				${ROTATION_POLICY.STALE_THRESHOLD_DAYS} days.
 			</p>
 			<h3>How to rotate your key:</h3>
@@ -244,7 +244,7 @@ For security best practices, we recommend rotating API keys every ${ROTATION_POL
 
 How to rotate your key:
 1. Generate a new API key in your dashboard
-2. Update your applications to use the new key  
+2. Update your applications to use the new key
 3. Revoke the old key once confirmed working
 
 Key created: ${key.createdAt.toLocaleDateString()}

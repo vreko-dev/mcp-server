@@ -148,17 +148,6 @@ export const auth = betterAuth({
 				},
 			},
 		},
-		// Cross-subdomain cookie configuration for Pattern B
-		crossSubDomainCookies: {
-			enabled: env.NODE_ENV === "production",
-			// In production, set domain to .snapback.dev for cross-subdomain sharing
-			domain: env.NODE_ENV === "production" ? ".snapback.dev" : undefined,
-		},
-		defaultCookieAttributes: {
-			sameSite: "lax",
-			secure: env.NODE_ENV === "production",
-			httpOnly: true,
-		},
 	},
 	emailAndPassword: {
 		enabled: true,

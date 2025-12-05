@@ -258,7 +258,7 @@ async function invalidateSessionsDatabase(userId: string): Promise<number> {
 
 		// Delete all sessions for this user
 		const result = await db.execute(sql`
-			DELETE FROM session 
+			DELETE FROM session
 			WHERE user_id = ${userId}
 		`);
 
@@ -293,8 +293,8 @@ async function invalidateOrgSessionsDatabase(
 
 		// Delete sessions where activeOrganizationId matches
 		const result = await db.execute(sql`
-			DELETE FROM session 
-			WHERE user_id = ${userId} 
+			DELETE FROM session
+			WHERE user_id = ${userId}
 			AND active_organization_id = ${organizationId}
 		`);
 

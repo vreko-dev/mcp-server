@@ -239,14 +239,18 @@ jobs:
                   STRIPE_TEAM_MONTHLY_PRICE_ID: price_test_team
                   STRIPE_ENTERPRISE_MONTHLY_PRICE_ID: price_test_enterprise
 
-            - name: Upload coverage reports
+            - name: Upload coverage to Codecov
               if: always()
-              uses: codecov/codecov-action@v4
+              uses: codecov/codecov-action@v5
               with:
-                  directory: ./packages/**/coverage
-                  flags: turborepo
-                  name: Turborepo Coverage
-                  fail_ci_if_error: true
+                  token: ${{ secrets.CODECOV_TOKEN }}
+                  files: |
+                      ./packages-oss/sdk/coverage/coverage-final.json,
+                      ./packages-oss/contracts/coverage/coverage-final.json,
+                      ./apps/mcp-server/coverage/coverage-final.json,
+                      ./apps/vscode/coverage/coverage-final.json
+                  flags: sdk,contracts,mcp-server,vscode
+                  fail_ci_if_error: false  # Don't break build if Codecov is down
               env:
                   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 

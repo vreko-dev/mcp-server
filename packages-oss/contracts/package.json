@@ -1,7 +1,7 @@
 {
   "name": "@snapback-oss/contracts",
   "description": "Production-grade TypeScript types for code safety infrastructure - battle-tested contracts powering SnapBack's safety systems",
-  "version": "0.1.4",
+  "version": "0.4.0",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",

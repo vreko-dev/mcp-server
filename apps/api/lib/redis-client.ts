@@ -1,6 +1,3 @@
-// Redis implementation commented out for MVP - replaced with Postgres counters
-// For more context, see Redis Elimination Strategy in project documentation
-/*
 import { logger } from "@snapback/infrastructure";
 import { createClient, type RedisClientType } from "redis";
 
@@ -31,7 +28,7 @@ export async function getRedisClient(): Promise<RedisClientType> {
 			},
 		});
 
-		redisClient.on("error", (err) => {
+		redisClient.on("error", (err: Error) => {
 			logger.error("Redis Client Error:", err);
 		});
 
@@ -42,37 +39,34 @@ export async function getRedisClient(): Promise<RedisClientType> {
 }
 
 export async function initializeRedisClient(): Promise<void> {
-	// Initialize the Redis client on startup
-	await getRedisClient();
-	logger.info("Redis client initialized successfully");
+	if (!process.env.REDIS_URL) {
+		logger.warn(
+			"REDIS_URL not configured - rate limiting will use in-memory fallback",
+		);
+		return;
+	}
+
+	try {
+		await getRedisClient();
+		logger.info("✅ Redis client initialized successfully");
+	} catch (error) {
+		logger.error("Failed to initialize Redis client", {
+			error: error instanceof Error ? error.message : String(error),
+		});
+		// Don't throw - allow fallback to in-memory
+	}
 }
 
 export async function closeRedisClient(): Promise<void> {
 	if (redisClient) {
-		await redisClient.quit();
-		redisClient = null;
+		try {
+			await redisClient.quit();
+			redisClient = null;
+			logger.info("Redis client closed");
+		} catch (error) {
+			logger.error("Error closing Redis client", {
+				error: error instanceof Error ? error.message : String(error),
+			});
+		}
 	}
-}
-*/
-
-// MVP implementation uses Postgres with INSERT ... ON CONFLICT DO UPDATE
-// into monthly usage tables and materialized views instead of Redis
-export async function getRedisClient(): Promise<any> {
-	throw new Error(
-		"Redis client not available in MVP - using Postgres counters instead",
-	);
-}
-
-export async function initializeRedisClient(): Promise<void> {
-	// No-op in MVP - Redis replaced with Postgres counters
-	console.log(
-		"Redis initialization skipped in MVP - using Postgres counters instead",
-	);
-}
-
-export async function closeRedisClient(): Promise<void> {
-	// No-op in MVP - Redis replaced with Postgres counters
-	console.log(
-		"Redis client close skipped in MVP - using Postgres counters instead",
-	);
 }

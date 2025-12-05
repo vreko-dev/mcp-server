@@ -25,17 +25,17 @@
  * - welcome.action.triggered: User interacted with feature CTA
  */
 
-import {
-	type AuthApprovalReceivedEvent,
-	type AuthBrowserOpenedEvent,
-	type AuthCodeEntryEvent,
-	type AuthProviderSelectedEvent,
-	type CoreTelemetryEvent,
-	type IssueCreatedEvent,
-	type PolicyChangedEvent,
-	type SessionFinalizedEvent,
-	type WelcomeActionTriggeredEvent,
-	type WelcomeFeatureViewedEvent,
+import type {
+	AuthApprovalReceivedEvent,
+	AuthBrowserOpenedEvent,
+	AuthCodeEntryEvent,
+	AuthProviderSelectedEvent,
+	CoreTelemetryEvent,
+	IssueCreatedEvent,
+	PolicyChangedEvent,
+	SessionFinalizedEvent,
+	WelcomeActionTriggeredEvent,
+	WelcomeFeatureViewedEvent,
 } from "../events/core.js";
 
 /**
@@ -63,32 +63,22 @@ export class DiagnosticEventMapper {
 	): CoreTelemetryEvent | null {
 		switch (event.event) {
 			case "auth.provider.selected":
-				return DiagnosticEventMapper.mapAuthProviderSelected(
-					event as AuthProviderSelectedEvent,
-				);
+				return DiagnosticEventMapper.mapAuthProviderSelected(event as AuthProviderSelectedEvent);
 
 			case "auth.browser.opened":
-				return DiagnosticEventMapper.mapAuthBrowserOpened(
-					event as AuthBrowserOpenedEvent,
-				);
+				return DiagnosticEventMapper.mapAuthBrowserOpened(event as AuthBrowserOpenedEvent);
 
 			case "auth.code.entry":
 				return DiagnosticEventMapper.mapAuthCodeEntry(event as AuthCodeEntryEvent);
 
 			case "auth.approval.received":
-				return DiagnosticEventMapper.mapAuthApprovalReceived(
-					event as AuthApprovalReceivedEvent,
-				);
+				return DiagnosticEventMapper.mapAuthApprovalReceived(event as AuthApprovalReceivedEvent);
 
 			case "welcome.feature.viewed":
-				return DiagnosticEventMapper.mapWelcomeFeatureViewed(
-					event as WelcomeFeatureViewedEvent,
-				);
+				return DiagnosticEventMapper.mapWelcomeFeatureViewed(event as WelcomeFeatureViewedEvent);
 
 			case "welcome.action.triggered":
-				return DiagnosticEventMapper.mapWelcomeActionTriggered(
-					event as WelcomeActionTriggeredEvent,
-				);
+				return DiagnosticEventMapper.mapWelcomeActionTriggered(event as WelcomeActionTriggeredEvent);
 
 			default:
 				return null;
@@ -105,9 +95,7 @@ export class DiagnosticEventMapper {
 	 * This maintains separation of concerns and allows diagnostic events to be
 	 * analyzed independently of core events.
 	 */
-	private static mapAuthProviderSelected(
-		_event: AuthProviderSelectedEvent,
-	): IssueCreatedEvent | null {
+	private static mapAuthProviderSelected(_event: AuthProviderSelectedEvent): IssueCreatedEvent | null {
 		// Diagnostic events are tracked separately from core events
 		// Return null to prevent mapping
 		return null;
@@ -122,9 +110,7 @@ export class DiagnosticEventMapper {
 	 * This maintains separation of concerns and allows diagnostic events to be
 	 * analyzed independently of core events.
 	 */
-	private static mapAuthBrowserOpened(
-		_event: AuthBrowserOpenedEvent,
-	): IssueCreatedEvent | null {
+	private static mapAuthBrowserOpened(_event: AuthBrowserOpenedEvent): IssueCreatedEvent | null {
 		// Diagnostic events are tracked separately from core events
 		// Return null to prevent mapping
 		return null;
@@ -156,9 +142,7 @@ export class DiagnosticEventMapper {
 	 * "watch" | "warn" | "block" | "unprotected". Authentication is tracked via
 	 * diagnostic events, not policy changes.
 	 */
-	private static mapAuthApprovalReceived(
-		_event: AuthApprovalReceivedEvent,
-	): PolicyChangedEvent | null {
+	private static mapAuthApprovalReceived(_event: AuthApprovalReceivedEvent): PolicyChangedEvent | null {
 		// Diagnostic events are tracked separately from core events
 		// Return null to prevent mapping
 		return null;
@@ -174,9 +158,7 @@ export class DiagnosticEventMapper {
 	 * This maintains separation of concerns and allows diagnostic events to be
 	 * analyzed independently of core events.
 	 */
-	private static mapWelcomeFeatureViewed(
-		_event: WelcomeFeatureViewedEvent,
-	): SessionFinalizedEvent | null {
+	private static mapWelcomeFeatureViewed(_event: WelcomeFeatureViewedEvent): SessionFinalizedEvent | null {
 		// Diagnostic events are tracked separately from core events
 		// Return null to prevent mapping
 		return null;
@@ -192,9 +174,7 @@ export class DiagnosticEventMapper {
 	 * "watch" | "warn" | "block" | "unprotected". User awareness is tracked via
 	 * diagnostic events, not policy changes.
 	 */
-	private static mapWelcomeActionTriggered(
-		event: WelcomeActionTriggeredEvent,
-	): PolicyChangedEvent | null {
+	private static mapWelcomeActionTriggered(_event: WelcomeActionTriggeredEvent): PolicyChangedEvent | null {
 		// Diagnostic events are tracked separately from core events
 		// Return null to prevent mapping
 		return null;

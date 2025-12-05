@@ -92,6 +92,9 @@ export class LocalStorage implements StorageAdapter {
           id, timestamp, name, protected, files, file_contents, metadata, content_hash
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
       `);
+			if (!stmt) {
+				throw new StorageError("Failed to prepare save statement", "DB_PREPARE_ERROR");
+			}
 
 			stmt.run(
 				snapshot.id,
@@ -132,6 +135,9 @@ export class LocalStorage implements StorageAdapter {
 		await this.ensureInitialized();
 		try {
 			const stmt = this.db?.prepare("SELECT * FROM snapshots WHERE id = ?");
+			if (!stmt) {
+				throw new StorageError("Failed to prepare get statement", "DB_PREPARE_ERROR");
+			}
 			const row = stmt.get(id) as any;
 
 			if (!row) {
@@ -161,6 +167,9 @@ export class LocalStorage implements StorageAdapter {
 		await this.ensureInitialized();
 		try {
 			const stmt = this.db?.prepare("SELECT * FROM snapshots WHERE content_hash = ? LIMIT 1");
+			if (!stmt) {
+				throw new StorageError("Failed to prepare getByContentHash statement", "DB_PREPARE_ERROR");
+			}
 			const row = stmt.get(hash) as any;
 
 			if (!row) {
@@ -195,6 +204,9 @@ export class LocalStorage implements StorageAdapter {
 		await this.ensureInitialized();
 		try {
 			const stmt = this.db?.prepare("SELECT content_hash FROM snapshots WHERE id = ?");
+			if (!stmt) {
+				throw new StorageError("Failed to prepare getStoredContentHash statement", "DB_PREPARE_ERROR");
+			}
 			const row = stmt.get(id) as any;
 
 			return row?.content_hash || null;
@@ -260,6 +272,9 @@ export class LocalStorage implements StorageAdapter {
 			}
 
 			const stmt = this.db?.prepare(query);
+			if (!stmt) {
+				throw new StorageError("Failed to prepare list statement", "DB_PREPARE_ERROR");
+			}
 			const rows = stmt.all(...params) as any[];
 
 			let snapshots = rows.map((row) => this.deserializeSnapshot(row));
@@ -292,6 +307,9 @@ export class LocalStorage implements StorageAdapter {
 		await this.ensureInitialized();
 		try {
 			const stmt = this.db?.prepare("DELETE FROM snapshots WHERE id = ?");
+			if (!stmt) {
+				throw new StorageError("Failed to prepare delete statement", "DB_PREPARE_ERROR");
+			}
 			stmt.run(id);
 		} catch (error: any) {
 			if (error.code === "SQLITE_BUSY") {

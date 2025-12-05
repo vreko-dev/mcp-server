@@ -37,11 +37,9 @@ describe("Diagnostic Telemetry Events - RED Test", () => {
 		it("should define auth.provider.selected event for tracking OAuth vs Device flow choice", () => {
 			// RED: FAILING - event doesn't exist yet
 			// This event allows us to see if users prefer OAuth or device flow
-			// @ts-expect-error
 			expect(CORE_TELEMETRY_EVENTS).toHaveProperty(
 				"AUTH_PROVIDER_SELECTED",
 			);
-			// @ts-expect-error
 			expect(
 				CORE_TELEMETRY_EVENTS.AUTH_PROVIDER_SELECTED || "auth.provider.selected",
 			).toBe("auth.provider.selected");
@@ -50,9 +48,7 @@ describe("Diagnostic Telemetry Events - RED Test", () => {
 		it("should define auth.browser.opened event for tracking browser launches", () => {
 			// RED: FAILING - event doesn't exist yet
 			// Allows us to see if browser actually opened when user clicked "Open Browser"
-			// @ts-expect-error
 			expect(CORE_TELEMETRY_EVENTS).toHaveProperty("AUTH_BROWSER_OPENED");
-			// @ts-expect-error
 			expect(CORE_TELEMETRY_EVENTS.AUTH_BROWSER_OPENED || "auth.browser.opened").toBe(
 				"auth.browser.opened",
 			);
@@ -62,9 +58,7 @@ describe("Diagnostic Telemetry Events - RED Test", () => {
 			// RED: FAILING - event doesn't exist yet
 			// Tracks when user enters the device code in browser
 			// Helps us see if the code entry form is discoverable
-			// @ts-expect-error
 			expect(CORE_TELEMETRY_EVENTS).toHaveProperty("AUTH_CODE_ENTRY");
-			// @ts-expect-error
 			expect(CORE_TELEMETRY_EVENTS.AUTH_CODE_ENTRY || "auth.code.entry").toBe(
 				"auth.code.entry",
 			);
@@ -74,9 +68,7 @@ describe("Diagnostic Telemetry Events - RED Test", () => {
 			// RED: FAILING - event doesn't exist yet
 			// Tracks when backend confirms user approved in browser
 			// Helps identify if polling is working
-			// @ts-expect-error
 			expect(CORE_TELEMETRY_EVENTS).toHaveProperty("AUTH_APPROVAL_RECEIVED");
-			// @ts-expect-error
 			expect(CORE_TELEMETRY_EVENTS.AUTH_APPROVAL_RECEIVED || "auth.approval.received").toBe(
 				"auth.approval.received",
 			);
@@ -86,9 +78,7 @@ describe("Diagnostic Telemetry Events - RED Test", () => {
 			// RED: FAILING - event doesn't exist yet
 			// Tracks when welcome panel shows a feature
 			// Helps us see if feature education is reaching users
-			// @ts-expect-error
 			expect(CORE_TELEMETRY_EVENTS).toHaveProperty("WELCOME_FEATURE_VIEWED");
-			// @ts-expect-error
 			expect(CORE_TELEMETRY_EVENTS.WELCOME_FEATURE_VIEWED || "welcome.feature.viewed").toBe(
 				"welcome.feature.viewed",
 			);
@@ -98,9 +88,7 @@ describe("Diagnostic Telemetry Events - RED Test", () => {
 			// RED: FAILING - event doesn't exist yet
 			// Tracks when user clicks CTA in welcome panel
 			// Helps us measure feature adoption from education
-			// @ts-expect-error
 			expect(CORE_TELEMETRY_EVENTS).toHaveProperty("WELCOME_ACTION_TRIGGERED");
-			// @ts-expect-error
 			expect(
 				CORE_TELEMETRY_EVENTS.WELCOME_ACTION_TRIGGERED || "welcome.action.triggered",
 			).toBe("welcome.action.triggered");

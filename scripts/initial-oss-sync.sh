@@ -112,7 +112,7 @@ for repo in "${REPOS[@]}"; do
 
    [Full Apache 2.0 license text would go here]
 
-   Copyright 2024 SnapBack
+   Copyright 2025 SnapBack
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -127,7 +127,12 @@ for repo in "${REPOS[@]}"; do
    limitations under the License.
 EOF
 
-    # Commit and push
+    # Copy CHANGELOG if exists
+    if [ -f "$OLDPWD/packages-oss/${repo}/CHANGELOG.md" ]; then
+        cp "$OLDPWD/packages-oss/${repo}/CHANGELOG.md" CHANGELOG.md
+    fi
+
+    # Commit and push with clean squashed message
     git config user.name "SnapBack Bot"
     git config user.email "bot@snapback.dev"
     git add .
@@ -135,8 +140,72 @@ EOF
     if git diff --staged --quiet; then
         echo -e "${GREEN}  ✓ No changes to sync${NC}"
     else
-        echo -e "  Committing changes..."
-        git commit -m "sync: Initial sync from private monorepo"
+        echo -e "  Creating clean initial commit..."
+
+        # Create meaningful squashed commit message
+        case "$repo" in
+            contracts)
+                git commit -m "chore: initial release v0.1.0
+
+feat: TypeScript contracts and type definitions
+
+- Event types (SnapshotCreated, FileProtected, etc.)
+- Zod validation schemas
+- Session management utilities
+- ID generation helpers
+
+This is the initial public release of @snapback-oss/contracts,
+extracted from the main SnapBack platform."
+                ;;
+            infrastructure)
+                git commit -m "chore: initial release v0.1.0
+
+feat: infrastructure utilities for Node.js
+
+- Structured logging with Pino
+- Generic metrics interfaces
+- OpenTelemetry distributed tracing
+- Context propagation helpers
+
+Framework-agnostic utilities that work with any Node.js app."
+                ;;
+            sdk)
+                git commit -m "chore: initial release v0.1.0
+
+feat: TypeScript SDK for SnapBack API
+
+- Snapshot CRUD operations
+- File protection management
+- Storage adapters (HTTP, optional SQLite)
+- Type-safe API client with retries
+
+Complete SDK for interacting with SnapBack platform."
+                ;;
+            events)
+                git commit -m "chore: initial release v0.1.0
+
+feat: event bus implementation
+
+- Type-safe EventEmitter2 wrapper
+- Event namespacing support
+
+Simple pub/sub event system."
+                ;;
+            config)
+                git commit -m "chore: initial release v0.1.0
+
+feat: configuration utilities
+
+- Config loading and merging
+- Schema validation
+- Type-safe helpers
+
+Configuration management for Node.js apps."
+                ;;
+            *)
+                git commit -m "chore: initial release v0.1.0"
+                ;;
+        esac
 
         echo -e "  Pushing to remote..."
         git push

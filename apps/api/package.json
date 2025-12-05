@@ -32,6 +32,7 @@
 		"pino": "catalog:",
 		"posthog-node": "catalog:",
 		"react": "catalog:",
+		"redis": "catalog:",
 		"resend": "^4.0.0",
 		"semver": "catalog:",
 		"uuid": "catalog:",

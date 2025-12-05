@@ -57,6 +57,10 @@
     "./sentry": {
       "types": "./dist/sentry/index.d.ts",
       "default": "./dist/sentry/index.js"
+    },
+    "./health": {
+      "types": "./dist/health/index.d.ts",
+      "default": "./dist/health/index.js"
     }
   },
   "main": "dist/index.js",

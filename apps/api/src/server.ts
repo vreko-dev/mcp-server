@@ -12,6 +12,7 @@ import { cors } from "hono/cors";
 import { logger as honoLogger } from "hono/logger";
 import { openApiHandler, rpcHandler } from "@/orpc/handler.js";
 import { router } from "@/orpc/router.js";
+import { handlePostHogWebhook } from "../modules/webhooks/posthog-handler.js";
 import { createRateLimitMiddleware } from "./middleware/rate-limit-distributed.js";
 import { requestLoggingMiddleware } from "./middleware/request-logging.js";
 import { honoSentryMiddleware, initSentryAPI } from "./middleware/sentry.js";
@@ -189,6 +190,8 @@ const apiApp: HonoApp = new Hono()
 	)
 	// Payments webhook handler
 	.post("/api/webhooks/payments", (c) => paymentsWebhookHandler(c.req.raw))
+	// PostHog webhook handler for engagement triggers
+	.post("/api/webhooks/posthog", (c) => handlePostHogWebhook(c.req.raw))
 	// Health check (with database dependency monitoring)
 	.route("/api/health", healthRoute)
 	// Protected route examples (Auth + validation + RBAC)

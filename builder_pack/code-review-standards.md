@@ -31,6 +31,7 @@
 -   ✅ **Isolated** - No dependencies on other tests
 -   ✅ **Meaningful** - Catch real bugs, not implementation details
 -   ✅ **IP-Safe** - Public tests never expose proprietary logic (Open Core)
+-   ✅ **Deterministic** - Use `@snapback/testing` utilities to eliminate flakiness
 
 **Bad tests are:**
 
@@ -40,6 +41,64 @@
 -   ❌ Slow (>1s per test)
 -   ❌ Just for coverage numbers
 -   ❌ Exposing proprietary algorithms or business logic in OSS packages
+-   ❌ Flaky (non-deterministic timing, resource leaks)
+
+---
+
+### Testing Infrastructure (`@snapback/testing`)
+
+**Centralized Testing Utilities Package:**
+
+All deterministic testing infrastructure is consolidated in `@snapback/testing`:
+
+```typescript
+import { TestCleanupManager } from "@snapback/testing/utils/TestCleanupManager";
+import { DeterministicTime, toTimestamp, addTime } from "@snapback/testing/utils/DeterministicTime";
+import { createTestUser, createTestSnapshot, createTestOrganization } from "@snapback/testing/fixtures/factories";
+import { setupServer } from "msw/node";
+import { snapshotHandlers } from "@snapback/testing/msw/handlers";
+```
+
+**Key Utilities:**
+
+1. **TestCleanupManager** - LIFO cleanup callback manager (prevents resource leaks)
+2. **DeterministicTime** - Vitest fake timers wrapper (eliminates timing flakiness)
+3. **Test Data Factories** - IP-safe test data generation with `@faker-js/faker`
+4. **MSW Handlers** - Feature-specific network mocking by domain
+
+**Quick Example:**
+```typescript
+import { TestCleanupManager } from "@snapback/testing/utils/TestCleanupManager";
+import { DeterministicTime } from "@snapback/testing/utils/DeterministicTime";
+import { createTestUser } from "@snapback/testing/fixtures/factories";
+
+describe("SessionExpiration", () => {
+  let cleanup: TestCleanupManager;
+  let time: DeterministicTime;
+
+  beforeEach(() => {
+    cleanup = new TestCleanupManager();
+    time = new DeterministicTime();
+  });
+
+  afterEach(async () => {
+    time.restore();
+    await cleanup.runAll();
+  });
+
+  it("should expire session after 30 minutes", async () => {
+    const user = createTestUser();
+    const session = await sessionManager.create(user.id);
+    cleanup.register(() => session.destroy());
+
+    time.advanceBy(30 * 60 * 1000);
+
+    expect(session.isExpired()).toBe(true);
+  });
+});
+```
+
+**📖 Full Documentation:** See `builder_pack/test-infrastructure-patterns.md`
 
 ---
 

@@ -1,7 +1,13 @@
-import { hash } from "@node-rs/argon2";
-import { apiKeys, db, deviceTrials } from "@snapback/platform";
+import type { apiKeys, deviceTrials } from "@snapback/platform";
 import { eq, sql } from "drizzle-orm";
-import { nanoid } from "nanoid";
+
+export interface DeviceTrialsDependencies {
+	db: any; // Type as needed, preventing circular dep on platform types if possible, or use 'any' for now as per pragmatic approach
+	deviceTrials: typeof deviceTrials;
+	apiKeys: typeof apiKeys;
+	nanoid: () => string;
+	hash: (plain: string, options?: any) => Promise<string>;
+}
 
 /**
  * Device Trials Service
@@ -10,6 +16,28 @@ import { nanoid } from "nanoid";
  */
 
 export class DeviceTrialsService {
+	constructor(private dependencies?: DeviceTrialsDependencies) {}
+
+	private async getDeps(): Promise<DeviceTrialsDependencies> {
+		if (this.dependencies) {
+			return this.dependencies;
+		}
+
+		const { db, deviceTrials, apiKeys } = await import("@snapback/platform");
+		const { nanoid } = await import("nanoid");
+		const { hash } = await import("@node-rs/argon2");
+
+		this.dependencies = {
+			db,
+			deviceTrials,
+			apiKeys,
+			nanoid,
+			hash,
+		};
+
+		return this.dependencies;
+	}
+
 	/**
 	 * Get or create device trial
 	 * @param deviceFingerprint Unique device identifier
@@ -20,6 +48,8 @@ export class DeviceTrialsService {
 		trialInfo: any;
 	}> {
 		try {
+			const { db, deviceTrials, apiKeys } = await this.getDeps();
+
 			if (!db) {
 				throw new Error("Database not available");
 			}
@@ -101,6 +131,8 @@ export class DeviceTrialsService {
 		trialInfo: any;
 	}> {
 		try {
+			const { db, apiKeys, deviceTrials } = await this.getDeps();
+
 			if (!db) {
 				throw new Error("Database not available");
 			}
@@ -177,6 +209,8 @@ export class DeviceTrialsService {
 	 * @returns True if device is blocked
 	 */
 	private async isDeviceBlocked(deviceTrial: any): Promise<boolean> {
+		const { db, deviceTrials } = await this.getDeps();
+
 		if (!db) {
 			return true; // If database is not available, treat as blocked
 		}
@@ -215,6 +249,8 @@ export class DeviceTrialsService {
 		userId: string,
 	): Promise<any> {
 		try {
+			const { db, deviceTrials, apiKeys } = await this.getDeps();
+
 			if (!db) {
 				throw new Error("Database not available");
 			}
@@ -275,6 +311,7 @@ export class DeviceTrialsService {
 		hashedKey: string;
 		keyPreview: string;
 	}> {
+		const { nanoid, hash } = await this.getDeps();
 		const rawKey = `sb_${nanoid()}${nanoid()}`;
 		const keyPreview = rawKey.substring(0, 8);
 		const hashedKey = await hash(rawKey, {

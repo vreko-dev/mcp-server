@@ -7,7 +7,10 @@
 /**
  * Protection level for files
  */
-export type ProtectionLevel = "Watched" | "Warning" | "Protected";
+import type { ProtectionLevel } from "@snapback/contracts";
+
+// Re-export the type for consumption by other modules
+export type { ProtectionLevel };
 
 /**
  * Protection rule for file patterns

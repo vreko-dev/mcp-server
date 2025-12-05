@@ -60,6 +60,13 @@ export const AnalyticsEvents = {
 	// RPC events
 	RPC_CALL: "rpc_call",
 	RPC_RESPONSE: "rpc_response",
+
+	// Activation Funnel Events
+	EXTENSION_INSTALLED: "extension_installed",
+	EXTENSION_AUTHENTICATED: "extension_authenticated",
+	FIRST_PROTECTED_SAVE: "first_protected_save",
+	FIRST_AI_DETECTION: "ai_detected", // Distinct from generic AI_EDIT_DETECTED
+	FIRST_RESTORE: "snapshot_restored", // Alias/reuse if possible, but distinct flow event
 } as const;
 
 export type AnalyticsEvent = keyof typeof AnalyticsEvents;

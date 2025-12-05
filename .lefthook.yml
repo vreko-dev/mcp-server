@@ -69,28 +69,56 @@ pre-commit:
                     echo "To install ripgrep: brew install ripgrep (macOS) or apt-get install ripgrep (Linux)"
                 fi
             fail_text: "TODO/FIXME found — please resolve or suppress"
-        # Security: Check for API keys and secrets
+        # Security: Industry-standard secret detection
+        # Replaces simple grep with Gitleaks (if available)
         check-secrets:
             tags: [security]
             run: |
-                # Check for common secret patterns in staged files
-                # Exclude .snapback directories and test files
-                STAGED_FILES=$(git diff --cached --name-only | grep -v "\.snapback/" | grep -v "\.test\." | grep -v "\.spec\." | grep -v "/test/" | grep -v "__tests__")
-                if [ -n "$STAGED_FILES" ]; then
-                  SECRETS=$(echo "$STAGED_FILES" | xargs grep -E "(sk-[a-zA-Z0-9]{32,}|pk_(live|test)_[a-zA-Z0-9]{24,}|AKIA[A-Z0-9]{16}|AIza[a-zA-Z0-9_-]{35}|ghp_[a-zA-Z0-9]{36}|gho_[a-zA-Z0-9]{36})" 2>/dev/null || true)
-
-                  if [ -n "$SECRETS" ]; then
-                    echo "❌ Potential API key/secret detected!"
-                    echo ""
-                    echo "$SECRETS"
-                    echo ""
-                    echo "🔒 Security issue: Remove secrets from code and use environment variables."
-                    echo "   Common patterns: sk-xxx (OpenAI), pk_live/pk_test (Stripe), AKIA (AWS), AIza (Google), ghp/gho (GitHub)"
-                    echo ""
-                    echo "To skip this check: git commit --no-verify"
-                    exit 1
-                  fi
+                if command -v gitleaks &> /dev/null; then
+                    gitleaks protect --staged --redact --verbose
+                else
+                    echo "⚠️ Gitleaks not found. Falling back to basic grep check..."
+                    # Check for common secret patterns in staged files
+                    STAGED_FILES=$(git diff --cached --name-only | grep -v "\.snapback/" | grep -v "\.test\." | grep -v "\.spec\." | grep -v "/test/" | grep -v "__tests__")
+                    if [ -n "$STAGED_FILES" ]; then
+                        SECRETS=$(echo "$STAGED_FILES" | xargs grep -E "(sk-[a-zA-Z0-9]{32,}|pk_(live|test)_[a-zA-Z0-9]{24,}|AKIA[A-Z0-9]{16}|AIza[a-zA-Z0-9_-]{35}|ghp_[a-zA-Z0-9]{36}|gho_[a-zA-Z0-9]{36})" 2>/dev/null || true)
+                        if [ -n "$SECRETS" ]; then
+                           echo "❌ Potential API key/secret detected!"
+                           echo "$SECRETS"
+                           exit 1
+                        fi
+                    fi
                 fi
+
+        # IP Guard: Prevent proprietary code leakage into OSS packages
+        # Critical for Open Core: Ensures private modules are never imported in public code
+        ip-guard:
+            tags: [security, ip-protection]
+            glob: "packages-oss/**/*.{ts,tsx,js,jsx,json}"
+            run: |
+                # 1. Check for forbidden imports from private @snapback/* packages
+                # Allowed: @snapback-oss/*, @snapback/mcp-server (if public)
+                # Forbidden: @snapback/core, @snapback/auth, @snapback/infrastructure (private parts)
+
+                FORBIDDEN_IMPORTS=$(grep -rE "from [\"']@snapback/(core|auth|infrastructure)[\"']" packages-oss/ --include="*.ts" --include="*.tsx" || true)
+                if [ -n "$FORBIDDEN_IMPORTS" ]; then
+                    echo "❌ PROPRIETARY CODE LEAK DETECTED!"
+                    echo "   OSS packages cannot import from private packages:"
+                    echo "$FORBIDDEN_IMPORTS"
+                    echo ""
+                    echo "   Solution: Move shared code to @snapback-oss/infrastructure or use dependency injection."
+                    exit 1
+                fi
+
+                # 2. Check for "CONFIDENTIAL" headers
+                CONFIDENTIAL=$(grep -rE "(CONFIDENTIAL|PROPRIETARY|INTERNAL USE ONLY)" packages-oss/ --include="*.ts" --include="*.tsx" || true)
+                if [ -n "$CONFIDENTIAL" ]; then
+                    echo "❌ CONFIDENTIAL MARKERS FOUND IN OSS CODE!"
+                    echo "$CONFIDENTIAL"
+                    exit 1
+                fi
+
+                echo "✅ Open Core IP boundaries secure"
 
 pre-push:
     parallel: true

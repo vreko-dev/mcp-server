@@ -12,7 +12,6 @@
     "@snapback/events": "workspace:*",
     "@snapback/github-action": "workspace:*",
     "@snapback/guardian-lite": "workspace:*",
-    "@snapback/health": "workspace:*",
     "@snapback/integrations": "workspace:*",
     "@snapback/policy-engine": "workspace:*",
     "@snapback/sdk": "workspace:*",

@@ -73,6 +73,7 @@ export {
 	postAcceptOutcomes,
 	rateLimitViolations,
 	responseCache,
+	retentionConfig,
 	securityEvents,
 	snapbackSchema,
 	telemetryEvents,

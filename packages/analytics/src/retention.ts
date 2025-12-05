@@ -18,7 +18,8 @@ async function initializeDb() {
 		try {
 			// Try to import the actual database client
 			const dbModule = await import("@snapback/platform/db/client");
-			const schemaModule = await import("@snapback/platform/db/schema/snapback");
+			// Import from main schema export which includes all tables
+			const schemaModule = await import("@snapback/platform");
 			db = dbModule.db;
 			retentionConfig = schemaModule.retentionConfig;
 			agentSuggestions = schemaModule.agentSuggestions;

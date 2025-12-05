@@ -1,6 +1,6 @@
 "use client";
 
-import { AnalyticsEvents } from "@analytics/events";
+import { AnalyticsEvents, trackEvent } from "@analytics";
 import { Button } from "@ui/components/button";
 import {
 	Dialog,
@@ -11,7 +11,6 @@ import {
 	DialogTitle,
 } from "@ui/components/dialog";
 import { Check, Copy, Twitter } from "lucide-react";
-import posthog from "posthog-js";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -40,7 +39,7 @@ export function ShareDialog({
 		toast.success("Copied to clipboard");
 
 		// Track share
-		posthog.capture(AnalyticsEvents.SAVE_STORY_SHARED, {
+		trackEvent(AnalyticsEvents.SAVE_STORY_SHARED, {
 			lines_recovered: linesRecovered,
 			method: "copy",
 		});
@@ -54,7 +53,7 @@ export function ShareDialog({
 		twitterUrl.searchParams.set("url", shareUrl);
 
 		// Track share
-		posthog.capture(AnalyticsEvents.SAVE_STORY_SHARED, {
+		trackEvent(AnalyticsEvents.SAVE_STORY_SHARED, {
 			lines_recovered: linesRecovered,
 			method: "twitter",
 		});

@@ -1,26 +1,8 @@
 import { logger } from "@snapback/infrastructure";
-import { PostHog } from "posthog-node";
 import { z } from "zod";
 import { publicProcedure } from "../../../orpc/procedures";
+import { getPostHog } from "../lib/posthog";
 import { addContext, filterProperties } from "../lib/privacy-gate";
-
-// Initialize PostHog client
-let posthogClient: PostHog | null = null;
-
-function getPostHog(): PostHog {
-	if (!posthogClient) {
-		const posthogKey =
-			process.env.POSTHOG_API_KEY || process.env.NEXT_PUBLIC_POSTHOG_KEY;
-		if (!posthogKey) {
-			throw new Error("PostHog API key not configured");
-		}
-
-		posthogClient = new PostHog(posthogKey, {
-			host: process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://app.posthog.com",
-		});
-	}
-	return posthogClient;
-}
 
 // Input validation schema
 const proxyEventSchema = z.object({

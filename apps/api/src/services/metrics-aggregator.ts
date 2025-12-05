@@ -1,7 +1,10 @@
 import { logger } from "@snapback/infrastructure";
-import type { PgDatabase} from "drizzle-orm/pg-core";
+import {
+	userDailyMetrics,
+	userProductMetrics,
+} from "@snapback/platform/db/schema/snapback";
 import { and, eq, gte, lte } from "drizzle-orm";
-import { userProductMetrics, userDailyMetrics } from "@snapback/platform/db/schema/snapback";
+import type { PgDatabase } from "drizzle-orm/pg-core";
 
 /**
  * Metrics Aggregator
@@ -71,10 +74,7 @@ export class MetricsAggregator {
 			if (!userId || userId.trim() === "") {
 				return {
 					success: false,
-					error: new MetricsError(
-						"User ID required",
-						"MISSING_USER_ID",
-					),
+					error: new MetricsError("User ID required", "MISSING_USER_ID"),
 				};
 			}
 
@@ -117,14 +117,10 @@ export class MetricsAggregator {
 
 			return {
 				success: false,
-				error: new MetricsError(
-					"Failed to fetch metrics",
-					"FETCH_FAILED",
-					{
-						userId,
-						originalError: error instanceof Error ? error.message : String(error),
-					},
-				),
+				error: new MetricsError("Failed to fetch metrics", "FETCH_FAILED", {
+					userId,
+					originalError: error instanceof Error ? error.message : String(error),
+				}),
 			};
 		}
 	}
@@ -141,10 +137,7 @@ export class MetricsAggregator {
 			if (!userId || userId.trim() === "") {
 				return {
 					success: false,
-					error: new MetricsError(
-						"User ID required",
-						"MISSING_USER_ID",
-					),
+					error: new MetricsError("User ID required", "MISSING_USER_ID"),
 				};
 			}
 
@@ -207,7 +200,8 @@ export class MetricsAggregator {
 						userId,
 						startDate,
 						endDate,
-						originalError: error instanceof Error ? error.message : String(error),
+						originalError:
+							error instanceof Error ? error.message : String(error),
 					},
 				),
 			};
@@ -253,7 +247,8 @@ export class MetricsAggregator {
 					{
 						userId,
 						days,
-						originalError: error instanceof Error ? error.message : String(error),
+						originalError:
+							error instanceof Error ? error.message : String(error),
 					},
 				),
 			};
@@ -271,10 +266,7 @@ export class MetricsAggregator {
 			if (!userId || userId.trim() === "") {
 				return {
 					success: false,
-					error: new MetricsError(
-						"User ID required",
-						"MISSING_USER_ID",
-					),
+					error: new MetricsError("User ID required", "MISSING_USER_ID"),
 				};
 			}
 
@@ -319,14 +311,10 @@ export class MetricsAggregator {
 
 			return {
 				success: false,
-				error: new MetricsError(
-					"Failed to initialize metrics",
-					"INIT_FAILED",
-					{
-						userId,
-						originalError: error instanceof Error ? error.message : String(error),
-					},
-				),
+				error: new MetricsError("Failed to initialize metrics", "INIT_FAILED", {
+					userId,
+					originalError: error instanceof Error ? error.message : String(error),
+				}),
 			};
 		}
 	}

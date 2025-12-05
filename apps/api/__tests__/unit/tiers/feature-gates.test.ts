@@ -84,7 +84,7 @@ describe("Feature Gates", () => {
 
 		it("should have all free features enabled", () => {
 			const freeFeatures = ["basic_protection", "local_snapshots", "basic_ai_detection"];
-			
+
 			freeFeatures.forEach((feature) => {
 				expect(FEATURE_GATES[tier][feature]).toBe(true);
 			});

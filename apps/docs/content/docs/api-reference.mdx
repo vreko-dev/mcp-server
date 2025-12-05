@@ -1,0 +1,34 @@
+---
+title: "API Reference"
+description: "Interactive API documentation for SnapBack services"
+---
+
+# API Reference
+
+SnapBack provides a comprehensive REST and RPC API for managing snapshots, authentication, and analytics.
+
+The API Reference is available as an interactive documentation site powered by [Scalar](https://scalar.com).
+
+<Cards>
+  <Card
+    title="Interactive API Docs"
+    href="http://localhost:3001/api/docs"
+    description="Explore endpoints, test requests, and view schemas in real-time."
+  />
+  <Card
+    title="OpenAPI Spec (JSON)"
+    href="http://localhost:3001/api/openapi"
+    description="Download the raw OpenAPI 3.1 specifications."
+  />
+</Cards>
+
+## Service Overview
+
+The API is unified, covering both core application logic and authentication services.
+
+- **Authentication**: Endpoints for signing in, signing up, and managing sessions (via Better Auth).
+- **Telemetry**: Endpoints for analytics and identification (e.g., `/api/identify`).
+- **Webhooks**: Handlers for Stripe and PostHog integration.
+
+> [!NOTE]
+> The interactive documentation merges all service schemas into a single view for easier discovery.

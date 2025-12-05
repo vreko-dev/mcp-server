@@ -10,7 +10,7 @@ export default defineConfig({
 		"src/lib/organization.ts",
 	],
 	format: ["esm"],
-	dts: false, // Disabled due to monorepo path constraints
+	dts: false, // Disabled - complex internal structure with Session export issues
 	clean: true,
 	sourcemap: true,
 	outDir: "dist",

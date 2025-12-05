@@ -14,7 +14,13 @@ export default defineConfig({
 		"fixtures/index": "src/fixtures/index.ts",
 	},
 	format: ["esm"],
-	dts: false, // Disabled due to monorepo path constraints
+	dts: {
+		resolve: true, // Resolves workspace:* dependencies
+		compilerOptions: {
+			composite: false, // Disable composite for DTS bundling
+			incremental: false, // Disable incremental for DTS generation
+		},
+	},
 	clean: true,
 	sourcemap: true,
 	treeshake: true,

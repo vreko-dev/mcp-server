@@ -79,7 +79,7 @@ export function apiKeyScopeMiddleware(
 				columns: {
 					id: true,
 					permissions: true,
-					revokedAt: true,
+					revoked: true,
 					expiresAt: true,
 				},
 			});
@@ -94,7 +94,7 @@ export function apiKeyScopeMiddleware(
 			}
 
 			// Check if key is revoked
-			if (keyRecord.revokedAt) {
+			if (keyRecord.revoked) {
 				logger.warn("Revoked API key attempted", {
 					keyId: `${keyId.substring(0, 10)}...`,
 				});
@@ -124,10 +124,8 @@ export function apiKeyScopeMiddleware(
 
 			// Extract permissions from JSON field
 			// Schema: { maxSnapshots?: number; cloudBackup?: boolean; advancedDetection?: boolean; customRules?: boolean; teamSharing?: boolean }
-			const keyPermissions = (keyRecord.permissions || {}) as Record<
-				string,
-				boolean | number
-			>;
+			const keyPermissions = ((keyRecord.permissions as string[]) ||
+				[]) as unknown as Record<string, boolean | number>;
 
 			// Convert feature permissions to scope strings for backward compatibility
 			// TODO: Eventually migrate to feature-based authorization entirely

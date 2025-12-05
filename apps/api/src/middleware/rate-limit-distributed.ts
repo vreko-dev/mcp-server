@@ -59,13 +59,12 @@ async function initializeRedis() {
 	}
 
 	try {
-		// @ts-expect-error - redis is an optional dependency
-		const redis = await import("redis");
+		const redis = (await import("redis")) as any;
 		redisClient = redis.createClient({
 			url: process.env.REDIS_URL || "redis://localhost:6379",
 			socket: {
 				connectTimeout: 5000,
-				retryStrategy: (retries: number) =>
+				reconnectStrategy: (retries: number) =>
 					retries > 3 ? new Error("Redis max retries") : 100 * retries,
 			},
 		});

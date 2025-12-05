@@ -2,8 +2,8 @@
 
 ## Comprehensive Blueprint for Implementation Excellence
 
-**Version:** 1.0  
-**Last Updated:** October 2025  
+**Version:** 1.0
+**Last Updated:** October 2025
 **Purpose:** Authoritative guide for code quality, DX, and architecture
 
 ---
@@ -108,7 +108,7 @@ describe("SessionExpiration", () => {
 
 #### 🌍 Public (Open Source) Packages
 - `@snapback/sdk` - Client SDK (MIT)
-- `@snapback/core` - Core snapshot logic (Apache 2.0) 
+- `@snapback/core` - Core snapshot logic (Apache 2.0)
 - `@snapback/contracts` - TypeScript types (MIT)
 - `@snapback/config` - Configuration utilities (MIT)
 - `@snapback/events` - Event system (MIT)
@@ -170,12 +170,12 @@ describe("Snapshot Creation", () => {
   it("should create snapshot when valid file path provided", async () => {
     // ✅ Tests public API behavior only
     const sdk = new SnapBackSDK({ apiKey: "test-key" });
-    
+
     const result = await sdk.snapshots.create({
       filePath: "/test/file.ts",
       content: "const x = 1;"
     });
-    
+
     // ✅ Generic assertions, no IP exposure
     expect(result.success).toBe(true);
     expect(result.value.id).toBeDefined();
@@ -201,7 +201,7 @@ ip-guard:
       echo "❌ PROPRIETARY CODE LEAK DETECTED"
       exit 1
     fi
-    
+
     # Scans for sensitive keywords
     SENSITIVE=$(grep -rE "(stripe|posthog|subscription|tier|enterprise)" packages-oss/test/ -i)
     if [ -n "$SENSITIVE" ]; then
@@ -227,7 +227,7 @@ ip-guard:
 
 ```
 [feature-name].test.ts                    // Unit tests
-[feature-name].integration.test.ts        // Integration tests  
+[feature-name].integration.test.ts        // Integration tests
 [feature-name].e2e.test.ts               // End-to-end tests
 [feature-name].perf.test.ts              // Performance tests
 ```
@@ -258,7 +258,7 @@ describe("[Feature Name]", () => {           // Level 1: Feature
     describe("[Specific Behavior]", () => {   // Level 3: Scenario (optional)
       it("should [behavior] when [condition]", () => {  // Test case
         // Arrange
-        // Act  
+        // Act
         // Assert
       });
     });
@@ -279,18 +279,18 @@ describe("Secret Detection", () => {
     // Test ID: SD-AWS-001 (as comment for traceability)
     it("should detect access keys with AKIA prefix", async () => {
       const code = `const awsKey = "AKIA_EXAMPLE_NOT_REAL_KEY_12345";`;
-      
+
       const result = await plugin.analyze(code, "/src/config.ts");
-      
+
       expect(result.score).toBeGreaterThan(0.7);
       expect(result.severity).toBe("critical");
     });
 
     it("should ignore AWS keys in example configuration files", async () => {
       const code = `AWS_ACCESS_KEY_ID=your-key-here`;
-      
+
       const result = await plugin.analyze(code, "/src/.env.example");
-      
+
       expect(result.score).toBeLessThan(0.3);
     });
   });
@@ -382,7 +382,7 @@ describe("SnapshotManager", () => {
 
   it("should create snapshot successfully", async () => {
     const result = await snapshotManager.create("/path/file.ts");
-    
+
     expect(result.success).toBe(true);
     expect(result.value.id).toBeDefined();
   });
@@ -391,7 +391,7 @@ describe("SnapshotManager", () => {
     useSnapshotError(server, "notFound"); // Override for this test
 
     const result = await snapshotManager.get("nonexistent");
-    
+
     expect(result.success).toBe(false);
     expect(result.error.message).toContain("not found");
   });

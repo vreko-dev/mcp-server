@@ -1,0 +1,21 @@
+{
+  "projectId": "YOUR_PROJECT_ID_HERE",
+  "buildScriptName": "storybook:build",
+  "exitZeroOnChanges": true,
+  "exitOnceUploaded": true,
+  "onlyChanged": true,
+  "skip": "dependabot/**",
+  "ignoreLastBuildOnBranch": "main",
+  "autoAcceptChanges": "main",
+  "externals": [
+    "public/**"
+  ],
+  "delay": 300,
+  "diffThreshold": 0.05,
+  "diffIncludeAntiAliasing": true,
+  "forceBuild": false,
+  "untraced": [
+    "node_modules/**",
+    ".storybook/preview-head.html"
+  ]
+}

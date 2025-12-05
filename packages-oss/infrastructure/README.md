@@ -1,7 +1,7 @@
-# @snapback/infrastructure
+# @snapback-oss/infrastructure
 
-[![npm version](https://img.shields.io/npm/v/@snapback/infrastructure?style=flat&colorA=18181B&colorB=10B981)](https://www.npmjs.com/package/@snapback/infrastructure)
-[![npm downloads](https://img.shields.io/npm/dm/@snapback/infrastructure?style=flat&colorA=18181B&colorB=10B981)](https://www.npmjs.com/package/@snapback/infrastructure)
+[![npm version](https://img.shields.io/npm/v/@snapback-oss/infrastructure?style=flat&colorA=18181B&colorB=10B981)](https://www.npmjs.com/package/@snapback-oss/infrastructure)
+[![npm downloads](https://img.shields.io/npm/dm/@snapback-oss/infrastructure?style=flat&colorA=18181B&colorB=10B981)](https://www.npmjs.com/package/@snapback-oss/infrastructure)
 [![License](https://img.shields.io/badge/license-Apache%202.0-10B981?style=flat&colorA=18181B&colorB=10B981)](https://github.com/snapback-dev/infrastructure/blob/main/LICENSE)
 
 **Production-grade observability toolkit for TypeScript applications**
@@ -215,11 +215,11 @@ Part of the complete code safety platform:
 
 | Package | Purpose | Documentation |
 |---------|---------|---------------|
-| **[@snapback/contracts](https://www.npmjs.com/package/@snapback/contracts)** | TypeScript types | [Docs](https://docs.snapback.dev/api/contracts) |
-| **[@snapback/sdk](https://www.npmjs.com/package/@snapback/sdk)** | Complete SDK | [Docs](https://docs.snapback.dev/api/sdk) |
-| **[@snapback/infrastructure](https://www.npmjs.com/package/@snapback/infrastructure)** | Observability (you are here) | [Docs](https://docs.snapback.dev/api/infrastructure) |
-| **[@snapback/events](https://www.npmjs.com/package/@snapback/events)** | Event bus | [Docs](https://docs.snapback.dev/api/events) |
-| **[@snapback/config](https://www.npmjs.com/package/@snapback/config)** | Configuration | [Docs](https://docs.snapback.dev/api/config) |
+| **[@snapback-oss/contracts](https://www.npmjs.com/package/@snapback-oss/contracts)** | TypeScript types | [Docs](https://docs.snapback.dev/api/contracts) |
+| **[@snapback-oss/sdk](https://www.npmjs.com/package/@snapback-oss/sdk)** | Complete SDK | [Docs](https://docs.snapback.dev/api/sdk) |
+| **[@snapback-oss/infrastructure](https://www.npmjs.com/package/@snapback-oss/infrastructure)** | Observability (you are here) | [Docs](https://docs.snapback.dev/api/infrastructure) |
+| **[@snapback-oss/events](https://www.npmjs.com/package/@snapback-oss/events)** | Event bus | [Docs](https://docs.snapback.dev/api/events) |
+| **[@snapback-oss/config](https://www.npmjs.com/package/@snapback-oss/config)** | Configuration | [Docs](https://docs.snapback.dev/api/config) |
 
 [Explore the platform →](https://snapback.dev)
 

@@ -51,15 +51,31 @@ function trackSecurityViolation(violationType: string, details: Record<string, a
 /**
  * Validate file path is within workspace boundaries
  *
- * Security checks:
- * 1. Resolve symlinks to detect symlink attacks
- * 2. Ensure path is within workspace root
- * 3. Reject path traversal attempts (../)
+ * **Security Checks:**
+ * 1. Null byte injection prevention
+ * 2. Path traversal detection (../ and ..\\)
+ * 3. URL-encoded/double-encoded traversal prevention
+ * 4. Windows-specific attack vectors (UNC paths, drive letters)
+ * 5. Symlink resolution to detect symlink attacks
+ * 6. Circular symlink detection (ELOOP)
+ * 7. Workspace boundary enforcement
+ * 8. Telemetry logging of all violations
  *
  * @param filePath Path to validate (absolute or relative)
  * @param workspaceRoot Workspace root directory
- * @returns Validated absolute path
- * @throws SecurityError if path is outside workspace or invalid
+ * @returns Validated absolute path within workspace
+ * @throws SecurityError if path is outside workspace or malicious
+ * 
+ * @example
+ * ```ts
+ * // Valid path within workspace
+ * const safe = validateFilePath('src/index.ts', '/workspace');
+ * // => '/workspace/src/index.ts'
+ * 
+ * // Path traversal attack blocked
+ * validateFilePath('../../../etc/passwd', '/workspace');
+ * // => throws SecurityError
+ * ```
  */
 export function validateFilePath(filePath: string, workspaceRoot: string): string {
 	try {
@@ -104,8 +120,12 @@ export function validateFilePath(filePath: string, workspaceRoot: string): strin
 
 		// Reject paths that traverse upward by checking segments
 		// This correctly handles legitimate filenames like "config..json"
-		const segments = normalized.split(path.sep);
-		if (segments.some((seg) => seg === "..")) {
+		// Support both Unix (/) and Windows (\) path separators
+		const unixSegments = normalized.split('/');
+		const windowsSegments = normalized.split('\\');
+		const allSegments = [...unixSegments, ...windowsSegments];
+			
+		if (allSegments.some((seg) => seg === "..")) {
 			const violationDetails = {
 				filePath: normalized.substring(0, 100),
 				reason: "path_traversal",
@@ -141,7 +161,19 @@ export function validateFilePath(filePath: string, workspaceRoot: string): strin
 		let realPath: string;
 		try {
 			realPath = fs.realpathSync(absolutePath);
-		} catch (_error) {
+		} catch (_error: unknown) {
+			const error = _error as Error;
+				
+			// Handle circular symlinks (ELOOP error)
+			if (error.message && error.message.includes('ELOOP')) {
+				const violationDetails = {
+					filePath: absolutePath.substring(0, 100),
+					reason: 'circular_symlink',
+				};
+				trackSecurityViolation('path_validation_failed', violationDetails);
+				throw new SecurityError('Circular symlink detected');
+			}
+				
 			// File doesn't exist - validate parent directory instead
 			const parentDir = path.dirname(absolutePath);
 

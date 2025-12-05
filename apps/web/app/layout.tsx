@@ -5,8 +5,6 @@ import "cropperjs/dist/cropper.css";
 import { ASSETS } from "@marketing/lib/assets";
 import { ClientProviders } from "@shared/components/ClientProviders";
 import { cn } from "@ui/lib";
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import { GeistSans } from "geist/font/sans";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 
@@ -70,8 +68,6 @@ export default function RootLayout({ children }: PropsWithChildren) {
 			<body
 				className={cn("min-h-screen bg-background text-foreground antialiased")}
 			>
-				<Analytics />
-				<SpeedInsights />
 				<NuqsAdapter>
 					<ClientProviders>{children}</ClientProviders>
 				</NuqsAdapter>

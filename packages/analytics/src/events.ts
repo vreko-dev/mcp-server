@@ -67,6 +67,9 @@ export const AnalyticsEvents = {
 	FIRST_PROTECTED_SAVE: "first_protected_save",
 	FIRST_AI_DETECTION: "ai_detected", // Distinct from generic AI_EDIT_DETECTED
 	FIRST_RESTORE: "snapshot_restored", // Alias/reuse if possible, but distinct flow event
+
+	// Value Recognition Events
+	DISASTER_AVERTED: "value:disaster_averted",
 } as const;
 
 export type AnalyticsEvent = keyof typeof AnalyticsEvents;
@@ -108,6 +111,13 @@ export type EventProperties = {
 	[AnalyticsEvents.POLICY_VIOLATION]: {
 		policy_name: string;
 		violation_details: string;
+	};
+	[AnalyticsEvents.DISASTER_AVERTED]: {
+		files_restored: number;
+		lines_recovered?: number;
+		severity?: "low" | "medium" | "high";
+		ai_tool?: string;
+		recovery_type: "full_snapshot" | "single_file";
 	};
 };
 

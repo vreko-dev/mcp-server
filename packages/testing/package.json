@@ -19,6 +19,15 @@
 		"./fixtures": "./dist/fixtures/index.js",
 		"./fixtures/factories": "./dist/fixtures/factories.js"
 	},
+	"typesVersions": {
+		"*": {
+			"msw/server": ["./dist/msw/server.d.ts"],
+			"msw/handlers": ["./dist/msw/handlers/index.d.ts"],
+			"msw": ["./dist/msw/index.d.ts"],
+			"mocks/auth": ["./dist/mocks/auth.d.ts"],
+			"fixtures": ["./dist/fixtures/index.d.ts"]
+		}
+	},
 	"main": "./dist/index.js",
 	"scripts": {
 		"build": "tsup",
@@ -32,6 +41,7 @@
 	"devDependencies": {
 		"@snapback/tsconfig": "workspace:*",
 		"@types/node": "catalog:",
+		"graphql": "^16.12.0",
 		"tsup": "catalog:",
 		"typescript": "catalog:",
 		"vitest": "catalog:"

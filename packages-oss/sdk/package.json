@@ -57,7 +57,14 @@
     "client",
     "sdk",
     "snapback",
-    "oss"
+    "oss",
+    "code-safety",
+    "snapshot",
+    "file-protection",
+    "backup",
+    "restore",
+    "typescript",
+    "developer-tools"
   ],
   "scripts": {
     "build": "tsup && tsc --emitDeclarationOnly --outDir dist-types -p tsconfig.build.json",

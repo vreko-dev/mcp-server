@@ -9,6 +9,7 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "catalog:",
+		"@simplewebauthn/server": "^13.2.2",
 		"@snapback/tsconfig": "workspace:*",
 		"@types/node": "catalog:",
 		"nanoid": "catalog:",

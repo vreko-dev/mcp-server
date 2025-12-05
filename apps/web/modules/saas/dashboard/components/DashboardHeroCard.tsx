@@ -1,7 +1,9 @@
 "use client";
 
+import { Share2 } from "lucide-react";
 import { m } from "motion/react";
 import { useEffect, useState } from "react";
+import { ShareDialog } from "./ShareDialog";
 
 interface DashboardHeroCardProps {
 	threatsPreventedCount: number;
@@ -18,9 +20,10 @@ export function DashboardHeroCard({
 	confidenceLevel,
 	period,
 	onViewDetails,
-	onViewWins,
+	// onViewWins, // TODO: Implement wins view
 }: DashboardHeroCardProps) {
 	const [isMounted, setIsMounted] = useState(false);
+	const [isShareOpen, setIsShareOpen] = useState(false);
 
 	useEffect(() => {
 		setIsMounted(true);
@@ -78,7 +81,9 @@ export function DashboardHeroCard({
 
 						<div className="flex items-center justify-between">
 							<span className="text-slate-400">Your Confidence</span>
-							<span className={`text-lg font-bold flex items-center gap-2 ${confidenceColor}`}>
+							<span
+								className={`text-lg font-bold flex items-center gap-2 ${confidenceColor}`}
+							>
 								{confidenceEmoji}
 								{confidenceText}
 							</span>
@@ -86,10 +91,16 @@ export function DashboardHeroCard({
 					</div>
 
 					<div className="flex flex-wrap gap-3">
-						<button className="px-6 py-2 rounded-lg bg-emerald-400/20 text-emerald-300 hover:bg-emerald-400/30 transition-colors font-medium">
+						<button
+							type="button"
+							className="px-6 py-2 rounded-lg bg-emerald-400/20 text-emerald-300 hover:bg-emerald-400/30 transition-colors font-medium"
+						>
 							View Details
 						</button>
-						<button className="px-6 py-2 rounded-lg bg-slate-700/50 text-slate-300 hover:bg-slate-700 transition-colors font-medium">
+						<button
+							type="button"
+							className="px-6 py-2 rounded-lg bg-slate-700/50 text-slate-300 hover:bg-slate-700 transition-colors font-medium"
+						>
 							Recent Wins
 						</button>
 					</div>
@@ -127,7 +138,9 @@ export function DashboardHeroCard({
 						>
 							🛡️
 						</m.div>
-						<h1 className="text-3xl font-bold text-slate-50">You're Protected</h1>
+						<h1 className="text-3xl font-bold text-slate-50">
+							You're Protected
+						</h1>
 					</div>
 					<p className="text-emerald-300/80 text-sm uppercase tracking-wider">
 						This {period}
@@ -202,18 +215,26 @@ export function DashboardHeroCard({
 				>
 					<button
 						onClick={onViewDetails}
+						type="button"
 						className="px-6 py-2 rounded-lg bg-emerald-400/20 text-emerald-300 hover:bg-emerald-400/30 transition-colors font-medium"
 					>
 						View Details
 					</button>
 					<button
-						onClick={onViewWins}
-						className="px-6 py-2 rounded-lg bg-slate-700/50 text-slate-300 hover:bg-slate-700 transition-colors font-medium"
+						onClick={() => setIsShareOpen(true)}
+						type="button"
+						className="px-6 py-2 rounded-lg bg-slate-700/50 text-slate-300 hover:bg-slate-700 transition-colors font-medium flex items-center gap-2"
 					>
-						Recent Wins
+						<Share2 className="w-4 h-4" />
+						Share Win
 					</button>
 				</m.div>
 			</div>
+			<ShareDialog
+				open={isShareOpen}
+				onOpenChange={setIsShareOpen}
+				linesRecovered={threatsPreventedCount * 15} // Estimated lines based on threats
+			/>
 		</m.div>
 	);
 }

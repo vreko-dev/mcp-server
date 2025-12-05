@@ -9,7 +9,8 @@ import type {
 // Fetch user dashboard metrics from API
 export async function fetchUserMetrics(): Promise<DashboardMetrics> {
 	try {
-		const result = await orpcClient.dashboard.getUserMetrics();
+		// Use the new getMetrics procedure which returns real data
+		const result = await orpcClient.dashboard.getMetrics();
 		return result;
 	} catch (error) {
 		console.error("Failed to fetch user metrics", { error });

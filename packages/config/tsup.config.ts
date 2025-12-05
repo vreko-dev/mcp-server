@@ -3,7 +3,13 @@ import { defineConfig } from "tsup";
 export default defineConfig({
 	entry: ["src/index.ts", "src/subscription-config.ts", "src/utils/*.ts"],
 	format: ["esm"],
-	dts: false, // Generate declarations separately with tsc
+	dts: {
+		resolve: true, // Resolves workspace:* dependencies
+		compilerOptions: {
+			composite: false,
+			incremental: false,
+		},
+	},
 	splitting: true,
 	sourcemap: true,
 	clean: true,

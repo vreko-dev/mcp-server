@@ -1,8 +1,8 @@
 # Deterministic Testing Infrastructure Patterns (2025)
 
-**Applies to:** All test files in `packages/*/test/`, `apps/*/test/`  
-**Authority:** Workspace-wide testing standards  
-**Enforcement:** Required for integration tests, recommended for all tests  
+**Applies to:** All test files in `packages/*/test/`, `apps/*/test/`
+**Authority:** Workspace-wide testing standards
+**Enforcement:** Required for integration tests, recommended for all tests
 **Package:** `@snapback/testing`
 
 ---
@@ -268,7 +268,7 @@ describe("SessionExpiration", () => {
 
   it("should handle timestamp calculations", () => {
     const now = toTimestamp("2025-01-01T12:00:00Z");
-    
+
     // Add various time units
     const futureTime = addTime(now, {
       hours: 2,
@@ -351,7 +351,7 @@ describe("SearchDebounce", () => {
     time.advanceBy(100);
 
     debouncedSearch("abc");
-    
+
     // Before debounce timeout - no calls yet
     expect(searchFn).not.toHaveBeenCalled();
 
@@ -519,12 +519,12 @@ Generate IP-safe, generic test data using `@faker-js/faker`. Prevents exposure o
 ### Pattern: Factory Functions with Overrides
 
 ```typescript
-import { 
-  createTestUser, 
-  createTestSnapshot, 
+import {
+  createTestUser,
+  createTestSnapshot,
   createTestOrganization,
   createTestApiKey,
-  createTestRiskAnalysis 
+  createTestRiskAnalysis
 } from "@snapback/testing/fixtures/factories";
 
 describe("SnapshotCreation", () => {
@@ -952,6 +952,6 @@ it("debounce test", () => {
 - **IP Safety:** See `code-review-standards.md` § Open Core Testing Strategy
 - **Vitest Fake Timers:** https://vitest.dev/guide/features.html#timer-mocking
 
-**Last Updated:** 2025-12-05  
-**Reviewed By:** Testing infrastructure team  
+**Last Updated:** 2025-12-05
+**Reviewed By:** Testing infrastructure team
 **Phase 1 Status:** ✅ Complete - Infrastructure ready for use

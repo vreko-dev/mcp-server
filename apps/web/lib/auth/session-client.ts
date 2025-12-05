@@ -156,7 +156,8 @@ class SessionClient {
 		password: string,
 	): Promise<{ success: boolean; error?: string }> {
 		try {
-			const response = await fetch(`${API_BASE_URL}/auth/signin`, {
+			// Fixed: Use correct Better Auth endpoint (hyphenated)
+			const response = await fetch(`${API_BASE_URL}/auth/sign-in/email`, {
 				method: "POST",
 				credentials: "include",
 				headers: {
@@ -192,7 +193,8 @@ class SessionClient {
 		name?: string,
 	): Promise<{ success: boolean; error?: string }> {
 		try {
-			const response = await fetch(`${API_BASE_URL}/auth/signup`, {
+			// Fixed: Use correct Better Auth endpoint (hyphenated)
+			const response = await fetch(`${API_BASE_URL}/auth/sign-up/email`, {
 				method: "POST",
 				credentials: "include",
 				headers: {
@@ -224,7 +226,8 @@ class SessionClient {
 	 */
 	async signOut(): Promise<void> {
 		try {
-			await fetch(`${API_BASE_URL}/auth/signout`, {
+			// Fixed: Use correct Better Auth endpoint (hyphenated)
+			await fetch(`${API_BASE_URL}/auth/sign-out`, {
 				method: "POST",
 				credentials: "include",
 			});

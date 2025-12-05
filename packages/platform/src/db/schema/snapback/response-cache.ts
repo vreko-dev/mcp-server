@@ -1,7 +1,7 @@
 import { createId as cuid } from "@paralleldrive/cuid2";
 import { relations } from "drizzle-orm";
 import { index, integer, jsonb, pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
-import { user } from "../postgres.js";
+import { user } from "../postgres";
 
 export const responseCache = pgTable(
 	"response_cache",

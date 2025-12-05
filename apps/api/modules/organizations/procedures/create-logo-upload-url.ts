@@ -1,6 +1,10 @@
 import { ORPCError } from "@orpc/server";
 import { getOrganizationById } from "@snapback/platform";
 import { z } from "zod";
+import {
+	getPresignedUploadUrl,
+	isS3Configured,
+} from "../../../lib/s3-client.js";
 import { protectedProcedure } from "../../../orpc/procedures";
 import { verifyOrganizationMembership } from "../lib/membership.js";
 
@@ -41,11 +45,23 @@ export const createLogoUploadUrl = protectedProcedure
 				throw new ORPCError("FORBIDDEN");
 			}
 
-			// const path = `${organizationId}.png`;
-			// const signedUploadUrl = await getSignedUploadUrl(path, {
-			// 	bucket: config.storage.bucketNames.avatars,
-			// });
+			if (!isS3Configured()) {
+				throw new ORPCError("SERVICE_UNAVAILABLE", {
+					message: "Logo uploads not configured - S3 credentials required",
+				});
+			}
 
-			// return { signedUploadUrl, path };
+			const path = `logos/${organizationId}.png`;
+
+			const signedUploadUrl = await getPresignedUploadUrl(path, {
+				contentType: "image/png",
+				expiresIn: 300, // 5 minutes
+			});
+
+			return {
+				signedUploadUrl,
+				path,
+				expiresAt: Date.now() + 300000, // 5 minutes from now
+			};
 		},
 	);

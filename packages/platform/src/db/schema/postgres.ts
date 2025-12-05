@@ -50,6 +50,7 @@ export const user = pgTable("user", {
 	totalRecoveries: integer("totalRecoveries").default(0).notNull(),
 	subscriptionTier: planTypeEnum("subscription_tier").default("free"), // Add subscription tier field
 	twoFactorEnabled: boolean("twoFactorEnabled").default(false), // Required by Better Auth twoFactor plugin
+	deviceFingerprint: text("deviceFingerprint"), // Added for fraud prevention
 });
 
 export const session = pgTable(
@@ -147,7 +148,6 @@ export const organization = pgTable(
 		metadata: text("metadata"),
 		paymentsCustomerId: text("paymentsCustomerId"),
 	},
-
 
 	(table) => [uniqueIndex("organization_slug_idx").on(table.slug)],
 );
@@ -557,12 +557,12 @@ export const newsletterSubscribers = pgTable(
 
 export const newsletterSubscribersRelations = relations(newsletterSubscribers, () => ({}));
 
-export { deviceTrials } from "./snapback/device-trials.js";
+export { deviceTrials } from "./snapback/device-trials";
 // Snapback schema imports
-export * from "./snapback/snapshots.js";
-export * from "./snapback/waitlist.js";
+export * from "./snapback/snapshots";
+export * from "./snapback/waitlist";
 
-import { waitlist, waitlistReferrals, waitlistTasks } from "./snapback/waitlist.js";
+import { waitlist, waitlistReferrals, waitlistTasks } from "./snapback/waitlist";
 
 // Schema namespace export - all tables as a single object
 // Note: extensionSessions is exported from extension-auth.ts via index.ts
@@ -687,3 +687,45 @@ export type Subscription = typeof subscriptions.$inferSelect;
 export type NewSubscription = typeof subscriptions.$inferInsert;
 export type NewsletterSubscriber = typeof newsletterSubscribers.$inferSelect;
 export type NewNewsletterSubscriber = typeof newsletterSubscribers.$inferInsert;
+
+// Agent Suggestions table
+export const agentSuggestions = pgTable(
+	"agent_suggestions",
+	{
+		id: text("id")
+			.primaryKey()
+			.$defaultFn(() => cuid()),
+		userId: text("user_id")
+			.notNull()
+			.references(() => user.id, { onDelete: "cascade" }),
+		apiKeyId: text("api_key_id")
+			.notNull()
+			.references(() => apiKeys.id, { onDelete: "cascade" }),
+		sessionId: text("session_id"),
+		requestId: text("request_id").notNull(),
+		suggestionId: text("suggestion_id").notNull(),
+		suggestionText: text("suggestion_text").notNull(),
+		suggestionType: text("suggestion_type"),
+		filePath: text("file_path"),
+		lineStart: integer("line_start"),
+		lineEnd: integer("line_end"),
+		characterStart: integer("character_start"),
+		characterEnd: integer("character_end"),
+		accepted: boolean("accepted").default(false),
+		dismissed: boolean("dismissed").default(false),
+		timestamp: timestamp("timestamp").defaultNow().notNull(),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+	},
+	(table) => {
+		return {
+			userCreatedAtIndex: index("agent_suggestions_user_created_at_idx").on(table.userId, table.createdAt),
+			apiKeyCreatedAtIndex: index("agent_suggestions_api_key_created_at_idx").on(table.apiKeyId, table.createdAt),
+			// Check constraint is not directly supported in drizzle-orm/pg-core pgTable builder yet in this version or syntax might differ,
+			// but we can skip it for now or add it via raw SQL if needed.
+			// The original file had a check constraint.
+		};
+	},
+);
+
+export type AgentSuggestion = typeof agentSuggestions.$inferSelect;
+export type NewAgentSuggestion = typeof agentSuggestions.$inferInsert;

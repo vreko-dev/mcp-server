@@ -40,19 +40,43 @@ export const submitFeedback = protectedProcedure
 			timestamp: new Date(input.timestamp),
 		});
 
-		// TODO: Send to Slack webhook (optional)
-		// if (process.env.SLACK_FEEDBACK_WEBHOOK) {
-		//   await fetch(process.env.SLACK_FEEDBACK_WEBHOOK, {
-		//     method: 'POST',
-		//     headers: { 'Content-Type': 'application/json' },
-		//     body: JSON.stringify({
-		//       text: `New ${input.category} feedback from ${ctx.user.email}`,
-		//       blocks: [
-		//         { type: 'section', text: { type: 'mrkdwn', text: input.message } },
-		//       ],
-		//     }),
-		//   });
-		// }
+		// Send to Slack webhook (optional)
+		if (process.env.SLACK_FEEDBACK_WEBHOOK) {
+			try {
+				await fetch(process.env.SLACK_FEEDBACK_WEBHOOK, {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({
+						text: `New ${input.category} feedback from ${context.user?.email || "anonymous"}`,
+						blocks: [
+							{
+								type: "section",
+								text: {
+									type: "mrkdwn",
+									text: `*${input.category.toUpperCase()} Feedback*\n${input.message}`,
+								},
+							},
+							{
+								type: "context",
+								elements: [
+									{
+										type: "mrkdwn",
+										text: `User: ${context.user?.email || "N/A"} | URL: ${input.url || "N/A"}`,
+									},
+								],
+							},
+						],
+					}),
+				});
+
+				console.log("[Feedback] Sent to Slack", { userId: context.user?.id });
+			} catch (error) {
+				console.error("[Feedback] Failed to send to Slack", {
+					error: error instanceof Error ? error.message : String(error),
+				});
+				// Don't fail the request if Slack is down
+			}
+		}
 
 		return { success: true };
 	});

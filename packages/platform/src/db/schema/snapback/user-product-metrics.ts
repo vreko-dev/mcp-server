@@ -1,6 +1,6 @@
 import { createId as cuid } from "@paralleldrive/cuid2";
 import { index, integer, pgTable, text, timestamp } from "drizzle-orm/pg-core";
-import { user } from "../postgres.js";
+import { user } from "../postgres";
 
 // User product metrics table
 // Stores lifetime aggregated metrics for each user (rolled up from daily)

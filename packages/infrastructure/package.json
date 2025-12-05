@@ -1,6 +1,6 @@
 {
   "name": "@snapback/infrastructure",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "dependencies": {
     "@sentry/node": "catalog:",
     "@sentry/profiling-node": "catalog:",

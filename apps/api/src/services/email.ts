@@ -121,11 +121,9 @@ export async function sendWelcomeEmail(
 
 			return {
 				success: false,
-				error: new EmailError(
-					"Email address required",
-					"MISSING_EMAIL",
-					{ customerId },
-				),
+				error: new EmailError("Email address required", "MISSING_EMAIL", {
+					customerId,
+				}),
 			};
 		}
 
@@ -154,7 +152,7 @@ export async function sendWelcomeEmail(
 		// For now, send plain HTML until React Email components are ported
 		const htmlContent = generateWelcomeEmailHTML(emailData);
 
-		await resend!.emails.send({
+		await resend?.emails.send({
 			from: "SnapBack <welcome@snapback.dev>",
 			to: userEmail,
 			subject: `Welcome to SnapBack ${plan.charAt(0).toUpperCase() + plan.slice(1)}!`,
@@ -177,15 +175,11 @@ export async function sendWelcomeEmail(
 
 		return {
 			success: false,
-			error: new EmailError(
-				"Failed to send welcome email",
-				"SEND_FAILED",
-				{
-					customerId,
-					plan,
-					originalError: error instanceof Error ? error.message : String(error),
-				},
-			),
+			error: new EmailError("Failed to send welcome email", "SEND_FAILED", {
+				customerId,
+				plan,
+				originalError: error instanceof Error ? error.message : String(error),
+			}),
 		};
 	}
 }
@@ -206,21 +200,16 @@ export async function sendPaymentReceiptEmail(
 
 			return {
 				success: false,
-				error: new EmailError(
-					"Email address required",
-					"MISSING_EMAIL",
-					{ customerId },
-				),
+				error: new EmailError("Email address required", "MISSING_EMAIL", {
+					customerId,
+				}),
 			};
 		}
 
 		if (!isConfigured()) {
-			logger.warn(
-				"RESEND_API_KEY not configured - skipping payment receipt",
-				{
-					customerId,
-				},
-			);
+			logger.warn("RESEND_API_KEY not configured - skipping payment receipt", {
+				customerId,
+			});
 
 			return {
 				success: false,
@@ -244,7 +233,7 @@ export async function sendPaymentReceiptEmail(
 
 		const htmlContent = generatePaymentReceiptHTML(emailData);
 
-		await resend!.emails.send({
+		await resend?.emails.send({
 			from: "SnapBack <billing@snapback.dev>",
 			to: userEmail,
 			subject: "Payment Receipt - SnapBack",
@@ -267,15 +256,11 @@ export async function sendPaymentReceiptEmail(
 
 		return {
 			success: false,
-			error: new EmailError(
-				"Failed to send payment receipt",
-				"SEND_FAILED",
-				{
-					customerId,
-					amount,
-					originalError: error instanceof Error ? error.message : String(error),
-				},
-			),
+			error: new EmailError("Failed to send payment receipt", "SEND_FAILED", {
+				customerId,
+				amount,
+				originalError: error instanceof Error ? error.message : String(error),
+			}),
 		};
 	}
 }
@@ -296,11 +281,9 @@ export async function sendPaymentFailedEmail(
 
 			return {
 				success: false,
-				error: new EmailError(
-					"Email address required",
-					"MISSING_EMAIL",
-					{ customerId },
-				),
+				error: new EmailError("Email address required", "MISSING_EMAIL", {
+					customerId,
+				}),
 			};
 		}
 
@@ -333,7 +316,7 @@ export async function sendPaymentFailedEmail(
 
 		const htmlContent = generatePaymentFailedHTML(emailData);
 
-		await resend!.emails.send({
+		await resend?.emails.send({
 			from: "SnapBack <billing@snapback.dev>",
 			to: userEmail,
 			subject: "Payment Failed - Action Required",
@@ -375,13 +358,10 @@ export async function sendPaymentFailedEmail(
 export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
 	try {
 		if (!isConfigured()) {
-			throw new EmailError(
-				"Email service not configured",
-				"NOT_CONFIGURED",
-			);
+			throw new EmailError("Email service not configured", "NOT_CONFIGURED");
 		}
 
-		await resend!.emails.send({
+		await resend?.emails.send({
 			from: "SnapBack <noreply@snapback.dev>",
 			to: options.to.email,
 			subject: options.subject,
@@ -410,15 +390,11 @@ export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
 
 		return {
 			success: false,
-			error: new EmailError(
-				"Failed to send email",
-				"SEND_FAILED",
-				{
-					to: options.to.email,
-					subject: options.subject,
-					originalError: error instanceof Error ? error.message : String(error),
-				},
-			),
+			error: new EmailError("Failed to send email", "SEND_FAILED", {
+				to: options.to.email,
+				subject: options.subject,
+				originalError: error instanceof Error ? error.message : String(error),
+			}),
 		};
 	}
 }
@@ -439,19 +415,19 @@ function generateWelcomeEmailHTML(data: WelcomeEmailData): string {
         <h1 style="color: white; margin: 0; font-size: 32px;">Welcome to SnapBack!</h1>
         <p style="color: rgba(255,255,255,0.9); margin-top: 10px; font-size: 18px;">${data.plan.charAt(0).toUpperCase() + data.plan.slice(1)} Plan</p>
     </div>
-    
+
     <div style="background: white; padding: 40px 20px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px;">
         <h2 style="color: #1f2937; margin-top: 0;">Your features:</h2>
         <ul style="color: #4b5563; padding-left: 20px;">
             ${data.features.map((feature) => `<li style="margin: 8px 0;">${feature}</li>`).join("")}
         </ul>
-        
+
         <div style="margin: 30px 0; text-align: center;">
             <a href="${data.dashboardUrl}" style="display: inline-block; background: #667eea; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: 600;">
                 Go to Dashboard
             </a>
         </div>
-        
+
         <p style="color: #6b7280; font-size: 14px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
             Need help? Contact us at <a href="mailto:${data.supportEmail}" style="color: #667eea;">${data.supportEmail}</a>
         </p>
@@ -473,9 +449,9 @@ function generatePaymentReceiptHTML(data: PaymentReceiptData): string {
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
     <div style="background: white; padding: 40px 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
         <h1 style="color: #1f2937; margin-top: 0;">Payment Receipt</h1>
-        
+
         <p style="color: #4b5563; font-size: 16px;">Thank you for your payment!</p>
-        
+
         <div style="background: #f9fafb; padding: 20px; border-radius: 6px; margin: 20px 0;">
             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
                 <span style="color: #6b7280;">Amount:</span>
@@ -486,7 +462,7 @@ function generatePaymentReceiptHTML(data: PaymentReceiptData): string {
                 <span style="color: #1f2937;">${data.date}</span>
             </div>
         </div>
-        
+
         <div style="margin: 30px 0; text-align: center;">
             <a href="${data.invoiceUrl}" style="display: inline-block; background: #667eea; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: 600;">
                 View Invoice
@@ -510,15 +486,15 @@ function generatePaymentFailedHTML(data: PaymentFailedData): string {
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
     <div style="background: white; padding: 40px 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
         <h1 style="color: #dc2626; margin-top: 0;">Payment Failed</h1>
-        
+
         <p style="color: #4b5563; font-size: 16px;">We were unable to process your payment (Attempt ${data.attemptCount}).</p>
-        
+
         <div style="background: #fef2f2; border-left: 4px solid #dc2626; padding: 15px; margin: 20px 0;">
             <p style="color: #991b1b; margin: 0; font-weight: 600;">${data.warningMessage}</p>
         </div>
-        
+
         <p style="color: #4b5563;">Please update your payment method to ensure uninterrupted service.</p>
-        
+
         <div style="margin: 30px 0; text-align: center;">
             <a href="${data.updatePaymentUrl}" style="display: inline-block; background: #dc2626; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: 600;">
                 Update Payment Method

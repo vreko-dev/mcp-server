@@ -7,6 +7,8 @@
 
 import { sql } from "drizzle-orm";
 import { getDb } from "../src/services/database";
+import { getRedisClient } from "./redis-client.js";
+import { checkS3Health, isS3Configured } from "./s3-client.js";
 
 export interface HealthCheckResult {
 	status: "healthy" | "degraded" | "unhealthy";
@@ -55,9 +57,8 @@ async function checkRedis(): Promise<"healthy" | "unhealthy" | undefined> {
 	}
 
 	try {
-		// TODO: Implement Redis ping check
-		// const redis = await getRedisClient();
-		// await redis.ping();
+		const redis = await getRedisClient();
+		await redis.ping();
 		return "healthy";
 	} catch (error) {
 		console.error("[Health] Redis check failed:", error);
@@ -69,15 +70,13 @@ async function checkRedis(): Promise<"healthy" | "unhealthy" | undefined> {
  * Check S3 connectivity (optional)
  */
 async function checkS3(): Promise<"healthy" | "unhealthy" | undefined> {
-	if (!process.env.AWS_S3_BUCKET) {
+	if (!isS3Configured()) {
 		return undefined; // S3 not configured
 	}
 
 	try {
-		// TODO: Implement S3 HeadBucket check
-		// const s3 = getS3Client();
-		// await s3.headBucket({ Bucket: process.env.AWS_S3_BUCKET }).promise();
-		return "healthy";
+		const healthy = await checkS3Health();
+		return healthy ? "healthy" : "unhealthy";
 	} catch (error) {
 		console.error("[Health] S3 check failed:", error);
 		return "unhealthy";

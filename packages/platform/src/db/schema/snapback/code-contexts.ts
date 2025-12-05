@@ -1,7 +1,7 @@
 import { createId as cuid } from "@paralleldrive/cuid2";
 import { relations } from "drizzle-orm";
 import { integer, jsonb, pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
-import { user } from "../postgres.js";
+import { user } from "../postgres";
 
 export const codeContexts = pgTable(
 	"code_contexts",

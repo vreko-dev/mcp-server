@@ -1,6 +1,7 @@
 {
   "name": "@snapback/mcp-server",
-  "version": "0.0.0",
+  "version": "1.0.1",
+  "description": "AI-powered code analysis server for Claude Desktop and MCP clients - risk detection, snapshots, and intelligent code safety",
   "dependencies": {
     "@modelcontextprotocol/sdk": "catalog:",
     "@snapback/analytics": "workspace:*",
@@ -64,8 +65,6 @@
     "dist"
   ],
   "license": "Apache-2.0",
-  "main": "dist/index.js",
-  "private": true,
   "scripts": {
     "build": "tsup --clean",
     "dev": "tsx watch src/index.ts",

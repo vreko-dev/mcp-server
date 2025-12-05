@@ -1,7 +1,7 @@
 {
   "name": "@snapback-oss/sdk",
-  "description": "SnapBack SDK for interacting with the SnapBack API",
-  "version": "0.1.0",
+  "description": "Production-ready TypeScript SDK for building code safety systems - snapshots, protection, and risk analysis in one powerful library",
+  "version": "0.1.2",
   "author": "SnapBack Team",
   "license": "Apache-2.0",
   "repository": {

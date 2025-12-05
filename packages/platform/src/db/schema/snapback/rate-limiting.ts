@@ -1,7 +1,7 @@
 import { createId as cuid } from "@paralleldrive/cuid2";
 import { relations } from "drizzle-orm";
 import { bigint, integer, jsonb, numeric, pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
-import { apiKeys, planTypeEnum, user } from "../postgres.js";
+import { apiKeys, planTypeEnum, user } from "../postgres";
 
 // Rate limiting violations
 export const rateLimitViolations = pgTable("rate_limit_violations", {

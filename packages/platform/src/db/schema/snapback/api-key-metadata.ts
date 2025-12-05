@@ -1,6 +1,6 @@
 import { relations } from "drizzle-orm";
 import { boolean, inet, integer, jsonb, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
-import { apiKeys, user } from "../postgres.js";
+import { apiKeys, user } from "../postgres";
 
 // API key metadata table - extends Better Auth api_key table
 export const apiKeyMetadata = pgTable("api_key_metadata", {

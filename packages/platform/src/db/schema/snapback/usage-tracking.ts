@@ -1,7 +1,7 @@
 import { createId as cuid } from "@paralleldrive/cuid2";
 import { relations } from "drizzle-orm";
 import { bigint, integer, jsonb, pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
-import { apiKeys, user } from "../postgres.js";
+import { apiKeys, user } from "../postgres";
 
 // High-frequency API usage logs (partitioned by month)
 export const apiUsageLogs = pgTable("api_usage_logs", {

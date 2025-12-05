@@ -1,6 +1,6 @@
 import { createId as cuid } from "@paralleldrive/cuid2";
 import { index, pgTable, text, timestamp } from "drizzle-orm/pg-core";
-import { user } from "../postgres.js";
+import { user } from "../postgres";
 
 // Device auth codes table
 // Tracks RFC 8628 device authorization flow (for VS Code extension auth)

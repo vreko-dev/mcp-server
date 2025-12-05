@@ -42,7 +42,7 @@ describe("Auth Queries", () => {
 				role: "user",
 			};
 
-			vi.mocked(db.select).mockReturnValue({
+			vi.mocked(db?.select).mockReturnValue({
 				from: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						limit: vi.fn().mockResolvedValue([mockUser]),
@@ -53,11 +53,11 @@ describe("Auth Queries", () => {
 			const result = await getUserById("user-123");
 
 			expect(result).toEqual(mockUser);
-			expect(db.select).toHaveBeenCalled();
+			expect(db?.select).toHaveBeenCalled();
 		});
 
 		it("should return null when user not found", async () => {
-			vi.mocked(db.select).mockReturnValue({
+			vi.mocked(db?.select).mockReturnValue({
 				from: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						limit: vi.fn().mockResolvedValue([]),
@@ -71,7 +71,7 @@ describe("Auth Queries", () => {
 		});
 
 		it("should handle database errors gracefully", async () => {
-			vi.mocked(db.select).mockReturnValue({
+			vi.mocked(db?.select).mockReturnValue({
 				from: vi.fn().mockReturnValue({
 					where: vi.fn().mockRejectedValue(new Error("DB error")),
 				}),
@@ -96,7 +96,7 @@ describe("Auth Queries", () => {
 				expiresAt: new Date(Date.now() + 1000000),
 			};
 
-			vi.mocked(db.select).mockReturnValue({
+			vi.mocked(db?.select).mockReturnValue({
 				from: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						limit: vi.fn().mockResolvedValue([mockKey]),
@@ -110,7 +110,7 @@ describe("Auth Queries", () => {
 		});
 
 		it("should return null for revoked key", async () => {
-			vi.mocked(db.select).mockReturnValue({
+			vi.mocked(db?.select).mockReturnValue({
 				from: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						limit: vi.fn().mockResolvedValue([]),
@@ -124,7 +124,7 @@ describe("Auth Queries", () => {
 		});
 
 		it("should return null for expired key", async () => {
-			vi.mocked(db.select).mockReturnValue({
+			vi.mocked(db?.select).mockReturnValue({
 				from: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						limit: vi.fn().mockResolvedValue([]),
@@ -145,7 +145,7 @@ describe("Auth Queries", () => {
 		it("should return plan for active subscription", async () => {
 			const mockSub = { plan: "pro", status: "active" };
 
-			vi.mocked(db.select).mockReturnValue({
+			vi.mocked(db?.select).mockReturnValue({
 				from: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						limit: vi.fn().mockResolvedValue([mockSub]),
@@ -159,7 +159,7 @@ describe("Auth Queries", () => {
 		});
 
 		it("should return free for no subscription", async () => {
-			vi.mocked(db.select).mockReturnValue({
+			vi.mocked(db?.select).mockReturnValue({
 				from: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						limit: vi.fn().mockResolvedValue([]),
@@ -175,7 +175,7 @@ describe("Auth Queries", () => {
 		it("should return plan for trial subscription", async () => {
 			const mockSub = { plan: "team", status: "trialing" };
 
-			vi.mocked(db.select).mockReturnValue({
+			vi.mocked(db?.select).mockReturnValue({
 				from: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						limit: vi.fn().mockResolvedValue([mockSub]),
@@ -189,7 +189,7 @@ describe("Auth Queries", () => {
 		});
 
 		it("should return free on error", async () => {
-			vi.mocked(db.select).mockReturnValue({
+			vi.mocked(db?.select).mockReturnValue({
 				from: vi.fn().mockReturnValue({
 					where: vi.fn().mockRejectedValue(new Error("DB error")),
 				}),
@@ -208,7 +208,7 @@ describe("Auth Queries", () => {
 		it("should return admin permissions for admin user", async () => {
 			const mockUser = { id: "user-123", role: "admin" };
 
-			vi.mocked(db.select).mockReturnValue({
+			vi.mocked(db?.select).mockReturnValue({
 				from: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						limit: vi.fn().mockResolvedValue([mockUser]),
@@ -225,7 +225,7 @@ describe("Auth Queries", () => {
 		it("should return user permissions for regular user", async () => {
 			const mockUser = { id: "user-123", role: "user" };
 
-			vi.mocked(db.select).mockReturnValue({
+			vi.mocked(db?.select).mockReturnValue({
 				from: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						limit: vi.fn().mockResolvedValue([mockUser]),
@@ -243,7 +243,7 @@ describe("Auth Queries", () => {
 			const mockSub = { plan: "enterprise", status: "active" };
 
 			let selectCallCount = 0;
-			vi.mocked(db.select).mockImplementation(() => {
+			vi.mocked(db?.select).mockImplementation(() => {
 				selectCallCount++;
 				if (selectCallCount === 1) {
 					// First call: getUserById
@@ -272,7 +272,7 @@ describe("Auth Queries", () => {
 		});
 
 		it("should return empty for nonexistent user", async () => {
-			vi.mocked(db.select).mockReturnValue({
+			vi.mocked(db?.select).mockReturnValue({
 				from: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						limit: vi.fn().mockResolvedValue([]),
@@ -293,7 +293,7 @@ describe("Auth Queries", () => {
 		it("should return org IDs for user", async () => {
 			const mockMemberships = [{ orgId: "org-1" }, { orgId: "org-2" }];
 
-			vi.mocked(db.select).mockReturnValue({
+			vi.mocked(db?.select).mockReturnValue({
 				from: vi.fn().mockReturnValue({
 					where: vi.fn().mockResolvedValue(mockMemberships),
 				}),
@@ -305,7 +305,7 @@ describe("Auth Queries", () => {
 		});
 
 		it("should return empty array for user with no orgs", async () => {
-			vi.mocked(db.select).mockReturnValue({
+			vi.mocked(db?.select).mockReturnValue({
 				from: vi.fn().mockReturnValue({
 					where: vi.fn().mockResolvedValue([]),
 				}),
@@ -328,7 +328,7 @@ describe("Auth Queries", () => {
 				role: "member",
 			};
 
-			vi.mocked(db.select).mockReturnValue({
+			vi.mocked(db?.select).mockReturnValue({
 				from: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						limit: vi.fn().mockResolvedValue([mockMembership]),
@@ -342,7 +342,7 @@ describe("Auth Queries", () => {
 		});
 
 		it("should return null when user is not member", async () => {
-			vi.mocked(db.select).mockReturnValue({
+			vi.mocked(db?.select).mockReturnValue({
 				from: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						limit: vi.fn().mockResolvedValue([]),
@@ -367,16 +367,16 @@ describe("Auth Queries", () => {
 				}),
 			};
 
-			vi.mocked(db.update).mockReturnValue(mockUpdate as any);
+			vi.mocked(db?.update).mockReturnValue(mockUpdate as any);
 
 			await updateApiKeyLastUsed("key-123");
 
-			expect(db.update).toHaveBeenCalled();
+			expect(db?.update).toHaveBeenCalled();
 			expect(mockUpdate.set).toHaveBeenCalled();
 		});
 
 		it("should handle update errors gracefully", async () => {
-			vi.mocked(db.update).mockImplementation(() => {
+			vi.mocked(db?.update).mockImplementation(() => {
 				throw new Error("Update failed");
 			});
 
@@ -398,7 +398,7 @@ describe("Auth Queries", () => {
 				}),
 			};
 
-			vi.mocked(db.update).mockReturnValue(mockUpdate as any);
+			vi.mocked(db?.update).mockReturnValue(mockUpdate as any);
 
 			const result = await revokeApiKey("key-123");
 
@@ -406,7 +406,7 @@ describe("Auth Queries", () => {
 		});
 
 		it("should return false on error", async () => {
-			vi.mocked(db.update).mockImplementation(() => {
+			vi.mocked(db?.update).mockImplementation(() => {
 				throw new Error("Revoke failed");
 			});
 

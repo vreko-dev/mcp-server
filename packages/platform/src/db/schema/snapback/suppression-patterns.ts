@@ -1,6 +1,6 @@
 import { relations } from "drizzle-orm";
 import { boolean, integer, jsonb, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
-import { user } from "../postgres.js";
+import { user } from "../postgres";
 
 /**
  * Suppression Patterns - Track user-defined suppression patterns

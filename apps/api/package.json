@@ -47,7 +47,6 @@
 		"drizzle-orm": "catalog:",
 		"msw": "catalog:",
 		"pg": "catalog:",
-		"postgres": "catalog:",
 		"tsconfig-paths": "^4.2.0",
 		"tsup": "catalog:",
 		"tsx": "catalog:",

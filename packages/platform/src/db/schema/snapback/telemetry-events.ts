@@ -1,6 +1,6 @@
 import { createId as cuid } from "@paralleldrive/cuid2";
 import { integer, json, pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
-import { apiKeys, user } from "../postgres.js";
+import { apiKeys, user } from "../postgres";
 
 // Telemetry events for time-series tracking
 export const telemetryEvents = pgTable(

@@ -1,7 +1,7 @@
 {
   "name": "@snapback/events",
   "description": "Event bus for SnapBack inter-process communication",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "SnapBack Team",
   "dependencies": {
     "@snapback/config": "workspace:*",

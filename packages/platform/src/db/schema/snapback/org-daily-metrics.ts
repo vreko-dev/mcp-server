@@ -1,6 +1,6 @@
 import { createId as cuid } from "@paralleldrive/cuid2";
 import { integer, jsonb, pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
-import { organization } from "../postgres.js";
+import { organization } from "../postgres";
 
 // Organization daily metrics table
 // Stores aggregated metrics for each organization on a daily basis

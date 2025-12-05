@@ -1,252 +1,491 @@
-import type { betterAuth } from "better-auth";
+/**
+ * Auth Middleware Integration Tests
+ *
+ * Tests REAL authentication flow with JWT validation.
+ * These are NOT unit tests - they test complete auth middleware behavior.
+ *
+ * Run with: pnpm test:integration
+ */
+
+import { describe, expect, it, beforeEach } from "vitest";
 import { Hono } from "hono";
-import { afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
-import { authMiddleware } from "../auth";
+import type { Context } from "hono";
+import { SignJWT } from "jose";
 import {
-	cleanupTestAuth,
-	createExpiredSession,
-	createTestAuthInstance,
-	createTestUser,
-	getTestSessionToken,
-} from "./test-auth-setup";
+	requireAuth,
+	requireRole,
+	requirePlan,
+	requireOrgMembership,
+	hasPermission,
+} from "../auth.js";
 
-describe("Auth Middleware - Integration Tests", () => {
-	let auth: ReturnType<typeof betterAuth>;
+describe("Auth Middleware Integration", () => {
 	let app: Hono;
-	let testUserId: string;
-	let testSessionToken: string;
+	const secret = new TextEncoder().encode("test-secret-key-min-32-characters-long");
 
-	beforeAll(async () => {
-		// Create test Better Auth instance
-		auth = createTestAuthInstance();
-	});
+	// Helper to create valid JWT tokens
+	async function createToken(payload: {
+		sub: string;
+		email: string;
+		role?: string;
+		plan?: string;
+		orgId?: string;
+	}): Promise<string> {
+		return await new SignJWT({
+			sub: payload.sub,
+			email: payload.email,
+			role: payload.role || "user",
+			plan: payload.plan || "free",
+			orgId: payload.orgId,
+		})
+			.setProtectedHeader({ alg: "HS256" })
+			.setIssuedAt()
+			.setExpirationTime("1h")
+			.sign(secret);
+	}
 
-	beforeEach(async () => {
-		// Create test user before each test
-		const userData = await createTestUser(auth);
-		testUserId = userData.user.id;
-
-		// Get session token
-		testSessionToken = await getTestSessionToken(auth);
-
-		// Create test Hono app with auth middleware
+	beforeEach(() => {
 		app = new Hono();
+		// Set the secret for testing
+		process.env.BETTER_AUTH_SECRET = "test-secret-key-min-32-characters-long";
+	});
 
-		// Mock the snapbackAuth to use our test auth instance
-		// This is a bit of a hack but necessary since the middleware
-		// uses the global snapbackAuth from @snapback/auth
-		(global as any).testAuthInstance = auth;
+	describe("requireAuth - Basic Authentication", () => {
+		beforeEach(() => {
+			app.use("/protected/*", requireAuth);
+			app.get("/protected/resource", (c: Context) =>
+				c.json({ message: "success", user: (c.env as any).auth?.user }),
+			);
+		});
 
-		app.use("*", authMiddleware);
-		app.get("/protected", (c) => {
-			const authContext = c.get("auth");
-			return c.json({
-				userId: authContext?.userId,
-				email: authContext?.email,
-				plan: authContext?.plan,
+		it("should allow access with valid Bearer token", async () => {
+			const token = await createToken({
+				sub: "user_123",
+				email: "test@example.com",
+			});
+
+			const response = await app.request("/protected/resource", {
+				method: "GET",
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
+
+			expect(response.status).toBe(200);
+			const body = await response.json();
+			expect(body.message).toBe("success");
+			expect(body.user).toBeDefined();
+			expect(body.user.id).toBe("user_123");
+			expect(body.user.email).toBe("test@example.com");
+		});
+
+		it("should reject request without Authorization header", async () => {
+			const response = await app.request("/protected/resource", {
+				method: "GET",
+			});
+
+			expect(response.status).toBe(401);
+			const body = await response.json();
+			expect(body.code).toBe("unauthorized");
+			expect(body.message).toBe("Authentication required");
+		});
+
+		it("should reject invalid Bearer token format", async () => {
+			const response = await app.request("/protected/resource", {
+				method: "GET",
+				headers: {
+					Authorization: "InvalidFormat token123",
+				},
+			});
+
+			expect(response.status).toBe(401);
+		});
+
+		it("should reject malformed JWT token", async () => {
+			const response = await app.request("/protected/resource", {
+				method: "GET",
+				headers: {
+					Authorization: "Bearer invalid.jwt.token",
+				},
+			});
+
+			expect(response.status).toBe(401);
+			const body = await response.json();
+			expect(body.message).toContain("Invalid or expired");
+		});
+
+		it("should attach auth context to request", async () => {
+			const token = await createToken({
+				sub: "user_456",
+				email: "context@example.com",
+				role: "admin",
+			});
+
+			const response = await app.request("/protected/resource", {
+				method: "GET",
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
+
+			const body = await response.json();
+			expect(body.user).toMatchObject({
+				id: "user_456",
+				email: "context@example.com",
+				role: "admin",
 			});
 		});
 	});
 
-	afterEach(async () => {
-		// Cleanup test data
-		await cleanupTestAuth(auth);
-		delete (global as any).testAuthInstance;
+	describe("requireRole - Role-Based Access Control", () => {
+		beforeEach(() => {
+			app.use("/admin/*", requireRole("admin"));
+			app.get("/admin/dashboard", (c: Context) =>
+				c.json({ message: "admin access granted" }),
+			);
+		});
+
+		it("should allow access for matching role", async () => {
+			const token = await createToken({
+				sub: "admin_001",
+				email: "admin@example.com",
+				role: "admin",
+			});
+
+			const response = await app.request("/admin/dashboard", {
+				method: "GET",
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
+
+			expect(response.status).toBe(200);
+			const body = await response.json();
+			expect(body.message).toBe("admin access granted");
+		});
+
+		it("should deny access for non-matching role", async () => {
+			const token = await createToken({
+				sub: "user_002",
+				email: "user@example.com",
+				role: "user",
+			});
+
+			const response = await app.request("/admin/dashboard", {
+				method: "GET",
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
+
+			expect(response.status).toBe(403);
+			const body = await response.json();
+			expect(body.code).toBe("forbidden");
+			expect(body.message).toContain("Required role");
+		});
+
+		it("should support multiple allowed roles", async () => {
+			app = new Hono();
+			app.use("/moderator/*", requireRole("admin", "user"));
+			app.get("/moderator/panel", (c: Context) => c.json({ message: "ok" }));
+
+			// Admin should have access
+			const adminToken = await createToken({
+				sub: "admin_003",
+				email: "admin@example.com",
+				role: "admin",
+			});
+
+			const adminResponse = await app.request("/moderator/panel", {
+				method: "GET",
+				headers: {
+					Authorization: `Bearer ${adminToken}`,
+				},
+			});
+
+			expect(adminResponse.status).toBe(200);
+
+			// Regular user should also have access
+			const userToken = await createToken({
+				sub: "user_004",
+				email: "user@example.com",
+				role: "user",
+			});
+
+			const userResponse = await app.request("/moderator/panel", {
+				method: "GET",
+				headers: {
+					Authorization: `Bearer ${userToken}`,
+				},
+			});
+
+			expect(userResponse.status).toBe(200);
+
+			// Viewer should be denied
+			const viewerToken = await createToken({
+				sub: "viewer_005",
+				email: "viewer@example.com",
+				role: "viewer",
+			});
+
+			const viewerResponse = await app.request("/moderator/panel", {
+				method: "GET",
+				headers: {
+					Authorization: `Bearer ${viewerToken}`,
+				},
+			});
+
+			expect(viewerResponse.status).toBe(403);
+		});
 	});
 
-	describe("Session Authentication", () => {
-		it("should reject requests without session token", async () => {
-			const res = await app.request("/protected");
-			expect(res.status).toBe(401);
-
-			const data = await res.json();
-			expect(data.error).toBeDefined();
+	describe("requirePlan - Plan-Based Access Control", () => {
+		beforeEach(() => {
+			app.use("/pro/*", requirePlan("pro", "enterprise"));
+			app.get("/pro/feature", (c: Context) =>
+				c.json({ message: "pro feature" }),
+			);
 		});
 
-		it("should accept valid session token via cookie", async () => {
-			const res = await app.request("/protected", {
+		it("should allow access for matching plan", async () => {
+			const token = await createToken({
+				sub: "user_pro",
+				email: "pro@example.com",
+				plan: "pro",
+			});
+
+			const response = await app.request("/pro/feature", {
+				method: "GET",
 				headers: {
-					Cookie: `better-auth.session_token=${testSessionToken}`,
+					Authorization: `Bearer ${token}`,
 				},
 			});
 
-			expect(res.status).toBe(200);
-			const data = await res.json();
-			expect(data.userId).toBe(testUserId);
-			expect(data.email).toBe("test@example.com");
+			expect(response.status).toBe(200);
 		});
 
-		it("should accept valid session token via Authorization header", async () => {
-			const res = await app.request("/protected", {
+		it("should deny access for lower-tier plan", async () => {
+			const token = await createToken({
+				sub: "user_free",
+				email: "free@example.com",
+				plan: "free",
+			});
+
+			const response = await app.request("/pro/feature", {
+				method: "GET",
 				headers: {
-					Authorization: `Bearer ${testSessionToken}`,
+					Authorization: `Bearer ${token}`,
 				},
 			});
 
-			expect(res.status).toBe(200);
-			const data = await res.json();
-			expect(data.userId).toBe(testUserId);
+			expect(response.status).toBe(403);
+			const body = await response.json();
+			expect(body.message).toContain("Required plan");
 		});
 
-		it("should reject expired session token", async () => {
-			const expiredToken = await createExpiredSession(auth, testUserId);
+		it("should allow enterprise plan for pro features", async () => {
+			const token = await createToken({
+				sub: "user_enterprise",
+				email: "enterprise@example.com",
+				plan: "enterprise",
+			});
 
-			const res = await app.request("/protected", {
+			const response = await app.request("/pro/feature", {
+				method: "GET",
 				headers: {
-					Cookie: `better-auth.session_token=${expiredToken}`,
+					Authorization: `Bearer ${token}`,
 				},
 			});
 
-			expect(res.status).toBe(401);
-		});
-
-		it("should reject invalid session token", async () => {
-			const res = await app.request("/protected", {
-				headers: {
-					Cookie: "better-auth.session_token=invalid-token-12345",
-				},
-			});
-
-			expect(res.status).toBe(401);
-		});
-
-		it("should reject malformed session token", async () => {
-			const res = await app.request("/protected", {
-				headers: {
-					Cookie: "better-auth.session_token=",
-				},
-			});
-
-			expect(res.status).toBe(401);
+			expect(response.status).toBe(200);
 		});
 	});
 
-	describe("Rate Limiting", () => {
-		it("should enforce rate limits on auth endpoints", async () => {
-			const attempts: Promise<any>[] = [];
+	describe("requireOrgMembership - Organization Access Control", () => {
+		beforeEach(() => {
+			app.use("/org/:orgId/*", requireOrgMembership("orgId"));
+			app.get("/org/:orgId/dashboard", (c: Context) =>
+				c.json({ message: "org dashboard", orgId: c.req.param("orgId") }),
+			);
+		});
 
-			// Make 10 failed sign-in attempts
-			for (let i = 0; i < 10; i++) {
-				attempts.push(
-					auth.api.signInEmail({
-						body: {
-							email: "test@example.com",
-							password: "WrongPassword!",
-						},
-					}),
-				);
-			}
+		it("should allow access for matching organization", async () => {
+			const token = await createToken({
+				sub: "user_org",
+				email: "user@org.com",
+				orgId: "org_123",
+			});
 
-			const results = await Promise.all(attempts);
+			const response = await app.request("/org/org_123/dashboard", {
+				method: "GET",
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
 
-			// Should have some rate-limited responses
-			const rateLimited = results.filter(
-				(r) => r.error?.message?.includes("rate limit") || r.error?.message?.includes("Too many"),
+			expect(response.status).toBe(200);
+			const body = await response.json();
+			expect(body.orgId).toBe("org_123");
+		});
+
+		it("should deny access for different organization", async () => {
+			const token = await createToken({
+				sub: "user_org2",
+				email: "user@org2.com",
+				orgId: "org_456",
+			});
+
+			const response = await app.request("/org/org_123/dashboard", {
+				method: "GET",
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
+
+			expect(response.status).toBe(403);
+			const body = await response.json();
+			expect(body.message).toContain("Access to this organization denied");
+		});
+
+		it("should allow admin access to any organization", async () => {
+			const token = await createToken({
+				sub: "admin_global",
+				email: "admin@example.com",
+				role: "admin",
+				orgId: "org_999",
+			});
+
+			const response = await app.request("/org/org_123/dashboard", {
+				method: "GET",
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
+
+			expect(response.status).toBe(200);
+		});
+	});
+
+	describe("Permission Generation", () => {
+		beforeEach(() => {
+			app.use("/protected/*", requireAuth);
+			app.get("/protected/check-permission", (c: Context) => {
+				const canCreateSnapshot = hasPermission(c, "snapshot:create");
+				const canManageOrg = hasPermission(c, "org:manage");
+
+				return c.json({
+					canCreateSnapshot,
+					canManageOrg,
+					permissions: (c.env as any).auth?.permissions || [],
+				});
+			});
+		});
+
+		it("should generate permissions for admin role", async () => {
+			const token = await createToken({
+				sub: "admin_perm",
+				email: "admin@example.com",
+				role: "admin",
+			});
+
+			const response = await app.request("/protected/check-permission", {
+				method: "GET",
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
+
+			const body = await response.json();
+			expect(body.canCreateSnapshot).toBe(true);
+			expect(body.canManageOrg).toBe(true);
+			expect(body.permissions).toContain("admin:read");
+			expect(body.permissions).toContain("org:manage");
+		});
+
+		it("should generate permissions for user role", async () => {
+			const token = await createToken({
+				sub: "user_perm",
+				email: "user@example.com",
+				role: "user",
+			});
+
+			const response = await app.request("/protected/check-permission", {
+				method: "GET",
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
+
+			const body = await response.json();
+			expect(body.canCreateSnapshot).toBe(true);
+			expect(body.canManageOrg).toBe(false);
+		});
+
+		it("should include plan-based permissions", async () => {
+			const token = await createToken({
+				sub: "user_enterprise",
+				email: "enterprise@example.com",
+				role: "user",
+				plan: "enterprise",
+			});
+
+			const response = await app.request("/protected/check-permission", {
+				method: "GET",
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
+
+			const body = await response.json();
+			expect(body.permissions).toContain("sso:enabled");
+			expect(body.permissions).toContain("audit:enabled");
+			expect(body.permissions).toContain("compliance:enabled");
+		});
+	});
+
+	describe("Complex Authorization Scenarios", () => {
+		it("should handle chained middleware correctly", async () => {
+			app.use("/api/*", requireAuth);
+			app.use("/api/admin/*", requireRole("admin"));
+			app.use("/api/admin/pro/*", requirePlan("pro", "enterprise"));
+
+			app.get("/api/admin/pro/feature", (c: Context) =>
+				c.json({ message: "exclusive feature" }),
 			);
 
-			expect(rateLimited.length).toBeGreaterThan(0);
-		});
-
-		it("should allow requests within rate limit", async () => {
-			// Make 2 requests (within limit of 3 per 10s for /sign-in/email)
-			const result1 = await auth.api.signInEmail({
-				body: {
-					email: "test@example.com",
-					password: "WrongPassword!",
-				},
+			// Admin with pro plan should succeed
+			const validToken = await createToken({
+				sub: "admin_pro",
+				email: "admin@example.com",
+				role: "admin",
+				plan: "pro",
 			});
 
-			const result2 = await auth.api.signInEmail({
-				body: {
-					email: "test@example.com",
-					password: "WrongPassword!",
-				},
-			});
-
-			// Both should fail auth but NOT be rate limited
-			expect(result1.error?.message).not.toContain("rate limit");
-			expect(result2.error?.message).not.toContain("rate limit");
-		});
-	});
-
-	describe("Better Auth Plugins", () => {
-		it("should have API key plugin active", () => {
-			// Verify API key plugin is loaded
-			expect(auth.api.createAPIKey).toBeDefined();
-			expect(typeof auth.api.createAPIKey).toBe("function");
-		});
-
-		it("should have JWT plugin active", () => {
-			// Verify JWT plugin is loaded
-			expect(auth.api.signJWT).toBeDefined();
-			expect(typeof auth.api.signJWT).toBe("function");
-		});
-
-		it("should have organization plugin active", () => {
-			// Verify organization plugin is loaded
-			expect(auth.api.createOrganization).toBeDefined();
-			expect(typeof auth.api.createOrganization).toBe("function");
-		});
-	});
-
-	describe("Multi-User Scenarios", () => {
-		it("should isolate sessions between different users", async () => {
-			// Create second user
-			const user2Data = await createTestUser(auth, {
-				email: "user2@example.com",
-				password: "Password123!",
-				name: "User Two",
-			});
-
-			const user2Token = await getTestSessionToken(auth, {
-				email: "user2@example.com",
-				password: "Password123!",
-			});
-
-			// Request with user1 token
-			const res1 = await app.request("/protected", {
+			const validResponse = await app.request("/api/admin/pro/feature", {
+				method: "GET",
 				headers: {
-					Cookie: `better-auth.session_token=${testSessionToken}`,
+					Authorization: `Bearer ${validToken}`,
 				},
 			});
 
-			// Request with user2 token
-			const res2 = await app.request("/protected", {
+			expect(validResponse.status).toBe(200);
+
+			// Admin with free plan should fail at plan check
+			const freeToken = await createToken({
+				sub: "admin_free",
+				email: "admin@example.com",
+				role: "admin",
+				plan: "free",
+			});
+
+			const freeResponse = await app.request("/api/admin/pro/feature", {
+				method: "GET",
 				headers: {
-					Cookie: `better-auth.session_token=${user2Token}`,
+					Authorization: `Bearer ${freeToken}`,
 				},
 			});
 
-			const data1 = await res1.json();
-			const data2 = await res2.json();
-
-			expect(data1.userId).toBe(testUserId);
-			expect(data2.userId).toBe(user2Data.user.id);
-			expect(data1.userId).not.toBe(data2.userId);
-		});
-	});
-
-	describe("Security Headers", () => {
-		it("should include security context in response", async () => {
-			const res = await app.request("/protected", {
-				headers: {
-					Cookie: `better-auth.session_token=${testSessionToken}`,
-				},
-			});
-
-			expect(res.status).toBe(200);
-			const data = await res.json();
-
-			// Verify auth context is populated
-			expect(data.userId).toBeDefined();
-			expect(data.email).toBeDefined();
-			expect(data.plan).toBeDefined(); // From subscription tier
-		});
-
-		it("should log authentication failures", async () => {
-			// This would require mocking the logger, but verifies the error path
-			const res = await app.request("/protected");
-			expect(res.status).toBe(401);
+			expect(freeResponse.status).toBe(403);
 		});
 	});
 });

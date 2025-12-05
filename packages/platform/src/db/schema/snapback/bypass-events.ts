@@ -1,6 +1,6 @@
 import { relations } from "drizzle-orm";
 import { boolean, integer, jsonb, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
-import { apiKeys, user } from "../postgres.js";
+import { apiKeys, user } from "../postgres";
 
 /**
  * Bypass Events - Track when users bypass safety checks

@@ -1,0 +1,43 @@
+# Build outputs
+dist/
+out/
+build/
+*.tsbuildinfo
+
+# Dependencies
+node_modules/
+
+# Cache
+.turbo/
+.cache/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Testing
+coverage/
+.nyc_output/
+test/
+tests/
+*.spec.*
+*.test.*
+
+# Environment
+.env
+.env.local
+
+# Temp & Scratchwork
+tmp/
+temp/
+*.tmp
+CLAUDE.md
+*_PLAN.md
+*_REVIEW.md

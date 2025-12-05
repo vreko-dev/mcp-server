@@ -1,99 +1,96 @@
 // SnapBack database schema
 
-import { agentSuggestions } from "./agent-suggestions.js";
-import { analysisEvents } from "./analysis-events.js";
+import { analysisEvents } from "./analysis-events";
 // Import all tables and types
-import { apiKeyMetadata } from "./api-key-metadata.js";
-import { apiKeyUsage } from "./api-key-usage.js";
-import { apiKeys } from "./api-keys.js";
-import { bypassEvents } from "./bypass-events.js";
-import { codeContexts } from "./code-contexts.js";
-import { deviceAuthCodes } from "./device-auth-codes.js";
-import { deviceTrials } from "./device-trials.js";
-import { errorLogs, errorLogs202510 } from "./error-logs.js";
-import { extensionSessions } from "./extension-sessions.js";
-import { featureUsage, featureUsage202510 } from "./feature-usage.js";
-import { feedback } from "./feedback.js";
-import { loops } from "./loops.js";
-import { nurtureTrack } from "./nurture-track.js";
-import { orgDailyMetrics } from "./org-daily-metrics.js";
-import { policyEvaluations } from "./policy-evaluations.js";
-import { postAcceptOutcomes } from "./post-accept-outcomes.js";
-import { protectionDecisions } from "./protection-decisions.js";
+import { apiKeyMetadata } from "./api-key-metadata";
+import { apiKeyUsage } from "./api-key-usage";
+import { apiKeys } from "./api-keys";
+import { bypassEvents } from "./bypass-events";
+import { codeContexts } from "./code-contexts";
+import { deviceAuthCodes } from "./device-auth-codes";
+import { deviceTrials } from "./device-trials";
+import { errorLogs, errorLogs202510 } from "./error-logs";
+import { extensionSessions } from "./extension-sessions";
+import { featureUsage, featureUsage202510 } from "./feature-usage";
+import { feedback } from "./feedback";
+import { loops } from "./loops";
+import { nurtureTrack } from "./nurture-track";
+import { orgDailyMetrics } from "./org-daily-metrics";
+import { policyEvaluations } from "./policy-evaluations";
+import { postAcceptOutcomes } from "./post-accept-outcomes";
+import { protectionDecisions } from "./protection-decisions";
 import { quarantineEvents } from "./quarantine-events";
-import { rateLimitViolations, tokenBuckets } from "./rate-limiting.js";
-import { responseCache } from "./response-cache.js";
-import { retentionConfig } from "./retention-config.js";
-import { ruleViolations } from "./rule-violations.js";
-import { securityEvents } from "./security-events.js";
-import { snapshotFiles, snapshots } from "./snapshots.js";
-import { subscriptions } from "./subscriptions.js";
-import { suppressionPatterns } from "./suppression-patterns.js";
-import { teamMembers, teams } from "./teams.js";
-import { telemetryDailyStats, telemetryEvents, telemetryIdempotencyKeys } from "./telemetry-events.js";
-import { apiUsageLogs, apiUsageLogs202510, apiUsageLogs202511, usageStatsDaily } from "./usage-tracking.js";
-import { userAnalyticsIdentities } from "./user-analytics-identities.js";
-import { userDailyMetrics } from "./user-daily-metrics.js";
-import { userLifecycleState } from "./user-lifecycle-state.js";
-import { userProductMetrics } from "./user-product-metrics.js";
-import { userProfiles } from "./user-profiles.js";
-import { userSafetyProfiles } from "./user-safety-profiles.js";
-import { waitlist, waitlistReferrals, waitlistTasks } from "./waitlist.js";
-import { webhookEvents } from "./webhooks.js";
-import { workspaceSettings } from "./workspace-settings.js";
+import { rateLimitViolations, tokenBuckets } from "./rate-limiting";
+import { responseCache } from "./response-cache";
+import { retentionConfig } from "./retention-config";
+import { ruleViolations } from "./rule-violations";
+import { securityEvents } from "./security-events";
+import { snapshotFiles, snapshots } from "./snapshots";
+import { subscriptions } from "./subscriptions";
+import { suppressionPatterns } from "./suppression-patterns";
+import { teamMembers, teams } from "./teams";
+import { telemetryDailyStats, telemetryEvents, telemetryIdempotencyKeys } from "./telemetry-events";
+import { apiUsageLogs, apiUsageLogs202510, apiUsageLogs202511, usageStatsDaily } from "./usage-tracking";
+import { userAnalyticsIdentities } from "./user-analytics-identities";
+import { userDailyMetrics } from "./user-daily-metrics";
+import { userLifecycleState } from "./user-lifecycle-state";
+import { userProductMetrics } from "./user-product-metrics";
+import { userProfiles } from "./user-profiles";
+import { userSafetyProfiles } from "./user-safety-profiles";
+import { waitlist, waitlistReferrals, waitlistTasks } from "./waitlist";
+import { webhookEvents } from "./webhooks";
+import { workspaceSettings } from "./workspace-settings";
 
-export * from "./agent-suggestions.js";
-export * from "./analysis-events.js";
+export * from "./analysis-events";
 // Re-export all individual items for compatibility
-export * from "./api-key-metadata.js";
-export * from "./api-key-usage.js";
-export * from "./api-keys.js";
-export * from "./bypass-events.js";
-export * from "./code-contexts.js";
-export * from "./device-auth-codes.js";
-export * from "./device-trials.js";
-export * from "./error-logs.js";
-export * from "./extension-sessions.js";
-export * from "./feature-usage.js";
-export * from "./feedback.js";
-export * from "./functions.js";
-export * from "./loops.js";
-export * from "./materialized-views.js";
-export * from "./nurture-track.js";
-export * from "./org-daily-metrics.js";
-export * from "./policy-evaluations.js";
-export * from "./post-accept-outcomes.js";
-export * from "./protection-decisions.js";
+export * from "./api-key-metadata";
+export * from "./api-key-usage";
+export * from "./api-keys";
+export * from "./bypass-events";
+export * from "./code-contexts";
+export * from "./device-auth-codes";
+export * from "./device-trials";
+export * from "./error-logs";
+export * from "./extension-sessions";
+export * from "./feature-usage";
+export * from "./feedback";
+export * from "./functions";
+export * from "./loops";
+export * from "./materialized-views";
+export * from "./nurture-track";
+export * from "./org-daily-metrics";
+export * from "./policy-evaluations";
+export * from "./post-accept-outcomes";
+export * from "./protection-decisions";
 export * from "./quarantine-events";
-export * from "./rate-limiting.js";
-export * from "./response-cache.js";
-export * from "./retention-config.js";
-export * from "./rule-violations.js";
-export * from "./security-events.js";
-export * from "./snapshots.js";
-export * from "./subscriptions.js";
+export * from "./rate-limiting";
+export * from "./response-cache";
+export * from "./retention-config";
+export * from "./rule-violations";
+export * from "./security-events";
+export * from "./snapshots";
+export * from "./subscriptions";
 // Supabase compatibility helpers
-export * from "./supabase-helpers.js";
-export * from "./suppression-patterns.js";
-export * from "./teams.js";
-export * from "./telemetry-events.js";
-export * from "./usage-tracking.js";
-export * from "./user-analytics-identities.js";
-export * from "./user-daily-metrics.js";
-export * from "./user-lifecycle-state.js";
-export * from "./user-product-metrics.js";
-export * from "./user-profiles.js";
-export * from "./user-safety-profiles.js";
-export * from "./waitlist.js";
-export * from "./webhooks.js";
-export * from "./workspace-settings.js";
+export * from "./supabase-helpers";
+export * from "./suppression-patterns";
+export * from "./teams";
+export * from "./telemetry-events";
+export * from "./usage-tracking";
+export * from "./user-analytics-identities";
+export * from "./user-daily-metrics";
+export * from "./user-lifecycle-state";
+export * from "./user-product-metrics";
+export * from "./user-profiles";
+export * from "./user-safety-profiles";
+export * from "./waitlist";
+export * from "./webhooks";
+export * from "./workspace-settings";
 
 // Export tables individually for better TypeScript inference
 export {
 	apiKeyMetadata,
 	apiKeys,
 	apiKeyUsage,
-	agentSuggestions,
 	analysisEvents,
 	bypassEvents,
 	codeContexts,
@@ -149,7 +146,7 @@ export const snapbackSchema = {
 	apiKeyMetadata,
 	apiKeys,
 	apiKeyUsage,
-	agentSuggestions,
+
 	analysisEvents,
 	bypassEvents,
 	codeContexts,

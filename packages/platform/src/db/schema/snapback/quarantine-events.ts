@@ -1,5 +1,5 @@
 import { index, jsonb, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
-import { apiKeys } from "./api-keys.js";
+import { apiKeys } from "./api-keys";
 
 /**
  * Quarantine Events - Dead-letter queue for failed telemetry events

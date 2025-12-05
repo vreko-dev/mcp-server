@@ -1,6 +1,6 @@
 import { createId as cuid } from "@paralleldrive/cuid2";
 import { index, pgEnum, pgTable, text, timestamp } from "drizzle-orm/pg-core";
-import { user } from "../postgres.js";
+import { user } from "../postgres";
 
 // Lifecycle state enum
 export const lifecycleStageEnum = pgEnum("lifecycle_stage", ["new", "engaged", "power_user", "at_risk", "churned"]);

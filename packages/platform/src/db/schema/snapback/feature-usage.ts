@@ -1,7 +1,7 @@
 import { relations } from "drizzle-orm";
 import { bigint, boolean, integer, jsonb, pgEnum, pgTable, text, timestamp } from "drizzle-orm/pg-core";
-import { user } from "../postgres.js";
-import { extensionSessions } from "./extension-sessions.js";
+import { user } from "../postgres";
+import { extensionSessions } from "./extension-sessions";
 
 // Enums
 export const featureCategoryEnum = pgEnum("feature_category", [

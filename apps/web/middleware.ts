@@ -1,5 +1,24 @@
+import arcjet, { detectBot, shield, slidingWindow } from "@arcjet/next";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+
+const aj = arcjet({
+	key: process.env.ARCJET_KEY!,
+	// characteristics: ["ip.src"], // default
+	rules: [
+		shield({ mode: "LIVE" }),
+		detectBot({
+			mode: "LIVE",
+			allow: ["CATEGORY:SEARCH_ENGINE", "CATEGORY:MONITOR", "CATEGORY:PREVIEW"],
+		}),
+		// Global rate limit: 500 req/hour per IP
+		slidingWindow({
+			mode: "LIVE",
+			interval: "1h",
+			max: 500,
+		}),
+	],
+});
 
 function addSecurityHeaders(response: NextResponse): void {
 	// Prevent clickjacking attacks
@@ -50,7 +69,31 @@ function addSecurityHeaders(response: NextResponse): void {
 	response.headers.set("Permissions-Policy", permissionsPolicy);
 }
 
-export function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest) {
+	// Arcjet protection (only if key is present)
+	if (process.env.ARCJET_KEY) {
+		const decision = await aj.protect(req);
+
+		if (decision.isDenied()) {
+			if (decision.reason.isRateLimit()) {
+				return NextResponse.json(
+					{ error: "Too many requests", reason: "Rate limit exceeded" },
+					{ status: 429 },
+				);
+			}
+			if (decision.reason.isBot()) {
+				return NextResponse.json(
+					{ error: "Bot detected", reason: "Automated traffic denied" },
+					{ status: 403 },
+				);
+			}
+			return NextResponse.json(
+				{ error: "Access denied", reason: "Security policy violation" },
+				{ status: 403 },
+			);
+		}
+	}
+
 	const url = req.nextUrl;
 	const host = req.headers.get("host") ?? "";
 	const hostname = host.split(":")[0] ?? ""; // Handle ports

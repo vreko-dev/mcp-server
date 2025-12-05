@@ -1,7 +1,7 @@
 {
-  "name": "@snapback-oss/config",
-  "version": "0.1.0",
-  "description": "Configuration utilities for SnapBack applications",
+  "name": "@snapback/config",
+  "version": "0.1.2",
+  "description": "Type-safe configuration management for TypeScript applications - environment-based config with validation and zero-downtime updates",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",

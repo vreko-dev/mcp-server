@@ -1,6 +1,6 @@
 import { relations } from "drizzle-orm";
 import { integer, pgTable, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
-import { apiKeys, user } from "../postgres.js";
+import { apiKeys, user } from "../postgres";
 
 /**
  * Device Trials Table

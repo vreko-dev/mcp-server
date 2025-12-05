@@ -1,7 +1,7 @@
 {
-  "name": "@snapback-oss/events",
-  "version": "0.1.0",
-  "description": "Event bus implementation for SnapBack",
+  "name": "@snapback/events",
+  "version": "0.1.2",
+  "description": "Type-safe event bus for building reactive TypeScript applications - powered by EventEmitter2 with full async/await support",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",

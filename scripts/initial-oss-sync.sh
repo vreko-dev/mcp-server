@@ -132,6 +132,26 @@ EOF
         cp "$OLDPWD/packages-oss/${repo}/CHANGELOG.md" CHANGELOG.md
     fi
 
+    # Copy Standard OSS Files
+    echo -e "  Copying standard OSS files..."
+    if [ -f "$OLDPWD/scripts/oss-templates/SECURITY.md" ]; then
+        cp "$OLDPWD/scripts/oss-templates/SECURITY.md" SECURITY.md
+    fi
+    if [ -f "$OLDPWD/scripts/oss-templates/CODE_OF_CONDUCT.md" ]; then
+        cp "$OLDPWD/scripts/oss-templates/CODE_OF_CONDUCT.md" CODE_OF_CONDUCT.md
+    fi
+
+    # Copy GitHub Templates
+    mkdir -p .github/ISSUE_TEMPLATE
+    if [ -d "$OLDPWD/scripts/oss-templates/.github" ]; then
+        cp -r "$OLDPWD/scripts/oss-templates/.github/" .github/
+    fi
+
+    # Copy .gitignore if exists in packages-oss
+    if [ -f "$OLDPWD/packages-oss/${repo}/.gitignore" ]; then
+        cp "$OLDPWD/packages-oss/${repo}/.gitignore" .gitignore
+    fi
+
     # Commit and push with clean squashed message
     git config user.name "SnapBack Bot"
     git config user.email "bot@snapback.dev"

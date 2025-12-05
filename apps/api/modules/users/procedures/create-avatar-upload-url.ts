@@ -1,4 +1,8 @@
-// import { getSignedUploadUrl } from "@snapback/storage";
+import { ORPCError } from "@orpc/server";
+import {
+	getPresignedUploadUrl,
+	isS3Configured,
+} from "../../../lib/s3-client.js";
 import { protectedProcedure } from "../../../orpc/procedures";
 
 export const createAvatarUploadUrl = protectedProcedure
@@ -10,10 +14,23 @@ export const createAvatarUploadUrl = protectedProcedure
 		description:
 			"Create a signed upload URL to upload an avatar image to the storage bucket",
 	})
-	.handler(async ({ context: { user: _user } }) => {
-		// const path = `${user.id}.png`;
-		// const signedUploadUrl = await getSignedUploadUrl(`${user.id}.png`, {
-		// 	bucket: config.storage.bucketNames.avatars,
-		// });
-		// return { signedUploadUrl, path };
+	.handler(async ({ context: { user } }) => {
+		if (!isS3Configured()) {
+			throw new ORPCError("SERVICE_UNAVAILABLE", {
+				message: "Avatar uploads not configured - S3 credentials required",
+			});
+		}
+
+		const path = `avatars/${user.id}.png`;
+
+		const signedUploadUrl = await getPresignedUploadUrl(path, {
+			contentType: "image/png",
+			expiresIn: 300, // 5 minutes
+		});
+
+		return {
+			signedUploadUrl,
+			path,
+			expiresAt: Date.now() + 300000, // 5 minutes from now
+		};
 	});

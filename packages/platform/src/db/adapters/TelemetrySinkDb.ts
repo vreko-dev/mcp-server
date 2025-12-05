@@ -1,7 +1,8 @@
+import { redactObject, redactString } from "@snapback/analytics";
 import { eq } from "drizzle-orm";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
-import { redactObject, redactString } from "@snapback/analytics";
-import { agentSuggestions, feedback, loops, policyEvaluations, postAcceptOutcomes, quarantineEvents } from "../schema/snapback/index.js";
+import { agentSuggestions } from "../schema/postgres";
+import { feedback, loops, policyEvaluations, postAcceptOutcomes, quarantineEvents } from "../schema/snapback/index.js";
 
 /**
  * Slow query threshold (200ms) for performance monitoring
@@ -89,9 +90,7 @@ function applyRedaction(event: any): any {
  */
 function logSlowQuery(operationName: string, durationMs: number): void {
 	if (durationMs > SLOW_MS) {
-		console.warn(
-			`Slow query detected: ${operationName} took ${durationMs}ms (threshold: ${SLOW_MS}ms)`,
-		);
+		console.warn(`Slow query detected: ${operationName} took ${durationMs}ms (threshold: ${SLOW_MS}ms)`);
 	}
 }
 
@@ -358,7 +357,11 @@ export class TelemetrySinkDb {
 
 		try {
 			// Check if event already exists (idempotency)
-			const existing = await this.db.select().from(feedback).where(eq(feedback.requestId, event.requestId)).limit(1);
+			const existing = await this.db
+				.select()
+				.from(feedback)
+				.where(eq(feedback.requestId, event.requestId))
+				.limit(1);
 
 			if (existing.length > 0) {
 				// Event already exists, no-op

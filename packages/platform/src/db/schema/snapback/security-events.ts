@@ -1,7 +1,7 @@
 import { relations } from "drizzle-orm";
 import { bigint, jsonb, pgTable, text, timestamp } from "drizzle-orm/pg-core";
-import { apiKeys, user } from "../postgres.js";
-import { severityLevelEnum } from "./error-logs.js";
+import { apiKeys, user } from "../postgres";
+import { severityLevelEnum } from "./error-logs";
 
 // Security events
 export const securityEvents = pgTable("security_events", {

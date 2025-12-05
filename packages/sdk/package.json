@@ -1,7 +1,7 @@
 {
   "name": "@snapback/sdk",
   "description": "SnapBack SDK for interacting with the SnapBack API",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "SnapBack Team",
   "dependencies": {
     "@aws-sdk/client-s3": "catalog:",

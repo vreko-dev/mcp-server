@@ -34,6 +34,7 @@ import {
 	type OAuthProvider,
 	oAuthProviders,
 } from "../constants/oauth-providers";
+import { DeviceFingerprint } from "./DeviceFingerprint";
 import { SocialSigninButton } from "./SocialSigninButton";
 
 const formSchema = z.object({
@@ -76,6 +77,8 @@ export function SignupForm({ prefillEmail }: { prefillEmail?: string }) {
 		? `/organization-invitation/${invitationId}`
 		: (redirectTo ?? authConfig.redirectAfterSignIn);
 
+	const [fingerprint, setFingerprint] = useState<string | undefined>();
+
 	const onSubmit = form.handleSubmit(async ({ email, password, name }) => {
 		try {
 			// Send Turnstile token via header (not body) for security
@@ -91,8 +94,19 @@ export function SignupForm({ prefillEmail }: { prefillEmail?: string }) {
 				: "/api/auth/sign-in/magic-link";
 
 			const body = authConfig.enablePasswordLogin
-				? { email, password, name, callbackURL: redirectPath }
-				: { email, name, callbackURL: redirectPath };
+				? {
+						email,
+						password,
+						name,
+						callbackURL: redirectPath,
+						deviceFingerprint: fingerprint,
+					}
+				: {
+						email,
+						name,
+						callbackURL: redirectPath,
+						deviceFingerprint: fingerprint,
+					};
 
 			const response = await fetch(endpoint, {
 				method: "POST",
@@ -152,6 +166,7 @@ export function SignupForm({ prefillEmail }: { prefillEmail?: string }) {
 
 	return (
 		<div>
+			<DeviceFingerprint onFingerprint={setFingerprint} />
 			<h1 className="font-bold text-xl md:text-2xl">Create your account</h1>
 			<p className="mt-1 mb-6 text-foreground/60">
 				Get started with your free account today.

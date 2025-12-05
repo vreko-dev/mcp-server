@@ -1,7 +1,7 @@
 {
   "name": "@snapback-oss/infrastructure",
-  "version": "0.1.0",
-  "description": "Generic infrastructure utilities (logging, metrics, tracing)",
+  "version": "0.1.2",
+  "description": "Production-grade observability toolkit - structured logging, distributed tracing, and performance monitoring for TypeScript applications",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",

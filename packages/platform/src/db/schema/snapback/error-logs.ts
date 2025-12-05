@@ -1,7 +1,7 @@
 import { createId as cuid } from "@paralleldrive/cuid2";
 import { relations } from "drizzle-orm";
 import { bigint, jsonb, pgEnum, pgTable, text, timestamp } from "drizzle-orm/pg-core";
-import { apiKeys, user } from "../postgres.js";
+import { apiKeys, user } from "../postgres";
 
 // Enums
 export const severityLevelEnum = pgEnum("severity_level", ["debug", "info", "warning", "error", "critical"]);

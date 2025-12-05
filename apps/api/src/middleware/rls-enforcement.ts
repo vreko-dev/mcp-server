@@ -9,9 +9,11 @@
  * Applies to all routes with org context: /api/orgs/:orgId/*
  */
 
+import * as Sentry from "@sentry/node";
 import { logger } from "@snapback/infrastructure";
 import { checkOrgMembership } from "@snapback/platform/db/queries/auth";
 import type { Context, Next } from "hono";
+import { getDb } from "../services/database.js";
 import type { AuthContext } from "./auth-unified.js";
 
 // ============================================================================
@@ -54,10 +56,59 @@ async function logRLSViolation(violation: RLSViolation): Promise<void> {
 		timestamp: violation.timestamp.toISOString(),
 	});
 
-	// TODO: Send to security monitoring/alerting system
-	// - Datadog, Sentry, or custom security dashboard
-	// - Track patterns of RLS bypass attempts
-	// - Alert on repeated violations from same user
+	// Send to security monitoring systems
+	try {
+		if (Sentry?.captureMessage) {
+			// Send to Sentry for alerting
+			Sentry.captureMessage("RLS Policy Violation Attempted", {
+				level: "warning",
+				contexts: {
+					rls_violation: {
+						user_id: violation.userId,
+						requested_org_id: violation.requestedOrgId,
+						user_org_ids: violation.userOrgIds,
+						path: violation.path,
+						timestamp: violation.timestamp.toISOString(),
+					},
+				},
+				tags: {
+					security_event: "rls_violation",
+					user_id: violation.userId,
+					org_id: violation.requestedOrgId,
+				},
+			});
+		}
+	} catch (sentryError) {
+		logger.debug("Could not send RLS violation to Sentry", {
+			error:
+				sentryError instanceof Error
+					? sentryError.message
+					: String(sentryError),
+		});
+	}
+
+	// Track in database for analytics (optional)
+	// This allows detecting patterns of repeated violation attempts
+	try {
+		const db = getDb();
+		if (db._.schema.securityEvents) {
+			await db.insert(db._.schema.securityEvents).values({
+				eventType: "rls_violation",
+				userId: violation.userId,
+				metadata: {
+					requestedOrgId: violation.requestedOrgId,
+					userOrgIds: violation.userOrgIds,
+					path: violation.path,
+				},
+				timestamp: violation.timestamp,
+			});
+		}
+	} catch (error) {
+		logger.debug("Could not log RLS violation to database", {
+			error: error instanceof Error ? error.message : String(error),
+		});
+		// Don't fail the request if logging fails
+	}
 }
 
 // ============================================================================

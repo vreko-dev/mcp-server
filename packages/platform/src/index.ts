@@ -45,6 +45,7 @@ export type {
 // Add all the other missing exports that are being used in the API service
 // Export postgres schema items
 export {
+	agentSuggestions,
 	apiKeys,
 	apiUsage,
 	clientTokens,
@@ -57,25 +58,9 @@ export {
 	usageLimits,
 	user,
 } from "./db/schema/postgres.js";
-
-export {
-	waitlist,
-	waitlistReferrals,
-	waitlistTasks,
-} from "./db/schema/snapback/waitlist.js";
-
-export {
-	snapshots,
-	snapshotFiles,
-} from "./db/schema/snapback/snapshots.js";
-
 export { analysisEvents } from "./db/schema/snapback/analysis-events.js";
-export { ruleViolations } from "./db/schema/snapback/rule-violations.js";
-export { userSafetyProfiles } from "./db/schema/snapback/user-safety-profiles.js";
-
 // Export the snapbackSchema namespace
 export {
-	agentSuggestions,
 	apiKeyMetadata,
 	apiKeyUsage,
 	apiUsageLogs,
@@ -93,9 +78,19 @@ export {
 	telemetryEvents,
 	waitlistAuditLogs,
 } from "./db/schema/snapback/index.js";
-
+export { ruleViolations } from "./db/schema/snapback/rule-violations.js";
+export {
+	snapshotFiles,
+	snapshots,
+} from "./db/schema/snapback/snapshots.js";
+export { userSafetyProfiles } from "./db/schema/snapback/user-safety-profiles.js";
 // Re-export type exports from snapback schema
 export type { NewWaitlistAuditLog } from "./db/schema/snapback/waitlist.js";
+export {
+	waitlist,
+	waitlistReferrals,
+	waitlistTasks,
+} from "./db/schema/snapback/waitlist.js";
 
 export * from "./db/supabase-service.js";
 export * from "./db/test-utils.js";

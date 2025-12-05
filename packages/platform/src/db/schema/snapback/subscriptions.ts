@@ -1,7 +1,7 @@
 import { createId as cuid } from "@paralleldrive/cuid2";
 import { relations } from "drizzle-orm";
 import { boolean, integer, json, pgEnum, pgTable, text, timestamp } from "drizzle-orm/pg-core";
-import { organization, usageLimits, user } from "../postgres.js";
+import { organization, usageLimits, user } from "../postgres";
 
 // Enums - matching those in postgres.ts
 export const planTypeEnum = pgEnum("plan_type", ["free", "solo", "team", "enterprise"]);

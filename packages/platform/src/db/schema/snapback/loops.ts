@@ -1,6 +1,6 @@
 import { sql } from "drizzle-orm";
 import { boolean, check, index, integer, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
-import { apiKeys } from "./api-keys.js";
+import { apiKeys } from "./api-keys";
 
 export const loops = pgTable(
 	"loops",

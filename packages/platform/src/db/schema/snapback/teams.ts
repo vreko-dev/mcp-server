@@ -1,7 +1,7 @@
 import { createId as cuid } from "@paralleldrive/cuid2";
 import { relations } from "drizzle-orm";
 import { jsonb, pgEnum, pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
-import { subscriptions, user } from "../postgres.js";
+import { subscriptions, user } from "../postgres";
 
 // Enums
 export const teamRoleEnum = pgEnum("team_role", ["owner", "admin", "member", "billing"]);

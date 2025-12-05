@@ -11,6 +11,7 @@ import { validateAPIKeyScope } from "@snapback/auth/security/api-key-security";
 import { logger } from "@snapback/infrastructure";
 import type { MiddlewareHandler } from "hono";
 import { HTTPException } from "hono/http-exception";
+import { getDb } from "../services/database.js";
 
 /**
  * API Key context stored in Hono context
@@ -71,9 +72,73 @@ export function apiKeyScopeMiddleware(
 				});
 			}
 
-			// TODO: Lookup API key from database to get actual scopes
-			// For now, use example scopes (replace with database lookup)
-			const keyScopes = ["snapshots:read", "snapshots:write"];
+			// Lookup API key from database to get actual permissions
+			const db = getDb();
+			const keyRecord = await db.query.apiKeys.findFirst({
+				where: (apiKeys, { eq }) => eq(apiKeys.id, keyId),
+				columns: {
+					id: true,
+					permissions: true,
+					revokedAt: true,
+					expiresAt: true,
+				},
+			});
+
+			if (!keyRecord) {
+				throw new HTTPException(401, {
+					message: "API key not found",
+					cause: {
+						code: "INVALID_API_KEY",
+					},
+				});
+			}
+
+			// Check if key is revoked
+			if (keyRecord.revokedAt) {
+				logger.warn("Revoked API key attempted", {
+					keyId: `${keyId.substring(0, 10)}...`,
+				});
+
+				throw new HTTPException(401, {
+					message: "API key has been revoked",
+					cause: {
+						code: "REVOKED_API_KEY",
+					},
+				});
+			}
+
+			// Check if key is expired
+			if (keyRecord.expiresAt && new Date(keyRecord.expiresAt) < new Date()) {
+				logger.warn("Expired API key attempted", {
+					keyId: `${keyId.substring(0, 10)}...`,
+					expiresAt: keyRecord.expiresAt,
+				});
+
+				throw new HTTPException(401, {
+					message: "API key has expired",
+					cause: {
+						code: "EXPIRED_API_KEY",
+					},
+				});
+			}
+
+			// Extract permissions from JSON field
+			// Schema: { maxSnapshots?: number; cloudBackup?: boolean; advancedDetection?: boolean; customRules?: boolean; teamSharing?: boolean }
+			const keyPermissions = (keyRecord.permissions || {}) as Record<
+				string,
+				boolean | number
+			>;
+
+			// Convert feature permissions to scope strings for backward compatibility
+			// TODO: Eventually migrate to feature-based authorization entirely
+			const keyScopes: string[] = [];
+			if (keyPermissions.cloudBackup) keyScopes.push("snapshots:backup");
+			if (keyPermissions.advancedDetection)
+				keyScopes.push("detection:advanced");
+			if (keyPermissions.customRules) keyScopes.push("rules:custom");
+			if (keyPermissions.teamSharing) keyScopes.push("team:share");
+			// All keys have basic snapshot operations
+			keyScopes.push("snapshots:read", "snapshots:write");
 
 			// Validate each required scope
 			for (const requiredScope of requiredScopes) {

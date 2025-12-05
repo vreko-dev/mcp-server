@@ -11,7 +11,7 @@ import {
 	session,
 	subscriptionStatusEnum,
 	user,
-} from "../postgres.js";
+} from "../postgres";
 
 // Supabase Row Level Security (RLS) policies
 export const supabasePolicies = {

@@ -154,3 +154,4 @@ export type { SDKConfig } from "./types.js";
 // Utility exports
 export { toError } from "./utils/errorHelpers.js";
 export { areEqual, getDepth, isWithin, normalize } from "./utils/PathNormalizer.js";
+export { calculateBackoff, type RetryOptions, RetryPresets, withRetry } from "./utils/retry.js";

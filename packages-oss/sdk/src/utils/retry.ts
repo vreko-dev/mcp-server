@@ -50,10 +50,7 @@ export interface RetryOptions {
  * );
  * ```
  */
-export async function withRetry<T>(
-	operation: () => Promise<T>,
-	options: RetryOptions,
-): Promise<T> {
+export async function withRetry<T>(operation: () => Promise<T>, options: RetryOptions): Promise<T> {
 	const { maxAttempts, baseDelayMs, maxDelayMs = 30000, jitter = false, onRetry } = options;
 
 	for (let attempt = 1; attempt <= maxAttempts; attempt++) {
@@ -101,14 +98,9 @@ export async function withRetry<T>(
  * const delay = calculateBackoff(3, 1000, 30000, false); // 4000
  * ```
  */
-export function calculateBackoff(
-	attempt: number,
-	baseMs: number,
-	maxMs: number,
-	jitter: boolean,
-): number {
+export function calculateBackoff(attempt: number, baseMs: number, maxMs: number, jitter: boolean): number {
 	// Exponential backoff: baseMs * 2^(attempt - 1)
-	const exponential = baseMs * Math.pow(2, attempt - 1);
+	const exponential = baseMs * 2 ** (attempt - 1);
 
 	// Cap at maximum delay
 	const capped = Math.min(exponential, maxMs);

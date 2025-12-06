@@ -5,6 +5,7 @@
     "@hubspot/api-client": "catalog:",
     "@react-email/components": "catalog:",
     "@react-email/render": "catalog:",
+    "@snapback-oss/sdk": "workspace:*",
     "@snapback/config": "^0.1.1",
     "@snapback/contracts": "^0.1.4",
     "@snapback/infrastructure": "^0.1.2",

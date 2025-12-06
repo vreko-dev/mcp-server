@@ -8,6 +8,7 @@
  */
 
 import { logger } from "@snapback/infrastructure";
+import { calculateBackoff } from "@snapback-oss/sdk";
 
 /**
  * Rate limit configuration
@@ -278,7 +279,7 @@ export function calculateCredentialStuffingScore(
 /**
  * Get exponential backoff delay
  *
- * Increases wait time with each failed attempt:
+ * Uses centralized backoff algorithm from SDK:
  * - Attempt 1: 1 second
  * - Attempt 2: 2 seconds
  * - Attempt 3: 4 seconds
@@ -292,8 +293,9 @@ export function getExponentialBackoffDelay(
 	attemptNumber: number,
 	maxDelaySeconds = 3600, // 1 hour max
 ): number {
-	const baseDelay = 2 ** Math.max(0, attemptNumber - 1);
-	return Math.min(baseDelay, maxDelaySeconds);
+	return (
+		calculateBackoff(attemptNumber, 1000, maxDelaySeconds * 1000, false) / 1000
+	);
 }
 
 /**

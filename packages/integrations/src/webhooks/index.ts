@@ -1,6 +1,7 @@
 // POST on snapshot/guardian events; retry/backoff; offline fixtures for tests
 
 import { EventEmitter } from "node:events";
+import { RetryPresets, withRetry } from "@snapback-oss/sdk";
 
 export interface WebhookEvent {
 	id: string;
@@ -95,31 +96,32 @@ export class WebhookService extends EventEmitter {
 	}
 
 	private async retryWithBackoff(event: WebhookEvent): Promise<boolean> {
-		let retries = 0;
+		try {
+			await withRetry(
+				async () => {
+					const response = await this.makeRequest(event);
+					if (!response.ok) {
+						throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+					}
+					return response;
+				},
+				{
+					...RetryPresets.api,
+					maxAttempts: this.config.retries || 3,
+					onRetry: (attempt: number, error: Error) => {
+						console.error(`Retry ${attempt} failed:`, error);
+					},
+				},
+			);
 
-		while (retries < (this.config.retries || 3)) {
-			retries++;
-
-			// Exponential backoff: 1s, 2s, 4s, 8s, etc.
-			const delay = 2 ** (retries - 1) * 1000;
-
-			await new Promise((resolve) => setTimeout(resolve, delay));
-
-			try {
-				const response = await this.makeRequest(event);
-				if (response.ok) {
-					this.emit("success", event);
-					// Remove from retry queue
-					this.retryQueue = this.retryQueue.filter((e) => e.id !== event.id);
-					return true;
-				}
-			} catch (error) {
-				console.error(`Retry ${retries} failed:`, error);
-			}
+			this.emit("success", event);
+			// Remove from retry queue
+			this.retryQueue = this.retryQueue.filter((e) => e.id !== event.id);
+			return true;
+		} catch (_error) {
+			this.emit("failure", event);
+			return false;
 		}
-
-		this.emit("failure", event);
-		return false;
 	}
 
 	// Process the retry queue

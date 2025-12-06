@@ -187,6 +187,5 @@ export * from "./subscription-config.js";
 export * from "./utils/base-url.js";
 // Utilities
 export * from "./utils/index.js";
-export * from "./utils/logger.js";
 export * from "./utils/monorepo-flattener.js";
 export * from "./utils/path-transformer.js";

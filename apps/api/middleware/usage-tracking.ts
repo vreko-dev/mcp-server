@@ -73,7 +73,9 @@ export async function usageTrackingMiddleware(request: NextRequest) {
 	}
 }
 
-async function checkSnapshotLimit(authContext: AuthContext): Promise<UsageLimitResult> {
+async function checkSnapshotLimit(
+	authContext: AuthContext,
+): Promise<UsageLimitResult> {
 	try {
 		if (!db) {
 			return { allowed: true }; // Allow if database not available

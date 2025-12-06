@@ -1,6 +1,6 @@
 import { ORPCError } from "@orpc/client";
 import { agentSuggestions } from "@snapback/platform";
-import { type SQL, and, desc, eq, gte, lte } from "drizzle-orm";
+import { and, desc, eq, gte, lte, type SQL } from "drizzle-orm";
 import { protectedProcedure } from "../../../orpc/procedures";
 import { getDb } from "../../../src/services/database";
 import { TelemetryQueryOptionsSchema } from "../types";

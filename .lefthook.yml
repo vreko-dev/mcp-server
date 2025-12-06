@@ -9,9 +9,171 @@ pre-commit:
         - merge
         - rebase
 
-    type-check:
-      glob: "**/*.{ts,tsx}"
-      run: pnpm turbo run type-check --no-cache
+    dts-resolution-validator:
+      glob: "**/tsup.config.ts"
+      run: |
+        echo '🔍 Validating DTS resolution configuration...'
+        node - << 'EOF'
+        const fs = require('fs');
+        const path = require('path');
+        const files = process.argv.slice(1);
+        const failureThreshold = 3;
+        let hasErrors = false;
+        let validationErrors = [];
+
+        // Packages that MUST have dts.resolve: true
+        const requiresDtsResolve = [
+          '@snapback/testing',
+          '@snapback/events',
+          '@snapback/config',
+          '@snapback/sdk',
+          '@snapback/infrastructure',
+          '@snapback-oss/contracts',
+          '@snapback-oss/infrastructure',
+          '@snapback-oss/config',
+          '@snapback-oss/events',
+          '@snapback-oss/sdk'
+        ];
+
+        files.forEach(file => {
+          const content = fs.readFileSync(file, 'utf8');
+          const dir = path.dirname(file);
+          const packageJsonPath = path.join(dir, 'package.json');
+          
+          if (!fs.existsSync(packageJsonPath)) return;
+          
+          const pkg = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+          const packageName = pkg.name;
+
+          if (requiresDtsResolve.includes(packageName)) {
+            if (!content.includes('dts:') || !content.includes('resolve:') || !content.includes('true')) {
+              validationErrors.push(`❌ ${packageName}: tsup.config.ts missing 'dts: { resolve: true }'`);
+              hasErrors = true;
+            }
+          }
+
+          // Check for unsafe configurations
+          if (content.includes('dts: false')) {
+            validationErrors.push(`⚠️  ${packageName}: DTS generation disabled (dts: false) - reconsider`);
+          }
+        });
+
+        if (validationErrors.length > 0) {
+          validationErrors.forEach(err => console.error(err));
+        }
+
+        if (hasErrors && validationErrors.length >= failureThreshold) {
+          console.error(`\n❌ DTS resolution validation failed. Fix ${validationErrors.length} issues.`);
+          process.exit(1);
+        }
+        
+        console.log('✅ DTS resolution configuration validated');
+        process.exit(0);
+        EOF
+      skip:
+        - merge
+        - rebase
+
+    tsconfig-path-validator:
+      glob: "**/tsconfig.json"
+      run: |
+        echo '📋 Validating tsconfig path consistency...'
+        node - << 'EOF'
+        const fs = require('fs');
+        const path = require('path');
+        const files = process.argv.slice(1);
+        let hasErrors = false;
+
+        files.forEach(file => {
+          try {
+            const content = JSON.parse(fs.readFileSync(file, 'utf8'));
+            const dir = path.dirname(file);
+            const packageJsonPath = path.join(dir, 'package.json');
+            
+            if (!fs.existsSync(packageJsonPath)) return;
+            const pkg = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+
+            // Validate paths config
+            if (content.compilerOptions?.paths) {
+              const paths = content.compilerOptions.paths;
+              Object.entries(paths).forEach(([key, values]) => {
+                if (!Array.isArray(values)) {
+                  console.error(`❌ ${file}: Path "${key}" value must be array, got ${typeof values}`);
+                  hasErrors = true;
+                }
+                values.forEach(val => {
+                  if (typeof val !== 'string') {
+                    console.error(`❌ ${file}: Path value must be string, got ${typeof val}`);
+                    hasErrors = true;
+                  }
+                });
+              });
+            }
+
+            // Warn about extends chain
+            if (content.extends && !content.extends.includes('tsconfig.base.json')) {
+              if (pkg.name?.startsWith('@snapback')) {
+                console.warn(`⚠️  ${pkg.name} extends non-standard tsconfig: ${content.extends}`);
+              }
+            }
+          } catch (e) {
+            console.error(`❌ Failed to parse ${file}: ${e.message}`);
+            hasErrors = true;
+          }
+        });
+
+        if (hasErrors) {
+          console.error('\n❌ tsconfig validation failed.');
+          process.exit(1);
+        }
+        console.log('✅ tsconfig paths validated');
+        process.exit(0);
+        EOF
+      skip:
+        - merge
+        - rebase
+
+    relative-import-detector:
+      glob: "**/src/**/*.{ts,tsx}"
+      run: |
+        echo '🔗 Checking for cross-package relative imports...'
+        node - << 'EOF'
+        const fs = require('fs');
+        const path = require('path');
+        const files = process.argv.slice(1);
+        const relativeImportRegex = /^import\s+.*?from\s+['"](?:\.\./){2,}/m;
+        let hasErrors = false;
+
+        files.forEach(file => {
+          const content = fs.readFileSync(file, 'utf8');
+          const packageRoot = file.split('/src/')[0];
+          
+          const lines = content.split('\n');
+          lines.forEach((line, idx) => {
+            if (relativeImportRegex.test(line)) {
+              const match = line.match(/from\s+['"]([^'"]+)['"]/);
+              if (match) {
+                const importPath = match[1];
+                // Check if import goes outside package boundary
+                const resolvedPath = path.resolve(path.dirname(file), importPath);
+                if (!resolvedPath.startsWith(packageRoot)) {
+                  console.error(`❌ ${file}:${idx + 1} - Cross-package relative import detected:`);
+                  console.error(`   ${line.trim()}`);
+                  console.error(`   Use '@snapback/*' package import instead of relative path`);
+                  hasErrors = true;
+                }
+              }
+            }
+          });
+        });
+
+        if (hasErrors) {
+          console.error('\n❌ Cross-package relative imports are not allowed. Use package imports.\n');
+          process.exit(1);
+        }
+        console.log('✅ No cross-package relative imports detected');
+        process.exit(0);
+        EOF
       skip:
         - merge
         - rebase
@@ -37,12 +199,69 @@ pre-commit:
               }
             });
           } catch (e) {
-            console.error(`Failed to parse ${file}: ${e.message}`);
+            console.error(`❌ Failed to parse ${file}: ${e.message}`);
             hasErrors = true;
           }
         });
 
         process.exit(hasErrors ? 1 : 0);
+        EOF
+      skip:
+        - merge
+        - rebase
+
+pre-push:
+  parallel: true
+  commands:
+    type-check-full:
+      glob: "**/*.{ts,tsx}"
+      run: pnpm turbo run type-check --no-cache
+      skip:
+        - merge
+        - rebase
+
+    dts-build-validation:
+      run: |
+        echo '🔍 Validating DTS builds for migrated packages...'
+        node - << 'EOF'
+        const { spawnSync } = require('child_process');
+        const fs = require('fs');
+        const path = require('path');
+
+        // Packages that have dts.resolve: true
+        const dtsResolvePkgs = [
+          'packages/testing',
+          'packages/events',
+          'packages/config',
+          'packages/sdk',
+          'packages/infrastructure'
+        ];
+
+        let failures = [];
+
+        dtsResolvePkgs.forEach(pkg => {
+          const tsconfigPath = path.join(pkg, 'tsconfig.json');
+          if (!fs.existsSync(tsconfigPath)) return;
+
+          console.log(`  Checking ${pkg} DTS generation...`);
+          const result = spawnSync('pnpm', ['--filter', path.basename(pkg), 'build'], {
+            cwd: process.cwd(),
+            stdio: 'pipe',
+            timeout: 60000
+          });
+
+          if (result.status !== 0) {
+            failures.push(`${pkg} build failed`);
+          }
+        });
+
+        if (failures.length > 0) {
+          console.error(`\n❌ DTS validation failed:\n`);
+          failures.forEach(f => console.error(`  - ${f}`));
+          process.exit(1);
+        }
+        console.log('\n✅ All DTS builds validated');
+        process.exit(0);
         EOF
       skip:
         - merge

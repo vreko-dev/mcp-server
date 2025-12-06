@@ -4,7 +4,7 @@
   "dependencies": {
     "@paralleldrive/cuid2": "catalog:",
     "@sindresorhus/slugify": "catalog:",
-    "@snapback/config": "^0.1.1",
+    "@snapback/config": "workspace:*",
     "@snapback/contracts": "workspace:*",
     "@snapback/infrastructure": "workspace:*",
     "@supabase/ssr": "catalog:",

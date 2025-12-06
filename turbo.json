@@ -1,9 +1,20 @@
 {
 	"$schema": "https://turbo.build/schema.json",
-	"globalDependencies": ["**/.env.*local", "biome.json", "tsconfig.json"],
+	"globalDependencies": ["**/.env.*local", "biome.json", "tsconfig.json", "tsup.config.ts"],
 	"globalEnv": ["DATABASE_URL", "REDIS_URL", "BETTER_AUTH_URL"],
 	"globalPassThroughEnv": ["NODE_OPTIONS", "CI", "VERCEL", "DOCKER_BUILDKIT", "COMPOSE_DOCKER_CLI_BUILD"],
 	"tasks": {
+		"validate:infrastructure": {
+			"cache": false,
+			"inputs": [
+				"pnpm-lock.yaml",
+				"**/package.json",
+				"**/tsconfig.json",
+				"**/tsup.config.ts",
+				".syncpackrc.json"
+			],
+			"outputs": ["reports/infrastructure-validation/**"]
+		},
 		"quality": {
 			"cache": false,
 			"outputs": ["reports/quality/**"],
@@ -19,7 +30,7 @@
 			"inputs": ["apps/vscode/package.base.json", "apps/vscode/package-contributes/**"]
 		},
 		"build": {
-			"dependsOn": ["build:package", "^generate", "^build"],
+			"dependsOn": ["validate:infrastructure", "build:package", "^generate", "^build"],
 			"outputs": ["dist/**", "*.tsbuildinfo", ".next/**", "!.next/cache/**", "out/**"],
 			"inputs": [
 				"$TURBO_DEFAULT$",

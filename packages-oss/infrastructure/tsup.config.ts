@@ -7,7 +7,13 @@ export default defineConfig({
 		"tracing/index": "src/tracing/index.ts",
 	},
 	format: ["esm"],
-	dts: false, // Temporarily disable DTS generation - use tsc for type declarations
+	dts: {
+		resolve: true,
+		compilerOptions: {
+			composite: false,
+			incremental: false,
+		},
+	},
 	clean: true,
 	sourcemap: true,
 	outDir: "dist",

@@ -15,8 +15,6 @@
     "@snapback-oss/sdk": "workspace:*",
     "@snapback/contracts": "workspace:*",
     "@snapback/infrastructure": "workspace:*",
-    "@types/better-sqlite3": "catalog:",
-    "better-sqlite3": "catalog:",
     "ky": "catalog:",
     "minimatch": "catalog:",
     "ow": "catalog:",
@@ -25,10 +23,14 @@
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "catalog:",
     "@types/node": "catalog:",
     "tsup": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
+  },
+  "optionalDependencies": {
+    "better-sqlite3": "catalog:"
   },
   "exports": {
     ".": {

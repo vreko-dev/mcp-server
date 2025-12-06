@@ -144,6 +144,7 @@
     "type-check:all": "turbo run type-check",
     "type-check:tsc": "tsc --build --force",
     "validate": "tsx scripts/validate-project.ts",
+    "validate:infrastructure": "tsx scripts/validate-infrastructure.ts",
     "validate:oss": "node scripts/validate-oss-builds.js",
     "pre-publish": "tsx scripts/pre-publish.ts",
     "pre-publish:dry-run": "tsx scripts/pre-publish.ts --dry-run",

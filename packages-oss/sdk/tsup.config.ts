@@ -3,7 +3,7 @@ import { defineConfig } from "tsup";
 export default defineConfig({
 	entry: ["src/index.ts"],
 	format: ["esm"],
-	dts: false, // Skip declarations - tsup has issues with internal imports
+	dts: false, // Skip DTS generation due to better-sqlite3 type resolution issues
 	clean: true,
 	sourcemap: true,
 	outDir: "dist",

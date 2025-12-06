@@ -3,10 +3,10 @@
   "version": "0.0.1",
   "dependencies": {
     "@snapback/auth": "workspace:*",
-    "@snapback/config": "^0.1.1",
+    "@snapback/config": "workspace:*",
     "@snapback/contracts": "workspace:*",
     "@snapback/core": "workspace:*",
-    "@snapback/events": "^0.1.1",
+    "@snapback/events": "workspace:*",
     "@snapback/infrastructure": "workspace:*",
     "@snapback/integrations": "workspace:*",
     "@snapback/platform": "workspace:*",

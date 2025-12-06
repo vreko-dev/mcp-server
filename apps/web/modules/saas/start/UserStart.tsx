@@ -46,6 +46,8 @@ export default function UserStart() {
 		[]);
 
 	// Activity events (initially mock, future: subscribe to activity_log table)
+	// Max 10 events to prevent memory bloat and maintain UI responsiveness
+	// Rationale: 10 events provides sufficient history for UX without excessive DOM nodes
 	const [activityEvents, setActivityEvents] = useState<Activity[]>([
 		{
 			type: "snapshot",
@@ -68,6 +70,8 @@ export default function UserStart() {
 	]);
 
 	// Callback for protection status changes
+	// Maintains stable reference via useCallback to prevent re-subscription in child components
+	// Updates activity feed atomically and logs status change for analytics
 	const onProtectionStatusChange = useCallback(
 		(fileId: string, newStatus: 'enabled' | 'disabled') => {
 			const message =
@@ -92,7 +96,9 @@ export default function UserStart() {
 		useBulkProtectionStatus(demoFileIds, onProtectionStatusChange);
 
 	// Compute metrics from real-time protection statuses
-	// Phase 5: Data-driven metrics using intelligent derivation
+	// Performance: Memoization prevents recalculation on parent re-renders
+	// Time complexity: O(n) where n = number of tracked files
+	// Only recalculates when protectionStatuses or activityEvents actually change
 	const computedMetrics = useMemo(() => {
 		const protectedCount = Array.from(protectionStatuses.values()).filter(
 			(s) => s.protection === "enabled"

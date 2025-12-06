@@ -20,6 +20,16 @@ export default defineConfig({
 			"**/tests/e2e/**", // Exclude Playwright E2E tests
 		],
 		setupFiles: ["./vitest.setup.ts"],
+		// Watch for template/hook changes to rerun dependent tests
+		watchTriggerPatterns: [
+			{
+				pattern: /^(modules|hooks|app)\/(.*)\.(ts|tsx)$/,
+				testsToRun: (id, match) => {
+					// Rerun tests when component or hook changes
+					return `**/${match[2]}.{test,spec}.{ts,tsx}`;
+				},
+			},
+		],
 		coverage: {
 			enabled: true,
 			reporter: ["text", "json", "html"],

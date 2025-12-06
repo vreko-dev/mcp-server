@@ -34,14 +34,15 @@ const REQUIRED_DTS_RESOLVE_PACKAGES = [
 	"@snapback/testing",
 	"@snapback/events",
 	"@snapback/config",
-	"@snapback/sdk",
 	"@snapback/infrastructure",
 	"@snapback-oss/contracts",
 	"@snapback-oss/infrastructure",
 	"@snapback-oss/config",
 	"@snapback-oss/events",
-	"@snapback-oss/sdk",
 ];
+
+// Packages with native module dependencies - keep dts: false (better-sqlite3)
+const NATIVE_MODULE_PACKAGES = ["@snapback/sdk", "@snapback-oss/sdk"];
 
 // Validation 1: Workspace dependencies
 async function validateWorkspaceDependencies() {
@@ -92,8 +93,10 @@ async function validateDtsResolution() {
 			}
 		}
 
-		if (content.includes("dts: false")) {
-			result.warnings.push(`⚠️  ${pkg.name}: DTS generation disabled (dts: false)`);
+		if (NATIVE_MODULE_PACKAGES.includes(pkg.name)) {
+			if (!content.includes("dts: false")) {
+				result.warnings.push(`⚠️  ${pkg.name}: Should use 'dts: false' due to native module dependencies`);
+			}
 		}
 	}
 }

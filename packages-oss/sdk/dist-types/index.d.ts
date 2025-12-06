@@ -13,15 +13,16 @@ export {
 	type RiskSeverity,
 } from "./analysis/RiskAnalyzer";
 export * from "./cache/lru-cache";
+export { type Envelope, SnapbackAnalyticsClient, SnapbackClient } from "./client";
 export { ProtectionClient } from "./client/ProtectionClient";
 export { SnapshotClient } from "./client/SnapshotClient";
-export { type Envelope, SnapbackAnalyticsClient, SnapbackClient } from "./client";
 export {
 	type CloudBackupConfig,
 	CloudBackupService,
 	type DownloadResult,
 	type UploadResult,
 } from "./cloud/CloudBackupService";
+export * from "./config";
 export {
 	type ConfigChange,
 	ConfigDetector,
@@ -59,7 +60,6 @@ export type {
 	SnapBackSettings,
 	SnapshotTemplate,
 } from "./config/types";
-export * from "./config";
 export {
 	AI_EXTENSION_IDS,
 	type AIAssistantName,
@@ -135,8 +135,8 @@ export {
 	StorageFullError,
 	StorageLockError,
 } from "./storage/StorageErrors";
-export type { ExperienceMetrics } from "./types/experience";
 export type { SDKConfig } from "./types";
+export type { ExperienceMetrics } from "./types/experience";
 export { toError } from "./utils/errorHelpers";
 export { areEqual, getDepth, isWithin, normalize } from "./utils/PathNormalizer";
 export { calculateBackoff, type RetryOptions, RetryPresets, withRetry } from "./utils/retry";

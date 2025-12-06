@@ -176,7 +176,7 @@ export declare class Snapback {
 	 * @param filePath - File path to check
 	 * @returns Protection level or null if not protected
 	 */
-	getProtectionLevel(filePath: string): "warn" | "watch" | "block" | null;
+	getProtectionLevel(filePath: string): "block" | "watch" | "warn" | null;
 	/**
 	 * Close the storage connection
 	 */

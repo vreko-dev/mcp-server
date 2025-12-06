@@ -282,6 +282,6 @@ Apache-2.0 © SnapBack
 
 ## Related
 
-- [VS Code Extension](https://marketplace.visualstudio.com/items?itemName=snapback.snapback)
+- [VS Code Extension](https://marketplace.visualstudio.com/items?itemName=MarcelleLabs.snapback-vscode)
 - [`@snapback-oss/sdk`](https://www.npmjs.com/package/@snapback-oss/sdk) - TypeScript SDK
 - [`@snapback-oss/contracts`](https://www.npmjs.com/package/@snapback-oss/contracts) - Type definitions

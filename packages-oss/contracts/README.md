@@ -176,7 +176,7 @@ Build complete code safety solutions with the SnapBack platform:
 | **[@snapback-oss/events](https://www.npmjs.com/package/@snapback-oss/events)** | Event bus | [Docs](https://docs.snapback.dev/api/events?utm_source=npm&utm_medium=readme&utm_campaign=contracts) |
 | **[@snapback-oss/config](https://www.npmjs.com/package/@snapback-oss/config)** | Configuration | [Docs](https://docs.snapback.dev/api/config?utm_source=npm&utm_medium=readme&utm_campaign=contracts) |
 | **[@snapback/mcp-server](https://www.npmjs.com/package/@snapback/mcp-server)** | AI integration | [Docs](https://docs.snapback.dev/integrations/mcp?utm_source=npm&utm_medium=readme&utm_campaign=contracts) |
-| **[VS Code Extension](https://marketplace.visualstudio.com/items?itemName=MarcelleLabs.snapback-vscode&utm_source=npm&utm_medium=readme&utm_campaign=contracts)** | Editor integration | [Docs](https://docs.snapback.dev/integrations/vscode?utm_source=npm&utm_medium=readme&utm_campaign=contracts) |
+| **[VS Code Extension](https://marketplace.visualstudio.com/items?itemName=MarcelleLabs.snapback-vscode&utm_source=npm&utm_medium=readme&utm_campaign=contracts)** | Editor integration | [Docs](https://new-docs.snapback.dev/integrations/vscode?utm_source=npm&utm_medium=readme&utm_campaign=contracts) |
 
 [Explore the full platform →](https://snapback.dev?utm_source=npm&utm_medium=readme&utm_campaign=contracts)
 

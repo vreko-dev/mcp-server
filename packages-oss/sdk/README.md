@@ -275,7 +275,7 @@ Build complete code safety solutions:
 | **[@snapback-oss/events](https://www.npmjs.com/package/@snapback-oss/events)** | Event bus | [Docs](https://docs.snapback.dev/api/events) |
 | **[@snapback-oss/config](https://www.npmjs.com/package/@snapback-oss/config)** | Configuration | [Docs](https://docs.snapback.dev/api/config) |
 | **[@snapback/mcp-server](https://www.npmjs.com/package/@snapback/mcp-server)** | AI integration | [Docs](https://docs.snapback.dev/integrations/mcp) |
-| **[VS Code Extension](https://marketplace.visualstudio.com/items?itemName=MarcelleLabs.snapback-vscode&utm_source=npm&utm_medium=readme&utm_campaign=sdk)** | Editor integration | [Docs](https://docs.snapback.dev/integrations/vscode?utm_source=npm&utm_medium=readme&utm_campaign=sdk) |
+| **[VS Code Extension](https://marketplace.visualstudio.com/items?itemName=MarcelleLabs.snapback-vscode&utm_source=npm&utm_medium=readme&utm_campaign=sdk)** | Editor integration | [Docs](https://new-docs.snapback.dev/integrations/vscode?utm_source=npm&utm_medium=readme&utm_campaign=sdk) |
 
 [Explore the platform →](https://snapback.dev?utm_source=npm&utm_medium=readme&utm_campaign=sdk)
 

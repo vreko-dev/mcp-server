@@ -63,11 +63,11 @@ export function VSCodeInstallButton({
 		const protocols: Array<[string, string]> = [];
 
 		if (editor === "vscode" || editor === "all") {
-			protocols.push(["vscode:extension/marcellelabs.snapback", "VS Code"]);
+			protocols.push(["vscode:extension/MarcelleLabs.snapback-vscode", "VS Code"]);
 		}
 
 		if (editor === "cursor" || editor === "all") {
-			protocols.push(["cursor://extensions/marcellelabs.snapback", "Cursor"]);
+			protocols.push(["cursor:extension/MarcelleLabs.snapback-vscode", "Cursor"]);
 		}
 
 		// Try protocols
@@ -144,7 +144,7 @@ export function VSCodeInstallButton({
 									Option 1: Extension Marketplace
 								</p>
 								<a
-									href="https://marketplace.visualstudio.com/items?itemName=marcellelabs.snapback"
+									href="https://marketplace.visualstudio.com/items?itemName=MarcelleLabs.snapback-vscode"
 									target="_blank"
 									rel="noopener noreferrer"
 									className="block w-full bg-[#10B981] text-black text-center px-4 py-2 rounded-lg hover:bg-[#34D399] font-medium transition-colors"

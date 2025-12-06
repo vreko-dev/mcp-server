@@ -164,6 +164,6 @@ export {
 } from "./storage/StorageErrors.js";
 export type { ExperienceMetrics } from "./types/experience.js";
 export type { SDKConfig } from "./types.js";
-// Utility exports
-export { toError } from "./utils/errorHelpers.js";
+// Utility exports - re-export from OSS package
+export { toError } from "@snapback-oss/sdk/utils/errorHelpers.js";
 export { areEqual, getDepth, isWithin, normalize } from "./utils/PathNormalizer.js";

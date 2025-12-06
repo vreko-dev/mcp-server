@@ -7,7 +7,7 @@
  * key user outcomes like retention, conversion, and engagement.
  */
 
-import { runCorrelationAnalysis } from "@snapback/api-service/modules/posthog/procedures/run-correlation-analysis";
+import { runCorrelationAnalysis } from "@snapback/api/modules/posthog/procedures/run-correlation-analysis";
 import { logger } from "@snapback/infrastructure";
 import { CORRELATION_ANALYSES } from "@snapback/infrastructure/src/posthog/correlation";
 

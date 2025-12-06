@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "author": "SnapBack Team",
   "dependencies": {
-    "@snapback/api-service": "workspace:*",
+    "@snapback/api": "workspace:*",
     "@snapback/infrastructure": "workspace:*"
   },
   "devDependencies": {

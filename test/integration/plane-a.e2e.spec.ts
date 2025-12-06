@@ -1,4 +1,4 @@
-import { createApiKey, getApiKey, revokeApiKey, validateApiKey } from "@snapback/api-service/src/services/keys";
+import { createApiKey, getApiKey, revokeApiKey, validateApiKey } from "@snapback/api/src/services/keys";
 import type { Envelope } from "@snapback/sdk/src/client";
 import { analyze, evaluatePolicy, ingestTelemetry } from "@snapback/sdk/src/helpers";
 import { beforeEach, describe, expect, it, vi } from "vitest";

@@ -10,7 +10,7 @@
  * - Correlation analysis cohorts (optional)
  */
 
-import { setupCohorts } from "@snapback/api-service/modules/posthog/procedures/setup-cohorts";
+import { setupCohorts } from "@snapback/api/modules/posthog/procedures/setup-cohorts";
 import { logger } from "@snapback/infrastructure";
 
 async function main() {

@@ -11,7 +11,7 @@
  * - D7 retention drops by > 5% from baseline
  */
 
-import { setupAlerts } from "@snapback/api-service/modules/posthog/procedures/setup-alerts";
+import { setupAlerts } from "@snapback/api/modules/posthog/procedures/setup-alerts";
 import { logger } from "@snapback/infrastructure";
 
 async function main() {

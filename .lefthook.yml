@@ -54,9 +54,9 @@ pre-commit:
         biome-fix:
             run: pnpm -w biome check --write --unsafe --staged --files-ignore-unknown=true --no-errors-on-unmatched
         typecheck-scoped:
-            run: pnpm -w turbo run type-check --filter=...[HEAD] --filter="!@snapback/api-service"
+            run: pnpm -w turbo run type-check --filter=...[HEAD]
         lint-scoped:
-            run: pnpm -w turbo run lint --filter=...[HEAD] --filter='!@snapback/api-service'
+            run: pnpm -w turbo run lint --filter=...[HEAD]
         # test-scoped:
         #     run: pnpm -w turbo run test --filter=...[HEAD] -- --run
         todo-scan:
@@ -205,7 +205,7 @@ pre-push:
         # Note: Excludes web package (has 320+ pre-existing type errors)
         # Note: Excludes api-service package (has architectural type errors requiring larger refactor)
         type-check-affected:
-            run: pnpm turbo type-check --filter="[HEAD^]..." --filter="!@snapback/web" --filter="!@snapback/api-service"
+            run: pnpm turbo type-check --filter="[HEAD^]..." --filter="!@snapback/web"
 
         # Run unit tests on affected packages (catch bugs before CI)
         # Note: Only runs if packages have "test" script in package.json
@@ -214,7 +214,7 @@ pre-push:
 
         # Lint affected packages
         lint-affected:
-            run: pnpm turbo lint --filter=[HEAD^] --filter="!@snapback/api-service"
+            run: pnpm turbo lint --filter=[HEAD^]
 
         # Format check for affected files
         format-affected:

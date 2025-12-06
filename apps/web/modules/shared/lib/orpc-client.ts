@@ -1,7 +1,7 @@
 import { createORPCClient, onError } from "@orpc/client";
 import { RPCLink } from "@orpc/client/fetch";
 
-// import type { ApiRouterClient } from "@snapback/api-service/orpc/router";
+// import type { ApiRouterClient } from "@snapback/api/orpc/router";
 
 // Function to get web app base URL
 function getBaseUrl(): string {

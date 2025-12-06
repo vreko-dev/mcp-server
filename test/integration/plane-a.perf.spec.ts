@@ -1,5 +1,5 @@
 import { performance } from "node:perf_hooks";
-import { createApiKey, validateApiKey } from "@snapback/api-service/src/services/keys";
+import { createApiKey, validateApiKey } from "@snapback/api/src/services/keys";
 import { QoSService } from "@snapback/sdk/src/qos";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 

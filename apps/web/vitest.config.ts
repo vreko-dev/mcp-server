@@ -36,7 +36,7 @@ export default defineConfig({
 			"@ui": path.resolve(__dirname, "./modules/ui"),
 			"@shared": path.resolve(__dirname, "./modules/shared"),
 			"@analytics": path.resolve(__dirname, "./modules/analytics"),
-			"@snapback/api-service": path.resolve(__dirname, "../api"),
+			"@snapback/api": path.resolve(__dirname, "../api"),
 			"@snapback/auth/client": path.resolve(
 				__dirname,
 				"../../packages/auth/src/client.ts",

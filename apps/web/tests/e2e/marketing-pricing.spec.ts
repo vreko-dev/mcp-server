@@ -14,7 +14,7 @@ test.describe("Marketing Pricing Page", () => {
 
 		// Check that all pricing tiers are visible
 		await expect(page.getByRole("heading", { name: "Core" })).toBeVisible();
-		await expect(page.getByRole("heading", { name: "Solo" })).toBeVisible();
+		await expect(page.getByRole("heading", { name: "Pro" })).toBeVisible();
 		await expect(page.getByRole("heading", { name: "Team" })).toBeVisible();
 		await expect(
 			page.getByRole("heading", { name: "Enterprise" }),

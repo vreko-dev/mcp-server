@@ -41,7 +41,7 @@ export const createApiKey = protectedProcedure
 		// Paywall: Free users can't create API keys
 		if (tier === "free") {
 			throw new ORPCError("FORBIDDEN", {
-				message: "API keys require Solo plan or higher. Upgrade at /pricing",
+				message: "API keys require Pro plan or higher. Upgrade at /pricing",
 			});
 		}
 

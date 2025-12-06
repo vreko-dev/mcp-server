@@ -203,7 +203,8 @@ export function Features() {
 						Pattern Memory. Gets Smarter.
 					</h2>
 					<p className="mt-6 text-balance text-lg">
-						Every restore teaches SnapBack. Accuracy improves: Day 1 (94%) → Day 30 (98%) → Month 3 (99%+)
+						Every restore teaches SnapBack. Accuracy improves: Day 1 (94%) → Day
+						30 (98%) → Month 3 (99%+)
 					</p>
 				</motion.div>
 
@@ -283,7 +284,9 @@ export function Features() {
 							description={
 								<div className="mt-4">
 									<p className="text-white/70">
-										Learns what breaks in YOUR codebase. Catches hardcoded secrets, phantom dependencies, test code in prod, and risky patterns. Accuracy improves with every restore.
+										Learns what breaks in YOUR codebase. Catches hardcoded
+										secrets, phantom dependencies, test code in prod, and risky
+										patterns. Accuracy improves with every restore.
 									</p>
 									<div className="mt-6 flex items-center gap-4">
 										<div className="flex items-center gap-2">
@@ -296,7 +299,9 @@ export function Features() {
 										</div>
 										<div className="flex items-center gap-2">
 											<div className="size-3 rounded-full bg-snapback-green animate-pulse" />
-											<span className="text-sm text-white/80">Month 3: 99%+</span>
+											<span className="text-sm text-white/80">
+												Month 3: 99%+
+											</span>
 										</div>
 									</div>
 								</div>
@@ -322,7 +327,8 @@ export function Features() {
 							}
 							description={
 								<p className="mt-2 text-sm text-white/70">
-									Every restore teaches what patterns broke. Pattern memory uses outcome data to improve.
+									Every restore teaches what patterns broke. Pattern memory uses
+									outcome data to improve.
 								</p>
 							}
 						/>

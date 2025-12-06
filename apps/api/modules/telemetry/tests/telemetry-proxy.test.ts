@@ -144,7 +144,7 @@ describe("Telemetry Proxy API - TDD", () => {
 			// WHEN: Fetching feature flags
 			const featureFlags = {
 				cloudBackup: true, // Pro tier has this
-				advancedDetection: true, // Solo tier has this
+				advancedDetection: true, // Pro tier has this
 				customRules: false, // Team tier only
 				teamSharing: false, // Team tier only
 				aiInsights: false, // Not yet released

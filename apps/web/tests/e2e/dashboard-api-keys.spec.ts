@@ -311,7 +311,7 @@ test.describe("Dashboard & API Key Management E2E", () => {
 		test("should allow unlimited keys for Solo/Team plans", async ({
 			page,
 		}) => {
-			// GIVEN: Solo tier user with 5 keys
+			// GIVEN: Pro tier user with 5 keys
 			await mockUserPlan(page, "solo");
 			await mockUserWithKeys(page, [
 				{ id: "key_1", name: "Key 1", preview: "sb_1..." },
@@ -567,7 +567,7 @@ test.describe("Dashboard & API Key Management E2E", () => {
 				page.getByText(/you've used all 100 snapshots/i),
 			).toBeVisible();
 
-			// AND: Should suggest Solo plan
+			// AND: Should suggest Pro plan
 			await expect(page.getByText(/upgrade to solo/i)).toBeVisible();
 			await expect(page.getByText(/unlimited snapshots/i)).toBeVisible();
 
@@ -578,7 +578,7 @@ test.describe("Dashboard & API Key Management E2E", () => {
 		});
 
 		test('should show "Unlimited" for Solo/Team plans', async ({ page }) => {
-			// GIVEN: Solo tier user with 500 snapshots
+			// GIVEN: Pro tier user with 500 snapshots
 			await mockUserPlan(page, "solo");
 			await mockUsageLimits(page, {
 				snapshotsUsed: 500,
@@ -601,7 +601,7 @@ test.describe("Dashboard & API Key Management E2E", () => {
 		test("should display cloud storage usage for Solo/Team plans", async ({
 			page,
 		}) => {
-			// GIVEN: Solo tier with cloud backup enabled
+			// GIVEN: Pro tier with cloud backup enabled
 			await mockUserPlan(page, "solo");
 			await mockUsageLimits(page, {
 				snapshotsUsed: 150,
@@ -624,7 +624,7 @@ test.describe("Dashboard & API Key Management E2E", () => {
 
 	test.describe("Subscription Management", () => {
 		test("should display current plan with features", async ({ page }) => {
-			// GIVEN: User on Solo plan
+			// GIVEN: User on Pro plan
 			await mockSubscription(page, {
 				plan: "solo",
 				status: "active",
@@ -633,7 +633,7 @@ test.describe("Dashboard & API Key Management E2E", () => {
 			await page.goto("/app/settings/billing");
 
 			// THEN: Should show current plan
-			await expect(page.getByText("Solo Plan")).toBeVisible();
+			await expect(page.getByText("Pro Plan")).toBeVisible();
 			await expect(page.getByText(/\$29\/month/i)).toBeVisible();
 
 			// AND: Should show plan features
@@ -656,7 +656,7 @@ test.describe("Dashboard & API Key Management E2E", () => {
 			await expect(page.getByText("Free Plan")).toBeVisible();
 
 			// AND: Should show upgrade options
-			await expect(page.getByText("Upgrade to Solo")).toBeVisible();
+			await expect(page.getByText("Upgrade to Pro")).toBeVisible();
 			await expect(page.getByText("Upgrade to Team")).toBeVisible();
 
 			// AND: Should highlight recommended plan
@@ -665,7 +665,7 @@ test.describe("Dashboard & API Key Management E2E", () => {
 			await expect(soloCard.getByText("Recommended")).toBeVisible();
 		});
 
-		test("should handle upgrade flow to Solo plan", async ({ page }) => {
+		test("should handle upgrade flow to Pro plan", async ({ page }) => {
 			// GIVEN: Free tier user
 			await mockUserPlan(page, "free");
 			await page.goto("/app/settings/billing");
@@ -703,7 +703,7 @@ test.describe("Dashboard & API Key Management E2E", () => {
 		});
 
 		test("should handle subscription cancellation", async ({ page }) => {
-			// GIVEN: User on active Solo plan
+			// GIVEN: User on active Pro plan
 			await mockSubscription(page, {
 				plan: "solo",
 				status: "active",

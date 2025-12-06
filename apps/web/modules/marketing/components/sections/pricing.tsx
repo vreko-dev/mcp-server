@@ -8,7 +8,7 @@ const Pricing = () => {
 
 	const plans = [
 		{
-			name: "Developer",
+			name: "Free",
 			description: "Free forever. Snapshots + pattern detection locally.",
 			price: { monthly: 0, annual: 0 },
 			badge: "Free",

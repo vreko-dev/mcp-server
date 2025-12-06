@@ -12,8 +12,8 @@ import {
 	ENABLE_PREDICTION_ENGINE,
 	ENABLE_RATE_LIMITING,
 	ENABLE_TRUST_CALIBRATION,
-	featureFlags,
 	type FeatureFlags,
+	featureFlags,
 } from "../feature-flags";
 
 describe("Feature Flags - Configuration Object", () => {

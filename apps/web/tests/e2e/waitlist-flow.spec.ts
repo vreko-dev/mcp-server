@@ -72,7 +72,7 @@ test.describe("Waitlist Flow", () => {
 
 		// Select team size
 		await page.getByRole("combobox", { name: /team size/i }).click();
-		await page.getByRole("option", { name: "Solo" }).click();
+		await page.getByRole("option", { name: "Pro" }).click();
 
 		// Wait for Turnstile if present (in production)
 		const turnstileFrame = page.frameLocator('iframe[src*="turnstile"]');
@@ -109,7 +109,7 @@ test.describe("Waitlist Flow", () => {
 		await page.getByRole("combobox", { name: /language/i }).click();
 		await page.getByRole("option", { name: "TypeScript" }).click();
 		await page.getByRole("combobox", { name: /team size/i }).click();
-		await page.getByRole("option", { name: "Solo" }).click();
+		await page.getByRole("option", { name: "Pro" }).click();
 
 		// Mock Turnstile success
 		await page.evaluate(() => {
@@ -149,7 +149,7 @@ test.describe("Waitlist Flow", () => {
 		await page.getByRole("combobox", { name: /language/i }).click();
 		await page.getByRole("option", { name: "TypeScript" }).click();
 		await page.getByRole("combobox", { name: /team size/i }).click();
-		await page.getByRole("option", { name: "Solo" }).click();
+		await page.getByRole("option", { name: "Pro" }).click();
 
 		// Submit button should be disabled (if Turnstile is enabled)
 		const submitButton = page.getByRole("button", {
@@ -177,7 +177,7 @@ test.describe("Waitlist Flow", () => {
 		await page.getByRole("combobox", { name: /language/i }).click();
 		await page.getByRole("option", { name: "TypeScript" }).click();
 		await page.getByRole("combobox", { name: /team size/i }).click();
-		await page.getByRole("option", { name: "Solo" }).click();
+		await page.getByRole("option", { name: "Pro" }).click();
 
 		// Submit (should sanitize on backend)
 		await page.getByRole("button", { name: /request beta access/i }).click();
@@ -205,7 +205,7 @@ test.describe("Waitlist Flow", () => {
 		await page.getByRole("combobox", { name: /language/i }).click();
 		await page.getByRole("option", { name: "TypeScript" }).click();
 		await page.getByRole("combobox", { name: /team size/i }).click();
-		await page.getByRole("option", { name: "Solo" }).click();
+		await page.getByRole("option", { name: "Pro" }).click();
 
 		await page.getByRole("button", { name: /request beta access/i }).click();
 

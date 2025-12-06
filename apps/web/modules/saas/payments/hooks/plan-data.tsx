@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 // Plan types available in the system
-type ProductReferenceId = "free" | "solo" | "team";
+type ProductReferenceId = "free" | "pro" | "team";
 
 export function usePlanData() {
 	const planData: Record<
@@ -22,9 +22,9 @@ export function usePlanData() {
 				"Community support",
 			],
 		},
-		solo: {
-			title: "Solo",
-			description: "Enhanced Protection for Individual Professionals",
+		pro: {
+			title: "Pro",
+			description: "Enhanced Protection for Individual Power Users",
 			features: [
 				"Everything in Free",
 				"Cloud checkpoint backup",
@@ -38,7 +38,7 @@ export function usePlanData() {
 			title: "Team",
 			description: "Collaborative Safety for Growing Teams",
 			features: [
-				"Everything in Solo",
+				"Everything in Pro",
 				"Centralized policies",
 				"Shared checkpoints",
 				"Admin dashboard",

@@ -250,15 +250,21 @@ describe("Analytics Events - Event Count Validation", () => {
 	});
 
 	it("should have correct number of intelligence layer events", () => {
-		const predictionEvents = Object.values(AnalyticsEvents).filter((e) =>
-			e.startsWith("prediction_") || e.startsWith("trust_score_") ||
-			e.startsWith("pattern_") || e.startsWith("model_calibration_")
+		const predictionEvents = Object.values(AnalyticsEvents).filter(
+			(e) =>
+				e.startsWith("prediction_") ||
+				e.startsWith("trust_score_") ||
+				e.startsWith("pattern_") ||
+				e.startsWith("model_calibration_"),
 		);
 		expect(predictionEvents).toHaveLength(6);
 
-		const crossRepoEvents = Object.values(AnalyticsEvents).filter((e) =>
-			e.startsWith("workspace_") || e.startsWith("cross_repo_") ||
-			e.startsWith("repo_personality_") || e.startsWith("global_insight_")
+		const crossRepoEvents = Object.values(AnalyticsEvents).filter(
+			(e) =>
+				e.startsWith("workspace_") ||
+				e.startsWith("cross_repo_") ||
+				e.startsWith("repo_personality_") ||
+				e.startsWith("global_insight_"),
 		);
 		expect(crossRepoEvents).toHaveLength(4);
 
@@ -268,10 +274,13 @@ describe("Analytics Events - Event Count Validation", () => {
 		const mcpEvents = Object.values(AnalyticsEvents).filter((e) => e.startsWith("mcp_"));
 		expect(mcpEvents).toHaveLength(3);
 
-		const communityEvents = Object.values(AnalyticsEvents).filter((e) =>
-			e.startsWith("disaster_story_") || e.startsWith("feedback_") ||
-			e.startsWith("community_action_") || e.startsWith("beta_eligibility_") ||
-			e.startsWith("referral_")
+		const communityEvents = Object.values(AnalyticsEvents).filter(
+			(e) =>
+				e.startsWith("disaster_story_") ||
+				e.startsWith("feedback_") ||
+				e.startsWith("community_action_") ||
+				e.startsWith("beta_eligibility_") ||
+				e.startsWith("referral_"),
 		);
 		expect(communityEvents).toHaveLength(6);
 
@@ -310,7 +319,7 @@ describe("Analytics Events - Intelligence Layer Events", () => {
 			const props = {
 				tool_id: "cursor_0.42",
 				context_key: "react_typescript_refactor",
-				old_score: 0.70,
+				old_score: 0.7,
 				new_score: 0.75,
 				adjustment_reason: "success" as const,
 				sample_size: 25,

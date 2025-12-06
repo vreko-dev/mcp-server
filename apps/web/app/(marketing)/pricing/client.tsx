@@ -80,12 +80,12 @@ const pricingTiers: PricingCardData[] = [
 		},
 	},
 	{
-		id: "solo",
-		name: "Solo",
-		price: 29,
+		id: "pro",
+		name: "Pro",
+		price: 12,
 		annualPrice: 24,
 		description: "Enhanced Protection",
-		persona: "Solo developers using AI",
+		persona: "Individual power users",
 		headline: "Most popular for individuals",
 		popular: true,
 		features: {
@@ -152,15 +152,15 @@ const pricingTiers: PricingCardData[] = [
 	{
 		id: "team",
 		name: "Team",
-		price: 79,
-		annualPrice: 65,
+		price: 29,
+		annualPrice: 24,
 		description: "Collaborative Safety",
 		persona: "Teams shipping with AI",
 		headline: "Best for teams of 3+",
 		features: {
 			mustShow: [
 				{
-					text: "Everything in Solo, plus:",
+					text: "Everything in Free, plus:",
 					category: "protection",
 				},
 				{
@@ -227,7 +227,7 @@ const faqs = [
 	{
 		question: "Do I need a credit card to start?",
 		answer:
-			"No! The Free plan is completely free forever with no credit card required. Solo and Team plans offer a 14-day free trial, also with no credit card needed upfront.",
+			"No! The Free plan is completely free forever with no credit card required. Pro and Team plans offer a 14-day free trial, also with no credit card needed upfront.",
 	},
 	{
 		question: "What's included in the Free plan?",
@@ -245,9 +245,9 @@ const faqs = [
 			"Yes! You can upgrade or downgrade anytime. Upgrades take effect immediately, and downgrades apply at the end of your current billing cycle. All your snapshots and data are preserved during plan changes.",
 	},
 	{
-		question: "What's the difference between Solo and Team?",
+		question: "What's the difference between Pro and Team?",
 		answer:
-			"Solo is for individual developers and includes cloud backup, Guardian detection, and session time-travel. Team adds shared snapshots, team policies via .snapbackrc, analytics dashboard, SSO, and collaboration features for teams of 3+.",
+			"Pro is for individual power users and includes cloud backup, Guardian detection, and session time-travel. Team adds shared snapshots, team policies via .snapbackrc, analytics dashboard, SSO, and collaboration features for teams of 3+.",
 	},
 	{
 		question: "Do you offer refunds?",
@@ -257,7 +257,7 @@ const faqs = [
 	{
 		question: "How does MCP integration work?",
 		answer:
-			"The MCP server (coming soon, planned for Solo+) will expose Guardian detection, dependency checks, and snapshot creation to AI assistants like Claude and Cursor. Your AI will be able to analyze risks before making changes and create checkpoints automatically.",
+			"The MCP server (coming soon, planned for Pro+) will expose Guardian detection, dependency checks, and snapshot creation to AI assistants like Claude and Cursor. Your AI will be able to analyze risks before making changes and create checkpoints automatically.",
 	},
 	{
 		question: "What happens to my data if I downgrade to Free?",

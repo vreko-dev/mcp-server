@@ -10,7 +10,7 @@
  * Enables VS Code extension auth endpoints (link token, exchange, refresh)
  * @default false
  */
-export const ENABLE_EXTENSION_AUTH = process.env.ENABLE_EXTENSION_AUTH === 'true';
+export const ENABLE_EXTENSION_AUTH = process.env.ENABLE_EXTENSION_AUTH === "true";
 
 /**
  * API Key Authentication
@@ -18,21 +18,21 @@ export const ENABLE_EXTENSION_AUTH = process.env.ENABLE_EXTENSION_AUTH === 'true
  * Requires: argon2 or alternative hashing library resolved
  * @default false
  */
-export const ENABLE_API_KEYS = process.env.ENABLE_API_KEYS === 'true';
+export const ENABLE_API_KEYS = process.env.ENABLE_API_KEYS === "true";
 
 /**
  * Rate Limiting
  * Enables rate limit middleware for auth endpoints
  * @default false (disabled until type declarations fixed)
  */
-export const ENABLE_RATE_LIMITING = process.env.ENABLE_RATE_LIMITING === 'true';
+export const ENABLE_RATE_LIMITING = process.env.ENABLE_RATE_LIMITING === "true";
 
 /**
  * Intelligence Layer (Master Toggle)
  * Enables all intelligence layer features: trust calibration, pattern library, prediction engine
  * @default false (controlled rollout via PostHog)
  */
-export const ENABLE_INTELLIGENCE_LAYER = process.env.ENABLE_INTELLIGENCE_LAYER === 'true';
+export const ENABLE_INTELLIGENCE_LAYER = process.env.ENABLE_INTELLIGENCE_LAYER === "true";
 
 /**
  * Trust Calibration Engine
@@ -40,7 +40,7 @@ export const ENABLE_INTELLIGENCE_LAYER = process.env.ENABLE_INTELLIGENCE_LAYER =
  * Requires: ENABLE_INTELLIGENCE_LAYER = true
  * @default false
  */
-export const ENABLE_TRUST_CALIBRATION = process.env.ENABLE_TRUST_CALIBRATION === 'true';
+export const ENABLE_TRUST_CALIBRATION = process.env.ENABLE_TRUST_CALIBRATION === "true";
 
 /**
  * Pattern Library
@@ -48,7 +48,7 @@ export const ENABLE_TRUST_CALIBRATION = process.env.ENABLE_TRUST_CALIBRATION ===
  * Requires: ENABLE_INTELLIGENCE_LAYER = true, pgvector extension in database
  * @default false
  */
-export const ENABLE_PATTERN_LIBRARY = process.env.ENABLE_PATTERN_LIBRARY === 'true';
+export const ENABLE_PATTERN_LIBRARY = process.env.ENABLE_PATTERN_LIBRARY === "true";
 
 /**
  * Prediction Engine
@@ -56,7 +56,7 @@ export const ENABLE_PATTERN_LIBRARY = process.env.ENABLE_PATTERN_LIBRARY === 'tr
  * Requires: ENABLE_INTELLIGENCE_LAYER = true, ENABLE_PATTERN_LIBRARY = true
  * @default false
  */
-export const ENABLE_PREDICTION_ENGINE = process.env.ENABLE_PREDICTION_ENGINE === 'true';
+export const ENABLE_PREDICTION_ENGINE = process.env.ENABLE_PREDICTION_ENGINE === "true";
 
 /**
  * GitHub Integration
@@ -64,7 +64,7 @@ export const ENABLE_PREDICTION_ENGINE = process.env.ENABLE_PREDICTION_ENGINE ===
  * Requires: GitHub App configured, webhook endpoint deployed
  * @default false
  */
-export const ENABLE_GITHUB_INTEGRATION = process.env.ENABLE_GITHUB_INTEGRATION === 'true';
+export const ENABLE_GITHUB_INTEGRATION = process.env.ENABLE_GITHUB_INTEGRATION === "true";
 
 /**
  * Feature flag configuration object

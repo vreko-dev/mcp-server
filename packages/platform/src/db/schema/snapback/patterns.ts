@@ -1,5 +1,5 @@
-import { relations, sql } from "drizzle-orm";
-import { boolean, decimal, index, integer, jsonb, pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
+import { boolean, decimal, index, integer, pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
 import { user } from "../postgres";
 
 /**

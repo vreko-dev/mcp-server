@@ -10,7 +10,7 @@ test.describe("Pricing Section - Enhanced", () => {
 
 	test("should display all pricing tiers", async ({ page }) => {
 		// Check that all 4 tiers are visible
-		const tiers = ["Core", "Solo", "Team", "Enterprise"];
+		const tiers = ["Free", "Pro", "Team", "Enterprise"];
 
 		for (const tier of tiers) {
 			await expect(
@@ -19,15 +19,15 @@ test.describe("Pricing Section - Enhanced", () => {
 		}
 	});
 
-	test("should highlight Solo tier as popular", async ({ page }) => {
+	test("should highlight Pro tier as popular", async ({ page }) => {
 		// Find the popular badge
 		const popularBadge = page.locator("text=Most Popular").first();
 		await expect(popularBadge).toBeVisible();
 
-		// Verify it's near the Solo tier
+		// Verify it's near the Pro tier
 		const soloCard = page
 			.locator('[class*="pricing"]')
-			.filter({ hasText: "Solo" })
+			.filter({ hasText: "Pro" })
 			.first();
 		await expect(soloCard).toBeVisible();
 	});
@@ -42,15 +42,15 @@ test.describe("Pricing Section - Enhanced", () => {
 		await expect(annualButton).toBeVisible();
 
 		// Check Solo price (monthly)
-		const soloCard = page.locator("text=Solo").locator("..");
-		await expect(soloCard).toContainText("$9");
+		const soloCard = page.locator("text=Pro").locator("..");
+		await expect(soloCard).toContainText("$12");
 
 		// Click annual
 		await annualButton.click();
 
 		// Wait for animation and check price changed
 		await page.waitForTimeout(500);
-		await expect(soloCard).toContainText("$7");
+		await expect(soloCard).toContainText("$10");
 
 		// Verify savings badge appears
 		await expect(page.locator("text=Save 20%").first()).toBeVisible();
@@ -256,7 +256,7 @@ test.describe("Pricing Section - Enhanced", () => {
 		).toBeVisible();
 
 		// All tiers should be visible
-		const tiers = ["Core", "Solo", "Team", "Enterprise"];
+		const tiers = ["Free", "Pro", "Team", "Enterprise"];
 		for (const tier of tiers) {
 			await expect(
 				page.locator(`[class*="pricing"]`).filter({ hasText: tier }),

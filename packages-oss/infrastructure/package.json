@@ -1,6 +1,6 @@
 {
   "name": "@snapback-oss/infrastructure",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Production-grade observability toolkit - structured logging, distributed tracing, and performance monitoring for TypeScript applications",
   "license": "Apache-2.0",
   "repository": {
@@ -30,7 +30,6 @@
     "nanoid": "catalog:"
   },
   "devDependencies": {
-    "@snapback/tsconfig": "workspace:*",
     "@types/node": "catalog:",
     "tsup": "catalog:",
     "typescript": "catalog:",

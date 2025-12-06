@@ -1,6 +1,6 @@
 {
   "name": "@snapback-oss/events",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Type-safe event bus for building reactive TypeScript applications - powered by EventEmitter2 with full async/await support",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -47,7 +47,6 @@
     }
   },
   "devDependencies": {
-    "@snapback/tsconfig": "workspace:*",
     "@types/node": "catalog:",
     "tsup": "catalog:",
     "typescript": "catalog:",

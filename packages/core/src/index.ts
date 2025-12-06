@@ -10,6 +10,7 @@ export * from "./mcp-fallbacks";
 export * from "./mcp-federation";
 export * from "./mcp-response-processor";
 export * from "./risk-analyzer";
+export * from "./services/index";
 export * from "./threat-detection";
 export * from "./utils/cache";
 export * from "./utils/circuit-breaker";

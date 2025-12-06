@@ -1,6 +1,6 @@
 {
   "name": "@snapback/analytics",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "dependencies": {
     "@snapback/contracts": "workspace:*",
     "@snapback/infrastructure": "workspace:*",

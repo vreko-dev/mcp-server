@@ -4,7 +4,24 @@
 
 ### Minor Changes
 
-- 884ce9e: refactor: Major repository reorganization
+## [Unreleased]
+
+## [0.2.0] - 2025-12-06
+
+### 🚀 Added
+- Tier-aware logging with Free vs Pro distinction
+- Pricing tier enum exports (Free | Pro | Team | Enterprise)
+- Better error context in logs
+
+### �� Changed
+- Logging messages use developer-native language
+- Type safety for tier-based log routing
+- Error messages show what broke, not codes
+
+### �� What You See
+- Logs distinguish: 'Pro user hit rate limit' vs generic 'limit exceeded'
+- Infrastructure now knows about Free vs Premium paths
+- Error logs include resolution steps
 
   - Consolidated 10 packages into 4 new packages:
     - @snapback/infrastructure (logging, metrics, tracing)

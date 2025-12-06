@@ -1,5 +1,20 @@
 # @snapback/auth
 
+## 0.1.0
+
+### Minor Changes
+
+- Pricing tier type definitions (Free | Pro | Team | Enterprise)
+- Auth defense preparation for device fingerprinting
+- Better error messages for auth flow failures
+- Type safety for tier-gated auth features
+
+### What You See
+
+- Auth system now knows which tier user is on
+- Device context included in auth flow for security
+- Clear error messages when auth fails
+
 ## 0.0.1
 
 ### Patch Changes

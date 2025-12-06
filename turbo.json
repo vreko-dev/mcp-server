@@ -72,8 +72,12 @@
 			"dependsOn": ["build"],
 			"cache": false
 		},
+		"publish": {
+			"dependsOn": ["build"],
+			"cache": false
+		},
 		"release": {
-			"dependsOn": ["deploy"],
+			"dependsOn": ["publish", "deploy"],
 			"cache": false
 		},
 		"seo:lint": {
@@ -110,6 +114,26 @@
 		"@snapback/docs#dev": {
 			"cache": false,
 			"persistent": true
+		},
+		"@snapback-oss/contracts#build": {
+			"outputs": ["dist/**"],
+			"dependsOn": ["^build"]
+		},
+		"@snapback-oss/infrastructure#build": {
+			"outputs": ["dist/**"],
+			"dependsOn": ["^build"]
+		},
+		"@snapback-oss/config#build": {
+			"outputs": ["dist/**"],
+			"dependsOn": ["^build"]
+		},
+		"@snapback-oss/events#build": {
+			"outputs": ["dist/**"],
+			"dependsOn": ["^build"]
+		},
+		"@snapback-oss/sdk#build": {
+			"outputs": ["dist/**", "dist-types/**"],
+			"dependsOn": ["^build"]
 		}
 	}
 }

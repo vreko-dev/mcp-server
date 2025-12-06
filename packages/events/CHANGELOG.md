@@ -1,5 +1,19 @@
 # @snapback/events
 
+## 1.0.2
+
+### Patch Changes
+
+- Tier-specific event types for Free | Pro | Team | Enterprise
+- Device trial events for multi-device evaluation tracking
+- Improved event names using Pattern Memory terminology
+
+### What You See
+
+- Subscribe to tier-gated events: only Pro/Team/Enterprise emit certain events
+- Device trial events show trial-specific behavior separate from paid accounts
+- Event names are clear: `FileProtected` not `FileSafeguardInitiated`
+
 ## 1.1.0
 
 ### Minor Changes

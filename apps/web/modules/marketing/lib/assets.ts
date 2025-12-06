@@ -21,7 +21,7 @@ export const ASSETS = {
 		icon32: "/favicon/icon-32.png",
 		icon192: "/favicon/icon-192.png",
 		appleTouchIcon: "/favicon/apple-touch-icon.png",
-		manifest: "/favicon/manifest.json",
+		manifest: "/manifest.webmanifest", // Next.js generated from app/manifest.ts
 	},
 
 	// Social media images

@@ -4,7 +4,24 @@
 
 ### Minor Changes
 
-- 884ce9e: refactor: Major repository reorganization
+## [Unreleased]
+
+## [0.2.0] - 2025-12-06
+
+### 🚀 Added
+- Pricing tier type definitions and enums
+- Device trial contract types
+- Expanded subscription type definitions
+
+### 📝 Changed
+- Tier names standardized across types
+- Type names aligned with Pattern Memory terminology
+- JSDoc examples use behavior-focused descriptions
+
+### 🎯 What You See
+- Type safety prevents tier name inconsistencies
+- Device trial types clearly separate trial from paid accounts
+- Types guarantee Free/Pro/Team/Enterprise consistency
 
   - Consolidated 10 packages into 4 new packages:
     - @snapback/infrastructure (logging, metrics, tracing)

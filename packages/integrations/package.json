@@ -1,6 +1,6 @@
 {
   "name": "@snapback/integrations",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "dependencies": {
     "@hubspot/api-client": "catalog:",
     "@react-email/components": "catalog:",

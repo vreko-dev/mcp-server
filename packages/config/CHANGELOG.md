@@ -4,7 +4,24 @@
 
 ### Minor Changes
 
-- 884ce9e: refactor: Major repository reorganization
+## [Unreleased]
+
+## [0.2.0] - 2025-12-06
+
+### 🚀 Added
+- Explicit tier config loading
+- Device trial configuration support
+- Improved validation error messages
+
+### 📝 Changed
+- Config schema includes pricing tiers
+- Utils exported explicitly for direct imports
+- Better error messages showing which setting failed
+
+### 🎯 What You See
+- Load config for specific tier: Pro features show/hide based on config
+- Trial devices get different config than paid accounts
+- Validation errors tell you exactly what's wrong
 
   - Consolidated 10 packages into 4 new packages:
     - @snapback/infrastructure (logging, metrics, tracing)

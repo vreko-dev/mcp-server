@@ -147,7 +147,9 @@
     "build:affected": "turbo run build --filter=...[origin/main]",
     "deploy:web": "turbo run deploy --filter=@snapback/web",
     "deploy:api": "turbo run deploy --filter=@snapback/api",
-    "deploy:mcp": "turbo run deploy --filter=@snapback/mcp-server"
+    "deploy:mcp": "turbo run deploy --filter=@snapback/mcp-server",
+    "publish:turbo": "node scripts/publish-oss-packages.mjs",
+    "publish:turbo:dry-run": "DRY_RUN=1 node scripts/publish-oss-packages.mjs"
   },
   "peerDependencies": {
     "drizzle-orm": "catalog:"

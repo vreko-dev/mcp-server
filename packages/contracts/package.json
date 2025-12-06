@@ -1,7 +1,7 @@
 {
   "name": "@snapback/contracts",
   "description": "Type definitions and contracts for SnapBack",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "dependencies": {
     "@asteasolutions/zod-to-openapi": "7.3.4",
     "nanoid": "5.1.5",

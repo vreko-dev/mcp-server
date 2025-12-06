@@ -1,5 +1,21 @@
 # @snapback-oss/infrastructure
 
+## 0.2.0 (2025-12-06)
+
+### Features
+
+**Messaging alignment and tier standardization**
+
+- Pattern Memory narrative alignment - logs now show what actually happened, not internal state
+- Pricing tier standardization (Free | Pro | Team | Enterprise)
+- Improved error messages with clear remediation steps
+
+### What You See
+
+- Logs use developer-native language: "Snapshot restored successfully" not "RestoreOperation completed"
+- Tier-gated logging distinguishes free vs premium user paths
+- Error context includes what broke and why, not diagnostic codes
+
 ## 0.1.0 (2025-12-04)
 
 ### Features

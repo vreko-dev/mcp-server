@@ -1,9 +1,8 @@
 {
 	"name": "@snapback/auth",
-	"version": "0.0.1",
+	"version": "0.1.0",
 	"dependencies": {
-		"@node-rs/argon2": "catalog:",
-		"@snapback/config": "^0.1.1",
+		"@snapback-oss/sdk": "workspace:*",
 		"@snapback/contracts": "workspace:*",
 		"@snapback/infrastructure": "workspace:*",
 		"@snapback/integrations": "workspace:*",

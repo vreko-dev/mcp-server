@@ -1,5 +1,21 @@
 # @snapback-oss/events
 
+## 0.2.0 (2025-12-06)
+
+### Features
+
+**OSS remediation and event schema expansion**
+
+- Tier-specific event types for Free | Pro | Team | Enterprise tiers
+- Device trial events for multi-device evaluation
+- Improved event names using Pattern Memory terminology
+
+### What You See
+
+- Subscribe to tier-gated events: only Pro/Team/Enterprise emits certain events
+- Device trial events show trial-specific behavior separate from paid accounts
+- Event names are clear: `FileProtected` not `FileSafeguardInitiated`
+
 ## 0.1.0 (2025-12-04)
 
 ### Features

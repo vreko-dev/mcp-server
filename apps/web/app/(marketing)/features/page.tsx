@@ -8,21 +8,21 @@ import FeaturesClient from "./client";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://snapback.dev";
 
 export const metadata: Metadata = {
-	title: "Features | SnapBack - AI Code Protection",
+	title: "Features | SnapBack - Pattern Memory & Learning",
 	description:
-		"Explore SnapBack's powerful features: 3-level protection, session time-travel, Guardian AI detection, severity analysis, MCP integration, and lightning-fast performance.",
+		"SnapBack learns what breaks YOUR codebase. Pattern memory gets smarter over time. Day 1: 94% accurate. Day 30: knows your specific risks.",
 	keywords: [
-		"code protection features",
-		"ai detection",
-		"session snapshots",
-		"guardian analysis",
-		"mcp integration",
+		"pattern memory",
+		"learns from mistakes",
+		"progressive improvement",
+		"ai code safety",
 		"vscode extension",
+		"snapshot restore",
 	],
 	openGraph: {
-		title: "Features | SnapBack - AI Code Protection",
+		title: "Features | SnapBack - Learns Your Codebase",
 		description:
-			"3-level protection • Session time-travel • Guardian AI detection • MCP integration",
+			"Pattern Memory • Learns from Outcomes • Detects What Breaks • Gets Smarter Daily",
 		url: `${SITE_URL}/features`,
 		siteName: "SnapBack",
 		type: "website",
@@ -31,15 +31,15 @@ export const metadata: Metadata = {
 				url: `${SITE_URL}/og-features.png`,
 				width: 1200,
 				height: 630,
-				alt: "SnapBack Features Overview",
+				alt: "SnapBack - Learns What Breaks Your Code",
 			},
 		],
 	},
 	twitter: {
 		card: "summary_large_image",
-		title: "Features | SnapBack - AI Code Protection",
+		title: "Features | SnapBack - Pattern Memory",
 		description:
-			"3-level protection • Session time-travel • Guardian AI detection • MCP integration",
+			"Day 1: 94% accurate. Day 30: knows YOUR codebase. Month 3: catches patterns before you do.",
 		images: [`${SITE_URL}/og-features.png`],
 		creator: "@snapbackdev",
 	},

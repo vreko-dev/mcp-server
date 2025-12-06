@@ -9,31 +9,31 @@ const Pricing = () => {
 	const plans = [
 		{
 			name: "Developer",
-			description: "Free forever for individual developers",
+			description: "Free forever. Snapshots + pattern detection locally.",
 			price: { monthly: 0, annual: 0 },
 			badge: "Free",
 			features: [
 				"Unlimited local snapshots",
 				"VS Code extension",
-				"CLI tool included",
-				"7-day local history",
-				"Community support",
+				"CLI tool",
+				"7-day history",
+				"Detects secrets & risky patterns",
 			],
 			cta: "Start Free",
 			popular: false,
 		},
 		{
 			name: "Pro",
-			description: "Cloud intelligence for serious developers",
+			description: "Pattern memory that learns YOUR codebase",
 			price: { monthly: 12, annual: 120 },
 			badge: null,
 			features: [
 				"Everything in Developer",
-				"5GB cloud backup storage",
-				"GitHub integration (personal repos)",
+				"Cloud backup & sync",
 				"30-day cloud history",
-				"Cross-repo intelligence",
-				"Advanced AI detection (94% accuracy)",
+				"Learns from your patterns",
+				"94% accurate, improves over time",
+				"GitHub integration",
 				"Priority support",
 			],
 			cta: "Start Free Trial",
@@ -41,36 +41,36 @@ const Pricing = () => {
 		},
 		{
 			name: "Team",
-			description: "Governance & visibility for engineering teams",
+			description: "Learn together, protect faster",
 			price: { monthly: 29, annual: 290 },
 			badge: null,
 			features: [
 				"Everything in Pro",
-				"$29/user/month",
 				"Team dashboard",
-				"PR risk scoring",
-				"Block merge policies",
-				"1-year cloud history",
-				"25GB storage per user",
-				"Role-based access control",
+				"Shared pattern library",
+				"Learn from team's recoveries",
+				"1-year history",
+				"Per-repo risk scoring",
+				"Merge policies & audit trail",
+				"Role-based access",
 			],
 			cta: "Start Team Trial",
 			popular: false,
 		},
 		{
 			name: "Enterprise",
-			description: "Custom governance for large organizations",
+			description: "Full control for large organizations",
 			price: { monthly: null, annual: null },
 			badge: null,
 			features: [
 				"Everything in Team",
-				"Custom pricing (starts $49/user)",
-				"Unlimited storage",
-				"5-year retention",
+				"Custom pricing",
+				"Unlimited storage & retention",
+				"Custom integrations",
 				"SOC2 compliance",
 				"Dedicated support",
 				"Custom SLA",
-				"On-premise deployment available",
+				"On-premise deployment",
 			],
 			cta: "Contact Sales",
 			popular: false,
@@ -91,10 +91,10 @@ const Pricing = () => {
 			<div className="container">
 				<div className="text-center mb-16">
 					<h2 id="pricing-heading" className="text-display mb-6">
-						Simple, transparent <span className="text-primary">pricing</span>
+						SnapBack Learns. <span className="text-primary">You Choose the Price.</span>
 					</h2>
 					<p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-						Start free, scale as you grow. No hidden fees, no surprise charges.
+						Start free. Scale as your team learns. Pattern memory improves over time—so your protection gets smarter without you doing anything.
 					</p>
 				</div>
 

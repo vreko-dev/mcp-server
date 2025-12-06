@@ -21,13 +21,13 @@
 							"id": "hero",
 							"type": "video_hero",
 							"content": {
-								"eyebrow": "Private Alpha",
-								"headline": "Code Breaks. Snap Back.",
-								"subheadline": "A VS Code extension that automatically snapshots your workspace so you can experiment freely with AI and restore the last working state in one click.",
-								"founder_story": "Local-first, works offline, no account required. Currently in alpha—help shape the product.",
+								"eyebrow": "Pattern Memory",
+								"headline": "SnapBack Learns.\nYou Experiment.",
+								"subheadline": "Every time you undo a mistake, SnapBack learns what patterns caused it. Day 1: 94% accurate. Day 30: knows YOUR codebase. Month 3: catches what you didn't know to look for.",
+								"founder_story": "Local-first snapshots, cloud-optional learning. Metadata only—your code stays on your machine. Works offline, no account required.",
 								"primary_cta": {
 									"label": "Install for VS Code",
-									"subtext": "Private Alpha · Install the extension",
+									"subtext": "Pattern Memory learns instantly",
 									"href": "vscode:extension/MarcelleLabs.snapback-vscode",
 									"analytics_event": "INSTALL_BUTTON_CLICKED"
 								},
@@ -36,65 +36,65 @@
 									"href": "cursor:extension/MarcelleLabs.snapback-vscode",
 									"analytics_event": "HERO_CTA_CLICKED_SECONDARY"
 								},
-								"trust_line": "Local-first · Works offline · No account required",
-								"video_caption": "[TODO: 60-second hero video] Real SnapBack session showing Sessions panel → snapshot selection → file restoration → confirmation toast"
+								"trust_line": "Local-first · Learns over time · Privacy first",
+								"video_caption": "[TODO: 60-second hero video] Real SnapBack session showing Pattern Memory learning: snapshot after AI edit → Restore triggered → SnapBack learns what broke"
 							}
 						},
 						"problem": {
 							"id": "problem",
 							"type": "two_column_story",
 							"content": {
-								"label": "The challenge",
-								"headline": "AI moves fast. So do mistakes.",
-								"body": "Copilot, Claude, Gemini—they suggest code at breakneck speed. Some ideas are gold. Others break everything. Git helps if you commit. Local History helps if it's one file. SnapBack saves you mid-thought.",
+								"label": "The learning loop",
+								"headline": "Pattern Memory Gets Smarter",
+								"body": "Copilot, Claude, Cursor—they move fast. Great ideas. But some refactors break your specific patterns. SnapBack watches what goes wrong and learns what to flag next time. Your codebase is unique. SnapBack's pattern memory becomes unique too.",
 								"timeline_items": [
 									{
-										"title": "AI refactored too much",
-										"description": "Across 20 files in one go. Which change broke it? Not a commit. Not a save. A single AI suggestion.",
+										"title": "Day 1: 94% accurate out of the box",
+										"description": "Install SnapBack. It detects hardcoded secrets, phantom dependencies, test code in production, and risky patterns right away.",
 										"screenshot": "/images/git-vs-snapback.webp"
 									},
 									{
-										"title": "Tests were passing. Now they're not.",
-										"description": "Revert to the exact moment before the last suggestion, not the last commit. Get back to green in one click."
+										"title": "Day 30: Learns YOUR specific risks",
+										"description": "Every time you restore, SnapBack learns. 'Cursor always breaks this auth module.' 'This refactor pattern cascades.' 'This folder has phantom dependency issues.' Accuracy climbs to 98%."
 									},
 									{
-										"title": "You don't want to lose the good work.",
-										"description": "Undo is too coarse. Git history is too fragile. You need a safety net that lets you experiment without fear."
+										"title": "Month 3: Catches patterns before you do",
+										"description": "After 90 days, pattern memory knows what breaks in YOUR codebase. Flags issues before you'd even think to look. Accuracy reaches 99%+."
 									}
 								],
-								"closing": "SnapBack gives you a way back to the last moment you felt safe. No commits required. Just code and snapshots."
+								"closing": "That's pattern memory. It's not magic—it's outcome learning. Every undo teaches it something."
 							}
 						},
 						"how_it_works": {
 							"id": "how_it_works",
 							"type": "bento_steps",
 							"content": {
-								"label": "How it works",
-								"headline": "Simple. Automatic. Local.",
+								"label": "How pattern memory works",
+								"headline": "Snapshots. Learning. Protection.",
 								"steps": [
 									{
 										"step_number": 1,
-										"title": "Auto snapshots on save",
-										"body": "Every save creates a local restore point. No setup, no new workflow—keep coding as usual while SnapBack quietly tracks your progress.",
-										"tag": "Lightning fast",
+										"title": "Automatic snapshots",
+										"body": "Every save creates a restore point. Local-first, no setup. SnapBack watches your edits and remembers the state of your workspace.",
+										"tag": "<200ms snapshots",
 										"screenshot": "[TODO: VS Code status bar showing 'SnapBack: 47 snapshots' with green checkmark]"
 									},
 									{
 										"step_number": 2,
-										"title": "Session timeline & diff",
-										"body": "Scroll through your session and compare snapshots to see exactly what changed. Understand how AI suggestions reshaped your code.",
+										"title": "Detects what breaks",
+										"body": "Pattern memory flags hardcoded secrets, phantom dependencies, test code in production, and risky patterns. Learns which issues matter most for YOUR code.",
 										"screenshot": "[TODO: Detection toast notification showing 'Breaking change detected · file-service.ts']"
 									},
 									{
 										"step_number": 3,
-										"title": "One-click restore",
-										"body": "Pick any snapshot, hit restore, and your workspace jumps back to that state in seconds. Recover broken sessions without wrestling with Git.",
+										"title": "Learn from outcomes",
+										"body": "Every restore teaches SnapBack. What patterns caused this mistake? What changes broke this module? Pattern memory uses outcome data to get smarter.",
 										"screenshot": "[TODO: Command Palette showing SnapBack: Restore menu with 3 recent snapshots]"
 									}
 								],
 								"inline_cta": {
-									"label": "View UI screenshots →",
-									"href": "#demo",
+									"label": "View feature breakdown →",
+									"href": "#features",
 									"analytics_event": "HERO_CTA_CLICKED_SECONDARY"
 								}
 							}
@@ -119,21 +119,21 @@
 							"id": "for_teams",
 							"type": "metrics",
 							"content": {
-								"label": "Why developers choose SnapBack",
-								"headline": "Zero latency. No vendor lock-in. Just you and your snapshots.",
-								"body": "SnapBack is built for developers who code alone and teams that ship together. Local-first means instant restores, no network calls, and your data always under your control.",
+								"label": "Pattern memory gets smarter",
+								"headline": "Fast. Private. Learning.",
+								"body": "SnapBack works locally, learns progressively, and keeps your code private. Snapshots happen in the background. Restores are instant. Pattern memory improves with every outcome.",
 								"metric_cards": [
 									{
-										"title": "Sub-100ms snapshots",
-										"description": "No editor lag. SnapBack captures your workspace in the background while you keep working."
+										"title": "<200ms snapshots",
+										"description": "No editor lag. Pattern memory captures your workspace state while you keep coding."
 									},
 									{
-										"title": "<1s restore time",
-										"description": "Jump back to any point in seconds. Works on monorepos, microservices, and large projects."
+										"title": "Instant restores",
+										"description": "One click gets you back to the last safe state. Works on monorepos, microservices, and large codebases."
 									},
 									{
-										"title": "100% local storage",
-										"description": "Your snapshots live in ~/.snapback. No cloud provider. No subscription required. Just efficient local storage."
+										"title": "Code stays local",
+										"description": "Snapshots live in ~/.snapback. Metadata-only for cloud features. Your code never leaves your machine unless you choose to share it."
 									}
 								]
 							}
@@ -142,23 +142,23 @@
 							"id": "privacy",
 							"type": "trust_panel",
 							"content": {
-								"label": "Privacy first",
-								"headline": "Local-first. Private by design.",
+								"label": "Your code, your control",
+								"headline": "Pattern Memory stays local. Learning is optional.",
 								"items": [
 									{
-										"title": "Works offline on planes, in tunnels, and on bad Wi-Fi.",
-										"description": "Your snapshots never leave your machine. Instant recovery, zero latency, and no third-party storage—SnapBack works even when you're offline."
+										"title": "Snapshots never leave your machine by default.",
+										"description": "Every snapshot stores locally in ~/.snapback. Zero cloud uploads. Works offline. No third-party storage or tracking. Verify it yourself: ls -la ~/.snapback."
 									},
 									{
-										"title": "No source code uploads—snapshots live alongside your project.",
-										"description": "Every snapshot is stored locally in ~/.snapback. No cloud services. No tracking. No hidden syncs. Verify it yourself: ls -la ~/.snapback."
+										"title": "Pattern memory learns from outcomes, not source code.",
+										"description": "Cloud features send metadata only: 'file changed,' 'test failed,' 'restored here.' Never your actual code. You opt-in to learning features."
 									},
 									{
-										"title": "Local-only mode means no login required to get protection.",
-										"description": "You don't need an account to use SnapBack. Start protecting your workspace immediately after install, completely offline."
+										"title": "No account required to get protection.",
+										"description": "Install SnapBack and start creating snapshots immediately. Completely offline. Pattern memory works in local-only mode—decide later if you want cloud learning."
 									}
 								],
-								"footer": "Your code is your responsibility and your asset. SnapBack is transparent about how it handles your work."
+								"footer": "Your code is your asset. SnapBack is transparent about what gets stored and learned."
 							}
 						},
 						"social_proof": {
@@ -181,10 +181,10 @@
 							"id": "final_cta",
 							"type": "cta_band",
 							"content": {
-								"headline": "Install SnapBack for VS Code.",
-								"body": "Start using automatic local snapshots today. Install the extension and take the risk out of AI-assisted coding. We're actively iterating with private alpha teams—your feedback helps shape the roadmap.",
+								"headline": "SnapBack learns. Let it protect you.",
+								"body": "Start with local snapshots today. Pattern memory learns instantly. No account needed. Works offline. Metadata-only cloud features. Your code stays on your machine—decide later if you want cloud learning and pattern intelligence across your team.",
 								"primary_cta": {
-									"label": "Install Extension",
+									"label": "Install for VS Code",
 									"href": "vscode:extension/MarcelleLabs.snapback-vscode",
 									"analytics_event": "INSTALL_BUTTON_CLICKED"
 								}

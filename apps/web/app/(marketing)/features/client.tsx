@@ -8,15 +8,15 @@ import Link from "next/link";
 const features = [
 	{
 		icon: Shield,
-		title: "3-Level Protection",
-		subtitle: "Watch • Warn • Block",
+		title: "Pattern Memory",
+		subtitle: "Learns What Breaks",
 		description:
-			"Granular file protection with Watch (silent snapshots), Warn (confirm before save), and Block (require note). Team policies via .snapbackrc sync across your organization.",
+			"SnapBack learns what went wrong in YOUR codebase. Watch level auto-snapshots what you care about. Warn level asks before changes. Block level creates audit trails. Your protection rules sync across the team.",
 		benefits: [
-			"Silent auto-snapshots for low-risk files",
-			"Confirmation dialogs for sensitive changes",
-			"Required notes for critical files (audit trail)",
-			"Team-wide policy enforcement via .snapbackrc",
+			"Auto-snapshots remember what changes matter",
+			"Confirmation dialogs for risky edits",
+			"Audit trail for critical file modifications",
+			"Team-wide consistency via .snapbackrc",
 		],
 		docsLink: "/docs/concepts/protection-levels",
 		color: "text-emerald-400",
@@ -24,15 +24,15 @@ const features = [
 	},
 	{
 		icon: Clock,
-		title: "Session Time-Travel",
-		subtitle: "Multi-File Rollback",
+		title: "Learns from Outcomes",
+		subtitle: "Gets Smarter Over Time",
 		description:
-			"AI often changes 5+ files at once. Sessions group related snapshots with atomic restore—rollback entire features, not just individual files.",
+			"Every time you restore files, SnapBack learns what patterns caused problems. Day 1: detects 94% of issues. Day 30: knows YOUR codebase's specific risks. Month 3: catches patterns before you even notice them.",
 		benefits: [
-			"Auto-grouped snapshots (idle, blur, commit, task triggers)",
-			"Atomic multi-file restore in one click",
-			"Session timeline with visual diff preview",
-			"105s idle detection for automatic finalization",
+			"Day 1: 94% accurate out of the box",
+			"Day 30: Learns your specific patterns",
+			"Month 3: Detects what others miss",
+			"Outcome loop: Restore → Learn → Improve",
 		],
 		docsLink: "/docs/concepts/sessions",
 		color: "text-blue-400",
@@ -40,15 +40,15 @@ const features = [
 	},
 	{
 		icon: Brain,
-		title: "Guardian AI Detection",
-		subtitle: "94% Accuracy",
+		title: "Detects What Breaks",
+		subtitle: "94% Accurate",
 		description:
-			"Multi-plugin risk engine detects secrets (entropy + regex), test mocks in production, and phantom dependencies. Real-time confidence scoring on every change.",
+			"Catches hardcoded secrets, phantom dependencies, test code in production, and risky patterns. Every change gets a risk score. You see exactly what's dangerous and why.",
 		benefits: [
-			"Secret detection with Shannon entropy analysis",
-			"Mock/test artifact detection in production code",
-			"Phantom dependency detection (import ↔ package.json)",
-			"Aggregated risk scoring (low/medium/high/critical)",
+			"Hardcoded secrets (API keys, passwords)",
+			"Phantom dependencies (imports without package.json entry)",
+			"Test mocks in production code",
+			"Per-change risk scoring in real-time",
 		],
 		docsLink: "/docs/how-to/guardian-detection",
 		color: "text-purple-400",
@@ -56,15 +56,15 @@ const features = [
 	},
 	{
 		icon: AlertTriangle,
-		title: "Severity Analysis",
-		subtitle: "Risk-Based Workflows",
+		title: "Severity Matters",
+		subtitle: "Risk-Based Action",
 		description:
-			"Each Guardian detection includes severity classification (low/medium/high/critical) with actionable recommendations. Never miss critical issues.",
+			"Not all issues are equal. Critical finds block. High-risk changes warn. Low-risk changes proceed. You decide the rules. When AI tools break something, you see exactly what went wrong and how to fix it.",
 		benefits: [
-			"Color-coded risk levels in VS Code",
-			"Contextual recommendations per severity",
-			"Integration with protection levels (auto-block critical)",
-			"Real-time notifications with progressive disclosure",
+			"Color-coded severity levels in VS Code",
+			"Actionable remediation suggestions",
+			"Auto-blocking for critical issues",
+			"Learn from each detection",
 		],
 		docsLink: "/docs/concepts/severity",
 		color: "text-orange-400",
@@ -72,16 +72,16 @@ const features = [
 	},
 	{
 		icon: Plug,
-		title: "MCP Integration",
-		subtitle: "Coming Soon",
+		title: "AI Agent Ready",
+		subtitle: "MCP Protocol",
 		comingSoon: true,
 		description:
-			"Model Context Protocol server will expose Guardian, dependency checks, and snapshot creation to AI assistants like Claude and Cursor. Analyze risks before AI makes changes.",
+			"Give Claude, Cursor, and other AI agents access to SnapBack's pattern memory. Before they change 10 files, they ask SnapBack: 'What patterns will break this?' and 'Did this cause problems before?'",
 		benefits: [
-			"analyze_risk tool for Guardian detection (<200ms)",
-			"check_dependencies for phantom detection (<300ms)",
-			"create_checkpoint for manual snapshots (<500ms)",
-			"JSON-RPC 2.0 stdio transport (universal compatibility)",
+			"Check for risky patterns before applying changes",
+			"Query if this refactor pattern caused problems",
+			"Checkpoint before dangerous operations",
+			"Agents learn alongside developers",
 		],
 		docsLink: "/docs/integrations/mcp-server",
 		color: "text-cyan-400",
@@ -89,15 +89,15 @@ const features = [
 	},
 	{
 		icon: Zap,
-		title: "Performance Budgets",
-		subtitle: "Lightning Fast",
+		title: "Lightning Fast",
+		subtitle: "<200ms snapshots",
 		description:
-			"Every operation measured: <200ms snapshot creation, <10ms protection checks, <50ms session finalization avg. Performance tests enforce budgets.",
+			"Snapshots happen in under 200ms. Checks take 10ms. Restore is instant. Speed matters because developers won't wait around for safety—it has to vanish into the background.",
 		benefits: [
-			"SQLite WAL mode for concurrent reads",
-			"Hash-based deduplication (>90% space savings)",
-			"Event bus pub/sub <10ms latency",
-			"Indexed queries <10ms (session manifests, snapshots)",
+			"Snapshot creation in <200ms",
+			"Risk checks <10ms (per-change)",
+			"Session finalization <50ms avg",
+			"90% space savings with deduplication",
 		],
 		docsLink: "/docs/architecture/performance",
 		color: "text-yellow-400",
@@ -117,15 +117,14 @@ export default function FeaturesClient() {
 					className="text-center mb-16"
 				>
 					<h1 className="text-5xl lg:text-7xl font-bold tracking-tight text-white mb-6">
-						Powerful{" "}
+						SnapBack Learns
+						<br />
 						<span className="bg-gradient-to-r from-emerald-400 to-emerald-500 bg-clip-text text-transparent">
-							Protection
-						</span>{" "}
-						Features
+							What Breaks
+						</span>
 					</h1>
 					<p className="text-xl lg:text-2xl text-gray-300 max-w-3xl mx-auto mb-8">
-						Built for developers who use AI tools. Every feature designed to
-						keep you safe while moving fast.
+						Every time you undo a mistake, SnapBack gets smarter. Day 1 catches 94% of issues. Day 30 knows YOUR codebase. Month 3 prevents what you didn't even know could break.
 					</p>
 					<div className="flex flex-wrap justify-center gap-4">
 						<Link
@@ -222,10 +221,10 @@ export default function FeaturesClient() {
 					className="bg-gradient-to-r from-emerald-400/20 to-emerald-500/20 border border-emerald-400/30 rounded-2xl p-12 text-center"
 				>
 					<h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
-						Ready to protect your code?
+						Ready to learn smarter?
 					</h2>
 					<p className="text-xl text-gray-300 mb-8">
-						Install the VS Code extension and start snapshotting in seconds.
+						Install SnapBack for VS Code. It learns from your first mistake.
 					</p>
 					<div className="flex flex-wrap justify-center gap-4">
 						<a

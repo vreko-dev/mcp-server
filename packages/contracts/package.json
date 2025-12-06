@@ -10,6 +10,7 @@
     "directory": "packages/contracts"
   },
   "dependencies": {
+    "@asteasolutions/zod-to-openapi": "catalog:",
     "nanoid": "catalog:",
     "zod": "catalog:"
   },

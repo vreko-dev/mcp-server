@@ -258,5 +258,6 @@ export async function flushSentry(timeout = 2000): Promise<boolean> {
 	return await Sentry.close(timeout);
 }
 
-// Re-export common Sentry functions
-export { Sentry };
+// Export wrapper functions only (not the full Sentry type to avoid DTS generation issues)
+// Applications should use the specific functions exported above
+// If direct Sentry access is needed: import * as Sentry from "@sentry/node"

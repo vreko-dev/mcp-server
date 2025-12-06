@@ -18,6 +18,8 @@ export default defineConfig({
 			composite: false,
 			incremental: false,
 			rootDir: undefined,
+			// Skip problematic @sentry/node type resolution during DTS generation
+			skipLibCheck: true,
 		},
 	},
 	clean: true,
@@ -28,5 +30,25 @@ export default defineConfig({
 	treeshake: true,
 	target: "es2022",
 	skipNodeModulesBundle: true,
-	external: ["next", "next/*", "next/headers", "next/server", "next/navigation", "react", "react-dom"],
+	noExternal: [
+		// Allow Sentry types to be processed (don't skip)
+		"@sentry/node",
+		"@sentry/profiling-node",
+	],
+	external: [
+		// React/Next frameworks
+		"next",
+		"next/*",
+		"next/headers",
+		"next/server",
+		"next/navigation",
+		"react",
+		"react-dom",
+		// Node.js built-ins
+		// These must NOT be imported directly in types; they're only for runtime
+		"node:http",
+		"node:diagnostics_channel",
+		"http",
+		"diagnostics_channel",
+	],
 });

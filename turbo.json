@@ -21,7 +21,8 @@
 		},
 		"type-check": {
 			"dependsOn": ["^type-check"],
-			"inputs": ["$TURBO_DEFAULT$"]
+			"inputs": ["$TURBO_DEFAULT$"],
+			"cache": true
 		},
 		"clean": {
 			"cache": false
@@ -47,15 +48,16 @@
 		},
 		"lint": {
 			"dependsOn": ["^lint"],
-			"inputs": ["$TURBO_DEFAULT$"]
+			"inputs": ["$TURBO_DEFAULT$", "biome.json"],
+			"cache": true
 		},
 		"test": {
 			"dependsOn": ["^build"],
-			"inputs": ["$TURBO_DEFAULT$"]
+			"inputs": ["$TURBO_DEFAULT$", "**/*.test.ts", "**/*.spec.ts", "vitest.config.ts"]
 		},
 		"test:coverage": {
 			"dependsOn": ["^build"],
-			"inputs": ["$TURBO_DEFAULT$"],
+			"inputs": ["$TURBO_DEFAULT$", "**/*.test.ts", "**/*.spec.ts", "vitest.config.ts"],
 			"outputs": ["coverage/**"]
 		},
 		"docker-build": {
@@ -118,13 +120,29 @@
 			"cache": false,
 			"persistent": true
 		},
+		"@snapback/infrastructure#build": {
+			"outputs": ["dist/**"],
+			"dependsOn": ["^build"],
+			"inputs": [
+				"$TURBO_DEFAULT$",
+				"tsup.config.ts",
+				"src/sentry/**/*"
+			],
+			"cache": true
+		},
 		"@snapback-oss/contracts#build": {
 			"outputs": ["dist/**"],
 			"dependsOn": ["^build"]
 		},
 		"@snapback-oss/infrastructure#build": {
 			"outputs": ["dist/**"],
-			"dependsOn": ["^build"]
+			"dependsOn": ["^build"],
+			"inputs": [
+				"$TURBO_DEFAULT$",
+				"tsup.config.ts",
+				"src/sentry/**/*"
+			],
+			"cache": true
 		},
 		"@snapback-oss/config#build": {
 			"outputs": ["dist/**"],

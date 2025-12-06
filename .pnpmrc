@@ -11,6 +11,7 @@ hoist-workspace-packages=true
 # This hoists drizzle-orm to the root node_modules so Better Auth can find it
 public-hoist-pattern[]=*drizzle-orm*
 public-hoist-pattern[]=*better-sqlite3*
+public-hoist-pattern[]=*@supabase*
 
 # SHAMEFULLY HOIST - Forces all dependencies to root node_modules
 # Required for Better Auth's dynamic imports to work correctly

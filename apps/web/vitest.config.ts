@@ -1,6 +1,10 @@
 import path from "node:path";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vitest/config";
+import { config } from "dotenv";
+
+// Load test env file for Supabase configuration
+config({ path: ".env.test" });
 
 export default defineConfig({
 	plugins: [react()],

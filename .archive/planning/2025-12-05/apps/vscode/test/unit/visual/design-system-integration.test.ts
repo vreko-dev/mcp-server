@@ -13,18 +13,9 @@ suite("Visual: Design System Integration", () => {
 			protected: 1,
 		});
 
-		assert.ok(
-			statusText.includes(DesignTokens.icons.watch),
-			"Status bar should use design token icons",
-		);
-		assert.ok(
-			statusText.includes(DesignTokens.icons.warn),
-			"Status bar should use design token icons",
-		);
-		assert.ok(
-			statusText.includes(DesignTokens.icons.block),
-			"Status bar should use design token icons",
-		);
+		assert.ok(statusText.includes(DesignTokens.icons.watch), "Status bar should use design token icons");
+		assert.ok(statusText.includes(DesignTokens.icons.warn), "Status bar should use design token icons");
+		assert.ok(statusText.includes(DesignTokens.icons.block), "Status bar should use design token icons");
 
 		// File decorations use design tokens
 		const watchDecoration = FileDecorationProvider.getDecoration("watch");
@@ -36,10 +27,7 @@ suite("Visual: Design System Integration", () => {
 
 		// Notifications use design tokens
 		const notification = NotificationFormatter.createWatchNotification("test");
-		assert.ok(
-			notification.includes(DesignTokens.icons.watch),
-			"Notifications should use design token icons",
-		);
+		assert.ok(notification.includes(DesignTokens.icons.watch), "Notifications should use design token icons");
 	});
 
 	test("no UI component should use lock icon", () => {
@@ -58,20 +46,13 @@ suite("Visual: Design System Integration", () => {
 		];
 
 		components.forEach((component) => {
-			assert.ok(
-				!component.includes("🔒"),
-				"No component should use deprecated lock icon",
-			);
+			assert.ok(!component.includes("🔒"), "No component should use deprecated lock icon");
 		});
 	});
 
 	test("color consistency across protection levels", () => {
 		// Each level should use its designated color from design tokens
-		const levels: Array<"watch" | "warn" | "block"> = [
-			"watch",
-			"warn",
-			"block",
-		];
+		const levels: Array<"watch" | "warn" | "block"> = ["watch", "warn", "block"];
 
 		levels.forEach((level) => {
 			const color = DesignTokens.getColor(level);

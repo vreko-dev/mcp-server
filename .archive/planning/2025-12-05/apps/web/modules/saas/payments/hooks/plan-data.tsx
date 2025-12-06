@@ -15,12 +15,7 @@ export function usePlanData() {
 		free: {
 			title: "Free",
 			description: "Perfect for getting started",
-			features: [
-				"VS Code extension",
-				"CLI tool included",
-				"Unlimited local checkpoints",
-				"Community support",
-			],
+			features: ["VS Code extension", "CLI tool included", "Unlimited local checkpoints", "Community support"],
 		},
 		solo: {
 			title: "Solo",

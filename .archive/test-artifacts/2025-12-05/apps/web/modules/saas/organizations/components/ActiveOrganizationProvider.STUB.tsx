@@ -3,10 +3,6 @@
 
 import type { ReactNode } from "react";
 
-export function ActiveOrganizationProvider({
-	children,
-}: {
-	children: ReactNode;
-}) {
+export function ActiveOrganizationProvider({ children }: { children: ReactNode }) {
 	return <>{children}</>;
 }

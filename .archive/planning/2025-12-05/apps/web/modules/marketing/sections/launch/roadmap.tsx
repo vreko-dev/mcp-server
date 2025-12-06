@@ -58,12 +58,9 @@ export function Roadmap() {
 					<div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-500 text-xs font-medium uppercase tracking-wider">
 						The Roadmap
 					</div>
-					<h2 className="text-3xl lg:text-5xl font-bold text-white">
-						What We're Building—And When
-					</h2>
+					<h2 className="text-3xl lg:text-5xl font-bold text-white">What We're Building—And When</h2>
 					<p className="text-lg text-[#A0A0A0] max-w-2xl mx-auto">
-						We develop in the open. Here's our timeline. Track our progress or
-						request features on GitHub.
+						We develop in the open. Here's our timeline. Track our progress or request features on GitHub.
 					</p>
 				</div>
 
@@ -80,18 +77,13 @@ export function Roadmap() {
 						>
 							{/* Phase Header */}
 							<div className="flex items-center gap-4 pb-4 border-b border-[#262626]">
-								<h3 className="text-lg font-bold text-white">
-									{phase.quarter}
-								</h3>
+								<h3 className="text-lg font-bold text-white">{phase.quarter}</h3>
 							</div>
 
 							{/* Items */}
 							<div className="space-y-3 ml-4">
 								{phase.items.map((item, itemIndex) => (
-									<div
-										key={itemIndex}
-										className="flex items-center gap-3 text-[#A0A0A0]"
-									>
+									<div key={itemIndex} className="flex items-center gap-3 text-[#A0A0A0]">
 										<span className="text-base">{item.icon}</span>
 										<span>{item.label}</span>
 									</div>

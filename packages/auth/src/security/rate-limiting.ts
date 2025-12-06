@@ -8,7 +8,6 @@
  */
 
 import { logger } from "@snapback/infrastructure";
-import { calculateBackoff } from "@snapback-oss/sdk";
 
 /**
  * Rate limit configuration
@@ -279,7 +278,7 @@ export function calculateCredentialStuffingScore(
 /**
  * Get exponential backoff delay
  *
- * Uses centralized backoff algorithm from SDK:
+ * Uses exponential backoff algorithm:
  * - Attempt 1: 1 second
  * - Attempt 2: 2 seconds
  * - Attempt 3: 4 seconds
@@ -289,13 +288,21 @@ export function calculateCredentialStuffingScore(
  * @param maxDelaySeconds Maximum delay cap
  * @returns Delay in seconds
  */
+function calculateBackoffSeconds(
+	attemptNumber: number,
+	maxDelaySeconds = 3600, // 1 hour max
+): number {
+	// Exponential: seconds * 2^(attempt - 1)
+	const exponential = 1 * 2 ** (attemptNumber - 1);
+	// Cap at maximum
+	return Math.min(exponential, maxDelaySeconds);
+}
+
 export function getExponentialBackoffDelay(
 	attemptNumber: number,
 	maxDelaySeconds = 3600, // 1 hour max
 ): number {
-	return (
-		calculateBackoff(attemptNumber, 1000, maxDelaySeconds * 1000, false) / 1000
-	);
+	return calculateBackoffSeconds(attemptNumber, maxDelaySeconds);
 }
 
 /**

@@ -19,7 +19,7 @@
  */
 
 import { execSync } from "node:child_process";
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -136,7 +136,7 @@ function extractAffectedPackages(commits) {
 /**
  * Generate Pattern Memory-focused changelog entry
  */
-function generateChangesetDescription(pkg, data) {
+function generateChangesetDescription(_pkg, data) {
 	const commits = data.commits;
 	const hasFeat = commits.some((c) => c.type === "feat");
 	const hasFix = commits.some((c) => c.type === "fix");
@@ -149,7 +149,7 @@ function generateChangesetDescription(pkg, data) {
 	}
 
 	if (hasRefactor) {
-		description += `- Code consolidation and messaging alignment with Pattern Memory narrative\n`;
+		description += "- Code consolidation and messaging alignment with Pattern Memory narrative\n";
 	}
 
 	if (hasFix) {

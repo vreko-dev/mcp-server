@@ -245,6 +245,7 @@ catalogs:
     redis: 4.7.1
     rehype-autolink-headings: 7.1.0
     rehype-mermaid: 2.1.0
+    rehype-pretty-code: 0.14.1
     rehype-slug: 6.0.0
     remark-gfm: 4.0.1
     remark-smartypants: 3.0.2
@@ -272,6 +273,7 @@ catalogs:
     tweetnacl: 1.0.3
     typescript: 5.9.2
     ufo: 1.6.1
+    use-debounce: 10.0.6
     use-intl: 4.3.9
     usehooks-ts: 3.1.1
     uuid: 13.0.0

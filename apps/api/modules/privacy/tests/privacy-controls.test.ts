@@ -61,7 +61,7 @@ describe("Privacy Controls API - TDD", () => {
 					],
 				},
 				subscription: {
-					plan: "solo",
+					plan: "pro",
 					status: "active",
 					billingCycle: "monthly",
 				},

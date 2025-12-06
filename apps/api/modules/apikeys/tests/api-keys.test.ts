@@ -109,7 +109,7 @@ describe("API Key Management", () => {
 	describe("API Key Permissions", () => {
 		it("should assign correct permissions based on plan", () => {
 			// GIVEN: Different plans
-			const plans = ["free", "solo", "team"];
+			const plans = ["free", "pro", "team"];
 
 			// WHEN: We check permissions for each plan
 			const permissions = plans.map((plan) => {
@@ -122,7 +122,7 @@ describe("API Key Management", () => {
 							customRules: true,
 							teamSharing: true,
 						};
-					case "solo":
+					case "pro":
 						return {
 							maxSnapshots: undefined,
 							cloudBackup: true,
@@ -143,7 +143,7 @@ describe("API Key Management", () => {
 
 			// THEN: Each plan should have appropriate permissions
 			expect(permissions[0].maxSnapshots).toBe(100); // free
-			expect(permissions[1].cloudBackup).toBe(true); // solo
+			expect(permissions[1].cloudBackup).toBe(true); // pro
 			expect(permissions[2].teamSharing).toBe(true); // team
 		});
 	});

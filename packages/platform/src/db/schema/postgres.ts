@@ -25,7 +25,7 @@ export const subscriptionStatusEnum = pgEnum("subscription_status", [
 	"paused",
 ]);
 
-export const planTypeEnum = pgEnum("plan_type", ["free", "solo", "team", "enterprise"]);
+export const planTypeEnum = pgEnum("plan_type", ["free", "pro", "team", "enterprise"]);
 
 // Tables
 export const user = pgTable("user", {

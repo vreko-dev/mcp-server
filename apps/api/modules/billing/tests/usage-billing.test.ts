@@ -130,7 +130,7 @@ describe("Usage-Based Billing", () => {
 		it("should calculate snapshot overage charges", async () => {
 			// GIVEN: Usage exceeding included amount
 			const usage = {
-				tier: "solo",
+				tier: "pro",
 				snapshotsUsed: 1250,
 				snapshotsIncluded: 1000,
 				overageRate: 0.01, // $0.01 per snapshot

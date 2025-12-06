@@ -35,7 +35,7 @@ describe("Telemetry Proxy API - TDD", () => {
 
 			const userId = "user_telemetry_123";
 			const subscription = {
-				plan: "solo",
+				plan: "pro",
 				status: "active",
 			};
 
@@ -55,7 +55,7 @@ describe("Telemetry Proxy API - TDD", () => {
 
 			// THEN: Should enrich and forward to PostHog
 			expect(enrichedEvent.distinctId).toBe(userId);
-			expect(enrichedEvent.properties.plan).toBe("solo");
+			expect(enrichedEvent.properties.plan).toBe("pro");
 			expect(enrichedEvent.properties.filesProtected).toBe(5);
 		});
 
@@ -138,12 +138,12 @@ describe("Telemetry Proxy API - TDD", () => {
 			// GIVEN: A user requesting feature flags
 			const _userId = "user_flags_123";
 			const _subscription = {
-				plan: "solo",
+				plan: "pro",
 			};
 
 			// WHEN: Fetching feature flags
 			const featureFlags = {
-				cloudBackup: true, // Solo tier has this
+				cloudBackup: true, // Pro tier has this
 				advancedDetection: true, // Solo tier has this
 				customRules: false, // Team tier only
 				teamSharing: false, // Team tier only

@@ -1,6 +1,6 @@
 "use client";
 
-import { AnalyticsEvents, trackEvent } from "@analytics";
+import { AnalyticsEvents, useAnalytics } from "@analytics";
 import { Button } from "@ui/components/button";
 import {
 	Dialog,
@@ -28,7 +28,7 @@ export function ShareDialog({
 	const [copied, setCopied] = useState(false);
 	const { trackEvent } = useAnalytics();
 
-	const shareText = `Just recovered ${linesRecovered} lines of code with @SnapBackDev. 
+	const shareText = `Just recovered ${linesRecovered} lines of code with @SnapBackDev.
 
 If you're using AI coding tools, you need this foundation. 🛡️
 
@@ -105,10 +105,6 @@ If you're using AI coding tools, you need this foundation. 🛡️
 						{copied ? "Copied" : "Copy Text"}
 					</Button>
 				</DialogFooter>
-			</DialogContent>
-		</Dialog>
-	);
-}
 			</DialogContent>
 		</Dialog>
 	);

@@ -159,7 +159,7 @@ export interface TestUser {
 	id: string;
 	email: string;
 	name: string;
-	tier: "free" | "solo" | "team" | "enterprise";
+	tier: "free" | "pro" | "team" | "enterprise";
 	createdAt: Date;
 	updatedAt: Date;
 }

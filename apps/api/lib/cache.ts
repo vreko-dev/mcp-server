@@ -2,7 +2,15 @@ import crypto from "node:crypto";
 import { logger } from "@snapback/infrastructure";
 import { snapbackSchema } from "@snapback/platform";
 import { and, eq, gt } from "drizzle-orm";
-import type { NextRequest } from "next/server";
+
+// import type { NextRequest } from "next/server";
+
+// Temporary type to avoid Next.js dependency in API service
+interface NextRequest {
+	url: string;
+	method: string;
+}
+
 import { getDb } from "../src/services/database";
 
 const { responseCache } = snapbackSchema;

@@ -4,7 +4,7 @@ import { boolean, integer, json, pgEnum, pgTable, text, timestamp } from "drizzl
 import { organization, usageLimits, user } from "../postgres";
 
 // Enums - matching those in postgres.ts
-export const planTypeEnum = pgEnum("plan_type", ["free", "solo", "team", "enterprise"]);
+export const planTypeEnum = pgEnum("plan_type", ["free", "pro", "team", "enterprise"]);
 
 export const subscriptionStatusEnum = pgEnum("subscription_status", [
 	"active",

@@ -6,7 +6,7 @@
 - [x] **Next.js 16 Native Sitemaps** with `priority` and `changeFrequency`
   - Web: `/apps/web/app/sitemap.ts` (5 marketing pages prioritized)
   - Docs: `/apps/docs/app/sitemap.ts` (auto-generated from Fumadocs)
-  
+
 - [x] **Robots.txt** with AI crawler controls
   - Blocks: `/api/`, `/_next/`, `/auth/`, `/dashboard/`
   - AI crawlers: GPTBot, ChatGPT-User (allowed on `/blog/`)
@@ -133,5 +133,5 @@ pnpm dev
 
 ---
 
-**Last Updated:** 2025-12-05  
+**Last Updated:** 2025-12-05
 **Status:** ✅ Production-ready, industry-standard + cut above

@@ -7,9 +7,9 @@ export const PLAN_PERMISSIONS = {
 		advancedAnalytics: false,
 		apiAccess: false,
 	},
-	solo: {
+	pro: {
 		cloudBackup: true,
-		maxSnapshots: 500,
+		maxSnapshots: -1, // unlimited
 		cloudStorageQuotaMb: 5120, // 5GB
 		teamMembers: 1,
 		advancedAnalytics: true,

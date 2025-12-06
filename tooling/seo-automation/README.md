@@ -18,8 +18,8 @@ This package provides comprehensive, automated SEO polish that runs during the p
 ### ✅ What This Package Adds (External Libraries Needed)
 
 #### 1. Markdown Linting
-**Tool**: `markdownlint-cli2` + `markdownlint`  
-**Why Needed**: Turbo can't validate markdown syntax  
+**Tool**: `markdownlint-cli2` + `markdownlint`
+**Why Needed**: Turbo can't validate markdown syntax
 **What It Does**:
 - Heading hierarchy (H1 → H2 → H3, no skips)
 - Consistent formatting (ATX headers, dash lists)
@@ -27,8 +27,8 @@ This package provides comprehensive, automated SEO polish that runs during the p
 - HTML element whitelist for MDX
 
 #### 2. Image Optimization
-**Tool**: `sharp` (high-performance image processing)  
-**Why Needed**: Turbo can't transform images  
+**Tool**: `sharp` (high-performance image processing)
+**Why Needed**: Turbo can't transform images
 **What It Does**:
 - Convert to WebP/AVIF (60-80% size reduction)
 - Generate 8 responsive sizes (640w-3840w)
@@ -37,8 +37,8 @@ This package provides comprehensive, automated SEO polish that runs during the p
 - Validate alt text presence
 
 #### 3. SEO Content Validation
-**Tools**: `gray-matter` + `zod` + custom algorithms  
-**Why Needed**: Turbo can't analyze content quality  
+**Tools**: `gray-matter` + `zod` + custom algorithms
+**Why Needed**: Turbo can't analyze content quality
 **What It Does**:
 - Metadata schema validation (Zod)
 - Keyword density analysis (prevent over-optimization)
@@ -47,8 +47,8 @@ This package provides comprehensive, automated SEO polish that runs during the p
 - Heading hierarchy validation
 
 #### 4. Link Validation
-**Tools**: Custom (uses Node.js `fs` + `glob`)  
-**Why Needed**: Turbo can't check file references  
+**Tools**: Custom (uses Node.js `fs` + `glob`)
+**Why Needed**: Turbo can't check file references
 **What It Does**:
 - Broken internal link detection
 - Missing page warnings
@@ -164,25 +164,25 @@ pnpm seo:full
 ## Patterns from Research
 
 ### Industry Best Practices (Implemented)
-✓ Answer-first approach (40-60 words, from Onely research)  
-✓ Long-form content (>2,000 words for AI citations)  
-✓ Structured formats (lists, tables for LLM extraction)  
-✓ Original research signals (E-E-A-T)  
-✓ Content freshness (updated <30 days)  
-✓ Schema markup (FAQ, BlogPosting, BreadcrumbList)  
+✓ Answer-first approach (40-60 words, from Onely research)
+✓ Long-form content (>2,000 words for AI citations)
+✓ Structured formats (lists, tables for LLM extraction)
+✓ Original research signals (E-E-A-T)
+✓ Content freshness (updated <30 days)
+✓ Schema markup (FAQ, BlogPosting, BreadcrumbList)
 
 ### Web Patterns (2025)
-✓ WebP/AVIF format priority  
-✓ Responsive image srcset generation  
-✓ Blur-up placeholder technique  
-✓ Lazy loading below-the-fold  
-✓ CDN-friendly asset structure  
+✓ WebP/AVIF format priority
+✓ Responsive image srcset generation
+✓ Blur-up placeholder technique
+✓ Lazy loading below-the-fold
+✓ CDN-friendly asset structure
 
 ### Markdown Patterns
-✓ ATX headers (##) over Setext  
-✓ Fenced code blocks with language tags  
-✓ Consistent list markers (-)  
-✓ Semantic heading hierarchy  
+✓ ATX headers (##) over Setext
+✓ Fenced code blocks with language tags
+✓ Consistent list markers (-)
+✓ Semantic heading hierarchy
 
 ## Recipes
 

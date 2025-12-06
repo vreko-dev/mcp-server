@@ -1,17 +1,17 @@
 /**
  * Tier Definitions - Single Source of Truth for Alpha
  *
- * Alpha Scope: Free and Solo tiers are ACTIVE
+ * Alpha Scope: Free and Pro tiers are ACTIVE
  * Team and Enterprise are designed stubs (feature flag gated)
  */
 
-export type Tier = "free" | "solo" | "team" | "enterprise";
+export type Tier = "free" | "pro" | "team" | "enterprise";
 
 /**
  * Active tiers for Alpha release
  * Used by docs PlanSwitcher and feature gating
  */
-export const ALPHA_ACTIVE_TIERS: ReadonlyArray<Tier> = ["free", "solo"] as const;
+export const ALPHA_ACTIVE_TIERS: ReadonlyArray<Tier> = ["free", "pro"] as const;
 
 /**
  * Feature flag: Team/Enterprise features disabled in Alpha
@@ -39,25 +39,25 @@ export const TIER_CAPABILITIES: Record<Tier, TierCapabilities> = {
 		seats: 1,
 		cloudBackup: false,
 		backendMCP: false,
-		maxSnapshots: 50,
-		storageMB: 0,
-		retentionDays: 30,
+		maxSnapshots: -1, // unlimited local
+		storageMB: 0, // local only
+		retentionDays: 7, // local retention
 	},
-	solo: {
+	pro: {
 		seats: 1,
 		cloudBackup: true,
 		backendMCP: true,
-		maxSnapshots: 500,
+		maxSnapshots: -1, // unlimited
 		storageMB: 5 * 1024, // 5GB
-		retentionDays: 90,
+		retentionDays: 30,
 	},
 	team: {
-		seats: 10,
+		seats: -1, // unlimited seats
 		cloudBackup: true,
 		backendMCP: true,
-		maxSnapshots: 2000,
-		storageMB: 25 * 1024, // 25GB
-		retentionDays: 365,
+		maxSnapshots: -1, // unlimited
+		storageMB: 25 * 1024, // 25GB per user
+		retentionDays: 365, // 1 year
 	},
 	enterprise: {
 		seats: -1, // unlimited

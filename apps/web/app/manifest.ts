@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 
 /**
  * Web App Manifest for SnapBack
- * 
+ *
  * Provides PWA metadata and enhances mobile experience
  * Industry best practices for installable web apps
  */

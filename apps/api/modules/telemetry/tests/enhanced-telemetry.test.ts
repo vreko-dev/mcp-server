@@ -57,8 +57,8 @@ describe("Enhanced Telemetry API Tests", () => {
 				},
 			});
 
-			const soloContext = createMockORPCContext({
-				subscription: { plan: "solo" },
+			const proContext = createMockORPCContext({
+				subscription: { plan: "pro" },
 				apiKey: {
 					permissions: {
 						maxSnapshots: undefined,
@@ -95,7 +95,7 @@ describe("Enhanced Telemetry API Tests", () => {
 					},
 				},
 				{
-					context: soloContext,
+					context: proContext,
 					expectedFlags: {
 						cloudBackup: true,
 						advancedDetection: true,
@@ -134,7 +134,7 @@ describe("Enhanced Telemetry API Tests", () => {
 			const users = Array.from({ length: 10 }, (_, i) =>
 				createMockORPCContext({
 					user: { id: `user_${i}`, email: `user${i}@example.com` },
-					subscription: { plan: "solo" },
+					subscription: { plan: "pro" },
 				}),
 			);
 

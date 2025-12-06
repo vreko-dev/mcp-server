@@ -104,16 +104,16 @@ describe("Snapshot API - TDD", () => {
 				used: 100,
 				limit: 100,
 				upgradeUrl: "/pricing",
-				suggestedPlan: "solo",
+				suggestedPlan: "pro",
 			};
 
 			expect(expectedError.error).toBe("Monthly snapshot limit exceeded");
 		});
 
-		it("should allow cloud backup for solo/team tier (opt-in)", async () => {
-			// GIVEN: A solo tier user with cloudBackup permission
-			const userId = "user_solo_123";
-			const apiKeyId = "key_solo";
+		it("should allow cloud backup for pro/team tier (opt-in)", async () => {
+			// GIVEN: A pro tier user with cloudBackup permission
+			const userId = "user_pro_123";
+			const apiKeyId = "key_pro";
 
 			const snapshotData = {
 				userId,
@@ -123,8 +123,8 @@ describe("Snapshot API - TDD", () => {
 				fileCount: 5,
 				totalSizeBytes: 150000,
 				fileHashes: ["hash1", "hash2", "hash3", "hash4", "hash5"],
-				cloudBackupEnabled: true, // Solo tier allows this
-				cloudBackupUrl: "s3://snapback-backups/user_solo_123/snapshot_456",
+				cloudBackupEnabled: true, // Pro tier allows this
+				cloudBackupUrl: "s3://snapback-backups/user_pro_123/snapshot_456",
 			};
 
 			const mockSnapshot = {

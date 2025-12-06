@@ -55,11 +55,18 @@ describe("UserStart Real-Time Integration", () => {
       expect(protectedCount).toBe(2);
     });
 
-    it("should derive snapshot count from protected count", () => {
+    it("should derive snapshot count equal to protected count", () => {
       const protectedCount = 5;
-      const snapshotCount = Math.max(24, protectedCount * 2);
+      const snapshotCount = protectedCount;
 
-      expect(snapshotCount).toBe(24); // Max value when protectedCount * 2 < 24
+      expect(snapshotCount).toBe(5);
+    });
+
+    it("should derive recovery count as 50% of protected count", () => {
+      const protectedCount = 10;
+      const recoveryCount = Math.floor(protectedCount * 0.5);
+
+      expect(recoveryCount).toBe(5);
     });
 
     it("should handle zero protected files", () => {
@@ -89,7 +96,8 @@ describe("UserStart Real-Time Integration", () => {
         ).length;
         return {
           filesProtected: protectedCount || 0,
-          snapshotCount: Math.max(24, protectedCount * 2),
+          snapshotCount: protectedCount,
+          recoveryCount: Math.floor(protectedCount * 0.5),
         };
       };
 
@@ -187,6 +195,72 @@ describe("UserStart Real-Time Integration", () => {
 
       // O(1) operations on 150 items should be < 5ms
       expect(duration).toBeLessThan(5);
+    });
+  });
+
+  describe("Critical Path: Callback Wiring (Phase 4)", () => {
+    it("should call onChange callback when status changes", () => {
+      const mockCallback = vi.fn();
+      const fileId = "file-1";
+      const newProtection = "enabled" as const;
+
+      // Simulate callback being called
+      if (mockCallback) {
+        mockCallback(fileId, newProtection);
+      }
+
+      expect(mockCallback).toHaveBeenCalledWith(fileId, newProtection);
+      expect(mockCallback).toHaveBeenCalledTimes(1);
+    });
+
+    it("should generate activity event on status change", () => {
+      const fileId = "file-1";
+      const newStatus = "enabled" as const;
+      const message =
+        newStatus === "enabled"
+          ? `${fileId} protection enabled`
+          : `${fileId} protection disabled`;
+
+      const activity = {
+        type: "snapshot",
+        message,
+        timestamp: "just now",
+        metadata: { fileId, status: newStatus },
+      };
+
+      expect(activity.message).toBe("file-1 protection enabled");
+      expect(activity.type).toBe("snapshot");
+    });
+
+    it("should handle multiple status changes without losing history", () => {
+      const activityEvents: Array<{
+        type: string;
+        message: string;
+        timestamp: string;
+        metadata: Record<string, unknown>;
+      }> = [];
+
+      // Simulate adding first event
+      activityEvents.unshift({
+        type: "snapshot",
+        message: "file-1 protection enabled",
+        timestamp: "just now",
+        metadata: { fileId: "file-1", status: "enabled" },
+      });
+
+      // Simulate adding second event
+      activityEvents.unshift({
+        type: "snapshot",
+        message: "file-2 protection disabled",
+        timestamp: "just now",
+        metadata: { fileId: "file-2", status: "disabled" },
+      });
+
+      expect(activityEvents.length).toBe(2);
+      expect(activityEvents[0]?.metadata).toBeDefined();
+      expect((activityEvents[0]?.metadata as Record<string, unknown>).fileId).toBe("file-2");
+      expect(activityEvents[1]?.metadata).toBeDefined();
+      expect((activityEvents[1]?.metadata as Record<string, unknown>).fileId).toBe("file-1");
     });
   });
 

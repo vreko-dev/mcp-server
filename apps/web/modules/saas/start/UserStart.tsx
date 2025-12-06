@@ -69,7 +69,7 @@ export default function UserStart() {
 
 	// Callback for protection status changes
 	const onProtectionStatusChange = useCallback(
-		(fileId: string, newStatus: string) => {
+		(fileId: string, newStatus: 'enabled' | 'disabled') => {
 			const message =
 				newStatus === "enabled"
 					? `${fileId} protection enabled`

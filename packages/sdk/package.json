@@ -10,24 +10,24 @@
     "directory": "packages/sdk"
   },
   "dependencies": {
-    "@aws-sdk/s3-request-presigner": "^3.500.0",
+    "@aws-sdk/s3-request-presigner": "catalog:",
     "@snapback-oss/sdk": "workspace:*",
-    "@snapback/contracts": "^0.1.2",
-    "@snapback/infrastructure": "^0.1.2",
-    "@types/better-sqlite3": "^7.6.8",
-    "better-sqlite3": "^9.0.0",
-    "ky": "^1.7.2",
-    "minimatch": "^9.0.3",
-    "ow": "^1.1.1",
-    "p-retry": "^6.1.0",
-    "quick-lru": "^7.0.0",
-    "zod": "^4.1.8"
+    "@snapback/contracts": "workspace:*",
+    "@snapback/infrastructure": "workspace:*",
+    "@types/better-sqlite3": "catalog:",
+    "better-sqlite3": "catalog:",
+    "ky": "catalog:",
+    "minimatch": "catalog:",
+    "ow": "catalog:",
+    "p-retry": "catalog:",
+    "quick-lru": "catalog:",
+    "zod": "catalog:"
   },
   "devDependencies": {
-    "@types/node": "^22.0.0",
-    "tsup": "^8.5.0",
-    "typescript": "^5.9.2",
-    "vitest": "^3.2.4"
+    "@types/node": "catalog:",
+    "tsup": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   },
   "exports": {
     ".": {

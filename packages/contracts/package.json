@@ -10,17 +10,17 @@
     "directory": "packages/contracts"
   },
   "dependencies": {
-    "nanoid": "5.1.5",
-    "zod": "4.1.8"
+    "nanoid": "catalog:",
+    "zod": "catalog:"
   },
   "devDependencies": {
-    "@types/node": "^22.0.0",
-    "@types/react": "^18.0.0",
-    "diff": "^5.2.0",
-    "dotenv": "^16.3.1",
-    "tsup": "^8.5.0",
-    "typescript": "^5.9.2",
-    "vitest": "^3.2.4"
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "diff": "catalog:",
+    "dotenv": "catalog:",
+    "tsup": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   },
   "exports": {
     ".": {

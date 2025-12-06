@@ -62,7 +62,7 @@ export function requestIdMiddleware(request: NextRequest): NextResponse {
 
 	// Store in request context for logging
 	// This will be picked up by the logger
-	(request as any).__requestId = requestId;
+	(request as { __requestId?: string }).__requestId = requestId;
 
 	return response;
 }
@@ -70,6 +70,7 @@ export function requestIdMiddleware(request: NextRequest): NextResponse {
 /**
  * Get request ID from request context
  */
-export function extractRequestId(request: any): string | undefined {
-	return request.__requestId || request.headers?.get?.(REQUEST_ID_HEADER);
+export function extractRequestId(request: unknown): string | undefined {
+	const req = request as { __requestId?: string; headers?: { get?: (name: string) => string | undefined } };
+	return req.__requestId || req.headers?.get?.(REQUEST_ID_HEADER);
 }

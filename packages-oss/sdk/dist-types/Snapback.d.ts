@@ -1,8 +1,8 @@
 import type { ProtectionConfig } from "@snapback-oss/contracts";
-import { SnapbackAnalyticsClient } from "./client.js";
-import { ProtectionManager } from "./protection/ProtectionManager.js";
-import { SnapshotManager } from "./snapshot/SnapshotManager.js";
-import type { StorageAdapter } from "./storage/StorageAdapter.js";
+import { SnapbackAnalyticsClient } from "./client";
+import { ProtectionManager } from "./protection/ProtectionManager";
+import { SnapshotManager } from "./snapshot/SnapshotManager";
+import type { StorageAdapter } from "./storage/StorageAdapter";
 export interface SnapshotFilters {
     limit?: number;
     offset?: number;
@@ -167,7 +167,7 @@ export declare class Snapback {
      * @param filePath - File path to check
      * @returns Protection level or null if not protected
      */
-    getProtectionLevel(filePath: string): "warn" | "block" | "watch" | null;
+    getProtectionLevel(filePath: string): "block" | "watch" | "warn" | null;
     /**
      * Close the storage connection
      */

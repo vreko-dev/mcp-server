@@ -13,7 +13,7 @@
  * - Rollback recovery: Journal replay on crash (automatic on next startup)
  */
 import type { SessionChange, SessionManifestV1 } from "@snapback-oss/contracts/session";
-import type { BlobStore } from "../storage/BlobStore.js";
+import type { BlobStore } from "../storage/BlobStore";
 /**
  * Rollback options
  */

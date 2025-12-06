@@ -1,5 +1,5 @@
 import type { CreateSnapshotOptions, FileInput, Snapshot, SnapshotFilters, SnapshotRestoreResult } from "@snapback-oss/contracts";
-import type { StorageAdapter } from "../storage/StorageAdapter.js";
+import type { StorageAdapter } from "../storage/StorageAdapter";
 export interface SnapshotManagerOptions {
     enableDeduplication?: boolean;
     namingStrategy?: "git" | "semantic" | "timestamp";

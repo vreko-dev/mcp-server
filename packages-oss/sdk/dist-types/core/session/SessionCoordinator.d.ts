@@ -21,8 +21,8 @@
  *
  * @module SessionCoordinator
  */
-import type { IEventEmitter, ILogger, ISessionStorage, ITimerService } from "./interfaces.js";
-import type { SessionFinalizeReason, SessionId, SessionManifest } from "./types.js";
+import type { IEventEmitter, ILogger, ISessionStorage, ITimerService } from "./interfaces";
+import type { SessionFinalizeReason, SessionId, SessionManifest } from "./types";
 /**
  * Configuration for session detection
  */

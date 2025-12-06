@@ -1,5 +1,5 @@
 import type { Snapshot, SnapshotFilters } from "@snapback-oss/contracts";
-import type { StorageAdapter } from "./StorageAdapter.js";
+import type { StorageAdapter } from "./StorageAdapter";
 export declare class LocalStorage implements StorageAdapter {
     private db;
     private dbPath;

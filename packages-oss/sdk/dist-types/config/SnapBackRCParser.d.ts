@@ -6,7 +6,7 @@
  *
  * @module SnapBackRCParser
  */
-import type { SnapBackRC } from "./types.js";
+import type { SnapBackRC } from "./types";
 /**
  * Result of parsing a configuration
  */

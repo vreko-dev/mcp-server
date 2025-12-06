@@ -11,7 +11,7 @@
  * ~/.snapback/blobs/sha256/aa/bb/<full-hash>.lz4
  */
 import type Database from "better-sqlite3";
-import type { BlobStore, BlobStoreError, HashAlgorithm, Result } from "./BlobStore.js";
+import type { BlobStore, BlobStoreError, HashAlgorithm, Result } from "./BlobStore";
 /**
  * Filesystem implementation of BlobStore
  */

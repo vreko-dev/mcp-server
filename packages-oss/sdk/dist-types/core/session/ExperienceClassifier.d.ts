@@ -7,8 +7,8 @@
  *
  * @module ExperienceClassifier
  */
-import type { ExperienceMetrics } from "../../types/experience.js";
-import type { ILogger } from "./interfaces.js";
+import type { ExperienceMetrics } from "../../types/experience";
+import type { ILogger } from "./interfaces";
 /**
  * Experience tiers for users
  */

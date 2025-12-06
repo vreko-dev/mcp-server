@@ -7,8 +7,8 @@
  *
  * Migrated from apps/vscode to SDK for platform-wide reuse.
  */
-import type { BurstDetectionResult } from "../detection/BurstHeuristicsDetector.js";
-import type { SessionManifest } from "./types.js";
+import type { BurstDetectionResult } from "../detection/BurstHeuristicsDetector";
+import type { SessionManifest } from "./types";
 /**
  * Configuration for session tagging
  */

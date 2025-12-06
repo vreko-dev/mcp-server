@@ -16,7 +16,7 @@
  *
  * @module config/Thresholds
  */
-import type { ExperienceMetrics } from "../types/experience.js";
+import type { ExperienceMetrics } from "../types/experience";
 /**
  * Session coordinator thresholds for session lifecycle management
  */

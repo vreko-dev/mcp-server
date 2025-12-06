@@ -112,5 +112,5 @@ export declare class NodeTimerService implements ITimerService {
      */
     dispose(): void;
 }
-import type { SessionManifest } from "./types.js";
+import type { SessionManifest } from "./types";
 //# sourceMappingURL=interfaces.d.ts.map

@@ -1,5 +1,5 @@
 import type { FileInput } from "@snapback-oss/contracts";
-import type { StorageAdapter } from "../storage/StorageAdapter.js";
+import type { StorageAdapter } from "../storage/StorageAdapter";
 export declare class SnapshotDeduplication {
     private cacheSize;
     private hashCache;

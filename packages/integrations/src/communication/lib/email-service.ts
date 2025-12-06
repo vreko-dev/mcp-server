@@ -1,6 +1,7 @@
 import { logger } from "@snapback/infrastructure";
 import { send as sendResendEmail } from "../../email/provider/resend";
 import type { SendEmailParams } from "../../email/types";
+// @ts-ignore - Config types should be available after build
 import type { PlanTier } from "@snapback/config";
 
 export interface EmailServiceResult {

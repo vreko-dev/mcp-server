@@ -13,7 +13,7 @@
  * - finalize(): <500ms (batch hash computation, database flush)
  */
 import type { ChangeOp, SessionManifestV1, SessionSummary } from "@snapback-oss/contracts/session";
-import type { BlobStore } from "../storage/BlobStore.js";
+import type { BlobStore } from "../storage/BlobStore";
 /**
  * SessionManager configuration options
  */

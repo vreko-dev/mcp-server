@@ -99,7 +99,7 @@ const pricingTiers: PricingCardData[] = [
 					category: "protection",
 				},
 				{
-					text: "Guardian AI detection with cloud scoring (94% accuracy)",
+					text: "Guardian AI detection (94% Day 1 accuracy, improves over time)",
 					category: "intelligence",
 				},
 				{
@@ -237,7 +237,7 @@ const faqs = [
 	{
 		question: "How does Guardian AI detection work?",
 		answer:
-			"Guardian uses multiple detection plugins (secrets, mocks, phantom dependencies) with 94% accuracy. It analyzes code changes in real-time using regex patterns, Shannon entropy analysis, and import/package.json validation. Available in Solo and Team plans.",
+			"Guardian uses multiple detection plugins (secrets, mocks, phantom dependencies) with 94% accuracy on Day 1. Accuracy improves as it learns your codebase. It analyzes code changes in real-time using regex patterns, Shannon entropy analysis, and import/package.json validation. Available in Pro and Team plans.",
 	},
 	{
 		question: "Can I switch plans later?",

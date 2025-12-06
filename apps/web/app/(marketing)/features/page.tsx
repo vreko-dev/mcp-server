@@ -10,7 +10,7 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://snapback.dev";
 export const metadata: Metadata = {
 	title: "Features | SnapBack - Pattern Memory & Learning",
 	description:
-		"SnapBack learns what breaks YOUR codebase. Pattern memory gets smarter over time. Day 1: 94% accurate. Day 30: knows your specific risks.",
+		"SnapBack learns what breaks YOUR codebase. Pattern memory gets smarter over time. Day 1: 94% accurate baseline. Day 30: knows your specific risks. Month 3: catches patterns you didn't see.",
 	keywords: [
 		"pattern memory",
 		"learns from mistakes",
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 	openGraph: {
 		title: "Features | SnapBack - Learns Your Codebase",
 		description:
-			"Pattern Memory • Learns from Outcomes • Detects What Breaks • Gets Smarter Daily",
+			"Pattern Memory • Learns from Your Mistakes • Detects What Breaks • Gets Smarter Daily",
 		url: `${SITE_URL}/features`,
 		siteName: "SnapBack",
 		type: "website",
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
 		card: "summary_large_image",
 		title: "Features | SnapBack - Pattern Memory",
 		description:
-			"Day 1: 94% accurate. Day 30: knows YOUR codebase. Month 3: catches patterns before you do.",
+			"Day 1: 94% accurate baseline. Day 30: knows YOUR codebase. Month 3: catches patterns before you do.",
 		images: [`${SITE_URL}/og-features.png`],
 		creator: "@snapbackdev",
 	},
@@ -63,7 +63,7 @@ export default function FeaturesPage() {
 		featureList: [
 			"3-level file protection (Watch/Warn/Block)",
 			"Session-based multi-file time-travel",
-			"Guardian AI detection with 94% accuracy",
+			"Guardian AI detection with 94% accuracy on Day 1",
 			"Risk severity analysis and recommendations",
 			"MCP integration for Claude Code and Cursor",
 			"Performance budgets (<200ms snapshots, <10ms checks)",

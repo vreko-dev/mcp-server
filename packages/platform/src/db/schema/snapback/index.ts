@@ -41,6 +41,14 @@ import { waitlist, waitlistReferrals, waitlistTasks } from "./waitlist";
 import { webhookEvents } from "./webhooks";
 import { workspaceSettings } from "./workspace-settings";
 
+// Intelligence Layer tables
+import { trustScores } from "./trust-scores";
+import { patterns } from "./patterns";
+import { predictions } from "./predictions";
+import { repoPersonalities } from "./repo-personalities";
+import { engagementActions, engagementScores } from "./engagement-tracking";
+import { githubInstallations, githubPrAnalyses } from "./github-integrations";
+
 export * from "./analysis-events";
 // Re-export all individual items for compatibility
 export * from "./api-key-metadata";
@@ -85,6 +93,14 @@ export * from "./user-safety-profiles";
 export * from "./waitlist";
 export * from "./webhooks";
 export * from "./workspace-settings";
+
+// Intelligence Layer
+export * from "./trust-scores";
+export * from "./patterns";
+export * from "./predictions";
+export * from "./repo-personalities";
+export * from "./engagement-tracking";
+export * from "./github-integrations";
 
 // Export tables individually for better TypeScript inference
 export {
@@ -139,6 +155,16 @@ export {
 	waitlistTasks,
 	webhookEvents,
 	workspaceSettings,
+
+	// Intelligence Layer
+	trustScores,
+	patterns,
+	predictions,
+	repoPersonalities,
+	engagementScores,
+	engagementActions,
+	githubInstallations,
+	githubPrAnalyses,
 };
 
 // Export all tables as a namespace object for backward compatibility
@@ -195,4 +221,14 @@ export const snapbackSchema = {
 	waitlistTasks,
 	webhookEvents,
 	workspaceSettings,
+
+	// Intelligence Layer
+	trustScores,
+	patterns,
+	predictions,
+	repoPersonalities,
+	engagementScores,
+	engagementActions,
+	githubInstallations,
+	githubPrAnalyses,
 };

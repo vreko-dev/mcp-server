@@ -337,7 +337,7 @@ export async function startServer(): Promise<{
 
 **Returns:**
 - Context7-compatible library ID
-- Library metadata (description, trust score, versions)
+- Library metadata (description, reputation, versions)
 - Multiple matches if applicable`,
 				inputSchema: {
 					type: "object",
@@ -521,7 +521,7 @@ export async function startServer(): Promise<{
 								type: "text",
 								text: `Policy Decision: ${policyDecision.action.toUpperCase()}
 Reason: ${policyDecision.reason}
-Confidence: ${policyDecision.confidence.toFixed(2)}
+Confidence Level: ${(policyDecision.confidence * 100).toFixed(0)}%
 
 ⚠️ Using basic analysis due to backend connectivity issues.`,
 							},

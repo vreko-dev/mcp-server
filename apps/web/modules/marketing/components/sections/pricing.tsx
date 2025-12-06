@@ -47,7 +47,7 @@ const Pricing = () => {
 			features: [
 				"Everything in Pro",
 				"Team dashboard",
-				"Shared pattern library",
+				"Shared pattern memory",
 				"Learn from team's recoveries",
 				"1-year history",
 				"Per-repo risk scoring",

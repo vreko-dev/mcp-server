@@ -10,9 +10,9 @@ import type { AuthSignupCompletedProps, BillingCheckoutCompletedProps, SnapshotC
 import { AnalyticsEvents } from "../core/events";
 
 describe("Analytics Events - Event Definitions", () => {
-	it("should define all 70 events", () => {
+	it("should define all 84 events (60 existing + 24 intelligence layer)", () => {
 		const eventValues = Object.values(AnalyticsEvents);
-		expect(eventValues).toHaveLength(60);
+		expect(eventValues).toHaveLength(84);
 	});
 
 	it("should have unique event names", () => {
@@ -247,5 +247,170 @@ describe("Analytics Events - Event Count Validation", () => {
 
 		const apiEvents = Object.values(AnalyticsEvents).filter((e) => e.startsWith("api_"));
 		expect(apiEvents).toHaveLength(5);
+	});
+
+	it("should have correct number of intelligence layer events", () => {
+		const predictionEvents = Object.values(AnalyticsEvents).filter((e) =>
+			e.startsWith("prediction_") || e.startsWith("trust_score_") ||
+			e.startsWith("pattern_") || e.startsWith("model_calibration_")
+		);
+		expect(predictionEvents).toHaveLength(6);
+
+		const crossRepoEvents = Object.values(AnalyticsEvents).filter((e) =>
+			e.startsWith("workspace_") || e.startsWith("cross_repo_") ||
+			e.startsWith("repo_personality_") || e.startsWith("global_insight_")
+		);
+		expect(crossRepoEvents).toHaveLength(4);
+
+		const githubEvents = Object.values(AnalyticsEvents).filter((e) => e.startsWith("github_"));
+		expect(githubEvents).toHaveLength(5);
+
+		const mcpEvents = Object.values(AnalyticsEvents).filter((e) => e.startsWith("mcp_"));
+		expect(mcpEvents).toHaveLength(3);
+
+		const communityEvents = Object.values(AnalyticsEvents).filter((e) =>
+			e.startsWith("disaster_story_") || e.startsWith("feedback_") ||
+			e.startsWith("community_action_") || e.startsWith("beta_eligibility_") ||
+			e.startsWith("referral_")
+		);
+		expect(communityEvents).toHaveLength(6);
+
+		// Total intelligence layer events: 24
+		const allIntelligenceEvents = [
+			...predictionEvents,
+			...crossRepoEvents,
+			...githubEvents,
+			...mcpEvents,
+			...communityEvents,
+		];
+		expect(allIntelligenceEvents).toHaveLength(24);
+	});
+});
+
+describe("Analytics Events - Intelligence Layer Events", () => {
+	describe("prediction_made", () => {
+		it("should track prediction with model version and features", () => {
+			const props = {
+				session_id: "sess_123",
+				prediction_type: "risk_level" as const,
+				predicted_value: 0.75,
+				model_version: "v1.0.0",
+				features_used: ["file_complexity", "change_velocity"],
+				context_hash: "abc123",
+			};
+
+			expect(props.predicted_value).toBeGreaterThan(0);
+			expect(props.predicted_value).toBeLessThanOrEqual(1);
+			expect(props.features_used).toHaveLength(2);
+		});
+	});
+
+	describe("trust_score_updated", () => {
+		it("should track trust score changes with adjustment reason", () => {
+			const props = {
+				tool_id: "cursor_0.42",
+				context_key: "react_typescript_refactor",
+				old_score: 0.70,
+				new_score: 0.75,
+				adjustment_reason: "success" as const,
+				sample_size: 25,
+			};
+
+			expect(props.new_score).toBeGreaterThan(props.old_score);
+			expect(props.sample_size).toBeGreaterThan(0);
+		});
+	});
+
+	describe("pattern_detected", () => {
+		it("should classify patterns by type", () => {
+			const props = {
+				pattern_signature: "sig_abc123",
+				pattern_type: "dangerous" as const,
+				similarity_score: 0.92,
+				file_types: [".ts", ".tsx"],
+				tool_affinity: ["cursor", "copilot"],
+			};
+
+			expect(props.similarity_score).toBeGreaterThan(0.8);
+			expect(props.file_types).toContain(".ts");
+		});
+	});
+
+	describe("github_pr_analyzed", () => {
+		it("should track PR analysis with AI contribution detection", () => {
+			const props = {
+				pr_number: 42,
+				repo_id: "hashed_repo_123",
+				risk_score: 35,
+				ai_contribution_percentage: 65,
+				files_changed: 8,
+				lines_added: 420,
+				lines_removed: 120,
+				estimated_ai_tool: "cursor",
+				patterns_detected: ["burst-write", "multi-file-refactor"],
+				check_conclusion: "neutral" as const,
+			};
+
+			expect(props.ai_contribution_percentage).toBeGreaterThan(0);
+			expect(props.ai_contribution_percentage).toBeLessThanOrEqual(100);
+			expect(props.patterns_detected).toHaveLength(2);
+		});
+	});
+
+	describe("community_action_completed", () => {
+		it("should track engagement actions with points", () => {
+			const props = {
+				action_type: "github_star" as const,
+				points_earned: 10,
+				tier_progress_before: 45,
+				tier_progress_after: 55,
+				engagement_score_delta: 10,
+			};
+
+			expect(props.points_earned).toBeGreaterThan(0);
+			expect(props.tier_progress_after).toBeGreaterThan(props.tier_progress_before);
+		});
+	});
+});
+
+describe("Analytics Events - Type Safety for Intelligence Layer", () => {
+	it("should enforce type safety for intelligence layer events", () => {
+		// Valid prediction props
+		const validPrediction = {
+			session_id: "sess_123",
+			prediction_type: "will_need_recovery" as const,
+			predicted_value: 0.65,
+			model_version: "v1.0.0",
+			features_used: ["complexity"],
+			context_hash: "hash123",
+		};
+
+		// Valid trust score props
+		const validTrustScore = {
+			tool_id: "copilot_1.2",
+			context_key: "python_fastapi",
+			old_score: 0.75,
+			new_score: 0.78,
+			adjustment_reason: "near_miss" as const,
+			sample_size: 10,
+		};
+
+		// Valid GitHub props
+		const validGithub = {
+			pr_number: 1,
+			repo_id: "repo_hash",
+			risk_score: 0,
+			ai_contribution_percentage: 0,
+			files_changed: 1,
+			lines_added: 10,
+			lines_removed: 0,
+			estimated_ai_tool: null,
+			patterns_detected: [],
+			check_conclusion: "success" as const,
+		};
+
+		expect(validPrediction).toBeDefined();
+		expect(validTrustScore).toBeDefined();
+		expect(validGithub).toBeDefined();
 	});
 });

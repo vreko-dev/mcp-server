@@ -25,7 +25,7 @@ const featureTabs = [
 		icon: CpuIcon,
 		subtitle: "94% Accuracy",
 		description:
-			"Recognizes Copilot, Cursor, and Windsurf patterns. Real-time confidence scoring on every change.",
+			"Detects Copilot, Cursor, and Windsurf patterns. Shows detection confidence on every change.",
 		highlights: [
 			{
 				title: "Multi-Platform Support",

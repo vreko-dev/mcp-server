@@ -10,7 +10,7 @@
 
 > What does the developer SEE happening when they use SnapBack?
 
-Not: "What technology is running?"  
+Not: "What technology is running?"
 Yes: "What problem gets solved?"
 
 ---
@@ -48,8 +48,8 @@ WHY IT MATTERS (The benefit)
 ```
 
 ### Example:
-**What you see:** "SnapBack noticed Copilot broke your auth flow twice."  
-**What it means:** "It's watching that folder closer now."  
+**What you see:** "SnapBack noticed Copilot broke your auth flow twice."
+**What it means:** "It's watching that folder closer now."
 **Why it matters:** "Next time, you catch it before it ships."
 
 ---
@@ -186,11 +186,11 @@ If you see ANY of these, rewrite it:
 
 ## Key Reminders
 
-✅ **Show the behavior.** Not the mechanism.  
-✅ **Use concrete examples.** "Copilot broke auth twice" not "multi-pattern detection."  
-✅ **Make it personal.** "Your codebase" and "your commits," not generic language.  
-✅ **Use developer vocabulary.** Repos, branches, commits, merges—not "data points."  
-✅ **Ground progress in time.** Day 1 vs Day 30, not "continuous improvement."  
+✅ **Show the behavior.** Not the mechanism.
+✅ **Use concrete examples.** "Copilot broke auth twice" not "multi-pattern detection."
+✅ **Make it personal.** "Your codebase" and "your commits," not generic language.
+✅ **Use developer vocabulary.** Repos, branches, commits, merges—not "data points."
+✅ **Ground progress in time.** Day 1 vs Day 30, not "continuous improvement."
 
 ---
 
@@ -235,6 +235,6 @@ This creates a bridge for power users who read both marketing copy and technical
 
 ---
 
-**Last Updated:** December 6, 2025  
-**Status:** Ready for implementation  
+**Last Updated:** December 6, 2025
+**Status:** Ready for implementation
 **Questions?** Refer to MESSAGING_AUDIT_INVENTORY.md for full context

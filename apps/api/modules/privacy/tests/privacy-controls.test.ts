@@ -400,7 +400,7 @@ describe("Privacy Controls API - TDD", () => {
 		it("should enforce minimum data retention for billing compliance", async () => {
 			// GIVEN: User with active subscription
 			const subscription = {
-				plan: "solo",
+				plan: "pro",
 				status: "active",
 				startDate: "2025-01-01",
 			};

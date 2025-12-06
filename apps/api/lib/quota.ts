@@ -36,7 +36,7 @@ export async function enforceQuotas(
 			storage: 100, // MB
 			api: 1000, // requests per hour
 		},
-		solo: {
+		pro: {
 			snapshots: null, // unlimited
 			storage: 1000, // MB
 			api: 10000, // requests per hour

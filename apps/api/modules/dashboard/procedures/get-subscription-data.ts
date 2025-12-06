@@ -5,7 +5,7 @@ import { protectedProcedure } from "../../../orpc/procedures";
 import { getDb } from "../../../src/services/database";
 
 const subscriptionDataSchema = z.object({
-	plan: z.enum(["free", "solo", "team", "enterprise"]),
+	plan: z.enum(["free", "pro", "team", "enterprise"]),
 	status: z.enum(["active", "canceled", "past_due", "trialing", "paused"]),
 	currentPeriodEnd: z.date().optional(),
 	trialEnd: z.date().optional(),
@@ -91,7 +91,7 @@ export const getSubscriptionData = protectedProcedure
 		}
 
 		return {
-			plan: subscription.plan as "free" | "solo" | "team" | "enterprise",
+			plan: subscription.plan as "free" | "pro" | "team" | "enterprise",
 			status: subscription.status as
 				| "active"
 				| "canceled"

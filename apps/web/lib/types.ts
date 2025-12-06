@@ -26,7 +26,7 @@ export interface UsageMetrics {
 }
 
 export interface Subscription {
-	plan: "free" | "solo" | "team";
+	plan: "free" | "pro" | "team";
 	status: "active" | "trialing" | "cancelled";
 	currentPeriodEnd: Date | null;
 	trialEnd: Date | null;

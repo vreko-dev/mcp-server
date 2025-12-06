@@ -312,7 +312,7 @@ test.describe("Dashboard & API Key Management E2E", () => {
 			page,
 		}) => {
 			// GIVEN: Pro tier user with 5 keys
-			await mockUserPlan(page, "solo");
+			await mockUserPlan(page, "pro");
 			await mockUserWithKeys(page, [
 				{ id: "key_1", name: "Key 1", preview: "sb_1..." },
 				{ id: "key_2", name: "Key 2", preview: "sb_2..." },
@@ -579,7 +579,7 @@ test.describe("Dashboard & API Key Management E2E", () => {
 
 		test('should show "Unlimited" for Solo/Team plans', async ({ page }) => {
 			// GIVEN: Pro tier user with 500 snapshots
-			await mockUserPlan(page, "solo");
+			await mockUserPlan(page, "pro");
 			await mockUsageLimits(page, {
 				snapshotsUsed: 500,
 				snapshotsLimit: null, // unlimited
@@ -602,7 +602,7 @@ test.describe("Dashboard & API Key Management E2E", () => {
 			page,
 		}) => {
 			// GIVEN: Pro tier with cloud backup enabled
-			await mockUserPlan(page, "solo");
+			await mockUserPlan(page, "pro");
 			await mockUsageLimits(page, {
 				snapshotsUsed: 150,
 				snapshotsLimit: null,
@@ -626,7 +626,7 @@ test.describe("Dashboard & API Key Management E2E", () => {
 		test("should display current plan with features", async ({ page }) => {
 			// GIVEN: User on Pro plan
 			await mockSubscription(page, {
-				plan: "solo",
+				plan: "pro",
 				status: "active",
 				currentPeriodEnd: new Date("2024-02-15"),
 			});
@@ -660,9 +660,9 @@ test.describe("Dashboard & API Key Management E2E", () => {
 			await expect(page.getByText("Upgrade to Team")).toBeVisible();
 
 			// AND: Should highlight recommended plan
-			const soloCard = page.locator('[data-plan="solo"]');
-			await expect(soloCard).toHaveClass(/recommended/);
-			await expect(soloCard.getByText("Recommended")).toBeVisible();
+			const proCard = page.locator('[data-plan="pro"]');
+			await expect(proCard).toHaveClass(/recommended/);
+			await expect(proCard.getByText("Recommended")).toBeVisible();
 		});
 
 		test("should handle upgrade flow to Pro plan", async ({ page }) => {
@@ -685,7 +685,7 @@ test.describe("Dashboard & API Key Management E2E", () => {
 		}) => {
 			// GIVEN: User on Solo trial
 			await mockSubscription(page, {
-				plan: "solo",
+				plan: "pro",
 				status: "trialing",
 				trialEnd: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
 			});
@@ -705,7 +705,7 @@ test.describe("Dashboard & API Key Management E2E", () => {
 		test("should handle subscription cancellation", async ({ page }) => {
 			// GIVEN: User on active Pro plan
 			await mockSubscription(page, {
-				plan: "solo",
+				plan: "pro",
 				status: "active",
 				currentPeriodEnd: new Date("2024-02-15"),
 			});
@@ -933,7 +933,7 @@ async function mockUserWithKeys(page: Page, keys: any[]) {
 	});
 }
 
-async function mockUserPlan(page: Page, plan: "free" | "solo" | "team") {
+async function mockUserPlan(page: Page, plan: "free" | "pro" | "team") {
 	await page.route("**/api/user/subscription", (route) => {
 		route.fulfill({
 			status: 200,

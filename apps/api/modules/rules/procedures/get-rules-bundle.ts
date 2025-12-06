@@ -132,7 +132,7 @@ const RULE_THRESHOLDS = {
 		advancedDetection: false,
 		customRules: false,
 	},
-	solo: {
+	pro: {
 		riskThreshold: 0.2,
 		maxSnapshots: 1000,
 		cloudBackup: true,

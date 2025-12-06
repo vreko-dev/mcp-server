@@ -151,7 +151,7 @@ export const createSnapshot = protectedProcedure
 					used: snapshotsUsed,
 					limit: snapshotsLimit,
 					upgradeUrl: "/pricing",
-					suggestedPlan: snapshotsLimit === 100 ? "solo" : "team",
+					suggestedPlan: snapshotsLimit === 100 ? "pro" : "team",
 				}),
 			);
 		}

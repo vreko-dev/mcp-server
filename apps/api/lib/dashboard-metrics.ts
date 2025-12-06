@@ -31,7 +31,7 @@ export interface UsageLimits {
 }
 
 export interface SubscriptionInfo {
-	plan: "free" | "solo" | "team" | "enterprise";
+	plan: "free" | "pro" | "team" | "enterprise";
 	status: "active" | "canceled" | "past_due" | "trialing" | "paused";
 	currentPeriodEnd?: Date;
 	trialEnd?: Date;
@@ -323,7 +323,7 @@ export async function getSubscription(
 	}
 
 	return {
-		plan: subscription.plan as "free" | "solo" | "team" | "enterprise",
+		plan: subscription.plan as "free" | "pro" | "team" | "enterprise",
 		status: subscription.status as
 			| "active"
 			| "canceled"

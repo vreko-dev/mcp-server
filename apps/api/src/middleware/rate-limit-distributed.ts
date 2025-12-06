@@ -35,7 +35,7 @@ interface RateLimitState {
 
 const RATE_LIMITS: Record<string, RateLimitConfig> = {
 	free: { requests: 100, window: 3600 }, // 100/hour
-	solo: { requests: 5000, window: 3600 }, // 5,000/hour
+	pro: { requests: 5000, window: 3600 }, // 5,000/hour
 	team: { requests: 10000, window: 3600 }, // 10,000/hour
 	enterprise: { requests: 50000, window: 3600 }, // 50,000/hour
 };

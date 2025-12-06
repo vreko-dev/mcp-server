@@ -27,7 +27,7 @@ export interface EmailOptions {
 }
 
 export interface WelcomeEmailData {
-	plan: "free" | "solo" | "team" | "enterprise";
+	plan: "free" | "pro" | "team" | "enterprise";
 	features: string[];
 	dashboardUrl: string;
 	supportEmail: string;
@@ -72,7 +72,7 @@ function isConfigured(): boolean {
  * Get plan features for email content
  */
 function getPlanFeatures(
-	plan: "free" | "solo" | "team" | "enterprise",
+	plan: "free" | "pro" | "team" | "enterprise",
 ): string[] {
 	const features: Record<string, string[]> = {
 		enterprise: [
@@ -110,7 +110,7 @@ function getPlanFeatures(
  */
 export async function sendWelcomeEmail(
 	customerId: string,
-	plan: "free" | "solo" | "team" | "enterprise",
+	plan: "free" | "pro" | "team" | "enterprise",
 	userEmail?: string,
 ): Promise<EmailResult> {
 	try {

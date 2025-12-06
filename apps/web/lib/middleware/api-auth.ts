@@ -29,7 +29,7 @@ const ApiAuthContextSchema = z.object({
 		.regex(/^[a-f0-9]{64}$/)
 		.optional(), // SHA-256 hash
 	apiKeyId: z.string().uuid().optional(),
-	plan: z.enum(["free", "solo", "team", "enterprise"]),
+	plan: z.enum(["free", "pro", "team", "enterprise"]),
 	permissions: z.object({
 		maxSnapshots: z.number().int().min(0),
 		cloudBackup: z.boolean(),

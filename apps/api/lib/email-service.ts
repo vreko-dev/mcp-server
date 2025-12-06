@@ -37,7 +37,7 @@ export interface EmailOptions {
  */
 export async function sendWelcomeEmail(
 	customerId: string,
-	plan: "free" | "solo" | "team" | "enterprise",
+	plan: "free" | "pro" | "team" | "enterprise",
 	userEmail?: string,
 ): Promise<void> {
 	try {
@@ -246,7 +246,7 @@ export async function sendPaymentFailedEmail(
  * Get features for a plan (for email content)
  */
 function getPlanFeatures(
-	plan: "free" | "solo" | "team" | "enterprise",
+	plan: "free" | "pro" | "team" | "enterprise",
 ): string[] {
 	switch (plan) {
 		case "enterprise":
@@ -269,7 +269,7 @@ function getPlanFeatures(
 				"Team collaboration",
 				"Priority support",
 			];
-		case "solo":
+		case "pro":
 			return [
 				"Unlimited snapshots",
 				"Cloud backup",

@@ -119,7 +119,7 @@ export const createApiKey = protectedProcedure
 export function getKeyLimit(plan: string) {
 	switch (plan) {
 		case "team":
-		case "solo":
+		case "pro":
 			return Number.POSITIVE_INFINITY; // unlimited
 		case "enterprise":
 			return Number.POSITIVE_INFINITY; // unlimited
@@ -147,7 +147,7 @@ export function getPermissionsForPlan(plan: string) {
 				customRules: true,
 				teamSharing: true,
 			};
-		case "solo":
+		case "pro":
 			return {
 				maxSnapshots: undefined,
 				cloudBackup: true,

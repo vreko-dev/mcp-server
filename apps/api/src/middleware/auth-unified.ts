@@ -35,7 +35,7 @@ export interface AuthContext {
 		role: "admin" | "user" | "viewer" | null;
 		name: string;
 	};
-	plan: "free" | "solo" | "team" | "enterprise";
+	plan: "free" | "pro" | "team" | "enterprise";
 	permissions: string[];
 	authenticatedVia: "jwt" | "api-key" | "session";
 	apiKeyId?: string;
@@ -333,7 +333,7 @@ export function requireRole(
 
 /**
  * Require minimum subscription plan
- * Plan hierarchy: free < solo < team < enterprise
+ * Plan hierarchy: free < pro < team < enterprise
  */
 export function requirePlan(
 	...plans: string[]

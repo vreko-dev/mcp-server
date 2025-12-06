@@ -143,7 +143,7 @@ function getRateLimitByTier(tier: string) {
 		{ requestsPerMinute: number; snapshotsPerMonth: number }
 	> = {
 		free: { requestsPerMinute: 10, snapshotsPerMonth: 1000 },
-		solo: { requestsPerMinute: 100, snapshotsPerMonth: 10000 },
+		pro: { requestsPerMinute: 100, snapshotsPerMonth: 10000 },
 		team: { requestsPerMinute: 500, snapshotsPerMonth: 100000 },
 		enterprise: { requestsPerMinute: 5000, snapshotsPerMonth: -1 },
 	};

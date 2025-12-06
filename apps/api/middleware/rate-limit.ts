@@ -21,7 +21,7 @@ const RATE_LIMITS: Record<Tier, Record<string, RateLimitConfig>> = {
 		"/api/analytics/ingest": { maxRequests: 20, windowMs: 3600000 }, // 20/hr
 		default: { maxRequests: 50, windowMs: 3600000 }, // 50/hr default
 	},
-	solo: {
+	pro: {
 		"/api/snapshot/create": { maxRequests: 100, windowMs: 3600000 }, // 100/hr
 		"/api/policy/evaluate": { maxRequests: 50, windowMs: 3600000 }, // 50/hr
 		"/api/analytics/ingest": { maxRequests: 200, windowMs: 3600000 }, // 200/hr

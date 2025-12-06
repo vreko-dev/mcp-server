@@ -41,33 +41,33 @@
       "types": "./dist/metrics/index.d.ts",
       "default": "./dist/metrics/index.js"
     },
-    "./posthog": {
-      "types": "./dist/posthog/index.d.ts",
-      "default": "./dist/posthog/index.js"
-    },
-    "./posthog/alerts": {
-      "types": "./dist/posthog/alerts.d.ts",
-      "default": "./dist/posthog/alerts.js"
-    },
-    "./posthog/cohorts": {
-      "types": "./dist/posthog/cohorts.d.ts",
-      "default": "./dist/posthog/cohorts.js"
-    },
-    "./posthog/correlation": {
-      "types": "./dist/posthog/correlation.d.ts",
-      "default": "./dist/posthog/correlation.js"
-    },
     "./tracing": {
       "types": "./dist/tracing/index.d.ts",
       "default": "./dist/tracing/index.js"
     },
-    "./sentry": {
-      "types": "./dist/sentry/index.d.ts",
-      "default": "./dist/sentry/index.js"
-    },
     "./health": {
       "types": "./dist/health/index.d.ts",
       "default": "./dist/health/index.js"
+    }
+  },
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "types": "./dist/logging/logger.d.ts",
+        "default": "./dist/logging/logger.js"
+      },
+      "./logging/logger": {
+        "types": "./dist/logging/logger.d.ts",
+        "default": "./dist/logging/logger.js"
+      },
+      "./tracing": {
+        "types": "./dist/tracing/index.d.ts",
+        "default": "./dist/tracing/index.js"
+      },
+      "./metrics": {
+        "types": "./dist/metrics/index.d.ts",
+        "default": "./dist/metrics/index.js"
+      }
     }
   },
   "main": "dist/index.js",

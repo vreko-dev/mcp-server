@@ -32,10 +32,6 @@
       "types": "./dist/env.d.ts",
       "default": "./dist/env.js"
     },
-    "./subscription-config": {
-      "types": "./dist/subscription-config.d.ts",
-      "default": "./dist/subscription-config.js"
-    },
     "./utils": {
       "types": "./dist/utils/index.d.ts",
       "default": "./dist/utils/index.js"
@@ -44,10 +40,6 @@
       "types": "./dist/utils/base-url.d.ts",
       "default": "./dist/utils/base-url.js"
     },
-    "./utils/feature-flags": {
-      "types": "./dist/utils/feature-flags.d.ts",
-      "default": "./dist/utils/feature-flags.js"
-    },
     "./utils/monorepo-flattener": {
       "types": "./dist/utils/monorepo-flattener.d.ts",
       "default": "./dist/utils/monorepo-flattener.js"
@@ -55,6 +47,22 @@
     "./utils/path-transformer": {
       "types": "./dist/utils/path-transformer.d.ts",
       "default": "./dist/utils/path-transformer.js"
+    }
+  },
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "types": "./dist/defaults.d.ts",
+        "default": "./dist/defaults.js"
+      },
+      "./defaults": {
+        "types": "./dist/defaults.d.ts",
+        "default": "./dist/defaults.js"
+      },
+      "./utils/base-url": {
+        "types": "./dist/utils/base-url.d.ts",
+        "default": "./dist/utils/base-url.js"
+      }
     }
   },
   "main": "dist/index.js",

@@ -46,6 +46,22 @@
       "default": "./dist/session/index.js"
     }
   },
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "types": "./dist-types/storage/index.d.ts",
+        "default": "./dist/storage/index.js"
+      },
+      "./storage": {
+        "types": "./dist-types/storage/index.d.ts",
+        "default": "./dist/storage/index.js"
+      },
+      "./session": {
+        "types": "./dist-types/session/index.d.ts",
+        "default": "./dist/session/index.js"
+      }
+    }
+  },
   "files": [
     "dist"
   ],

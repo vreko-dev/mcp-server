@@ -195,4 +195,4 @@ If tools are slower, check:
 3. Test checkpoint creation/restoration
 4. Review logs for any warnings or errors
 
-For support: https://github.com/snapback/snapback/issues
+For support: https://github.com/snapback-dev/snapback.dev/issues

@@ -361,8 +361,8 @@ pnpm start
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/snapback/snapback/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/snapback/snapback/discussions)
+- **Issues**: [GitHub Issues](https://github.com/snapback-dev/snapback.dev/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/snapback-dev/snapback.dev/discussions)
 - **Discord**: [SnapBack Discord](https://discord.gg/SF6Vcjzj)
 
 ## License

@@ -272,8 +272,8 @@ Report security issues: security@snapback.dev
 ## Links
 
 - **Documentation**: [docs.snapback.dev](https://docs.snapback.dev)
-- **Main Repository**: [Marcelle-Labs/snapback.dev](https://github.com/Marcelle-Labs/snapback.dev)
-- **Issues**: [github.com/snapback-dev/mcp-server/issues](https://github.com/snapback-dev/mcp-server/issues)
+- **Main Repository**: [snapback-dev/snapback.dev](https://github.com/snapback-dev/snapback.dev)
+- **Issues**: [github.com/snapback-dev/snapback.dev/issues](https://github.com/snapback-dev/snapback.dev/issues)
 - **NPM**: [@snapback/mcp-server](https://www.npmjs.com/package/@snapback/mcp-server)
 
 ## License

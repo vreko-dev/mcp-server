@@ -232,7 +232,7 @@ MIT
 ## Resources
 
 - **Documentation**: [SnapBack Docs](/docs)
-- **GitHub**: [snapback/snapback](https://github.com/snapback/snapback)
+- **GitHub**: [snapback-dev/snapback.dev](https://github.com/snapback-dev/snapback.dev)
 - **NPM**: [@snapback-oss/sdk](https://npmjs.com/package/@snapback-oss/sdk)
-- **Issues**: [Bug reports & feature requests](https://github.com/snapback/snapback/issues)
-- **Discussions**: [Questions & ideas](https://github.com/snapback/snapback/discussions)
+- **Issues**: [Bug reports & feature requests](https://github.com/snapback-dev/snapback.dev/issues)
+- **Discussions**: [Questions & ideas](https://github.com/snapback-dev/snapback.dev/discussions)

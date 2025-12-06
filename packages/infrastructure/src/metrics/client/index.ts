@@ -7,10 +7,10 @@
 
 import { createLogger, LogLevel } from "@snapback/contracts";
 import type { PostHog as PostHogBrowser } from "posthog-js";
-import type { EventPropertiesMap } from "../core/events.js";
-import { shouldSampleEvent } from "../core/sampling.js";
-import type { AnalyticsClient, BrowserAnalyticsConfig, GroupProperties, UserTraits } from "../core/types.js";
-import { SessionReplayManager } from "../session-replay/manager.js";
+import type { EventPropertiesMap } from "../core/events";
+import { shouldSampleEvent } from "../core/sampling";
+import type { AnalyticsClient, BrowserAnalyticsConfig, GroupProperties, UserTraits } from "../core/types";
+import { SessionReplayManager } from "../session-replay/manager";
 
 const logger = createLogger({ name: "analytics-client", level: LogLevel.INFO });
 
@@ -233,6 +233,6 @@ export function createBrowserAnalytics(config: BrowserAnalyticsConfig): Analytic
 // EXPORTS
 // ============================================================================
 
-export { AnalyticsEvents } from "../core/events.js";
-export type { BrowserAnalyticsConfig } from "../core/types.js";
-export { SessionReplayManager } from "../session-replay/manager.js";
+export { AnalyticsEvents } from "../core/events";
+export type { BrowserAnalyticsConfig } from "../core/types";
+export { SessionReplayManager } from "../session-replay/manager";

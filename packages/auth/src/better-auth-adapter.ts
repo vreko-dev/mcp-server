@@ -1,5 +1,5 @@
 import type { Session } from "better-auth/types";
-import { auth } from "./auth.js";
+import { auth } from "./auth";
 
 /**
  * Adapter for Better Auth API calls to provide a stable interface

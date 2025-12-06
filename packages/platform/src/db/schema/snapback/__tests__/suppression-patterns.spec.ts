@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { suppressionPatterns } from "../suppression-patterns.js";
+import { suppressionPatterns } from "../suppression-patterns";
 
 describe("suppressionPatterns schema", () => {
 	it("should have the correct table structure", () => {

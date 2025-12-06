@@ -1,6 +1,6 @@
 import type { Snapshot, SnapshotFilters } from "@snapback-oss/contracts";
-import type { StorageAdapter } from "./StorageAdapter.js";
-import { StorageBroker } from "./StorageBroker.js";
+import type { StorageAdapter } from "./StorageAdapter";
+import { StorageBroker } from "./StorageBroker";
 
 /**
  * StorageBrokerAdapter - Adapter that makes StorageBroker compatible with StorageAdapter interface

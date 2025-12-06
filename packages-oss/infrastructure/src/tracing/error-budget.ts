@@ -1,4 +1,4 @@
-import { logger } from "../logging/logger.js";
+import { logger } from "../logging/logger";
 
 // Error budget configuration
 const ERROR_BUDGET = 0.01; // 1% error rate

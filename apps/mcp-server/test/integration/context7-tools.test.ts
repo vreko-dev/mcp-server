@@ -2,7 +2,7 @@ import type { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import type { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { CallToolRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { startServer } from "../../src/index.js";
+import { startServer } from "../../src/index";
 
 // Mock the MCP SDK
 const mockServer = {

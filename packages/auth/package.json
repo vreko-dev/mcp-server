@@ -4,8 +4,8 @@
 	"dependencies": {
 		"@node-rs/argon2": "catalog:",
 		"@snapback/config": "^0.1.1",
-		"@snapback/contracts": "^0.1.4",
-		"@snapback/infrastructure": "^0.1.2",
+		"@snapback/contracts": "workspace:*",
+		"@snapback/infrastructure": "workspace:*",
 		"@snapback/integrations": "workspace:*",
 		"@snapback/platform": "workspace:*",
 		"@types/bcrypt": "catalog:",

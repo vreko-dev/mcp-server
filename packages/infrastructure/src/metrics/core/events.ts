@@ -87,6 +87,40 @@ export const AnalyticsEvents = {
 	API_KEY_ROTATED: "api_key_rotated",
 	API_WEBHOOK_CONFIGURED: "api_webhook_configured",
 
+	// ===== Intelligence Layer: Prediction & Learning (6) =====
+	PREDICTION_MADE: "prediction_made",
+	PREDICTION_OUTCOME_RECORDED: "prediction_outcome_recorded",
+	TRUST_SCORE_UPDATED: "trust_score_updated",
+	PATTERN_DETECTED: "pattern_detected",
+	PATTERN_CONFIRMED: "pattern_confirmed",
+	MODEL_CALIBRATION_TRIGGERED: "model_calibration_triggered",
+
+	// ===== Intelligence Layer: Cross-Repo Intelligence (4) =====
+	WORKSPACE_CONNECTED: "workspace_connected",
+	CROSS_REPO_PATTERN_DETECTED: "cross_repo_pattern_detected",
+	REPO_PERSONALITY_UPDATED: "repo_personality_updated",
+	GLOBAL_INSIGHT_APPLIED: "global_insight_applied",
+
+	// ===== Intelligence Layer: GitHub Integration (5) =====
+	GITHUB_REPO_CONNECTED: "github_repo_connected",
+	GITHUB_PR_ANALYZED: "github_pr_analyzed",
+	GITHUB_COMMIT_SCANNED: "github_commit_scanned",
+	GITHUB_AI_CONTRIBUTION_DETECTED: "github_ai_contribution_detected",
+	GITHUB_CHECK_POSTED: "github_check_posted",
+
+	// ===== Intelligence Layer: MCP Tools (3) =====
+	MCP_TOOL_CALLED: "mcp_tool_called",
+	MCP_CONTEXT_PROVIDED: "mcp_context_provided",
+	MCP_AGENT_SELF_CHECK: "mcp_agent_self_check",
+
+	// ===== Intelligence Layer: Community & Engagement (6) =====
+	DISASTER_STORY_SHARED: "disaster_story_shared",
+	FEEDBACK_SUBMITTED: "feedback_submitted",
+	COMMUNITY_ACTION_COMPLETED: "community_action_completed",
+	BETA_ELIGIBILITY_CALCULATED: "beta_eligibility_calculated",
+	REFERRAL_LINK_GENERATED: "referral_link_generated",
+	REFERRAL_CONVERTED: "referral_converted",
+
 	// ===== Activation Funnel Events (2) =====
 	AUTH_COMPLETED: "auth_completed",
 	FIRST_SNAPSHOT_CREATED: "first_snapshot_created",
@@ -476,6 +510,211 @@ export interface FirstSnapshotCreatedProps extends BaseEventProperties {
 	time_to_first_snapshot_minutes: number;
 }
 
+// ----- Intelligence Layer: Prediction & Learning -----
+
+export interface PredictionMadeProps extends BaseEventProperties {
+	session_id: string;
+	prediction_type: "risk_level" | "will_need_recovery" | "ai_tool_confidence";
+	predicted_value: number;
+	model_version: string;
+	features_used: string[];
+	context_hash: string; // Anonymized context identifier
+}
+
+export interface PredictionOutcomeRecordedProps extends BaseEventProperties {
+	session_id: string;
+	prediction_id: string;
+	predicted_value: number;
+	actual_outcome: boolean;
+	was_correct: boolean;
+	time_to_feedback_ms: number;
+	outcome_source: "user_action" | "build_result" | "recovery_triggered";
+}
+
+export interface TrustScoreUpdatedProps extends BaseEventProperties {
+	tool_id: string; // e.g., 'cursor_0.42', 'copilot_1.2'
+	context_key: string; // e.g., 'react_typescript_refactor'
+	old_score: number;
+	new_score: number;
+	adjustment_reason: "success" | "failure" | "near_miss" | "decay";
+	sample_size: number; // How many outcomes informed this
+}
+
+export interface PatternDetectedProps extends BaseEventProperties {
+	pattern_signature: string;
+	pattern_type: "dangerous" | "beneficial" | "neutral";
+	similarity_score: number;
+	file_types: string[];
+	tool_affinity: string[];
+}
+
+export interface PatternConfirmedProps extends BaseEventProperties {
+	pattern_id: string;
+	confirmation_source: "user_feedback" | "recovery_avoided" | "incident_occurred";
+	previous_success_rate: number;
+	new_success_rate: number;
+}
+
+export interface ModelCalibrationTriggeredProps extends BaseEventProperties {
+	calibration_reason: "scheduled" | "accuracy_drop" | "new_data_threshold";
+	model_version: string;
+	samples_used: number;
+	accuracy_before: number;
+	accuracy_after: number;
+}
+
+// ----- Intelligence Layer: Cross-Repo Intelligence -----
+
+export interface WorkspaceConnectedProps extends BaseEventProperties {
+	repo_count: number;
+	primary_language: string;
+	framework_detected: string[];
+}
+
+export interface CrossRepoPatternDetectedProps extends BaseEventProperties {
+	pattern_signature: string;
+	occurrence_count: number; // Across how many repos
+	success_rate: number;
+	repos_affected: number; // Privacy: count only, no repo IDs
+}
+
+export interface RepoPersonalityUpdatedProps extends BaseEventProperties {
+	repo_id: string; // Hashed
+	ai_tolerance: number;
+	volatility: number;
+	risk_profile: "production" | "experimental" | "stable";
+	incident_count: number;
+}
+
+export interface GlobalInsightAppliedProps extends BaseEventProperties {
+	insight_type: "pattern_warning" | "trust_adjustment" | "risk_prediction";
+	source: "community_pattern" | "similar_repo" | "framework_best_practice";
+	confidence: number;
+}
+
+// ----- Intelligence Layer: GitHub Integration -----
+
+export interface GithubRepoConnectedProps extends BaseEventProperties {
+	repo_id: string; // Hashed
+	organization_id: string; // Hashed
+	permissions: string[];
+	webhook_configured: boolean;
+}
+
+export interface GithubPrAnalyzedProps extends BaseEventProperties {
+	pr_number: number;
+	repo_id: string; // Hashed
+	risk_score: number;
+	ai_contribution_percentage: number;
+	files_changed: number;
+	lines_added: number;
+	lines_removed: number;
+	estimated_ai_tool: string | null;
+	patterns_detected: string[];
+	check_conclusion: "success" | "neutral" | "failure";
+}
+
+export interface GithubCommitScannedProps extends BaseEventProperties {
+	commit_hash: string; // Partial hash
+	repo_id: string; // Hashed
+	has_co_author_tag: boolean;
+	detected_ai_tool: string | null;
+	analysis_method: "co_author_tag" | "stylistic_analysis" | "burst_pattern";
+}
+
+export interface GithubAiContributionDetectedProps extends BaseEventProperties {
+	commit_hash: string; // Partial
+	repo_id: string; // Hashed
+	detection_method: "co_author_tag" | "stylistic_analysis" | "burst_pattern";
+	confidence: number;
+	tool_identified: string | null;
+	fed_to_calibration: boolean;
+}
+
+export interface GithubCheckPostedProps extends BaseEventProperties {
+	pr_number: number;
+	repo_id: string; // Hashed
+	check_status: "queued" | "in_progress" | "completed";
+	conclusion: "success" | "neutral" | "failure" | null;
+	risk_score_displayed: number;
+}
+
+// ----- Intelligence Layer: MCP Tools -----
+
+export interface McpToolCalledProps extends BaseEventProperties {
+	tool_name: string;
+	client_type: "vscode" | "jetbrains" | "cli" | "api";
+	parameters: Record<string, unknown>; // Sanitized
+	execution_time_ms: number;
+	was_successful: boolean;
+}
+
+export interface McpContextProvidedProps extends BaseEventProperties {
+	context_type: "checkpoint_history" | "risk_analysis" | "protection_status";
+	context_size_bytes: number;
+	request_source: "ai_agent" | "user_query";
+}
+
+export interface McpAgentSelfCheckProps extends BaseEventProperties {
+	agent_type: string;
+	recovery_count_this_repo: number;
+	self_adjustment_made: boolean;
+	new_behavior_pattern: string | null;
+}
+
+// ----- Intelligence Layer: Community & Engagement -----
+
+export interface DisasterStorySharedProps extends BaseEventProperties {
+	story_category: "recovery_saved_me" | "ai_mistake" | "near_miss";
+	impact_severity: "low" | "medium" | "high" | "critical";
+	shared_publicly: boolean;
+}
+
+export interface FeedbackSubmittedProps extends BaseEventProperties {
+	feedback_type: "bug_report" | "feature_request" | "general";
+	feedback_quality_score: number; // Internal scoring
+	includes_reproduction_steps: boolean;
+}
+
+export interface CommunityActionCompletedProps extends BaseEventProperties {
+	action_type:
+		| "github_star"
+		| "github_issue_opened"
+		| "github_pr_submitted"
+		| "discord_joined"
+		| "discord_question_answered"
+		| "social_share"
+		| "marketplace_review"
+		| "disaster_story_shared"
+		| "feedback_submitted";
+	points_earned: number;
+	tier_progress_before: number;
+	tier_progress_after: number;
+	engagement_score_delta: number;
+}
+
+export interface BetaEligibilityCalculatedProps extends BaseEventProperties {
+	total_engagement_score: number;
+	usage_score: number;
+	feedback_quality_score: number;
+	community_score: number;
+	referral_score: number;
+	beta_tier_unlocked: "none" | "early_access" | "beta" | "lifetime_free";
+	qualifying_actions: string[];
+}
+
+export interface ReferralLinkGeneratedProps extends BaseEventProperties {
+	referral_code: string; // Hashed
+	campaign: string | null;
+}
+
+export interface ReferralConvertedProps extends BaseEventProperties {
+	referrer_id: string; // Hashed
+	referred_id: string; // Hashed
+	conversion_time_hours: number;
+	referral_reward: string;
+}
+
 // ============================================================================
 // EVENT PROPERTIES MAP (Type-safe mapping)
 // ============================================================================
@@ -556,6 +795,40 @@ export interface EventPropertiesMap {
 	[AnalyticsEvents.API_ERROR_OCCURRED]: ApiErrorOccurredProps;
 	[AnalyticsEvents.API_KEY_ROTATED]: ApiKeyRotatedProps;
 	[AnalyticsEvents.API_WEBHOOK_CONFIGURED]: ApiWebhookConfiguredProps;
+
+	// Intelligence Layer: Prediction & Learning
+	[AnalyticsEvents.PREDICTION_MADE]: PredictionMadeProps;
+	[AnalyticsEvents.PREDICTION_OUTCOME_RECORDED]: PredictionOutcomeRecordedProps;
+	[AnalyticsEvents.TRUST_SCORE_UPDATED]: TrustScoreUpdatedProps;
+	[AnalyticsEvents.PATTERN_DETECTED]: PatternDetectedProps;
+	[AnalyticsEvents.PATTERN_CONFIRMED]: PatternConfirmedProps;
+	[AnalyticsEvents.MODEL_CALIBRATION_TRIGGERED]: ModelCalibrationTriggeredProps;
+
+	// Intelligence Layer: Cross-Repo Intelligence
+	[AnalyticsEvents.WORKSPACE_CONNECTED]: WorkspaceConnectedProps;
+	[AnalyticsEvents.CROSS_REPO_PATTERN_DETECTED]: CrossRepoPatternDetectedProps;
+	[AnalyticsEvents.REPO_PERSONALITY_UPDATED]: RepoPersonalityUpdatedProps;
+	[AnalyticsEvents.GLOBAL_INSIGHT_APPLIED]: GlobalInsightAppliedProps;
+
+	// Intelligence Layer: GitHub Integration
+	[AnalyticsEvents.GITHUB_REPO_CONNECTED]: GithubRepoConnectedProps;
+	[AnalyticsEvents.GITHUB_PR_ANALYZED]: GithubPrAnalyzedProps;
+	[AnalyticsEvents.GITHUB_COMMIT_SCANNED]: GithubCommitScannedProps;
+	[AnalyticsEvents.GITHUB_AI_CONTRIBUTION_DETECTED]: GithubAiContributionDetectedProps;
+	[AnalyticsEvents.GITHUB_CHECK_POSTED]: GithubCheckPostedProps;
+
+	// Intelligence Layer: MCP Tools
+	[AnalyticsEvents.MCP_TOOL_CALLED]: McpToolCalledProps;
+	[AnalyticsEvents.MCP_CONTEXT_PROVIDED]: McpContextProvidedProps;
+	[AnalyticsEvents.MCP_AGENT_SELF_CHECK]: McpAgentSelfCheckProps;
+
+	// Intelligence Layer: Community & Engagement
+	[AnalyticsEvents.DISASTER_STORY_SHARED]: DisasterStorySharedProps;
+	[AnalyticsEvents.FEEDBACK_SUBMITTED]: FeedbackSubmittedProps;
+	[AnalyticsEvents.COMMUNITY_ACTION_COMPLETED]: CommunityActionCompletedProps;
+	[AnalyticsEvents.BETA_ELIGIBILITY_CALCULATED]: BetaEligibilityCalculatedProps;
+	[AnalyticsEvents.REFERRAL_LINK_GENERATED]: ReferralLinkGeneratedProps;
+	[AnalyticsEvents.REFERRAL_CONVERTED]: ReferralConvertedProps;
 
 	// Activation Funnel
 	[AnalyticsEvents.AUTH_COMPLETED]: AuthCompletedProps;

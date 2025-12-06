@@ -1,15 +1,15 @@
 import type { Snapshot, SnapshotFilters } from "@snapback/contracts";
 import { logger } from "@snapback/infrastructure";
 import type Database from "better-sqlite3";
-import { sanitizeForJSON } from "../utils/security.js";
-import type { StorageAdapter } from "./StorageAdapter.js";
+import { sanitizeForJSON } from "../utils/security";
+import type { StorageAdapter } from "./StorageAdapter";
 import {
 	CorruptedDataError,
 	StorageConnectionError,
 	StorageError,
 	StorageFullError,
 	StorageLockError,
-} from "./StorageErrors.js";
+} from "./StorageErrors";
 
 // Lazy-loaded better-sqlite3 instance
 let DatabaseConstructor: typeof Database | null = null;

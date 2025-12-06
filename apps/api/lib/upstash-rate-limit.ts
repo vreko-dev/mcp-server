@@ -1,5 +1,5 @@
 import { logger } from "@snapback/infrastructure";
-import { rateLimitCheck } from "./upstash-client.js";
+import { rateLimitCheck } from "./upstash-client";
 
 /**
  * Rate limiting configuration per tier

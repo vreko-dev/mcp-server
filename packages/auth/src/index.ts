@@ -19,7 +19,7 @@ import {
 } from "drizzle-orm";
 
 // Import and re-export auth from auth.ts
-export { auth } from "./auth.js";
+export { auth } from "./auth";
 
 // Re-export business logic functions
 export {
@@ -29,7 +29,7 @@ export {
 	getUserPlan,
 	hasPermission,
 	type SubscriptionPlan,
-} from "./business/index.js";
+} from "./business/index";
 
 // ============================================================================
 // TYPES
@@ -1035,23 +1035,23 @@ export {
 	AuthError,
 	InsufficientRoleError,
 	InsufficientScopesError,
-} from "./errors.js";
+} from "./errors";
 // Extension JWT authentication
 export type {
 	ExtensionAccessTokenPayload,
 	ExtensionAuthContext,
-} from "./lib/extension-jwt.js";
+} from "./lib/extension-jwt";
 export {
 	decodeExtensionAccessToken,
 	signExtensionAccessToken,
 	verifyExtensionAccessToken,
-} from "./lib/extension-jwt.js";
-export type { PlanPermissions } from "./plan.js";
-export { getPlanPermissions, mapUserToPlan } from "./plan.js";
+} from "./lib/extension-jwt";
+export type { PlanPermissions } from "./plan";
+export { getPlanPermissions, mapUserToPlan } from "./plan";
 export type {
 	PlanId,
 	SnapbackAuth,
 	SnapbackAuthContext,
 	UserRole,
-} from "./shared-auth.js";
-export { snapbackAuth } from "./shared-auth-impl.js";
+} from "./shared-auth";
+export { snapbackAuth } from "./shared-auth-impl";

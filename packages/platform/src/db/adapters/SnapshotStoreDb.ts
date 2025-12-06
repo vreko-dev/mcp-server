@@ -1,6 +1,6 @@
 import { desc, eq } from "drizzle-orm";
 import type { PgDatabase } from "drizzle-orm/pg-core";
-import { snapshotFiles, snapshots } from "../schema/snapback/index.js";
+import { snapshotFiles, snapshots } from "../schema/snapback/index";
 
 export interface Snapshot {
 	id: string;

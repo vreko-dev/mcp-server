@@ -2,8 +2,8 @@ import slugify from "@sindresorhus/slugify";
 import { eq, sql } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import type { z } from "zod";
-import { combinedSchema, db } from "../client.js";
-import type { OrganizationUpdateSchema } from "../zod.js";
+import { combinedSchema, db } from "../client";
+import type { OrganizationUpdateSchema } from "../zod";
 
 const { organization, member } = combinedSchema;
 

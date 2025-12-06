@@ -1,7 +1,7 @@
 import crypto from "node:crypto";
 import type { NextRequest } from "next/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { handlePostHogWebhook } from "../posthog-handler.js";
+import { handlePostHogWebhook } from "../posthog-handler";
 
 // Mock the HubSpot service
 vi.mock("../hubspot-service", () => ({

@@ -1,5 +1,5 @@
-export * from "./event-mapper.js";
-export * from "./events.js";
+export * from "./event-mapper";
+export * from "./events";
 export type {
 	CoreTelemetryEventName,
 	CoreTelemetryEventV1,
@@ -10,7 +10,7 @@ export type {
 	SessionFinalizedEventV1,
 	SessionRestoredEventV1,
 	SnapshotCreatedEventV1,
-} from "./events.v1.js";
+} from "./events.v1";
 export {
 	CORE_TELEMETRY_EVENTS,
 	CoreEventSchema,
@@ -24,5 +24,5 @@ export {
 	SessionRestoredSchema,
 	SnapshotCreatedSchemaV1 as SnapshotCreatedSchema,
 	validateCoreTelemetryEvent,
-} from "./events.v1.js";
-export * from "./migrate-events.js";
+} from "./events.v1";
+export * from "./migrate-events";

@@ -1,8 +1,8 @@
 import { expect } from "@playwright/test";
-import { createApiKey, createUser } from "../utils/data/factories.js";
-import { test } from "../utils/fixtures/auth.js";
-import { checkAccessibility } from "../utils/helpers/accessibility.js";
-import { mockApiResponses } from "../utils/helpers/api-mocking.js";
+import { createApiKey, createUser } from "../utils/data/factories";
+import { test } from "../utils/fixtures/auth";
+import { checkAccessibility } from "../utils/helpers/accessibility";
+import { mockApiResponses } from "../utils/helpers/api-mocking";
 import {
 	assertPageLoadTime,
 	measurePageLoadPerformance,
@@ -11,8 +11,8 @@ import {
 	expectSearchResultsCount,
 	performSearch,
 } from "../utils/helpers/search";
-import { compareScreenshot } from "../utils/helpers/visual-regression.js";
-import { DashboardPage } from "../utils/pages/dashboard.js";
+import { compareScreenshot } from "../utils/helpers/visual-regression";
+import { DashboardPage } from "../utils/pages/dashboard";
 
 test.describe("Full Integration Flow", () => {
 	test("complete user journey from login to API key management", async ({

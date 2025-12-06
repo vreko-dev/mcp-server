@@ -3,9 +3,9 @@
  * Provides watch/warn/block actions based on detection results
  */
 
-import { type MockDetectionResult, MockDetector } from "./detectors/MockDetector.js";
-import { PhantomDependencyDetector, type PhantomDependencyResult } from "./detectors/PhantomDependencyDetector.js";
-import { type SecretDetectionResult, SecretDetector } from "./detectors/SecretDetector.js";
+import { type MockDetectionResult, MockDetector } from "./detectors/MockDetector";
+import { PhantomDependencyDetector, type PhantomDependencyResult } from "./detectors/PhantomDependencyDetector";
+import { type SecretDetectionResult, SecretDetector } from "./detectors/SecretDetector";
 
 export type PolicyAction = "watch" | "warn" | "block";
 

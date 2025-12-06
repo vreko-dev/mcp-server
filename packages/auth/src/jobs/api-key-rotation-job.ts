@@ -12,7 +12,7 @@
  */
 
 import { logger } from "@snapback/infrastructure";
-import { trackEvent } from "../lib/audit.js";
+import { trackEvent } from "../lib/audit";
 
 /**
  * Configuration

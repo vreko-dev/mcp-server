@@ -6,7 +6,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { areEqual, getDepth, isWithin, normalize } from "../../src/utils/PathNormalizer.js";
+import { areEqual, getDepth, isWithin, normalize } from "../../src/utils/PathNormalizer";
 
 describe("PathNormalizer", () => {
 	describe("normalize", () => {

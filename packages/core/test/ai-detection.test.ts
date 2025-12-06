@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { AIDetectionEngine } from "../src/ai-detection.js";
+import { AIDetectionEngine } from "../src/ai-detection";
 
 describe("AIDetectionEngine", () => {
 	describe("analyze", () => {

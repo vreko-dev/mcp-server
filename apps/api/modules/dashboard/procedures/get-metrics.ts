@@ -16,8 +16,8 @@ import {
 } from "@snapback/contracts";
 import { logger } from "@snapback/infrastructure";
 import { z } from "zod";
-import { protectedProcedure } from "../../../orpc/procedures.js";
-import { getDb } from "../../../src/services/database.js";
+import { protectedProcedure } from "../../../orpc/procedures";
+import { getDb } from "../../../src/services/database";
 
 /**
  * Get dashboard metrics for authenticated user
@@ -35,15 +35,16 @@ import { getDb } from "../../../src/services/database.js";
 export const getMetricsHandler = async ({
 	context,
 }: {
-	context: { user?: { id: string } } | any;
+	context: unknown;
 }): Promise<DashboardMetricsResponse> => {
-	const userId = context.user?.id;
+	const userId = (context as { user?: { id: string } }).user?.id;
 
 	// Validate authenticated context
 	if (!userId) {
 		logger.warn("getMetrics called without authenticated user", {
 			event: "auth_guard_denied",
-			path: context.request?.url || "unknown",
+			path:
+				(context as { request?: { url?: string } }).request?.url || "unknown",
 		});
 
 		return {
@@ -74,7 +75,7 @@ export const getMetricsHandler = async ({
 		const { snapshots, snapshotFiles, telemetryEvents } = await import(
 			"@snapback/platform"
 		);
-		const { count, eq, sql, desc, and } = await import("drizzle-orm");
+		const { count, eq, sql } = await import("drizzle-orm");
 
 		// Execute queries in parallel for performance
 		const [

@@ -3,7 +3,7 @@ import { apiKeys, subscriptions } from "@snapback/platform";
 import { eq } from "drizzle-orm";
 import { PostHog } from "posthog-node";
 import { z } from "zod";
-import { trackUsage } from "../../../lib/usage.js";
+import { trackUsage } from "../../../lib/usage";
 import { protectedProcedure } from "../../../orpc/procedures";
 import { getDb } from "../../../src/services/database";
 
@@ -155,8 +155,8 @@ export const trackEvent = protectedProcedure
  * Sanitize PII and secrets from event properties
  */
 function sanitizeProperties(
-	properties: Record<string, any>,
-): Record<string, any> {
+	properties: Record<string, unknown>,
+): Record<string, unknown> {
 	const sanitized = { ...properties };
 
 	// Remove common PII fields
@@ -177,16 +177,17 @@ function sanitizeProperties(
 	}
 
 	// Sanitize file paths (remove usernames)
-	if (sanitized.filePath && typeof sanitized.filePath === "string") {
-		sanitized.filePath = sanitized.filePath.replace(
+	const props = sanitized as Record<string, any>;
+	if (props.filePath && typeof props.filePath === "string") {
+		props.filePath = props.filePath.replace(
 			/\/Users\/[^/]+/,
 			"/Users/[redacted]",
 		);
-		sanitized.filePath = sanitized.filePath.replace(
+		props.filePath = props.filePath.replace(
 			/\/home\/[^/]+/,
 			"/home/[redacted]",
 		);
-		sanitized.filePath = sanitized.filePath.replace(
+		props.filePath = props.filePath.replace(
 			/C:\\Users\\[^\\]+/,
 			"C:\\Users\\[redacted]",
 		);

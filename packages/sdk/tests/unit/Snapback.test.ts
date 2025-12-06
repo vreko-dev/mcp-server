@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { Snapback } from "../../src/Snapback.js";
-import { MemoryStorage } from "../../src/storage/MemoryStorage.js";
+import { Snapback } from "../../src/Snapback";
+import { MemoryStorage } from "../../src/storage/MemoryStorage";
 
 describe("Snapback", () => {
 	let snapback: Snapback;

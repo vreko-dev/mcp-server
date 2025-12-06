@@ -1,11 +1,11 @@
 import { Hono } from "hono";
-import keysRoute from "../keys.js";
-import snapshotsRoute from "../snapshots.js";
-import analyzeRoute from "./analyze.js";
-import detectSecretsRoute from "./detect-secrets.js";
-import policyCurrentRoute from "./policy-current.js";
-import policyEvaluateRoute from "./policy-evaluate.js";
-import telemetryIngestRoute from "./telemetry-ingest.js";
+import keysRoute from "../keys";
+import snapshotsRoute from "../snapshots";
+import analyzeRoute from "./analyze";
+import detectSecretsRoute from "./detect-secrets";
+import policyCurrentRoute from "./policy-current";
+import policyEvaluateRoute from "./policy-evaluate";
+import telemetryIngestRoute from "./telemetry-ingest";
 
 const app = new Hono();
 

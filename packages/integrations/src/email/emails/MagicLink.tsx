@@ -1,6 +1,6 @@
 import { Link, Text } from "@react-email/components";
-import PrimaryButton from "../components/PrimaryButton.js";
-import Wrapper from "../components/Wrapper.js";
+import PrimaryButton from "../components/PrimaryButton";
+import Wrapper from "../components/Wrapper";
 
 export function MagicLink({ url, name }: { url: string; name: string }) {
 	return (

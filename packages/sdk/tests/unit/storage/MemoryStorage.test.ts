@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { MemoryStorage } from "../../../src/storage/MemoryStorage.js";
+import { MemoryStorage } from "../../../src/storage/MemoryStorage";
 import { testStorageAdapter } from "./StorageAdapter.contract";
 
 // Run contract tests

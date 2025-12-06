@@ -11,17 +11,17 @@ import { DependencyAnalyzer, MCPClientManager, validateToolArgs } from "@snapbac
 import { SnapBackEventBusEventEmitter2 as SnapBackEventBus } from "@snapback/events";
 import { evaluate } from "@snapback/policy-engine"; // Import the proper policy engine
 import { z } from "zod";
-import { authenticate, hasToolAccess } from "./auth.js";
-import { ExtensionIPCClient } from "./client/extension-ipc.js";
-import { SnapBackAPIClient } from "./client/snapback-api.js";
-import { AnalysisRouter } from "./services/AnalysisRouter.js";
-import { Context7Service } from "./context7/index.js";
-import { MCPHttpServer } from "./http-server.js";
-import { CreateSnapshotSchema, createSnapshot } from "./tools/create-snapshot.js";
-import { addSnapshot, listSnapshots } from "./tools/list-snapshots.js";
-import { restoreSnapshot, storeSnapshotContent } from "./tools/restore-snapshot.js";
-import { addResult, createSarifLog } from "./utils/sarif.js";
-import { initializeSecurityTelemetry, setWorkspaceRoot } from "./utils/security.js";
+import { authenticate, hasToolAccess } from "./auth";
+import { ExtensionIPCClient } from "./client/extension-ipc";
+import { SnapBackAPIClient } from "./client/snapback-api";
+import { AnalysisRouter } from "./services/AnalysisRouter";
+import { Context7Service } from "./context7/index";
+import { MCPHttpServer } from "./http-server";
+import { CreateSnapshotSchema, createSnapshot } from "./tools/create-snapshot";
+import { addSnapshot, listSnapshots } from "./tools/list-snapshots";
+import { restoreSnapshot, storeSnapshotContent } from "./tools/restore-snapshot";
+import { addResult, createSarifLog } from "./utils/sarif";
+import { initializeSecurityTelemetry, setWorkspaceRoot } from "./utils/security";
 
 /**
  * Performance tracker for monitoring operation times

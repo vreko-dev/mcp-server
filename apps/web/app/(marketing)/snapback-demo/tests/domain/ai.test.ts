@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getAiSuggestions } from "../../domain/ai.js";
+import { getAiSuggestions } from "../../domain/ai";
 
 describe("AI Domain Functions", () => {
 	describe("getAiSuggestions", () => {

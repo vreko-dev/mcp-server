@@ -1,20 +1,20 @@
 {
   "name": "@snapback/contracts",
   "description": "Type definitions and contracts for SnapBack",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "dependencies": {
-    "@asteasolutions/zod-to-openapi": "catalog:",
-    "nanoid": "catalog:",
-    "zod": "catalog:"
+    "@asteasolutions/zod-to-openapi": "7.3.4",
+    "nanoid": "5.1.5",
+    "zod": "4.1.8"
   },
   "devDependencies": {
-    "@types/node": "catalog:",
-    "@types/react": "catalog:",
-    "diff": "catalog:",
-    "dotenv": "catalog:",
-    "tsup": "catalog:",
-    "typescript": "catalog:",
-    "vitest": "catalog:"
+    "@types/node": "^22.0.0",
+    "@types/react": "^18.0.0",
+    "diff": "^5.2.0",
+    "dotenv": "^16.3.1",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
   },
   "exports": {
     ".": {

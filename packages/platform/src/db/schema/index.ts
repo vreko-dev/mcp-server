@@ -1,2 +1,2 @@
-export * from "./extension-auth.js";
-export * from "./postgres.js";
+export * from "./extension-auth";
+export * from "./postgres";

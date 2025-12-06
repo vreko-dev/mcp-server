@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { checkRateLimit } from "../../app/middleware/rate-limit.js";
+import { checkRateLimit } from "../../app/middleware/rate-limit";
 
 // Mock Redis client
 const mockRedisClient = {

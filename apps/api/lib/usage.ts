@@ -1,6 +1,6 @@
 import { apiUsageLogs, rateLimitViolations } from "@snapback/platform";
 import { getDb } from "../src/services/database";
-import { log } from "./logger.js";
+import { log } from "./logger";
 
 export async function trackUsage(data: {
 	requestId: string;

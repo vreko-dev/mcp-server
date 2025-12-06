@@ -1,4 +1,4 @@
-import { subscribeToNewsletter } from "./procedures/subscribe-to-newsletter.js";
+import { subscribeToNewsletter } from "./procedures/subscribe-to-newsletter";
 
 export const newsletterRouter = {
 	subscribe: subscribeToNewsletter,

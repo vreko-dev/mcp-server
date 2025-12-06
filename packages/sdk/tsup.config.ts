@@ -3,14 +3,7 @@ import { defineConfig } from "tsup";
 export default defineConfig({
 	entry: ["src/index.ts"],
 	format: ["esm"],
-	dts: {
-		resolve: true,
-		compilerOptions: {
-			composite: false,
-			incremental: false,
-			rootDir: undefined,
-		},
-	},
+	dts: false, // Skip declarations - use tsc for type declarations (matches OSS SDK pattern)
 	clean: true,
 	sourcemap: true,
 	outDir: "dist",

@@ -2,7 +2,7 @@ import { mkdirSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createSnapshotStorage } from "../src/types/snapshot.js";
+import { createSnapshotStorage } from "../src/types/snapshot";
 
 describe("createSnapshotStorage", () => {
 	let testDir: string;

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { type RetentionJobConfig, RetentionService } from "../src/retention.js";
+import { type RetentionJobConfig, RetentionService } from "../src/retention";
 
 // Mock the database client and schema
 vi.mock("@snapback/platform/src/db/client", async () => {

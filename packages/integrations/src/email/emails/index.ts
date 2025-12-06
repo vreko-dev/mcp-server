@@ -1,11 +1,11 @@
-import { ApiKeyCreatedEmail } from "./ApiKeyCreatedEmail.js";
-import { EmailVerification } from "./EmailVerification.js";
-import { ForgotPassword } from "./ForgotPassword.js";
-import { MagicLink } from "./MagicLink.js";
-import { NewsletterSignup } from "./NewsletterSignup.js";
-import { NewUser } from "./NewUser.js";
-import { OrganizationInvitation } from "./OrganizationInvitation.js";
-import { WelcomeEmail } from "./WelcomeEmail.js";
+import { ApiKeyCreatedEmail } from "./ApiKeyCreatedEmail";
+import { EmailVerification } from "./EmailVerification";
+import { ForgotPassword } from "./ForgotPassword";
+import { MagicLink } from "./MagicLink";
+import { NewsletterSignup } from "./NewsletterSignup";
+import { NewUser } from "./NewUser";
+import { OrganizationInvitation } from "./OrganizationInvitation";
+import { WelcomeEmail } from "./WelcomeEmail";
 
 export const emails = {
 	emailVerification: EmailVerification,

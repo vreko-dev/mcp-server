@@ -1,7 +1,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { describe, expect, it } from "vitest";
-import { PhantomDependencyPlugin } from "../../src/detection/plugins/phantom-dependency.js";
+import { PhantomDependencyPlugin } from "../../src/detection/plugins/phantom-dependency";
 
 describe("PhantomDependencyPlugin", () => {
 	// Create a new plugin instance for each test to avoid caching issues
@@ -219,7 +219,7 @@ describe("PhantomDependencyPlugin", () => {
 
 	it("should detect relative imports that resolve to phantom dependencies", async () => {
 		const code = `
-      import { helper } from "../node_modules/phantom-package/index.js";
+      import { helper } from "../node_modules/phantom-package/index";
       
       export const service = () => helper();
     `;

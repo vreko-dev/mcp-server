@@ -10,8 +10,8 @@
 import * as path from "node:path";
 import type { Snapshot } from "@snapback-oss/contracts";
 import { createSilentLogger } from "@snapback-oss/contracts";
-import type { ILogger } from "./interfaces.js";
-import type { SessionManifest } from "./types.js";
+import type { ILogger } from "./interfaces";
+import type { SessionManifest } from "./types";
 
 /**
  * Interface for snapshot providers

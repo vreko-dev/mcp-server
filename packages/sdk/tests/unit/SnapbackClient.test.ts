@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { SnapbackClient } from "../../src/client/SnapbackClient.js";
+import { SnapbackClient } from "../../src/client/SnapbackClient";
 
 describe("SnapbackClient", () => {
 	describe("initialization", () => {

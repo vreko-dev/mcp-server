@@ -1,5 +1,5 @@
 import { render } from "@react-email/render";
-import { emails as mailTemplates } from "../../emails.js";
+import { emails as mailTemplates } from "../../emails";
 
 const subjectMap: Record<string, string> = {
 	emailVerification: "Verify your email address",

@@ -8,8 +8,8 @@
  * @module token/DistributedTokenManager
  */
 
-import { type PlanConfig, RateLimiter } from "./RateLimiter.js";
-import { TokenBucket } from "./TokenBucket.js";
+import { type PlanConfig, RateLimiter } from "./RateLimiter";
+import { TokenBucket } from "./TokenBucket";
 
 export interface RedisClient {
 	get(key: string): Promise<string | null>;

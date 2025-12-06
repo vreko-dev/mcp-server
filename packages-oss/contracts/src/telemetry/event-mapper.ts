@@ -5,14 +5,14 @@ import {
 	type SnapBackUsedEvent,
 	type SnapshotCreatedEvent,
 	TELEMETRY_EVENTS,
-} from "./events.js";
+} from "./events";
 import {
 	type CoreTelemetryEventV1,
 	IssueCreatedSchema,
 	SaveAttemptSchema,
 	SessionRestoredSchema,
 	SnapshotCreatedSchemaV1,
-} from "./events.v1.js";
+} from "./events.v1";
 
 /**
  * Maps legacy telemetry events to new core events

@@ -6,7 +6,7 @@ import {
 	DepQuickArgsSchema,
 	DiffChangeSchema,
 	RiskScoreSchema,
-} from "../src/schemas.js";
+} from "../src/schemas";
 
 describe("Schemas", () => {
 	describe("DiffChangeSchema", () => {

@@ -20,7 +20,7 @@ import {
 	checkAccountLockout,
 	incrementFailedAttempts,
 	resetFailedAttempts,
-} from "../lib/account-lockout.js";
+} from "../lib/account-lockout";
 
 /**
  * Extract email from request body

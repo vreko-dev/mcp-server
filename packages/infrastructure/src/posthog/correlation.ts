@@ -5,7 +5,7 @@
  */
 
 import { PostHog } from "posthog-node";
-import { logger } from "../logging/logger.js";
+import { logger } from "../logging/logger";
 
 // Define correlation analysis types
 export interface CorrelationAnalysisConfig {

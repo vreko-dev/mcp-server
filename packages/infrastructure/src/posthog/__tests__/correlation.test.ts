@@ -3,7 +3,7 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { CORRELATION_ANALYSES, performCorrelationAnalysis } from "../correlation.js";
+import { CORRELATION_ANALYSES, performCorrelationAnalysis } from "../correlation";
 
 // Mock the PostHog client
 vi.mock("posthog-node", () => {

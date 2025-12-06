@@ -4,7 +4,7 @@ import {
 	SaveAttemptSchema,
 	SessionRestoredSchema,
 	SnapshotCreatedSchema,
-} from "../events/core.js";
+} from "../events/core";
 import {
 	type AllowedTelemetryEvent,
 	type OnboardingProtectionAssignedEvent,
@@ -12,7 +12,7 @@ import {
 	type SnapBackUsedEvent,
 	type SnapshotCreatedEvent,
 	TELEMETRY_EVENTS,
-} from "./events.js";
+} from "./events";
 
 /**
  * Maps legacy telemetry events to new core events

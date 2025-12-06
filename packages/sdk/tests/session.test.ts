@@ -10,9 +10,9 @@ import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import type { SessionManifestV1 } from "@snapback/contracts/session";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { SessionRecovery } from "../src/session/SessionRecovery.js";
-import { SessionRollback } from "../src/session/SessionRollback.js";
-import type { BlobStore, BlobStoreError, Result } from "../src/storage/BlobStore.js";
+import { SessionRecovery } from "../src/session/SessionRecovery";
+import { SessionRollback } from "../src/session/SessionRollback";
+import type { BlobStore, BlobStoreError, Result } from "../src/storage/BlobStore";
 
 // ============================================================================
 // Mock BlobStore

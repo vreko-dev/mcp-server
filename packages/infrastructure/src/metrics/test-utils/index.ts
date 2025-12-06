@@ -4,8 +4,8 @@
  * Mock client and helpers for testing analytics integrations.
  */
 
-import type { EventPropertiesMap } from "../core/events.js";
-import type { AnalyticsClient, GroupProperties, UserTraits } from "../core/types.js";
+import type { EventPropertiesMap } from "../core/events";
+import type { AnalyticsClient, GroupProperties, UserTraits } from "../core/types";
 
 // ============================================================================
 // MOCK ANALYTICS CLIENT

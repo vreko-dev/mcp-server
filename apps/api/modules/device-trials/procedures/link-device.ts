@@ -24,7 +24,11 @@ export const linkDevice = publicProcedure
 		}
 
 		// Extract API key from Authorization header
-		const authHeader = (context as any).request?.headers?.get("Authorization");
+		const authHeader = (
+			context as {
+				request?: { headers?: { get: (k: string) => string | undefined } };
+			}
+		).request?.headers?.get("Authorization");
 
 		if (!authHeader || !authHeader.startsWith("Bearer ")) {
 			throw new Error(

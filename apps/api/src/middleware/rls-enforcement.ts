@@ -15,7 +15,7 @@ import { db } from "@snapback/platform";
 import { member } from "@snapback/platform/db/schema/postgres";
 import { and, eq } from "drizzle-orm";
 import type { Context, Next } from "hono";
-import type { AuthContext } from "./auth-unified.js";
+import type { AuthContext } from "./auth-unified";
 
 /**
  * Check if user is member of an organization (inline)

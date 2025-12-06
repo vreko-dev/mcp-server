@@ -7,9 +7,9 @@
 
 import type { Snapshot } from "@snapback/contracts";
 import { describe, expect, it, vi } from "vitest";
-import type { ILogger } from "../../../src/core/session/interfaces.js";
-import { SessionSummaryGenerator } from "../../../src/core/session/SessionSummaryGenerator.js";
-import type { SessionManifest } from "../../../src/core/session/types.js";
+import type { ILogger } from "../../../src/core/session/interfaces";
+import { SessionSummaryGenerator } from "../../../src/core/session/SessionSummaryGenerator";
+import type { SessionManifest } from "../../../src/core/session/types";
 
 describe("SessionSummaryGenerator", () => {
 	describe("Metadata-based summaries", () => {

@@ -1,6 +1,6 @@
 /// <reference types="react" />
 
-export * from "./analytics.js";
+export * from "./analytics";
 // Auth contracts (explicit exports to avoid naming conflicts)
 export {
 	AUTH_ERROR_MESSAGES,
@@ -50,25 +50,25 @@ export {
 	UpdateProfileRequestSchema,
 	type UpdateProfileResponse,
 	UpdateProfileResponseSchema,
-} from "./auth/index.js";
-export * from "./dashboard/metrics.js";
-export * from "./eventBus.js";
-export * from "./events/index.js";
-export * from "./exports.js";
-export * from "./feature-manager.js";
-export * from "./features.js";
-export * from "./id-generator.js";
-export * from "./logger.js";
-export * from "./risk-conversion.js";
-export * from "./schemas.js";
+} from "./auth/index";
+export * from "./dashboard/metrics";
+export * from "./eventBus";
+export * from "./events/index";
+export * from "./exports";
+export * from "./feature-manager";
+export * from "./features";
+export * from "./id-generator";
+export * from "./logger";
+export * from "./risk-conversion";
+export * from "./schemas";
 // Alpha contracts (Phase 0)
-export * from "./tiers.js";
+export * from "./tiers";
 // Note: telemetry re-exports from events, so not exported here to avoid conflicts
 
-export * from "./session.js";
-export * from "./types/config.js";
-export * from "./types/protection.js";
-export * from "./types/protection-utils.js";
+export * from "./session";
+export * from "./types/config";
+export * from "./types/protection";
+export * from "./types/protection-utils";
 // Note: Not exporting types/snapshot due to naming conflicts with schemas.ts
 
 // Required exports for SDK functionality
@@ -79,7 +79,7 @@ export type {
 	RiskScore,
 	Snapshot,
 	SnapshotMetadata,
-} from "./schemas.js";
+} from "./schemas";
 
 // Export snapshot types that don't conflict
 export type {
@@ -88,12 +88,12 @@ export type {
 	SnapshotFilters,
 	SnapshotRestoreResult,
 	SnapshotStorage,
-} from "./types/snapshot.js";
+} from "./types/snapshot";
 
 // Note: createSnapshotStorage is commented out to avoid SDK dependency in web builds
 // CLI and VSCode extension import SDK directly, not through contracts
 // Web app uses Supabase storage, not local SQLite (better-sqlite3)
-// export { createSnapshotStorage } from "./types/snapshot.js"
+// export { createSnapshotStorage } from "./types/snapshot"
 
 // Dashboard exports (for web app metrics display)
 export type {
@@ -102,7 +102,7 @@ export type {
 	DashboardMetricsError,
 	DashboardMetricsResponse,
 	RecentActivity,
-} from "./dashboard/metrics.js";
+} from "./dashboard/metrics";
 export {
 	AI_TOOLS,
 	AIActivityBreakdownSchema,
@@ -116,4 +116,4 @@ export {
 	PROTECTION_STATUSES,
 	RECENT_ACTIVITY_ACTIONS,
 	RecentActivitySchema,
-} from "./dashboard/metrics.js";
+} from "./dashboard/metrics";

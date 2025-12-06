@@ -1,5 +1,5 @@
 import { logger } from "@snapback/infrastructure";
-import type { WebhookHandler } from "../types.js";
+import type { WebhookHandler } from "../types";
 
 /**
  * Verify HubSpot webhook signature

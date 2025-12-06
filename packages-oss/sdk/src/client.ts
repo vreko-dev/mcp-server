@@ -3,8 +3,8 @@ import { logger } from "@snapback-oss/infrastructure";
 import ky from "ky";
 import ow from "ow";
 import pRetry, { AbortError } from "p-retry";
-import { LRUCache } from "./cache/lru-cache.js";
-import { PrivacySanitizer } from "./privacy/sanitizer.js";
+import { LRUCache } from "./cache/lru-cache";
+import { PrivacySanitizer } from "./privacy/sanitizer";
 
 export type ClientSurface = "vscode" | "mcp" | "cli" | "web";
 export interface Envelope {

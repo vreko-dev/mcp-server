@@ -2,7 +2,7 @@ import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { StorageBrokerAdapter } from "../../src/storage/StorageBrokerAdapter.js";
+import { StorageBrokerAdapter } from "../../src/storage/StorageBrokerAdapter";
 
 /**
  * SKIPPED: SQLite native bindings not available in test environment

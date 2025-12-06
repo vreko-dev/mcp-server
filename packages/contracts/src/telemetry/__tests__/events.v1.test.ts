@@ -10,7 +10,7 @@ import {
 	SessionRestoredSchema,
 	SnapshotCreatedSchemaV1,
 	validateCoreTelemetryEvent,
-} from "../events.v1.js";
+} from "../events.v1";
 
 describe("Core Telemetry Events v1", () => {
 	it("should validate save attempt events", () => {

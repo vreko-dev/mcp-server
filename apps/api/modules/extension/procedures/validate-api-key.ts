@@ -1,7 +1,7 @@
 import { apiKeys } from "@snapback/platform";
 import { eq, sql } from "drizzle-orm";
 import { z } from "zod";
-import { verifyApiKey } from "../../../lib/crypto.js";
+import { verifyApiKey } from "../../../lib/crypto";
 import { publicProcedure } from "../../../orpc/procedures";
 import { getDb } from "../../../src/services/database";
 

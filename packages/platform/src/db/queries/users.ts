@@ -1,8 +1,8 @@
 import { eq } from "drizzle-orm";
 import type { z } from "zod";
 import { z as zod } from "zod";
-import { combinedSchema, db } from "../client.js";
-import type { UserUpdateSchema } from "../zod.js";
+import { combinedSchema, db } from "../client";
+import type { UserUpdateSchema } from "../zod";
 
 const { user, account } = combinedSchema;
 

@@ -1,11 +1,11 @@
 import { getTableConfig } from "drizzle-orm/pg-core";
 import { describe, expect, it } from "vitest";
-import { agentSuggestions } from "../src/db/schema/snapback/agent-suggestions.js";
-import { feedback } from "../src/db/schema/snapback/feedback.js";
-import { loops } from "../src/db/schema/snapback/loops.js";
-import { policyEvaluations } from "../src/db/schema/snapback/policy-evaluations.js";
-import { postAcceptOutcomes } from "../src/db/schema/snapback/post-accept-outcomes.js";
-import { quarantineEvents } from "../src/db/schema/snapback/quarantine-events.js";
+import { agentSuggestions } from "../src/db/schema/snapback/agent-suggestions";
+import { feedback } from "../src/db/schema/snapback/feedback";
+import { loops } from "../src/db/schema/snapback/loops";
+import { policyEvaluations } from "../src/db/schema/snapback/policy-evaluations";
+import { postAcceptOutcomes } from "../src/db/schema/snapback/post-accept-outcomes";
+import { quarantineEvents } from "../src/db/schema/snapback/quarantine-events";
 
 describe.skip("SCH1: Schema FK CASCADE constraints", () => {
 	const testId1 = "sch-fk-001";

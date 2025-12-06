@@ -22,7 +22,7 @@ vi.mock("@modelcontextprotocol/sdk/client/websocket.js", () => ({
 	WebSocketClientTransport: vi.fn(() => mockWebSocketTransport),
 }));
 
-import { MCPClientManager } from "./mcp-client.js";
+import { MCPClientManager } from "./mcp-client";
 
 // Mock ZodObject for tests
 const _mockZodObject = {

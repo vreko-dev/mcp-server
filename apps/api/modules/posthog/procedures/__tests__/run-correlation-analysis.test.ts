@@ -3,7 +3,7 @@
  */
 
 import { describe, expect, it, vi } from "vitest";
-import { runCorrelationAnalysis } from "../run-correlation-analysis.js";
+import { runCorrelationAnalysis } from "../run-correlation-analysis";
 
 // Mock the logger
 vi.mock("@snapback/infrastructure", () => ({

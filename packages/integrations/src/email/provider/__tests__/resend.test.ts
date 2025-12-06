@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { send } from "../resend.js";
+import { send } from "../resend";
 
 // Mock fetch globally
 const mockFetch = vi.fn();

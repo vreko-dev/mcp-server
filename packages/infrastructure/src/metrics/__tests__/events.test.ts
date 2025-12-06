@@ -6,8 +6,8 @@
  */
 
 import { describe, expect, it } from "vitest";
-import type { AuthSignupCompletedProps, BillingCheckoutCompletedProps, SnapshotCreatedProps } from "../core/events.js";
-import { AnalyticsEvents } from "../core/events.js";
+import type { AuthSignupCompletedProps, BillingCheckoutCompletedProps, SnapshotCreatedProps } from "../core/events";
+import { AnalyticsEvents } from "../core/events";
 
 describe("Analytics Events - Event Definitions", () => {
 	it("should define all 70 events", () => {

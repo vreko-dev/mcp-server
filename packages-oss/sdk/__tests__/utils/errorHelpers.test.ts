@@ -6,7 +6,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { toError } from "../../src/utils/errorHelpers.js";
+import { toError } from "../../src/utils/errorHelpers";
 
 describe("errorHelpers", () => {
 	describe("toError", () => {

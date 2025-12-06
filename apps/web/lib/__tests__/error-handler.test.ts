@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { getErrorMessage, logError, toAppError } from "../error-handler.js";
+import { getErrorMessage, logError, toAppError } from "../error-handler";
 
 describe("Error Handler", () => {
 	it("should handle network errors", () => {

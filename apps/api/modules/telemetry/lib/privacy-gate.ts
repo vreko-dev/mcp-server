@@ -165,7 +165,7 @@ function isAllowedKey(key: string): boolean {
 /**
  * Check if a value contains sensitive data
  */
-function containsSensitiveData(value: any): boolean {
+function containsSensitiveData(value: unknown): boolean {
 	if (typeof value !== "string") {
 		return false;
 	}
@@ -184,9 +184,9 @@ function containsSensitiveData(value: any): boolean {
  * Filter properties through the privacy gate
  */
 export function filterProperties(
-	properties: Record<string, any> = {},
-): Record<string, any> {
-	const filtered: Record<string, any> = {};
+	properties: Record<string, unknown> = {},
+): Record<string, unknown> {
+	const filtered: Record<string, unknown> = {};
 
 	for (const [key, value] of Object.entries(properties)) {
 		// Skip if key is not allowed
@@ -223,13 +223,13 @@ export function filterProperties(
  * Add required context to events
  */
 export function addContext(
-	properties: Record<string, any>,
+	properties: Record<string, unknown>,
 	context: {
 		userId?: string;
 		orgId?: string;
 		version?: string;
 	},
-): Record<string, any> {
+): Record<string, unknown> {
 	const enriched = { ...properties };
 
 	// Add user context

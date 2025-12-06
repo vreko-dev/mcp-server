@@ -11,7 +11,7 @@ import { validateAPIKeyScope } from "@snapback/auth/security/api-key-security";
 import { logger } from "@snapback/infrastructure";
 import type { MiddlewareHandler } from "hono";
 import { HTTPException } from "hono/http-exception";
-import { getDb } from "../services/database.js";
+import { getDb } from "../services/database";
 
 /**
  * API Key context stored in Hono context

@@ -1,10 +1,10 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { beforeEach, describe, expect, it } from "vitest";
-import { PhantomDependencyPlugin } from "../../src/detection/plugins/phantom-dependency.js";
+import { PhantomDependencyPlugin } from "../../src/detection/plugins/phantom-dependency";
 
 // Import the cache so we can clear it between tests
-import { cache } from "../../src/detection/utils/package-parser.js";
+import { cache } from "../../src/detection/utils/package-parser";
 
 describe("PhantomDependencyPlugin Integration Tests", () => {
 	let plugin: PhantomDependencyPlugin;

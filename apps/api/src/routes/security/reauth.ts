@@ -8,7 +8,7 @@ import crypto from "node:crypto";
 import { auth } from "@snapback/auth";
 import { logger } from "@snapback/infrastructure";
 import { Hono } from "hono";
-import { setStepUpValid } from "../../middleware/stepup.js";
+import { setStepUpValid } from "../../middleware/stepup";
 import type { BetterAuthSession, BetterAuthUser } from "../../types/context";
 
 const app = new Hono();

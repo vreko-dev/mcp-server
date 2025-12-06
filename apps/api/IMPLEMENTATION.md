@@ -41,7 +41,7 @@ apps/api/
 Created a new `package.json` for the standalone API service:
 ```json
 {
-  "name": "@snapback/api-service",
+  "name": "@snapback/api",
   "version": "1.0.0",
   "description": "Standalone API service for SnapBack",
   "type": "module",

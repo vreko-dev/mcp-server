@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { SimpleCircuitBreaker } from "../src/circuit-breaker.js";
-import { Guardian } from "../src/guardian.js";
-import { detectThreats } from "../src/threat-detection.js";
+import { SimpleCircuitBreaker } from "../src/circuit-breaker";
+import { Guardian } from "../src/guardian";
+import { detectThreats } from "../src/threat-detection";
 
 describe("Guardian Threat Integration", () => {
 	let guardian: Guardian;

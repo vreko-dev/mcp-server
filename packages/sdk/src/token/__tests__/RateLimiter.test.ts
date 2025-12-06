@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { PlanConfig } from "../RateLimiter.js";
-import { RateLimiter } from "../RateLimiter.js";
+import type { PlanConfig } from "../RateLimiter";
+import { RateLimiter } from "../RateLimiter";
 
 describe("RateLimiter", () => {
 	const plans: Record<string, PlanConfig> = {

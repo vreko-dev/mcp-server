@@ -1,8 +1,8 @@
 import type { ProtectionConfig } from "@snapback/contracts";
 import { describe, expect, it } from "vitest";
-import { ProtectionManager } from "../../src/protection/ProtectionManager.js";
-import { SnapshotManager } from "../../src/snapshot/SnapshotManager.js";
-import { MemoryStorage } from "../../src/storage/MemoryStorage.js";
+import { ProtectionManager } from "../../src/protection/ProtectionManager";
+import { SnapshotManager } from "../../src/snapshot/SnapshotManager";
+import { MemoryStorage } from "../../src/storage/MemoryStorage";
 
 // Mock storage adapter
 const mockStorage = new MemoryStorage();

@@ -1,6 +1,6 @@
 import { logger } from "@snapback/infrastructure";
-import { send as sendResendEmail } from "../../email/provider/resend.js";
-import type { SendEmailParams } from "../../email/types.js";
+import { send as sendResendEmail } from "../../email/provider/resend";
+import type { SendEmailParams } from "../../email/types";
 import type { PlanTier } from "@snapback/config";
 
 export interface EmailServiceResult {

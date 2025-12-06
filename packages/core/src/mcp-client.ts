@@ -5,10 +5,10 @@ import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js"
 import retry from "async-retry";
 import pLimit from "p-limit";
 import { z } from "zod";
-import { processToolResponse } from "./mcp-response-processor.js";
-import { getLibraryDocsCached } from "./utils/cache.js";
-import { withBreaker } from "./utils/circuit-breaker.js";
-import { logger } from "./utils/logger.js";
+import { processToolResponse } from "./mcp-response-processor";
+import { getLibraryDocsCached } from "./utils/cache";
+import { withBreaker } from "./utils/circuit-breaker";
+import { logger } from "./utils/logger";
 
 // Type definitions for MCP tools with namespacing
 interface MCPTool {

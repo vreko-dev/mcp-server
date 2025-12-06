@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
-import { handleSupabaseError, safeSupabaseOperation, supabaseConnectionManager } from "./supabase-error-handler.js";
-import type { Database } from "./types.js";
+import { handleSupabaseError, safeSupabaseOperation, supabaseConnectionManager } from "./supabase-error-handler";
+import type { Database } from "./types";
 
 // Types for Supabase configuration
 interface SupabaseConfig {

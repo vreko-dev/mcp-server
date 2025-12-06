@@ -1,7 +1,7 @@
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { TelemetrySinkDb } from "../src/db/adapters/TelemetrySinkDb.js";
-import { agentSuggestions, quarantineEvents } from "../src/db/schema/snapback/index.js";
+import { TelemetrySinkDb } from "../src/db/adapters/TelemetrySinkDb";
+import { agentSuggestions, quarantineEvents } from "../src/db/schema/snapback/index";
 
 describe("AD-QUAR: Adapter quarantine mechanism", () => {
 	const testId1 = "ad-quar-001";

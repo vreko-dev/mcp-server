@@ -5,10 +5,10 @@ export type {
 	FileUnprotectedPayload,
 	ProtectionChangedPayload,
 	SnapshotCreatedPayload,
-} from "./EventBusEventEmitter2.js";
+} from "./EventBusEventEmitter2";
 export {
 	QoSLevel,
 	SnapBackEvent,
 	SnapBackEventBusEventEmitter2,
 	SnapBackEventBusEventEmitter2 as SnapBackEventBus,
-} from "./EventBusEventEmitter2.js";
+} from "./EventBusEventEmitter2";

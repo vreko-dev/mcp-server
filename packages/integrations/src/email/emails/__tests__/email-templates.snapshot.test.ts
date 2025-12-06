@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { render } from "@react-email/render";
-import WelcomeSubscriptionEmail from "../WelcomeSubscriptionEmail.js";
-import CancellationEmail from "../CancellationEmail.js";
-import PaymentReceiptEmail from "../PaymentReceiptEmail.js";
-import PaymentFailedEmail from "../PaymentFailedEmail.js";
+import WelcomeSubscriptionEmail from "../WelcomeSubscriptionEmail";
+import CancellationEmail from "../CancellationEmail";
+import PaymentReceiptEmail from "../PaymentReceiptEmail";
+import PaymentFailedEmail from "../PaymentFailedEmail";
 
 describe("Email Template Snapshot Tests", () => {
 	describe("WelcomeSubscriptionEmail", () => {

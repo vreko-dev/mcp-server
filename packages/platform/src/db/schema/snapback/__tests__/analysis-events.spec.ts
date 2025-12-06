@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { analysisEvents } from "../analysis-events.js";
+import { analysisEvents } from "../analysis-events";
 
 describe("analysisEvents schema", () => {
 	it("should have the correct table structure", () => {

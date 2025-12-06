@@ -13,7 +13,7 @@ import {
 	closeRedisClient,
 	getRedisClient,
 	initializeRedisClient,
-} from "../../lib/redis-client.js";
+} from "../../lib/redis-client";
 
 describe("Redis Client Integration", () => {
 	let originalEnv: NodeJS.ProcessEnv;

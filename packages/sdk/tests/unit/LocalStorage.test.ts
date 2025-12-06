@@ -2,8 +2,8 @@ import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { LocalStorage } from "../../src/storage/LocalStorage.js";
-import { generateTestSnapshot } from "../setup.js";
+import { LocalStorage } from "../../src/storage/LocalStorage";
+import { generateTestSnapshot } from "../setup";
 
 describe("LocalStorage", () => {
 	let storage: LocalStorage;

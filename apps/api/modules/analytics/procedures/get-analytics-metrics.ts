@@ -105,16 +105,18 @@ export const getAnalyticsMetrics = protectedProcedure
 			// Calculate metrics
 			const totalSuggestions = suggestions.length;
 			const acceptedSuggestions = suggestions.filter(
-				(s: any) => s.accepted,
+				(s: { accepted: boolean }) => s.accepted,
 			).length;
 			const dismissedSuggestions = suggestions.filter(
-				(s: any) => s.dismissed,
+				(s: { dismissed: boolean }) => s.dismissed,
 			).length;
 			const policyViolations = policies.filter(
-				(p: any) => p.evaluationResult === "fail",
+				(p: { evaluationResult: string }) => p.evaluationResult === "fail",
 			).length;
 			const totalLoops = loopData.length;
-			const successfulLoops = loopData.filter((l: { success: boolean }) => l.success).length;
+			const successfulLoops = loopData.filter(
+				(l: { success: boolean }) => l.success,
+			).length;
 			const feedbackCount = feedbackData.length;
 
 			// Calculate average times if we have outcomes data
@@ -123,11 +125,13 @@ export const getAnalyticsMetrics = protectedProcedure
 
 			if (outcomes.length > 0) {
 				const totalEditTime = outcomes.reduce(
-					(sum: number, outcome: { timeToEditMs: number | null }) => sum + (outcome.timeToEditMs || 0),
+					(sum: number, outcome: { timeToEditMs: number | null }) =>
+						sum + (outcome.timeToEditMs || 0),
 					0,
 				);
 				const totalSubmitTime = outcomes.reduce(
-					(sum: number, outcome: any) => sum + (outcome.timeToSubmitMs || 0),
+					(sum: number, outcome: { timeToSubmitMs: number | null }) =>
+						sum + (outcome.timeToSubmitMs || 0),
 					0,
 				);
 				avgTimeToEditMs = totalEditTime / outcomes.length;

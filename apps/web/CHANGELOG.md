@@ -12,7 +12,7 @@
 ### Patch Changes
 
 - Updated dependencies
-  - @snapback/api-service@1.1.0
+  - @snapback/api@1.1.0
   - @snapback/auth@0.0.1
   - @snapback/core@0.1.2
 
@@ -42,7 +42,7 @@
   - @snapback/core@0.2.0
   - @snapback/infrastructure@0.2.0
   - @snapback/integrations@0.1.0
-  - @snapback/api-service@1.0.1
+  - @snapback/api@1.0.1
   - @snapback/auth@0.0.1
 
 ## 0.0.1

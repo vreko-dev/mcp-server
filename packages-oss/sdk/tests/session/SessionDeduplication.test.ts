@@ -4,7 +4,7 @@
 
 import type { SessionChange } from "@snapback-oss/contracts/session";
 import { beforeEach, describe, expect, it } from "vitest";
-import { SessionDeduplication } from "../../src/session/SessionDeduplication.js";
+import { SessionDeduplication } from "../../src/session/SessionDeduplication";
 
 describe("SessionDeduplication", () => {
 	let dedup: SessionDeduplication;

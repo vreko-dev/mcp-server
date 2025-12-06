@@ -8,7 +8,7 @@
  * Legacy format: "Watched" | "Warning" | "Protected"
  */
 
-import type { LegacyProtectionLevel, ProtectionLevel } from "./protection.js";
+import type { LegacyProtectionLevel, ProtectionLevel } from "./protection";
 
 /**
  * Mapping table for legacy to canonical conversion

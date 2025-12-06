@@ -5,7 +5,7 @@ import {
 	getSnapshotsForFile,
 	restoreSnapshot,
 } from "../../domain/snapshot";
-import type { Snapshot } from "../../domain/types.js";
+import type { Snapshot } from "../../domain/types";
 
 describe("Snapshot Domain Functions", () => {
 	describe("createSnapshot", () => {

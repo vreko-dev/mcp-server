@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { getSnapshotManager, toFileInputs } from "./sdk-adapter.js";
+import { getSnapshotManager, toFileInputs } from "./sdk-adapter";
 
 // Schema for create snapshot tool
 export const CreateSnapshotSchema = z.object({

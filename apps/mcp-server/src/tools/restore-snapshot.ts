@@ -1,4 +1,4 @@
-import { getSnapshotManager } from "./sdk-adapter.js";
+import { getSnapshotManager } from "./sdk-adapter";
 
 /**
  * Store snapshot content in cache/storage

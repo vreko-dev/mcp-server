@@ -14,7 +14,7 @@ This document confirms the successful migration of the SnapBack API from the leg
 
 ### After Migration
 - **Location**: `apps/api` (standalone microservice)
-- **Package Name**: `@snapback/api-service`
+- **Package Name**: `@snapback/api`
 - **Architecture**: Standalone service with Docker containerization
 - **Deployment**: Docker container ready for Fly.io deployment
 

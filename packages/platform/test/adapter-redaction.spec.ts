@@ -1,6 +1,6 @@
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { TelemetrySinkDb } from "../src/db/adapters/TelemetrySinkDb.js";
+import { TelemetrySinkDb } from "../src/db/adapters/TelemetrySinkDb";
 
 // Mock the redaction module
 vi.mock("@snapback/analytics", () => ({

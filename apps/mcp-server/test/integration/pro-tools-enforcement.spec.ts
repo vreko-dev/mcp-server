@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { authenticate, clearAuthCache } from "../../src/auth.js";
-import { addResult, createSarifLog } from "../../src/utils/sarif.js";
+import { authenticate, clearAuthCache } from "../../src/auth";
+import { addResult, createSarifLog } from "../../src/utils/sarif";
 
 describe("MCP Pro Tools Enforcement", () => {
 	beforeEach(() => {

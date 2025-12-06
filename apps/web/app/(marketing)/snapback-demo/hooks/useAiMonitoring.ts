@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { snapBackCommands } from "../commands";
-import { useSnapBack } from "../context/SnapBackContext.js";
-import { debounce } from "../domain/protection.js";
+import { useSnapBack } from "../context/SnapBackContext";
+import { debounce } from "../domain/protection";
 
 const generateId = () =>
 	crypto?.randomUUID

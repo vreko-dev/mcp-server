@@ -91,10 +91,12 @@ const Pricing = () => {
 			<div className="container">
 				<div className="text-center mb-16">
 					<h2 id="pricing-heading" className="text-display mb-6">
-						SnapBack Learns. <span className="text-primary">You Choose the Price.</span>
+						SnapBack Learns.{" "}
+						<span className="text-primary">You Choose the Price.</span>
 					</h2>
 					<p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-						Start free. Scale as your team learns. Pattern memory improves over time—so your protection gets smarter without you doing anything.
+						Start free. Scale as your team learns. Pattern memory improves over
+						time—so your protection gets smarter without you doing anything.
 					</p>
 				</div>
 

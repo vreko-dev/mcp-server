@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { auth } from "../src/auth.js";
+import { auth } from "../src/auth";
 
 /**
  * Cookie Cache Tests - TDD Red Phase

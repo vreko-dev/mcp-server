@@ -10,7 +10,7 @@ vi.mock("../../src/services/database", () => ({
 	isDatabaseAvailable: vi.fn(() => true),
 }));
 
-import { getDb } from "../../src/services/database.js";
+import { getDb } from "../../src/services/database";
 
 describe("TierResolver (CRITICAL)", () => {
 	const mockDb = {

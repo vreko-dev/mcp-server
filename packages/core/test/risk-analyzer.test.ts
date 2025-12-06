@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { type FileChangeInfo, RiskAnalyzer } from "../src/risk-analyzer.js";
+import { type FileChangeInfo, RiskAnalyzer } from "../src/risk-analyzer";
 
 // Mock simple-git module
 const mockGit = {

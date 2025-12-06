@@ -4,7 +4,7 @@
  * Isomorphic types used by both server and client implementations.
  */
 
-import type { EventPropertiesMap } from "./events.js";
+import type { EventPropertiesMap } from "./events";
 
 // ============================================================================
 // CORE INTERFACES

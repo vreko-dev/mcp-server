@@ -23,10 +23,10 @@
  */
 
 import { randomUUID } from "node:crypto";
-import { THRESHOLDS } from "../../config/Thresholds.js";
-import type { IEventEmitter, ILogger, ISessionStorage, ITimerService } from "./interfaces.js";
-import { NodeTimerService, NoOpLogger } from "./interfaces.js";
-import type { SessionCandidate, SessionFinalizeReason, SessionId, SessionManifest } from "./types.js";
+import { THRESHOLDS } from "../../config/Thresholds";
+import type { IEventEmitter, ILogger, ISessionStorage, ITimerService } from "./interfaces";
+import { NodeTimerService, NoOpLogger } from "./interfaces";
+import type { SessionCandidate, SessionFinalizeReason, SessionId, SessionManifest } from "./types";
 
 /**
  * Configuration for session detection

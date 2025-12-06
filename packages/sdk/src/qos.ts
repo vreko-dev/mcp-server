@@ -5,7 +5,7 @@
 
 import { logger } from "@snapback/infrastructure";
 import ky from "ky";
-import { THRESHOLDS } from "./config/Thresholds.js";
+import { THRESHOLDS } from "./config/Thresholds";
 
 // Define specific types for QoS data
 export interface QoSData {

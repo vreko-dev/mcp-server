@@ -1,6 +1,6 @@
-import { checkDatabaseConnection, closeDatabaseConnection, db, supabase } from "./client.js";
-import type { Database } from "./schema/postgres.js";
-import type { SupabaseClient } from "./supabase-service.js";
+import { checkDatabaseConnection, closeDatabaseConnection, db, supabase } from "./client";
+import type { Database } from "./schema/postgres";
+import type { SupabaseClient } from "./supabase-service";
 
 // Type for our combined database service
 export interface DatabaseService {
@@ -47,8 +47,8 @@ export const healthCheck = async (): Promise<{
 };
 
 // Export schema for convenience
-export * as schema from "./schema/postgres.js";
-export * as snapbackSchema from "./schema/snapback/index.js";
+export * as schema from "./schema/postgres";
+export * as snapbackSchema from "./schema/snapback/index";
 
 // Export types
 export type { Database };

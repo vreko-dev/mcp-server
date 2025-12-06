@@ -1,10 +1,10 @@
 import { expect } from "@playwright/test";
-import { createApiKey, createUser } from "../utils/data/factories.js";
-import { test } from "../utils/fixtures/auth.js";
-import { checkAccessibility } from "../utils/helpers/accessibility.js";
-import { mockApiResponses } from "../utils/helpers/api-mocking.js";
-import { DashboardPage } from "../utils/pages/dashboard.js";
-import { LoginPage } from "../utils/pages/login.js";
+import { createApiKey, createUser } from "../utils/data/factories";
+import { test } from "../utils/fixtures/auth";
+import { checkAccessibility } from "../utils/helpers/accessibility";
+import { mockApiResponses } from "../utils/helpers/api-mocking";
+import { DashboardPage } from "../utils/pages/dashboard";
+import { LoginPage } from "../utils/pages/login";
 
 test.describe("Authenticated User", () => {
 	test("can view dashboard and metrics", async ({ authenticatedPage }) => {

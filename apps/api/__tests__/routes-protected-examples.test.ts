@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { Hono } from "hono";
-import { createRateLimitMiddleware } from "../src/middleware/ratelimit.js";
-import { requestLoggingMiddleware } from "../src/middleware/request-logging.js";
-import { requireAuth, requireRole, requireOrgMembership, requirePlan } from "../src/middleware/auth.js";
-import protectedExamplesRoute from "../src/routes/protected-examples.js";
+import { createRateLimitMiddleware } from "../src/middleware/ratelimit";
+import { requestLoggingMiddleware } from "../src/middleware/request-logging";
+import { requireAuth, requireRole, requireOrgMembership, requirePlan } from "../src/middleware/auth";
+import protectedExamplesRoute from "../src/routes/protected-examples";
 
 /**
  * Protected Routes Integration Tests

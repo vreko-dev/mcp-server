@@ -8,10 +8,10 @@
  * @module ExperienceClassifier
  */
 
-import { THRESHOLDS } from "../../config/Thresholds.js";
-import type { ExperienceMetrics } from "../../types/experience.js";
-import type { ILogger } from "./interfaces.js";
-import { NoOpLogger } from "./interfaces.js";
+import { THRESHOLDS } from "../../config/Thresholds";
+import type { ExperienceMetrics } from "../../types/experience";
+import type { ILogger } from "./interfaces";
+import { NoOpLogger } from "./interfaces";
 
 /**
  * Experience tiers for users

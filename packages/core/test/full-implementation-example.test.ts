@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { AIDetectionEngine } from "../src/ai-detection.js";
-import { SimpleCircuitBreaker } from "../src/circuit-breaker.js";
-import { DependencyAnalyzer } from "../src/dependency-analyzer.js";
-import { GitIntegration } from "../src/git-integration.js";
-import { Guardian } from "../src/guardian.js";
-import { detectThreats } from "../src/threat-detection.js";
+import { AIDetectionEngine } from "../src/ai-detection";
+import { SimpleCircuitBreaker } from "../src/circuit-breaker";
+import { DependencyAnalyzer } from "../src/dependency-analyzer";
+import { GitIntegration } from "../src/git-integration";
+import { Guardian } from "../src/guardian";
+import { detectThreats } from "../src/threat-detection";
 
 // Mock simple-git module
 const mockGit = {

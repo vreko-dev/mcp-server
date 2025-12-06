@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { usageTrackingMiddleware } from "../../middleware/usage-tracking.js";
+import { usageTrackingMiddleware } from "../../middleware/usage-tracking";
 
 // Mock database client
 const mockDb = {

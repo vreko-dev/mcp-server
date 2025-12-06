@@ -15,8 +15,8 @@
  */
 
 import { beforeEach, describe, expect, it } from "vitest";
-import type { EncryptedData } from "../../src/encryption/EncryptionService.js";
-import { EncryptionService } from "../../src/encryption/EncryptionService.js";
+import type { EncryptedData } from "../../src/encryption/EncryptionService";
+import { EncryptionService } from "../../src/encryption/EncryptionService";
 
 // ============================================================================
 // EncryptionService Tests

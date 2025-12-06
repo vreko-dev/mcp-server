@@ -6,7 +6,7 @@ import {
 	type DashboardMetrics,
 	type AIActivityBreakdown,
 	type RecentActivity,
-} from "../../src/dashboard/metrics.js";
+} from "../../src/dashboard/metrics";
 
 describe("Dashboard Metrics Contracts (RED - Type Validation)", () => {
 	describe("DashboardMetricsSchema", () => {

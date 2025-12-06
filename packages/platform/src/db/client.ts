@@ -1,9 +1,9 @@
 import { createLogger, LogLevel } from "@snapback/contracts";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool, type PoolConfig } from "pg";
-import * as schema from "./schema/postgres.js";
-import * as snapbackSchema from "./schema/snapback/index.js";
-import { supabase } from "./supabase-service.js";
+import * as schema from "./schema/postgres";
+import * as snapbackSchema from "./schema/snapback/index";
+import { supabase } from "./supabase-service";
 
 const logger = createLogger({ name: "database", level: LogLevel.INFO });
 

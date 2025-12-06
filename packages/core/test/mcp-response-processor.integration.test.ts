@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { processToolResponse } from "../src/mcp-response-processor.js";
+import { processToolResponse } from "../src/mcp-response-processor";
 
 describe("MCPResponseProcessor Integration", () => {
 	describe("processToolResponse", () => {

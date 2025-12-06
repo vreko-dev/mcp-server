@@ -1,5 +1,5 @@
-import { createContact, getContact, updateContact } from "../provider/hubspot/index.js";
-import type { CreateContactParams, GetContactParams, HubSpotContact, UpdateContactParams } from "../types.js";
+import { createContact, getContact, updateContact } from "../provider/hubspot/index";
+import type { CreateContactParams, GetContactParams, HubSpotContact, UpdateContactParams } from "../types";
 
 /**
  * Create a new contact in HubSpot

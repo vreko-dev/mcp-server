@@ -2,8 +2,8 @@
  * Session Module - Session-based change tracking exports
  */
 
-export * from "./SessionDeduplication.js";
-export * from "./SessionManager.js";
-export * from "./SessionRecovery.js";
-export * from "./SessionRollback.js";
-export * from "./sessionAnalytics.js";
+export * from "./SessionDeduplication";
+export * from "./SessionManager";
+export * from "./SessionRecovery";
+export * from "./SessionRollback";
+export * from "./sessionAnalytics";

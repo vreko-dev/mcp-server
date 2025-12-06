@@ -1,4 +1,4 @@
-import type { SnapBackSettings } from "./types.js";
+import type { SnapBackSettings } from "./types";
 
 /**
  * Default SnapBack settings

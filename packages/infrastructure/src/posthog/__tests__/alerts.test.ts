@@ -3,7 +3,7 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createAlert, deleteAlert, getAlerts, KEY_METRIC_ALERTS, toggleAlert } from "../alerts.js";
+import { createAlert, deleteAlert, getAlerts, KEY_METRIC_ALERTS, toggleAlert } from "../alerts";
 
 describe("PostHog Alerts", () => {
 	beforeEach(() => {

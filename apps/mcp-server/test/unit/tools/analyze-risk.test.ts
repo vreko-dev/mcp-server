@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { analyzeRisk } from "../../../src/utils/risk-analyzer.js";
+import { analyzeRisk } from "../../../src/utils/risk-analyzer";
 import type {
   RiskAnalysisInput,
   RiskAnalysisResult,
-} from "../../../src/utils/risk-analyzer.js";
+} from "../../../src/utils/risk-analyzer";
 
 /**
  * analyze-risk Tool Tests

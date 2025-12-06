@@ -1,7 +1,7 @@
 import { AnalyzeRiskArgsSchema } from "@snapback/contracts";
 import { z } from "zod";
-import { getLibraryDocsCached } from "./utils/cache.js";
-import { logger } from "./utils/logger.js";
+import { getLibraryDocsCached } from "./utils/cache";
+import { logger } from "./utils/logger";
 
 // Using hardcoded values for now to avoid import issues
 const _snapbackDefaults = {

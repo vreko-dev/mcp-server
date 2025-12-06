@@ -4,10 +4,10 @@
  * https://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html
  */
 
-import type { MockFinding } from "./detectors/MockDetector.js";
-import type { PhantomDependencyFinding } from "./detectors/PhantomDependencyDetector.js";
-import type { SecretFinding } from "./detectors/SecretDetector.js";
-import type { PolicyEngineResult } from "./PolicyEngine.js";
+import type { MockFinding } from "./detectors/MockDetector";
+import type { PhantomDependencyFinding } from "./detectors/PhantomDependencyDetector";
+import type { SecretFinding } from "./detectors/SecretDetector";
+import type { PolicyEngineResult } from "./PolicyEngine";
 
 export interface SarifLog {
 	version: "2.1.0";

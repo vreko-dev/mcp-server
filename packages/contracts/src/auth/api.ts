@@ -7,8 +7,8 @@
  */
 
 import { z } from "zod";
-import { AuthErrorSchema } from "./errors.js";
-import { AuthUserSchema, SessionWithUserSchema } from "./session.js";
+import { AuthErrorSchema } from "./errors";
+import { AuthUserSchema, SessionWithUserSchema } from "./session";
 
 /**
  * Password validation schema

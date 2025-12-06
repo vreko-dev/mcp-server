@@ -17,7 +17,7 @@ vi.mock("../../platform/src/db/adapters/TelemetrySinkDb.js", () => {
 });
 
 // Import after mocking
-import { TelemetrySinkDb } from "../../platform/src/db/adapters/TelemetrySinkDb.js";
+import { TelemetrySinkDb } from "../../platform/src/db/adapters/TelemetrySinkDb";
 
 describe("TEL2: Ingest handler", () => {
 	const testId1 = "ing-001";

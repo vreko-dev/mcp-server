@@ -1,7 +1,7 @@
 import { apiKeys } from "@snapback/platform";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
-import { trackUsage } from "../../../lib/usage.js";
+import { trackUsage } from "../../../lib/usage";
 import { protectedProcedure } from "../../../orpc/procedures";
 import { getDb } from "../../../src/services/database";
 
@@ -10,7 +10,7 @@ type RiskFactor = {
 	type: string;
 	severity: "low" | "medium" | "high";
 	message: string;
-	details?: Record<string, any>;
+	details?: Record<string, unknown>;
 };
 
 // Input validation

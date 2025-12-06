@@ -14,8 +14,8 @@
 import * as crypto from "node:crypto";
 import { logger } from "@snapback/infrastructure";
 import { eq, lte } from "drizzle-orm";
-import { db } from "../client.js";
-import { account, apiKeys, session, subscriptions, user } from "../schema/postgres.js";
+import { db } from "../client";
+import { account, apiKeys, session, subscriptions, user } from "../schema/postgres";
 
 // ============================================================================
 // Constants

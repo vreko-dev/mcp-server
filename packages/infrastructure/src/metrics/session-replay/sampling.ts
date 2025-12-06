@@ -5,7 +5,7 @@
  * plan tiers, and behavioral signals to optimize for both insights and cost.
  */
 
-import type { BrowserAnalyticsConfig } from "../core/types.js";
+import type { BrowserAnalyticsConfig } from "../core/types";
 
 // ============================================================================
 // SAMPLING STRATEGIES

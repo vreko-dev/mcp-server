@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { callTool } from "./concurrency.js";
+import { callTool } from "./concurrency";
 
 describe("Concurrency Control", () => {
 	it("should execute tool with concurrency control", async () => {

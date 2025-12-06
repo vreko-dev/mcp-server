@@ -1,11 +1,11 @@
-import { getAiSuggestions } from "../domain/ai.js";
+import { getAiSuggestions } from "../domain/ai";
 import {
 	parseIgnoreFile,
 	parsePolicyFile,
 	parseSnapbackRc,
 } from "../domain/policies";
-import { shouldProtectFile } from "../domain/protection.js";
-import { createSnapshot } from "../domain/snapshot.js";
+import { shouldProtectFile } from "../domain/protection";
+import { createSnapshot } from "../domain/snapshot";
 import type {
 	GitContext,
 	Policy,
@@ -13,10 +13,10 @@ import type {
 	ProtectionLevel,
 	Snapshot,
 } from "../domain/types";
-import { NotificationRepo } from "../persistence/NotificationRepo.js";
-import { PolicyRepo } from "../persistence/PolicyRepo.js";
-import { ProtectionRepo } from "../persistence/ProtectionRepo.js";
-import { SnapshotRepo } from "../persistence/SnapshotRepo.js";
+import { NotificationRepo } from "../persistence/NotificationRepo";
+import { PolicyRepo } from "../persistence/PolicyRepo";
+import { ProtectionRepo } from "../persistence/ProtectionRepo";
+import { SnapshotRepo } from "../persistence/SnapshotRepo";
 
 // Repository instances
 const snapshotRepo = new SnapshotRepo();

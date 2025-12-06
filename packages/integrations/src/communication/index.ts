@@ -6,4 +6,4 @@ export {
 	sendPaymentReceipt,
 	sendPaymentFailedEmail,
 	type EmailServiceResult,
-} from "./lib/email-service.js";
+} from "./lib/email-service";

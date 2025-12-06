@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { FusedScanner } from "../../../src/detection/scanner/FusedScanner.js";
+import { FusedScanner } from "../../../src/detection/scanner/FusedScanner";
 
 // Generate a test fixture with realistic code patterns
 function generateFixture(lines: number): string {

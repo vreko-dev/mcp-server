@@ -5,8 +5,8 @@
  * through the SnapBack MCP Client Manager.
  */
 
-import { Guardian } from "./guardian.js";
-import { MCPClientManager } from "./mcp-client.js";
+import { Guardian } from "./guardian";
+import { MCPClientManager } from "./mcp-client";
 
 async function example() {
 	// Initialize the MCP client manager

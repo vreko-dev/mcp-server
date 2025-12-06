@@ -1,12 +1,12 @@
 import { auth } from "@snapback/auth";
 // import { type NextRequest, NextResponse } from "next/server";
 import * as semver from "semver";
-import { getCacheKey, getOrCreateCache } from "../lib/cache.js";
-import { log } from "../lib/logger.js";
-import { checkRateLimit } from "../lib/rate-limit.js";
-import { verifyRequestSignature } from "../lib/security.js";
-import { getSubscription } from "../lib/subscription.js";
-import { trackRateLimitViolation, trackUsage } from "../lib/usage.js";
+import { getCacheKey, getOrCreateCache } from "../lib/cache";
+import { log } from "../lib/logger";
+import { checkRateLimit } from "../lib/rate-limit";
+import { verifyRequestSignature } from "../lib/security";
+import { getSubscription } from "../lib/subscription";
+import { trackRateLimitViolation, trackUsage } from "../lib/usage";
 
 // Temporary types to avoid Next.js dependency in API service
 interface NextRequest {

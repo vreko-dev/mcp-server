@@ -26,15 +26,15 @@ export type {
 	TelemetryEventName as LegacyTelemetryEventName,
 	ViewActivatedEvent as LegacyViewActivatedEvent,
 	WalkthroughStepCompletedEvent as LegacyWalkthroughStepCompletedEvent,
-} from "../telemetry/events.js";
+} from "../telemetry/events";
 // Export legacy event names and validation functions
 export {
 	TELEMETRY_EVENTS as LEGACY_TELEMETRY_EVENTS,
 	validateTelemetryEvent as validateLegacyTelemetryEvent,
-} from "../telemetry/events.js";
+} from "../telemetry/events";
 // Export core events (new v1 schema)
-export * from "./core.js";
+export * from "./core";
 // Export infrastructure events
-export * from "./infrastructure.js";
+export * from "./infrastructure";
 // NOTE: Temporarily disabled due to circular dependency during build
-// export * from "./migrate.js";
+// export * from "./migrate";

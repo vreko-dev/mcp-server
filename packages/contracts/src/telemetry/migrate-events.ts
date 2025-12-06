@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 import { readFileSync, writeFileSync } from "node:fs";
-import type { CoreTelemetryEvent } from "../events/core.js";
-import { mapLegacyEventsToCore, TelemetryEventMapper } from "./event-mapper.js";
-import type { AllowedTelemetryEvent } from "./events.js";
+import type { CoreTelemetryEvent } from "../events/core";
+import { mapLegacyEventsToCore, TelemetryEventMapper } from "./event-mapper";
+import type { AllowedTelemetryEvent } from "./events";
 
 /**
  * Migration script to convert legacy telemetry events to core events

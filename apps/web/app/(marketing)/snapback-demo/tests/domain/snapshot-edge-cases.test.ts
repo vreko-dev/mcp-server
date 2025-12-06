@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createSnapshot } from "../../domain/snapshot.js";
-import type { Snapshot } from "../../domain/types.js";
+import { createSnapshot } from "../../domain/snapshot";
+import type { Snapshot } from "../../domain/types";
 
 describe("Snapshot Edge Cases", () => {
 	beforeEach(() => {

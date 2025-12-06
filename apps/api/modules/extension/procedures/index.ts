@@ -1,1 +1,1 @@
-export * from "./create-extension-session.js";
+export * from "./create-extension-session";

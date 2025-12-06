@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { SimpleCircuitBreaker } from "../src/circuit-breaker.js";
-import { Guardian } from "../src/guardian.js";
-import { detectThreats } from "../src/threat-detection.js";
+import { SimpleCircuitBreaker } from "../src/circuit-breaker";
+import { Guardian } from "../src/guardian";
+import { detectThreats } from "../src/threat-detection";
 
 // This test demonstrates a comprehensive example of how to use the new features
 describe("Comprehensive Example", () => {

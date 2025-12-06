@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import type { AppError } from "../lib/error-handler.js";
-import { getErrorMessage, logError, toAppError } from "../lib/error-handler.js";
+import type { AppError } from "../lib/error-handler";
+import { getErrorMessage, logError, toAppError } from "../lib/error-handler";
 import {
 	isEmpty,
 	isError,

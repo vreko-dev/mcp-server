@@ -9,7 +9,7 @@ import {
 	it,
 	vi,
 } from "vitest";
-import { analytics } from "../../modules/marketing/lib/analytics.js";
+import { analytics } from "../../modules/marketing/lib/analytics";
 
 vi.mock("posthog-js");
 

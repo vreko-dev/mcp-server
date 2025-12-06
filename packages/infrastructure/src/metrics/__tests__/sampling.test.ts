@@ -5,7 +5,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { AnalyticsEvents } from "../core/events.js";
+import { AnalyticsEvents } from "../core/events";
 import {
 	BUDGET_EXAMPLE,
 	EVENT_SAMPLING_RATES,
@@ -14,7 +14,7 @@ import {
 	getEventTier,
 	getSamplingRate,
 	shouldSampleEvent,
-} from "../core/sampling.js";
+} from "../core/sampling";
 
 describe("Sampling - Event Tier Configuration", () => {
 	it("should define sampling rates for all events", () => {

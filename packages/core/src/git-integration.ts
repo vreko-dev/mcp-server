@@ -1,5 +1,5 @@
 import simpleGit, { type SimpleGit } from "simple-git";
-import { logger } from "./utils/logger.js";
+import { logger } from "./utils/logger";
 
 export interface CommitInfo {
 	hash: string;

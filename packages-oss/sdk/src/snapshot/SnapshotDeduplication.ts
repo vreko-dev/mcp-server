@@ -1,8 +1,8 @@
 import { createHash } from "node:crypto";
 import type { FileInput, Snapshot } from "@snapback-oss/contracts";
 import QuickLRU from "quick-lru";
-import { THRESHOLDS } from "../config/Thresholds.js";
-import type { StorageAdapter } from "../storage/StorageAdapter.js";
+import { THRESHOLDS } from "../config/Thresholds";
+import type { StorageAdapter } from "../storage/StorageAdapter";
 
 export class SnapshotDeduplication {
 	private hashCache: QuickLRU<string, string>;

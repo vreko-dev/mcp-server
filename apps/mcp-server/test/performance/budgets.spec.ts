@@ -1,6 +1,6 @@
 import { CallToolRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { startServer } from "../../src/index.js";
+import { startServer } from "../../src/index";
 
 // Mock the MCP SDK
 const mockServer = {

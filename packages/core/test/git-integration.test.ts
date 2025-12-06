@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { GitIntegration } from "../src/git-integration.js";
+import { GitIntegration } from "../src/git-integration";
 
 // Mock simple-git module
 const mockGit = {

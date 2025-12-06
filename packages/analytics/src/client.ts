@@ -14,7 +14,7 @@
 
 import crypto from "node:crypto";
 import type { AnalyticsBatch, AnalyticsIngestResponse, ProductAnalyticsEvent } from "@snapback/contracts";
-import { redactObject, redactString } from "./redaction.js";
+import { redactObject, redactString } from "./redaction";
 
 /**
  * Client configuration

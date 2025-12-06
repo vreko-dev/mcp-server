@@ -5,7 +5,7 @@
  * plan tiers, and budget constraints.
  */
 
-import type { BrowserAnalyticsConfig } from "../core/types.js";
+import type { BrowserAnalyticsConfig } from "../core/types";
 import {
 	adjustStrategyForBudget,
 	BALANCED_SAMPLING,
@@ -14,7 +14,7 @@ import {
 	isApproachingBudgetLimit,
 	type SamplingContext,
 	type SamplingStrategy,
-} from "./sampling.js";
+} from "./sampling";
 
 // ============================================================================
 // SESSION REPLAY MANAGER
@@ -139,9 +139,9 @@ export type {
 	BudgetConfig,
 	SamplingContext,
 	SamplingStrategy,
-} from "./sampling.js";
+} from "./sampling";
 export {
 	AGGRESSIVE_SAMPLING,
 	BALANCED_SAMPLING,
 	CONSERVATIVE_SAMPLING,
-} from "./sampling.js";
+} from "./sampling";

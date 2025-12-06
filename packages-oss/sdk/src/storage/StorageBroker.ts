@@ -1,6 +1,6 @@
 import { gunzipSync, gzipSync } from "node:zlib";
 import type { Database } from "better-sqlite3";
-import { StorageConnectionError, StorageError, StorageTransactionError } from "./StorageErrors.js";
+import { StorageConnectionError, StorageError, StorageTransactionError } from "./StorageErrors";
 
 // Type definitions for better-sqlite3
 type DatabaseInstance = Database;

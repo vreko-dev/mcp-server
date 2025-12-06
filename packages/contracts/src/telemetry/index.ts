@@ -16,7 +16,7 @@ export type {
 	SnapshotCreatedEvent,
 	WelcomeActionTriggeredEvent,
 	WelcomeFeatureViewedEvent,
-} from "../events/core.js";
+} from "../events/core";
 export {
 	AuthApprovalReceivedSchema,
 	AuthBrowserOpenedSchema,
@@ -36,8 +36,8 @@ export {
 	validateCoreTelemetryEvent,
 	WelcomeActionTriggeredSchema,
 	WelcomeFeatureViewedSchema,
-} from "../events/core.js";
-export * from "./diagnostic-events.js";
-export * from "./event-mapper.js";
-export * from "./events.js";
-export * from "./migrate-events.js";
+} from "../events/core";
+export * from "./diagnostic-events";
+export * from "./event-mapper";
+export * from "./events";
+export * from "./migrate-events";

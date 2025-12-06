@@ -4,7 +4,7 @@
  * This demonstrates the improved developer experience with the unified Snapback class
  */
 
-import { Snapback } from "../src/index.js";
+import { Snapback } from "../src/index";
 
 // Example 1: Simple local-only usage (like the issue requested)
 async function basicExample() {

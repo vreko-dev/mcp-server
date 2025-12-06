@@ -1,2 +1,2 @@
-export * from "./error-budget.js";
-export * from "./telemetry-client.js";
+export * from "./error-budget";
+export * from "./telemetry-client";

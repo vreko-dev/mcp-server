@@ -7,7 +7,7 @@
  * @module SnapBackRCParser
  */
 
-import type { ProtectionRule, SnapBackPolicies, SnapBackRC, SnapBackSettings } from "./types.js";
+import type { ProtectionRule, SnapBackPolicies, SnapBackRC, SnapBackSettings } from "./types";
 
 /**
  * Result of parsing a configuration

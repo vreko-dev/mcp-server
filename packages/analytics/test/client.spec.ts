@@ -11,7 +11,7 @@
 
 import type { ProductAnalyticsEvent } from "@snapback/contracts";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { AnalyticsClient, initAnalyticsClient, trackEvent } from "../src/client.js";
+import { AnalyticsClient, initAnalyticsClient, trackEvent } from "../src/client";
 
 describe("AnalyticsClient", () => {
 	let mockFetch: ReturnType<typeof vi.fn>;

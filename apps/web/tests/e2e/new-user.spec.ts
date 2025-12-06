@@ -1,6 +1,6 @@
 import { expect } from "@playwright/test";
-import { test } from "../utils/fixtures/auth.js";
-import { DashboardPage } from "../utils/pages/dashboard.js";
+import { test } from "../utils/fixtures/auth";
+import { DashboardPage } from "../utils/pages/dashboard";
 
 test.describe("New User", () => {
 	test("sees onboarding flow", async ({ newUserPage }) => {

@@ -1,6 +1,6 @@
 import { db as drizzle } from "@snapback/platform";
 import { describe, expect, it, vi } from "vitest";
-import { generateApiKey, hashApiKey, verifyApiKey } from "../../lib/crypto.js";
+import { generateApiKey, hashApiKey, verifyApiKey } from "../../lib/crypto";
 
 // Mock the database
 vi.mock("@snapback/platform", () => {

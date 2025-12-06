@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { MCPFallbacks } from "../src/mcp-fallbacks.js";
+import { MCPFallbacks } from "../src/mcp-fallbacks";
 
 describe("MCPFallbacks", () => {
 	it("should provide fallback for docs MCP", () => {

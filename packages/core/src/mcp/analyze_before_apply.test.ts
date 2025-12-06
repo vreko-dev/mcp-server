@@ -1,6 +1,6 @@
 import { Guardian } from "@snapback/core";
 import { describe, expect, it, vi } from "vitest";
-import { analyzeBeforeApply, formatAnalysisResult } from "./analyze_before_apply.js";
+import { analyzeBeforeApply, formatAnalysisResult } from "./analyze_before_apply";
 
 // Mock the Guardian class
 vi.mock("@snapback/core", () => {

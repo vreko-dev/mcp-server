@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { FEATURE_FLAGS, type FeatureFlag } from "../src/features.js";
+import { FEATURE_FLAGS, type FeatureFlag } from "../src/features";
 
 describe("Feature Flags", () => {
 	it("should define all required feature flags", () => {

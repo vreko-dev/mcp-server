@@ -164,4 +164,4 @@ export class NodeTimerService implements ITimerService {
 }
 
 // Import SessionManifest type for storage interface
-import type { SessionManifest } from "./types.js";
+import type { SessionManifest } from "./types";

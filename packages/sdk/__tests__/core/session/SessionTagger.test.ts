@@ -16,10 +16,10 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { BurstDetectionResult } from "../../../src/core/detection/BurstHeuristicsDetector.js";
-import { type AIPresenceInfo, SessionTagger } from "../../../src/core/session/SessionTagger.js";
-import type { SessionManifest } from "../../../src/core/session/types.js";
-import { expectNormalizedScore } from "../../helpers/assertions.js";
+import type { BurstDetectionResult } from "../../../src/core/detection/BurstHeuristicsDetector";
+import { type AIPresenceInfo, SessionTagger } from "../../../src/core/session/SessionTagger";
+import type { SessionManifest } from "../../../src/core/session/types";
+import { expectNormalizedScore } from "../../helpers/assertions";
 
 describe("SessionTagger", () => {
 	let tagger: SessionTagger;

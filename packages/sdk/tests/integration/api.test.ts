@@ -1,8 +1,8 @@
 import ky from "ky";
 import pRetry from "p-retry";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { SnapbackAnalyticsClient } from "../../src/client.js";
-import { defaultConfig } from "../../src/config.js";
+import { SnapbackAnalyticsClient } from "../../src/client";
+import { defaultConfig } from "../../src/config";
 
 // Mock ky and p-retry
 vi.mock("ky");

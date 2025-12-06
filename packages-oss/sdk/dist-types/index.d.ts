@@ -38,4 +38,5 @@ export type { ExperienceMetrics } from "./types/experience.js";
 export type { SDKConfig } from "./types.js";
 export { toError } from "./utils/errorHelpers.js";
 export { areEqual, getDepth, isWithin, normalize } from "./utils/PathNormalizer.js";
+export { calculateBackoff, type RetryOptions, RetryPresets, withRetry } from "./utils/retry.js";
 //# sourceMappingURL=index.d.ts.map

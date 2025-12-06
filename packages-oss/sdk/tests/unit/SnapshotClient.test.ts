@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { SnapshotClient } from "../../src/client/SnapshotClient.js";
-import { createMockCache, createMockHttp } from "../helpers.js";
-import { generateTestSnapshot } from "../setup.js";
+import { SnapshotClient } from "../../src/client/SnapshotClient";
+import { createMockCache, createMockHttp } from "../helpers";
+import { generateTestSnapshot } from "../setup";
 
 describe("SnapshotClient", () => {
 	let client: SnapshotClient;

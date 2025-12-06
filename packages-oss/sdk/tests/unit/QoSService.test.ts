@@ -14,7 +14,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { QoSService } from "../../src/qos.js";
+import { QoSService } from "../../src/qos";
 
 // ============================================================================
 // Mock Ky HTTP Client

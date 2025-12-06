@@ -15,7 +15,7 @@ import {
 	userProductMetrics,
 	userDailyMetrics,
 } from "@snapback/platform/db/schema/snapback";
-import { MetricsAggregator } from "../metrics-aggregator.js";
+import { MetricsAggregator } from "../metrics-aggregator";
 
 describe("Metrics Aggregator Database Integration", () => {
 	let aggregator: MetricsAggregator;

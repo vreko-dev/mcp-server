@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { AnalyticsService } from "../../services/analytics.js";
+import { AnalyticsService } from "../../services/analytics";
 
 // Mock PostHog client
 const mockPostHog = {

@@ -1,5 +1,5 @@
-import type { Snapshot } from "../domain/types.js";
-import { db } from "./db.js";
+import type { Snapshot } from "../domain/types";
+import { db } from "./db";
 
 type SnapshotInput = Snapshot | (Omit<Snapshot, "id"> & { id?: string });
 

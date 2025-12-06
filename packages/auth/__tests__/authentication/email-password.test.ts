@@ -3,9 +3,9 @@ import {
 	invalidUsers,
 	securityTestUsers,
 	validUsers,
-} from "../fixtures/users.js";
-import { createMockDatabase } from "../utils/mock-db.js";
-import { createMockEmailService } from "../utils/mock-email.js";
+} from "../fixtures/users";
+import { createMockDatabase } from "../utils/mock-db";
+import { createMockEmailService } from "../utils/mock-email";
 import {
 	createSqlInjectionPayloads,
 	createXssPayloads,

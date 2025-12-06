@@ -1,6 +1,6 @@
 import { logger } from "@snapback/infrastructure";
-import { createContact as createHubSpotContact } from "../../hubspot/index.js";
-import type { HubSpotContact } from "../../hubspot/types.js";
+import { createContact as createHubSpotContact } from "../../hubspot/index";
+import type { HubSpotContact } from "../../hubspot/types";
 
 export interface CRMContact {
 	id: string;

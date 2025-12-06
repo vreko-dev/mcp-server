@@ -1,5 +1,5 @@
 import { expect } from "@playwright/test";
-import { test } from "../utils/fixtures/auth.js";
+import { test } from "../utils/fixtures/auth";
 import {
 	createTestFile,
 	deleteTestFile,

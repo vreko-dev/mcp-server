@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { apiClient } from "../../lib/api-client.js";
+import { apiClient } from "../../lib/api-client";
 
 // Mock the API client to simulate real API calls
 vi.mock("../../lib/api-client", () => {

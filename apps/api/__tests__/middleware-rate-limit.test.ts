@@ -4,7 +4,7 @@ import {
 	rateLimitMiddleware,
 	clearRateLimitBuckets,
 	stopCleanupTimer,
-} from "../src/middleware/ratelimit.js";
+} from "../src/middleware/ratelimit";
 
 /**
  * RED Phase: Rate Limiting Middleware Tests

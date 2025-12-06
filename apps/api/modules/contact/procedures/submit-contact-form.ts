@@ -4,7 +4,7 @@ import { logger } from "@snapback/infrastructure";
 import { sendEmail } from "@snapback/integrations";
 import { localeMiddleware } from "../../../orpc/middleware/locale-middleware";
 import { publicProcedure } from "../../../orpc/procedures";
-import { contactFormSchema } from "../types.js";
+import { contactFormSchema } from "../types";
 
 export const submitContactForm = publicProcedure
 	.route({

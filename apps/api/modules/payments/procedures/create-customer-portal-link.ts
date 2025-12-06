@@ -30,7 +30,7 @@ export const createCustomerPortalLink = protectedProcedure
 			context: { user },
 		}: {
 			input: { purchaseId: string; redirectUrl?: string };
-			context: { user: any };
+			context: { user: { id: string } };
 		}): Promise<{ customerPortalLink: string }> => {
 			// Check if database is available
 			const db = getDb();

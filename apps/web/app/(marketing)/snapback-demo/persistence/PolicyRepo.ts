@@ -1,5 +1,5 @@
-import type { Policy } from "../domain/types.js";
-import { db } from "./db.js";
+import type { Policy } from "../domain/types";
+import { db } from "./db";
 
 /**
  * Repository for managing policies in IndexedDB

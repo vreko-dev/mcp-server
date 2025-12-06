@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createOrUpdateHubSpotContact } from "../hubspot-service.js";
+import { createOrUpdateHubSpotContact } from "../hubspot-service";
 
 // Mock the logger
 vi.mock("@snapback/infrastructure", () => ({

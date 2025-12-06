@@ -1,7 +1,7 @@
 import type { SelectiveSnapshotConfig } from "@snapback/contracts";
 import { chunk } from "es-toolkit";
-import { type ChangeInfo, type CommitContext, GitIntegration } from "./git-integration.js";
-import { type DetectedThreat, detectThreats } from "./threat-detection.js";
+import { type ChangeInfo, type CommitContext, GitIntegration } from "./git-integration";
+import { type DetectedThreat, detectThreats } from "./threat-detection";
 
 /**
  * Risk analysis result with standardized 0-10 scoring scale

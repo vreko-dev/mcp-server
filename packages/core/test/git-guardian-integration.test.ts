@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { SimpleCircuitBreaker } from "../src/circuit-breaker.js";
-import { GitIntegration } from "../src/git-integration.js";
-import { Guardian } from "../src/guardian.js";
-import { detectThreats } from "../src/threat-detection.js";
+import { SimpleCircuitBreaker } from "../src/circuit-breaker";
+import { GitIntegration } from "../src/git-integration";
+import { Guardian } from "../src/guardian";
+import { detectThreats } from "../src/threat-detection";
 
 // Mock simple-git module
 const mockGit = {

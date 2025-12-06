@@ -3,7 +3,7 @@
  * Provides transaction rollback functionality and test data fixtures
  */
 
-import type { db } from "./client.js";
+import type { db } from "./client";
 
 // Type for database transaction
 export type TestTransaction = typeof db;

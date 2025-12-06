@@ -1,6 +1,6 @@
 # SnapBack Core
 
-Core business logic for SnapBack - snapshot management, file protection, risk assessment, and restoration algorithms.
+Core business logic for SnapBack - snapshot management, file protection, pattern memory, and restoration algorithms.
 
 ## Overview
 
@@ -8,7 +8,7 @@ Core business logic for SnapBack - snapshot management, file protection, risk as
 
 - **Snapshot Management**: Create, store, and retrieve file snapshots
 - **File Protection**: Monitor files for changes and protect against unwanted modifications
-- **Risk Assessment**: Analyze code for complexity, dependencies, and potential risks
+- **Pattern Memory**: Learn from what breaks in your codebase
 - **Restoration**: Restore files to previous states
 - **Session Management**: Track snapshot sessions and history
 
@@ -40,10 +40,10 @@ Core/
 │   └── Enforce restrictions
 │
 ├── Risk Assessor
-│   ├── Analyze code complexity
-│   ├── Identify risk factors
-│   ├── Calculate risk scores
-│   └── Generate recommendations
+│   ├── Analyze patterns that caused problems
+│   ├── Calculate how confident we are
+│   ├── Suggest what to watch for
+│   └── Learn from outcomes
 │
 ├── Restoration Engine
 │   ├── Restore files to snapshots
@@ -112,9 +112,9 @@ await protector.unprotect(filePath);
 - `WARN`: Warn before modifications
 - `BLOCK`: Prevent modifications
 
-#### Risk Assessor (`src/risk/`)
+#### Risk Assessor (`src/risk/`) - *How SnapBack learns what breaks in your codebase*
 
-Analyzes code for potential issues:
+Analyzes code changes and learns patterns:
 
 ```typescript
 import { RiskAssessor } from "@snapback/core";
@@ -125,12 +125,12 @@ const assessor = new RiskAssessor();
 const assessment = await assessor.assess(filePath, content);
 
 // Properties:
-// - score: 0-1 (0 = low risk, 1 = high risk)
-// - factors: Array of risk factors detected
+// - score: 0-1 (0 = safe, 1 = risky)
+// - factors: Patterns detected
 // - severity: "low" | "medium" | "high"
 
 console.log(assessment.score);        // 0.65
-console.log(assessment.factors);      // ["high_complexity", "many_dependencies"]
+console.log(assessment.factors);      // ["hardcoded_secret", "eval_usage"]
 console.log(assessment.severity);     // "high"
 ```
 

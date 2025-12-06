@@ -10,7 +10,7 @@ interface ApiKey {
 	lastUsedAt?: Date;
 	expiresAt?: Date;
 	revokedAt?: Date;
-	permissions: Record<string, any>;
+	permissions: Record<string, unknown>;
 }
 
 // In-memory store for usage audit logs
@@ -44,7 +44,7 @@ function generateApiKey(): string {
  */
 export async function createApiKey(
 	userId: string,
-	permissions: Record<string, any>,
+	permissions: Record<string, unknown>,
 	expiresAt?: Date,
 ): Promise<{ id: string; key: string }> {
 	const key = generateApiKey();
@@ -80,7 +80,7 @@ export async function getApiKey(
 	}
 
 	// Return the key object without the actual key hash
-	const { keyHash, ...keyWithoutValue } = apiKey;
+	const { keyHash: _keyHash, ...keyWithoutValue } = apiKey;
 	return keyWithoutValue;
 }
 
@@ -101,7 +101,7 @@ export async function getApiKeyByKey(
 	for (const [_id, apiKey] of apiKeysStore.entries()) {
 		if (await verify(apiKey.keyHash, keyValue)) {
 			// Return the key object without the hash
-			const { keyHash, ...keyWithoutValue } = apiKey;
+			const { keyHash: _keyHash, ...keyWithoutValue } = apiKey;
 			return keyWithoutValue;
 		}
 	}

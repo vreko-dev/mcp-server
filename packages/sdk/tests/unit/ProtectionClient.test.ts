@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { ProtectionClient } from "../../src/client/ProtectionClient.js";
-import { createMockCache, createMockHttp } from "../helpers.js";
-import { generateTestProtectedFile } from "../setup.js";
+import { ProtectionClient } from "../../src/client/ProtectionClient";
+import { createMockCache, createMockHttp } from "../helpers";
+import { generateTestProtectedFile } from "../setup";
 
 describe("ProtectionClient", () => {
 	let client: ProtectionClient;

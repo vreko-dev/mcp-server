@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { LRUCache } from "../src/cache/lru-cache.js";
+import { LRUCache } from "../src/cache/lru-cache";
 
 describe("LRUCache", () => {
 	it("should set and get values", () => {

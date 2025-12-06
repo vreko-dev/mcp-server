@@ -16,7 +16,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { authenticate, clearAuthCache, AuthResult } from '../../../src/auth.js';
+import { authenticate, clearAuthCache, AuthResult } from '../../../src/auth';
 import { auth } from '@snapback/auth';
 
 // Mock @snapback/auth

@@ -1,6 +1,6 @@
 import type { ProtectionConfig } from "@snapback/contracts";
 import { beforeEach, describe, expect, it } from "vitest";
-import { ProtectionManager } from "../../src/protection/ProtectionManager.js";
+import { ProtectionManager } from "../../src/protection/ProtectionManager";
 
 describe("ProtectionManager", () => {
 	let manager: ProtectionManager;

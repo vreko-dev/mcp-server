@@ -7,7 +7,7 @@ This plan outlines a comprehensive open core repository strategy for SnapBack th
 ## Current Architecture Analysis
 
 ### Apps (6 total)
-- **@snapback/api-service** - Hono.js API service → Deploy to Fly.io
+- **@snapback/api** - Hono.js API service → Deploy to Fly.io
 - **@snapback/mcp-server** - Model Context Protocol server → Deploy to Fly.io
 - **@snapback/cli** - NPM CLI tool → Publish to npm
 - **@snapback/web** - Next.js marketing/SaaS web app → Deploy to Vercel
@@ -99,7 +99,7 @@ These should be in a **public GitHub monorepo** (`snapback-dev/snapback-oss`):
 #### Tier 2: Commercial Infrastructure
 These stay in your **private monorepo** (`Marcelle-Labs/snapback.dev`):
 
-1. **@snapback/api-service** 🔒
+1. **@snapback/api** 🔒
    - Reason: Contains business logic, integrations
    - Deployment: Fly.io (private)
 
@@ -178,7 +178,7 @@ snapback-oss/
 ```
 snapback.dev/
 ├── apps/
-│   ├── api/                    # @snapback/api-service → Fly.io
+│   ├── api/                    # @snapback/api → Fly.io
 │   ├── mcp-server/             # @snapback/mcp-server → Fly.io
 │   ├── web/                    # @snapback/web → Vercel
 │   └── docs/                   # @snapback/docs → Vercel
@@ -210,7 +210,7 @@ snapback.dev/
 
 ## 🚀 Deployment Strategy
 
-### API Service (@snapback/api-service) → Fly.io
+### API Service (@snapback/api) → Fly.io
 
 **Setup:**
 ```bash

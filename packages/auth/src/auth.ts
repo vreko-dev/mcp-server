@@ -20,14 +20,14 @@ import {
 } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 import { parse as parseCookies } from "cookie";
-import { trackEvent } from "./lib/audit.js";
+import { trackEvent } from "./lib/audit";
 import {
 	ac,
 	admin as adminRole,
 	member as memberRole,
 	owner as ownerRole,
-} from "./lib/organization-permissions.js";
-import { invitationOnlyPlugin } from "./plugins/invitation-only/index.js";
+} from "./lib/organization-permissions";
+import { invitationOnlyPlugin } from "./plugins/invitation-only/index";
 
 const _getLocaleFromRequest = (request?: Request) => {
 	const cookies = parseCookies(request?.headers.get("cookie") ?? "");
@@ -484,7 +484,7 @@ export const auth = betterAuth({
 // biome-ignore lint/suspicious/noExplicitAny: Better Auth type compatibility
 export const authTyped: any = auth;
 
-export * from "./lib/organization.js";
+export * from "./lib/organization";
 
 // Type exports moved to appropriate locations:
 // - Session: Use 'better-auth/types' or '@snapback/contracts/auth/session'

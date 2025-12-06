@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
 	type PostHogHandlerDependencies,
 	handlePostHogWebhook,
-} from "../posthog-handler.js";
+} from "../posthog-handler";
 
 // Helper to create mock request
 function createMockRequest(body: any, headers: Record<string, string> = {}) {

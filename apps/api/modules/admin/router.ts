@@ -1,6 +1,6 @@
-import { findOrganization } from "./procedures/find-organization.js";
-import { listOrganizations } from "./procedures/list-organizations.js";
-import { listUsers } from "./procedures/list-users.js";
+import { findOrganization } from "./procedures/find-organization";
+import { listOrganizations } from "./procedures/list-organizations";
+import { listUsers } from "./procedures/list-users";
 
 export const adminRouter = {
 	users: {

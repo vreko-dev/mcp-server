@@ -2,10 +2,10 @@
  * Detector exports
  */
 
-export { type MockDetectionResult, MockDetector, type MockFinding } from "./MockDetector.js";
+export { type MockDetectionResult, MockDetector, type MockFinding } from "./MockDetector";
 export {
 	PhantomDependencyDetector,
 	type PhantomDependencyFinding,
 	type PhantomDependencyResult,
-} from "./PhantomDependencyDetector.js";
-export { type SecretDetectionResult, SecretDetector, type SecretFinding } from "./SecretDetector.js";
+} from "./PhantomDependencyDetector";
+export { type SecretDetectionResult, SecretDetector, type SecretFinding } from "./SecretDetector";

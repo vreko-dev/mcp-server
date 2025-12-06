@@ -1,7 +1,7 @@
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { createSnapshotStorage } from "../src/types/snapshot.js";
+import { createSnapshotStorage } from "../src/types/snapshot";
 
 /**
  * Minimal smoke tests for snapshot storage factory

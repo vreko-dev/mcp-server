@@ -21,9 +21,9 @@ import {
 	type PolicyEvaluationEvent,
 	type PostAcceptOutcomeEvent,
 	TelemetrySinkDb,
-} from "../packages/platform/src/db/adapters/TelemetrySinkDb.js";
-import { db } from "../packages/platform/src/db/client.js";
-import { quarantineEvents } from "../packages/platform/src/db/schema/snapback/quarantine-events.js";
+} from "../packages/platform/src/db/adapters/TelemetrySinkDb";
+import { db } from "../packages/platform/src/db/client";
+import { quarantineEvents } from "../packages/platform/src/db/schema/snapback/quarantine-events";
 
 interface QuarantinedEvent {
 	id: string;

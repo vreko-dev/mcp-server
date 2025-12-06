@@ -16,10 +16,10 @@ const __dirname = dirname(__filename);
 
 // Since we're running this as a compiled JS file, we need to adjust the import paths
 // Import our schemas from the compiled output
-import { CORE_TELEMETRY_EVENTS } from "../events/core.js";
+import { CORE_TELEMETRY_EVENTS } from "../events/core";
 
 // Import infrastructure events
-import { AnalyticsEvents } from "../events/infrastructure.js";
+import { AnalyticsEvents } from "../events/infrastructure";
 
 async function generateCoreEventTypes() {
 	const outputPath = join(__dirname, "../../generated/core-events.ts");

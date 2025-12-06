@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { PolicyEngine } from "../src/PolicyEngine.js";
+import { PolicyEngine } from "../src/PolicyEngine";
 
 describe("PolicyEngine", () => {
 	describe("Configuration", () => {

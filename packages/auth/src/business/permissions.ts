@@ -4,7 +4,7 @@
  * Centralized business logic for generating user permissions based on role and plan.
  */
 
-import type { SubscriptionPlan } from "./plan.js";
+import type { SubscriptionPlan } from "./plan";
 
 export type UserRole = "admin" | "user" | "viewer" | null;
 

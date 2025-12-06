@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { MCPFallbacks } from "../src/mcp-fallbacks.js";
-import { ServiceFederation } from "../src/mcp-federation.js";
+import { MCPFallbacks } from "../src/mcp-fallbacks";
+import { ServiceFederation } from "../src/mcp-federation";
 
 describe("ServiceFederation Integration", () => {
 	it("should handle full service federation with fallbacks when partner services are unavailable", async () => {

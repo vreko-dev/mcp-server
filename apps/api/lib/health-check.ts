@@ -7,8 +7,8 @@
 
 import { sql } from "drizzle-orm";
 import { getDb } from "../src/services/database";
-import { getRedisClient } from "./redis-client.js";
-import { checkS3Health, isS3Configured } from "./s3-client.js";
+import { getRedisClient } from "./redis-client";
+import { checkS3Health, isS3Configured } from "./s3-client";
 
 export interface HealthCheckResult {
 	status: "healthy" | "degraded" | "unhealthy";

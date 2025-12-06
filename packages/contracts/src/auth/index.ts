@@ -41,7 +41,7 @@ export {
 	UpdateProfileRequestSchema,
 	type UpdateProfileResponse,
 	UpdateProfileResponseSchema,
-} from "./api.js";
+} from "./api";
 
 // Error types
 export {
@@ -54,7 +54,7 @@ export {
 	createAuthError,
 	getErrorMessage,
 	mapBetterAuthError,
-} from "./errors.js";
+} from "./errors";
 // Session types
 export {
 	type AuthState,
@@ -68,4 +68,4 @@ export {
 	SessionSchema,
 	type SessionWithUser,
 	SessionWithUserSchema,
-} from "./session.js";
+} from "./session";

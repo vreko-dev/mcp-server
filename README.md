@@ -175,7 +175,7 @@ The SnapBack platform consists of several key components organized into 10 conso
 
     -   Platform-agnostic TypeScript SDK for SnapBack functionality
 
-9.  **@snapback/api-service** - API Service (Standalone)
+9.  **@snapback/api** - API Service (Standalone)
 
     -   Standalone Hono.js-based API service with Docker containerization
     -   Ready for Fly.io deployment

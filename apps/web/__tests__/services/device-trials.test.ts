@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { type DeviceTrialsDependencies, DeviceTrialsService } from "../../services/device-trials.js";
+import { type DeviceTrialsDependencies, DeviceTrialsService } from "../../services/device-trials";
 
 describe("Device Trials Service", () => {
 	let deviceTrialsService: DeviceTrialsService;

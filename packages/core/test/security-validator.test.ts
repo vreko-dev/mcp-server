@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { SecurityValidator } from "../src/security-validator.js";
+import { SecurityValidator } from "../src/security-validator";
 
 describe("SecurityValidator", () => {
 	let validator: SecurityValidator;

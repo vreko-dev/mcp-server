@@ -1,5 +1,5 @@
-import type { Notification } from "../domain/types.js";
-import { db } from "./db.js";
+import type { Notification } from "../domain/types";
+import { db } from "./db";
 
 /**
  * Repository for managing notifications in IndexedDB

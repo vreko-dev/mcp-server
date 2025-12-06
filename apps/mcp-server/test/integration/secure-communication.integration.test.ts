@@ -1,7 +1,7 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
 import type { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { MCPHttpServer } from "../../src/http-server.js";
+import { MCPHttpServer } from "../../src/http-server";
 
 // Mock the MCP server
 const mockMCPServer = {

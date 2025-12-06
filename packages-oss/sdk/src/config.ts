@@ -1,4 +1,4 @@
-import type { SDKConfig } from "./types.js";
+import type { SDKConfig } from "./types";
 
 export const defaultConfig: SDKConfig = {
 	endpoint: "https://api.snapback.dev",

@@ -15,7 +15,7 @@
  */
 
 import type { PostHog } from "posthog-node";
-import { logger } from "../logging/logger.js";
+import { logger } from "../logging/logger";
 
 /**
  * Privacy-filtered event properties

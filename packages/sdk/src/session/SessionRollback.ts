@@ -18,7 +18,7 @@ import { existsSync } from "node:fs";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import type { SessionChange, SessionManifestV1 } from "@snapback/contracts/session";
-import type { BlobStore } from "../storage/BlobStore.js";
+import type { BlobStore } from "../storage/BlobStore";
 
 /**
  * Rollback options

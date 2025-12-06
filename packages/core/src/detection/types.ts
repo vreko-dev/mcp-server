@@ -1,4 +1,4 @@
-import type { AnalysisResult } from "../guardian.js";
+import type { AnalysisResult } from "../guardian";
 
 // Base plugin interface that extends the existing AnalysisPlugin
 export interface DetectionPlugin {

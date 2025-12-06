@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ServiceFederation } from "./mcp-federation.js";
+import { ServiceFederation } from "./mcp-federation";
 
 describe("ServiceFederation", () => {
 	let federation: ServiceFederation;

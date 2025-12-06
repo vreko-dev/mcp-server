@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { MockReplacementPlugin } from "../../src/detection/plugins/mock-replacement.js";
-import { PhantomDependencyPlugin } from "../../src/detection/plugins/phantom-dependency.js";
-import { SecretDetectionPlugin } from "../../src/detection/plugins/secret-detection.js";
-import { Guardian } from "../../src/guardian.js";
+import { MockReplacementPlugin } from "../../src/detection/plugins/mock-replacement";
+import { PhantomDependencyPlugin } from "../../src/detection/plugins/phantom-dependency";
+import { SecretDetectionPlugin } from "../../src/detection/plugins/secret-detection";
+import { Guardian } from "../../src/guardian";
 
 describe("Detection Memory Tests", () => {
 	it("should use less than 100MB memory", async () => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { SecretDetector } from "../src/detectors/SecretDetector.js";
+import { SecretDetector } from "../src/detectors/SecretDetector";
 
 describe("SecretDetector", () => {
 	const detector = new SecretDetector();

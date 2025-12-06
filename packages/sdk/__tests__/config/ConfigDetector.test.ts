@@ -6,8 +6,8 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { IFileSystemProvider } from "../../src/config/ConfigDetector.js";
-import { ConfigDetector } from "../../src/config/ConfigDetector.js";
+import type { IFileSystemProvider } from "../../src/config/ConfigDetector";
+import { ConfigDetector } from "../../src/config/ConfigDetector";
 
 describe("ConfigDetector", () => {
 	let mockFileSystem: IFileSystemProvider;

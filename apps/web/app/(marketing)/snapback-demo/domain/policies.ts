@@ -1,4 +1,4 @@
-import type { Policy, ProtectionLevel } from "./types.js";
+import type { Policy, ProtectionLevel } from "./types";
 
 /**
  * Parses policy files like .snapbackprotected, .snapbackignore, .snapbackrc

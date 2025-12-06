@@ -9,10 +9,10 @@ import type {
 	SnapshotFilters,
 	SnapshotRestoreResult,
 } from "@snapback/contracts";
-import type { StorageAdapter } from "../storage/StorageAdapter.js";
-import { validatePath } from "../utils/security.js";
-import { SnapshotDeduplication } from "./SnapshotDeduplication.js";
-import { SnapshotNaming } from "./SnapshotNaming.js";
+import type { StorageAdapter } from "../storage/StorageAdapter";
+import { validatePath } from "../utils/security";
+import { SnapshotDeduplication } from "./SnapshotDeduplication";
+import { SnapshotNaming } from "./SnapshotNaming";
 
 export interface SnapshotManagerOptions {
 	enableDeduplication?: boolean;

@@ -2,7 +2,7 @@ import { ORPCError } from "@orpc/server";
 import {
 	getPresignedUploadUrl,
 	isS3Configured,
-} from "../../../lib/s3-client.js";
+} from "../../../lib/s3-client";
 import { protectedProcedure } from "../../../orpc/procedures";
 
 export const createAvatarUploadUrl = protectedProcedure

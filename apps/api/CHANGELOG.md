@@ -1,4 +1,4 @@
-# @snapback/api-service
+# @snapback/api
 
 ## 1.1.0
 

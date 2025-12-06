@@ -12,7 +12,7 @@ import type {
 	UpdateCompany,
 	UpdateContact,
 	UpdateDeal,
-} from "../../types.js";
+} from "../../types";
 
 let hubspotClient: Client | null = null;
 

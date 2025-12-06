@@ -1,4 +1,4 @@
-import { getRedisClient } from "./redis-client.js";
+import { getRedisClient } from "./redis-client";
 
 interface TokenBucket {
 	tokens: number;

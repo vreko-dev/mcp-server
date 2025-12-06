@@ -1,6 +1,6 @@
 import { CallToolRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import { describe, expect, it } from "vitest";
-import { startServer } from "../../src/index.js";
+import { startServer } from "../../src/index";
 
 describe("Access Control Integration", () => {
 	it("should allow admin users to access all tools", async () => {

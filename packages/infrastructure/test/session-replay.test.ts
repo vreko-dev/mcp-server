@@ -5,15 +5,15 @@
  */
 
 import { beforeEach, describe, expect, it } from "vitest";
-import { calculateEffectiveSamplingRate } from "../../../packages/config/src/analytics/session-replay.js";
-import { SessionReplayManager } from "../src/metrics/session-replay/manager.js";
+import { calculateEffectiveSamplingRate } from "../../../packages/config/src/analytics/session-replay";
+import { SessionReplayManager } from "../src/metrics/session-replay/manager";
 import {
 	AGGRESSIVE_SAMPLING,
 	BALANCED_SAMPLING,
 	CONSERVATIVE_SAMPLING,
 	calculateSamplingRate,
 	type SamplingContext,
-} from "../src/metrics/session-replay/sampling.js";
+} from "../src/metrics/session-replay/sampling";
 
 describe("Session Replay Sampling", () => {
 	describe("Preset Strategies", () => {

@@ -1,5 +1,5 @@
 {
-	"name": "@snapback/api-service",
+	"name": "@snapback/api",
 	"description": "Standalone API service for SnapBack",
 	"version": "1.1.0",
 	"dependencies": {
@@ -17,10 +17,10 @@
 		"@sentry/node": "catalog:",
 		"@snapback/auth": "workspace:*",
 		"@snapback/config": "^0.1.1",
-		"@snapback/contracts": "^0.1.4",
+		"@snapback/contracts": "workspace:*",
 		"@snapback/core": "workspace:*",
 		"@snapback/events": "^0.1.1",
-		"@snapback/infrastructure": "^0.1.2",
+		"@snapback/infrastructure": "workspace:*",
 		"@snapback/integrations": "workspace:*",
 		"@snapback/platform": "workspace:*",
 		"@snapback/policy-engine": "workspace:*",

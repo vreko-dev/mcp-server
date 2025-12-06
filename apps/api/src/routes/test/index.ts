@@ -9,7 +9,7 @@ import {
 	fastForward,
 	getTimeOffset,
 	resetTime,
-} from "../../test-utils/time-control.js";
+} from "../../test-utils/time-control";
 
 const testRoutes = new Hono();
 

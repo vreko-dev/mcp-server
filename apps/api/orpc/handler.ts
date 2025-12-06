@@ -2,7 +2,7 @@ import { OpenAPIHandler } from "@orpc/openapi/fetch";
 import type { FetchHandleResult } from "@orpc/server/fetch";
 import { RPCHandler } from "@orpc/server/fetch";
 import { logger } from "@snapback/infrastructure";
-import { router } from "./router.js";
+import { router } from "./router";
 
 // Create proper oRPC handlers according to spec
 const rpcHandlerInstance = new RPCHandler(router);

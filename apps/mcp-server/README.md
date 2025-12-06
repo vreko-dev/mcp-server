@@ -3,9 +3,9 @@
 [![npm version](https://badge.fury.io/js/@snapback%2Fmcp-server.svg)](https://www.npmjs.com/package/@snapback/mcp-server)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-> AI-powered code analysis and snapshot management via Model Context Protocol
-
-Integrate SnapBack's code safety features directly into Claude Desktop, Cursor, and any MCP-compatible AI tool.
+> Give your AI agent access to SnapBack's pattern memory.
+>
+> Query what's broken before, get warnings about risky patterns, and let your agent learn from 1,000+ repos' mistakes.
 
 ## Quick Start
 
@@ -16,24 +16,23 @@ snapback-mcp
 
 Works immediately - no configuration required!
 
-## Features
+## What It Does
 
 ### 🆓 Free (No Account Needed)
 
-- ✅ **Risk Analysis**: Detect secrets, vulnerabilities in code changes
+- ✅ **Pattern Memory Queries**: "Has this refactor pattern caused problems before?"
+- ✅ **Risk Assessment**: Check if changes match known failure patterns
 - ✅ **Dependency Checking**: Validate package.json changes
-- ✅ **Local Analysis**: Basic secret detection and security scanning
-- ✅ **Offline Mode**: Works without internet connection
-- ✅ **Context7 Integration**: Library documentation and code search
+- ✅ **Offline Ready**: Works without internet connection
 
 ### ☁️ Pro Features (Optional API Key)
 
-Get a free API key from [snapback.dev](https://snapback.dev) to unlock:
+Add `SNAPBACK_API_KEY` to unlock:
 
-- 🔐 **Advanced ML Analysis**: AI-powered risk detection
-- 🔐 **Snapshot Management**: Create and restore code snapshots
+- 🔐 **Report Outcomes**: Tell SnapBack what actually broke (improves future detection)
+- 🔐 **Create Snapshots**: Let your AI agent checkpoint before risky refactors
 - 🔐 **Cloud Sync**: Access snapshots across devices
-- 🔐 **Team Sharing**: Collaborate on code safety
+- 🔐 **Team Sharing**: Share learned patterns with teammates
 
 ## Installation
 

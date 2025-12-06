@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { SecretDetectionPlugin } from "../../src/detection/plugins/secret-detection.js";
+import { SecretDetectionPlugin } from "../../src/detection/plugins/secret-detection";
 
 describe("SecretDetectionPlugin", () => {
 	let plugin: SecretDetectionPlugin;

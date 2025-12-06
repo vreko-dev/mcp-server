@@ -1,5 +1,5 @@
 // Legacy config compatibility layer
-import type { Config } from "./types.js";
+import type { Config } from "./types";
 
 const configValue: Config = {
 	appName: "SnapBack",
@@ -180,12 +180,12 @@ export default configValue;
 export type { Config };
 
 // Re-export other modules
-export * from "./defaults.js";
-export * from "./env.js";
-export * from "./feature-flags.js";
-export * from "./subscription-config.js";
-export * from "./utils/base-url.js";
+export * from "./defaults";
+export * from "./env";
+export * from "./feature-flags";
+export * from "./subscription-config";
+export * from "./utils/base-url";
 // Utilities
-export * from "./utils/index.js";
-export * from "./utils/monorepo-flattener.js";
-export * from "./utils/path-transformer.js";
+export * from "./utils/index";
+export * from "./utils/monorepo-flattener";
+export * from "./utils/path-transformer";

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { withBreaker } from "./circuit-breaker.js";
+import { withBreaker } from "./circuit-breaker";
 
 describe("Circuit Breaker", () => {
 	it("should execute function successfully", async () => {

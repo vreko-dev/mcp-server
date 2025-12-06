@@ -1,11 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { checkDependencies } from "../../../src/utils/dependency-checker.js";
+import { checkDependencies } from "../../../src/utils/dependency-checker";
 import type {
   DependencyCheckInput,
   DependencyCheckResult,
   DependencyChange,
   VulnerabilityInfo,
-} from "../../../src/utils/dependency-checker.js";
+} from "../../../src/utils/dependency-checker";
 
 /**
  * check-dependencies Tool Tests

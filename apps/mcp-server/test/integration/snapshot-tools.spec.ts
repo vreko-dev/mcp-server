@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { createSnapshot } from "../../src/tools/create-snapshot.js";
-import { addSnapshot, listSnapshots } from "../../src/tools/list-snapshots.js";
-import { restoreSnapshot, storeSnapshotContent } from "../../src/tools/restore-snapshot.js";
+import { createSnapshot } from "../../src/tools/create-snapshot";
+import { addSnapshot, listSnapshots } from "../../src/tools/list-snapshots";
+import { restoreSnapshot, storeSnapshotContent } from "../../src/tools/restore-snapshot";
 
 describe("MCP Snapshot Tools", () => {
 	it("mcp-snap-001: should create snapshot with content-addressed ID", async () => {

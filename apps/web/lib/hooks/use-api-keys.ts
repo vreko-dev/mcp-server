@@ -1,8 +1,8 @@
-import type { ApiKey } from "../types.js";
+import type { ApiKey } from "../types";
 import {
 	useResourceMutation,
 	useResourceQuery,
-} from "../use-resource-query.js";
+} from "../use-resource-query";
 
 // Mock API functions - these would be replaced with actual API calls
 const fetchApiKeys = async (): Promise<ApiKey[]> => {

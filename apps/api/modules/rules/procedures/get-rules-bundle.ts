@@ -239,7 +239,9 @@ export const getRulesBundle = protectedProcedure
 		const tier = subscription?.plan || "free";
 
 		// Get tier-specific thresholds
-		const tierThresholds = RULE_THRESHOLDS[tier] || RULE_THRESHOLDS.free;
+		const tierThresholds =
+			RULE_THRESHOLDS[tier as keyof typeof RULE_THRESHOLDS] ||
+			RULE_THRESHOLDS.free;
 
 		// Get feature flags from FeatureManager
 		// MVP Note: Feature flags are included in the rules bundle (not remote flips)
@@ -293,7 +295,9 @@ function generateETag(content: string): string {
 }
 
 // Helper function to sign rules bundle with JWS
-async function signRulesBundle(bundle: any): Promise<string> {
+async function signRulesBundle(
+	bundle: Record<string, unknown>,
+): Promise<string> {
 	// Use environment variable for signing key, fallback to hardcoded key for MVP
 	// MVP Note: In production, always use a secure environment variable
 	const secretKey = env.RULES_SIGNING_KEY || "snapback-rules-secret-key";

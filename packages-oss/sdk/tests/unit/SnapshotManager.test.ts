@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { SnapshotManager } from "../../src/snapshot/SnapshotManager.js";
-import { createMockStorage } from "../helpers.js";
+import { SnapshotManager } from "../../src/snapshot/SnapshotManager";
+import { createMockStorage } from "../helpers";
 
 describe("SnapshotManager", () => {
 	let manager: SnapshotManager;

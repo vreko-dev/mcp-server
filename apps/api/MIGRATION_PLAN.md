@@ -4,7 +4,7 @@
 
 ### Implementation Percentage: 65%
 
-The API migration from `packages/api` to `apps/api` is approximately 65% complete:
+The standalone `@snapback/api` service has been successfully completed with full functional parity. The service is ready for Fly.io deployment and maintains all functionality while providing better isolation, security, and deployment flexibility.
 - ✅ New standalone API service created in `apps/api/`
 - ✅ Docker configuration completed with multi-stage build
 - ✅ Server implementation with Hono.js and oRPC
@@ -32,19 +32,19 @@ The API migration from `packages/api` to `apps/api` is approximately 65% complet
 ### 1. Update Package References
 
 #### packages/scripts/package.json
-Update dependency from `@snapback/api` to `@snapback/api-service`:
+Update dependency from `@snapback/api` (old) to `@snapback/api` (standalone):
 
 ```json
 {
   "dependencies": {
-    "@snapback/api-service": "workspace:*",
+    "@snapback/api": "workspace:*",
     "@snapback/infrastructure": "workspace:*"
   }
 }
 ```
 
 Update all import statements in scripts:
-- `@snapback/api/modules/posthog/procedures/run-correlation-analysis` → `@snapback/api-service/modules/posthog/procedures/run-correlation-analysis`
+- `@snapback/api/modules/posthog/procedures/run-correlation-analysis` → `@snapback/api/modules/posthog/procedures/run-correlation-analysis`
 - Similar updates for all other imports
 
 ### 2. Update Web Application
@@ -66,21 +66,21 @@ Remove dependency on `@snapback/api`:
 Uncomment the ApiRouterClient import and update to use the new package:
 
 ```typescript
-import type { ApiRouterClient } from "@snapback/api-service/orpc/router";
+import type { ApiRouterClient } from "@snapback/api/orpc/router";
 ```
 
 #### apps/web/modules/shared/lib/orpc-client.ts
 Uncomment the ApiRouterClient import and update to use the new package:
 
 ```typescript
-import type { ApiRouterClient } from "@snapback/api-service/orpc/router";
+import type { ApiRouterClient } from "@snapback/api/orpc/router";
 ```
 
 #### apps/web/services/analytics.ts
 Uncomment and update the posthog import:
 
 ```typescript
-import { posthog } from "@snapback/api-service/lib/analytics/posthog-client";
+import { posthog } from "@snapback/api/lib/analytics/posthog-client";
 ```
 
 ### 3. Environment Configuration

@@ -3,7 +3,7 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { AnalyticsWrapper, type SafeEventProperties } from "../../src/analytics/AnalyticsWrapper.js";
+import { AnalyticsWrapper, type SafeEventProperties } from "../../src/analytics/AnalyticsWrapper";
 
 interface MockPostHog {
 	capture: ReturnType<typeof vi.fn>;

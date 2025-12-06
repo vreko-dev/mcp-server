@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { MockReplacementPlugin } from "../../src/detection/plugins/mock-replacement.js";
+import { MockReplacementPlugin } from "../../src/detection/plugins/mock-replacement";
 
 // Mock implementation of MockReplacementPlugin for testing
 // class MockReplacementPlugin {

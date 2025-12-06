@@ -8,9 +8,9 @@
 import { createLogger, LogLevel } from "@snapback/contracts";
 import { nanoid } from "nanoid";
 import type { PostHog as PostHogClient } from "posthog-node";
-import type { EventPropertiesMap } from "../core/events.js";
-import { shouldSampleEvent } from "../core/sampling.js";
-import type { AnalyticsClient, GroupProperties, ServerAnalyticsConfig, UserTraits } from "../core/types.js";
+import type { EventPropertiesMap } from "../core/events";
+import { shouldSampleEvent } from "../core/sampling";
+import type { AnalyticsClient, GroupProperties, ServerAnalyticsConfig, UserTraits } from "../core/types";
 
 const logger = createLogger({ name: "analytics-server", level: LogLevel.INFO });
 
@@ -203,5 +203,5 @@ export function createServerAnalytics(config: ServerAnalyticsConfig): AnalyticsC
 // EXPORTS
 // ============================================================================
 
-export { AnalyticsEvents } from "../core/events.js";
-export type { ServerAnalyticsConfig } from "../core/types.js";
+export { AnalyticsEvents } from "../core/events";
+export type { ServerAnalyticsConfig } from "../core/types";

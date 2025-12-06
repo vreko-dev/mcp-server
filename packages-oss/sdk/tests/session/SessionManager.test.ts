@@ -17,8 +17,8 @@
 import * as os from "node:os";
 import * as path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { SessionManager } from "../../src/session/SessionManager.js";
-import type { BlobStore, BlobStoreError, Result } from "../../src/storage/BlobStore.js";
+import { SessionManager } from "../../src/session/SessionManager";
+import type { BlobStore, BlobStoreError, Result } from "../../src/storage/BlobStore";
 
 // ============================================================================
 // Mock BlobStore

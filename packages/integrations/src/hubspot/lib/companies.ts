@@ -1,5 +1,5 @@
-import { createCompany, getCompany, updateCompany } from "../provider/hubspot/index.js";
-import type { CreateCompanyParams, GetCompanyParams, HubSpotCompany, UpdateCompanyParams } from "../types.js";
+import { createCompany, getCompany, updateCompany } from "../provider/hubspot/index";
+import type { CreateCompanyParams, GetCompanyParams, HubSpotCompany, UpdateCompanyParams } from "../types";
 
 /**
  * Create a new company in HubSpot

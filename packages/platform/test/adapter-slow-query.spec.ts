@@ -1,6 +1,6 @@
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { TelemetrySinkDb } from "../src/db/adapters/TelemetrySinkDb.js";
+import { TelemetrySinkDb } from "../src/db/adapters/TelemetrySinkDb";
 
 describe("AD-SLOW: Adapter slow-query logging", () => {
 	const testId1 = "ad-slow-001";

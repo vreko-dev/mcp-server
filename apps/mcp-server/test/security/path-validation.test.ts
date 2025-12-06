@@ -1,6 +1,6 @@
 import * as fs from "node:fs";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { SecurityError, setWorkspaceRoot, validateFilePath } from "../../src/utils/security.js";
+import { SecurityError, setWorkspaceRoot, validateFilePath } from "../../src/utils/security";
 
 // Mock fs.realpathSync to control the behavior
 vi.mock("node:fs", async () => {

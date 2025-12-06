@@ -308,13 +308,73 @@ async function runBuildValidation() {
 	console.log("\n🔨 Step 6: Build Validation\n");
 	console.log("=".repeat(60));
 
-	console.log("Building OSS packages...");
+	console.log("Validating package.json dependencies...");
+	validateCatalogReferences();
+
+	console.log("\nBuilding OSS packages...");
 	exec("pnpm build:oss");
 
 	console.log("\nValidating OSS builds...");
 	exec("pnpm validate:oss");
 
 	console.log("\n✅ Build validation complete");
+}
+
+function validateCatalogReferences() {
+	console.log("\n🔍 Checking for catalog: references in published packages...");
+
+	const publishedPackages = [
+		"packages/contracts",
+		"packages/sdk",
+		"packages/infrastructure",
+		"packages/events",
+		"packages/config",
+	];
+
+	let hasErrors = false;
+
+	for (const pkgPath of publishedPackages) {
+		const fullPath = join(process.cwd(), pkgPath);
+		const packageJsonPath = join(fullPath, "package.json");
+
+		if (!existsSync(packageJsonPath)) {
+			continue;
+		}
+
+		const pkg = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
+		const content = readFileSync(packageJsonPath, "utf-8");
+
+		// Check for catalog: in dependencies and devDependencies
+		if (content.includes('"catalog:"')) {
+			console.error(`\n❌ CRITICAL: ${pkg.name} contains catalog: references!`);
+			console.error(`   File: ${packageJsonPath}`);
+			console.error("   catalog: protocol is ONLY for workspace, not for npm publishing.");
+			console.error("\n   Replace all catalog: with specific versions from pnpm-workspace.yaml");
+			hasErrors = true;
+		}
+
+		// Check for workspace:* in dependencies (should be removed for published packages)
+		if (pkg.dependencies) {
+			for (const [depName, version] of Object.entries(pkg.dependencies)) {
+				if (version === "workspace:*" && !depName.includes("snapback-oss")) {
+					// workspace:* is only ok for snapback-oss references (they stay in workspace)
+					console.warn(`\n⚠️  WARNING: ${pkg.name} has workspace:* for ${depName}`);
+					console.warn("   Published packages should use npm versions, not workspace references");
+					// Don't fail on this, just warn
+				}
+			}
+		}
+	}
+
+	if (hasErrors) {
+		throw new PrePublishError(
+			"Invalid package.json: published packages contain catalog: protocol",
+			"validation",
+			false,
+		);
+	}
+
+	console.log("   ✅ All packages have valid dependencies");
 }
 
 async function runPublishReadinessCheck() {

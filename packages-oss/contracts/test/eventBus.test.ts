@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { EventBus } from "../src/eventBus.js";
+import { EventBus } from "../src/eventBus";
 
 describe("EventBus", () => {
 	type TestEvents = {

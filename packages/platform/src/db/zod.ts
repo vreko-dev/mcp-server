@@ -11,7 +11,7 @@ import {
 	session,
 	user,
 	verification,
-} from "./schema/index.js";
+} from "./schema/index";
 
 export const AiChatSchema = createSelectSchema(aiChat);
 export const UserSchema = createSelectSchema(user);

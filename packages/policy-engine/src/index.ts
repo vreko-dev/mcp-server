@@ -359,16 +359,16 @@ export function loadPolicyConfig(cwd: string = process.cwd()): PolicyConfig {
 	}
 }
 
-export { type MockDetectionResult, MockDetector, type MockFinding } from "./detectors/MockDetector.js";
+export { type MockDetectionResult, MockDetector, type MockFinding } from "./detectors/MockDetector";
 export {
 	PhantomDependencyDetector,
 	type PhantomDependencyFinding,
 	type PhantomDependencyResult,
-} from "./detectors/PhantomDependencyDetector.js";
+} from "./detectors/PhantomDependencyDetector";
 /**
  * Export detectors
  */
-export { type SecretDetectionResult, SecretDetector, type SecretFinding } from "./detectors/SecretDetector.js";
+export { type SecretDetectionResult, SecretDetector, type SecretFinding } from "./detectors/SecretDetector";
 
 /**
  * Export policy engine
@@ -380,9 +380,9 @@ export {
 	type PolicyEngineConfig,
 	type PolicyEngineResult,
 	type PolicyRule,
-} from "./PolicyEngine.js";
+} from "./PolicyEngine";
 
 /**
  * Export SARIF formatter
  */
-export { SarifFormatter, type SarifLog, type SarifResult, type SarifRule, type SarifRun } from "./SarifFormatter.js";
+export { SarifFormatter, type SarifLog, type SarifResult, type SarifRule, type SarifRun } from "./SarifFormatter";

@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { db } from "../../persistence/db.js";
-import { ProtectionRepo } from "../../persistence/ProtectionRepo.js";
+import { db } from "../../persistence/db";
+import { ProtectionRepo } from "../../persistence/ProtectionRepo";
 
 describe("ProtectionRepo", () => {
 	let protectionRepo: ProtectionRepo;

@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { Clock } from "../src/clock.js";
-import { RetentionService } from "../src/retention.js";
+import type { Clock } from "../src/clock";
+import { RetentionService } from "../src/retention";
 
 describe("RET-CLOCK: Retention service clock injection", () => {
 	const testId1 = "ret-clock-001";

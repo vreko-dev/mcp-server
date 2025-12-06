@@ -5,9 +5,9 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { AnalyticsEvents } from "../core/events.js";
-import type { ServerAnalyticsConfig } from "../core/types.js";
-import { ServerAnalyticsClient } from "../server/index.js";
+import { AnalyticsEvents } from "../core/events";
+import type { ServerAnalyticsConfig } from "../core/types";
+import { ServerAnalyticsClient } from "../server/index";
 
 describe("Server Analytics Client", () => {
 	let mockPostHog: any;

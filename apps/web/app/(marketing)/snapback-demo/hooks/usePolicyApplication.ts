@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { snapBackCommands } from "../commands";
-import { useSnapBack } from "../context/SnapBackContext.js";
+import { useSnapBack } from "../context/SnapBackContext";
 
 /**
  * Hook to apply policies to files when they change

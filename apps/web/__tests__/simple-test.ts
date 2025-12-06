@@ -1,4 +1,4 @@
-import { matchResource, R } from "../lib/resource.js";
+import { matchResource, R } from "../lib/resource";
 
 // Simple test to verify the resource pattern is working
 const resource = R.ready("test");

@@ -62,6 +62,7 @@ export type MetricsResult<T> =
  * Metrics Aggregator Service
  */
 export class MetricsAggregator {
+	// biome-ignore lint/suspicious/noExplicitAny: Drizzle generic type requires any
 	constructor(private readonly db: PgDatabase<any>) {}
 
 	/**

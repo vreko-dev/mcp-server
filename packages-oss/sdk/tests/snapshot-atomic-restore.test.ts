@@ -8,8 +8,8 @@ import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import type { FileInput } from "@snapback-oss/contracts";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { SnapshotManager } from "../src/snapshot/SnapshotManager.js";
-import { LocalStorage } from "../src/storage/LocalStorage.js";
+import { SnapshotManager } from "../src/snapshot/SnapshotManager";
+import { LocalStorage } from "../src/storage/LocalStorage";
 
 describe("SnapshotManager - Atomic Restore", () => {
 	let manager: SnapshotManager;

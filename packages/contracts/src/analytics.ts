@@ -17,7 +17,7 @@
  * - ✅ ext_counts (Solo tier only, consent required, ≥3 changes for k-anonymity)
  */
 
-import type { Tier } from "./tiers.js";
+import type { Tier } from "./tiers";
 
 /**
  * Base event structure

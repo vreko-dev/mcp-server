@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { restoreSnapshot } from "../../../src/tools/restore-snapshot.js";
+import { restoreSnapshot } from "../../../src/tools/restore-snapshot";
 import type { SnapshotManager } from "@snapback/sdk";
 
 /**

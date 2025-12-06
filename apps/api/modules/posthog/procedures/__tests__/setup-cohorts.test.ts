@@ -3,7 +3,7 @@
  */
 
 import { describe, expect, it, vi } from "vitest";
-import { setupCohorts } from "../setup-cohorts.js";
+import { setupCohorts } from "../setup-cohorts";
 
 // Mock the logger
 vi.mock("@snapback/infrastructure", () => ({

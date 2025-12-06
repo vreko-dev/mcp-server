@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ServiceFederation } from "../src/mcp-federation.js";
+import { ServiceFederation } from "../src/mcp-federation";
 
 describe("ServiceFederation", () => {
 	it("should create an instance of ServiceFederation", () => {

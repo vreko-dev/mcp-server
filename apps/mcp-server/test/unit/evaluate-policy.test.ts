@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { evaluatePolicy } from "../../src/index.js";
+import { evaluatePolicy } from "../../src/index";
 
 describe("evaluatePolicy", () => {
 	it("should return block action when critical issues are found", () => {

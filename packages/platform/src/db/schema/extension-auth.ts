@@ -19,7 +19,7 @@
 
 import { createId as cuid } from "@paralleldrive/cuid2";
 import { boolean, index, jsonb, pgTable, text, timestamp, varchar } from "drizzle-orm/pg-core";
-import { user } from "./postgres.js";
+import { user } from "./postgres";
 
 /**
  * Extension Link Tokens

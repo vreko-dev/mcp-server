@@ -98,7 +98,7 @@ export const ingestEvents = protectedProcedure
 			return {
 				success: true,
 				eventCount: successCount,
-				eventIds: insertResult.map((r) => r.id),
+				eventIds: insertResult.map((r: { id: string }) => r.id),
 				errors:
 					errors.length > 0
 						? errors.map((err, idx) => ({ index: idx, error: err }))

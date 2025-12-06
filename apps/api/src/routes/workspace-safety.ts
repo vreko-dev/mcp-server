@@ -6,7 +6,7 @@
 import { Hono } from "hono";
 
 // TODO: Implement authMiddleware
-// import { authMiddleware } from "../middleware/auth.js";
+// import { authMiddleware } from "../middleware/auth";
 
 const workspaceSafety = new Hono();
 

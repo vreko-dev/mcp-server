@@ -68,15 +68,15 @@
 // These can be imported in any environment (server/browser)
 // ============================================================================
 
-export type { EventPropertiesMap } from "./core/events.js";
-export { AnalyticsEvents } from "./core/events.js";
+export type { EventPropertiesMap } from "./core/events";
+export { AnalyticsEvents } from "./core/events";
 export type {
 	AnalyticsClient,
 	BrowserAnalyticsConfig,
 	GroupProperties,
 	ServerAnalyticsConfig,
 	UserTraits,
-} from "./core/types.js";
+} from "./core/types";
 
 // ============================================================================
 // IMPORTANT: Environment-specific imports

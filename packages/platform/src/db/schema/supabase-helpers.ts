@@ -10,8 +10,8 @@ import {
 	session,
 	subscriptionStatusEnum,
 	user,
-} from "./postgres.js";
-import * as snapbackSchema from "./snapback/index.js";
+} from "./postgres";
+import * as snapbackSchema from "./snapback/index";
 
 // Supabase Row Level Security (RLS) policies
 export const supabasePolicies = {
@@ -181,4 +181,4 @@ export const generateSupabaseSchema = () => {
 };
 
 // Export all SnapBack schema for Supabase compatibility
-export * from "./snapback/index.js";
+export * from "./snapback/index";

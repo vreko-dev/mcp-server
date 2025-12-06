@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { scheduleInAppMessage } from "../inapp-messaging.js";
+import { scheduleInAppMessage } from "../inapp-messaging";
 
 // Mock the database
 vi.mock("@snapback/platform", () => {

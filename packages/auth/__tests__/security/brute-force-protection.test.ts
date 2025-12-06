@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { validUsers } from "../fixtures/users.js";
-import { createMockDatabase } from "../utils/mock-db.js";
+import { validUsers } from "../fixtures/users";
+import { createMockDatabase } from "../utils/mock-db";
 
 describe("Brute Force Protection", () => {
 	let _mockDb: ReturnType<typeof createMockDatabase>;

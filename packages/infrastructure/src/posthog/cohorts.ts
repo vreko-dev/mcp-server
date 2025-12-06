@@ -6,7 +6,7 @@
  */
 
 import { PostHog } from "posthog-node";
-import { logger } from "../logging/logger.js";
+import { logger } from "../logging/logger";
 
 // Define the cohort configuration types
 export interface CohortConfig {

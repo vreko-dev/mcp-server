@@ -15,7 +15,7 @@
  * @module token/RateLimiter
  */
 
-import { isConsumptionAllowed, TokenBucket } from "./TokenBucket.js";
+import { isConsumptionAllowed, TokenBucket } from "./TokenBucket";
 
 export interface PlanConfig {
 	/** Maximum tokens capacity for this plan */

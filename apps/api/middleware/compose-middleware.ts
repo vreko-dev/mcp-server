@@ -1,6 +1,6 @@
-import { errorTrackingMiddleware } from "./error-tracking.js";
-import { loggingMiddleware } from "./logging.js";
-import { monitoringMiddleware } from "./monitoring.js";
+import { errorTrackingMiddleware } from "./error-tracking";
+import { loggingMiddleware } from "./logging";
+import { monitoringMiddleware } from "./monitoring";
 
 // Define the context type that will be passed through all middleware
 export interface MiddlewareContext {

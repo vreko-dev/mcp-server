@@ -1,8 +1,8 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { LRUCache } from "lru-cache";
-import { logger } from "../../utils/logger.js";
-import type { PackageJson } from "../types.js";
+import { logger } from "../../utils/logger";
+import type { PackageJson } from "../types";
 
 // Cache for package.json results
 export const cache = new LRUCache<string, any>({ max: 100 });

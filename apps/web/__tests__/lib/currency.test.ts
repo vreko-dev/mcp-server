@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatCurrency } from "../../modules/shared/lib/currency.js";
+import { formatCurrency } from "../../modules/shared/lib/currency";
 
 describe("formatCurrency", () => {
 	it("should format currency correctly", () => {

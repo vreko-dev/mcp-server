@@ -13,7 +13,7 @@
 
 import { logger } from "@snapback/infrastructure";
 import type { Context, Next } from "hono";
-import type { AuthContext } from "./auth-unified.js";
+import type { AuthContext } from "./auth-unified";
 
 // ============================================================================
 // Types

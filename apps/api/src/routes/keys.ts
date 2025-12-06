@@ -3,8 +3,8 @@ import { auth } from "@snapback/auth";
 import { Hono } from "hono";
 import { z } from "zod";
 import { log } from "../../lib/logger";
-import { requirePasskey } from "../middleware/passkey-policy.js";
-import { requireStepUp } from "../middleware/stepup.js";
+import { requirePasskey } from "../middleware/passkey-policy";
+import { requireStepUp } from "../middleware/stepup";
 import { createApiKey, getApiKey, revokeApiKey } from "../services/keys";
 
 const app = new Hono();

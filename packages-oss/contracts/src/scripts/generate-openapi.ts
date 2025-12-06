@@ -19,7 +19,7 @@ import {
 	SessionFinalizedSchema,
 	SessionRestoredSchema,
 	SnapshotCreatedSchema,
-} from "../events/core.js";
+} from "../events/core";
 
 // Extend Zod with OpenAPI functionality
 extendZodWithOpenApi(z);

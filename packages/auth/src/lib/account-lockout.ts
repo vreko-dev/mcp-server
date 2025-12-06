@@ -16,7 +16,7 @@
  */
 
 import { logger } from "@snapback/infrastructure";
-import { trackEvent } from "./audit.js";
+import { trackEvent } from "./audit";
 
 /**
  * Lockout policy configuration

@@ -1,18 +1,18 @@
 import {
 	type BetterAuthAdapter,
 	betterAuthAdapter,
-} from "./better-auth-adapter.js";
+} from "./better-auth-adapter";
 import {
 	AuthError,
 	InsufficientRoleError,
 	InsufficientScopesError,
-} from "./errors.js";
-import { mapUserToPlan } from "./plan.js";
+} from "./errors";
+import { mapUserToPlan } from "./plan";
 import type {
 	SnapbackAuth,
 	SnapbackAuthContext,
 	UserRole,
-} from "./shared-auth.js";
+} from "./shared-auth";
 
 export class SnapbackAuthImpl implements SnapbackAuth {
 	constructor(private adapter: BetterAuthAdapter = betterAuthAdapter) {}

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { QoSLevel, SnapBackEventBus } from "../src/index.js";
+import { QoSLevel, SnapBackEventBus } from "../src/index";
 
 describe("SnapBackEventBus QoS Features", () => {
 	let eventBus: SnapBackEventBus;

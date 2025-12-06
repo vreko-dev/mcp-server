@@ -36,7 +36,7 @@ import type {
 	SessionFinalizedEvent,
 	WelcomeActionTriggeredEvent,
 	WelcomeFeatureViewedEvent,
-} from "../events/core.js";
+} from "../events/core";
 
 /**
  * Maps diagnostic telemetry events to core events

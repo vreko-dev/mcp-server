@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import type { z } from "zod";
-import { combinedSchema, db } from "../client.js";
-import type { PurchaseInsertSchema, PurchaseUpdateSchema } from "../zod.js";
+import { combinedSchema, db } from "../client";
+import type { PurchaseInsertSchema, PurchaseUpdateSchema } from "../zod";
 
 const { purchase } = combinedSchema;
 

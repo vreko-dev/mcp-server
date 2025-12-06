@@ -1,4 +1,4 @@
-import { FEATURE_FLAGS, type FeatureFlag } from "./index.js";
+import { FEATURE_FLAGS, type FeatureFlag } from "./index";
 
 // Environment variables should be loaded by the application entry point (e.g. Next.js, or dotenv/config in scripts)
 

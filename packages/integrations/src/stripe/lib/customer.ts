@@ -1,6 +1,6 @@
 import { createLogger, LogLevel } from "@snapback/contracts";
 import { getOrganizationById, getUserById, updateOrganization, updateUser } from "@snapback/platform";
-import { getStripeClient } from "../provider/stripe/index.js";
+import { getStripeClient } from "../provider/stripe/index";
 
 const logger = createLogger({ name: "payments", level: LogLevel.INFO });
 

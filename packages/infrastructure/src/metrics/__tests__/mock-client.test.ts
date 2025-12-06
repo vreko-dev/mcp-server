@@ -5,8 +5,8 @@
  */
 
 import { beforeEach, describe, expect, it } from "vitest";
-import { AnalyticsEvents } from "../core/events.js";
-import { createMockAnalytics, type MockAnalyticsClient } from "../test-utils/index.js";
+import { AnalyticsEvents } from "../core/events";
+import { createMockAnalytics, type MockAnalyticsClient } from "../test-utils/index";
 
 describe("MockAnalyticsClient - Event Tracking", () => {
 	let analytics: MockAnalyticsClient;

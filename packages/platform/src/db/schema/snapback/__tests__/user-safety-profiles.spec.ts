@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { userSafetyProfiles } from "../user-safety-profiles.js";
+import { userSafetyProfiles } from "../user-safety-profiles";
 
 describe("userSafetyProfiles schema", () => {
 	it("should have the correct table structure", () => {

@@ -9,7 +9,7 @@ import type {
 	CreateCustomerPortalLink,
 	SetSubscriptionSeats,
 	WebhookHandler,
-} from "../../types.js";
+} from "../../types";
 
 type DbClient = NonNullable<typeof db>;
 

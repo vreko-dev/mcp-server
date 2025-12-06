@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { MockDetector } from "../src/detectors/MockDetector.js";
+import { MockDetector } from "../src/detectors/MockDetector";
 
 describe("MockDetector", () => {
 	const detector = new MockDetector();

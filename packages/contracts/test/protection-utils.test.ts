@@ -5,7 +5,7 @@ import {
 	type LegacyProtectionLevel,
 	legacyToCanonical,
 	type ProtectionLevel,
-} from "../src/types/protection-utils.js";
+} from "../src/types/protection-utils";
 
 describe("Protection Level Conversion Utilities", () => {
 	describe("legacyToCanonical", () => {

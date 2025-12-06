@@ -1,4 +1,4 @@
-import { calculateEntropy } from "./packages/core/src/detection/utils/entropy.js";
+import { calculateEntropy } from "./packages/core/src/detection/utils/entropy";
 
 // Test different types of strings to understand entropy behavior
 const testStrings = [

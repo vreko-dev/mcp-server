@@ -15,7 +15,7 @@ import {
 	sendPaymentReceiptEmail,
 	sendPaymentFailedEmail,
 	type EmailResult,
-} from "../email.js";
+} from "../email";
 
 // Setup MSW server for Resend API
 const server = setupServer(

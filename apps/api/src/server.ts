@@ -12,14 +12,14 @@ import { cors } from "hono/cors";
 import { logger as honoLogger } from "hono/logger";
 import { openApiHandler, rpcHandler } from "@/orpc/handler.js";
 import { router } from "@/orpc/router.js";
-import { handlePostHogWebhook } from "../modules/webhooks/posthog-handler.js";
-import { createRateLimitMiddleware } from "./middleware/rate-limit-distributed.js";
-import { requestLoggingMiddleware } from "./middleware/request-logging.js";
-import { honoSentryMiddleware, initSentryAPI } from "./middleware/sentry.js";
-import healthRoute from "./routes/health.js";
-import apiRoutes from "./routes/index.js";
-import protectedExamplesRoute from "./routes/protected-examples.js";
-import { testRoutes } from "./routes/test/index.js";
+import { handlePostHogWebhook } from "../modules/webhooks/posthog-handler";
+import { createRateLimitMiddleware } from "./middleware/rate-limit-distributed";
+import { requestLoggingMiddleware } from "./middleware/request-logging";
+import { honoSentryMiddleware, initSentryAPI } from "./middleware/sentry";
+import healthRoute from "./routes/health";
+import apiRoutes from "./routes/index";
+import protectedExamplesRoute from "./routes/protected-examples";
+import { testRoutes } from "./routes/test/index";
 
 // Initialize Sentry first, before any other code runs
 initSentryAPI({

@@ -124,7 +124,9 @@ export default function FeaturesClient() {
 						</span>
 					</h1>
 					<p className="text-xl lg:text-2xl text-gray-300 max-w-3xl mx-auto mb-8">
-						Every time you undo a mistake, SnapBack gets smarter. Day 1 catches 94% of issues. Day 30 knows YOUR codebase. Month 3 prevents what you didn't even know could break.
+						Every time you undo a mistake, SnapBack gets smarter. Day 1 catches
+						94% of issues. Day 30 knows YOUR codebase. Month 3 prevents what you
+						didn't even know could break.
 					</p>
 					<div className="flex flex-wrap justify-center gap-4">
 						<Link

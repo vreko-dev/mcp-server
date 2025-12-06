@@ -16,8 +16,8 @@ import {
 	createSnapshots,
 	createSnapshotWithMocks,
 	createSnapshotWithSecret,
-} from "../fixtures/index.js";
-import { measureTime } from "../helpers/test-helpers.js";
+} from "../fixtures/index";
+import { measureTime } from "../helpers/test-helpers";
 
 describe("@snapback/sdk - Snapshot Creation", () => {
 	beforeEach(() => {

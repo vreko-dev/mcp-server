@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { createSnapshot } from "../../domain/snapshot.js";
-import type { ProtectionLevel } from "../../domain/types.js";
+import { createSnapshot } from "../../domain/snapshot";
+import type { ProtectionLevel } from "../../domain/types";
 
 describe("Save Pipeline Matrix", () => {
 	describe("protection level × content change × debounce window", () => {

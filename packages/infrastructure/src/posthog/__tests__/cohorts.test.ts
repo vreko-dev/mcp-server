@@ -3,7 +3,7 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { CORRELATION_COHORTS, createCohort, getCohorts, RETENTION_COHORTS } from "../cohorts.js";
+import { CORRELATION_COHORTS, createCohort, getCohorts, RETENTION_COHORTS } from "../cohorts";
 
 // Mock the PostHog client
 vi.mock("posthog-node", () => {

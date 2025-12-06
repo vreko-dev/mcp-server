@@ -11,7 +11,7 @@
  * - Tier-based routing (Free → Local, Pro → API with fallback)
  */
 
-import type { SnapBackAPIClient } from "../client/snapback-api.js";
+import type { SnapBackAPIClient } from "../client/snapback-api";
 
 // Types for Analysis Results (matches @snapback/guardian-lite)
 export type RiskLevel = "none" | "low" | "medium" | "high";

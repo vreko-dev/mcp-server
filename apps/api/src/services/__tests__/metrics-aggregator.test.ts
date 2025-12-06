@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { MetricsAggregator, type UserLifetimeMetrics } from "../metrics-aggregator.js";
+import { MetricsAggregator, type UserLifetimeMetrics } from "../metrics-aggregator";
 
 // Mock database
 const mockSelect = vi.fn();

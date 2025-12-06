@@ -4,7 +4,7 @@ import type {
 	AIDetectionStat,
 	DashboardMetrics,
 	SessionMetrics,
-} from "./metrics.js";
+} from "./metrics";
 
 // Fetch user dashboard metrics from API
 export async function fetchUserMetrics(): Promise<DashboardMetrics> {

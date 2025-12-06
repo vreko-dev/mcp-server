@@ -1,6 +1,6 @@
 import * as eslintParser from "@typescript-eslint/parser";
 import * as esprima from "esprima";
-import { logger } from "../../utils/logger.js";
+import { logger } from "../../utils/logger";
 
 /**
  * Parse code with automatic TypeScript/JavaScript detection

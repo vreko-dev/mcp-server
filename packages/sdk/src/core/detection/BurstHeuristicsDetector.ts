@@ -8,7 +8,7 @@
  * Migrated from apps/vscode to SDK for platform-wide reuse.
  */
 
-import { THRESHOLDS } from "../../config/Thresholds.js";
+import { THRESHOLDS } from "../../config/Thresholds";
 
 /**
  * Configuration for burst detection

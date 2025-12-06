@@ -13,8 +13,8 @@ import {
 	SessionRestoredSchema,
 	SnapshotCreatedSchema,
 	validateCoreTelemetryEvent,
-} from "./core.js";
-import { LEGACY_TELEMETRY_EVENTS, type LegacyAllowedTelemetryEvent } from "./index.js";
+} from "./core";
+import { LEGACY_TELEMETRY_EVENTS, type LegacyAllowedTelemetryEvent } from "./index";
 
 /**
  * Maps legacy telemetry events to new core events

@@ -25,11 +25,11 @@ import type {
 	SessionTrigger,
 } from "@snapback-oss/contracts/session";
 import { minimatch } from "minimatch";
-import { AiSessionTracker } from "../ai/AiSessionTracker.js";
-import { SimpleChangeTracker } from "../ai/SimpleChangeTracker.js";
-import { CursorDetector } from "../core/detection/CursorDetector.js";
-import type { BlobStore } from "../storage/BlobStore.js";
-import { makeSafeSessionFinalizedEvent, makeSafeSessionStartedEvent } from "./sessionAnalytics.js";
+import { AiSessionTracker } from "../ai/AiSessionTracker";
+import { SimpleChangeTracker } from "../ai/SimpleChangeTracker";
+import { CursorDetector } from "../core/detection/CursorDetector";
+import type { BlobStore } from "../storage/BlobStore";
+import { makeSafeSessionFinalizedEvent, makeSafeSessionStartedEvent } from "./sessionAnalytics";
 
 /**
  * SessionManager configuration options

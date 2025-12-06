@@ -1,9 +1,9 @@
 import type { Logger } from "@snapback/contracts";
 import { createSilentLogger } from "@snapback/contracts";
-import type { AnalysisResult } from "../../guardian.js";
-import { FusedScanner } from "../scanner/FusedScanner.js";
-import type { DetectionPlugin } from "../types.js";
-import { findPackageJson, getAllDeclaredDependencies } from "../utils/package-parser.js";
+import type { AnalysisResult } from "../../guardian";
+import { FusedScanner } from "../scanner/FusedScanner";
+import type { DetectionPlugin } from "../types";
+import { findPackageJson, getAllDeclaredDependencies } from "../utils/package-parser";
 
 // Simple Levenshtein distance implementation for near-miss detection
 function levenshteinDistance(a: string, b: string): number {

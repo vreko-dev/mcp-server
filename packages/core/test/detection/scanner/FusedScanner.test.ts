@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { FusedScanner } from "../../../src/detection/scanner/FusedScanner.js";
+import { FusedScanner } from "../../../src/detection/scanner/FusedScanner";
 
 describe("FusedScanner", () => {
 	let scanner: FusedScanner;

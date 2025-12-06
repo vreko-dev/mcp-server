@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { hoverEffects } from "../../modules/marketing/lib/hoverEffects.js";
+import { hoverEffects } from "../../modules/marketing/lib/hoverEffects";
 
 describe("hoverEffects", () => {
 	it("should return correct CSS classes", () => {

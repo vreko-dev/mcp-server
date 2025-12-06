@@ -6,8 +6,8 @@
  */
 
 import { describe, expect, it } from "vitest";
-import type { IExtensionProvider } from "../../../src/core/detection/AIPresenceDetector.js";
-import { AIPresenceDetector } from "../../../src/core/detection/AIPresenceDetector.js";
+import type { IExtensionProvider } from "../../../src/core/detection/AIPresenceDetector";
+import { AIPresenceDetector } from "../../../src/core/detection/AIPresenceDetector";
 
 describe("AIPresenceDetector", () => {
 	describe("Constructor and initialization", () => {

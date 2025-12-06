@@ -1,6 +1,6 @@
 import * as crypto from "node:crypto";
 import { describe, expect, it } from "vitest";
-import { invalidSessions, validSessions } from "../fixtures/sessions.js";
+import { invalidSessions, validSessions } from "../fixtures/sessions";
 import {
 	createMalformedJwt,
 	generateInsecureToken,

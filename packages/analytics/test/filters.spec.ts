@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { FilterBuilder } from "../src/query/filters.js";
+import { FilterBuilder } from "../src/query/filters";
 
 describe("FILT: Dynamic filter builder for analytics", () => {
 	const testId1 = "filt-001";

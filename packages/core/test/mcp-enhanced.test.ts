@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { MCPClientManager } from "../src/mcp-client.js";
-import { ServiceFederation } from "../src/mcp-federation.js";
-import { logger } from "../src/utils/logger.js";
+import { MCPClientManager } from "../src/mcp-client";
+import { ServiceFederation } from "../src/mcp-federation";
+import { logger } from "../src/utils/logger";
 
 // Mock the logger
 vi.mock("../src/utils/logger", () => ({

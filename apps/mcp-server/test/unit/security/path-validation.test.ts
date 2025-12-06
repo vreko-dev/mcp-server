@@ -22,7 +22,7 @@ import {
   SecurityError,
   setWorkspaceRoot,
   initializeSecurityTelemetry
-} from '../../../src/utils/security.js';
+} from '../../../src/utils/security';
 
 // Mock filesystem
 vi.mock('node:fs', async () => {

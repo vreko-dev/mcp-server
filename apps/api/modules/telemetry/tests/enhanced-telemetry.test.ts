@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createMockExternalServices } from "../../../__tests__/utils/enhanced-test-helpers.js";
+import { createMockExternalServices } from "../../../__tests__/utils/enhanced-test-helpers";
 import {
 	callMockProcedure,
 	createMockORPCContext,

@@ -1,6 +1,6 @@
 import type { Snapshot, SnapshotFilters } from "@snapback-oss/contracts";
 import { vi } from "vitest";
-import type { StorageAdapter } from "../../src/storage/StorageAdapter.js";
+import type { StorageAdapter } from "../../src/storage/StorageAdapter";
 
 /**
  * Create a mock storage adapter for testing

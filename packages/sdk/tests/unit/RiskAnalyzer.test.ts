@@ -16,8 +16,8 @@
  */
 
 import { describe, expect, it } from "vitest";
-import type { FileChangeInfo } from "../../src/analysis/RiskAnalyzer.js";
-import { RiskAnalyzer } from "../../src/analysis/RiskAnalyzer.js";
+import type { FileChangeInfo } from "../../src/analysis/RiskAnalyzer";
+import { RiskAnalyzer } from "../../src/analysis/RiskAnalyzer";
 
 // ============================================================================
 // RiskAnalyzer Tests

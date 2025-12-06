@@ -1,7 +1,7 @@
 import retry from "async-retry";
 import pLimit from "p-limit";
-import { withBreaker } from "./circuit-breaker.js";
-import { logger } from "./logger.js";
+import { withBreaker } from "./circuit-breaker";
+import { logger } from "./logger";
 
 // Configuration with safe defaults
 const snapbackDefaults = {

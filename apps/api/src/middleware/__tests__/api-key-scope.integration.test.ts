@@ -9,8 +9,8 @@
 
 import { eq } from "drizzle-orm";
 import { beforeEach, describe, expect, it } from "vitest";
-import { getDb } from "../../../src/services/database.js";
-import { apiKeyScopeMiddleware } from "../../../src/middleware/security-api-key-scope.js";
+import { getDb } from "../../../src/services/database";
+import { apiKeyScopeMiddleware } from "../../../src/middleware/security-api-key-scope";
 
 describe("API Key Scope Middleware Integration", () => {
 	let testApiKeyId: string;

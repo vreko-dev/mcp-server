@@ -15,7 +15,7 @@
  */
 
 import { logger } from "@snapback/infrastructure";
-import { trackEvent } from "./audit.js";
+import { trackEvent } from "./audit";
 
 /**
  * Rotate all sessions for a user when their role changes

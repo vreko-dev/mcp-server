@@ -7,8 +7,8 @@
  * the SnapBack-Site monorepo structure.
  */
 
-import { MonorepoFlattener } from "./monorepo-flattener.js";
-import { getAppMappings, transformClientToServerPath, transformServerToClientPath } from "./path-transformer.js";
+import { MonorepoFlattener } from "./monorepo-flattener";
+import { getAppMappings, transformClientToServerPath, transformServerToClientPath } from "./path-transformer";
 
 console.log("=== TDD Monorepo Flattening Demonstration ===\n");
 

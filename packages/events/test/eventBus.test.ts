@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { SnapBackEvent, SnapBackEventBus } from "../src/index.js";
+import { SnapBackEvent, SnapBackEventBus } from "../src/index";
 
 describe("SnapBackEventBus", () => {
 	let eventBus: SnapBackEventBus;

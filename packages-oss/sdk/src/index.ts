@@ -5,25 +5,25 @@ export {
 	FileChangeAnalyzer,
 	type FileChangeType,
 	type IFileSystemProvider as IFileSystemProviderAnalysis,
-} from "./analysis/FileChangeAnalyzer.js";
+} from "./analysis/FileChangeAnalyzer";
 export {
 	type AnalysisResult,
 	DEFAULT_RISK_THRESHOLDS,
 	RiskAnalyzer,
 	type RiskFactor,
 	type RiskSeverity,
-} from "./analysis/RiskAnalyzer.js";
-export * from "./cache/lru-cache.js";
-export { ProtectionClient } from "./client/ProtectionClient.js";
-export { SnapshotClient } from "./client/SnapshotClient.js";
-export { type Envelope, SnapbackAnalyticsClient, SnapbackClient } from "./client.js";
+} from "./analysis/RiskAnalyzer";
+export * from "./cache/lru-cache";
+export { ProtectionClient } from "./client/ProtectionClient";
+export { SnapshotClient } from "./client/SnapshotClient";
+export { type Envelope, SnapbackAnalyticsClient, SnapbackClient } from "./client";
 // Cloud backup exports
 export {
 	type CloudBackupConfig,
 	CloudBackupService,
 	type DownloadResult,
 	type UploadResult,
-} from "./cloud/CloudBackupService.js";
+} from "./cloud/CloudBackupService";
 // Configuration detector
 export {
 	type ConfigChange,
@@ -33,8 +33,8 @@ export {
 	type ConfigParseResult,
 	type ConfigValidationResult,
 	type IFileSystemProvider,
-} from "./config/ConfigDetector.js";
-export { type MergeOptions, type ParseResult, SnapBackRCParser } from "./config/SnapBackRCParser.js";
+} from "./config/ConfigDetector";
+export { type MergeOptions, type ParseResult, SnapBackRCParser } from "./config/SnapBackRCParser";
 // Centralized threshold configuration
 export {
 	type BurstThresholds,
@@ -53,7 +53,7 @@ export {
 	THRESHOLDS,
 	type ThresholdsConfig,
 	updateThresholds,
-} from "./config/Thresholds.js";
+} from "./config/Thresholds";
 // Configuration types and parser
 export type {
 	ProtectionLevel,
@@ -63,24 +63,24 @@ export type {
 	SnapBackRC,
 	SnapBackSettings,
 	SnapshotTemplate,
-} from "./config/types.js";
-export * from "./config.js";
+} from "./config/types";
+export * from "./config";
 export {
 	AI_EXTENSION_IDS,
 	type AIAssistantName,
 	AIPresenceDetector,
 	type IExtensionProvider,
-} from "./core/detection/AIPresenceDetector.js";
+} from "./core/detection/AIPresenceDetector";
 // Detection exports
 export {
 	type BurstDetectionResult,
 	type BurstDetectorConfig,
 	BurstHeuristicsDetector,
-} from "./core/detection/BurstHeuristicsDetector.js";
+} from "./core/detection/BurstHeuristicsDetector";
 export {
 	CursorDetector,
 	type IEnvironmentProvider,
-} from "./core/detection/CursorDetector.js";
+} from "./core/detection/CursorDetector";
 export {
 	DEFAULT_EXPERIENCE_THRESHOLDS,
 	ExperienceClassifier,
@@ -88,7 +88,7 @@ export {
 	type ExperienceThresholdsConfig,
 	type ExperienceTier,
 	type IKeyValueStorage,
-} from "./core/session/ExperienceClassifier.js";
+} from "./core/session/ExperienceClassifier";
 export {
 	type IDisposable,
 	type IEventEmitter,
@@ -97,17 +97,17 @@ export {
 	type ITimerService,
 	NodeTimerService,
 	NoOpLogger,
-} from "./core/session/interfaces.js";
+} from "./core/session/interfaces";
 export {
 	SessionCoordinator,
 	type SessionCoordinatorConfig,
 	type SessionCoordinatorOptions,
-} from "./core/session/SessionCoordinator.js";
+} from "./core/session/SessionCoordinator";
 export {
 	type ISnapshotProvider,
 	SessionSummaryGenerator,
 	type SessionSummaryGeneratorOptions,
-} from "./core/session/SessionSummaryGenerator.js";
+} from "./core/session/SessionSummaryGenerator";
 // Session exports
 export {
 	type AIPresenceInfo,
@@ -116,31 +116,31 @@ export {
 	type SessionTaggerConfig,
 	type SessionTaggerOptions,
 	type SessionTaggingResult,
-} from "./core/session/SessionTagger.js";
+} from "./core/session/SessionTagger";
 export type {
 	SessionCandidate,
 	SessionFileEntry,
 	SessionFinalizeReason,
 	SessionId,
 	SessionManifest,
-} from "./core/session/types.js";
-export { EncryptionService } from "./encryption/EncryptionService.js";
+} from "./core/session/types";
+export { EncryptionService } from "./encryption/EncryptionService";
 // Helper exports
-export { analyze, evaluatePolicy, ingestTelemetry } from "./helpers.js";
-export * from "./privacy/hasher.js";
-export * from "./privacy/sanitizer.js";
-export * from "./privacy/validator.js";
-export { ProtectionManager } from "./protection/ProtectionManager.js";
+export { analyze, evaluatePolicy, ingestTelemetry } from "./helpers";
+export * from "./privacy/hasher";
+export * from "./privacy/sanitizer";
+export * from "./privacy/validator";
+export { ProtectionManager } from "./protection/ProtectionManager";
 // Core SDK exports
-export { Snapback } from "./Snapback.js";
+export { Snapback } from "./Snapback";
 // Session Layer exports (new SessionManager)
-export * from "./session/index.js";
-export { SnapshotManager } from "./snapshot/SnapshotManager.js";
-export { LocalStorage } from "./storage/LocalStorage.js";
-export { MemoryStorage } from "./storage/MemoryStorage.js";
-export type { StorageAdapter } from "./storage/StorageAdapter.js";
-export { StorageBroker } from "./storage/StorageBroker.js";
-export { StorageBrokerAdapter } from "./storage/StorageBrokerAdapter.js";
+export * from "./session/index";
+export { SnapshotManager } from "./snapshot/SnapshotManager";
+export { LocalStorage } from "./storage/LocalStorage";
+export { MemoryStorage } from "./storage/MemoryStorage";
+export type { StorageAdapter } from "./storage/StorageAdapter";
+export { StorageBroker } from "./storage/StorageBroker";
+export { StorageBrokerAdapter } from "./storage/StorageBrokerAdapter";
 // Error exports
 export {
 	CorruptedDataError,
@@ -148,10 +148,10 @@ export {
 	StorageError,
 	StorageFullError,
 	StorageLockError,
-} from "./storage/StorageErrors.js";
-export type { ExperienceMetrics } from "./types/experience.js";
-export type { SDKConfig } from "./types.js";
+} from "./storage/StorageErrors";
+export type { ExperienceMetrics } from "./types/experience";
+export type { SDKConfig } from "./types";
 // Utility exports
-export { toError } from "./utils/errorHelpers.js";
-export { areEqual, getDepth, isWithin, normalize } from "./utils/PathNormalizer.js";
-export { calculateBackoff, type RetryOptions, RetryPresets, withRetry } from "./utils/retry.js";
+export { toError } from "./utils/errorHelpers";
+export { areEqual, getDepth, isWithin, normalize } from "./utils/PathNormalizer";
+export { calculateBackoff, type RetryOptions, RetryPresets, withRetry } from "./utils/retry";

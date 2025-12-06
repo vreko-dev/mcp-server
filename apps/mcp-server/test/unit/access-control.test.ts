@@ -7,7 +7,7 @@ import {
 	hasToolAccess,
 	PERMISSIONS,
 	ROLES,
-} from "../../src/auth.js";
+} from "../../src/auth";
 
 // Mock the @snapback/auth module to avoid database connections in tests
 vi.mock("@snapback/auth", () => ({

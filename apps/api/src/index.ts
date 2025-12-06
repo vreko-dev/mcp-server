@@ -17,14 +17,14 @@ import { router } from "@/orpc/router.js";
 import {
 	adaptiveTurnstile,
 	verifyChallenge,
-} from "./middleware/adaptive-turnstile.js";
-import { enforceRLS } from "./middleware/rls-tenant.js";
-import { csrfProtectionMiddleware } from "./middleware/security-csrf.js";
-import { rateLimitingMiddleware } from "./middleware/security-rate-limit.js";
-import { extractAuthContext } from "./middleware/session.js";
+} from "./middleware/adaptive-turnstile";
+import { enforceRLS } from "./middleware/rls-tenant";
+import { csrfProtectionMiddleware } from "./middleware/security-csrf";
+import { rateLimitingMiddleware } from "./middleware/security-rate-limit";
+import { extractAuthContext } from "./middleware/session";
 import apiRoutes from "./routes";
 import healthRoute from "./routes/health";
-import securityRoutes from "./routes/security/reauth.js";
+import securityRoutes from "./routes/security/reauth";
 
 const app: HonoApp = new Hono()
 	.basePath("/api")

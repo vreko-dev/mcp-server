@@ -4,9 +4,9 @@ import { z } from "zod";
 import {
 	getPresignedUploadUrl,
 	isS3Configured,
-} from "../../../lib/s3-client.js";
+} from "../../../lib/s3-client";
 import { protectedProcedure } from "../../../orpc/procedures";
-import { verifyOrganizationMembership } from "../lib/membership.js";
+import { verifyOrganizationMembership } from "../lib/membership";
 
 export const createLogoUploadUrl = protectedProcedure
 	.route({

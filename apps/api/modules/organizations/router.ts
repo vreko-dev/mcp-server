@@ -1,6 +1,6 @@
-import { createLogoUploadUrl } from "./procedures/create-logo-upload-url.js";
-import { generateOrganizationSlug } from "./procedures/generate-organization-slug.js";
-import { getById } from "./procedures/get-by-id.js";
+import { createLogoUploadUrl } from "./procedures/create-logo-upload-url";
+import { generateOrganizationSlug } from "./procedures/generate-organization-slug";
+import { getById } from "./procedures/get-by-id";
 
 export const organizationsRouter = {
 	generateSlug: generateOrganizationSlug,

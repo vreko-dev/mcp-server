@@ -1,8 +1,8 @@
 import * as assert from "node:assert";
-import { DesignTokens } from "../../../src/styles/designTokens.js";
-import { FileDecorationProvider } from "../../../src/ui/fileDecorations.js";
-import { NotificationFormatter } from "../../../src/ui/notifications.js";
-import { StatusBarController } from "../../../src/ui/statusBar.js";
+import { DesignTokens } from "../../../src/styles/designTokens";
+import { FileDecorationProvider } from "../../../src/ui/fileDecorations";
+import { NotificationFormatter } from "../../../src/ui/notifications";
+import { StatusBarController } from "../../../src/ui/statusBar";
 
 suite("Visual: Design System Integration", () => {
 	test("all UI components should use consistent design tokens", () => {

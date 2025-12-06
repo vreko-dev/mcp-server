@@ -5,7 +5,7 @@ export {
 	getAnalyticsClient,
 	initAnalyticsClient,
 	trackEvent,
-} from "./client.js";
+} from "./client";
 
 export { type Clock, SystemClock } from "./clock";
 export { type AnalyticsEvent, AnalyticsEvents, type EmptyEventProperties, type EventProperties } from "./events";
@@ -20,4 +20,4 @@ export {
 	initTelemetry,
 	type TelemetryConfig,
 	trackEvent as trackTelemetryEvent,
-} from "./telemetry-service.js";
+} from "./telemetry-service";

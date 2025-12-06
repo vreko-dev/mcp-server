@@ -4,7 +4,7 @@ import {
 	ReadResourceRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { startServer } from "../../src/index.js";
+import { startServer } from "../../src/index";
 
 // Mock the MCP SDK
 const mockServer = {

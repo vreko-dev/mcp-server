@@ -16,7 +16,7 @@ import { existsSync } from "node:fs";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import type Database from "better-sqlite3";
-import type { BlobStore, BlobStoreError, BlobStoreErrorCode, HashAlgorithm, Result } from "./BlobStore.js";
+import type { BlobStore, BlobStoreError, BlobStoreErrorCode, HashAlgorithm, Result } from "./BlobStore";
 
 /**
  * LZ4 compression/decompression (placeholder - requires lz4 package)

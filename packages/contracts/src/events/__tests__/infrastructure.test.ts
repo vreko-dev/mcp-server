@@ -6,8 +6,8 @@
  */
 
 import { describe, expect, it } from "vitest";
-import type { AuthCompletedProps, EventPropertiesMap, FirstSnapshotCreatedProps } from "../infrastructure.js";
-import { INFRASTRUCTURE_EVENTS } from "../infrastructure.js";
+import type { AuthCompletedProps, EventPropertiesMap, FirstSnapshotCreatedProps } from "../infrastructure";
+import { INFRASTRUCTURE_EVENTS } from "../infrastructure";
 
 describe("Infrastructure Events Contracts", () => {
 	describe("Event Definitions", () => {

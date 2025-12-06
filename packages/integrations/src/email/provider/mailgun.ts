@@ -1,4 +1,4 @@
-import type { SendEmailHandler } from "../../types.js";
+import type { SendEmailHandler } from "../../types";
 
 export const send: SendEmailHandler = async ({ to, subject, html, text }) => {
 	// Mailgun email sending logic would go here

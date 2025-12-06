@@ -6,7 +6,7 @@ import {
 	DashboardMetricsSchema,
 	type RecentActivity,
 	RecentActivitySchema,
-} from "../metrics.js";
+} from "../metrics";
 
 describe("Dashboard Metrics Contracts (RED - Type Validation)", () => {
 	describe("DashboardMetricsSchema", () => {

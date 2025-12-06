@@ -16,7 +16,7 @@
  * @module RiskAnalyzer
  */
 
-import { THRESHOLDS } from "../config/Thresholds.js";
+import { THRESHOLDS } from "../config/Thresholds";
 
 /**
  * Severity levels for risk analysis

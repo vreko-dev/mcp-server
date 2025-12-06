@@ -1,4 +1,4 @@
-import type { AiSuggestion, ProtectionLevel } from "./types.js";
+import type { AiSuggestion, ProtectionLevel } from "./types";
 
 /**
  * Stubbed AI risk detection and suggestion heuristics

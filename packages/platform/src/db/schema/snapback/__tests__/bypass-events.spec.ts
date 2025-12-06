@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { bypassEvents } from "../bypass-events.js";
+import { bypassEvents } from "../bypass-events";
 
 describe("bypassEvents schema", () => {
 	it("should have the correct table structure", () => {

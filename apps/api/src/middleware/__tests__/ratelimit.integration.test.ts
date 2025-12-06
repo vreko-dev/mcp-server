@@ -10,12 +10,12 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { Hono } from "hono";
 import type { Context, Next } from "hono";
-import { createRateLimitMiddleware } from "../ratelimit.js";
+import { createRateLimitMiddleware } from "../ratelimit";
 import {
 	closeRedisClient,
 	getRedisClient,
 	initializeRedisClient,
-} from "../../../lib/redis-client.js";
+} from "../../../lib/redis-client";
 
 describe("Rate Limiting Integration", () => {
 	let app: Hono;

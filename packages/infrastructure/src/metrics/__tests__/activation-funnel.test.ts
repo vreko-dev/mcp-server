@@ -6,8 +6,8 @@
  */
 
 import { describe, expect, it } from "vitest";
-import type { AuthCompletedProps, FirstSnapshotCreatedProps } from "../core/events.js";
-import { AnalyticsEvents } from "../core/events.js";
+import type { AuthCompletedProps, FirstSnapshotCreatedProps } from "../core/events";
+import { AnalyticsEvents } from "../core/events";
 
 describe("Activation Funnel Events", () => {
 	describe("Event Definitions", () => {

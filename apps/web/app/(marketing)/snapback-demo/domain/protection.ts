@@ -1,5 +1,5 @@
 import { minimatch } from "minimatch";
-import type { Policy, ProtectionLevel } from "./types.js";
+import type { Policy, ProtectionLevel } from "./types";
 
 /**
  * Cycles through protection levels in order

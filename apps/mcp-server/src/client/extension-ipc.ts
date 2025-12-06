@@ -6,7 +6,7 @@ import type {
 	SessionResponse,
 	SnapshotRequest,
 	SnapshotResponse,
-} from "./snapback-api.js";
+} from "./snapback-api";
 
 /**
  * ExtensionIPCClient - Direct IPC communication with VS Code Extension

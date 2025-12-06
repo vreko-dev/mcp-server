@@ -12,7 +12,7 @@
  * @module AIPresenceDetector
  */
 
-import type { AIPresenceInfo } from "../session/SessionTagger.js";
+import type { AIPresenceInfo } from "../session/SessionTagger";
 
 /**
  * Known AI assistant extension/tool IDs

@@ -6,7 +6,7 @@
  * Reserve: 200K for spikes
  */
 
-import { AnalyticsEvents } from "./events.js";
+import { AnalyticsEvents } from "./events";
 
 // ============================================================================
 // SAMPLING TIERS

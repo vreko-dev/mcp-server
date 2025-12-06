@@ -5,7 +5,7 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "catalog:",
     "@snapback/config": "^0.1.1",
-    "@snapback/contracts": "^0.1.4",
+    "@snapback/contracts": "workspace:*",
     "@types/esprima": "catalog:",
     "@typescript-eslint/parser": "catalog:",
     "async-retry": "catalog:",

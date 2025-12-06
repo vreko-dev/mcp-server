@@ -1,6 +1,6 @@
 import path from "node:path";
 import { expect, test as setup } from "@playwright/test";
-import { LoginPage } from "./utils/pages/login.js";
+import { LoginPage } from "./utils/pages/login";
 
 // Authentication setup for different user roles
 const authFile = path.join(__dirname, "playwright/.auth/user.json");

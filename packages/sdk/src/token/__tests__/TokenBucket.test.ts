@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createTokenBucket } from "../TokenBucket.js";
+import { createTokenBucket } from "../TokenBucket";
 
 describe("TokenBucket", () => {
 	let bucket: ReturnType<typeof createTokenBucket>;

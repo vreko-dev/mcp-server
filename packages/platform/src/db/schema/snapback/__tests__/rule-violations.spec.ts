@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ruleViolations } from "../rule-violations.js";
+import { ruleViolations } from "../rule-violations";
 
 describe("ruleViolations schema", () => {
 	it("should have the correct table structure", () => {

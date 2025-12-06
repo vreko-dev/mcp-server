@@ -2,7 +2,7 @@ import { redactObject, redactString } from "@snapback/analytics";
 import { eq } from "drizzle-orm";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { agentSuggestions } from "../schema/postgres";
-import { feedback, loops, policyEvaluations, postAcceptOutcomes, quarantineEvents } from "../schema/snapback/index.js";
+import { feedback, loops, policyEvaluations, postAcceptOutcomes, quarantineEvents } from "../schema/snapback/index";
 
 /**
  * Slow query threshold (200ms) for performance monitoring

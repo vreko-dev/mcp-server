@@ -6,8 +6,8 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { IFileSystemProvider } from "../../src/analysis/FileChangeAnalyzer.js";
-import { createChangeSummary, FileChangeAnalyzer } from "../../src/analysis/FileChangeAnalyzer.js";
+import type { IFileSystemProvider } from "../../src/analysis/FileChangeAnalyzer";
+import { createChangeSummary, FileChangeAnalyzer } from "../../src/analysis/FileChangeAnalyzer";
 
 describe("FileChangeAnalyzer", () => {
 	let mockFileSystem: IFileSystemProvider;

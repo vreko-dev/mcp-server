@@ -1,5 +1,5 @@
-import { createAssociation } from "../provider/hubspot/index.js";
-import type { CreateAssociationParams } from "../types.js";
+import { createAssociation } from "../provider/hubspot/index";
+import type { CreateAssociationParams } from "../types";
 
 /**
  * Create an association between a contact and a company

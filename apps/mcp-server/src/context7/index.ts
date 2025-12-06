@@ -1,1 +1,1 @@
-export * from "./Context7Service.js";
+export * from "./Context7Service";

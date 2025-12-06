@@ -1,4 +1,4 @@
-import type { SendEmailHandler } from "../../types.js";
+import type { SendEmailHandler } from "../../types";
 
 export const send: SendEmailHandler = async ({ to, subject, text, html }) => {
 	// Nodemailer email sending logic would go here

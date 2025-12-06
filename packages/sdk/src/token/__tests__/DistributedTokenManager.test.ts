@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { DistributedTokenManagerOptions } from "../DistributedTokenManager.js";
-import { DistributedTokenManager } from "../DistributedTokenManager.js";
-import type { PlanConfig } from "../RateLimiter.js";
+import type { DistributedTokenManagerOptions } from "../DistributedTokenManager";
+import { DistributedTokenManager } from "../DistributedTokenManager";
+import type { PlanConfig } from "../RateLimiter";
 
 describe("DistributedTokenManager", () => {
 	const plans: Record<string, PlanConfig> = {

@@ -7,8 +7,8 @@ import {
 	requireOrgMembership,
 	requirePlan,
 	requireRole,
-} from "../middleware/auth.js";
-import { validateBody } from "../middleware/validation.js";
+} from "../middleware/auth";
+import { validateBody } from "../middleware/validation";
 
 /**
  * Protected Route Examples

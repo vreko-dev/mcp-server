@@ -16,7 +16,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { hasPermission, hasToolAccess, AuthResult } from '../../../src/auth.js';
+import { hasPermission, hasToolAccess, AuthResult } from '../../../src/auth';
 import { hasPermissionForTier, getRateLimitForTier } from '@snapback/auth/lib/tier-utils';
 
 // Mock @snapback/infrastructure to avoid database initialization

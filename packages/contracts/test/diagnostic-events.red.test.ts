@@ -10,7 +10,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { CORE_TELEMETRY_EVENTS } from "../src/telemetry/index.js";
+import { CORE_TELEMETRY_EVENTS } from "../src/telemetry/index";
 
 /**
  * Expected diagnostic event constants that should exist in CORE_TELEMETRY_EVENTS

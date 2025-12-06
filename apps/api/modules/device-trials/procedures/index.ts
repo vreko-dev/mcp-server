@@ -1,2 +1,2 @@
-export * from "./create-device-trial.js";
-export * from "./link-device.js";
+export * from "./create-device-trial";
+export * from "./link-device";

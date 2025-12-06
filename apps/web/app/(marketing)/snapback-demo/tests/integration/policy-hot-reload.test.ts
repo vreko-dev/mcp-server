@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { parsePolicyFile } from "../../domain/policies.js";
+import { parsePolicyFile } from "../../domain/policies";
 
 describe("Policy Hot-Reload Debounce", () => {
 	beforeEach(() => {

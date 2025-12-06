@@ -4,31 +4,31 @@
 export type {
 	AnalyticsConfig,
 	SafeEventProperties,
-} from "./analytics/AnalyticsWrapper.js";
+} from "./analytics/AnalyticsWrapper";
 export {
 	AnalyticsWrapper,
 	createAnalyticsWrapper,
-} from "./analytics/AnalyticsWrapper.js";
+} from "./analytics/AnalyticsWrapper";
 // Logging (was @snapback/infrastructure)
-export * from "./logging/logger.js";
-export * from "./metrics/index.js";
+export * from "./logging/logger";
+export * from "./metrics/index";
 
 // PostHog utilities - Explicit named exports for tsup DTS compatibility
 export type {
 	AlertConfig,
 	AlertNotification,
-} from "./posthog/alerts.js";
+} from "./posthog/alerts";
 export {
 	createAlert,
 	deleteAlert,
 	getAlerts,
 	KEY_METRIC_ALERTS,
 	toggleAlert,
-} from "./posthog/alerts.js";
+} from "./posthog/alerts";
 export type {
 	Cohort,
 	CohortConfig,
-} from "./posthog/cohorts.js";
+} from "./posthog/cohorts";
 export {
 	CORRELATION_COHORTS,
 	createCohort,
@@ -38,18 +38,18 @@ export {
 	getCohorts,
 	RETENTION_COHORTS,
 	updateCohort,
-} from "./posthog/cohorts.js";
+} from "./posthog/cohorts";
 export type {
 	CorrelationAnalysis,
 	CorrelationAnalysisConfig,
 	CorrelationResult,
-} from "./posthog/correlation.js";
+} from "./posthog/correlation";
 
 export {
 	CORRELATION_ANALYSES,
 	getCorrelationAnalysis,
 	performCorrelationAnalysis,
-} from "./posthog/correlation.js";
+} from "./posthog/correlation";
 // Sentry Error Tracking
 export {
 	addSentryBreadcrumb,
@@ -60,6 +60,6 @@ export {
 	initSentry,
 	setSentryUser,
 	startSentryTransaction,
-} from "./sentry/index.js";
+} from "./sentry/index";
 // Tracing (was @snapback/observability and @snapback/telemetry)
-export * from "./tracing/index.js";
+export * from "./tracing/index";

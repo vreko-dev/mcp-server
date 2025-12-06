@@ -1,5 +1,5 @@
 import { logger } from "@snapback/infrastructure";
-import type { SendEmailHandler } from "../types.js";
+import type { SendEmailHandler } from "../types";
 
 const from = process.env.MAIL_FROM || "noreply@snapback.dev";
 

@@ -1,10 +1,10 @@
 import type { Logger } from "@snapback/contracts";
 import { createSilentLogger } from "@snapback/contracts";
-import type { AnalysisResult } from "../../guardian.js";
-import { FusedScanner } from "../scanner/FusedScanner.js";
-import type { DetectionPlugin } from "../types.js";
-import { isTestFile } from "../utils/ast-helpers.js";
-import { calculateCombinedEntropy } from "../utils/entropy.js";
+import type { AnalysisResult } from "../../guardian";
+import { FusedScanner } from "../scanner/FusedScanner";
+import type { DetectionPlugin } from "../types";
+import { isTestFile } from "../utils/ast-helpers";
+import { calculateCombinedEntropy } from "../utils/entropy";
 
 /**
  * Secret Detection Plugin

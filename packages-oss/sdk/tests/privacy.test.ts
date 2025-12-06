@@ -1,7 +1,7 @@
 import crypto from "node:crypto";
 import { describe, expect, it } from "vitest";
-import { PrivacySanitizer } from "../src/privacy/sanitizer.js";
-import { PrivacyValidator } from "../src/privacy/validator.js";
+import { PrivacySanitizer } from "../src/privacy/sanitizer";
+import { PrivacyValidator } from "../src/privacy/validator";
 
 describe("Privacy Validation", () => {
 	describe("PrivacySanitizer", () => {

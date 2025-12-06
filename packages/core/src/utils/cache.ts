@@ -1,5 +1,5 @@
 import { LRUCache } from "lru-cache";
-import { logger } from "./logger.js";
+import { logger } from "./logger";
 
 // Configuration with safe defaults
 const snapbackDefaults = {

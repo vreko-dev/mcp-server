@@ -6,15 +6,15 @@ export {
 	sendCancellationEmail,
 	sendPaymentReceipt,
 	sendPaymentFailedEmail,
-} from "./communication/index.js";
+} from "./communication/index";
 // Email (template-based emails)
-export * from "./email/index.js";
+export * from "./email/index";
 // HubSpot CRM Integration
-export * from "./hubspot/index.js";
-export * from "./stripe/index.js";
-export * from "./stripe/provider/index.js";
+export * from "./hubspot/index";
+export * from "./stripe/index";
+export * from "./stripe/provider/index";
 // Webhooks
-export * from "./webhooks/index.js";
+export * from "./webhooks/index";
 
 // Feature Flags functionality has been moved to @snapback/config/utils/feature-flags
 // No exports needed here for feature flags

@@ -11,8 +11,8 @@ import { describe, expect, it, beforeEach } from "vitest";
 import { Hono } from "hono";
 import type { Context } from "hono";
 import { SignJWT } from "jose";
-import { createMetricsRouter } from "../../../modules/metrics/router.js";
-import { requireAuth } from "../../middleware/auth.js";
+import { createMetricsRouter } from "../../../modules/metrics/router";
+import { requireAuth } from "../../middleware/auth";
 
 describe("API Endpoints Integration", () => {
 	let app: Hono;

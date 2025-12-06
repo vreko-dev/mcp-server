@@ -65,7 +65,7 @@ export {
 	DistributedTokenManager,
 	type DistributedTokenManagerOptions,
 	type RedisClient,
-} from "./DistributedTokenManager.js";
+} from "./DistributedTokenManager";
 
 export {
 	isRateLimitAllowed,
@@ -73,7 +73,7 @@ export {
 	type PlanConfig,
 	RateLimiter,
 	type RateLimitResult,
-} from "./RateLimiter.js";
+} from "./RateLimiter";
 export {
 	type ConsumptionInfo,
 	type ConsumptionResult,
@@ -83,4 +83,4 @@ export {
 	TokenBucket,
 	type TokenBucketConfig,
 	type TokenBucketState,
-} from "./TokenBucket.js";
+} from "./TokenBucket";

@@ -7,7 +7,7 @@ import {
 	matchPolicy,
 	shouldProtectFile,
 } from "../../domain/protection";
-import type { Policy } from "../../domain/types.js";
+import type { Policy } from "../../domain/types";
 
 describe("Protection Domain Functions", () => {
 	describe("cycleProtectionLevel", () => {

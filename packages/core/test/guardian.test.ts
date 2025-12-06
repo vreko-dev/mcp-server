@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { Guardian } from "../src/guardian.js";
+import { Guardian } from "../src/guardian";
 
 describe("Guardian", () => {
 	let guardian: Guardian;

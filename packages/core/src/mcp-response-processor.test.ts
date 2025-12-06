@@ -8,7 +8,7 @@ import {
 	processToolContent,
 	processToolResponse,
 	validateToolArgs,
-} from "./mcp-response-processor.js";
+} from "./mcp-response-processor";
 
 describe("MCP Response Processor", () => {
 	describe("normalizeTextContent", () => {

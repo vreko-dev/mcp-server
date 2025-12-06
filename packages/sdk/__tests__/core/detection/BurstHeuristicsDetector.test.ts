@@ -14,8 +14,8 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { BurstHeuristicsDetector } from "../../../src/core/detection/BurstHeuristicsDetector.js";
-import { expectNormalizedScore } from "../../helpers/assertions.js";
+import { BurstHeuristicsDetector } from "../../../src/core/detection/BurstHeuristicsDetector";
+import { expectNormalizedScore } from "../../helpers/assertions";
 
 describe("BurstHeuristicsDetector", () => {
 	let detector: BurstHeuristicsDetector;

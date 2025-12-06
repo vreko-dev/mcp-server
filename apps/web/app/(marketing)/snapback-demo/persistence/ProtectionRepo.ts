@@ -1,5 +1,5 @@
-import type { ProtectedFile, ProtectionLevel } from "../domain/types.js";
-import { db } from "./db.js";
+import type { ProtectedFile, ProtectionLevel } from "../domain/types";
+import { db } from "./db";
 
 /**
  * Repository for managing protected files in IndexedDB

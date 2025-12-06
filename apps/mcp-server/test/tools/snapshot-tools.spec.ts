@@ -7,10 +7,10 @@ import { existsSync } from "node:fs";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { CreateSnapshotSchema, createSnapshot } from "../../src/tools/create-snapshot.js";
-import { listSnapshots } from "../../src/tools/list-snapshots.js";
-import { restoreSnapshot } from "../../src/tools/restore-snapshot.js";
-import { clearRegistry, resetStorage } from "../../src/tools/storage-adapter.js";
+import { CreateSnapshotSchema, createSnapshot } from "../../src/tools/create-snapshot";
+import { listSnapshots } from "../../src/tools/list-snapshots";
+import { restoreSnapshot } from "../../src/tools/restore-snapshot";
+import { clearRegistry, resetStorage } from "../../src/tools/storage-adapter";
 
 describe("MCP Snapshot Tools - Integration with SnapshotStorage", () => {
 	let testDir: string;

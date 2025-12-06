@@ -6,8 +6,8 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { SnapBackRCParser } from "../../src/config/SnapBackRCParser.js";
-import type { SnapBackRC } from "../../src/config/types.js";
+import { SnapBackRCParser } from "../../src/config/SnapBackRCParser";
+import type { SnapBackRC } from "../../src/config/types";
 
 describe("SnapBackRCParser", () => {
 	describe("Parsing valid configurations", () => {

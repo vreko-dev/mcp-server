@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { EmailOrchestrator } from "../email-orchestrator.js";
+import { EmailOrchestrator } from "../email-orchestrator";
 
 // Mock the database
 vi.mock("@snapback/platform", () => ({

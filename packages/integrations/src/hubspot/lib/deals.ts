@@ -1,5 +1,5 @@
-import { createDeal, getDeal, updateDeal } from "../provider/hubspot/index.js";
-import type { CreateDealParams, GetDealParams, HubSpotDeal, UpdateDealParams } from "../types.js";
+import { createDeal, getDeal, updateDeal } from "../provider/hubspot/index";
+import type { CreateDealParams, GetDealParams, HubSpotDeal, UpdateDealParams } from "../types";
 
 /**
  * Create a new deal in HubSpot

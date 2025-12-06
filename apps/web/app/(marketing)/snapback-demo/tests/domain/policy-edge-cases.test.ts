@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseIgnoreFile, parsePolicyFile } from "../../domain/policies.js";
+import { parseIgnoreFile, parsePolicyFile } from "../../domain/policies";
 
 describe("Policy Edge Cases", () => {
 	describe("precedence rules", () => {

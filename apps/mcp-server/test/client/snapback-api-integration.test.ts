@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { SnapBackAPIClient } from "../../src/client/snapback-api.js";
+import { SnapBackAPIClient } from "../../src/client/snapback-api";
 
 describe("SnapBackAPIClient Integration", () => {
 	it("should create an instance with proper configuration", () => {

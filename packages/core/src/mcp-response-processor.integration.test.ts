@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { MCPClientManager } from "./mcp-client.js";
+import { MCPClientManager } from "./mcp-client";
 
 // Mock the MCP SDK
 const mockClient = {

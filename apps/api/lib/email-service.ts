@@ -1,9 +1,9 @@
 import { logger } from "@snapback/infrastructure";
 import { Resend } from "resend";
-import CancellationEmail from "../emails/cancellation-email.js";
-import PaymentFailedEmail from "../emails/payment-failed-email.js";
-import PaymentReceiptEmail from "../emails/payment-receipt-email.js";
-import WelcomeEmail from "../emails/welcome-email.js";
+import CancellationEmail from "../emails/cancellation-email";
+import PaymentFailedEmail from "../emails/payment-failed-email";
+import PaymentReceiptEmail from "../emails/payment-receipt-email";
+import WelcomeEmail from "../emails/welcome-email";
 
 /**
  * Email Service for Transactional Emails using Resend

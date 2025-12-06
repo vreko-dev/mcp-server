@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { getLibraryDocsCached } from "./cache.js";
+import { getLibraryDocsCached } from "./cache";
 
 describe("Cache", () => {
 	it("should cache results", async () => {

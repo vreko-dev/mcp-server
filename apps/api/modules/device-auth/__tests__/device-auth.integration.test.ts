@@ -14,7 +14,7 @@
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
-import { deviceAuthRouter } from "../router.js";
+import { deviceAuthRouter } from "../router";
 
 // Mock Better Auth server
 const BETTER_AUTH_URL = "http://localhost:3001/api/auth";

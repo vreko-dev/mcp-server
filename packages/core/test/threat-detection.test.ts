@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { SimpleCircuitBreaker } from "../src/circuit-breaker.js";
-import { detectThreats, ThreatDetector } from "../src/threat-detection.js";
+import { SimpleCircuitBreaker } from "../src/circuit-breaker";
+import { detectThreats, ThreatDetector } from "../src/threat-detection";
 
 describe("Threat Detection", () => {
 	describe("detectThreats", () => {

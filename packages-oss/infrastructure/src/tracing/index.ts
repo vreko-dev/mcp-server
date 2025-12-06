@@ -1,4 +1,4 @@
-export * from "./error-budget.js";
+export * from "./error-budget";
 // OSS Tracing exports - generic OpenTelemetry setup only
 // Note: telemetry-client.ts removed (contained proprietary FeatureManager integration)
 

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { SnapBackAPIClient } from "../../src/client/snapback-api.js";
+import { SnapBackAPIClient } from "../../src/client/snapback-api";
 
 // Mock fetch globally
 const mockFetch = vi.fn();

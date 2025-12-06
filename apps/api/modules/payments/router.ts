@@ -1,6 +1,6 @@
-import { createCheckoutLinkProcedure } from "./procedures/create-checkout-link.js";
-import { createCustomerPortalLink } from "./procedures/create-customer-portal-link.js";
-import { listPurchases } from "./procedures/list-purchases.js";
+import { createCheckoutLinkProcedure } from "./procedures/create-checkout-link";
+import { createCustomerPortalLink } from "./procedures/create-customer-portal-link";
+import { listPurchases } from "./procedures/list-purchases";
 
 export const paymentsRouter = {
 	createCheckoutLink: createCheckoutLinkProcedure,

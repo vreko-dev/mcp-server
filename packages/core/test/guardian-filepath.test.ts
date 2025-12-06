@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { type AnalysisPlugin, Guardian } from "../src/guardian.js";
+import { type AnalysisPlugin, Guardian } from "../src/guardian";
 
 describe("Guardian FilePath Parameter", () => {
 	let guardian: Guardian;

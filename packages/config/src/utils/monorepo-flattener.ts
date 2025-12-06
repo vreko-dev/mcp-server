@@ -7,7 +7,7 @@
  * NOTE: This is a demonstration only and does not actually modify the file system.
  */
 
-import { transformServerToClientPath } from "./path-transformer.js";
+import { transformServerToClientPath } from "./path-transformer";
 
 export class MonorepoFlattener {
 	// Track the flattening operations

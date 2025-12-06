@@ -1,4 +1,4 @@
-import type { GitContext, ProtectionLevel, Snapshot } from "./types.js";
+import type { GitContext, ProtectionLevel, Snapshot } from "./types";
 
 // Use native crypto.randomUUID() instead of uuid package
 const generateId = (): string => {

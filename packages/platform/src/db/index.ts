@@ -1,6 +1,6 @@
-export * from "./adapters/TelemetrySinkDb.js";
-export * from "./client.js";
-export * from "./queries/index.js";
-export * from "./schema/index.js";
-export * from "./zod.js";
+export * from "./adapters/TelemetrySinkDb";
+export * from "./client";
+export * from "./queries/index";
+export * from "./schema/index";
+export * from "./zod";
 // test change

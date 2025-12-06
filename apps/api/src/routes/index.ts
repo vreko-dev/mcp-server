@@ -1,6 +1,6 @@
 import { Hono } from "hono";
-import v1Routes from "./v1/index.js";
-import workspaceSafety from "./workspace-safety.js";
+import v1Routes from "./v1/index";
+import workspaceSafety from "./workspace-safety";
 
 const app = new Hono();
 

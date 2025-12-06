@@ -6,7 +6,7 @@ import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { protectedProcedure } from "../../../orpc/procedures";
 import { getDb } from "../../../src/services/database";
-import { createOrUpdateHubSpotContact } from "../services/hubspot-service.js";
+import { createOrUpdateHubSpotContact } from "../services/hubspot-service";
 
 const subscribeToNewsletterSchema = z.object({
 	email: z.string().email(),

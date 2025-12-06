@@ -17,7 +17,7 @@ import {
 	requirePlan,
 	requireOrgMembership,
 	hasPermission,
-} from "../auth.js";
+} from "../auth";
 
 describe("Auth Middleware Integration", () => {
 	let app: Hono;

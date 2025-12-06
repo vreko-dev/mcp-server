@@ -1,5 +1,5 @@
 import type { InferModel } from "drizzle-orm";
-import type { extensionSessions } from "./schema/extension-auth.js";
+import type { extensionSessions } from "./schema/extension-auth";
 import type {
 	account,
 	aiChat,
@@ -17,7 +17,7 @@ import type {
 	usageLimits,
 	user,
 	verification,
-} from "./schema/postgres.js";
+} from "./schema/postgres";
 
 export type Database = {
 	public: {

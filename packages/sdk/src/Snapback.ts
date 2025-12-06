@@ -1,10 +1,10 @@
 import type { FileInput, ProtectionConfig } from "@snapback/contracts";
-import { SnapbackAnalyticsClient, SnapbackClient } from "./client.js";
-import { ProtectionManager } from "./protection/ProtectionManager.js";
-import { SnapshotManager } from "./snapshot/SnapshotManager.js";
-import { LocalStorage } from "./storage/LocalStorage.js";
-import { MemoryStorage } from "./storage/MemoryStorage.js";
-import type { StorageAdapter } from "./storage/StorageAdapter.js";
+import { SnapbackAnalyticsClient, SnapbackClient } from "./client";
+import { ProtectionManager } from "./protection/ProtectionManager";
+import { SnapshotManager } from "./snapshot/SnapshotManager";
+import { LocalStorage } from "./storage/LocalStorage";
+import { MemoryStorage } from "./storage/MemoryStorage";
+import type { StorageAdapter } from "./storage/StorageAdapter";
 
 // Define the SnapshotFilters interface
 export interface SnapshotFilters {

@@ -1,8 +1,8 @@
 import type { Logger } from "@snapback/contracts";
 import { createSilentLogger } from "@snapback/contracts";
-import type { AnalysisResult } from "../../guardian.js";
-import type { DetectionPlugin } from "../types.js";
-import { isTestFile } from "../utils/ast-helpers.js";
+import type { AnalysisResult } from "../../guardian";
+import type { DetectionPlugin } from "../types";
+import { isTestFile } from "../utils/ast-helpers";
 
 /**
  * Mock Replacement Plugin

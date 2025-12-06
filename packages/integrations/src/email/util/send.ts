@@ -1,8 +1,8 @@
 import { logger } from "@snapback/infrastructure";
-import type { emails as mailTemplates } from "../../emails.js";
-import { send } from "../provider/index.js";
-import type { TemplateId } from "./templates.js";
-import { getTemplate } from "./templates.js";
+import type { emails as mailTemplates } from "../../emails";
+import { send } from "../provider/index";
+import type { TemplateId } from "./templates";
+import { getTemplate } from "./templates";
 
 export async function sendEmail<T extends TemplateId>(
 	params: {

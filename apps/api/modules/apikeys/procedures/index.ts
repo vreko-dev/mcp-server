@@ -1,3 +1,3 @@
-export * from "./create-api-key.js";
-export * from "./list-api-keys.js";
-export * from "./revoke-api-key.js";
+export * from "./create-api-key";
+export * from "./list-api-keys";
+export * from "./revoke-api-key";

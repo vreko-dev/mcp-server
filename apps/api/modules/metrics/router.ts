@@ -1,8 +1,8 @@
 import { logger } from "@snapback/infrastructure";
 import type { PgDatabase } from "drizzle-orm/pg-core";
 import { z } from "zod";
-import { publicProcedure } from "../../orpc/procedures.js";
-import { MetricsAggregator } from "../../src/services/metrics-aggregator.js";
+import { publicProcedure } from "../../orpc/procedures";
+import { MetricsAggregator } from "../../src/services/metrics-aggregator";
 
 /**
  * Metrics Router
@@ -12,6 +12,7 @@ import { MetricsAggregator } from "../../src/services/metrics-aggregator.js";
  * - GET /metrics/my-timeline: Get daily metrics timeline
  * - GET /metrics/my-limits: Get usage limits
  */
+// biome-ignore lint/suspicious/noExplicitAny: Drizzle generic type requires any
 export function createMetricsRouter(db: PgDatabase<any>) {
 	const aggregator = new MetricsAggregator(db);
 

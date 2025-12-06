@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { listSnapshots } from "../../../src/tools/list-snapshots.js";
+import { listSnapshots } from "../../../src/tools/list-snapshots";
 import type { SnapshotManager } from "@snapback/sdk";
 
 /**

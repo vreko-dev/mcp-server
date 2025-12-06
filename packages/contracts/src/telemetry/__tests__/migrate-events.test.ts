@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
-import { TELEMETRY_EVENTS } from "../events.js";
-import { migrateLegacyEventsToArray } from "../migrate-events.js";
+import { TELEMETRY_EVENTS } from "../events";
+import { migrateLegacyEventsToArray } from "../migrate-events";
 
 test("should migrate legacy events to core events", () => {
 	// Create sample legacy events

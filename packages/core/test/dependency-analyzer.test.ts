@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DependencyAnalyzer, isMajorBump } from "../src/dependency-analyzer.js";
+import { DependencyAnalyzer, isMajorBump } from "../src/dependency-analyzer";
 
 describe("DependencyAnalyzer", () => {
 	describe("quickAnalyze", () => {

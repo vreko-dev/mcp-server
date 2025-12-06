@@ -1,6 +1,6 @@
 import { Client } from "@hubspot/api-client";
 import { logger } from "@snapback/infrastructure";
-import type { HubSpotContactProperties } from "./types.js";
+import type { HubSpotContactProperties } from "./types";
 
 const hubspotClient = new Client({
 	accessToken: process.env.HUBSPOT_ACCESS_TOKEN,

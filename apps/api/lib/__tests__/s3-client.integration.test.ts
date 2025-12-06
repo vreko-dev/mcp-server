@@ -14,7 +14,7 @@ import {
 	getPresignedUploadUrl,
 	getS3Client,
 	isS3Configured,
-} from "../s3-client.js";
+} from "../s3-client";
 
 describe("S3 Client Integration Tests", () => {
 	let s3Available = false;

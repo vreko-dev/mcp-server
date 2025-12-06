@@ -1,7 +1,7 @@
 import { expect, test } from "vitest";
-import { mapLegacyEventsToCore, TelemetryEventMapper } from "../event-mapper.js";
-import { TELEMETRY_EVENTS } from "../events.js";
-import { validateCoreTelemetryEvent } from "../events.v1.js";
+import { mapLegacyEventsToCore, TelemetryEventMapper } from "../event-mapper";
+import { TELEMETRY_EVENTS } from "../events";
+import { validateCoreTelemetryEvent } from "../events.v1";
 
 test("should map onboarding protection assigned event to save attempt", () => {
 	const legacyEvent = {

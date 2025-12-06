@@ -5,7 +5,7 @@ import { apiKeys, db, snapbackSchema } from "@snapback/platform";
 import { eq } from "drizzle-orm";
 import type { NextRequest } from "next/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { authMiddleware } from "../../app/middleware/auth.js";
+import { authMiddleware } from "../../app/middleware/auth";
 
 // Mock dependencies
 vi.mock("@node-rs/argon2");

@@ -1,6 +1,6 @@
 {
   "name": "@snapback/mcp-server",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "AI-powered code analysis server for Claude Desktop and MCP clients - risk detection, snapshots, and intelligent code safety",
   "dependencies": {
     "@modelcontextprotocol/sdk": "catalog:",

@@ -1,5 +1,21 @@
 # @snapback/api-service
 
+## 1.1.0
+
+### Minor Changes
+
+- Feature release including:
+  - Web: Shareable moments dashboard.
+  - API: Unified OpenAPI documentation and linting fixes.
+  - VSCode: User Identity Service and consolidated telemetry.
+
+### Patch Changes
+
+- Updated dependencies
+  - @snapback/auth@0.0.1
+  - @snapback/core@0.1.2
+  - @snapback/policy-engine@0.0.1
+
 ## 1.0.1
 
 ### Patch Changes

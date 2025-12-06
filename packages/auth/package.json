@@ -1,86 +1,86 @@
 {
-	"name": "@snapback/auth",
-	"version": "0.0.0",
-	"dependencies": {
-		"@node-rs/argon2": "catalog:",
-		"@snapback/config": "workspace:*",
-		"@snapback/contracts": "workspace:*",
-		"@snapback/infrastructure": "workspace:*",
-		"@snapback/integrations": "workspace:*",
-		"@snapback/platform": "workspace:*",
-		"@types/bcrypt": "catalog:",
-		"bcrypt": "catalog:",
-		"better-auth": "catalog:",
-		"cookie": "^0.7.2",
-		"drizzle-orm": "catalog:"
-	},
-	"devDependencies": {
-		"@biomejs/biome": "catalog:",
-		"@snapback/tsconfig": "workspace:*",
-		"@types/cookie": "^0.5.1",
-		"@types/node": "catalog:",
-		"@vitest/coverage-v8": "catalog:",
-		"tsup": "catalog:",
-		"vitest": "catalog:"
-	},
-	"exports": {
-		".": {
-			"types": "./dist/index.d.ts",
-			"default": "./dist/index.js"
-		},
-		"./client": {
-			"types": "./dist/client.d.ts",
-			"default": "./dist/client.js"
-		},
-		"./auth": {
-			"types": "./dist/auth.d.ts",
-			"default": "./dist/auth.js"
-		},
-		"./lib/audit": {
-			"types": "./dist/lib/audit.d.ts",
-			"default": "./dist/lib/audit.js"
-		},
-		"./lib/helper": {
-			"types": "./dist/lib/helper.d.ts",
-			"default": "./dist/lib/helper.js"
-		},
-		"./lib/organization": {
-			"types": "./dist/lib/organization.d.ts",
-			"default": "./dist/lib/organization.js"
-		},
-		"./lib/tier-utils": {
-			"types": "./dist/lib/tier-utils.d.ts",
-			"default": "./dist/lib/tier-utils.js"
-		},
-		"./security/csrf-protection": {
-			"types": "./dist/security/csrf-protection.d.ts",
-			"default": "./dist/security/csrf-protection.js"
-		},
-		"./security/session-security": {
-			"types": "./dist/security/session-security.d.ts",
-			"default": "./dist/security/session-security.js"
-		},
-		"./security/api-key-security": {
-			"types": "./dist/security/api-key-security.d.ts",
-			"default": "./dist/security/api-key-security.js"
-		},
-		"./security/rate-limiting": {
-			"types": "./dist/security/rate-limiting.d.ts",
-			"default": "./dist/security/rate-limiting.js"
-		}
-	},
-	"license": "UNLICENSED",
-	"main": "./dist/index.js",
-	"private": true,
-	"scripts": {
-		"build": "tsup && tsc --build --force",
-		"migrate": "dotenv -e ../../.env.local -- pnpm dlx @better-auth/cli@latest generate --config ./auth.ts --output ../database/prisma/schema.prisma",
-		"postbuild": "echo 'Auth package built successfully'",
-		"test": "vitest",
-		"test:coverage": "vitest run --coverage",
-		"test:watch": "vitest watch",
-		"type-check": "tsc --noEmit"
-	},
-	"type": "module",
-	"types": "./dist/index.d.ts"
+  "name": "@snapback/auth",
+  "version": "0.0.1",
+  "dependencies": {
+    "@node-rs/argon2": "catalog:",
+    "@snapback/config": "^0.1.1",
+    "@snapback/contracts": "^0.1.4",
+    "@snapback/infrastructure": "^0.1.2",
+    "@snapback/integrations": "workspace:*",
+    "@snapback/platform": "workspace:*",
+    "@types/bcrypt": "catalog:",
+    "bcrypt": "catalog:",
+    "better-auth": "catalog:",
+    "cookie": "^0.7.2",
+    "drizzle-orm": "catalog:"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "catalog:",
+    "@snapback/tsconfig": "workspace:*",
+    "@types/cookie": "^0.5.1",
+    "@types/node": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
+    "tsup": "catalog:",
+    "vitest": "catalog:"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./client": {
+      "types": "./dist/client.d.ts",
+      "default": "./dist/client.js"
+    },
+    "./auth": {
+      "types": "./dist/auth.d.ts",
+      "default": "./dist/auth.js"
+    },
+    "./lib/audit": {
+      "types": "./dist/lib/audit.d.ts",
+      "default": "./dist/lib/audit.js"
+    },
+    "./lib/helper": {
+      "types": "./dist/lib/helper.d.ts",
+      "default": "./dist/lib/helper.js"
+    },
+    "./lib/organization": {
+      "types": "./dist/lib/organization.d.ts",
+      "default": "./dist/lib/organization.js"
+    },
+    "./lib/tier-utils": {
+      "types": "./dist/lib/tier-utils.d.ts",
+      "default": "./dist/lib/tier-utils.js"
+    },
+    "./security/csrf-protection": {
+      "types": "./dist/security/csrf-protection.d.ts",
+      "default": "./dist/security/csrf-protection.js"
+    },
+    "./security/session-security": {
+      "types": "./dist/security/session-security.d.ts",
+      "default": "./dist/security/session-security.js"
+    },
+    "./security/api-key-security": {
+      "types": "./dist/security/api-key-security.d.ts",
+      "default": "./dist/security/api-key-security.js"
+    },
+    "./security/rate-limiting": {
+      "types": "./dist/security/rate-limiting.d.ts",
+      "default": "./dist/security/rate-limiting.js"
+    }
+  },
+  "license": "UNLICENSED",
+  "main": "./dist/index.js",
+  "private": true,
+  "scripts": {
+    "build": "tsup && tsc --build --force",
+    "migrate": "dotenv -e ../../.env.local -- pnpm dlx @better-auth/cli@latest generate --config ./auth.ts --output ../database/prisma/schema.prisma",
+    "postbuild": "echo 'Auth package built successfully'",
+    "test": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest watch",
+    "type-check": "tsc --noEmit"
+  },
+  "type": "module",
+  "types": "./dist/index.d.ts"
 }

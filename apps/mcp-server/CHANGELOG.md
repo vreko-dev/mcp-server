@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.1.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @snapback/auth@0.0.1
+  - @snapback/core@0.1.2
+  - @snapback/policy-engine@0.0.1
+
 ## 1.1.0
 
 ### Minor Changes

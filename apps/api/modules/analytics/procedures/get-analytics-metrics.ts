@@ -6,7 +6,7 @@ import {
 	policyEvaluations,
 	postAcceptOutcomes,
 } from "@snapback/platform";
-import { and, eq, gte, lte } from "drizzle-orm";
+import { type SQL, and, eq, gte, lte } from "drizzle-orm";
 import { protectedProcedure } from "../../../orpc/procedures";
 import { getDb } from "../../../src/services/database";
 import { AnalyticsMetricsInputSchema } from "../types";
@@ -33,7 +33,7 @@ export const getAnalyticsMetrics = protectedProcedure
 			const { startDate, endDate, userId } = input;
 
 			// Build suggestions query
-			const suggestionsConditions: any[] = [
+			const suggestionsConditions: SQL[] = [
 				gte(agentSuggestions.timestamp, startDate),
 				lte(agentSuggestions.timestamp, endDate),
 			];
@@ -47,7 +47,7 @@ export const getAnalyticsMetrics = protectedProcedure
 				.execute();
 
 			// Build outcomes query
-			const outcomesConditions: any[] = [
+			const outcomesConditions: SQL[] = [
 				gte(postAcceptOutcomes.timestamp, startDate),
 				lte(postAcceptOutcomes.timestamp, endDate),
 			];
@@ -61,7 +61,7 @@ export const getAnalyticsMetrics = protectedProcedure
 				.execute();
 
 			// Build policies query
-			const policiesConditions: any[] = [
+			const policiesConditions: SQL[] = [
 				gte(policyEvaluations.timestamp, startDate),
 				lte(policyEvaluations.timestamp, endDate),
 			];
@@ -75,7 +75,7 @@ export const getAnalyticsMetrics = protectedProcedure
 				.execute();
 
 			// Build loops query
-			const loopsConditions: any[] = [
+			const loopsConditions: SQL[] = [
 				gte(loops.timestamp, startDate),
 				lte(loops.timestamp, endDate),
 			];
@@ -89,7 +89,7 @@ export const getAnalyticsMetrics = protectedProcedure
 				.execute();
 
 			// Build feedback query
-			const feedbackConditions: any[] = [
+			const feedbackConditions: SQL[] = [
 				gte(feedback.timestamp, startDate),
 				lte(feedback.timestamp, endDate),
 			];

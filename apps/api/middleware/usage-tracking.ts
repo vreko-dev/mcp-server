@@ -31,6 +31,18 @@ export interface UsageLimitResult {
 	};
 }
 
+interface DeviceAuthContext {
+	type: "device";
+	deviceId: string;
+}
+
+interface UserAuthContext {
+	type: "user";
+	userId: string;
+}
+
+type AuthContext = DeviceAuthContext | UserAuthContext;
+
 export async function usageTrackingMiddleware(request: NextRequest) {
 	try {
 		// Extract auth context from request headers
@@ -40,7 +52,7 @@ export async function usageTrackingMiddleware(request: NextRequest) {
 			return { allowed: true };
 		}
 
-		const authContext = JSON.parse(authContextHeader);
+		const authContext = JSON.parse(authContextHeader) as AuthContext;
 
 		// Check if this is a snapshot-related endpoint
 		const isSnapshotEndpoint = request.nextUrl.pathname.includes("/snapshots");
@@ -61,7 +73,7 @@ export async function usageTrackingMiddleware(request: NextRequest) {
 	}
 }
 
-async function checkSnapshotLimit(authContext: any): Promise<UsageLimitResult> {
+async function checkSnapshotLimit(authContext: AuthContext): Promise<UsageLimitResult> {
 	try {
 		if (!db) {
 			return { allowed: true }; // Allow if database not available
@@ -115,7 +127,7 @@ async function checkSnapshotLimit(authContext: any): Promise<UsageLimitResult> {
 	}
 }
 
-async function incrementSnapshotCounter(authContext: any) {
+async function incrementSnapshotCounter(authContext: AuthContext) {
 	try {
 		if (!db) {
 			return;
@@ -143,7 +155,7 @@ async function incrementSnapshotCounter(authContext: any) {
 	}
 }
 
-async function trackApiCall(authContext: any) {
+async function trackApiCall(authContext: AuthContext) {
 	try {
 		if (!db) {
 			return;

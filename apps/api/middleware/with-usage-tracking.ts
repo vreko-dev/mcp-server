@@ -24,10 +24,10 @@ interface NextRequest {
 class NextResponse {
 	status: number;
 	headers: Map<string, string>;
-	body: any;
+	body: unknown;
 
 	constructor(
-		body: any,
+		body: unknown,
 		init?: { status?: number; headers?: Record<string, string> },
 	) {
 		this.body = body;
@@ -36,7 +36,7 @@ class NextResponse {
 	}
 
 	static json(
-		data: any,
+		data: unknown,
 		init?: { status?: number; headers?: Record<string, string> },
 	): NextResponse {
 		return new NextResponse(data, init);
@@ -48,8 +48,10 @@ interface RequestContext {
 	requestId: string;
 	userId: string;
 	apiKeyId: string;
-	subscription: any;
-	session: any;
+	// Subscription and session are complex objects from other packages
+	// Using unknown to avoid implicit any, but allow flexibility without deep imports
+	subscription: unknown;
+	session: unknown;
 }
 
 export async function withUsageTracking(
@@ -244,12 +246,12 @@ export async function withUsageTracking(
 			"X-RateLimit-Limit": rateLimitResult.limit.toString(),
 			"X-Response-Time": `${responseTime}ms`,
 		};
-		
+
 		// Merge with response headers
 		response.headers.forEach((value, key) => {
 			responseHeaders[key] = value;
 		});
-		
+
 		return NextResponse.json(response.body, {
 			status: response.status,
 			headers: responseHeaders,

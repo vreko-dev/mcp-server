@@ -1,6 +1,6 @@
 import { ORPCError } from "@orpc/client";
 import { apiKeyUsage } from "@snapback/platform";
-import { and, desc, eq, gte, lte } from "drizzle-orm";
+import { type SQL, and, desc, eq, gte, lte } from "drizzle-orm";
 import { protectedProcedure } from "../../../orpc/procedures";
 import { getDb } from "../../../src/services/database";
 import { TelemetryQueryOptionsSchema } from "../types";
@@ -24,7 +24,7 @@ export const getApiKeyUsage = protectedProcedure
 				});
 			}
 
-			const conditions: any[] = [];
+			const conditions: SQL[] = [];
 
 			if (input.apiKeyId) {
 				conditions.push(eq(apiKeyUsage.apiKeyId, input.apiKeyId));
@@ -35,20 +35,22 @@ export const getApiKeyUsage = protectedProcedure
 				conditions.push(lte(apiKeyUsage.timestamp, input.endDate));
 			}
 
-			let query = getDb().select().from(apiKeyUsage);
+			// Use the fully constructed query instead of dynamic chaining which loses types
+			// This avoids 'as any' casting by constructing the chain step-by-step
+			let query = getDb().select().from(apiKeyUsage).$dynamic();
 
 			if (conditions.length > 0) {
-				query = query.where(and(...conditions)) as any;
+				query = query.where(and(...conditions));
 			}
 
-			query = query.orderBy(desc(apiKeyUsage.timestamp)) as any;
+			query = query.orderBy(desc(apiKeyUsage.timestamp));
 
 			if (input.limit) {
-				query = query.limit(input.limit) as any;
+				query = query.limit(input.limit);
 			}
 
 			if (input.offset) {
-				query = query.offset(input.offset) as any;
+				query = query.offset(input.offset);
 			}
 
 			const results = await query.execute();

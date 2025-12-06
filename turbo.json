@@ -80,6 +80,9 @@
 			"dependsOn": ["publish", "deploy"],
 			"cache": false
 		},
+		"changeset:version": {
+			"cache": false
+		},
 		"seo:lint": {
 			"inputs": ["**/*.{md,mdx}"],
 			"outputs": []

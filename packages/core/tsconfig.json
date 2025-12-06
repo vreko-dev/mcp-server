@@ -3,9 +3,22 @@
 	"compilerOptions": {
 		"outDir": "./dist",
 		"rootDir": "./src",
-		"lib": ["ES2022", "DOM"]
+		"lib": ["ES2022", "DOM"],
+		"moduleResolution": "node",
+		"baseUrl": ".",
+		"paths": {
+			"@snapback/infrastructure": ["../infrastructure/src"],
+			"@snapback/infrastructure/*": ["../infrastructure/src/*"],
+			"@snapback/platform": ["../platform/src"],
+			"@snapback/platform/*": ["../platform/src/*"]
+		}
 	},
 	"include": ["src/**/*"],
 	"exclude": ["node_modules", "dist", "build", "**/*.test.ts", "**/*.spec.ts"],
-	"references": [{ "path": "../contracts" }, { "path": "../config" }]
+	"references": [
+		{ "path": "../contracts" },
+		{ "path": "../config" },
+		{ "path": "../infrastructure" },
+		{ "path": "../platform" }
+	]
 }

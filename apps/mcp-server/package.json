@@ -2,6 +2,10 @@
   "name": "@snapback/mcp-server",
   "version": "1.1.1",
   "description": "AI-powered code analysis server for Claude Desktop and MCP clients - risk detection, snapshots, and intelligent code safety",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/snapback-dev/mcp-server.git"
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "catalog:",
     "@snapback/analytics": "workspace:*",

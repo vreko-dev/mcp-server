@@ -215,10 +215,10 @@ export function Installation() {
 			<div className="container max-w-5xl">
 				<div className="text-center mb-12">
 					<h2 className="font-bold text-3xl md:text-4xl">
-						Get Protected in 60 Seconds
+						Pattern Memory Starts in 60 Seconds
 					</h2>
 					<p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-						Multiple installation methods for your development environment
+						Install SnapBack, and pattern memory immediately begins learning from your edits. Zero setup required.
 					</p>
 				</div>
 

@@ -1,6 +1,6 @@
 ---
 title: SnapBack Documentation
-description: Undo for the AI era. Restore any file to any moment, instantly. Built for developers using AI coding assistants.
+description: Every recovery teaches SnapBack what breaks. Gets smarter over 30-90 days. Learns your codebase.
 ---
 
 # SnapBack Documentation
@@ -26,20 +26,20 @@ SnapBack lets you **restore any file to any moment in under 1 second**. No manua
 
 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-8">
   <div className="card hover:shadow-lg transition-all duration-300 border-l-4" style={{borderColor: 'var(--color-emerald-500, #10B981)'}}>
-    <h3 className="text-xl font-bold mb-2">🎯 Never Lose Work</h3>
-    <p className="text-gray-400 mb-4">Instantly restore any file to any point in time. No manual undoing. No lost code.</p>
-    <p className="text-emerald-400 hover:text-emerald-300 font-medium">[Time-travel guide →](/sessions)</p>
+    <h3 className="text-xl font-bold mb-2">📚 Pattern Memory</h3>
+    <p className="text-gray-400 mb-4">Learns what went wrong in YOUR codebase. Catches problems specific to your patterns, not just generic issues.</p>
+    <p className="text-emerald-400 hover:text-emerald-300 font-medium">[How pattern memory works →](/concepts/pattern-memory)</p>
   </div>
 
   <div className="card hover:shadow-lg transition-all duration-300 border-l-4" style={{borderColor: 'var(--color-emerald-500, #10B981)'}}>
-    <h3 className="text-xl font-bold mb-2">⚡ AI-Safe by Default</h3>
-    <p className="text-gray-400 mb-4">Detect risky changes (secrets, bad patterns, phantom deps) before they harm you. 94% accuracy.</p>
-    <p className="text-emerald-400 hover:text-emerald-300 font-medium">[Detection engine →](/ai-detection)</p>
+    <h3 className="text-xl font-bold mb-2">📈 Progressive Learning</h3>
+    <p className="text-gray-400 mb-4">Gets smarter the longer you use it. Day 1: 94% accurate. Day 30: knows your specific risks. Month 3: prevents what others miss.</p>
+    <p className="text-emerald-400 hover:text-emerald-300 font-medium">[Learning progression →](/concepts/progression)</p>
   </div>
 
   <div className="card hover:shadow-lg transition-all duration-300 border-l-4" style={{borderColor: 'var(--color-emerald-500, #10B981)'}}>
     <h3 className="text-xl font-bold mb-2">🔐 Code Stays Local</h3>
-    <p className="text-gray-400 mb-4">Your code never leaves your machine. Metadata-only transmission for cloud features. Fully optional.</p>
+    <p className="text-gray-400 mb-4">Your code never leaves your machine. Metadata-only for cloud features. Fully optional. You control what gets sent.</p>
     <p className="text-emerald-400 hover:text-emerald-300 font-medium">[Privacy details →](/privacy)</p>
   </div>
 </div>
@@ -71,41 +71,29 @@ SnapBack works for solo developers, teams, and enterprises. Choose what matches 
   </div>
 </div>
 
-## How It Works: The Story
+## How It Works: Learning Loop
 
-### The Problem: AI Makes Changes You Can't Predict
+### Day 1: Accurate Out of the Box
 
-You run Cursor or Claude with 15 files open. Your AI assistant works for 30 minutes, changes 12 files, modifies your package.json, and adds a few test utilities.
+You install SnapBack. It detects hardcoded secrets, phantom dependencies, test code in production, and risky patterns. 94% accuracy on the first day.
 
-**Result:**
-- 9 files look great ✅
-- 3 files have subtle bugs ❌
-- 1 file has a security risk ⚠️
+### Day 30: Knows Your Codebase
 
-**The challenge:** How do you undo just the 3-4 bad files without losing the good work?
+Every time you restore files, SnapBack learns what patterns caused the problem. Over 30 days, it figures out YOUR specific risks:
+- "Cursor always breaks this auth module"
+- "This refactor pattern causes cascading failures"
+- "This folder has phantom dependency issues"
 
-Traditional undo? Doesn't work (undo is per-file, not multi-file). Git? Too slow (commit, push, revert, pull). Manual fix? Hours of work.
+Accuracy improves to 98%.
 
-### The Solution: Sessions + Time-Travel
+### Month 3: Catches What Others Miss
 
-SnapBack groups all 12 file changes into one **Session** (automatically, by time). You see all changes at once:
+After 90 days, SnapBack has learned what breaks in YOUR specific codebase. It catches patterns before you even think to look for them. It knows:
+- Folder-specific risks (which folders are historically fragile)
+- Pattern-specific risks (which refactoring patterns cause issues)
+- Tool-specific risks (which AI tool is reckless with which files)
 
-```
-📦 Session: "Claude refactored user auth"
-├─ src/auth.ts          ✅ Keep
-├─ src/user.ts          ❌ Restore
-├─ src/index.ts         ❌ Restore
-├─ tests/auth.test.ts   ✅ Keep
-└─ package.json         ✅ Keep
-
-→ Click "Restore" on bad files → All 3 restored to saved state → 2 seconds
-```
-
-The good work stays. The bad work vanishes.
-
-### Why This Matters for AI
-
-AI makes **multi-file changes at scale**. Your traditional safety nets (git, undo, code review) aren't designed for this speed. SnapBack is.
+Accuracy reaches 99%+.
 
 ## Core Concepts
 
@@ -225,12 +213,12 @@ SnapBack uses a **canonical signage system** to ensure consistency across all in
 
 ## Features
 
-- **3-Level Protection** - Granular file-level control
-- **Session Rollback** - Multi-file atomic restore
-- **Guardian Detection** - 94% accuracy risk analysis
-- **MCP Integration** - Works with Claude Code & Cursor
-- **Performance** - &lt;200ms snapshots, &lt;10ms checks
-- **Privacy First** - Metadata-only transmission, never your code
+- **Pattern Memory** - Learns what went wrong in YOUR codebase
+- **Progressive Learning** - Gets smarter: Day 1 (94%) → Day 30 (98%) → Month 3 (99%+)
+- **Detects What Breaks** - Hardcoded secrets, phantom deps, test code in prod, risky patterns
+- **Multi-File Restore** - Undo entire features, not just individual files
+- **Per-Tool Learning** - Learns which AI tools break which parts of your code
+- **Privacy First** - Metadata-only, your code stays local
 
 ## Resources
 

@@ -42,10 +42,10 @@ export function ProblemStatement() {
 			<div className="container max-w-5xl">
 				<div className="text-center mb-12">
 					<h2 className="font-bold text-3xl md:text-4xl">
-						Every AI Session Creates These Risks
+						SnapBack Learns What Breaks
 					</h2>
 					<p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-						Real-time notifications from actual SnapBack implementations
+						Day 1: Detects hardcoded secrets, phantom dependencies, test code in production. Day 30: Knows YOUR specific patterns. Month 3: Catches what others miss.
 					</p>
 				</div>
 
@@ -76,19 +76,19 @@ export function ProblemStatement() {
 					<div className="bg-card border rounded-xl p-6 text-center">
 						<div className="text-3xl font-bold text-primary">94%</div>
 						<div className="mt-2 text-sm text-muted-foreground">
-							AI Detection Accuracy
+							Accuracy Day 1
 						</div>
 					</div>
 					<div className="bg-card border rounded-xl p-6 text-center">
-						<div className="text-3xl font-bold text-primary">&lt;100ms</div>
+						<div className="text-3xl font-bold text-primary">98%</div>
 						<div className="mt-2 text-sm text-muted-foreground">
-							Checkpoint Creation Speed
+							Accuracy Day 30
 						</div>
 					</div>
 					<div className="bg-card border rounded-xl p-6 text-center">
-						<div className="text-3xl font-bold text-primary">247</div>
+						<div className="text-3xl font-bold text-primary">99%+</div>
 						<div className="mt-2 text-sm text-muted-foreground">
-							Files Monitored Per Project
+							Accuracy Month 3
 						</div>
 					</div>
 				</div>

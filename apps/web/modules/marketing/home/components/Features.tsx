@@ -200,10 +200,10 @@ export function Features() {
 					className="mx-auto mb-6 lg:mb-0 lg:max-w-5xl lg:text-center"
 				>
 					<h2 className="font-bold text-4xl lg:text-5xl">
-						Powerful Protection Features
+						Pattern Memory. Gets Smarter.
 					</h2>
 					<p className="mt-6 text-balance text-lg">
-						Built by developers, for developers who use AI tools
+						Every restore teaches SnapBack. Accuracy improves: Day 1 (94%) → Day 30 (98%) → Month 3 (99%+)
 					</p>
 				</motion.div>
 
@@ -276,28 +276,27 @@ export function Features() {
 								<div className="flex items-center gap-3">
 									<CpuIcon className="size-8 text-snapback-green" />
 									<span className="font-bold text-2xl text-white">
-										AI Detection
+										Pattern Memory
 									</span>
 								</div>
 							}
 							description={
 								<div className="mt-4">
 									<p className="text-white/70">
-										Advanced pattern recognition for AI coding assistants with
-										94% accuracy
+										Learns what breaks in YOUR codebase. Catches hardcoded secrets, phantom dependencies, test code in prod, and risky patterns. Accuracy improves with every restore.
 									</p>
 									<div className="mt-6 flex items-center gap-4">
 										<div className="flex items-center gap-2">
 											<div className="size-3 rounded-full bg-snapback-green animate-pulse" />
-											<span className="text-sm text-white/80">Copilot</span>
+											<span className="text-sm text-white/80">Day 1: 94%</span>
 										</div>
 										<div className="flex items-center gap-2">
 											<div className="size-3 rounded-full bg-snapback-green animate-pulse" />
-											<span className="text-sm text-white/80">Cursor</span>
+											<span className="text-sm text-white/80">Day 30: 98%</span>
 										</div>
 										<div className="flex items-center gap-2">
 											<div className="size-3 rounded-full bg-snapback-green animate-pulse" />
-											<span className="text-sm text-white/80">Windsurf</span>
+											<span className="text-sm text-white/80">Month 3: 99%+</span>
 										</div>
 									</div>
 								</div>
@@ -317,13 +316,13 @@ export function Features() {
 								<div className="flex items-center gap-3">
 									<RotateCcwIcon className="size-6 text-snapback-green" />
 									<span className="font-bold text-lg text-white">
-										Instant Recovery
+										Learns from Outcomes
 									</span>
 								</div>
 							}
 							description={
 								<p className="mt-2 text-sm text-white/70">
-									One-click restore to any checkpoint in milliseconds
+									Every restore teaches what patterns broke. Pattern memory uses outcome data to improve.
 								</p>
 							}
 						/>
@@ -341,13 +340,13 @@ export function Features() {
 								<div className="flex items-center gap-3">
 									<GlobeIcon className="size-6 text-snapback-green" />
 									<span className="font-bold text-lg text-white">
-										Cloud Backup
+										Cloud Learning
 									</span>
 								</div>
 							}
 							description={
 								<p className="mt-2 text-sm text-white/70">
-									Secure cloud storage for all your checkpoints
+									Metadata-only cloud features. Your code stays local.
 								</p>
 							}
 						/>
@@ -365,13 +364,13 @@ export function Features() {
 								<div className="flex items-center gap-3">
 									<LayersIcon className="size-6 text-snapback-green" />
 									<span className="font-bold text-lg text-white">
-										Team Sharing
+										Team Patterns
 									</span>
 								</div>
 							}
 							description={
 								<p className="mt-2 text-sm text-white/70">
-									Share checkpoints and collaborate with your team
+									Learn from team's recoveries, patterns, and risks
 								</p>
 							}
 						/>
@@ -387,7 +386,7 @@ export function Features() {
 							className="bg-snapback-dark border border-white/10 rounded-xl p-4 transition-all duration-300 hover:border-snapback-green/50 hover:shadow-lg"
 							title={
 								<div className="text-center">
-									<span className="font-bold text-lg text-white">94%</span>
+									<span className="font-bold text-lg text-white">Day 1</span>
 									<p className="text-xs text-white/70">Accuracy</p>
 								</div>
 							}

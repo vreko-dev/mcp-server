@@ -2,6 +2,14 @@
   "name": "@snapback/core",
   "description": "Core logic for SnapBack",
   "version": "0.2.0",
+  "license": "Apache-2.0",
+  "author": "SnapBack Team",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Marcelle-Labs/snapback.dev.git",
+    "directory": "packages/core"
+  },
+  "private": true,
   "dependencies": {
     "@modelcontextprotocol/sdk": "catalog:",
     "@snapback/config": "^0.1.1",

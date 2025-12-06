@@ -3,6 +3,13 @@
   "description": "Event bus for SnapBack inter-process communication",
   "version": "1.0.2",
   "author": "SnapBack Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Marcelle-Labs/snapback.dev.git",
+    "directory": "packages/events"
+  },
+  "private": true,
   "dependencies": {
     "@snapback/config": "workspace:*",
     "@snapback/contracts": "workspace:*",

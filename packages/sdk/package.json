@@ -3,8 +3,13 @@
   "description": "SnapBack SDK for interacting with the SnapBack API",
   "version": "0.2.0",
   "author": "SnapBack Team",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Marcelle-Labs/snapback.dev.git",
+    "directory": "packages/sdk"
+  },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.500.0",
     "@aws-sdk/s3-request-presigner": "^3.500.0",
     "@snapback-oss/sdk": "workspace:*",
     "@snapback/contracts": "^0.1.2",

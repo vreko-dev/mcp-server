@@ -1,16 +1,26 @@
 {
 	"$schema": "https://turbo.build/schema.json",
-	"globalDependencies": ["**/.env.*local"],
+	"globalDependencies": ["**/.env.*local", "biome.json", "tsconfig.json"],
 	"globalEnv": ["DATABASE_URL", "REDIS_URL", "BETTER_AUTH_URL"],
 	"globalPassThroughEnv": ["NODE_OPTIONS", "CI", "VERCEL", "DOCKER_BUILDKIT", "COMPOSE_DOCKER_CLI_BUILD"],
 	"tasks": {
+		"quality": {
+			"cache": false,
+			"outputs": ["reports/quality/**"],
+			"inputs": ["$TURBO_DEFAULT$", "biome.json"]
+		},
+		"type-check": {
+			"dependsOn": ["^type-check"],
+			"inputs": ["$TURBO_DEFAULT$"],
+			"cache": true
+		},
 		"build:package": {
 			"outputs": ["apps/vscode/package.json"],
 			"inputs": ["apps/vscode/package.base.json", "apps/vscode/package-contributes/**"]
 		},
 		"build": {
 			"dependsOn": ["build:package", "^generate", "^build"],
-			"outputs": ["dist/**", "*.tsbuildinfo", ".next/**", "!.next/cache/**"],
+			"outputs": ["dist/**", "*.tsbuildinfo", ".next/**", "!.next/cache/**", "out/**"],
 			"inputs": [
 				"$TURBO_DEFAULT$",
 				"apps/web/.env.local",
@@ -19,10 +29,95 @@
 				"packages/auth/.env.local"
 			]
 		},
-		"type-check": {
-			"dependsOn": ["^type-check"],
-			"inputs": ["$TURBO_DEFAULT$"],
+		"test": {
+			"dependsOn": ["^build"],
+			"inputs": ["$TURBO_DEFAULT$", "**/*.test.ts", "**/*.spec.ts", "vitest.config.ts"],
+			"outputs": ["coverage/**"],
 			"cache": true
+		},
+		"test:coverage": {
+			"dependsOn": ["^build"],
+			"inputs": ["$TURBO_DEFAULT$", "**/*.test.ts", "**/*.spec.ts", "vitest.config.ts"],
+			"outputs": ["coverage/**"]
+		},
+		"contract-test": {
+			"dependsOn": ["build"],
+			"cache": true,
+			"inputs": ["$TURBO_DEFAULT$", "**/*.contract.ts"]
+		},
+		"analyze": {
+			"dependsOn": ["build"],
+			"cache": false,
+			"outputs": ["reports/analyze/**"]
+		},
+		"scan": {
+			"dependsOn": ["build"],
+			"cache": false,
+			"outputs": ["reports/security/**"]
+		},
+		"health": {
+			"cache": false,
+			"outputs": ["reports/health/**"]
+		},
+		"validate:deps": {
+			"cache": false,
+			"inputs": ["pnpm-lock.yaml", "**/package.json", ".syncpackrc.json"]
+		},
+		"pack": {
+			"dependsOn": ["build"],
+			"cache": false,
+			"outputs": ["dist/**", "*.vsix", "out/**"]
+		},
+		"docker-build": {
+			"dependsOn": ["build"],
+			"cache": false,
+			"passThroughEnv": ["DOCKER_BUILDKIT", "COMPOSE_DOCKER_CLI_BUILD"]
+		},
+		"deploy:preview": {
+			"dependsOn": ["build"],
+			"cache": false,
+			"passThroughEnv": ["VERCEL_TOKEN"]
+		},
+		"deploy:staging": {
+			"dependsOn": ["test", "build"],
+			"cache": false,
+			"passThroughEnv": ["VERCEL_TOKEN", "FLY_API_TOKEN"]
+		},
+		"deploy:production": {
+			"dependsOn": ["test", "pack", "docker-build"],
+			"cache": false,
+			"passThroughEnv": ["VERCEL_TOKEN", "FLY_API_TOKEN", "NPM_TOKEN", "VSCE_PAT"]
+		},
+		"deploy": {
+			"dependsOn": ["test", "pack", "docker-build"],
+			"cache": false,
+			"passThroughEnv": ["VERCEL_TOKEN", "FLY_API_TOKEN", "NPM_TOKEN", "VSCE_PAT"]
+		},
+		"sync-oss": {
+			"dependsOn": ["deploy"],
+			"cache": false
+		},
+		"sync-open-source": {
+			"dependsOn": ["build"],
+			"cache": false
+		},
+		"publish": {
+			"dependsOn": ["build"],
+			"cache": false
+		},
+		"release": {
+			"dependsOn": ["publish", "deploy"],
+			"cache": false
+		},
+		"version": {
+			"cache": false
+		},
+		"changelog": {
+			"cache": false,
+			"outputs": ["CHANGELOG.md"]
+		},
+		"changeset:version": {
+			"cache": false
 		},
 		"clean": {
 			"cache": false
@@ -43,47 +138,18 @@
 				"packages/auth/.env.local"
 			]
 		},
-		"export": {
-			"outputs": ["out/**"]
+		"start": {
+			"cache": false,
+			"dependsOn": ["^generate", "^build"],
+			"persistent": true
 		},
 		"lint": {
 			"dependsOn": ["^lint"],
 			"inputs": ["$TURBO_DEFAULT$", "biome.json"],
 			"cache": true
 		},
-		"test": {
-			"dependsOn": ["^build"],
-			"inputs": ["$TURBO_DEFAULT$", "**/*.test.ts", "**/*.spec.ts", "vitest.config.ts"]
-		},
-		"test:coverage": {
-			"dependsOn": ["^build"],
-			"inputs": ["$TURBO_DEFAULT$", "**/*.test.ts", "**/*.spec.ts", "vitest.config.ts"],
-			"outputs": ["coverage/**"]
-		},
-		"docker-build": {
-			"dependsOn": ["build"],
-			"cache": false,
-			"passThroughEnv": ["DOCKER_BUILDKIT", "COMPOSE_DOCKER_CLI_BUILD"]
-		},
-		"deploy": {
-			"dependsOn": ["test", "docker-build"],
-			"cache": false,
-			"passThroughEnv": ["VERCEL_TOKEN", "FLY_API_TOKEN"]
-		},
-		"sync-open-source": {
-			"dependsOn": ["build"],
-			"cache": false
-		},
-		"publish": {
-			"dependsOn": ["build"],
-			"cache": false
-		},
-		"release": {
-			"dependsOn": ["publish", "deploy"],
-			"cache": false
-		},
-		"changeset:version": {
-			"cache": false
+		"export": {
+			"outputs": ["out/**"]
 		},
 		"seo:lint": {
 			"inputs": ["**/*.{md,mdx}"],
@@ -106,11 +172,6 @@
 		"seo:full": {
 			"dependsOn": ["seo:validate"],
 			"cache": false
-		},
-		"start": {
-			"cache": false,
-			"dependsOn": ["^generate", "^build"],
-			"persistent": true
 		},
 		"@snapback/docs#build": {
 			"dependsOn": ["^build"],
@@ -192,5 +253,8 @@
 			"inputs": ["$TURBO_DEFAULT$", "tsup.config.ts", "package.json"],
 			"cache": true
 		}
+	},
+	"remoteCache": {
+		"signature": true
 	}
 }

@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useEffect, useState, useCallback } from 'react';
-import { supabase } from '@/lib/supabase';
-import type { RealtimeChannel } from '@supabase/supabase-js';
+import type { RealtimeChannel } from "@supabase/supabase-js";
+import { useCallback, useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
 
-export type ProtectionStatus = 'protected' | 'unprotected' | 'loading' | 'error';
+export type ProtectionStatus = "protected" | "unprotected" | "loading" | "error";
 
 interface UseProtectionStatusOptions {
 	fileId: string;
@@ -24,31 +24,31 @@ export function useProtectionStatus({
 	onStatusChange,
 	fallbackToPolling = true,
 }: UseProtectionStatusOptions): UseProtectionStatusReturn {
-	const [status, setStatus] = useState<ProtectionStatus>('loading');
+	const [status, setStatus] = useState<ProtectionStatus>("loading");
 	const [channel, setChannel] = useState<RealtimeChannel | null>(null);
 	const [isRealtime, setIsRealtime] = useState(true);
 	const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(null);
 
 	// Initial fetch
 	const fetchStatus = useCallback(async () => {
-		if (!fileId || fileId.trim() === '') {
-			setStatus('loading');
+		if (!fileId || fileId.trim() === "") {
+			setStatus("loading");
 			return;
 		}
 
 		try {
 			const { data, error } = await supabase
-				.from('protected_files')
-				.select('protection')
-				.eq('id', fileId)
-				.order('created_at', { ascending: false })
+				.from("protected_files")
+				.select("protection")
+				.eq("id", fileId)
+				.order("created_at", { ascending: false })
 				.limit(1)
 				.single();
 
 			// Handle "no rows" error (PGRST116)
-			if (error && error.code === 'PGRST116') {
-				setStatus('unprotected');
-				onStatusChange?.('unprotected');
+			if (error && error.code === "PGRST116") {
+				setStatus("unprotected");
+				onStatusChange?.("unprotected");
 				return;
 			}
 
@@ -56,16 +56,14 @@ export function useProtectionStatus({
 				throw error;
 			}
 
-			const newStatus: ProtectionStatus = data?.protection === 'enabled'
-				? 'protected'
-				: 'unprotected';
+			const newStatus: ProtectionStatus = data?.protection === "enabled" ? "protected" : "unprotected";
 
 			setStatus(newStatus);
 			onStatusChange?.(newStatus);
 		} catch (err) {
-			console.error('Failed to fetch protection status:', err);
-			setStatus('error');
-			onStatusChange?.('error');
+			console.error("Failed to fetch protection status:", err);
+			setStatus("error");
+			onStatusChange?.("error");
 		}
 	}, [fileId, onStatusChange]);
 
@@ -81,8 +79,8 @@ export function useProtectionStatus({
 
 	// Real-time subscription
 	useEffect(() => {
-		if (!fileId || fileId.trim() === '') {
-			setStatus('loading');
+		if (!fileId || fileId.trim() === "") {
+			setStatus("loading");
 			return;
 		}
 
@@ -97,37 +95,27 @@ export function useProtectionStatus({
 				},
 			})
 			.on(
-				'postgres_changes',
+				"postgres_changes",
 				{
-					event: '*',
-					schema: 'public',
-					table: 'protected_files',
+					event: "*",
+					schema: "public",
+					table: "protected_files",
 					filter: `id=eq.${fileId}`,
 				},
 				(payload) => {
-					if (payload.new && 'protection' in payload.new) {
-						const newStatus: ProtectionStatus = payload.new.protection === 'enabled'
-							? 'protected'
-							: 'unprotected';
+					if (payload.new && "protection" in payload.new) {
+						const newStatus: ProtectionStatus =
+							payload.new.protection === "enabled" ? "protected" : "unprotected";
 						setStatus(newStatus);
 						onStatusChange?.(newStatus);
 					}
-				}
+				},
 			)
-			.on('system', (payload) => {
-				if (payload.message === 'channel_error') {
-					console.warn('Realtime channel error, falling back to polling');
-					setIsRealtime(false);
-					if (fallbackToPolling) {
-						setupPolling();
-					}
-				}
-			})
 			.subscribe((subscriptionStatus) => {
-				if (subscriptionStatus === 'SUBSCRIBED') {
-					console.log('Connected to real-time protection updates');
+				if (subscriptionStatus === "SUBSCRIBED") {
+					console.log("Connected to real-time protection updates");
 					setIsRealtime(true);
-				} else if (subscriptionStatus === 'CHANNEL_ERROR') {
+				} else if (subscriptionStatus === "CHANNEL_ERROR") {
 					setIsRealtime(false);
 					if (fallbackToPolling) {
 						setupPolling();

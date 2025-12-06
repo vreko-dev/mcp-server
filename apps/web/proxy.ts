@@ -59,17 +59,12 @@ function addSecurityHeaders(response: NextResponse): void {
 	response.headers.set("Content-Security-Policy", cspDirectives);
 
 	// Permissions Policy (formerly Feature Policy)
-	const permissionsPolicy = [
-		"camera=()",
-		"microphone=()",
-		"geolocation=()",
-		"interest-cohort=()",
-	].join(", ");
+	const permissionsPolicy = ["camera=()", "microphone=()", "geolocation=()", "interest-cohort=()"].join(", ");
 
 	response.headers.set("Permissions-Policy", permissionsPolicy);
 }
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
 	// Arcjet protection (only if key is present)
 	if (process.env.ARCJET_KEY) {
 		const decision = await aj.protect(req);
@@ -87,10 +82,7 @@ export async function middleware(req: NextRequest) {
 					{ status: 403 },
 				);
 			}
-			return NextResponse.json(
-				{ error: "Access denied", reason: "Security policy violation" },
-				{ status: 403 },
-			);
+			return NextResponse.json({ error: "Access denied", reason: "Security policy violation" }, { status: 403 });
 		}
 	}
 

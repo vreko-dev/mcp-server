@@ -1,7 +1,23 @@
 pre-commit:
+  parallel: true
   commands:
+    quality:
+      glob: "**/*.{ts,tsx,js,jsx,json}"
+      run: pnpm biome check --staged --write
+      stage_fixed: true
+      skip:
+        - merge
+        - rebase
+
+    type-check-affected:
+      glob: "**/*.{ts,tsx}"
+      run: pnpm turbo run type-check --filter="...[HEAD~1]" --no-cache
+      skip:
+        - merge
+        - rebase
+
     no-placeholder-tests:
-      glob: '**/*.test.ts'
+      glob: "**/*.test.ts"
       run: |
         echo '🔍 Checking for placeholder assertions...'
         if grep -l 'expect(true).toBe(true)' {staged_files} 2>/dev/null; then
@@ -11,22 +27,20 @@ pre-commit:
         echo '✅ No placeholder assertions found'
 
     no-skipped-tests:
-      glob: '**/*.test.ts'
+      glob: "**/*.test.ts"
       run: |
         echo '⚠️  Checking for skipped tests...'
         if grep -l 'it.skip\|describe.skip\|test.skip' {staged_files} 2>/dev/null; then
           echo '⚠️  Skipped test detected. Add unblock criteria in comment or implement.'
-          # Warning only, not blocking - tests can have skips with proper documentation
         fi
 
     no-todo-tests:
-      glob: '**/*.test.ts'
+      glob: "**/*.test.ts"
       stage_fixed: true
       run: |
         echo '🔍 Checking for TODO markers in tests...'
         if grep -l '// TODO:' {staged_files} 2>/dev/null; then
           echo '⚠️  TODO marker found. Consider moving to __deferred__/ if test is blocked.'
-          # Warning only - not blocking but encouraged to move
         fi
 
 commit-msg:

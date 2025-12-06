@@ -6,6 +6,7 @@
 		"declarationMap": true,
 		"incremental": true,
 		"skipLibCheck": true,
+		"types": ["node"],
 		"moduleResolution": "bundler",
 		"resolvePackageJsonExports": true,
 		"resolvePackageJsonImports": true,

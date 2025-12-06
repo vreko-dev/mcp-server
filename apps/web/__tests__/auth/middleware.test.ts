@@ -6,7 +6,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { middleware } from "@/middleware";
+import { proxy as middleware } from "@/proxy";
 
 // Mock fetch for session validation
 global.fetch = vi.fn();

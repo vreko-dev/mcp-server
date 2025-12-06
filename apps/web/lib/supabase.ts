@@ -1,15 +1,15 @@
-import { createClient } from '@supabase/supabase-js';
-import type { Database } from '@/types/database.types';
+import { createClient } from "@supabase/supabase-js";
+import type { Database } from "../types/database.types";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl) {
-	throw new Error('Missing env var: NEXT_PUBLIC_SUPABASE_URL');
+	throw new Error("Missing env var: NEXT_PUBLIC_SUPABASE_URL");
 }
 
 if (!supabaseAnonKey) {
-	throw new Error('Missing env var: NEXT_PUBLIC_SUPABASE_ANON_KEY');
+	throw new Error("Missing env var: NEXT_PUBLIC_SUPABASE_ANON_KEY");
 }
 
 /**
@@ -24,8 +24,8 @@ if (!supabaseAnonKey) {
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
 	auth: {
 		persistSession: true,
-		storageKey: 'snapback-auth',
-		storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+		storageKey: "snapback-auth",
+		storage: typeof window !== "undefined" ? window.localStorage : undefined,
 	},
 	realtime: {
 		params: {
@@ -42,11 +42,11 @@ export async function verifySupabaseConnection() {
 	try {
 		const { data, error } = await supabase.auth.getUser();
 		if (error) {
-			console.warn('Supabase connection warning:', error.message);
+			console.warn("Supabase connection warning:", error.message);
 		}
 		return { success: !error, user: data?.user };
 	} catch (err) {
-		console.error('Supabase connection failed:', err);
+		console.error("Supabase connection failed:", err);
 		return { success: false, user: null };
 	}
 }

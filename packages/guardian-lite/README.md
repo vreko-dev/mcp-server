@@ -2,9 +2,9 @@
 
 Lightweight local code analysis engine with 15 industry-standard detection patterns.
 
-**Status**: ✅ Implemented  
-**Tests**: 43 passing (100% coverage)  
-**Performance**: <50ms for 1000 lines  
+**Status**: ✅ Implemented
+**Tests**: 43 passing (100% coverage)
+**Performance**: <50ms for 1000 lines
 **Package**: Private (not published to npm)
 
 ## Features

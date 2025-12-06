@@ -23,7 +23,8 @@ interface UseBulkProtectionStatusReturn {
  * Uses Supabase Realtime for instant updates (<500ms) with fallback awareness
  */
 export function useBulkProtectionStatus(
-	fileIds: string[]
+	fileIds: string[],
+	onChange?: (fileId: string, protection: 'enabled' | 'disabled') => void
 ): UseBulkProtectionStatusReturn {
 	const [statuses, setStatuses] = useState<Map<string, FileProtectionStatus>>(
 		new Map()
@@ -53,8 +54,8 @@ export function useBulkProtectionStatus(
 					return;
 				}
 
-				const statusMap = new Map(
-					data?.map((item) => [
+				const statusMap = new Map<string, FileProtectionStatus>(
+					data?.map((item: any) => [
 						item.id,
 						{
 							id: item.id,
@@ -84,18 +85,23 @@ export function useBulkProtectionStatus(
 					schema: 'public',
 					table: 'protected_files',
 				},
-				(payload) => {
+				(payload: any) => {
 					// Update if file is in our watched list
 					if (payload.new && 'id' in payload.new && fileIds.includes(payload.new.id)) {
-						setStatuses((prev) => {
+						const newProtection = payload.new.protection as 'enabled' | 'disabled';
+						setStatuses((prev: Map<string, FileProtectionStatus>) => {
 							const updated = new Map(prev);
 							updated.set(payload.new.id, {
 								id: payload.new.id,
-								protection: payload.new.protection,
+								protection: newProtection,
 								updatedAt: payload.new.updated_at,
 							});
 							return updated;
 						});
+						// Call onChange callback if provided
+						if (onChange) {
+							onChange(payload.new.id, newProtection);
+						}
 					}
 				}
 			)

@@ -5,7 +5,7 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import { ActivityFeed } from "@/modules/saas/dashboard/components/ActivityFeed";
 import { AIDetectionStats } from "@/modules/saas/dashboard/components/AIDetectionStats";
 import { MetricsGrid } from "@/modules/saas/dashboard/components/MetricsGrid";
-import { useBulkProtectionStatus } from "@/hooks/use-bulk-protection-status";
+import { useBulkProtectionStatus } from '@/hooks/use-bulk-protection-status';
 import { logger } from "@snapback/infrastructure";
 
 // Define types for dashboard data
@@ -45,24 +45,6 @@ export default function UserStart() {
 		],
 		[]);
 
-	// Real-time protection status tracking for bulk files (<500ms latency)
-	const { statuses: protectionStatuses, isLoading } =
-		useBulkProtectionStatus(demoFileIds);
-
-	// Compute metrics from real-time protection statuses
-	const computedMetrics = useMemo(() => {
-		const protectedCount = Array.from(protectionStatuses.values()).filter(
-			(s) => s.protection === "enabled"
-		).length;
-
-		return {
-			filesProtected: protectedCount || 0,
-			snapshotCount: Math.max(24, protectedCount * 2),
-			recoveryCount: 3,
-			aiDetectionRate: 87,
-		};
-	}, [protectionStatuses]);
-
 	// Activity events (initially mock, future: subscribe to activity_log table)
 	const [activityEvents, setActivityEvents] = useState<Activity[]>([
 		{
@@ -75,7 +57,7 @@ export default function UserStart() {
 			type: "ai_detection",
 			message: "GitHub Copilot detected",
 			timestamp: "5 hours ago",
-			metadata: { confidence: 0.92 },
+			metadata: { tool: "GitHub Copilot" },
 		},
 		{
 			type: "recovery",
@@ -104,6 +86,24 @@ export default function UserStart() {
 			logger.info("Protection status changed", { fileId, newStatus });
 		},
 		[]);
+
+	// Real-time protection status tracking for bulk files (<500ms latency)
+	const { statuses: protectionStatuses, isLoading } =
+		useBulkProtectionStatus(demoFileIds, onProtectionStatusChange);
+
+	// Compute metrics from real-time protection statuses
+	const computedMetrics = useMemo(() => {
+		const protectedCount = Array.from(protectionStatuses.values()).filter(
+			(s) => s.protection === "enabled"
+		).length;
+
+		return {
+			filesProtected: protectedCount || 0,
+			snapshotCount: protectedCount,
+			recoveryCount: Math.floor(protectedCount * 0.5),
+			aiDetectionRate: 87,
+		};
+	}, [protectionStatuses]);
 
 	// Track real-time connection status
 	useEffect(() => {

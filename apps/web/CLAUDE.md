@@ -138,9 +138,9 @@ const { statuses: protectionStatuses, isLoading } = useBulkProtectionStatus(demo
 const computedMetrics = useMemo(() => ({
   filesProtected: protectedCount || 0,
   snapshotCount: protectedCount,
-  recoveryCount: Math.floor(protectedCount * 0.5),
-  aiDetectionRate: 87,
-}), [protectionStatuses]);
+  recoveryCount: Math.max(Math.floor(protectedCount * 0.8), activityRecoveryCount),
+  aiDetectionRate: computeAIDetectionRate(activityEvents),
+}), [protectionStatuses, activityEvents]);
 ```
 
 ### Phase 4: Real-Time Callbacks & Activity Integration

@@ -544,7 +544,7 @@ suggestionsRouter.post(
       const { textStream } = streamText({
         model: openai('gpt-4o-mini'),
         system: `You are a code security expert analyzing protection needs.
-        
+
 Respond with exactly this format:
 1. Protection Level: [Safe/Warn/Block]
 2. Key Risks: [bullet points]

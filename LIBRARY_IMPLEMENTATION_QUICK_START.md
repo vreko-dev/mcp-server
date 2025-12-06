@@ -97,7 +97,7 @@ import { posthog } from './posthog'
 export const analytics = {
   pageView: () => posthog.capture('page_view'),
   // Other events - all use posthog
-  trackEvent: (name: string, props: any) => 
+  trackEvent: (name: string, props: any) =>
     posthog.capture(name, props),
 }
 ```
@@ -156,7 +156,7 @@ export function useProtectionStatus(fileId: string) {
   useEffect(() => {
     const channel = supabase
       .channel(`file:${fileId}`)
-      .on('postgres_changes', 
+      .on('postgres_changes',
         { event: '*', schema: 'public', table: 'protection_status' },
         (payload) => setStatus(payload.new.status)
       )
@@ -301,13 +301,13 @@ pnpm db:migrate
 ### Client-Side
 ```typescript
 // User enables 2FA
-const { totpURI } = await authClient.twoFactor.enable({ 
-  password: userPassword 
+const { totpURI } = await authClient.twoFactor.enable({
+  password: userPassword
 })
 // Show QR code to user
 
 // User verifies
-await authClient.twoFactor.verifyTOTP({ 
+await authClient.twoFactor.verifyTOTP({
   code: '123456' // From authenticator app
 })
 ```
@@ -452,6 +452,6 @@ app.post('/path', handler)  // Then routes
 
 ---
 
-**Last Updated:** December 6, 2025  
-**Status:** Ready to implement  
+**Last Updated:** December 6, 2025
+**Status:** Ready to implement
 **Confidence:** High (all libraries verified with Context7)

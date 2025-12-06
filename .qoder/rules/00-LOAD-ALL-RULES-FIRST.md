@@ -16,18 +16,19 @@ Automatically discover and read from these directories:
 - `apps/vscode/.qoder/rules/*.md` (VS Code extension rules)
 - Any other app-specific rule directories
 
-**Current rule inventory (11 files):**
+**Current rule inventory (12 files):**
 1. `00-LOAD-ALL-RULES-FIRST.md` (this file)
 2. `always-better-auth-canonical.md` (No custom auth)
-3. `always-monorepo-imports.md` (Workspace-wide imports)
-4. `always-react-security-boundaries.md` (React/Next.js security)
-5. `always-result-type-pattern.md` (Error handling)
-6. `always-typescript-patterns.md` (Type safety patterns)
-7. `decision-logging-observability.md` (Structured logging)
-8. `decision-oauth-multi-service.md` (OAuth architecture)
-9. `decision-typescript-esm-testing.md` (TypeScript ESM testing patterns)
-10. `files-docker-deployment.md` (Docker/deployment)
-11. `files-testing-vitest.md` (Testing standards)
+3. `always-code-consolidation.md` ⭐ NEW (Canonical locations)
+4. `always-monorepo-imports.md` (Workspace-wide imports)
+5. `always-react-security-boundaries.md` (React/Next.js security)
+6. `always-result-type-pattern.md` (Error handling)
+7. `always-typescript-patterns.md` (Type safety patterns)
+8. `decision-logging-observability.md` (Structured logging)
+9. `decision-oauth-multi-service.md` (OAuth architecture)
+10. `decision-typescript-esm-testing.md` (TypeScript ESM testing patterns)
+11. `files-docker-deployment.md` (Docker/deployment)
+12. `files-testing-vitest.md` (Testing standards)
 
 ### Step 2: Read ALL Files Completely
 

@@ -126,9 +126,7 @@ function isSpecialProtocol(path: string): boolean {
  *
  * @deprecated Use useNavigateTo hook in React components
  */
-export function createNavigateTo(
-	router: ReturnType<typeof useRouter>,
-): NavigateTo {
+export function createNavigateTo(router: ReturnType<typeof useRouter>): NavigateTo {
 	return (path: string, options: NavigateOptions = {}) => {
 		if (!path || path === null || path === undefined) {
 			path = "/";

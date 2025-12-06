@@ -2,7 +2,7 @@
  * Custom error class for security violations
  */
 export declare class SecurityError extends Error {
-    constructor(message: string);
+	constructor(message: string);
 }
 /**
  * Validate file paths to prevent path traversal attacks

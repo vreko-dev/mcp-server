@@ -10,16 +10,12 @@ export const getSession = cache(async () => {
 });
 
 export const getActiveOrganization = cache(async (_slug: string) => {
-	console.warn(
-		"[Auth] getActiveOrganization() is stubbed - requires backend API",
-	);
+	console.warn("[Auth] getActiveOrganization() is stubbed - requires backend API");
 	return null;
 });
 
 export const getOrganizationList = cache(async () => {
-	console.warn(
-		"[Auth] getOrganizationList() is stubbed - requires backend API",
-	);
+	console.warn("[Auth] getOrganizationList() is stubbed - requires backend API");
 	return [];
 });
 

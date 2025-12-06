@@ -1,5 +1,5 @@
-export * from "./BlobStore.fs";
 export * from "./BlobStore";
+export * from "./BlobStore.fs";
 export * from "./LocalStorage";
 export * from "./MemoryStorage";
 export * from "./StorageAdapter";

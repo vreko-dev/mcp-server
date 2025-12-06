@@ -8,11 +8,7 @@ interface ProtectionPromptProps {
 	onAction: (action: "create" | "skip" | "cancel") => void;
 }
 
-export function ProtectionPrompt({
-	level,
-	fileName,
-	onAction,
-}: ProtectionPromptProps) {
+export function ProtectionPrompt({ level, fileName, onAction }: ProtectionPromptProps) {
 	const getTitle = () => {
 		switch (level) {
 			case "warn":
@@ -92,10 +88,7 @@ export function ProtectionPrompt({
 	}
 
 	return (
-		<div
-			className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-			role="presentation"
-		>
+		<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" role="presentation">
 			<div
 				className="bg-white rounded-lg p-6 w-96 shadow-xl"
 				role="dialog"

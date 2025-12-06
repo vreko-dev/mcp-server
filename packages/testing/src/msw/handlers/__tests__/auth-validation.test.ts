@@ -67,10 +67,7 @@ describe("Auth Validation Logic", () => {
 
 			for (const { password, valid } of testCases) {
 				const meetsAllRequirements =
-					password.length >= 8 &&
-					/[A-Z]/.test(password) &&
-					/[a-z]/.test(password) &&
-					/[0-9]/.test(password);
+					password.length >= 8 && /[A-Z]/.test(password) && /[a-z]/.test(password) && /[0-9]/.test(password);
 
 				expect(meetsAllRequirements).toBe(valid);
 			}
@@ -112,8 +109,7 @@ describe("Auth Validation Logic", () => {
 
 		// TEST_ID: AUTH-VALIDATION-COOKIE-FLAGS-002
 		it("should validate required cookie security flags", () => {
-			const setCookieHeader =
-				"snapback_auth.session_token=abc123; Path=/; HttpOnly; SameSite=Lax";
+			const setCookieHeader = "snapback_auth.session_token=abc123; Path=/; HttpOnly; SameSite=Lax";
 
 			expect(setCookieHeader).toContain("HttpOnly");
 			expect(setCookieHeader).toContain("SameSite=Lax");
@@ -122,8 +118,7 @@ describe("Auth Validation Logic", () => {
 
 		// TEST_ID: AUTH-VALIDATION-COOKIE-SIGNOUT-003
 		it("should validate sign-out cookie expiration", () => {
-			const signOutCookie =
-				"snapback_auth.session_token=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0";
+			const signOutCookie = "snapback_auth.session_token=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0";
 
 			expect(signOutCookie).toContain("Max-Age=0");
 			expect(signOutCookie).toMatch(/snapback_auth\.session_token=;/);
@@ -246,12 +241,8 @@ describe("Auth Validation Logic", () => {
 			expect(mockSession.userAgent).toBeDefined();
 
 			// Validate ISO date format
-			expect(new Date(mockSession.expiresAt).toISOString()).toBe(
-				mockSession.expiresAt,
-			);
-			expect(new Date(mockSession.createdAt).toISOString()).toBe(
-				mockSession.createdAt,
-			);
+			expect(new Date(mockSession.expiresAt).toISOString()).toBe(mockSession.expiresAt);
+			expect(new Date(mockSession.createdAt).toISOString()).toBe(mockSession.createdAt);
 		});
 	});
 });

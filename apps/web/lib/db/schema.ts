@@ -1,23 +1,9 @@
 import { createId as cuid } from "@paralleldrive/cuid2";
 import { relations } from "drizzle-orm";
-import {
-	index,
-	integer,
-	json,
-	pgEnum,
-	pgTable,
-	text,
-	timestamp,
-	uniqueIndex,
-} from "drizzle-orm/pg-core";
+import { index, integer, json, pgEnum, pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
 
 // Waitlist status enum
-export const waitlistStatusEnum = pgEnum("waitlist_status", [
-	"pending",
-	"invited",
-	"accepted",
-	"rejected",
-]);
+export const waitlistStatusEnum = pgEnum("waitlist_status", ["pending", "invited", "accepted", "rejected"]);
 
 // Main waitlist table
 export const waitlist = pgTable(
@@ -121,21 +107,18 @@ export const waitlistRelations = relations(waitlist, ({ many }) => ({
 	tasks: many(waitlistTasks),
 }));
 
-export const waitlistReferralsRelations = relations(
-	waitlistReferrals,
-	({ one }) => ({
-		referrer: one(waitlist, {
-			fields: [waitlistReferrals.referrerId],
-			references: [waitlist.id],
-			relationName: "referrer",
-		}),
-		referred: one(waitlist, {
-			fields: [waitlistReferrals.referredId],
-			references: [waitlist.id],
-			relationName: "referred",
-		}),
+export const waitlistReferralsRelations = relations(waitlistReferrals, ({ one }) => ({
+	referrer: one(waitlist, {
+		fields: [waitlistReferrals.referrerId],
+		references: [waitlist.id],
+		relationName: "referrer",
 	}),
-);
+	referred: one(waitlist, {
+		fields: [waitlistReferrals.referredId],
+		references: [waitlist.id],
+		relationName: "referred",
+	}),
+}));
 
 export const waitlistTasksRelations = relations(waitlistTasks, ({ one }) => ({
 	waitlistEntry: one(waitlist, {

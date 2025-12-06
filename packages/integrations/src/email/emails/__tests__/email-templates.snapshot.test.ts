@@ -1,9 +1,9 @@
-import { describe, it, expect } from "vitest";
 import { render } from "@react-email/render";
-import WelcomeSubscriptionEmail from "../WelcomeSubscriptionEmail";
+import { describe, expect, it } from "vitest";
 import CancellationEmail from "../CancellationEmail";
-import PaymentReceiptEmail from "../PaymentReceiptEmail";
 import PaymentFailedEmail from "../PaymentFailedEmail";
+import PaymentReceiptEmail from "../PaymentReceiptEmail";
+import WelcomeSubscriptionEmail from "../WelcomeSubscriptionEmail";
 
 describe("Email Template Snapshot Tests", () => {
 	describe("WelcomeSubscriptionEmail", () => {
@@ -11,15 +11,10 @@ describe("Email Template Snapshot Tests", () => {
 			const html = await render(
 				WelcomeSubscriptionEmail({
 					plan: "solo",
-					features: [
-						"Unlimited snapshots",
-						"Cloud backup",
-						"Advanced AI detection",
-						"Custom security rules",
-					],
+					features: ["Unlimited snapshots", "Cloud backup", "Advanced AI detection", "Custom security rules"],
 					dashboardUrl: "https://snapback.dev/dashboard",
 					supportEmail: "support@snapback.dev",
-				})
+				}),
 			);
 
 			expect(html).toMatchSnapshot();
@@ -29,15 +24,10 @@ describe("Email Template Snapshot Tests", () => {
 			const html = await render(
 				WelcomeSubscriptionEmail({
 					plan: "team",
-					features: [
-						"Unlimited snapshots",
-						"Team collaboration",
-						"Priority support",
-						"Advanced analytics",
-					],
+					features: ["Unlimited snapshots", "Team collaboration", "Priority support", "Advanced analytics"],
 					dashboardUrl: "https://snapback.dev/dashboard",
 					supportEmail: "support@snapback.dev",
-				})
+				}),
 			);
 
 			expect(html).toMatchSnapshot();
@@ -55,7 +45,7 @@ describe("Email Template Snapshot Tests", () => {
 					],
 					dashboardUrl: "https://snapback.dev/dashboard",
 					supportEmail: "support@snapback.dev",
-				})
+				}),
 			);
 
 			expect(html).toMatchSnapshot();
@@ -68,7 +58,7 @@ describe("Email Template Snapshot Tests", () => {
 					features: ["Unlimited snapshots"],
 					dashboardUrl: "https://snapback.dev/dashboard",
 					supportEmail: "support@snapback.dev",
-				})
+				}),
 			);
 
 			expect(html).toContain("<!DOCTYPE");
@@ -86,7 +76,7 @@ describe("Email Template Snapshot Tests", () => {
 					feedbackUrl: "https://snapback.dev/feedback?reason=cancellation",
 					resubscribeUrl: "https://snapback.dev/pricing",
 					supportEmail: "support@snapback.dev",
-				})
+				}),
 			);
 
 			expect(html).toMatchSnapshot();
@@ -99,7 +89,7 @@ describe("Email Template Snapshot Tests", () => {
 					feedbackUrl: "https://snapback.dev/feedback",
 					resubscribeUrl: "https://snapback.dev/pricing",
 					supportEmail: "support@snapback.dev",
-				})
+				}),
 			);
 
 			expect(html).toContain("We&#x27;re sorry to see you go");
@@ -119,7 +109,7 @@ describe("Email Template Snapshot Tests", () => {
 					date: "December 3, 2025",
 					invoiceUrl: "https://snapback.dev/invoice/inv_123",
 					supportEmail: "support@snapback.dev",
-				})
+				}),
 			);
 
 			expect(html).toMatchSnapshot();
@@ -133,7 +123,7 @@ describe("Email Template Snapshot Tests", () => {
 					date: "December 3, 2025",
 					invoiceUrl: "https://snapback.dev/invoice/inv_123",
 					supportEmail: "support@snapback.dev",
-				})
+				}),
 			);
 
 			expect(html).toContain("$199.00");
@@ -148,7 +138,7 @@ describe("Email Template Snapshot Tests", () => {
 					date: "December 3, 2025",
 					invoiceUrl: "https://snapback.dev/invoice/inv_456",
 					supportEmail: "support@snapback.dev",
-				})
+				}),
 			);
 
 			expect(html).toContain("https://snapback.dev/invoice/inv_456");
@@ -161,10 +151,9 @@ describe("Email Template Snapshot Tests", () => {
 				PaymentFailedEmail({
 					attemptCount: 1,
 					updatePaymentUrl: "https://snapback.dev/settings/billing",
-					warningMessage:
-						"Please update your payment method within 3 days to avoid service interruption",
+					warningMessage: "Please update your payment method within 3 days to avoid service interruption",
 					supportEmail: "support@snapback.dev",
-				})
+				}),
 			);
 
 			expect(html).toMatchSnapshot();
@@ -177,7 +166,7 @@ describe("Email Template Snapshot Tests", () => {
 					updatePaymentUrl: "https://snapback.dev/settings/billing",
 					warningMessage: "Payment failed - update your card now",
 					supportEmail: "support@snapback.dev",
-				})
+				}),
 			);
 
 			expect(html).toContain("Payment failed - update your card now");
@@ -191,7 +180,7 @@ describe("Email Template Snapshot Tests", () => {
 					updatePaymentUrl: "https://snapback.dev/settings/billing",
 					warningMessage: "Update payment method",
 					supportEmail: "support@snapback.dev",
-				})
+				}),
 			);
 
 			expect(html).toContain("URGENT");

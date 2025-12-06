@@ -79,12 +79,7 @@ export function Confetti({
 				ctx.translate(particle.x, particle.y);
 				ctx.rotate((particle.rotation * Math.PI) / 180);
 				ctx.fillStyle = particle.color;
-				ctx.fillRect(
-					-particle.size / 2,
-					-particle.size / 2,
-					particle.size,
-					particle.size,
-				);
+				ctx.fillRect(-particle.size / 2, -particle.size / 2, particle.size, particle.size);
 				ctx.restore();
 			});
 

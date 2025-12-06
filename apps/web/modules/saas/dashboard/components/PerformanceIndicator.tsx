@@ -53,8 +53,7 @@ export function PerformanceIndicator() {
 			</CardHeader>
 			<CardContent>
 				<div className="text-2xl font-bold text-white">
-					{fps}{" "}
-					<span className="text-sm font-normal text-neutral-400">FPS</span>
+					{fps} <span className="text-sm font-normal text-neutral-400">FPS</span>
 				</div>
 				<p
 					className={`text-xs ${
@@ -65,11 +64,7 @@ export function PerformanceIndicator() {
 								: "text-red-400"
 					}`}
 				>
-					{isGoodPerformance
-						? "Excellent"
-						: isModeratePerformance
-							? "Good"
-							: "Needs improvement"}
+					{isGoodPerformance ? "Excellent" : isModeratePerformance ? "Good" : "Needs improvement"}
 				</p>
 			</CardContent>
 		</Card>

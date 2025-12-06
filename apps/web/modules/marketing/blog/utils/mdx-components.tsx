@@ -7,8 +7,7 @@ import Link from "next/link";
 export const mdxComponents = {
 	a: (props) => {
 		const { href, children, ...rest } = props;
-		const isInternalLink =
-			href && (href.startsWith("/") || href.startsWith("#"));
+		const isInternalLink = href && (href.startsWith("/") || href.startsWith("#"));
 
 		return isInternalLink ? (
 			<Link href={href} {...rest}>
@@ -31,56 +30,32 @@ export const mdxComponents = {
 			/>
 		) : null,
 	h1: ({ children, ...rest }) => (
-		<h1
-			id={slugifyHeadline(children as string)}
-			className="mb-6 font-bold text-4xl"
-			{...rest}
-		>
+		<h1 id={slugifyHeadline(children as string)} className="mb-6 font-bold text-4xl" {...rest}>
 			{children}
 		</h1>
 	),
 	h2: ({ children, ...rest }) => (
-		<h2
-			id={slugifyHeadline(children as string)}
-			className="mb-4 font-bold text-2xl"
-			{...rest}
-		>
+		<h2 id={slugifyHeadline(children as string)} className="mb-4 font-bold text-2xl" {...rest}>
 			{children}
 		</h2>
 	),
 	h3: ({ children, ...rest }) => (
-		<h3
-			id={slugifyHeadline(children as string)}
-			className="mb-4 font-bold text-xl"
-			{...rest}
-		>
+		<h3 id={slugifyHeadline(children as string)} className="mb-4 font-bold text-xl" {...rest}>
 			{children}
 		</h3>
 	),
 	h4: ({ children, ...rest }) => (
-		<h4
-			id={slugifyHeadline(children as string)}
-			className="mb-4 font-bold text-lg"
-			{...rest}
-		>
+		<h4 id={slugifyHeadline(children as string)} className="mb-4 font-bold text-lg" {...rest}>
 			{children}
 		</h4>
 	),
 	h5: ({ children, ...rest }) => (
-		<h5
-			id={slugifyHeadline(children as string)}
-			className="mb-4 font-bold text-base"
-			{...rest}
-		>
+		<h5 id={slugifyHeadline(children as string)} className="mb-4 font-bold text-base" {...rest}>
 			{children}
 		</h5>
 	),
 	h6: ({ children, ...rest }) => (
-		<h6
-			id={slugifyHeadline(children as string)}
-			className="mb-4 font-bold text-sm"
-			{...rest}
-		>
+		<h6 id={slugifyHeadline(children as string)} className="mb-4 font-bold text-sm" {...rest}>
 			{children}
 		</h6>
 	),

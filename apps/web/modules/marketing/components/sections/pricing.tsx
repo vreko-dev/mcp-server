@@ -83,20 +83,15 @@ const Pricing = () => {
 	};
 
 	return (
-		<section
-			id="pricing"
-			className="py-20 bg-background"
-			aria-labelledby="pricing-heading"
-		>
+		<section id="pricing" className="py-20 bg-background" aria-labelledby="pricing-heading">
 			<div className="container">
 				<div className="text-center mb-16">
 					<h2 id="pricing-heading" className="text-display mb-6">
-						SnapBack Learns.{" "}
-						<span className="text-primary">You Choose the Price.</span>
+						SnapBack Learns. <span className="text-primary">You Choose the Price.</span>
 					</h2>
 					<p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-						Start free. Scale as your team learns. Pattern memory improves over
-						time—so your protection gets smarter without you doing anything.
+						Start free. Scale as your team learns. Pattern memory improves over time—so your protection gets
+						smarter without you doing anything.
 					</p>
 				</div>
 
@@ -189,25 +184,16 @@ const Pricing = () => {
 							)}
 
 							<div className="p-2">
-								<h3
-									id={`plan-${index}-name`}
-									className="text-2xl font-bold mb-2"
-								>
+								<h3 id={`plan-${index}-name`} className="text-2xl font-bold mb-2">
 									{plan.name}
 								</h3>
-								<p
-									id={`plan-${index}-desc`}
-									className="text-muted-foreground mb-6"
-								>
+								<p id={`plan-${index}-desc`} className="text-muted-foreground mb-6">
 									{plan.description}
 								</p>
 
 								<div className="mb-8">
 									<div className="flex items-baseline">
-										<span
-											id={`plan-${index}-pricing`}
-											className="text-4xl font-black"
-										>
+										<span id={`plan-${index}-pricing`} className="text-4xl font-black">
 											{plan.price.monthly === null
 												? "Custom"
 												: `$${isAnnual ? plan.price.annual : plan.price.monthly}`}
@@ -218,14 +204,12 @@ const Pricing = () => {
 											</span>
 										)}
 									</div>
-									{isAnnual &&
-										plan.price.monthly !== null &&
-										plan.price.monthly > 0 && (
-											<div className="text-sm text-muted-foreground">
-												${Math.round(plan.price.annual / 12)}
-												/month billed annually
-											</div>
-										)}
+									{isAnnual && plan.price.monthly !== null && plan.price.monthly > 0 && (
+										<div className="text-sm text-muted-foreground">
+											${Math.round(plan.price.annual / 12)}
+											/month billed annually
+										</div>
+									)}
 								</div>
 
 								<button
@@ -242,22 +226,14 @@ const Pricing = () => {
 									</span>
 								</button>
 
-								<ul
-									className="space-y-4 mt-8"
-									aria-label={`${plan.name} plan features`}
-								>
+								<ul className="space-y-4 mt-8" aria-label={`${plan.name} plan features`}>
 									{plan.features.map((feature) => (
-										<li
-											key={`${plan.name}-${feature}`}
-											className="flex items-start space-x-3"
-										>
+										<li key={`${plan.name}-${feature}`} className="flex items-start space-x-3">
 											<Check
 												className="h-5 w-5 text-primary flex-shrink-0 mt-0.5"
 												aria-hidden="true"
 											/>
-											<span className="text-sm text-muted-foreground">
-												{feature}
-											</span>
+											<span className="text-sm text-muted-foreground">{feature}</span>
 										</li>
 									))}
 								</ul>
@@ -267,11 +243,7 @@ const Pricing = () => {
 				</div>
 
 				{/* Bracket Divider */}
-				<div
-					className="flex justify-center mt-16"
-					aria-hidden="true"
-					role="presentation"
-				>
+				<div className="flex justify-center mt-16" aria-hidden="true" role="presentation">
 					<div className="flex items-center space-x-4 text-2xl font-mono text-primary/60">
 						<span aria-hidden="true">&#123;</span>
 						<div className="w-16 h-px bg-gradient-neon" />

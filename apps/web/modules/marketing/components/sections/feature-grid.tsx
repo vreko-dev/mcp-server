@@ -21,9 +21,7 @@ const FeatureGrid = () => {
 				<div className="flex flex-1 w-full h-full min-h-[6rem] rounded-xl bg-gradient-to-br from-muted/30 to-muted/10 p-4 border border-primary/20">
 					<m.div
 						className="flex items-center justify-center w-full"
-						initial={
-							isMounted ? { opacity: 0, scale: 0.8 } : { opacity: 1, scale: 1 }
-						}
+						initial={isMounted ? { opacity: 0, scale: 0.8 } : { opacity: 1, scale: 1 }}
 						whileInView={{ opacity: 1, scale: 1 }}
 						transition={{ duration: 0.6 }}
 					>
@@ -109,11 +107,7 @@ const FeatureGrid = () => {
 								<m.div
 									key={i}
 									className="bg-gradient-to-t from-accent/60 to-accent flex-1 rounded-t border border-accent/20"
-									initial={
-										isMounted
-											? { height: 0, opacity: 0 }
-											: { height: "auto", opacity: 1 }
-									}
+									initial={isMounted ? { height: 0, opacity: 0 } : { height: "auto", opacity: 1 }}
 									animate={{
 										height: Math.random() * 40 + 20,
 										opacity: 1,
@@ -163,9 +157,7 @@ const FeatureGrid = () => {
 										boxShadow: "0 0 8px hsl(140 100% 50% / 0.4)",
 										borderColor: "hsl(140 100% 50% / 0.5)",
 									}}
-									initial={
-										isMounted ? { y: 10, opacity: 0 } : { y: 0, opacity: 1 }
-									}
+									initial={isMounted ? { y: 10, opacity: 0 } : { y: 0, opacity: 1 }}
 									animate={{ y: 0, opacity: 1 }}
 									transition={{ delay: i * 0.1 }}
 								>
@@ -253,9 +245,7 @@ const FeatureGrid = () => {
 							</m.div>
 							<m.div
 								className="text-xs bg-primary/20 text-primary px-2 py-1 rounded-full font-mono border border-primary/30"
-								initial={
-									isMounted ? { opacity: 0, y: 5 } : { opacity: 1, y: 0 }
-								}
+								initial={isMounted ? { opacity: 0, y: 5 } : { opacity: 1, y: 0 }}
 								animate={{ opacity: 1, y: 0 }}
 								transition={{ delay: 0.3 }}
 							>
@@ -284,8 +274,7 @@ const FeatureGrid = () => {
 						loved by <span className="text-secondary">teams</span>
 					</h2>
 					<p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-						Everything you need to automate, monitor, and scale your development
-						workflows.
+						Everything you need to automate, monitor, and scale your development workflows.
 					</p>
 				</m.div>
 

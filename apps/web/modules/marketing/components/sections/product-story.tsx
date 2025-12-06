@@ -28,9 +28,7 @@ const ProductStory = () => {
 
 						{/* TypeScript Code Sample */}
 						<div className="bg-muted/20 rounded-lg p-4 font-mono text-sm border border-border/30">
-							<div className="text-muted-foreground mb-2">
-								// Auto-detected pattern
-							</div>
+							<div className="text-muted-foreground mb-2">// Auto-detected pattern</div>
 							<div className="text-secondary">interface</div>{" "}
 							<div className="text-foreground">DeployWorkflow</div>{" "}
 							<div className="text-primary">&#123;</div>
@@ -38,11 +36,7 @@ const ProductStory = () => {
 								trigger: <span className="text-secondary">'pull_request'</span>;
 							</div>
 							<div className="ml-4 text-foreground">
-								actions:{" "}
-								<span className="text-accent">
-									Array&lt;'test' | 'build' | 'deploy'&gt;
-								</span>
-								;
+								actions: <span className="text-accent">Array&lt;'test' | 'build' | 'deploy'&gt;</span>;
 							</div>
 							<div className="ml-4 text-foreground">
 								frequency: <span className="text-primary">'high'</span>;{" "}
@@ -51,8 +45,7 @@ const ProductStory = () => {
 							<div className="text-primary">&#125;</div>
 							<div className="mt-3 text-muted-foreground">
 								<span className="text-accent">const</span> automate ={" "}
-								<span className="text-secondary">await</span>{" "}
-								snapback.compile(workflow);
+								<span className="text-secondary">await</span> snapback.compile(workflow);
 							</div>
 						</div>
 					</div>
@@ -67,9 +60,7 @@ const ProductStory = () => {
 				<div className="h-full w-full bg-gradient-to-br from-card to-muted/30 flex items-center justify-center p-8">
 					<div className="w-full">
 						<div className="text-center mb-6">
-							<div className="text-sm text-muted-foreground mb-2">
-								Building workflow...
-							</div>
+							<div className="text-sm text-muted-foreground mb-2">Building workflow...</div>
 							<div className="w-full bg-muted rounded-full h-2">
 								<m.div
 									className="bg-gradient-neon h-2 rounded-full"
@@ -82,9 +73,7 @@ const ProductStory = () => {
 									}}
 								/>
 							</div>
-							<div className="text-xs text-muted-foreground mt-2">
-								85% complete
-							</div>
+							<div className="text-xs text-muted-foreground mt-2">85% complete</div>
 						</div>
 
 						<div className="space-y-2 text-xs">
@@ -141,9 +130,7 @@ const ProductStory = () => {
 								className="bg-card/50 p-3 rounded border border-secondary/20"
 								whileHover={{ scale: 1.05 }}
 							>
-								<div className="text-secondary font-semibold">
-									Avg Cycle Time
-								</div>
+								<div className="text-secondary font-semibold">Avg Cycle Time</div>
 								<div className="text-2xl font-bold text-foreground">4.2h</div>
 								<div className="text-muted-foreground">-30min this week</div>
 							</m.div>
@@ -188,8 +175,8 @@ const ProductStory = () => {
 						<span className="bracket">&#125;</span>
 					</h2>
 					<p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-						Transform your development workflow in three simple steps. No
-						complex setup, no lengthy onboarding.
+						Transform your development workflow in three simple steps. No complex setup, no lengthy
+						onboarding.
 					</p>
 				</m.div>
 			</div>

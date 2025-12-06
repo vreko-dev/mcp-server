@@ -18,10 +18,7 @@ import type {
 const contentDirectory = path.join(process.cwd(), "src/content");
 
 // Generic content loader
-async function loadContent<T, M>(
-	collection: string,
-	slug?: string,
-): Promise<T[]> {
+async function loadContent<T, M>(collection: string, slug?: string): Promise<T[]> {
 	const collectionPath = path.join(contentDirectory, collection);
 
 	// Handle case where directory doesn't exist yet
@@ -87,9 +84,7 @@ export async function getFeaturedBlogPosts(): Promise<BlogPost[]> {
 	return posts.filter((post) => post.metadata.workflow.featured.homepage);
 }
 
-export async function getBlogPostsByCategory(
-	category: string,
-): Promise<BlogPost[]> {
+export async function getBlogPostsByCategory(category: string): Promise<BlogPost[]> {
 	const posts = await getBlogPosts();
 	return posts.filter((post) => post.metadata.format.type === category);
 }
@@ -98,39 +93,26 @@ export async function getBlogPostsByTag(tag: string): Promise<BlogPost[]> {
 	const posts = await getBlogPosts();
 	return posts.filter(
 		(post) =>
-			post.metadata.seo.secondaryKeywords.includes(tag) ||
-			post.metadata.seo.longTailVariations.includes(tag),
+			post.metadata.seo.secondaryKeywords.includes(tag) || post.metadata.seo.longTailVariations.includes(tag),
 	);
 }
 
 // Pillar Content
 export async function getPillarContent(): Promise<PillarContent[]> {
-	const pillars = await loadContent<PillarContent, PillarContentMetadata>(
-		"pillars",
-	);
+	const pillars = await loadContent<PillarContent, PillarContentMetadata>("pillars");
 
 	// Sort by semantic score (relevance)
-	return pillars.sort(
-		(a, b) =>
-			b.metadata.cluster.semanticScore - a.metadata.cluster.semanticScore,
-	);
+	return pillars.sort((a, b) => b.metadata.cluster.semanticScore - a.metadata.cluster.semanticScore);
 }
 
-export async function getPillarContentBySlug(
-	slug: string,
-): Promise<PillarContent | null> {
-	const pillars = await loadContent<PillarContent, PillarContentMetadata>(
-		"pillars",
-		slug,
-	);
+export async function getPillarContentBySlug(slug: string): Promise<PillarContent | null> {
+	const pillars = await loadContent<PillarContent, PillarContentMetadata>("pillars", slug);
 	return pillars[0] || null;
 }
 
 // Disaster Stories
 export async function getDisasterStories(): Promise<DisasterStory[]> {
-	const disasters = await loadContent<DisasterStory, DisasterStoryMetadata>(
-		"disasters",
-	);
+	const disasters = await loadContent<DisasterStory, DisasterStoryMetadata>("disasters");
 
 	// Sort by damage amount (highest first) then by date
 	return disasters.sort((a, b) => {
@@ -141,10 +123,7 @@ export async function getDisasterStories(): Promise<DisasterStory[]> {
 			return damageB - damageA;
 		}
 
-		return (
-			new Date(b.metadata.incident.date).getTime() -
-			new Date(a.metadata.incident.date).getTime()
-		);
+		return new Date(b.metadata.incident.date).getTime() - new Date(a.metadata.incident.date).getTime();
 	});
 }
 
@@ -153,13 +132,8 @@ export async function getRecentDisasters(limit = 5): Promise<DisasterStory[]> {
 	return disasters.slice(0, limit);
 }
 
-export async function getDisasterStory(
-	slug: string,
-): Promise<DisasterStory | null> {
-	const disasters = await loadContent<DisasterStory, DisasterStoryMetadata>(
-		"disasters",
-		slug,
-	);
+export async function getDisasterStory(slug: string): Promise<DisasterStory | null> {
+	const disasters = await loadContent<DisasterStory, DisasterStoryMetadata>("disasters", slug);
 	return disasters[0] || null;
 }
 
@@ -172,10 +146,7 @@ export async function getResources(): Promise<Resource[]> {
 }
 
 export async function getResource(slug: string): Promise<Resource | null> {
-	const resources = await loadContent<Resource, ResourceMetadata>(
-		"resources",
-		slug,
-	);
+	const resources = await loadContent<Resource, ResourceMetadata>("resources", slug);
 	return resources[0] || null;
 }
 
@@ -184,20 +155,11 @@ export async function getBlogStats() {
 	const posts = await getBlogPosts();
 	const disasters = await getDisasterStories();
 
-	const totalDamage = disasters.reduce(
-		(sum, disaster) => sum + (disaster.metadata.incident.damageAmount || 0),
-		0,
-	);
+	const totalDamage = disasters.reduce((sum, disaster) => sum + (disaster.metadata.incident.damageAmount || 0), 0);
 
-	const totalTimeWasted = disasters.reduce(
-		(sum, disaster) => sum + disaster.metadata.incident.timeWasted,
-		0,
-	);
+	const totalTimeWasted = disasters.reduce((sum, disaster) => sum + disaster.metadata.incident.timeWasted, 0);
 
-	const totalFiles = disasters.reduce(
-		(sum, disaster) => sum + disaster.metadata.incident.filesAffected,
-		0,
-	);
+	const totalFiles = disasters.reduce((sum, disaster) => sum + disaster.metadata.incident.filesAffected, 0);
 
 	return {
 		totalPosts: posts.length,
@@ -217,11 +179,7 @@ export async function searchContent(query: string): Promise<{
 	pillars: PillarContent[];
 	disasters: DisasterStory[];
 }> {
-	const [posts, pillars, disasters] = await Promise.all([
-		getBlogPosts(),
-		getPillarContent(),
-		getDisasterStories(),
-	]);
+	const [posts, pillars, disasters] = await Promise.all([getBlogPosts(), getPillarContent(), getDisasterStories()]);
 
 	const searchTerm = query.toLowerCase();
 
@@ -231,9 +189,7 @@ export async function searchContent(query: string): Promise<{
 			post.metadata.description.meta.toLowerCase().includes(searchTerm) ||
 			post.content.toLowerCase().includes(searchTerm) ||
 			post.metadata.seo.primaryKeyword.toLowerCase().includes(searchTerm) ||
-			post.metadata.seo.secondaryKeywords.some((keyword) =>
-				keyword.toLowerCase().includes(searchTerm),
-			),
+			post.metadata.seo.secondaryKeywords.some((keyword) => keyword.toLowerCase().includes(searchTerm)),
 	);
 
 	const matchingPillars = pillars.filter(
@@ -241,9 +197,7 @@ export async function searchContent(query: string): Promise<{
 			pillar.metadata.hero.title.toLowerCase().includes(searchTerm) ||
 			pillar.metadata.hero.subtitle.toLowerCase().includes(searchTerm) ||
 			pillar.content.toLowerCase().includes(searchTerm) ||
-			pillar.metadata.cluster.clusterKeywords.some((keyword) =>
-				keyword.toLowerCase().includes(searchTerm),
-			),
+			pillar.metadata.cluster.clusterKeywords.some((keyword) => keyword.toLowerCase().includes(searchTerm)),
 	);
 
 	const matchingDisasters = disasters.filter(
@@ -261,10 +215,7 @@ export async function searchContent(query: string): Promise<{
 }
 
 // Content relationship functions
-export async function getRelatedPosts(
-	currentSlug: string,
-	limit = 3,
-): Promise<BlogPost[]> {
+export async function getRelatedPosts(currentSlug: string, limit = 3): Promise<BlogPost[]> {
 	const posts = await getBlogPosts();
 	const currentPost = posts.find((post) => post.slug === currentSlug);
 
@@ -284,16 +235,14 @@ export async function getRelatedPosts(
 			}
 
 			// Shared keywords
-			const sharedKeywords = post.metadata.seo.secondaryKeywords.filter(
-				(keyword) =>
-					currentPost.metadata.seo.secondaryKeywords.includes(keyword),
+			const sharedKeywords = post.metadata.seo.secondaryKeywords.filter((keyword) =>
+				currentPost.metadata.seo.secondaryKeywords.includes(keyword),
 			);
 			score += sharedKeywords.length * 3;
 
 			// Similar reading time
 			const timeDiff = Math.abs(
-				post.metadata.experience.readingTime -
-					currentPost.metadata.experience.readingTime,
+				post.metadata.experience.readingTime - currentPost.metadata.experience.readingTime,
 			);
 			if (timeDiff <= 5) {
 				score += 2;
@@ -322,9 +271,7 @@ export async function generateRSSFeed(): Promise<string> {
       <description><![CDATA[${post.metadata.description.meta}]]></description>
       <link>${siteUrl}/blog/${post.slug}</link>
       <guid>${siteUrl}/blog/${post.slug}</guid>
-      <pubDate>${new Date(
-				post.metadata.workflow.publishDate,
-			).toUTCString()}</pubDate>
+      <pubDate>${new Date(post.metadata.workflow.publishDate).toUTCString()}</pubDate>
       <author>${post.metadata.schema.author.name}</author>
       <category>${post.metadata.format.type}</category>
     </item>
@@ -348,10 +295,7 @@ export async function generateRSSFeed(): Promise<string> {
 
 // Sitemap generation
 export async function generateSitemap(): Promise<string[]> {
-	const [posts, pillars] = await Promise.all([
-		getBlogPosts(),
-		getPillarContent(),
-	]);
+	const [posts, pillars] = await Promise.all([getBlogPosts(), getPillarContent()]);
 
 	const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://snapback.dev";
 

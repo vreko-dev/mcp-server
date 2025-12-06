@@ -72,10 +72,7 @@ export class KeysDb {
 		});
 
 		// Revoke the old key
-		await this.db
-			.update(apiKeys)
-			.set({ revoked: true })
-			.where(eq(apiKeys.id, oldKeyId));
+		await this.db.update(apiKeys).set({ revoked: true }).where(eq(apiKeys.id, oldKeyId));
 
 		return newKeyId;
 	}
@@ -84,10 +81,7 @@ export class KeysDb {
 	 * Revoke an API key
 	 */
 	async revokeKey(keyId: string): Promise<void> {
-		await this.db
-			.update(apiKeys)
-			.set({ revoked: true })
-			.where(eq(apiKeys.id, keyId));
+		await this.db.update(apiKeys).set({ revoked: true }).where(eq(apiKeys.id, keyId));
 	}
 
 	/**

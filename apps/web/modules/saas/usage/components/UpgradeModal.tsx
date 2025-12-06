@@ -57,11 +57,7 @@ UpgradeModal.Empty = function UpgradeModalEmpty() {
 };
 
 // Error state component
-UpgradeModal.Error = function UpgradeModalError({
-	error,
-}: {
-	error: AppError;
-}) {
+UpgradeModal.Error = function UpgradeModalError({ error }: { error: AppError }) {
 	return (
 		<Dialog open>
 			<DialogContent className="sm:max-w-md bg-neutral-900 border border-red-500/30">
@@ -72,9 +68,7 @@ UpgradeModal.Error = function UpgradeModalError({
 							Error Loading Upgrade Information
 						</DialogTitle>
 					</div>
-					<DialogDescription className="text-red-300 pt-2">
-						{error.message}
-					</DialogDescription>
+					<DialogDescription className="text-red-300 pt-2">{error.message}</DialogDescription>
 				</DialogHeader>
 
 				<DialogFooter>
@@ -92,25 +86,18 @@ UpgradeModal.Error = function UpgradeModalError({
 	);
 };
 
-export function UpgradeModal({
-	isOpen,
-	onClose,
-	resourceType,
-	currentPlan,
-}: UpgradeModalProps) {
+export function UpgradeModal({ isOpen, onClose, resourceType, currentPlan }: UpgradeModalProps) {
 	return (
 		<Dialog open={isOpen} onOpenChange={onClose}>
 			<DialogContent className="sm:max-w-md bg-neutral-900 border border-neutral-800">
 				<DialogHeader>
 					<div className="flex items-center gap-2 text-red-400">
 						<AlertCircle className="h-5 w-5" />
-						<DialogTitle className="text-xl font-bold text-white">
-							{resourceType} Limit Reached
-						</DialogTitle>
+						<DialogTitle className="text-xl font-bold text-white">{resourceType} Limit Reached</DialogTitle>
 					</div>
 					<DialogDescription className="text-neutral-300 pt-2">
-						You've reached your {currentPlan} plan limit for {resourceType}.
-						Upgrade to Pro or Team plan for unlimited access.
+						You've reached your {currentPlan} plan limit for {resourceType}. Upgrade to Pro or Team plan for
+						unlimited access.
 					</DialogDescription>
 				</DialogHeader>
 

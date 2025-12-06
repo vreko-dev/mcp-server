@@ -40,10 +40,7 @@ const HeroSequence = () => {
 	return (
 		<section className="min-h-screen bg-gradient-to-b from-slate-900 via-gray-900 to-black flex flex-col items-center justify-center px-4 relative overflow-hidden pt-20">
 			{/* Spotlight Effect */}
-			<Spotlight
-				className="-top-40 left-0 md:left-60 md:-top-20"
-				fill="white"
-			/>
+			<Spotlight className="-top-40 left-0 md:left-60 md:-top-20" fill="white" />
 
 			{/* Animated Background Elements */}
 			<div className="absolute inset-0 overflow-hidden">
@@ -51,11 +48,7 @@ const HeroSequence = () => {
 					<m.div
 						key={i}
 						className="absolute w-2 h-2 bg-primary rounded-full opacity-20"
-						initial={
-							isMounted
-								? { x: "-100vw", y: `${i * 20}%` }
-								: { x: 0, y: `${i * 20}%` }
-						}
+						initial={isMounted ? { x: "-100vw", y: `${i * 20}%` } : { x: 0, y: `${i * 20}%` }}
 						animate={isMounted ? { x: "100vw" } : { x: 0 }}
 						transition={{
 							duration: 20 + i * 5,
@@ -110,9 +103,8 @@ const HeroSequence = () => {
 					}}
 				>
 					The missing undo button for developers.
-					<span className="text-white font-medium"> SnapBack</span>{" "}
-					automatically protects your code from accidental changes, so you can
-					code with confidence.
+					<span className="text-white font-medium"> SnapBack</span> automatically protects your code from
+					accidental changes, so you can code with confidence.
 				</m.p>
 
 				{/* CTA Buttons */}
@@ -211,9 +203,7 @@ const HeroSequence = () => {
 							<div className="w-3 h-3 bg-red-500 rounded-full" />
 							<div className="w-3 h-3 bg-yellow-500 rounded-full" />
 							<div className="w-3 h-3 bg-green-500 rounded-full" />
-							<span className="text-xs text-muted-foreground ml-4">
-								terminal-preview.sh
-							</span>
+							<span className="text-xs text-muted-foreground ml-4">terminal-preview.sh</span>
 						</div>
 
 						<div className="space-y-6">

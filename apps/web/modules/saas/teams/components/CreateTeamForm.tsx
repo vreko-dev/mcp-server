@@ -5,22 +5,8 @@ import { authClient } from "@snapback/auth/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@ui/components/button";
 import { Checkbox } from "@ui/components/checkbox";
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogHeader,
-	DialogTitle,
-} from "@ui/components/dialog";
-import {
-	Form,
-	FormControl,
-	FormDescription,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from "@ui/components/form";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@ui/components/dialog";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@ui/components/form";
 import { Input } from "@ui/components/input";
 import { Textarea } from "@ui/components/textarea";
 import { AlertCircleIcon, LoaderIcon, PlusIcon } from "lucide-react";
@@ -34,11 +20,7 @@ const createTeamSchema = z.object({
 		.string()
 		.min(2, "Team name must be at least 2 characters")
 		.max(100, "Team name must be less than 100 characters"),
-	description: z
-		.string()
-		.max(500, "Description must be less than 500 characters")
-		.optional()
-		.nullable(),
+	description: z.string().max(500, "Description must be less than 500 characters").optional().nullable(),
 });
 
 type CreateTeamFormValues = z.infer<typeof createTeamSchema>;
@@ -66,9 +48,7 @@ export function CreateTeamForm({
 	const queryClient = useQueryClient();
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
-	const [selectedMembers, setSelectedMembers] = useState<Set<string>>(
-		new Set(),
-	);
+	const [selectedMembers, setSelectedMembers] = useState<Set<string>>(new Set());
 
 	const form = useForm<CreateTeamFormValues>({
 		resolver: zodResolver(createTeamSchema),
@@ -85,9 +65,7 @@ export function CreateTeamForm({
 		toast.promise(
 			(async () => {
 				// biome-ignore lint/suspicious/noExplicitAny: Better Auth API varies
-				const { error: apiError } = (await (
-					authClient.organization as any
-				).createTeam?.({
+				const { error: apiError } = (await (authClient.organization as any).createTeam?.({
 					organizationId,
 					...values,
 					memberIds: Array.from(selectedMembers),
@@ -140,9 +118,7 @@ export function CreateTeamForm({
 			<DialogContent className="max-w-2xl">
 				<DialogHeader>
 					<DialogTitle>Create New Team</DialogTitle>
-					<DialogDescription>
-						Teams allow you to organize members within your organization
-					</DialogDescription>
+					<DialogDescription>Teams allow you to organize members within your organization</DialogDescription>
 				</DialogHeader>
 
 				{error && (
@@ -207,9 +183,7 @@ export function CreateTeamForm({
 							<FormLabel>Team Members</FormLabel>
 							<div className="border rounded-lg p-4 space-y-3 max-h-48 overflow-y-auto">
 								{members.length === 0 ? (
-									<p className="text-sm text-muted-foreground">
-										No members available to add
-									</p>
+									<p className="text-sm text-muted-foreground">No members available to add</p>
 								) : (
 									members.map((member) => (
 										<div
@@ -227,9 +201,7 @@ export function CreateTeamForm({
 												className="flex-1 cursor-pointer text-sm"
 											>
 												<div className="font-medium">{member.name}</div>
-												<div className="text-xs text-muted-foreground">
-													{member.email}
-												</div>
+												<div className="text-xs text-muted-foreground">{member.email}</div>
 											</label>
 											<span className="text-xs font-medium text-primary capitalize bg-primary/10 px-2 py-1 rounded">
 												{member.role}
@@ -239,8 +211,7 @@ export function CreateTeamForm({
 								)}
 							</div>
 							<FormDescription>
-								Select members to add to this team (optional - you will be
-								automatically included)
+								Select members to add to this team (optional - you will be automatically included)
 							</FormDescription>
 						</FormItem>
 

@@ -44,12 +44,9 @@ export function FeaturesSectionDemo() {
 	return (
 		<div className="container mx-auto">
 			<div className="text-center mb-16">
-				<h2 className="text-display font-black text-white mb-6">
-					Protection First, Always
-				</h2>
+				<h2 className="text-display font-black text-white mb-6">Protection First, Always</h2>
 				<p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-					Comprehensive AI safety features that work seamlessly with your
-					development workflow
+					Comprehensive AI safety features that work seamlessly with your development workflow
 				</p>
 			</div>
 
@@ -96,13 +93,7 @@ const FeatureCard = ({
 
 // Icon components
 const IconAI = () => (
-	<svg
-		width="24"
-		height="24"
-		fill="none"
-		viewBox="0 0 24 24"
-		className="text-primary"
-	>
+	<svg width="24" height="24" fill="none" viewBox="0 0 24 24" className="text-primary">
 		<path
 			stroke="currentColor"
 			strokeLinecap="round"
@@ -114,13 +105,7 @@ const IconAI = () => (
 );
 
 const IconCheckpoint = () => (
-	<svg
-		width="24"
-		height="24"
-		fill="none"
-		viewBox="0 0 24 24"
-		className="text-primary"
-	>
+	<svg width="24" height="24" fill="none" viewBox="0 0 24 24" className="text-primary">
 		<path
 			stroke="currentColor"
 			strokeLinecap="round"
@@ -132,13 +117,7 @@ const IconCheckpoint = () => (
 );
 
 const IconRecover = () => (
-	<svg
-		width="24"
-		height="24"
-		fill="none"
-		viewBox="0 0 24 24"
-		className="text-primary"
-	>
+	<svg width="24" height="24" fill="none" viewBox="0 0 24 24" className="text-primary">
 		<path
 			stroke="currentColor"
 			strokeLinecap="round"
@@ -153,24 +132,12 @@ const IconRecover = () => (
 			strokeWidth={2}
 			d="M21 3v5h-5M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"
 		/>
-		<path
-			stroke="currentColor"
-			strokeLinecap="round"
-			strokeLinejoin="round"
-			strokeWidth={2}
-			d="M3 21v-5h5"
-		/>
+		<path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 21v-5h5" />
 	</svg>
 );
 
 const IconTeam = () => (
-	<svg
-		width="24"
-		height="24"
-		fill="none"
-		viewBox="0 0 24 24"
-		className="text-primary"
-	>
+	<svg width="24" height="24" fill="none" viewBox="0 0 24 24" className="text-primary">
 		<path
 			stroke="currentColor"
 			strokeLinecap="round"
@@ -182,13 +149,7 @@ const IconTeam = () => (
 );
 
 const IconGit = () => (
-	<svg
-		width="24"
-		height="24"
-		fill="none"
-		viewBox="0 0 24 24"
-		className="text-primary"
-	>
+	<svg width="24" height="24" fill="none" viewBox="0 0 24 24" className="text-primary">
 		<path
 			stroke="currentColor"
 			strokeLinecap="round"
@@ -200,13 +161,7 @@ const IconGit = () => (
 );
 
 const IconZero = () => (
-	<svg
-		width="24"
-		height="24"
-		fill="none"
-		viewBox="0 0 24 24"
-		className="text-primary"
-	>
+	<svg width="24" height="24" fill="none" viewBox="0 0 24 24" className="text-primary">
 		<path
 			stroke="currentColor"
 			strokeLinecap="round"

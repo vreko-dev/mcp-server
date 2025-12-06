@@ -25,9 +25,7 @@ interface PerformanceMonitoringState {
 	lastUpdate: number;
 }
 
-export function usePerformanceMonitoring(
-	options: UsePerformanceMonitoringOptions = {},
-) {
+export function usePerformanceMonitoring(options: UsePerformanceMonitoringOptions = {}) {
 	const { enabled = true, config, onViolation, onReport } = options;
 
 	const [state, setState] = useState<PerformanceMonitoringState>({
@@ -57,14 +55,9 @@ export function usePerformanceMonitoring(
 
 		// Check for new violations
 		const newViolationCount = violations.length;
-		if (
-			newViolationCount > violationCountRef.current &&
-			onViolationRef.current
-		) {
+		if (newViolationCount > violationCountRef.current && onViolationRef.current) {
 			const newViolations = violations.slice(violationCountRef.current);
-			newViolations.forEach((violation: PromiseViolation) =>
-				onViolationRef.current?.(violation),
-			);
+			newViolations.forEach((violation: PromiseViolation) => onViolationRef.current?.(violation));
 		}
 		violationCountRef.current = newViolationCount;
 
@@ -107,14 +100,9 @@ export function usePerformanceMonitoring(
 	// Helper functions
 	const getBrandPromiseViolations = useCallback(() => {
 		return state.violations.filter((v) =>
-			[
-				"checkpointLatency",
-				"recoveryTime",
-				"cpuUsage",
-				"memoryUsage",
-				"frameRate",
-				"dataLossEvents",
-			].includes(v.metric),
+			["checkpointLatency", "recoveryTime", "cpuUsage", "memoryUsage", "frameRate", "dataLossEvents"].includes(
+				v.metric,
+			),
 		);
 	}, [state.violations]);
 
@@ -138,9 +126,7 @@ export function usePerformanceMonitoring(
 	);
 
 	const getAllPromisesMet = useCallback(() => {
-		return Object.values(state.brandStatus).every(
-			(status) => status === "pass",
-		);
+		return Object.values(state.brandStatus).every((status) => status === "pass");
 	}, [state.brandStatus]);
 
 	const getMetricValue = useCallback(
@@ -331,9 +317,7 @@ export function usePerformanceAlerts() {
 			const alert = {
 				id: `${violation.metric}-${violation.timestamp}`,
 				type: "violation" as const,
-				message: `${violation.context}: ${violation.actual.toFixed(
-					1,
-				)} (target: ${violation.target})`,
+				message: `${violation.context}: ${violation.actual.toFixed(1)} (target: ${violation.target})`,
 				severity: violation.severity,
 				timestamp: violation.timestamp,
 			};

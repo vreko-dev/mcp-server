@@ -1,13 +1,13 @@
 {
-  "extends": "@snapback/tsconfig/base.json",
-  "compilerOptions": {
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "lib": ["ES2023"],
-    "target": "ES2022",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext"
-  },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist"]
+	"extends": "@snapback/tsconfig/base.json",
+	"compilerOptions": {
+		"outDir": "./dist",
+		"rootDir": "./src",
+		"lib": ["ES2023"],
+		"target": "ES2022",
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext"
+	},
+	"include": ["src/**/*.ts"],
+	"exclude": ["node_modules", "dist"]
 }

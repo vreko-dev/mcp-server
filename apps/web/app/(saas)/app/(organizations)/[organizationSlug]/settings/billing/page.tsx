@@ -21,11 +21,7 @@ export async function generateMetadata() {
 	};
 }
 
-export default async function BillingSettingsPage({
-	params,
-}: {
-	params: Promise<{ organizationSlug: string }>;
-}) {
+export default async function BillingSettingsPage({ params }: { params: Promise<{ organizationSlug: string }> }) {
 	const { organizationSlug } = await params;
 	const organization = (await getActiveOrganization(organizationSlug)) as any;
 
@@ -33,10 +29,7 @@ export default async function BillingSettingsPage({
 		return notFound();
 	}
 
-	const [error, purchasesData] = await attemptAsync<
-		{ purchases: Purchase[] },
-		Error
-	>(() =>
+	const [error, purchasesData] = await attemptAsync<{ purchases: Purchase[] }, Error>(() =>
 		orpcClient.payments.listPurchases({
 			organizationId: organization?.id,
 		}),
@@ -64,10 +57,7 @@ export default async function BillingSettingsPage({
 		<SettingsList>
 			{activePlan && <ActivePlan organizationId={organization?.id} />}
 			{activePlan?.id && typeof activePlan.id === "string" && (
-				<ChangePlan
-					organizationId={organization?.id}
-					activePlanId={activePlan.id}
-				/>
+				<ChangePlan organizationId={organization?.id} activePlanId={activePlan.id} />
 			)}
 		</SettingsList>
 	);

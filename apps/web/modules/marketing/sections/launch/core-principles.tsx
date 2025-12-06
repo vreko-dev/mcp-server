@@ -70,9 +70,7 @@ export function CorePrinciples() {
 					<div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20 text-green-500 text-xs font-medium uppercase tracking-wider">
 						Core Principles
 					</div>
-					<h2 className="text-3xl lg:text-5xl font-bold text-white">
-						Simple. Automatic. Local.
-					</h2>
+					<h2 className="text-3xl lg:text-5xl font-bold text-white">Simple. Automatic. Local.</h2>
 					<p className="text-lg text-[#A0A0A0] max-w-2xl mx-auto">
 						Three principles we won't compromise on—ever.
 					</p>
@@ -87,30 +85,21 @@ export function CorePrinciples() {
 					viewport={{ once: true, margin: "-100px" }}
 				>
 					{principles.map((principle, index) => (
-						<m.div
-							key={index}
-							variants={itemVariants}
-							className="group relative"
-						>
+						<m.div key={index} variants={itemVariants} className="group relative">
 							{/* Card */}
 							<div className="p-8 rounded-xl border border-[#262626] bg-[#111111] hover:bg-[#171717] transition-colors h-full flex flex-col gap-6">
 								{/* Icon & Status */}
 								<div className="space-y-3">
 									<div className="text-4xl">{principle.icon}</div>
 									<div className="flex items-center justify-between gap-4">
-										<h3 className="text-xl font-bold text-white">
-											{principle.title}
-										</h3>
+										<h3 className="text-xl font-bold text-white">{principle.title}</h3>
 									</div>
 									<div className="flex items-center gap-2">
 										<div
 											className="w-2 h-2 rounded-full"
 											style={{ backgroundColor: principle.statusColor }}
 										/>
-										<span
-											className="text-xs font-medium"
-											style={{ color: principle.statusColor }}
-										>
+										<span className="text-xs font-medium" style={{ color: principle.statusColor }}>
 											{principle.status}
 										</span>
 									</div>
@@ -122,9 +111,7 @@ export function CorePrinciples() {
 								</p>
 
 								{/* Technical Detail */}
-								<div className="text-xs text-[#71717A]">
-									{principle.details}
-								</div>
+								<div className="text-xs text-[#71717A]">{principle.details}</div>
 							</div>
 						</m.div>
 					))}

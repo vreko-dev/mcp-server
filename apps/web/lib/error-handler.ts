@@ -29,10 +29,7 @@ export interface AppError {
 /**
  * Convert any error to structured AppError
  */
-export function toAppError(
-	error: unknown,
-	fallbackCode: AppErrorCode = "INTERNAL",
-): AppError {
+export function toAppError(error: unknown, fallbackCode: AppErrorCode = "INTERNAL"): AppError {
 	// Already an AppError
 	if (isAppError(error)) {
 		return error;
@@ -69,10 +66,7 @@ export function toAppError(
 	// Handle standard Error objects
 	if (error instanceof Error) {
 		// Check for specific error patterns
-		if (
-			error.message.includes("unauthorized") ||
-			error.message.includes("401")
-		) {
+		if (error.message.includes("unauthorized") || error.message.includes("401")) {
 			return {
 				code: "UNAUTHORIZED",
 				message: "Authentication required. Please sign in.",
@@ -152,11 +146,9 @@ export function getErrorMessage(error: AppError): string {
 		UNAUTHORIZED: "You need to sign in to continue.",
 		FORBIDDEN: "You don't have permission to perform this action.",
 		NOT_FOUND: "The requested resource was not found.",
-		RATE_LIMITED:
-			"Too many requests. Please slow down and try again in a moment.",
+		RATE_LIMITED: "Too many requests. Please slow down and try again in a moment.",
 		VALIDATION: "Invalid input. Please check your data and try again.",
-		LIMIT_EXCEEDED:
-			"Usage limit exceeded. Please upgrade your plan to continue.",
+		LIMIT_EXCEEDED: "Usage limit exceeded. Please upgrade your plan to continue.",
 		INTERNAL: "Something went wrong on our end. Please try again.",
 		CONFLICT: "This resource has been modified. Please refresh and try again.",
 		TIMEOUT: "Request timed out. Please check your connection and try again.",
@@ -169,13 +161,7 @@ export function getErrorMessage(error: AppError): string {
  * Type guard for AppError
  */
 function isAppError(error: unknown): error is AppError {
-	return (
-		typeof error === "object" &&
-		error !== null &&
-		"code" in error &&
-		"message" in error &&
-		"retryable" in error
-	);
+	return typeof error === "object" && error !== null && "code" in error && "message" in error && "retryable" in error;
 }
 
 /**
@@ -287,10 +273,7 @@ function handleDrizzleError(error: Error): AppError {
 /**
  * Log error with context
  */
-export function logError(
-	error: AppError,
-	context?: Record<string, unknown>,
-): void {
+export function logError(error: AppError, context?: Record<string, unknown>): void {
 	console.error("Application error:", {
 		code: error.code,
 		message: error.message,

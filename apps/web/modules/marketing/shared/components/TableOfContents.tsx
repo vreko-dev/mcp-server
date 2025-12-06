@@ -2,17 +2,12 @@
 
 import { useEffect } from "react";
 
-export function TableOfContents({
-	items,
-}: {
-	items: { slug: string; content: string; lvl: number }[];
-}) {
+export function TableOfContents({ items }: { items: { slug: string; content: string; lvl: number }[] }) {
 	const scrollToSection = (id: string) => {
 		const scrollOffset = 80;
 		const element = document.getElementById(id);
 		if (element) {
-			const elementPositionY =
-				element.getBoundingClientRect().top + window.scrollY - scrollOffset;
+			const elementPositionY = element.getBoundingClientRect().top + window.scrollY - scrollOffset;
 			window.scrollTo({ top: elementPositionY, behavior: "smooth" });
 			history.pushState({}, "", `#${id}`);
 		}

@@ -18,11 +18,7 @@ interface VelocityScrollProps {
 	className?: string;
 }
 
-export const VelocityScroll = ({
-	children,
-	baseVelocity = 5,
-	className,
-}: VelocityScrollProps) => {
+export const VelocityScroll = ({ children, baseVelocity = 5, className }: VelocityScrollProps) => {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const textRef = useRef<HTMLDivElement>(null);
 	const [clones, setClones] = useState<number>(0);
@@ -60,10 +56,7 @@ export const VelocityScroll = ({
 	});
 
 	return (
-		<div
-			ref={containerRef}
-			className={`overflow-hidden whitespace-nowrap ${className}`}
-		>
+		<div ref={containerRef} className={`overflow-hidden whitespace-nowrap ${className}`}>
 			<motion.div ref={textRef} className="inline-block" style={{ x }}>
 				{children}
 			</motion.div>

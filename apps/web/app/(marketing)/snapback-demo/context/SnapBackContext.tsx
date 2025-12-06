@@ -1,22 +1,9 @@
 "use client";
 
-import React, {
-	createContext,
-	type ReactNode,
-	useContext,
-	useEffect,
-	useReducer,
-} from "react";
+import React, { createContext, type ReactNode, useContext, useEffect, useReducer } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { DEFAULT_SETTINGS } from "../domain/settings";
-import type {
-	Notification,
-	Policy,
-	ProtectedFile,
-	ProtectionLevel,
-	SnapBackSettings,
-	Snapshot,
-} from "../domain/types";
+import type { Notification, Policy, ProtectedFile, ProtectionLevel, SnapBackSettings, Snapshot } from "../domain/types";
 import { storageManager } from "../lib/idb-fallback";
 import { NotificationRepo } from "../persistence/NotificationRepo";
 import { PolicyRepo } from "../persistence/PolicyRepo";
@@ -29,10 +16,7 @@ const protectionRepo = new ProtectionRepo();
 const notificationRepo = new NotificationRepo();
 const policyRepo = new PolicyRepo();
 
-const generateId = () =>
-	crypto?.randomUUID
-		? crypto.randomUUID()
-		: Math.random().toString(36).slice(2, 11);
+const generateId = () => (crypto?.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2, 11));
 
 // State interface
 export interface SnapBackState {
@@ -105,10 +89,7 @@ const initialState: SnapBackState = {
 };
 
 // Reducer
-export function snapBackReducer(
-	state: SnapBackState,
-	action: SnapBackAction,
-): SnapBackState {
+export function snapBackReducer(state: SnapBackState, action: SnapBackAction): SnapBackState {
 	switch (action.type) {
 		case "INITIALIZE":
 			return { ...state, ...action.payload };
@@ -120,8 +101,8 @@ export function snapBackReducer(
 				currentFilePath: action.payload.filePath,
 				currentFileContent: action.payload.content,
 				currentProtectionLevel:
-					state.protectedFiles.find((f) => f.path === action.payload.filePath)
-						?.protectionLevel || "unprotected",
+					state.protectedFiles.find((f) => f.path === action.payload.filePath)?.protectionLevel ||
+					"unprotected",
 			};
 
 		case "UPDATE_FILE_CONTENT":
@@ -137,9 +118,7 @@ export function snapBackReducer(
 			};
 
 		case "PROTECT_FILE": {
-			const existing = state.protectedFiles.find(
-				(f) => f.path === action.payload.path,
-			);
+			const existing = state.protectedFiles.find((f) => f.path === action.payload.path);
 
 			const record: ProtectedFile = existing
 				? { ...existing, protectionLevel: action.payload.level }
@@ -154,9 +133,7 @@ export function snapBackReducer(
 			return {
 				...state,
 				protectedFiles: existing
-					? state.protectedFiles.map((file) =>
-							file.path === record.path ? record : file,
-						)
+					? state.protectedFiles.map((file) => (file.path === record.path ? record : file))
 					: [...state.protectedFiles, record],
 			};
 		}
@@ -166,20 +143,14 @@ export function snapBackReducer(
 			// The actual removal will be handled by the debounced callback in the provider
 			return {
 				...state,
-				protectedFiles: state.protectedFiles.filter(
-					(f) => f.path !== action.payload,
-				),
+				protectedFiles: state.protectedFiles.filter((f) => f.path !== action.payload),
 			};
 
 		case "ADD_SNAPSHOT": {
-			const exists = state.snapshots.some(
-				(snapshot) => snapshot.id === action.payload.id,
-			);
+			const exists = state.snapshots.some((snapshot) => snapshot.id === action.payload.id);
 			return {
 				...state,
-				snapshots: exists
-					? state.snapshots
-					: [action.payload, ...state.snapshots],
+				snapshots: exists ? state.snapshots : [action.payload, ...state.snapshots],
 			};
 		}
 
@@ -193,9 +164,7 @@ export function snapBackReducer(
 			return {
 				...state,
 				snapshots: state.snapshots.map((snapshot) =>
-					snapshot.id === action.payload.id
-						? { ...snapshot, ...action.payload.data }
-						: snapshot,
+					snapshot.id === action.payload.id ? { ...snapshot, ...action.payload.data } : snapshot,
 				),
 			};
 
@@ -216,9 +185,7 @@ export function snapBackReducer(
 		case "REMOVE_NOTIFICATION":
 			return {
 				...state,
-				notifications: state.notifications.filter(
-					(n) => n.id !== action.payload,
-				),
+				notifications: state.notifications.filter((n) => n.id !== action.payload),
 			};
 
 		case "CLEAR_NOTIFICATIONS":
@@ -284,9 +251,7 @@ interface SnapBackContextType {
 	dispatch: React.Dispatch<SnapBackAction>;
 }
 
-const SnapBackContext = createContext<SnapBackContextType | undefined>(
-	undefined,
-);
+const SnapBackContext = createContext<SnapBackContextType | undefined>(undefined);
 
 // Provider component
 export function SnapBackProvider({ children }: { children: ReactNode }) {
@@ -357,13 +322,12 @@ export function SnapBackProvider({ children }: { children: ReactNode }) {
 				const isIDBAvailable = await storageManager.initialize();
 
 				// Load data from repositories
-				const [snapshots, protectedFiles, notifications, policies] =
-					await Promise.all([
-						snapshotRepo.getAll(),
-						protectionRepo.getAll(),
-						notificationRepo.getRecent(50), // Load last 50 notifications
-						policyRepo.getAll(),
-					]);
+				const [snapshots, protectedFiles, notifications, policies] = await Promise.all([
+					snapshotRepo.getAll(),
+					protectionRepo.getAll(),
+					notificationRepo.getRecent(50), // Load last 50 notifications
+					policyRepo.getAll(),
+				]);
 
 				dispatch({
 					type: "INITIALIZE",
@@ -393,8 +357,7 @@ export function SnapBackProvider({ children }: { children: ReactNode }) {
 							id: "idb-warning",
 							type: "warning",
 							title: "Storage Warning",
-							message:
-								"IndexedDB is not available. Data will not be persisted across sessions.",
+							message: "IndexedDB is not available. Data will not be persisted across sessions.",
 							timestamp: new Date(),
 							duration: 0, // Don't auto-dismiss
 						},
@@ -403,8 +366,7 @@ export function SnapBackProvider({ children }: { children: ReactNode }) {
 			} catch (error) {
 				dispatch({
 					type: "SET_ERROR",
-					payload:
-						error instanceof Error ? error.message : "Failed to initialize",
+					payload: error instanceof Error ? error.message : "Failed to initialize",
 				});
 			} finally {
 				dispatch({ type: "SET_LOADING", payload: false });
@@ -414,11 +376,7 @@ export function SnapBackProvider({ children }: { children: ReactNode }) {
 		initialize();
 	}, []);
 
-	return (
-		<SnapBackContext.Provider value={{ state, dispatch }}>
-			{children}
-		</SnapBackContext.Provider>
-	);
+	return <SnapBackContext.Provider value={{ state, dispatch }}>{children}</SnapBackContext.Provider>;
 }
 
 // Hook to use the context

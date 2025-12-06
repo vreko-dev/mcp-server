@@ -26,9 +26,7 @@ export const Tabs = ({
 	contentClassName,
 }: TabsProps) => {
 	const firstTab = propTabs[0];
-	const [active, setActive] = useState<Tab>(
-		firstTab ?? { title: "", value: "" },
-	);
+	const [active, setActive] = useState<Tab>(firstTab ?? { title: "", value: "" });
 
 	return (
 		<>
@@ -44,9 +42,7 @@ export const Tabs = ({
 						onClick={() => setActive(tab)}
 						className={cn(
 							"relative px-6 py-3 rounded-full transition-colors",
-							active.value === tab.value
-								? "text-white"
-								: "text-gray-400 hover:text-gray-300",
+							active.value === tab.value ? "text-white" : "text-gray-400 hover:text-gray-300",
 							tabClassName,
 						)}
 					>
@@ -58,10 +54,7 @@ export const Tabs = ({
 									bounce: 0.2,
 									duration: 0.6,
 								}}
-								className={cn(
-									"absolute inset-0 bg-snapback-green rounded-full",
-									activeTabClassName,
-								)}
+								className={cn("absolute inset-0 bg-snapback-green rounded-full", activeTabClassName)}
 							/>
 						)}
 						<span className="relative z-10 font-medium">{tab.title}</span>

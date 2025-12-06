@@ -8,56 +8,49 @@ interface VSCodeInstallButtonProps {
 	editor?: "vscode" | "cursor" | "all";
 }
 
-export function VSCodeInstallButton({
-	variant = "primary",
-	size = "md",
-	editor = "all",
-}: VSCodeInstallButtonProps) {
+export function VSCodeInstallButton({ variant = "primary", size = "md", editor = "all" }: VSCodeInstallButtonProps) {
 	const [showFallback, setShowFallback] = useState(false);
 	const [selectedEditor, setSelectedEditor] = useState<string>("");
 
-	const tryProtocol = useCallback(
-		async (protocol: string): Promise<boolean> => {
-			return new Promise((resolve) => {
-				// Create hidden iframe to test protocol
-				const iframe = document.createElement("iframe");
-				iframe.style.display = "none";
+	const tryProtocol = useCallback(async (protocol: string): Promise<boolean> => {
+		return new Promise((resolve) => {
+			// Create hidden iframe to test protocol
+			const iframe = document.createElement("iframe");
+			iframe.style.display = "none";
 
-				// If window loses focus, protocol worked (editor opened)
-				const handleBlur = () => {
-					cleanup();
-					resolve(true);
-				};
+			// If window loses focus, protocol worked (editor opened)
+			const handleBlur = () => {
+				cleanup();
+				resolve(true);
+			};
 
-				// Timeout = protocol failed
-				const timeout = setTimeout(() => {
-					cleanup();
-					resolve(false);
-				}, 2000);
+			// Timeout = protocol failed
+			const timeout = setTimeout(() => {
+				cleanup();
+				resolve(false);
+			}, 2000);
 
-				const cleanup = () => {
-					window.removeEventListener("blur", handleBlur);
-					clearTimeout(timeout);
-					if (iframe.parentElement) {
-						iframe.parentElement.removeChild(iframe);
-					}
-				};
-
-				window.addEventListener("blur", handleBlur);
-				document.body.appendChild(iframe);
-
-				try {
-					if (iframe.contentWindow) {
-						iframe.contentWindow.location.replace(protocol);
-					}
-				} catch (_err) {
-					cleanup();
-					resolve(false);
+			const cleanup = () => {
+				window.removeEventListener("blur", handleBlur);
+				clearTimeout(timeout);
+				if (iframe.parentElement) {
+					iframe.parentElement.removeChild(iframe);
 				}
-			});
-		},
-		[],
-	);
+			};
+
+			window.addEventListener("blur", handleBlur);
+			document.body.appendChild(iframe);
+
+			try {
+				if (iframe.contentWindow) {
+					iframe.contentWindow.location.replace(protocol);
+				}
+			} catch (_err) {
+				cleanup();
+				resolve(false);
+			}
+		});
+	}, []);
 
 	const handleClick = useCallback(async () => {
 		const protocols: Array<[string, string]> = [];
@@ -79,13 +72,7 @@ export function VSCodeInstallButton({
 		}
 
 		// If all protocols failed, show fallback
-		setSelectedEditor(
-			editor === "vscode"
-				? "VS Code"
-				: editor === "cursor"
-					? "Cursor"
-					: "VS Code",
-		);
+		setSelectedEditor(editor === "vscode" ? "VS Code" : editor === "cursor" ? "Cursor" : "VS Code");
 		setShowFallback(true);
 	}, [editor, tryProtocol]);
 
@@ -97,8 +84,7 @@ export function VSCodeInstallButton({
 
 	const variantClasses = {
 		primary: "bg-[#10B981] text-black hover:bg-[#34D399] font-semibold",
-		secondary:
-			"bg-transparent text-[#10B981] border border-[#10B981] hover:bg-[#10B981]/10",
+		secondary: "bg-transparent text-[#10B981] border border-[#10B981] hover:bg-[#10B981]/10",
 	};
 
 	return (
@@ -111,12 +97,7 @@ export function VSCodeInstallButton({
           ${variantClasses[variant]}
         `}
 			>
-				Install{" "}
-				{editor === "vscode"
-					? "VS Code"
-					: editor === "cursor"
-						? "Cursor"
-						: "Extension"}
+				Install {editor === "vscode" ? "VS Code" : editor === "cursor" ? "Cursor" : "Extension"}
 			</button>
 
 			{/* Fallback Modal */}
@@ -129,12 +110,9 @@ export function VSCodeInstallButton({
 						className="bg-[#111111] border border-[#262626] rounded-xl p-6 max-w-md"
 						onClick={(e) => e.stopPropagation()}
 					>
-						<h3 className="text-xl font-bold text-white mb-2">
-							{selectedEditor} Not Found
-						</h3>
+						<h3 className="text-xl font-bold text-white mb-2">{selectedEditor} Not Found</h3>
 						<p className="text-[#A0A0A0] mb-6">
-							{selectedEditor} doesn't appear to be installed. Here are a few
-							ways to get SnapBack:
+							{selectedEditor} doesn't appear to be installed. Here are a few ways to get SnapBack:
 						</p>
 
 						<div className="space-y-3">
@@ -155,17 +133,13 @@ export function VSCodeInstallButton({
 
 							{/* Manual Install Command */}
 							<div>
-								<p className="text-sm text-[#71717A] mb-2 font-medium">
-									Option 2: Manual Install
-								</p>
+								<p className="text-sm text-[#71717A] mb-2 font-medium">Option 2: Manual Install</p>
 								<div className="bg-[#0A0A0A] border border-[#262626] rounded-lg p-3 font-mono text-sm text-[#A0A0A0]">
 									ext install marcellelabs.snapback
 								</div>
 								<button
 									onClick={() => {
-										navigator.clipboard.writeText(
-											"ext install marcellelabs.snapback",
-										);
+										navigator.clipboard.writeText("ext install marcellelabs.snapback");
 									}}
 									className="mt-2 w-full text-[#10B981] hover:text-[#34D399] text-sm font-medium"
 								>
@@ -175,9 +149,7 @@ export function VSCodeInstallButton({
 
 							{/* GitHub Link */}
 							<div>
-								<p className="text-sm text-[#71717A] mb-2 font-medium">
-									Option 3: Build from Source
-								</p>
+								<p className="text-sm text-[#71717A] mb-2 font-medium">Option 3: Build from Source</p>
 								<a
 									href="https://github.com/marcellelabs/snapback"
 									target="_blank"

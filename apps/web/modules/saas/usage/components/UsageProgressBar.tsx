@@ -28,26 +28,15 @@ UsageProgressBar.Skeleton = function UsageProgressBarSkeleton() {
 
 // Empty state component
 UsageProgressBar.Empty = function UsageProgressBarEmpty() {
-	return (
-		<div className="text-neutral-400 text-sm">No usage data available</div>
-	);
+	return <div className="text-neutral-400 text-sm">No usage data available</div>;
 };
 
 // Error state component
-UsageProgressBar.Error = function UsageProgressBarError({
-	error,
-}: {
-	error: Error;
-}) {
+UsageProgressBar.Error = function UsageProgressBarError({ error }: { error: Error }) {
 	return <div className="text-red-400 text-sm">Error: {error.message}</div>;
 };
 
-export function UsageProgressBar({
-	used,
-	limit,
-	label,
-	unit = "",
-}: UsageProgressBarProps) {
+export function UsageProgressBar({ used, limit, label, unit = "" }: UsageProgressBarProps) {
 	// Unlimited plan
 	if (limit === null) {
 		return (
@@ -95,9 +84,7 @@ export function UsageProgressBar({
 				<span className="text-xs text-neutral-400">
 					{remaining.toLocaleString()} {unit} remaining
 				</span>
-				<span className={`text-xs font-medium ${textColor}`}>
-					{percentage.toFixed(1)}%
-				</span>
+				<span className={`text-xs font-medium ${textColor}`}>{percentage.toFixed(1)}%</span>
 			</div>
 		</div>
 	);

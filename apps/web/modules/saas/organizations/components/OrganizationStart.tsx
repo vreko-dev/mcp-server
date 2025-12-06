@@ -6,24 +6,9 @@ export default function OrganizationStart() {
 	return (
 		<div className="@container">
 			<div className="grid @2xl:grid-cols-3 gap-4">
-				<StatsTile
-					title="New clients"
-					value={344}
-					valueFormat="number"
-					trend={0.12}
-				/>
-				<StatsTile
-					title="Revenue"
-					value={5243}
-					valueFormat="currency"
-					trend={0.6}
-				/>
-				<StatsTile
-					title="Churn"
-					value={0.03}
-					valueFormat="percentage"
-					trend={-0.3}
-				/>
+				<StatsTile title="New clients" value={344} valueFormat="number" trend={0.12} />
+				<StatsTile title="Revenue" value={5243} valueFormat="currency" trend={0.6} />
+				<StatsTile title="Churn" value={0.03} valueFormat="percentage" trend={-0.3} />
 			</div>
 
 			<Card className="mt-6">

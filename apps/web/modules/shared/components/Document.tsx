@@ -4,9 +4,7 @@ import { cookies } from "next/headers";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import type { PropsWithChildren } from "react";
 
-export async function Document({
-	children,
-}: PropsWithChildren<{ locale?: string }>) {
+export async function Document({ children }: PropsWithChildren<{ locale?: string }>) {
 	const cookieStore = await cookies();
 	const consentCookie = cookieStore.get("consent");
 

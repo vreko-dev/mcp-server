@@ -29,14 +29,10 @@ export function useMobileOptimization() {
 	});
 
 	// Prefers reduced motion (accessibility)
-	const prefersReducedMotion = useMediaQuery(
-		"(prefers-reduced-motion: reduce)",
-	);
+	const prefersReducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
 
 	// High DPI/Retina detection
-	const isHighDPI = useMediaQuery(
-		"(-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi)",
-	);
+	const isHighDPI = useMediaQuery("(-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi)");
 
 	// Dark mode preference
 	const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");

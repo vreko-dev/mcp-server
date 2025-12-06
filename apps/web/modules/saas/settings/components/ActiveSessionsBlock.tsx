@@ -58,9 +58,7 @@ export function ActiveSessionsBlock() {
 								<ComputerIcon className="size-6 shrink-0 text-primary/50" />
 								<div>
 									<strong className="block text-sm">
-										{session.id === currentSession?.id
-											? "Current Session"
-											: session.ipAddress}
+										{session.id === currentSession?.id ? "Current Session" : session.ipAddress}
 									</strong>
 									<small className="block text-foreground/60 text-xs leading-tight">
 										{session.userAgent}

@@ -5,25 +5,15 @@
 
 "use client";
 
-import {
-	fetchAIDetectionStats,
-	fetchRecentActivity,
-	fetchUserMetrics,
-} from "@/lib/dashboard/api";
-import type {
-	Activity,
-	AIDetectionStat,
-	DashboardMetrics,
-} from "@/lib/dashboard/metrics";
+import { fetchAIDetectionStats, fetchRecentActivity, fetchUserMetrics } from "@/lib/dashboard/api";
+import type { Activity, AIDetectionStat, DashboardMetrics } from "@/lib/dashboard/metrics";
 import { useResourceQuery } from "@/lib/use-resource-query";
 import { useSession } from "@/modules/saas/auth/hooks/use-session";
 
 /**
  * Fetch dashboard metrics with Resource pattern
  */
-export function useDashboardMetrics(): ReturnType<
-	typeof useResourceQuery<DashboardMetrics>
-> {
+export function useDashboardMetrics(): ReturnType<typeof useResourceQuery<DashboardMetrics>> {
 	const { user } = useSession();
 
 	return useResourceQuery<DashboardMetrics>(
@@ -44,9 +34,7 @@ export function useDashboardMetrics(): ReturnType<
 /**
  * Fetch AI detection statistics with Resource pattern
  */
-export function useAIDetectionStats(): ReturnType<
-	typeof useResourceQuery<AIDetectionStat[]>
-> {
+export function useAIDetectionStats(): ReturnType<typeof useResourceQuery<AIDetectionStat[]>> {
 	const { user } = useSession();
 
 	return useResourceQuery<AIDetectionStat[]>(
@@ -67,9 +55,7 @@ export function useAIDetectionStats(): ReturnType<
 /**
  * Fetch recent activity with Resource pattern
  */
-export function useRecentActivity(): ReturnType<
-	typeof useResourceQuery<Activity[]>
-> {
+export function useRecentActivity(): ReturnType<typeof useResourceQuery<Activity[]>> {
 	const { user } = useSession();
 
 	return useResourceQuery<Activity[]>(

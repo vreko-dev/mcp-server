@@ -23,11 +23,7 @@ export type ProtectionStatus = (typeof PROTECTION_STATUSES)[number];
  * Recent activity action discriminated union
  * Enables type-safe handling of different activity types
  */
-export const RECENT_ACTIVITY_ACTIONS = [
-	"checkpoint_created",
-	"recovery_performed",
-	"ai_detected",
-] as const;
+export const RECENT_ACTIVITY_ACTIONS = ["checkpoint_created", "recovery_performed", "ai_detected"] as const;
 export type RecentActivityAction = (typeof RECENT_ACTIVITY_ACTIONS)[number];
 
 /**
@@ -137,25 +133,18 @@ export type DashboardMetricsError = z.infer<typeof DashboardMetricsErrorSchema>;
  * Dashboard API response (success | error)
  * Type guard helpers for pattern matching
  */
-export const DashboardMetricsResponseSchema = z.union([
-	DashboardMetricsSchema,
-	DashboardMetricsErrorSchema,
-]);
+export const DashboardMetricsResponseSchema = z.union([DashboardMetricsSchema, DashboardMetricsErrorSchema]);
 export type DashboardMetricsResponse = z.infer<typeof DashboardMetricsResponseSchema>;
 
 /**
  * Type guards for discriminated unions
  * Enables safe pattern matching in UI components
  */
-export function isDashboardMetrics(
-	response: DashboardMetricsResponse
-): response is DashboardMetrics {
+export function isDashboardMetrics(response: DashboardMetricsResponse): response is DashboardMetrics {
 	return !("error" in response) || response.error !== true;
 }
 
-export function isDashboardMetricsError(
-	response: DashboardMetricsResponse
-): response is DashboardMetricsError {
+export function isDashboardMetricsError(response: DashboardMetricsResponse): response is DashboardMetricsError {
 	return "error" in response && response.error === true;
 }
 

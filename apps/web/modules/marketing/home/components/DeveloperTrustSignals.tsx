@@ -3,14 +3,7 @@
 import { Card3D } from "@marketing/components/ui/3d-card";
 import { InfiniteMovingCards } from "@marketing/components/ui/infinite-moving-cards";
 import { Badge } from "@ui/components/badge";
-import {
-	CodeIcon,
-	FileTextIcon,
-	GithubIcon,
-	LockIcon,
-	ServerIcon,
-	ShieldCheckIcon,
-} from "lucide-react";
+import { CodeIcon, FileTextIcon, GithubIcon, LockIcon, ServerIcon, ShieldCheckIcon } from "lucide-react";
 
 export function DeveloperTrustSignals() {
 	const trustSignals = [
@@ -85,8 +78,7 @@ export function DeveloperTrustSignals() {
 			<div className="container max-w-5xl">
 				<div className="text-center">
 					<h2 className="font-bold text-3xl md:text-4xl lg:text-5xl">
-						Built for Developers,{" "}
-						<span className="text-primary">Trusted by Teams</span>
+						Built for Developers, <span className="text-primary">Trusted by Teams</span>
 					</h2>
 					<p className="mx-auto mt-4 max-w-2xl text-balance text-foreground/60 text-lg">
 						We take security, transparency, and developer experience seriously
@@ -106,17 +98,13 @@ export function DeveloperTrustSignals() {
 										<Icon className="text-primary size-6" />
 									</div>
 									<h3 className="font-semibold text-lg">{signal.title}</h3>
-									<p className="mt-2 text-foreground/70 text-sm">
-										{signal.description}
-									</p>
+									<p className="mt-2 text-foreground/70 text-sm">{signal.description}</p>
 									<div className="mt-4">
 										<Badge status="info" className="text-xs">
 											{signal.badge}
 										</Badge>
 									</div>
-									<div className="mt-2 text-xs text-foreground/60">
-										{signal.stats}
-									</div>
+									<div className="mt-2 text-xs text-foreground/60">{signal.stats}</div>
 								</div>
 							</Card3D>
 						);
@@ -140,13 +128,10 @@ export function DeveloperTrustSignals() {
 				<div className="mt-16 rounded-3xl border bg-elevated-2 p-8">
 					<div className="grid gap-8 md:grid-cols-2">
 						<div>
-							<h3 className="font-bold text-2xl">
-								Open Source & Community Driven
-							</h3>
+							<h3 className="font-bold text-2xl">Open Source & Community Driven</h3>
 							<p className="mt-4 text-foreground/70">
-								SnapBack is built in the open with contributions from developers
-								worldwide. Our code is audited by the community and security
-								experts.
+								SnapBack is built in the open with contributions from developers worldwide. Our code is
+								audited by the community and security experts.
 							</p>
 							<div className="mt-6 flex flex-wrap gap-2">
 								<Badge status="success">MIT License</Badge>
@@ -161,9 +146,7 @@ export function DeveloperTrustSignals() {
 								<div className="relative rounded-xl border bg-elevated-3 p-4">
 									<div className="flex items-center gap-2">
 										<GithubIcon className="text-foreground size-5" />
-										<span className="font-mono text-sm">
-											github.com/snapback/snapback
-										</span>
+										<span className="font-mono text-sm">github.com/snapback/snapback</span>
 									</div>
 									<div className="mt-3 flex items-center gap-4 text-xs">
 										<div className="flex items-center gap-1">
@@ -188,8 +171,7 @@ export function DeveloperTrustSignals() {
 							<h4 className="font-semibold">Zero Data Retention</h4>
 						</div>
 						<p className="mt-2 text-foreground/70 text-sm">
-							Your code never leaves your machine. All processing happens
-							locally.
+							Your code never leaves your machine. All processing happens locally.
 						</p>
 					</div>
 					<div className="rounded-2xl border bg-elevated-2 p-6 hover:shadow-md transition-all duration-300">

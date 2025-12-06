@@ -31,14 +31,7 @@ export interface AuthMiddlewareConfig {
  * Default configuration
  */
 const defaultConfig: AuthMiddlewareConfig = {
-	protectedRoutes: [
-		"/dashboard",
-		"/settings",
-		"/admin",
-		"/api-keys",
-		"/choose-plan",
-		"/onboarding",
-	],
+	protectedRoutes: ["/dashboard", "/settings", "/admin", "/api-keys", "/choose-plan", "/onboarding"],
 	authRoutes: ["/auth/login", "/auth/signup"],
 	loginPath: "/auth/login",
 	dashboardPath: "/dashboard",
@@ -48,10 +41,7 @@ const defaultConfig: AuthMiddlewareConfig = {
 /**
  * Check if path matches protected routes
  */
-function isProtectedRoute(
-	pathname: string,
-	protectedRoutes: string[],
-): boolean {
+function isProtectedRoute(pathname: string, protectedRoutes: string[]): boolean {
 	return protectedRoutes.some((route) => pathname.startsWith(route));
 }
 
@@ -115,13 +105,7 @@ export async function authMiddleware(
 	const { pathname } = request.nextUrl;
 	const mergedConfig = { ...defaultConfig, ...config };
 
-	const {
-		protectedRoutes,
-		authRoutes,
-		loginPath,
-		dashboardPath,
-		sessionCookieName,
-	} = mergedConfig;
+	const { protectedRoutes, authRoutes, loginPath, dashboardPath, sessionCookieName } = mergedConfig;
 
 	// Check if route requires authentication
 	const isProtected = isProtectedRoute(pathname, protectedRoutes);
@@ -175,9 +159,7 @@ export async function authMiddlewareWithMonitoring(
 
 	// Optimistic checks should be <5ms
 	if (duration > 5) {
-		console.warn(
-			`Slow middleware execution: ${duration}ms for ${request.nextUrl.pathname}`,
-		);
+		console.warn(`Slow middleware execution: ${duration}ms for ${request.nextUrl.pathname}`);
 	}
 
 	return response;

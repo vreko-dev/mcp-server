@@ -68,10 +68,7 @@ export default function Footer() {
 							style={{ color: snapbackColors.text.secondary }}
 						>
 							Ship fast. Break things.{" "}
-							<span
-								className="font-semibold"
-								style={{ color: snapbackColors.green.DEFAULT }}
-							>
+							<span className="font-semibold" style={{ color: snapbackColors.green.DEFAULT }}>
 								SnapBack
 							</span>{" "}
 							instantly. Your AI-proof safety net for fearless development.
@@ -89,13 +86,8 @@ export default function Footer() {
 									style={{
 										color: snapbackColors.text.secondary,
 									}}
-									onMouseEnter={(e) =>
-										(e.currentTarget.style.color = snapbackColors.text.primary)
-									}
-									onMouseLeave={(e) =>
-										(e.currentTarget.style.color =
-											snapbackColors.text.secondary)
-									}
+									onMouseEnter={(e) => (e.currentTarget.style.color = snapbackColors.text.primary)}
+									onMouseLeave={(e) => (e.currentTarget.style.color = snapbackColors.text.secondary)}
 									aria-label={social.label}
 								>
 									<social.icon className="h-5 w-5" />
@@ -108,10 +100,7 @@ export default function Footer() {
 					<div className="lg:col-span-2 grid grid-cols-2 md:grid-cols-4 gap-8">
 						{footerRoutes.map((group) => (
 							<div key={group.category}>
-								<h4
-									className="font-semibold mb-4"
-									style={{ color: snapbackColors.text.primary }}
-								>
+								<h4 className="font-semibold mb-4" style={{ color: snapbackColors.text.primary }}>
 									{group.category}
 								</h4>
 								<ul className="space-y-3">
@@ -124,12 +113,10 @@ export default function Footer() {
 													color: snapbackColors.text.secondary,
 												}}
 												onMouseEnter={(e) =>
-													(e.currentTarget.style.color =
-														snapbackColors.text.primary)
+													(e.currentTarget.style.color = snapbackColors.text.primary)
 												}
 												onMouseLeave={(e) =>
-													(e.currentTarget.style.color =
-														snapbackColors.text.secondary)
+													(e.currentTarget.style.color = snapbackColors.text.secondary)
 												}
 											>
 												{route.label}
@@ -143,10 +130,7 @@ export default function Footer() {
 
 					{/* Newsletter Signup */}
 					<div className="lg:col-span-1">
-						<h4
-							className="font-semibold mb-4"
-							style={{ color: snapbackColors.text.primary }}
-						>
+						<h4 className="font-semibold mb-4" style={{ color: snapbackColors.text.primary }}>
 							Stay updated
 						</h4>
 						<div className="flex flex-col gap-2">
@@ -179,10 +163,7 @@ export default function Footer() {
 				</div>
 
 				{/* Bottom Bar */}
-				<div
-					className="pt-8 mt-16 border-t"
-					style={{ borderColor: snapbackColors.border.DEFAULT }}
-				>
+				<div className="pt-8 mt-16 border-t" style={{ borderColor: snapbackColors.border.DEFAULT }}>
 					<div className="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-8">
 						<div
 							className="flex items-center justify-center text-sm"
@@ -192,13 +173,8 @@ export default function Footer() {
 						</div>
 
 						<div className="text-sm flex items-center gap-2">
-							<div style={{ color: snapbackColors.text.secondary }}>
-								Code Breaks.
-							</div>
-							<div
-								className="font-semibold"
-								style={{ color: snapbackColors.green.DEFAULT }}
-							>
+							<div style={{ color: snapbackColors.text.secondary }}>Code Breaks.</div>
+							<div className="font-semibold" style={{ color: snapbackColors.green.DEFAULT }}>
 								SnapBack
 							</div>
 							<span className="font-bold">🧢</span>

@@ -130,9 +130,7 @@ export function TechnicalArchitecture() {
 		<section className="py-16 bg-muted/50">
 			<div className="container max-w-5xl">
 				<div className="text-center mb-12">
-					<h2 className="font-bold text-3xl md:text-4xl">
-						Built for Developers, By Developers
-					</h2>
+					<h2 className="font-bold text-3xl md:text-4xl">Built for Developers, By Developers</h2>
 					<p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
 						Technical architecture designed for performance and extensibility
 					</p>
@@ -141,14 +139,10 @@ export function TechnicalArchitecture() {
 				<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 					<Card3D className="h-full">
 						<div className="p-6">
-							<h3 className="font-semibold text-xl mb-4">
-								Architecture Highlights
-							</h3>
+							<h3 className="font-semibold text-xl mb-4">Architecture Highlights</h3>
 							<div className="space-y-4">
 								<div>
-									<h4 className="font-medium text-lg text-primary">
-										Core Package (Pure Logic)
-									</h4>
+									<h4 className="font-medium text-lg text-primary">Core Package (Pure Logic)</h4>
 									<ul className="mt-2 space-y-1 text-sm">
 										<li className="flex items-center gap-2">
 											<span className="w-1.5 h-1.5 bg-primary rounded-full" />
@@ -170,9 +164,7 @@ export function TechnicalArchitecture() {
 								</div>
 
 								<div>
-									<h4 className="font-medium text-lg text-primary">
-										Platform Adapters
-									</h4>
+									<h4 className="font-medium text-lg text-primary">Platform Adapters</h4>
 									<ul className="mt-2 space-y-1 text-sm">
 										<li className="flex items-center gap-2">
 											<span className="w-1.5 h-1.5 bg-primary rounded-full" />
@@ -190,9 +182,7 @@ export function TechnicalArchitecture() {
 								</div>
 
 								<div>
-									<h4 className="font-medium text-lg text-primary">
-										Storage Layer
-									</h4>
+									<h4 className="font-medium text-lg text-primary">Storage Layer</h4>
 									<ul className="mt-2 space-y-1 text-sm">
 										<li className="flex items-center gap-2">
 											<span className="w-1.5 h-1.5 bg-primary rounded-full" />
@@ -215,13 +205,8 @@ export function TechnicalArchitecture() {
 					<div>
 						<Card3D className="h-full">
 							<div className="p-6">
-								<h3 className="font-semibold text-xl mb-4">
-									Repository Structure
-								</h3>
-								<FileTree
-									items={fileTreeData}
-									className="max-h-80 overflow-y-auto"
-								/>
+								<h3 className="font-semibold text-xl mb-4">Repository Structure</h3>
+								<FileTree items={fileTreeData} className="max-h-80 overflow-y-auto" />
 							</div>
 						</Card3D>
 					</div>

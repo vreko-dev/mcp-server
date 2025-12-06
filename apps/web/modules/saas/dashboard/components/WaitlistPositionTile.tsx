@@ -3,13 +3,7 @@
 import { useSession } from "@saas/auth/hooks/use-session";
 import { useQuery } from "@tanstack/react-query";
 import { orpcClient } from "@/modules/shared/lib/orpc-client";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/modules/ui/components/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/modules/ui/components/card";
 import { Skeleton } from "@/modules/ui/components/skeleton";
 
 export function WaitlistPositionTile() {
@@ -57,12 +51,8 @@ export function WaitlistPositionTile() {
 			<CardContent>
 				<div className="space-y-4">
 					<div className="flex items-baseline gap-2">
-						<span className="text-4xl font-bold text-snapback-green">
-							#{data.position}
-						</span>
-						<span className="text-sm text-muted-foreground">
-							{data.fromCache && "(cached)"}
-						</span>
+						<span className="text-4xl font-bold text-snapback-green">#{data.position}</span>
+						<span className="text-sm text-muted-foreground">{data.fromCache && "(cached)"}</span>
 					</div>
 
 					{data.status && (
@@ -85,9 +75,7 @@ export function WaitlistPositionTile() {
 					{referralsData && referralsData.count > 0 && (
 						<div className="pt-4 border-t">
 							<div className="text-sm text-muted-foreground">Referrals</div>
-							<div className="text-2xl font-semibold">
-								{referralsData.count}
-							</div>
+							<div className="text-2xl font-semibold">{referralsData.count}</div>
 							<div className="text-xs text-muted-foreground">
 								{referralsData.totalPoints} points earned
 							</div>

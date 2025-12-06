@@ -57,9 +57,7 @@ export const env = createEnv({
 		REDIS_URL: z.string().url().optional(),
 
 		// Node environment
-		NODE_ENV: z
-			.enum(["development", "test", "production"])
-			.default("development"),
+		NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
 	},
 
 	/**
@@ -122,15 +120,11 @@ export const env = createEnv({
 		NEXT_PUBLIC_ROOT_DOMAIN: process.env.NEXT_PUBLIC_ROOT_DOMAIN,
 		NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
 		NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
-		NEXT_PUBLIC_GOOGLE_ANALYTICS_ID:
-			process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID,
+		NEXT_PUBLIC_GOOGLE_ANALYTICS_ID: process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID,
 		NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
-		NEXT_PUBLIC_AVATARS_BUCKET_NAME:
-			process.env.NEXT_PUBLIC_AVATARS_BUCKET_NAME,
-		NEXT_PUBLIC_PRICE_ID_PRO_MONTHLY:
-			process.env.NEXT_PUBLIC_PRICE_ID_PRO_MONTHLY,
-		NEXT_PUBLIC_PRICE_ID_PRO_YEARLY:
-			process.env.NEXT_PUBLIC_PRICE_ID_PRO_YEARLY,
+		NEXT_PUBLIC_AVATARS_BUCKET_NAME: process.env.NEXT_PUBLIC_AVATARS_BUCKET_NAME,
+		NEXT_PUBLIC_PRICE_ID_PRO_MONTHLY: process.env.NEXT_PUBLIC_PRICE_ID_PRO_MONTHLY,
+		NEXT_PUBLIC_PRICE_ID_PRO_YEARLY: process.env.NEXT_PUBLIC_PRICE_ID_PRO_YEARLY,
 		NEXT_PUBLIC_PRICE_ID_LIFETIME: process.env.NEXT_PUBLIC_PRICE_ID_LIFETIME,
 	},
 

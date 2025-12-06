@@ -13,11 +13,7 @@ export function trackRenderTime(componentName: string, renderTime: number) {
 }
 
 // Track API response times
-export function trackApiPerformance(
-	endpoint: string,
-	responseTime: number,
-	statusCode: number,
-) {
+export function trackApiPerformance(endpoint: string, responseTime: number, statusCode: number) {
 	if (typeof window !== "undefined" && posthog.__loaded) {
 		posthog.capture("api_performance", {
 			endpoint,

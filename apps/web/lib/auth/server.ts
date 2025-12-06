@@ -74,10 +74,7 @@ export async function requireAuth(redirectTo = "/auth/login") {
  * }
  * ```
  */
-export async function requireRole(
-	allowedRoles: string[],
-	redirectTo = "/dashboard",
-) {
+export async function requireRole(allowedRoles: string[], redirectTo = "/dashboard") {
 	const auth = await requireAuth();
 
 	if (!allowedRoles.includes(auth.role)) {

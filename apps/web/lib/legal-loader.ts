@@ -77,12 +77,7 @@ export function getAllLegalPages(): LegalPage[] {
 	return allPages;
 }
 
-export function getLegalPage(
-	pagePath: string,
-	locale = "en",
-): LegalPage | undefined {
+export function getLegalPage(pagePath: string, locale = "en"): LegalPage | undefined {
 	const allPages = getAllLegalPages();
-	return allPages.find(
-		(page) => page.path === pagePath && page.locale === locale,
-	);
+	return allPages.find((page) => page.path === pagePath && page.locale === locale);
 }

@@ -36,16 +36,11 @@ export class ErrorBoundary extends Component<Props, State> {
 
 			return (
 				<div className="flex flex-col items-center justify-center min-h-[200px] p-6 bg-red-500/10 border border-red-500/30 rounded-lg">
-					<h2 className="text-xl font-bold text-white mb-2">
-						Something went wrong
-					</h2>
+					<h2 className="text-xl font-bold text-white mb-2">Something went wrong</h2>
 					<p className="text-neutral-300 mb-4">
 						We're sorry, but something unexpected happened. Please try again.
 					</p>
-					<Button
-						onClick={() => this.setState({ hasError: false })}
-						variant="outline"
-					>
+					<Button onClick={() => this.setState({ hasError: false })} variant="outline">
 						Try Again
 					</Button>
 				</div>

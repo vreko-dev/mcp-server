@@ -13,35 +13,19 @@ export interface SettingsSectionProps {
 	className?: string;
 }
 
-export function SettingsSection({
-	title,
-	description,
-	children,
-	advanced = false,
-	className,
-}: SettingsSectionProps) {
+export function SettingsSection({ title, description, children, advanced = false, className }: SettingsSectionProps) {
 	const [expanded, setExpanded] = useState(!advanced);
 
 	return (
-		<motion.div
-			layout
-			className={cn("border-b border-terminal-border pb-6", className)}
-		>
-			<button
-				type="button"
-				onClick={() => setExpanded(!expanded)}
-				className="w-full text-left"
-			>
+		<motion.div layout className={cn("border-b border-terminal-border pb-6", className)}>
+			<button type="button" onClick={() => setExpanded(!expanded)} className="w-full text-left">
 				<div className="flex justify-between items-center">
 					<div>
 						<h3 className="font-semibold text-base">{title}</h3>
 						<p className="text-sm text-gray-500 mt-1">{description}</p>
 					</div>
 
-					<motion.div
-						animate={{ rotate: expanded ? 180 : 0 }}
-						className="text-gray-400"
-					>
+					<motion.div animate={{ rotate: expanded ? 180 : 0 }} className="text-gray-400">
 						<ChevronDown className="w-5 h-5" />
 					</motion.div>
 				</div>

@@ -10,11 +10,7 @@ interface CyclingChipProps {
 	className?: string;
 }
 
-export function CyclingChip({
-	items,
-	interval = 3000,
-	className,
-}: CyclingChipProps) {
+export function CyclingChip({ items, interval = 3000, className }: CyclingChipProps) {
 	const [index, setIndex] = useState(0);
 
 	useEffect(() => {
@@ -25,12 +21,7 @@ export function CyclingChip({
 	}, [items.length, interval]);
 
 	return (
-		<div
-			className={cn(
-				"relative h-6 overflow-hidden flex items-center",
-				className,
-			)}
-		>
+		<div className={cn("relative h-6 overflow-hidden flex items-center", className)}>
 			<AnimatePresence mode="wait">
 				<motion.div
 					key={index}

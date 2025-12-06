@@ -2,12 +2,7 @@
 import { cn } from "@marketing/lib/utils";
 // import { ASSETS } from "@marketing/lib/assets"
 import { Logo } from "@shared/components/Logo";
-import {
-	AnimatePresence,
-	m,
-	useMotionValueEvent,
-	useScroll,
-} from "motion/react";
+import { AnimatePresence, m, useMotionValueEvent, useScroll } from "motion/react";
 // import Image from "next/image"
 import Link from "next/link";
 import type React from "react";

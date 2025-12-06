@@ -7,13 +7,7 @@
 
 import { Alert, AlertDescription } from "@ui/components/alert";
 import { Button } from "@ui/components/button";
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogHeader,
-	DialogTitle,
-} from "@ui/components/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@ui/components/dialog";
 import { Input } from "@ui/components/input";
 import { AlertTriangleIcon, KeyIcon, ShieldCheckIcon } from "lucide-react";
 import { useState } from "react";
@@ -25,12 +19,7 @@ interface StepUpModalProps {
 	action?: string; // Description of the action requiring step-up
 }
 
-export function StepUpModal({
-	isOpen,
-	onClose,
-	onSuccess,
-	action = "this action",
-}: StepUpModalProps) {
+export function StepUpModal({ isOpen, onClose, onSuccess, action = "this action" }: StepUpModalProps) {
 	const [method, setMethod] = useState<"passkey" | "totp" | null>(null);
 	const [totpCode, setTotpCode] = useState("");
 	const [isVerifying, setIsVerifying] = useState(false);
@@ -54,9 +43,8 @@ export function StepUpModal({
 			const { challenge, rpId, timeout } = await challengeResponse.json();
 
 			// Step 2: Convert challenge to Uint8Array for WebAuthn
-			const challengeBuffer = Uint8Array.from(
-				atob(challenge.replace(/-/g, "+").replace(/_/g, "/")),
-				(c) => c.charCodeAt(0),
+			const challengeBuffer = Uint8Array.from(atob(challenge.replace(/-/g, "+").replace(/_/g, "/")), (c) =>
+				c.charCodeAt(0),
 			);
 
 			// Step 3: Use WebAuthn API to sign challenge with passkey
@@ -75,24 +63,15 @@ export function StepUpModal({
 
 			// Step 4: Convert credential to base64 for transport
 			const publicKeyCredential = credential as PublicKeyCredential;
-			const response =
-				publicKeyCredential.response as AuthenticatorAssertionResponse;
+			const response = publicKeyCredential.response as AuthenticatorAssertionResponse;
 
 			const passkeyResponse = {
 				id: publicKeyCredential.id,
-				rawId: btoa(
-					String.fromCharCode(...new Uint8Array(publicKeyCredential.rawId)),
-				),
+				rawId: btoa(String.fromCharCode(...new Uint8Array(publicKeyCredential.rawId))),
 				response: {
-					authenticatorData: btoa(
-						String.fromCharCode(...new Uint8Array(response.authenticatorData)),
-					),
-					clientDataJSON: btoa(
-						String.fromCharCode(...new Uint8Array(response.clientDataJSON)),
-					),
-					signature: btoa(
-						String.fromCharCode(...new Uint8Array(response.signature)),
-					),
+					authenticatorData: btoa(String.fromCharCode(...new Uint8Array(response.authenticatorData))),
+					clientDataJSON: btoa(String.fromCharCode(...new Uint8Array(response.clientDataJSON))),
+					signature: btoa(String.fromCharCode(...new Uint8Array(response.signature))),
 					userHandle: response.userHandle
 						? btoa(String.fromCharCode(...new Uint8Array(response.userHandle)))
 						: null,
@@ -121,9 +100,7 @@ export function StepUpModal({
 			onSuccess();
 			onClose();
 		} catch (err) {
-			setError(
-				err instanceof Error ? err.message : "Passkey verification failed",
-			);
+			setError(err instanceof Error ? err.message : "Passkey verification failed");
 		} finally {
 			setIsVerifying(false);
 		}
@@ -158,9 +135,7 @@ export function StepUpModal({
 
 			// Check if passkey enrollment is now required
 			if (data.passkeyEnrollmentRequired) {
-				setError(
-					"⚠️ You've used TOTP once. Please enroll a passkey for enhanced security.",
-				);
+				setError("⚠️ You've used TOTP once. Please enroll a passkey for enhanced security.");
 				// Show enrollment prompt
 				setTimeout(() => {
 					window.location.href = "/settings/security/passkey";
@@ -184,9 +159,7 @@ export function StepUpModal({
 						<ShieldCheckIcon className="size-5 text-primary" />
 						Confirm Your Identity
 					</DialogTitle>
-					<DialogDescription>
-						Please verify your identity to proceed with {action}.
-					</DialogDescription>
+					<DialogDescription>Please verify your identity to proceed with {action}.</DialogDescription>
 				</DialogHeader>
 
 				<div className="space-y-4 py-4">
@@ -199,11 +172,7 @@ export function StepUpModal({
 
 					{!method && (
 						<div className="space-y-3">
-							<Button
-								variant="secondary"
-								className="w-full"
-								onClick={() => setMethod("passkey")}
-							>
+							<Button variant="secondary" className="w-full" onClick={() => setMethod("passkey")}>
 								<KeyIcon className="mr-2 size-4" />
 								Verify with Passkey
 							</Button>
@@ -223,15 +192,10 @@ export function StepUpModal({
 					{method === "passkey" && (
 						<div className="space-y-4">
 							<p className="text-muted-foreground text-sm">
-								Use your passkey (Face ID, Touch ID, or security key) to verify
-								your identity.
+								Use your passkey (Face ID, Touch ID, or security key) to verify your identity.
 							</p>
 							<div className="flex gap-2">
-								<Button
-									variant="light"
-									onClick={() => setMethod(null)}
-									disabled={isVerifying}
-								>
+								<Button variant="light" onClick={() => setMethod(null)} disabled={isVerifying}>
 									Back
 								</Button>
 								<Button
@@ -251,10 +215,7 @@ export function StepUpModal({
 					{method === "totp" && (
 						<div className="space-y-4">
 							<div>
-								<label
-									htmlFor="totp-code"
-									className="mb-2 block font-medium text-sm"
-								>
+								<label htmlFor="totp-code" className="mb-2 block font-medium text-sm">
 									Authenticator Code
 								</label>
 								<Input
@@ -266,19 +227,13 @@ export function StepUpModal({
 									maxLength={6}
 									placeholder="000000"
 									value={totpCode}
-									onChange={(e) =>
-										setTotpCode(e.target.value.replace(/\D/g, ""))
-									}
+									onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, ""))}
 									autoComplete="one-time-code"
 									className="text-center text-2xl tracking-widest"
 								/>
 							</div>
 							<div className="flex gap-2">
-								<Button
-									variant="light"
-									onClick={() => setMethod(null)}
-									disabled={isVerifying}
-								>
+								<Button variant="light" onClick={() => setMethod(null)} disabled={isVerifying}>
 									Back
 								</Button>
 								<Button

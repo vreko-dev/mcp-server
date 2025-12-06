@@ -24,8 +24,7 @@ export const metadata: Metadata = {
 		default: `${config.appName} - Code Breaks.\nSnap Back.`,
 		template: `%s | ${config.appName}`,
 	},
-	description:
-		"Visual protection for every file. AI-aware checkpoints. Instant recovery.",
+	description: "Visual protection for every file. AI-aware checkpoints. Instant recovery.",
 	alternates: {
 		canonical: siteUrl,
 	},
@@ -35,8 +34,7 @@ export const metadata: Metadata = {
 	},
 	openGraph: {
 		title: `${config.appName} - Code Breaks.\nSnap Back.`,
-		description:
-			"Visual protection for every file. AI-aware checkpoints. Instant recovery.",
+		description: "Visual protection for every file. AI-aware checkpoints. Instant recovery.",
 		url: siteUrl,
 		images: [
 			{
@@ -50,8 +48,7 @@ export const metadata: Metadata = {
 	twitter: {
 		card: "summary_large_image",
 		title: `${config.appName} - Code Breaks.\nSnap Back.`,
-		description:
-			"Visual protection for every file. AI-aware checkpoints. Instant recovery.",
+		description: "Visual protection for every file. AI-aware checkpoints. Instant recovery.",
 		images: [ASSETS.social.ogTwitter],
 	},
 };
@@ -65,9 +62,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: PropsWithChildren) {
 	return (
 		<html lang="en" suppressHydrationWarning className={sansFont.className}>
-			<body
-				className={cn("min-h-screen bg-background text-foreground antialiased")}
-			>
+			<body className={cn("min-h-screen bg-background text-foreground antialiased")}>
 				<NuqsAdapter>
 					<ClientProviders>{children}</ClientProviders>
 				</NuqsAdapter>

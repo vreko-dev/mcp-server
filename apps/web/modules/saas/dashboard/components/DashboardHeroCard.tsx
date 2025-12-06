@@ -53,37 +53,25 @@ export function DashboardHeroCard({
 			<div className="relative w-full overflow-hidden rounded-2xl border border-emerald-400/40 bg-gradient-to-br from-emerald-500/10 via-slate-900 to-slate-950 p-8 md:p-12">
 				<div className="space-y-8">
 					<div className="mb-8">
-						<div className="text-3xl font-bold text-slate-50 mb-1">
-							You're Protected
-						</div>
-						<p className="text-emerald-300/80 text-sm uppercase tracking-wider">
-							This {period}
-						</p>
+						<div className="text-3xl font-bold text-slate-50 mb-1">You're Protected</div>
+						<p className="text-emerald-300/80 text-sm uppercase tracking-wider">This {period}</p>
 					</div>
 
 					<div>
-						<div className="text-6xl font-bold text-emerald-400 mb-3">
-							{threatsPreventedCount}
-						</div>
+						<div className="text-6xl font-bold text-emerald-400 mb-3">{threatsPreventedCount}</div>
 						<p className="text-lg text-slate-300">Security Risks Prevented</p>
-						<p className="text-sm text-slate-500">
-							That could have cost you hours of debugging
-						</p>
+						<p className="text-sm text-slate-500">That could have cost you hours of debugging</p>
 					</div>
 
 					<div className="space-y-4 border-t border-emerald-400/20 pt-6">
 						<div className="flex items-center justify-between">
 							<span className="text-slate-400">Protection Level</span>
-							<span className="text-emerald-400 font-bold">
-								{protectionLevelPercent}%
-							</span>
+							<span className="text-emerald-400 font-bold">{protectionLevelPercent}%</span>
 						</div>
 
 						<div className="flex items-center justify-between">
 							<span className="text-slate-400">Your Confidence</span>
-							<span
-								className={`text-lg font-bold flex items-center gap-2 ${confidenceColor}`}
-							>
+							<span className={`text-lg font-bold flex items-center gap-2 ${confidenceColor}`}>
 								{confidenceEmoji}
 								{confidenceText}
 							</span>
@@ -138,13 +126,9 @@ export function DashboardHeroCard({
 						>
 							🛡️
 						</m.div>
-						<h1 className="text-3xl font-bold text-slate-50">
-							You're Protected
-						</h1>
+						<h1 className="text-3xl font-bold text-slate-50">You're Protected</h1>
 					</div>
-					<p className="text-emerald-300/80 text-sm uppercase tracking-wider">
-						This {period}
-					</p>
+					<p className="text-emerald-300/80 text-sm uppercase tracking-wider">This {period}</p>
 				</m.div>
 
 				{/* Main Metric */}
@@ -156,13 +140,9 @@ export function DashboardHeroCard({
 					className="mb-8"
 				>
 					<div className="space-y-3">
-						<div className="text-6xl font-bold text-emerald-400">
-							{threatsPreventedCount}
-						</div>
+						<div className="text-6xl font-bold text-emerald-400">{threatsPreventedCount}</div>
 						<p className="text-lg text-slate-300">Security Risks Prevented</p>
-						<p className="text-sm text-slate-500">
-							That could have cost you hours of debugging
-						</p>
+						<p className="text-sm text-slate-500">That could have cost you hours of debugging</p>
 					</div>
 				</m.div>
 
@@ -187,18 +167,14 @@ export function DashboardHeroCard({
 									className="h-full bg-gradient-to-r from-emerald-400 to-emerald-300"
 								/>
 							</div>
-							<span className="text-emerald-400 font-bold">
-								{protectionLevelPercent}%
-							</span>
+							<span className="text-emerald-400 font-bold">{protectionLevelPercent}%</span>
 						</div>
 					</div>
 
 					{/* Confidence */}
 					<div className="flex items-center justify-between">
 						<span className="text-slate-400">Your Confidence</span>
-						<span
-							className={`text-lg font-bold flex items-center gap-2 ${confidenceColor}`}
-						>
+						<span className={`text-lg font-bold flex items-center gap-2 ${confidenceColor}`}>
 							{confidenceEmoji}
 							{confidenceText}
 						</span>

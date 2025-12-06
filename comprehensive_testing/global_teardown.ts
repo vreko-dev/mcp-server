@@ -7,7 +7,7 @@
 import type { FullConfig } from "@playwright/test";
 import { execSync } from "child_process";
 
-async function globalTeardown(config: FullConfig): Promise<void> {
+async function globalTeardown(_config: FullConfig): Promise<void> {
 	console.log("[E2E Teardown] Starting...");
 
 	// Clean test data

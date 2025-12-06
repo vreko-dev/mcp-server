@@ -1,10 +1,7 @@
 "use client";
 
 import { useSession } from "@saas/auth/hooks/use-session";
-import {
-	fullOrganizationQueryKey,
-	useFullOrganizationQuery,
-} from "@saas/organizations/lib/api";
+import { fullOrganizationQueryKey, useFullOrganizationQuery } from "@saas/organizations/lib/api";
 // Note: ActiveOrganization type is available from @snapback/auth if needed
 import { useQueryClient } from "@tanstack/react-query";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -17,30 +14,15 @@ import {
 	useReactTable,
 } from "@tanstack/react-table";
 import { Button } from "@ui/components/button";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from "@ui/components/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@ui/components/dropdown-menu";
 import { Table, TableBody, TableCell, TableRow } from "@ui/components/table";
 import { cn } from "@ui/lib";
-import {
-	CheckIcon,
-	ClockIcon,
-	MailXIcon,
-	MoreVerticalIcon,
-	XIcon,
-} from "lucide-react";
+import { CheckIcon, ClockIcon, MailXIcon, MoreVerticalIcon, XIcon } from "lucide-react";
 import { useMemo } from "react";
 import { toast } from "sonner";
 import { isOrganizationAdmin } from "@/lib/auth/helpers";
 import { OrganizationRoleSelect } from "./OrganizationRoleSelect";
-export function OrganizationInvitationsList({
-	organizationId,
-}: {
-	organizationId: string;
-}) {
+export function OrganizationInvitationsList({ organizationId }: { organizationId: string }) {
 	const queryClient = useQueryClient();
 	const { user } = useSession();
 	const { data: organization } = useFullOrganizationQuery(organizationId);
@@ -51,10 +33,7 @@ export function OrganizationInvitationsList({
 		() =>
 			(organization as any)?.invitations
 				?.filter((invitation: any) => invitation.status === "pending")
-				.sort(
-					(a: any, b: any) =>
-						new Date(a.expiresAt).getTime() - new Date(b.expiresAt).getTime(),
-				),
+				.sort((a: any, b: any) => new Date(a.expiresAt).getTime() - new Date(b.expiresAt).getTime()),
 		[(organization as any)?.invitations],
 	);
 
@@ -93,13 +72,7 @@ export function OrganizationInvitationsList({
 					accepted: CheckIcon,
 					rejected: XIcon,
 					canceled: XIcon,
-				}[
-					row.original.status as
-						| "pending"
-						| "accepted"
-						| "rejected"
-						| "canceled"
-				];
+				}[row.original.status as "pending" | "accepted" | "rejected" | "canceled"];
 				return (
 					<div className="leading-normal">
 						<strong
@@ -112,8 +85,7 @@ export function OrganizationInvitationsList({
 						<small className="flex flex-wrap gap-1 text-foreground/60">
 							<span className="flex items-center gap-0.5">
 								<InvitationStatusIcon className="size-3" />
-								{row.original.status.charAt(0).toUpperCase() +
-									row.original.status.slice(1)}
+								{row.original.status.charAt(0).toUpperCase() + row.original.status.slice(1)}
 							</span>
 							<span>-</span>
 							<span>
@@ -182,10 +154,7 @@ export function OrganizationInvitationsList({
 				<TableBody>
 					{table.getRowModel().rows?.length ? (
 						table.getRowModel().rows.map((row) => (
-							<TableRow
-								key={row.id}
-								data-state={row.getIsSelected() && "selected"}
-							>
+							<TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
 								{row.getVisibleCells().map((cell) => (
 									<TableCell key={cell.id}>
 										{flexRender(cell.column.columnDef.cell, cell.getContext())}

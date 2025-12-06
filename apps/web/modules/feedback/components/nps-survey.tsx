@@ -92,12 +92,8 @@ export function NPSSurvey({ userId, onDismiss }: NPSSurveyProps) {
 			<div className="fixed bottom-6 right-6 z-50 bg-slate-800 border border-slate-700 rounded-lg shadow-2xl p-6 w-96 max-w-[calc(100vw-3rem)]">
 				<div className="text-center">
 					<div className="text-4xl mb-3">🙏</div>
-					<p className="text-emerald-400 font-medium">
-						Thank you for your feedback!
-					</p>
-					<p className="text-slate-400 text-sm mt-1">
-						Your input helps us improve SnapBack.
-					</p>
+					<p className="text-emerald-400 font-medium">Thank you for your feedback!</p>
+					<p className="text-slate-400 text-sm mt-1">Your input helps us improve SnapBack.</p>
 				</div>
 			</div>
 		);
@@ -107,9 +103,7 @@ export function NPSSurvey({ userId, onDismiss }: NPSSurveyProps) {
 		<div className="fixed bottom-6 right-6 z-50 bg-slate-800 border border-slate-700 rounded-lg shadow-2xl p-6 w-96 max-w-[calc(100vw-3rem)]">
 			{/* Header */}
 			<div className="mb-4">
-				<h3 className="font-semibold text-white mb-1">
-					How likely are you to recommend SnapBack?
-				</h3>
+				<h3 className="font-semibold text-white mb-1">How likely are you to recommend SnapBack?</h3>
 				<p className="text-sm text-slate-400">On a scale of 0 to 10</p>
 			</div>
 
@@ -169,11 +163,7 @@ export function NPSSurvey({ userId, onDismiss }: NPSSurveyProps) {
 					</>
 				) : (
 					<>
-						<Button
-							onClick={() => handleDismiss("later")}
-							variant="outline"
-							className="flex-1"
-						>
+						<Button onClick={() => handleDismiss("later")} variant="outline" className="flex-1">
 							Ask me later
 						</Button>
 						<Button
@@ -193,10 +183,7 @@ export function NPSSurvey({ userId, onDismiss }: NPSSurveyProps) {
 /**
  * Hook to determine if NPS survey should be shown
  */
-export function useNPSSurveyTrigger(
-	userId: string | null,
-	snapshotCount: number,
-): boolean {
+export function useNPSSurveyTrigger(userId: string | null, snapshotCount: number): boolean {
 	const [shouldShow, setShouldShow] = useState(false);
 
 	useEffect(() => {

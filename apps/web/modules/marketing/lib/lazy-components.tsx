@@ -1,39 +1,36 @@
 import dynamic from "next/dynamic";
 
 // Lazy load heavy components with proper SSR handling and loading states
-export const LazyFooter = dynamic(
-	() => import("@marketing/components/sections/footer"),
-	{
-		ssr: true,
-		loading: () => (
-			<div className="bg-gradient-to-t from-muted/20 to-background border-t border-border">
-				<div className="container py-16">
-					<div className="animate-pulse">
-						<div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
-							<div className="lg:col-span-1 space-y-4">
-								<div className="h-12 w-32 bg-muted/30 rounded" />
-								<div className="h-20 bg-muted/30 rounded" />
-								<div className="h-10 bg-muted/30 rounded" />
-							</div>
-							<div className="lg:col-span-3 grid grid-cols-2 md:grid-cols-4 gap-8">
-								{Array.from({ length: 4 }).map((_, i) => (
-									<div key={i} className="space-y-3">
-										<div className="h-6 bg-muted/30 rounded" />
-										<div className="space-y-2">
-											{Array.from({ length: 4 }).map((_, j) => (
-												<div key={j} className="h-4 bg-muted/20 rounded" />
-											))}
-										</div>
+export const LazyFooter = dynamic(() => import("@marketing/components/sections/footer"), {
+	ssr: true,
+	loading: () => (
+		<div className="bg-gradient-to-t from-muted/20 to-background border-t border-border">
+			<div className="container py-16">
+				<div className="animate-pulse">
+					<div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
+						<div className="lg:col-span-1 space-y-4">
+							<div className="h-12 w-32 bg-muted/30 rounded" />
+							<div className="h-20 bg-muted/30 rounded" />
+							<div className="h-10 bg-muted/30 rounded" />
+						</div>
+						<div className="lg:col-span-3 grid grid-cols-2 md:grid-cols-4 gap-8">
+							{Array.from({ length: 4 }).map((_, i) => (
+								<div key={i} className="space-y-3">
+									<div className="h-6 bg-muted/30 rounded" />
+									<div className="space-y-2">
+										{Array.from({ length: 4 }).map((_, j) => (
+											<div key={j} className="h-4 bg-muted/20 rounded" />
+										))}
 									</div>
-								))}
-							</div>
+								</div>
+							))}
 						</div>
 					</div>
 				</div>
 			</div>
-		),
-	},
-);
+		</div>
+	),
+});
 
 export const LazyPricingSection = dynamic(
 	() =>

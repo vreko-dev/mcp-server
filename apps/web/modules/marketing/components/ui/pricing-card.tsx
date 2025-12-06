@@ -50,11 +50,7 @@ const categoryIcons = {
 	compliance: "✅",
 };
 
-export const PricingCard = ({
-	tier,
-	billingCycle,
-	index,
-}: PricingCardProps) => {
+export const PricingCard = ({ tier, billingCycle, index }: PricingCardProps) => {
 	const [expanded, setExpanded] = useState(false);
 
 	const displayPrice =
@@ -65,9 +61,7 @@ export const PricingCard = ({
 			: tier.price;
 
 	const savings =
-		typeof tier.price === "number" &&
-		billingCycle === "annual" &&
-		tier.annualPrice
+		typeof tier.price === "number" && billingCycle === "annual" && tier.annualPrice
 			? Math.round(((tier.price - tier.annualPrice) / tier.price) * 100)
 			: 0;
 
@@ -81,10 +75,7 @@ export const PricingCard = ({
 				delay: index * 0.08,
 				ease: [0.25, 0.46, 0.45, 0.94],
 			}}
-			className={cn(
-				"relative h-full flex flex-col",
-				tier.popular && "lg:-mt-8",
-			)}
+			className={cn("relative h-full flex flex-col", tier.popular && "lg:-mt-8")}
 		>
 			{/* Popular Badge */}
 			{tier.popular && (
@@ -113,21 +104,15 @@ export const PricingCard = ({
 					{/* Price Display */}
 					<div className="flex items-baseline mb-2">
 						<span className="text-4xl font-bold text-white">
-							{typeof displayPrice === "number"
-								? `$${displayPrice}`
-								: displayPrice}
+							{typeof displayPrice === "number" ? `$${displayPrice}` : displayPrice}
 						</span>
-						{typeof displayPrice === "number" && (
-							<span className="text-gray-400 ml-2 text-sm">/month</span>
-						)}
+						{typeof displayPrice === "number" && <span className="text-gray-400 ml-2 text-sm">/month</span>}
 					</div>
 
 					<p className="text-sm text-gray-400 mb-2">{tier.description}</p>
 
 					{savings > 0 && (
-						<div className="text-[#10B981] text-sm font-medium">
-							💰 Save {savings}% annually
-						</div>
+						<div className="text-[#10B981] text-sm font-medium">💰 Save {savings}% annually</div>
 					)}
 				</div>
 
@@ -202,9 +187,7 @@ export const PricingCard = ({
 										<span className="text-[#10B981] mr-2 mt-0.5 flex-shrink-0">
 											{categoryIcons[feature.category] || "✓"}
 										</span>
-										<span className="text-sm text-gray-300">
-											{feature.text}
-										</span>
+										<span className="text-sm text-gray-300">{feature.text}</span>
 									</m.div>
 								))}
 							</div>

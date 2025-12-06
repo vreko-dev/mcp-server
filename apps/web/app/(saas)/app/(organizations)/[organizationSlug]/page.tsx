@@ -3,32 +3,20 @@ import OrganizationStart from "@saas/organizations/components/OrganizationStart"
 import { PageHeader } from "@saas/shared/components/PageHeader";
 import { notFound } from "next/navigation";
 
-export async function generateMetadata({
-	params,
-}: {
-	params: Promise<{ organizationSlug: string }>;
-}) {
+export async function generateMetadata({ params }: { params: Promise<{ organizationSlug: string }> }) {
 	const { organizationSlug } = await params;
 
-	const activeOrganization = (await getActiveOrganization(
-		organizationSlug as string,
-	)) as any;
+	const activeOrganization = (await getActiveOrganization(organizationSlug as string)) as any;
 
 	return {
 		title: activeOrganization?.name,
 	};
 }
 
-export default async function OrganizationPage({
-	params,
-}: {
-	params: Promise<{ organizationSlug: string }>;
-}) {
+export default async function OrganizationPage({ params }: { params: Promise<{ organizationSlug: string }> }) {
 	const { organizationSlug } = await params;
 
-	const activeOrganization = (await getActiveOrganization(
-		organizationSlug as string,
-	)) as any;
+	const activeOrganization = (await getActiveOrganization(organizationSlug as string)) as any;
 
 	if (!activeOrganization) {
 		return notFound();
@@ -36,10 +24,7 @@ export default async function OrganizationPage({
 
 	return (
 		<div>
-			<PageHeader
-				title={activeOrganization?.name}
-				subtitle="Get started with your organization"
-			/>
+			<PageHeader title={activeOrganization?.name} subtitle="Get started with your organization" />
 
 			<OrganizationStart />
 		</div>

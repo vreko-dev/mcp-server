@@ -12,9 +12,7 @@ export function OnboardingForm() {
 
 	const stepSearchParam = searchParams.get("step");
 	const redirectTo = searchParams.get("redirectTo");
-	const onboardingStep = stepSearchParam
-		? Number.parseInt(stepSearchParam, 10)
-		: 1;
+	const onboardingStep = stepSearchParam ? Number.parseInt(stepSearchParam, 10) : 1;
 
 	// biome-ignore lint/correctness/noUnusedVariables: Will be used with more steps
 	// const setStep = (step: number) => {
@@ -44,16 +42,11 @@ export function OnboardingForm() {
 	return (
 		<div>
 			<h1 className="font-bold text-xl md:text-2xl">Welcome to SnapBack</h1>
-			<p className="mt-2 mb-6 text-foreground/60">
-				Let's get your account set up
-			</p>
+			<p className="mt-2 mb-6 text-foreground/60">Let's get your account set up</p>
 
 			{steps.length > 1 && (
 				<div className="mb-6 flex items-center gap-3">
-					<Progress
-						value={(onboardingStep / steps.length) * 100}
-						className="h-2"
-					/>
+					<Progress value={(onboardingStep / steps.length) * 100} className="h-2" />
 					<span className="shrink-0 text-foreground/60 text-xs">
 						Step {onboardingStep} of {steps.length}
 					</span>

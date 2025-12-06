@@ -21,11 +21,7 @@ export function OrganizationsGrid() {
 						className="flex cursor-pointer items-center gap-4 overflow-hidden p-4"
 						onClick={() => setActiveOrganization(organization.slug)}
 					>
-						<OrganizationLogo
-							name={organization.name}
-							logoUrl={organization.logo}
-							className="size-12"
-						/>
+						<OrganizationLogo name={organization.name} logoUrl={organization.logo} className="size-12" />
 						<span className="flex items-center gap-1 text-base leading-tight">
 							<span className="block font-medium">{organization.name}</span>
 							<ChevronRightIcon className="size-4" />

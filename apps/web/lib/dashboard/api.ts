@@ -1,10 +1,5 @@
 import { orpcClient } from "@shared/lib/orpc-client";
-import type {
-	Activity,
-	AIDetectionStat,
-	DashboardMetrics,
-	SessionMetrics,
-} from "./metrics";
+import type { Activity, AIDetectionStat, DashboardMetrics, SessionMetrics } from "./metrics";
 
 // Fetch user dashboard metrics from API
 export async function fetchUserMetrics(): Promise<DashboardMetrics> {

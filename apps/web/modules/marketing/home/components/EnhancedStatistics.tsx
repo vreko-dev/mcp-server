@@ -72,9 +72,7 @@ export function EnhancedStatistics() {
 					viewport={{ once: true }}
 					className="text-center mb-12"
 				>
-					<h2 className="font-bold text-3xl md:text-4xl">
-						Real Metrics from Implementation
-					</h2>
+					<h2 className="font-bold text-3xl md:text-4xl">Real Metrics from Implementation</h2>
 					<p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
 						Performance and reliability data from actual SnapBack usage
 					</p>
@@ -105,16 +103,10 @@ export function EnhancedStatistics() {
 									<AnimatedNumber value={stat.value} />
 									{stat.suffix}
 								</motion.div>
-								<motion.h3
-									className="font-semibold text-lg mb-2"
-									whileHover={{ scale: 1.05 }}
-								>
+								<motion.h3 className="font-semibold text-lg mb-2" whileHover={{ scale: 1.05 }}>
 									{stat.label}
 								</motion.h3>
-								<motion.p
-									className="text-sm text-muted-foreground"
-									whileHover={{ opacity: 0.8 }}
-								>
+								<motion.p className="text-sm text-muted-foreground" whileHover={{ opacity: 0.8 }}>
 									{stat.description}
 								</motion.p>
 							</NeonCard>
@@ -135,9 +127,8 @@ export function EnhancedStatistics() {
 						transition={{ type: "spring", stiffness: 300 }}
 					>
 						<span className="text-primary font-medium">
-							Protecting <AnimatedNumber value={developerCount} />+ developers
-							with <AnimatedNumber value={checkpointCount} />+ checkpoints
-							created
+							Protecting <AnimatedNumber value={developerCount} />+ developers with{" "}
+							<AnimatedNumber value={checkpointCount} />+ checkpoints created
 						</span>
 					</motion.div>
 				</motion.div>

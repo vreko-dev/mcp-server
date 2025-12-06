@@ -4,14 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useSession } from "@saas/auth/hooks/use-session";
 import { UserAvatarUpload } from "@saas/settings/components/UserAvatarUpload";
 import { Button } from "@ui/components/button";
-import {
-	Form,
-	FormControl,
-	FormDescription,
-	FormField,
-	FormItem,
-	FormLabel,
-} from "@ui/components/form";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } from "@ui/components/form";
 import { Input } from "@ui/components/input";
 import { ArrowRightIcon } from "lucide-react";
 import { useEffect } from "react";
@@ -61,10 +54,7 @@ export function OnboardingStep1({ onCompleted }: { onCompleted: () => void }) {
 	return (
 		<div>
 			<Form {...form}>
-				<form
-					className="flex flex-col items-stretch gap-8"
-					onSubmit={form.handleSubmit(onSubmit)}
-				>
+				<form className="flex flex-col items-stretch gap-8" onSubmit={form.handleSubmit(onSubmit)}>
 					<FormField
 						control={form.control}
 						name="name"
@@ -82,9 +72,7 @@ export function OnboardingStep1({ onCompleted }: { onCompleted: () => void }) {
 						<div>
 							<FormLabel>Avatar</FormLabel>
 
-							<FormDescription>
-								Upload a profile picture (optional)
-							</FormDescription>
+							<FormDescription>Upload a profile picture (optional)</FormDescription>
 						</div>
 						<FormControl>
 							<UserAvatarUpload

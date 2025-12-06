@@ -22,10 +22,7 @@ export interface SubdomainConfig {
  * @param protocol - The protocol to use (default: "http")
  * @returns Parsed subdomain configuration
  */
-export function parseSubdomainConfig(
-	host: string,
-	protocol = "http",
-): SubdomainConfig {
+export function parseSubdomainConfig(host: string, protocol = "http"): SubdomainConfig {
 	// Handle IPv6 addresses with port: [::1]:3000 or [2001:0db8::1]:443
 	const ipv6Match = host.match(/^\[([^\]]+)\]:(\d+)$/);
 	if (ipv6Match) {
@@ -111,8 +108,7 @@ export function parseSubdomainConfig(
  * @returns The home URL
  */
 export function getHomeUrl(host: string, forwardedProto?: string): string {
-	const protocol =
-		forwardedProto || (host.includes("localhost") ? "http" : "https");
+	const protocol = forwardedProto || (host.includes("localhost") ? "http" : "https");
 	const config = parseSubdomainConfig(host, protocol);
 	return config.homeUrl;
 }

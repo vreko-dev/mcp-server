@@ -14,11 +14,7 @@ export interface TypewriterEffectProps {
 	cursorClassName?: string;
 }
 
-export const TypewriterEffect = ({
-	words,
-	className,
-	cursorClassName,
-}: TypewriterEffectProps) => {
+export const TypewriterEffect = ({ words, className, cursorClassName }: TypewriterEffectProps) => {
 	const reducedMotion = useReducedMotion();
 	const [scope, animate] = useAnimate();
 	const isInView = useInView(scope);
@@ -67,10 +63,7 @@ export const TypewriterEffect = ({
 							{word.text.split("").map((char, index) => (
 								<motion.span
 									key={`char-${index}`}
-									className={cn(
-										"dark:text-white text-black opacity-0 hidden",
-										word.className,
-									)}
+									className={cn("dark:text-white text-black opacity-0 hidden", word.className)}
 								>
 									{char}
 								</motion.span>
@@ -84,12 +77,7 @@ export const TypewriterEffect = ({
 	};
 
 	return (
-		<div
-			className={cn(
-				"text-base sm:text-xl md:text-3xl lg:text-5xl font-bold text-center",
-				className,
-			)}
-		>
+		<div className={cn("text-base sm:text-xl md:text-3xl lg:text-5xl font-bold text-center", className)}>
 			{renderWords()}
 			<motion.span
 				initial={!reducedMotion ? { opacity: 1 } : {}}
@@ -99,10 +87,7 @@ export const TypewriterEffect = ({
 					repeat: Number.POSITIVE_INFINITY,
 					repeatType: "reverse",
 				}}
-				className={cn(
-					"inline-block rounded-sm w-[4px] h-4 md:h-6 lg:h-10 bg-blue-500",
-					cursorClassName,
-				)}
+				className={cn("inline-block rounded-sm w-[4px] h-4 md:h-6 lg:h-10 bg-blue-500", cursorClassName)}
 			/>
 		</div>
 	);
@@ -117,11 +102,7 @@ interface TypewriterEffectSmoothProps {
 	cursorClassName?: string;
 }
 
-export const TypewriterEffectSmooth = ({
-	words,
-	className,
-	cursorClassName,
-}: TypewriterEffectSmoothProps) => {
+export const TypewriterEffectSmooth = ({ words, className, cursorClassName }: TypewriterEffectSmoothProps) => {
 	// split text inside of words into array of characters
 	const wordsArray = words.map((word) => {
 		return {
@@ -189,10 +170,7 @@ export const TypewriterEffectSmooth = ({
 					repeat: Number.POSITIVE_INFINITY,
 					repeatType: "reverse",
 				}}
-				className={cn(
-					"block rounded-sm w-[4px] h-4 sm:h-6 xl:h-12 bg-blue-500",
-					cursorClassName,
-				)}
+				className={cn("block rounded-sm w-[4px] h-4 sm:h-6 xl:h-12 bg-blue-500", cursorClassName)}
 			/>
 		</div>
 	);

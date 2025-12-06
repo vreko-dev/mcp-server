@@ -5,8 +5,7 @@ import { useReducedMotion } from "@ui/lib/motion";
 import { motion } from "motion/react";
 import { type ButtonHTMLAttributes, forwardRef } from "react";
 
-export interface ShimmerButtonProps
-	extends ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ShimmerButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 	shimmerColor?: string;
 	shimmerSize?: string;
 	shimmerDuration?: string;

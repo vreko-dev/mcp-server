@@ -16,9 +16,7 @@ const DemoContext = createContext<DemoContextType | undefined>(undefined);
 export function DemoProvider({ children }: { children: ReactNode }) {
 	const { interactive_demo } = siteSpec.pages.home.sections;
 	const snapshots = interactive_demo.content.snapshots;
-	const [selectedSnapshotIndex, setSelectedSnapshotIndex] = useState(
-		snapshots.length - 1,
-	);
+	const [selectedSnapshotIndex, setSelectedSnapshotIndex] = useState(snapshots.length - 1);
 	const [isRecovered, setIsRecovered] = useState(false);
 
 	const recover = () => {

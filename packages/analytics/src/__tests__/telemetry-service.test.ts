@@ -5,14 +5,14 @@
  * These tests establish the contract for the telemetry service
  */
 
-import { describe, expect, it, beforeEach, afterEach, vi } from "vitest";
 import type { CoreTelemetryEvent } from "@snapback/contracts/events";
 import { CORE_TELEMETRY_EVENTS } from "@snapback/contracts/events";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
 	CanonicalTelemetryService,
-	type TelemetryConfig,
-	initTelemetry,
 	getTelemetry,
+	initTelemetry,
+	type TelemetryConfig,
 	trackEvent,
 } from "../telemetry-service";
 
@@ -74,7 +74,9 @@ describe("CanonicalTelemetryService - RED Tests", () => {
 			expect(() => {
 				// This would throw if not properly initialized
 				// We're testing the pattern, not the actual global state
-				if (!newService) { throw new Error("Not initialized"); }
+				if (!newService) {
+					throw new Error("Not initialized");
+				}
 			}).not.toThrow();
 		});
 	});
@@ -287,9 +289,7 @@ describe("CanonicalTelemetryService - RED Tests", () => {
 			];
 
 			for (const [eventName, event] of eventConfigs) {
-				await expect(service.track(event)).resolves.not.toThrow(
-					`Failed for event: ${eventName}`,
-				);
+				await expect(service.track(event)).resolves.not.toThrow(`Failed for event: ${eventName}`);
 			}
 		});
 	});

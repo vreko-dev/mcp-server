@@ -80,9 +80,7 @@ export function PricingSection() {
 		<section className="py-24 relative">
 			<div className="container mx-auto px-4">
 				<div className="text-center mb-20">
-					<h2 className="text-display font-black text-white mb-6">
-						Simple, transparent pricing
-					</h2>
+					<h2 className="text-display font-black text-white mb-6">Simple, transparent pricing</h2>
 					<p className="text-xl text-muted-foreground max-w-2xl mx-auto">
 						Start free. Upgrade when you need more.
 					</p>
@@ -96,8 +94,7 @@ export function PricingSection() {
 
 				<div className="text-center mt-16">
 					<p className="text-muted-foreground">
-						All plans include our core protection features. Need something
-						custom?{" "}
+						All plans include our core protection features. Need something custom?{" "}
 						<a href="#contact" className="text-primary underline-animate">
 							Let's talk
 						</a>
@@ -135,9 +132,7 @@ const PricingCard = ({ plan, index }: { plan: any; index: number }) => {
 				<div className="mb-3">
 					<span className="text-5xl font-black text-white">{plan.price}</span>
 					{plan.period !== "contact us" && (
-						<span className="text-muted-foreground ml-2 text-lg">
-							/{plan.period}
-						</span>
+						<span className="text-muted-foreground ml-2 text-lg">/{plan.period}</span>
 					)}
 				</div>
 				<p className="text-muted-foreground">{plan.description}</p>
@@ -147,13 +142,7 @@ const PricingCard = ({ plan, index }: { plan: any; index: number }) => {
 				{plan.features.map((feature: string, featureIndex: number) => (
 					<li key={featureIndex} className="flex items-start space-x-3">
 						<div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center mt-0.5 flex-shrink-0">
-							<svg
-								width="12"
-								height="12"
-								viewBox="0 0 12 12"
-								fill="none"
-								className="text-primary"
-							>
+							<svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="text-primary">
 								<path
 									d="M10 3L4.5 8.5L2 6"
 									stroke="currentColor"
@@ -163,23 +152,18 @@ const PricingCard = ({ plan, index }: { plan: any; index: number }) => {
 								/>
 							</svg>
 						</div>
-						<span className="text-sm text-muted-foreground leading-relaxed">
-							{feature}
-						</span>
+						<span className="text-sm text-muted-foreground leading-relaxed">{feature}</span>
 					</li>
 				))}
 			</ul>
 
 			<m.button
-				className={cn(
-					"w-full py-4 px-6 rounded-xl font-semibold transition-all duration-200 mt-auto",
-					{
-						"btn-neon": plan.ctaVariant === "neon",
-						"btn-ghost": plan.ctaVariant === "ghost",
-						"btn-accent": plan.ctaVariant === "accent",
-						"btn-secondary": plan.ctaVariant === "secondary",
-					},
-				)}
+				className={cn("w-full py-4 px-6 rounded-xl font-semibold transition-all duration-200 mt-auto", {
+					"btn-neon": plan.ctaVariant === "neon",
+					"btn-ghost": plan.ctaVariant === "ghost",
+					"btn-accent": plan.ctaVariant === "accent",
+					"btn-secondary": plan.ctaVariant === "secondary",
+				})}
 				whileHover={{ scale: 1.02 }}
 				whileTap={{ scale: 0.98 }}
 			>

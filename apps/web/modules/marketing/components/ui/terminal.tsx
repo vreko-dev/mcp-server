@@ -11,12 +11,7 @@ interface TerminalProps {
 	respectReducedMotion?: boolean;
 }
 
-export const Terminal = ({
-	lines,
-	className,
-	typingSpeed = 30,
-	respectReducedMotion = true,
-}: TerminalProps) => {
+export const Terminal = ({ lines, className, typingSpeed = 30, respectReducedMotion = true }: TerminalProps) => {
 	const terminalRef = useRef<HTMLDivElement>(null);
 	const [displayedText, setDisplayedText] = useState<string>("");
 	const [currentLineIndex, setCurrentLineIndex] = useState<number>(0);
@@ -46,11 +41,8 @@ export const Terminal = ({
 
 		if (typeof window !== "undefined") {
 			try {
-				const mediaQuery = window.matchMedia(
-					"(prefers-reduced-motion: reduce)",
-				);
-				const handleChange = (e: MediaQueryListEvent) =>
-					setReducedMotion(e.matches);
+				const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+				const handleChange = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
 				mediaQuery.addEventListener("change", handleChange);
 				return () => mediaQuery.removeEventListener("change", handleChange);
 			} catch {
@@ -136,10 +128,7 @@ export const Terminal = ({
 			initial={{ opacity: 1, y: 0 }}
 			animate={{ opacity: 1, y: 0 }}
 			transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-			className={cn(
-				"w-full rounded-lg shadow-2xl overflow-hidden font-mono",
-				className,
-			)}
+			className={cn("w-full rounded-lg shadow-2xl overflow-hidden font-mono", className)}
 			data-reduced-motion={reducedMotion}
 			data-testid="terminal"
 		>
@@ -149,27 +138,14 @@ export const Terminal = ({
 				data-testid="terminal-header"
 			>
 				<div className="flex gap-2">
-					<div
-						className="w-3 h-3 rounded-full bg-red-500"
-						data-testid="terminal-dot"
-					/>
-					<div
-						className="w-3 h-3 rounded-full bg-yellow-500"
-						data-testid="terminal-dot"
-					/>
-					<div
-						className="w-3 h-3 rounded-full bg-green-500"
-						data-testid="terminal-dot"
-					/>
+					<div className="w-3 h-3 rounded-full bg-red-500" data-testid="terminal-dot" />
+					<div className="w-3 h-3 rounded-full bg-yellow-500" data-testid="terminal-dot" />
+					<div className="w-3 h-3 rounded-full bg-green-500" data-testid="terminal-dot" />
 				</div>
 				<div className="flex-1 text-center">
-					<span className="text-gray-400 text-xs sm:text-sm font-medium">
-						Terminal
-					</span>
+					<span className="text-gray-400 text-xs sm:text-sm font-medium">Terminal</span>
 				</div>
-				{isTyping && (
-					<div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-				)}
+				{isTyping && <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />}
 			</div>
 
 			{/* Terminal Content */}

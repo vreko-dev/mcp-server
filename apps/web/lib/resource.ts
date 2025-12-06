@@ -47,26 +47,18 @@ export function matchResource<T, R, E = AppError>(
 }
 
 // Utility functions
-export function isLoading<T, E = AppError>(
-	resource: Resource<T, E>,
-): resource is { state: "loading" } {
+export function isLoading<T, E = AppError>(resource: Resource<T, E>): resource is { state: "loading" } {
 	return resource.state === "loading";
 }
 
-export function isEmpty<T, E = AppError>(
-	resource: Resource<T, E>,
-): resource is { state: "empty" } {
+export function isEmpty<T, E = AppError>(resource: Resource<T, E>): resource is { state: "empty" } {
 	return resource.state === "empty";
 }
 
-export function isError<T, E = AppError>(
-	resource: Resource<T, E>,
-): resource is { state: "error"; error: E } {
+export function isError<T, E = AppError>(resource: Resource<T, E>): resource is { state: "error"; error: E } {
 	return resource.state === "error";
 }
 
-export function isReady<T, E = AppError>(
-	resource: Resource<T, E>,
-): resource is { state: "ready"; data: T } {
+export function isReady<T, E = AppError>(resource: Resource<T, E>): resource is { state: "ready"; data: T } {
 	return resource.state === "ready";
 }

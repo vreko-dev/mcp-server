@@ -10,10 +10,7 @@ export function TeamsSection() {
 	const prefersReducedMotion = useReducedMotion();
 
 	return (
-		<section
-			className="py-32 bg-background relative overflow-hidden"
-			aria-labelledby="teams-heading"
-		>
+		<section className="py-32 bg-background relative overflow-hidden" aria-labelledby="teams-heading">
 			<div
 				className="absolute inset-0 bg-gradient-to-b from-transparent via-card to-transparent opacity-50"
 				aria-hidden="true"
@@ -21,15 +18,10 @@ export function TeamsSection() {
 
 			<div className="container mx-auto px-4 relative z-10">
 				<div className="text-center max-w-3xl mx-auto mb-20 space-y-6">
-					<h2
-						id="teams-heading"
-						className="text-heading-1 font-bold text-foreground"
-					>
+					<h2 id="teams-heading" className="text-heading-1 font-bold text-foreground">
 						{for_teams.content.headline}
 					</h2>
-					<p className="text-body-lg text-muted-foreground leading-relaxed">
-						{for_teams.content.body}
-					</p>
+					<p className="text-body-lg text-muted-foreground leading-relaxed">{for_teams.content.body}</p>
 				</div>
 
 				<div className="grid md:grid-cols-3 gap-8" role="list">
@@ -39,11 +31,7 @@ export function TeamsSection() {
 							initial={{ opacity: 1, y: 0 }}
 							whileInView={{ opacity: 1, y: 0 }}
 							viewport={{ once: true }}
-							transition={
-								prefersReducedMotion
-									? { duration: 0 }
-									: { delay: index * 0.1, duration: 0.5 }
-							}
+							transition={prefersReducedMotion ? { duration: 0 } : { delay: index * 0.1, duration: 0.5 }}
 							className="relative group"
 							role="listitem"
 						>
@@ -68,12 +56,8 @@ export function TeamsSection() {
 									)}
 									{index === 2 && <span className="text-foreground">100%</span>}
 								</div>
-								<h3 className="text-heading-3 font-semibold text-foreground mb-2">
-									{card.title}
-								</h3>
-								<p className="text-muted-foreground text-body-sm leading-relaxed">
-									{card.description}
-								</p>
+								<h3 className="text-heading-3 font-semibold text-foreground mb-2">{card.title}</h3>
+								<p className="text-muted-foreground text-body-sm leading-relaxed">{card.description}</p>
 							</div>
 						</m.div>
 					))}

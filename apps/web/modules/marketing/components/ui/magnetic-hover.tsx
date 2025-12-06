@@ -11,12 +11,7 @@ interface MagneticHoverProps {
 	radius?: number;
 }
 
-export function MagneticHover({
-	children,
-	className = "",
-	strength = 0.5,
-	radius = 30,
-}: MagneticHoverProps) {
+export function MagneticHover({ children, className = "", strength = 0.5, radius = 30 }: MagneticHoverProps) {
 	const ref = useRef<HTMLDivElement>(null);
 	const [position, setPosition] = useState({ x: 0, y: 0 });
 	const [isHovered, setIsHovered] = useState(false);

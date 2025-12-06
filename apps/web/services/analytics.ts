@@ -1,15 +1,8 @@
-import {
-	captureEvent as captureEventClient,
-	identifyUser,
-} from "@/lib/posthog-client";
+import { captureEvent as captureEventClient, identifyUser } from "@/lib/posthog-client";
 
 // Create a posthog-like interface to match the expected API
 const posthog = {
-	captureEvent: async (
-		distinctId: string,
-		event: string,
-		properties?: Record<string, unknown>,
-	) => {
+	captureEvent: async (distinctId: string, event: string, properties?: Record<string, unknown>) => {
 		// Add the distinctId to properties if needed
 		const eventProperties = {
 			...properties,
@@ -82,10 +75,7 @@ export class AnalyticsService {
 	 * @param deviceFingerprint Device fingerprint
 	 * @param userId User ID
 	 */
-	async linkDeviceToUser(
-		deviceFingerprint: string,
-		userId: string,
-	): Promise<void> {
+	async linkDeviceToUser(deviceFingerprint: string, userId: string): Promise<void> {
 		try {
 			const deviceDistinctId = `device_${deviceFingerprint}`;
 			// Call PostHog alias() to merge device and user identities
@@ -99,10 +89,7 @@ export class AnalyticsService {
 				deviceFingerprint,
 			});
 		} catch (error) {
-			console.error(
-				`Device linking failed: deviceFingerprint=${deviceFingerprint}, userId=${userId}`,
-				error,
-			);
+			console.error(`Device linking failed: deviceFingerprint=${deviceFingerprint}, userId=${userId}`, error);
 		}
 	}
 
@@ -112,11 +99,7 @@ export class AnalyticsService {
 	 * @param stage Conversion stage
 	 * @param properties Additional properties
 	 */
-	async trackConversion(
-		userId: string,
-		stage: string,
-		properties: Record<string, any> = {},
-	): Promise<void> {
+	async trackConversion(userId: string, stage: string, properties: Record<string, any> = {}): Promise<void> {
 		try {
 			await this.trackUserEvent(userId, `conversion_${stage}`, properties);
 		} catch (error) {

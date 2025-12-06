@@ -13,15 +13,9 @@
  * - Integration with ORPC API client
  */
 
-import { describe, expect, it, beforeEach, vi } from "vitest";
-import type {
-	DashboardMetrics,
-	DashboardMetricsResponse,
-} from "@snapback/contracts";
-import {
-	isDashboardMetrics,
-	isDashboardMetricsError,
-} from "@snapback/contracts";
+import type { DashboardMetrics, DashboardMetricsResponse } from "@snapback/contracts";
+import { isDashboardMetrics, isDashboardMetricsError } from "@snapback/contracts";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 /**
  * Mock ORPC client

@@ -4,11 +4,7 @@ import { usePlanData } from "@saas/payments/hooks/plan-data";
 import { usePurchases } from "@saas/payments/hooks/purchases";
 import { Badge } from "@ui/components/badge";
 
-export function ActivePlanBadge({
-	organizationId,
-}: {
-	organizationId?: string;
-}) {
+export function ActivePlanBadge({ organizationId }: { organizationId?: string }) {
 	const { planData } = usePlanData();
 	const { activePlan } = usePurchases(organizationId);
 
@@ -22,10 +18,7 @@ export function ActivePlanBadge({
 		return null;
 	}
 	return (
-		<Badge
-			status="info"
-			className="flex items-center gap-1 px-1.5 text-xs normal-case"
-		>
+		<Badge status="info" className="flex items-center gap-1 px-1.5 text-xs normal-case">
 			{activePlanData.title}
 		</Badge>
 	);

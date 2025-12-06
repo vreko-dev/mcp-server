@@ -134,9 +134,7 @@ export function canRemoveMember(
 		return false;
 	}
 
-	const currentUserMember = organization.members.find(
-		(m) => m.userId === user.id,
-	);
+	const currentUserMember = organization.members.find((m) => m.userId === user.id);
 
 	if (!currentUserMember) {
 		return false;

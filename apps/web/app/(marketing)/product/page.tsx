@@ -10,14 +10,7 @@ import posthog from "posthog-js";
 export default function ProductPage() {
 	useScrollDepth("product");
 	const { product } = siteSpec.pages;
-	const {
-		overview,
-		triggers,
-		sessions_timeline,
-		restore_flows,
-		architecture,
-		roadmap,
-	} = product.sections;
+	const { overview, triggers, sessions_timeline, restore_flows, architecture, roadmap } = product.sections;
 
 	return (
 		<main className="min-h-screen bg-background pt-24 pb-24">
@@ -27,21 +20,15 @@ export default function ProductPage() {
 					<h1 className="text-4xl lg:text-6xl font-bold text-foreground leading-tight">
 						{overview.content.headline}
 					</h1>
-					<p className="text-xl text-muted-foreground leading-relaxed">
-						{overview.content.body}
-					</p>
+					<p className="text-xl text-muted-foreground leading-relaxed">{overview.content.body}</p>
 				</section>
 
 				{/* Triggers */}
 				<section className="mb-32">
 					<div className="grid lg:grid-cols-2 gap-16 items-center">
 						<div className="space-y-8">
-							<h2 className="text-3xl font-bold text-foreground">
-								{triggers.content.headline}
-							</h2>
-							<p className="text-lg text-muted-foreground">
-								{triggers.content.body}
-							</p>
+							<h2 className="text-3xl font-bold text-foreground">{triggers.content.headline}</h2>
+							<p className="text-lg text-muted-foreground">{triggers.content.body}</p>
 							<div className="space-y-6">
 								{triggers.content.triggers.map((trigger, triggerIndex) => (
 									<div key={`trigger-${trigger.title}`} className="flex gap-4">
@@ -55,12 +42,8 @@ export default function ProductPage() {
 														: "🤖"}
 										</div>
 										<div>
-											<h3 className="text-lg font-semibold text-foreground">
-												{trigger.title}
-											</h3>
-											<p className="text-muted-foreground">
-												{trigger.description}
-											</p>
+											<h3 className="text-lg font-semibold text-foreground">{trigger.title}</h3>
+											<p className="text-muted-foreground">{trigger.description}</p>
 										</div>
 									</div>
 								))}
@@ -77,9 +60,7 @@ export default function ProductPage() {
 
 				{/* Sessions Timeline */}
 				<section className="mb-32 text-center max-w-5xl mx-auto">
-					<h2 className="text-3xl font-bold text-foreground mb-6">
-						{sessions_timeline.content.headline}
-					</h2>
+					<h2 className="text-3xl font-bold text-foreground mb-6">{sessions_timeline.content.headline}</h2>
 					<p className="text-lg text-muted-foreground mb-12 max-w-3xl mx-auto">
 						{sessions_timeline.content.body}
 					</p>
@@ -110,12 +91,8 @@ export default function ProductPage() {
 								<div className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-4">
 									{tab.label}
 								</div>
-								<h3 className="text-xl font-bold text-foreground mb-4">
-									{tab.title}
-								</h3>
-								<p className="text-muted-foreground leading-relaxed">
-									{tab.body}
-								</p>
+								<h3 className="text-xl font-bold text-foreground mb-4">{tab.title}</h3>
+								<p className="text-muted-foreground leading-relaxed">{tab.body}</p>
 							</div>
 						))}
 					</div>
@@ -124,12 +101,8 @@ export default function ProductPage() {
 				{/* Architecture */}
 				<section className="mb-32 bg-card-dark rounded-3xl border border-border-subtle p-8 lg:p-16">
 					<div className="max-w-3xl mx-auto text-center space-y-8">
-						<h2 className="text-3xl font-bold text-foreground">
-							{architecture.content.headline}
-						</h2>
-						<p className="text-lg text-muted-foreground">
-							{architecture.content.body}
-						</p>
+						<h2 className="text-3xl font-bold text-foreground">{architecture.content.headline}</h2>
+						<p className="text-lg text-muted-foreground">{architecture.content.body}</p>
 						<div className="grid md:grid-cols-3 gap-8 pt-8 text-left">
 							{architecture.content.bullets.map((bullet) => {
 								const [title, desc] = bullet.split(" – ");
@@ -146,15 +119,10 @@ export default function ProductPage() {
 
 				{/* Roadmap */}
 				<section className="text-center max-w-2xl mx-auto space-y-12">
-					<h2 className="text-3xl font-bold text-foreground">
-						{roadmap.content.headline}
-					</h2>
+					<h2 className="text-3xl font-bold text-foreground">{roadmap.content.headline}</h2>
 					<div className="space-y-4 text-left inline-block">
 						{roadmap.content.items.map((item) => (
-							<div
-								key={`roadmap-item-${item}`}
-								className="flex items-center gap-3"
-							>
+							<div key={`roadmap-item-${item}`} className="flex items-center gap-3">
 								<div className="w-2 h-2 rounded-full bg-accent" />
 								<span className="text-foreground">{item}</span>
 							</div>

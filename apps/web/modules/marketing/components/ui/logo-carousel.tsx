@@ -24,15 +24,9 @@ export const LogoCarousel = ({
 	const getDirection = useCallback(() => {
 		if (containerRef.current) {
 			if (direction === "left") {
-				containerRef.current.style.setProperty(
-					"--animation-direction",
-					"forwards",
-				);
+				containerRef.current.style.setProperty("--animation-direction", "forwards");
 			} else {
-				containerRef.current.style.setProperty(
-					"--animation-direction",
-					"reverse",
-				);
+				containerRef.current.style.setProperty("--animation-direction", "reverse");
 			}
 		}
 	}, [direction]);
@@ -75,8 +69,7 @@ export const LogoCarousel = ({
 			ref={containerRef}
 			className={`scroller relative z-20 w-full overflow-hidden ${className}`}
 			style={{
-				maskImage:
-					"linear-gradient(to right, transparent, white 20%, white 80%, transparent)",
+				maskImage: "linear-gradient(to right, transparent, white 20%, white 80%, transparent)",
 			}}
 		>
 			<ul
@@ -90,9 +83,7 @@ export const LogoCarousel = ({
 						className="w-[120px] flex-shrink-0 flex items-center justify-center opacity-50 hover:opacity-100 transition-opacity"
 						key={item.name}
 					>
-						<div className="text-muted-foreground font-medium text-lg">
-							{item.name}
-						</div>
+						<div className="text-muted-foreground font-medium text-lg">{item.name}</div>
 					</li>
 				))}
 			</ul>

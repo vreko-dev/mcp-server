@@ -37,7 +37,9 @@ export default async function DocsPageWrapper({ params }: { params: Promise<{ sl
 	const { slug = [] } = await params;
 	const page = source.getPage(slug);
 
-	if (!page) { notFound(); }
+	if (!page) {
+		notFound();
+	}
 
 	const pageData: any = page.data;
 	const MDX = pageData.body;
@@ -66,7 +68,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug?: st
 	const { slug = [] } = await params;
 	const page = source.getPage(slug);
 
-	if (!page) { notFound(); }
+	if (!page) {
+		notFound();
+	}
 
 	const pageData: any = page.data;
 	const url = `https://docs.snapback.dev/${slug.join("/")}`;

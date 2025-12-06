@@ -331,7 +331,8 @@ MIIEpAIBAAKCAQEA0Z3VS5...`;
 
 		it("should detect GITHUB_TOKEN pattern (github_pat_ prefix)", () => {
 			const guardian = new GuardianLite();
-			const code = 'const pat = "github_pat_11AAAAAA0aBcDeFgHiJkLmNoPqRsTuVwXyZ1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmno";';
+			const code =
+				'const pat = "github_pat_11AAAAAA0aBcDeFgHiJkLmNoPqRsTuVwXyZ1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmno";';
 			const result = guardian.analyze(code);
 
 			expect(result.issues.length).toBeGreaterThan(0);
@@ -374,7 +375,7 @@ MIIEpAIBAAKCAQEA0Z3VS5...`;
 
 		it("should detect ENV_SECRET_ASSIGNMENT pattern", () => {
 			const guardian = new GuardianLite();
-			const code = 'API_SECRET=super_secret_value_123';
+			const code = "API_SECRET=super_secret_value_123";
 			const result = guardian.analyze(code);
 
 			expect(result.issues.length).toBeGreaterThan(0);
@@ -385,7 +386,7 @@ MIIEpAIBAAKCAQEA0Z3VS5...`;
 
 		it("should detect NPM_AUTH_TOKEN pattern", () => {
 			const guardian = new GuardianLite();
-			const code = '//registry.npmjs.org/:_authToken=npm_AbCdEfGhIjKlMnOpQrStUvWxYz1234567890';
+			const code = "//registry.npmjs.org/:_authToken=npm_AbCdEfGhIjKlMnOpQrStUvWxYz1234567890";
 			const result = guardian.analyze(code);
 
 			expect(result.issues.length).toBeGreaterThan(0);
@@ -396,7 +397,7 @@ MIIEpAIBAAKCAQEA0Z3VS5...`;
 
 		it("should detect GENERIC_PRIVATE_KEY with broader pattern", () => {
 			const guardian = new GuardianLite();
-			const code = '-----BEGIN OPENSSH PRIVATE KEY-----';
+			const code = "-----BEGIN OPENSSH PRIVATE KEY-----";
 			const result = guardian.analyze(code);
 
 			expect(result.issues.length).toBeGreaterThan(0);
@@ -407,7 +408,8 @@ MIIEpAIBAAKCAQEA0Z3VS5...`;
 
 		it("should detect improved JWT pattern (three segments)", () => {
 			const guardian = new GuardianLite();
-			const code = 'const jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U";';
+			const code =
+				'const jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U";';
 			const result = guardian.analyze(code);
 
 			expect(result.issues.length).toBeGreaterThan(0);

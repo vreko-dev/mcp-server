@@ -70,9 +70,7 @@ AIDetectionStats.Empty = function AIDetectionStatsEmpty() {
 			<CardContent>
 				<div className="text-center py-8">
 					<div className="text-lg text-gray-400">No AI detections yet</div>
-					<div className="text-sm text-gray-500 mt-2">
-						Start using AI tools to see detection statistics
-					</div>
+					<div className="text-sm text-gray-500 mt-2">Start using AI tools to see detection statistics</div>
 				</div>
 			</CardContent>
 		</Card>
@@ -80,11 +78,7 @@ AIDetectionStats.Empty = function AIDetectionStatsEmpty() {
 };
 
 // Error state component
-AIDetectionStats.Error = function AIDetectionStatsError({
-	error,
-}: {
-	error: AppError;
-}) {
+AIDetectionStats.Error = function AIDetectionStatsError({ error }: { error: AppError }) {
 	const queryClient = useQueryClient();
 	const errorRef = useRef<HTMLDivElement>(null);
 
@@ -114,9 +108,7 @@ AIDetectionStats.Error = function AIDetectionStatsError({
 					role="alert"
 					aria-live="polite"
 				>
-					<div className="text-lg text-red-400">
-						Error loading AI detection stats
-					</div>
+					<div className="text-lg text-red-400">Error loading AI detection stats</div>
 					<div className="text-sm text-red-500 mt-2">{error.message}</div>
 					<button
 						type="button"
@@ -172,9 +164,7 @@ export function AIDetectionStats({ stats }: AIDetectionStatsProps) {
 									</div>
 									<div>
 										<div className="font-medium text-white">{stat.tool}</div>
-										<div className="text-sm text-neutral-400">
-											{stat.count} detections
-										</div>
+										<div className="text-sm text-neutral-400">{stat.count} detections</div>
 									</div>
 								</div>
 								<div className="text-right">

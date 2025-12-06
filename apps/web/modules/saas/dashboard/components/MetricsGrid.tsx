@@ -3,13 +3,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { BentoGrid, BentoGridItem } from "@ui/components/aceternity/bento-grid";
 import NumberTicker from "@ui/components/magic/number-ticker";
-import {
-	Activity,
-	Camera,
-	FileCheck,
-	HelpCircle,
-	Sparkles,
-} from "lucide-react";
+import { Activity, Camera, FileCheck, HelpCircle, Sparkles } from "lucide-react";
 import Link from "next/link";
 import posthog from "posthog-js";
 import { memo, useEffect, useRef } from "react";
@@ -35,9 +29,7 @@ const _MetricsGridSkeleton = memo(function MetricsGridSkeleton() {
 			{[...Array(5)].map((_, i) => (
 				<BentoGridItem
 					key={`skeleton-${i}`}
-					title={
-						<div className="flex items-center gap-2 text-lg h-6 bg-gray-700 rounded animate-pulse" />
-					}
+					title={<div className="flex items-center gap-2 text-lg h-6 bg-gray-700 rounded animate-pulse" />}
 					description={
 						<div className="space-y-2">
 							<div className="h-8 w-20 bg-gray-700 rounded animate-pulse" />
@@ -59,19 +51,13 @@ const _MetricsGridEmpty = memo(function MetricsGridEmpty() {
 	return (
 		<div className="text-center py-12">
 			<div className="text-lg text-gray-400">No metrics data available yet</div>
-			<div className="text-sm text-gray-500 mt-2">
-				Create your first snapshot to see metrics
-			</div>
+			<div className="text-sm text-gray-500 mt-2">Create your first snapshot to see metrics</div>
 		</div>
 	);
 });
 
 // Error state component
-const _MetricsGridError = memo(function MetricsGridError({
-	error,
-}: {
-	error: AppError;
-}) {
+const _MetricsGridError = memo(function MetricsGridError({ error }: { error: AppError }) {
 	const queryClient = useQueryClient();
 	const errorRef = useRef<HTMLDivElement>(null);
 
@@ -137,10 +123,7 @@ const MetricsGridComponent = memo(function MetricsGrid({
 					<span>Learn more</span>
 				</Link>
 			</div>
-			<BentoGrid
-				className="grid-cols-1 md:grid-cols-4 auto-rows-auto"
-				data-testid="metrics-grid"
-			>
+			<BentoGrid className="grid-cols-1 md:grid-cols-4 auto-rows-auto" data-testid="metrics-grid">
 				<BentoGridItem
 					title={
 						<div className="flex items-center gap-2 text-lg">
@@ -151,10 +134,7 @@ const MetricsGridComponent = memo(function MetricsGrid({
 					description={
 						<div className="space-y-1">
 							<div className="text-xs text-neutral-400">
-								<NumberTicker
-									value={snapshotCount}
-									className="text-3xl font-bold text-white"
-								/>{" "}
+								<NumberTicker value={snapshotCount} className="text-3xl font-bold text-white" />{" "}
 								snapshots created
 							</div>
 						</div>
@@ -175,15 +155,10 @@ const MetricsGridComponent = memo(function MetricsGrid({
 					description={
 						<div className="space-y-1">
 							<div className="text-xs text-neutral-400">
-								<NumberTicker
-									value={recoveryCount}
-									className="text-3xl font-bold text-white"
-								/>{" "}
+								<NumberTicker value={recoveryCount} className="text-3xl font-bold text-white" />{" "}
 								recoveries performed
 							</div>
-							<div className="text-xs text-neutral-500">
-								{recoveryCount} this month
-							</div>
+							<div className="text-xs text-neutral-500">{recoveryCount} this month</div>
 						</div>
 					}
 					header={
@@ -202,15 +177,9 @@ const MetricsGridComponent = memo(function MetricsGrid({
 					description={
 						<div className="space-y-1">
 							<div className="text-xs text-neutral-400">
-								<NumberTicker
-									value={filesProtected}
-									className="text-3xl font-bold text-white"
-								/>{" "}
-								files
+								<NumberTicker value={filesProtected} className="text-3xl font-bold text-white" /> files
 							</div>
-							<div className="text-xs text-neutral-500">
-								Across all projects
-							</div>
+							<div className="text-xs text-neutral-500">Across all projects</div>
 						</div>
 					}
 					header={
@@ -229,15 +198,10 @@ const MetricsGridComponent = memo(function MetricsGrid({
 					description={
 						<div className="space-y-1">
 							<div className="text-xs text-neutral-400">
-								<NumberTicker
-									value={aiDetectionRate}
-									className="text-3xl font-bold text-white"
-								/>
-								% detection rate
+								<NumberTicker value={aiDetectionRate} className="text-3xl font-bold text-white" />%
+								detection rate
 							</div>
-							<div className="text-xs text-[var(--snapback-green)]">
-								{snapshotCount} detections
-							</div>
+							<div className="text-xs text-[var(--snapback-green)]">{snapshotCount} detections</div>
 						</div>
 					}
 					header={
@@ -257,10 +221,7 @@ const MetricsGridComponent = memo(function MetricsGrid({
 						description={
 							<div className="space-y-1">
 								<div className="text-xs text-neutral-400">
-									<NumberTicker
-										value={totalBytesSaved}
-										className="text-3xl font-bold text-white"
-									/>
+									<NumberTicker value={totalBytesSaved} className="text-3xl font-bold text-white" />
 									bytes saved
 								</div>
 								{sessionCount !== undefined && aiSessionCount !== undefined && (

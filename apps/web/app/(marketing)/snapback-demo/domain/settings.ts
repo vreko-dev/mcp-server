@@ -30,9 +30,6 @@ export const DEFAULT_SETTINGS: SnapBackSettings = {
 /**
  * Gets a specific setting value with type safety
  */
-export function getSetting<T extends keyof SnapBackSettings>(
-	settings: SnapBackSettings,
-	key: T,
-): SnapBackSettings[T] {
+export function getSetting<T extends keyof SnapBackSettings>(settings: SnapBackSettings, key: T): SnapBackSettings[T] {
 	return settings[key];
 }

@@ -81,8 +81,7 @@ export function HeroSection() {
 				<div
 					className="absolute inset-0 z-10"
 					style={{
-						background:
-							"linear-gradient(135deg, rgba(0, 0, 0, 0.65) 0%, rgba(74, 124, 89, 0.55) 100%)",
+						background: "linear-gradient(135deg, rgba(0, 0, 0, 0.65) 0%, rgba(74, 124, 89, 0.55) 100%)",
 					}}
 				/>
 			</div>
@@ -120,9 +119,7 @@ export function HeroSection() {
 						}
 						className="group relative inline-flex items-center justify-center px-10 py-[18px] bg-white hover:bg-gray-50 text-[#4A7C59] text-lg font-bold rounded-lg transition-all duration-300 shadow-[0_8px_24px_rgba(0,0,0,0.4),0_0_0_1px_rgba(255,255,255,0.1)] hover:shadow-[0_12px_32px_rgba(0,0,0,0.5),0_0_40px_rgba(255,255,255,0.3)] hover:scale-105 hover:-translate-y-1 animate-[subtle-pulse_3s_ease-in-out_infinite]"
 					>
-						<span className="relative z-10">
-							Install for VS Code — Free Forever
-						</span>
+						<span className="relative z-10">Install for VS Code — Free Forever</span>
 					</Link>
 
 					{/* Secondary CTA - Tutorial Link */}

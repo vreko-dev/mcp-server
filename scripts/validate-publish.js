@@ -38,33 +38,24 @@ function validatePackage(pkgPath) {
 		// Check for catalog: references
 		const content = fs.readFileSync(packageJsonPath, "utf-8");
 		if (content.includes('"catalog:"')) {
-			errors.push(`❌ Contains catalog: protocol (workspace-only)`);
+			errors.push("❌ Contains catalog: protocol (workspace-only)");
 			isValid = false;
 		}
 
 		// Check for workspace:* (except for snapback-oss)
 		if (pkg.dependencies) {
 			for (const [depName, version] of Object.entries(pkg.dependencies)) {
-				if (
-					version === "workspace:*" &&
-					!depName.includes("snapback-oss")
-				) {
-					errors.push(
-						`❌ Has workspace:* for ${depName} (should use npm version)`
-					);
+				if (version === "workspace:*" && !depName.includes("snapback-oss")) {
+					errors.push(`❌ Has workspace:* for ${depName} (should use npm version)`);
 					isValid = false;
 				}
 			}
 		}
 
 		if (pkg.devDependencies) {
-			for (const [depName, version] of Object.entries(
-				pkg.devDependencies
-			)) {
+			for (const [depName, version] of Object.entries(pkg.devDependencies)) {
 				if (version === "workspace:*") {
-					errors.push(
-						`❌ Has workspace:* in devDependencies for ${depName}`
-					);
+					errors.push(`❌ Has workspace:* in devDependencies for ${depName}`);
 					isValid = false;
 				}
 			}
@@ -94,17 +85,11 @@ function main() {
 	}
 
 	if (errors.length > 0) {
-		console.error(
-			`\n❌ VALIDATION FAILED: ${errors.length} package(s) have invalid configuration\n`
-		);
+		console.error(`\n❌ VALIDATION FAILED: ${errors.length} package(s) have invalid configuration\n`);
 		console.error("❌ Cannot proceed with publishing\n");
 		console.error("Fix the above issues and retry:\n");
-		console.error(
-			"  Replace all 'catalog:' with specific versions from pnpm-workspace.yaml"
-		);
-		console.error(
-			"  Replace all 'workspace:*' with npm version references (^X.Y.Z)\n"
-		);
+		console.error("  Replace all 'catalog:' with specific versions from pnpm-workspace.yaml");
+		console.error("  Replace all 'workspace:*' with npm version references (^X.Y.Z)\n");
 		process.exit(1);
 	}
 

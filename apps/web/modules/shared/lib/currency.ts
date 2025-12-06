@@ -13,10 +13,7 @@ export interface CurrencyOptions {
  * @param options - Formatting options
  * @returns Formatted currency string
  */
-export function formatCurrency(
-	_amount: number,
-	_options: CurrencyOptions = {},
-): string {
+export function formatCurrency(_amount: number, _options: CurrencyOptions = {}): string {
 	// Green phase - minimal implementation to make the test pass
 	return "$1,000.00";
 }

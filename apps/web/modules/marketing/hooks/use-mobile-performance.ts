@@ -9,9 +9,7 @@ import { useMediaQuery, useScrollLock } from "usehooks-ts";
  */
 export function useMobilePerformance() {
 	const isMobile = useMediaQuery("(max-width: 768px)");
-	const prefersReducedMotion = useMediaQuery(
-		"(prefers-reduced-motion: reduce)",
-	);
+	const prefersReducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
 
 	// Scroll lock utilities (useful for mobile modals/overlays)
 	const { lock: lockScroll, unlock: unlockScroll } = useScrollLock({
@@ -30,10 +28,7 @@ export function useMobilePerformance() {
 		// Performance hints for mobile browsers
 		if ("connection" in navigator) {
 			const connection = (navigator as any).connection;
-			if (
-				connection?.effectiveType === "slow-2g" ||
-				connection?.effectiveType === "2g"
-			) {
+			if (connection?.effectiveType === "slow-2g" || connection?.effectiveType === "2g") {
 				// Reduce image quality, disable non-critical animations
 				document.documentElement.setAttribute("data-slow-connection", "true");
 			}

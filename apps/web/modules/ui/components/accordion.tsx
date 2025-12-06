@@ -7,10 +7,7 @@ import type * as React from "react";
 
 const Accordion = AccordionPrimitive.Root;
 
-const AccordionItem = ({
-	className,
-	...props
-}: React.ComponentProps<typeof AccordionPrimitive.Item>) => (
+const AccordionItem = ({ className, ...props }: React.ComponentProps<typeof AccordionPrimitive.Item>) => (
 	<AccordionPrimitive.Item className={cn("border-b", className)} {...props} />
 );
 

@@ -27,21 +27,15 @@ class MotionGuard {
 	private async validateMotionImports() {
 		try {
 			// Validate that motion/react imports are available synchronously
-			const { LazyMotion, MotionConfig, domAnimation } = await import(
-				"motion/react"
-			);
+			const { LazyMotion, MotionConfig, domAnimation } = await import("motion/react");
 
 			if (!LazyMotion || !MotionConfig || !domAnimation) {
-				throw new Error(
-					"Motion components are undefined - webpack chunk loading issue detected",
-				);
+				throw new Error("Motion components are undefined - webpack chunk loading issue detected");
 			}
 
 			// Validate that domAnimation features are properly loaded
 			if (typeof domAnimation !== "function") {
-				throw new Error(
-					"domAnimation is not a function - module resolution issue",
-				);
+				throw new Error("domAnimation is not a function - module resolution issue");
 			}
 
 			const loadTime = Date.now() - this.startTime;
@@ -54,15 +48,10 @@ class MotionGuard {
 			}
 
 			this.status = "ready";
-			console.log(
-				`✅ MotionGuard: Motion loaded successfully in ${loadTime}ms`,
-			);
+			console.log(`✅ MotionGuard: Motion loaded successfully in ${loadTime}ms`);
 		} catch (error) {
 			this.status = "failed";
-			console.error(
-				"🚨 MotionGuard: Critical motion/react loading failure",
-				error as Error,
-			);
+			console.error("🚨 MotionGuard: Critical motion/react loading failure", error as Error);
 
 			// In development, provide actionable debugging info
 			if (process.env.NODE_ENV === "development") {
@@ -111,13 +100,9 @@ export function useMotionValidation() {
 	if (process.env.NODE_ENV === "development") {
 		// Validate that MotionProvider is not wrapped with suppressHydrationWarning
 		if (typeof window !== "undefined") {
-			const hasSuppressionWarning = document.querySelector(
-				"[suppresshydrationwarning]",
-			);
+			const hasSuppressionWarning = document.querySelector("[suppresshydrationwarning]");
 			if (hasSuppressionWarning) {
-				console.warn(
-					"🚨 MotionGuard: suppressHydrationWarning detected - sign of underlying issue",
-				);
+				console.warn("🚨 MotionGuard: suppressHydrationWarning detected - sign of underlying issue");
 			}
 		}
 	}

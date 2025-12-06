@@ -27,20 +27,16 @@ export function OriginStory() {
 						viewport={{ once: true }}
 						className="space-y-6 text-lg text-[#A0A0A0] leading-relaxed"
 					>
+						<p>In 2024, we asked an AI assistant to "clean up" our config files.</p>
+
 						<p>
-							In 2024, we asked an AI assistant to "clean up" our config files.
+							It deleted production database credentials. Overwrote environment variables. "Simplified"
+							our webpack config into something that couldn't build.
 						</p>
 
 						<p>
-							It deleted production database credentials. Overwrote environment
-							variables. "Simplified" our webpack config into something that
-							couldn't build.
-						</p>
-
-						<p>
-							By the time we noticed, we'd already saved. Git couldn't help— the
-							AI had made commits. Time Machine was too slow. Three days and
-							$12,000 later, we were back online.
+							By the time we noticed, we'd already saved. Git couldn't help— the AI had made commits. Time
+							Machine was too slow. Three days and $12,000 later, we were back online.
 						</p>
 
 						<p className="text-white font-medium">

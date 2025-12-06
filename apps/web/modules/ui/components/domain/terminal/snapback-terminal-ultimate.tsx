@@ -5,21 +5,13 @@ import type React from "react";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 // Terminal base components
-const Terminal = memo(
-	({
-		children,
-		className = "",
-	}: {
-		children: React.ReactNode;
-		className?: string;
-	}) => (
-		<div
-			className={`bg-black/95 backdrop-blur-sm rounded-lg border border-green-500/20 shadow-2xl overflow-hidden ${className}`}
-		>
-			{children}
-		</div>
-	),
-);
+const Terminal = memo(({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
+	<div
+		className={`bg-black/95 backdrop-blur-sm rounded-lg border border-green-500/20 shadow-2xl overflow-hidden ${className}`}
+	>
+		{children}
+	</div>
+));
 
 Terminal.displayName = "Terminal";
 
@@ -62,15 +54,7 @@ const TypingAnimation = memo(
 TypingAnimation.displayName = "TypingAnimation";
 
 const AnimatedSpan = memo(
-	({
-		children,
-		delay = 0,
-		className = "",
-	}: {
-		children: React.ReactNode;
-		delay?: number;
-		className?: string;
-	}) => {
+	({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) => {
 		const [visible, setVisible] = useState(false);
 
 		useEffect(() => {
@@ -99,13 +83,10 @@ AnimatedSpan.displayName = "AnimatedSpan";
 
 // Custom hook for sound effects
 const useSound = () => {
-	const playSound = useCallback(
-		(type: "typing" | "error" | "success" | "warning" | "click") => {
-			// In production, you'd play actual sounds here
-			console.log(`🔊 Playing sound: ${type}`);
-		},
-		[],
-	);
+	const playSound = useCallback((type: "typing" | "error" | "success" | "warning" | "click") => {
+		// In production, you'd play actual sounds here
+		console.log(`🔊 Playing sound: ${type}`);
+	}, []);
 
 	return { playSound };
 };
@@ -184,9 +165,7 @@ const InteractivePrompt = memo(
 				>
 					<span className="text-cyan-400">Recover from checkpoint? (Y/n)</span>
 					{!hasInteracted && <BlinkingCursor />}
-					{hasInteracted && (
-						<span className="text-white ml-2 font-bold">Y</span>
-					)}
+					{hasInteracted && <span className="text-white ml-2 font-bold">Y</span>}
 				</motion.div>
 
 				{!hasInteracted && (
@@ -195,9 +174,7 @@ const InteractivePrompt = memo(
 						animate={{ opacity: 0.5 }}
 						className="absolute -bottom-6 left-0 text-xs text-gray-500"
 					>
-						{hovering
-							? "← Click to recover"
-							: `Auto-continuing in ${countdown}...`}
+						{hovering ? "← Click to recover" : `Auto-continuing in ${countdown}...`}
 					</motion.div>
 				)}
 			</div>
@@ -258,9 +235,7 @@ ProgressBar.displayName = "ProgressBar";
 
 // Main terminal component
 export const SnapBackTerminalUltimate = memo(() => {
-	const [stage, setStage] = useState<
-		"init" | "working" | "disaster" | "prompt" | "recovery" | "complete"
-	>("init");
+	const [stage, setStage] = useState<"init" | "working" | "disaster" | "prompt" | "recovery" | "complete">("init");
 	const [progress, setProgress] = useState(0);
 	const [isRecovering, setIsRecovering] = useState(false);
 	const [isMobile, setIsMobile] = useState(false);
@@ -282,11 +257,7 @@ export const SnapBackTerminalUltimate = memo(() => {
 		const observer = new IntersectionObserver(
 			([entry]) => {
 				// Only trigger when terminal is fully visible (threshold 0.8 = 80% visible)
-				if (
-					entry?.isIntersecting &&
-					entry.intersectionRatio >= intersectionThreshold &&
-					!hasStarted
-				) {
+				if (entry?.isIntersecting && entry.intersectionRatio >= intersectionThreshold && !hasStarted) {
 					setIsInView(true);
 					setHasStarted(true);
 				}
@@ -349,9 +320,7 @@ export const SnapBackTerminalUltimate = memo(() => {
 			{ name: "prompt", delay: 17000 },
 		];
 
-		const timers = stages.map(({ name, delay }) =>
-			setTimeout(() => setStage(name as typeof stage), delay),
-		);
+		const timers = stages.map(({ name, delay }) => setTimeout(() => setStage(name as typeof stage), delay));
 
 		return () => timers.forEach(clearTimeout);
 	}, [isInView]);
@@ -411,10 +380,7 @@ export const SnapBackTerminalUltimate = memo(() => {
 	}, [stage]);
 
 	// Memoized class names
-	const terminalClasses = useMemo(
-		() => `${isMobile ? "text-xs" : "text-sm"} max-w-5xl mx-auto`,
-		[isMobile],
-	);
+	const terminalClasses = useMemo(() => `${isMobile ? "text-xs" : "text-sm"} max-w-5xl mx-auto`, [isMobile]);
 
 	const progressBarProgress = useMemo(() => progress, [progress]);
 
@@ -426,22 +392,11 @@ export const SnapBackTerminalUltimate = memo(() => {
 				<Terminal className={terminalClasses}>
 					<div className="flex items-center gap-2 px-4 py-3 border-b border-white/10 bg-black/40">
 						<div className="flex gap-2">
-							<motion.div
-								className="w-3 h-3 rounded-full bg-red-500/80"
-								whileHover={{ scale: 1.2 }}
-							/>
-							<motion.div
-								className="w-3 h-3 rounded-full bg-yellow-500/80"
-								whileHover={{ scale: 1.2 }}
-							/>
-							<motion.div
-								className="w-3 h-3 rounded-full bg-green-500/80"
-								whileHover={{ scale: 1.2 }}
-							/>
+							<motion.div className="w-3 h-3 rounded-full bg-red-500/80" whileHover={{ scale: 1.2 }} />
+							<motion.div className="w-3 h-3 rounded-full bg-yellow-500/80" whileHover={{ scale: 1.2 }} />
+							<motion.div className="w-3 h-3 rounded-full bg-green-500/80" whileHover={{ scale: 1.2 }} />
 						</div>
-						<span className="text-xs text-white/40 ml-2">
-							snapback-terminal
-						</span>
+						<span className="text-xs text-white/40 ml-2">snapback-terminal</span>
 						<motion.div
 							className="ml-auto flex items-center gap-1"
 							animate={{ opacity: [0.5, 1, 0.5] }}
@@ -492,34 +447,31 @@ export const SnapBackTerminalUltimate = memo(() => {
 								<div className="text-green-400">&gt; next build</div>
 								<br />
 								<div className="text-white">
-									<span className="text-cyan-400">info</span> - Loaded env from
-									.env.local
+									<span className="text-cyan-400">info</span> - Loaded env from .env.local
 								</div>
 								<div className="text-white">
-									<span className="text-cyan-400">info</span> - Using webpack 5.
-									Reason: future.webpack5 set to true in next.config.js
+									<span className="text-cyan-400">info</span> - Using webpack 5. Reason:
+									future.webpack5 set to true in next.config.js
 									https://nextjs.org/docs/messages/webpack5
 								</div>
 								<div className="text-white">
-									<span className="text-cyan-400">info</span> - Checking
-									validity of types...
+									<span className="text-cyan-400">info</span> - Checking validity of types...
 								</div>
 								<div className="text-white">
-									<span className="text-cyan-400">info</span> - Creating an
-									optimized production build...
+									<span className="text-cyan-400">info</span> - Creating an optimized production
+									build...
 								</div>
 								<div className="text-white">
-									<span className="text-cyan-400">info</span> - Compiled
-									successfully
+									<span className="text-cyan-400">info</span> - Compiled successfully
 								</div>
 								<br />
 								<div className="text-white">
-									<span className="text-yellow-400">warn</span> - No API_ROUTE
-									for /api/checkout detected
+									<span className="text-yellow-400">warn</span> - No API_ROUTE for /api/checkout
+									detected
 								</div>
 								<div className="text-white">
-									<span className="text-yellow-400">warn</span> - Large
-									dependency found: lodash (2.1MB)
+									<span className="text-yellow-400">warn</span> - Large dependency found: lodash
+									(2.1MB)
 								</div>
 							</>
 						)}
@@ -528,18 +480,10 @@ export const SnapBackTerminalUltimate = memo(() => {
 						{stage === "disaster" && (
 							<>
 								<div className="text-cyan-400">$ git push origin main</div>
-								<div className="text-green-400">
-									Enumerating objects: 25, done.
-								</div>
-								<div className="text-green-400">
-									Counting objects: 100% (25/25), done.
-								</div>
-								<div className="text-green-400">
-									Delta compression using up to 8 threads
-								</div>
-								<div className="text-green-400">
-									Compressing objects: 100% (18/18), done.
-								</div>
+								<div className="text-green-400">Enumerating objects: 25, done.</div>
+								<div className="text-green-400">Counting objects: 100% (25/25), done.</div>
+								<div className="text-green-400">Delta compression using up to 8 threads</div>
+								<div className="text-green-400">Compressing objects: 100% (18/18), done.</div>
 								<div className="text-green-400">
 									Writing objects: 100% (18/18), 3.24 KiB | 3.24 MiB/s, done.
 								</div>
@@ -547,17 +491,15 @@ export const SnapBackTerminalUltimate = memo(() => {
 									Total 18 (delta 12), reused 0 (delta 0), pack-reused 0
 								</div>
 								<div className="text-green-400">
-									remote: Resolving deltas: 100% (12/12), completed with 7 local
-									objects.
+									remote: Resolving deltas: 100% (12/12), completed with 7 local objects.
 								</div>
 								<br />
 								<div className="text-red-400">
-									remote: error: GH006: Protected branch update failed for
-									refs/heads/main.
+									remote: error: GH006: Protected branch update failed for refs/heads/main.
 								</div>
 								<div className="text-red-400">
-									remote: error: At least 1 approving review is required by
-									reviewers with write access.
+									remote: error: At least 1 approving review is required by reviewers with write
+									access.
 								</div>
 								<br />
 								<div className="text-red-400">
@@ -568,16 +510,14 @@ export const SnapBackTerminalUltimate = memo(() => {
 								</div>
 								<br />
 								<div className="text-white">
-									<span className="text-red-400">error</span> - Deployment
-									failed: Required review missing
+									<span className="text-red-400">error</span> - Deployment failed: Required review
+									missing
 								</div>
 								<div className="text-white">
-									<span className="text-red-400">error</span> - Production
-									database connection lost
+									<span className="text-red-400">error</span> - Production database connection lost
 								</div>
 								<div className="text-white">
-									<span className="text-red-400">error</span> - 50+ users
-									currently affected
+									<span className="text-red-400">error</span> - 50+ users currently affected
 								</div>
 							</>
 						)}
@@ -592,13 +532,9 @@ export const SnapBackTerminalUltimate = memo(() => {
 								<div className="text-white">
 									SnapBack has detected a critical failure in your deployment.
 								</div>
-								<div className="text-white">
-									You have automatic checkpoints from 3 minutes ago.
-								</div>
+								<div className="text-white">You have automatic checkpoints from 3 minutes ago.</div>
 								<br />
-								<div className="text-white">
-									Restore to last known good state?
-								</div>
+								<div className="text-white">Restore to last known good state?</div>
 								<br />
 								<InteractivePrompt onAction={handleRecovery} />
 							</>
@@ -613,36 +549,26 @@ export const SnapBackTerminalUltimate = memo(() => {
 								<br />
 								<div className="text-white">
 									Restoring from checkpoint:{" "}
-									<span className="text-cyan-400">
-										cp_20231027_1432_main_safe
-									</span>
+									<span className="text-cyan-400">cp_20231027_1432_main_safe</span>
 								</div>
-								<div className="text-white">
-									Created: 3 minutes ago (safe state)
-								</div>
+								<div className="text-white">Created: 3 minutes ago (safe state)</div>
 								<br />
 								<div className="text-white">
-									<span className="text-cyan-400">info</span> - Restoring
-									package.json (v1.2.3 → v1.2.1)
+									<span className="text-cyan-400">info</span> - Restoring package.json (v1.2.3 →
+									v1.2.1)
 								</div>
 								<div className="text-white">
-									<span className="text-cyan-400">info</span> - Restoring
-									next.config.js
+									<span className="text-cyan-400">info</span> - Restoring next.config.js
 								</div>
 								<div className="text-white">
-									<span className="text-cyan-400">info</span> - Restoring
-									pages/api/checkout.ts
+									<span className="text-cyan-400">info</span> - Restoring pages/api/checkout.ts
 								</div>
 								<br />
-								<div className="text-green-400">
-									✓ 3 files restored successfully
-								</div>
+								<div className="text-green-400">✓ 3 files restored successfully</div>
 								<div className="text-green-400">✓ Dependencies validated</div>
 								<div className="text-green-400">✓ Tests passing</div>
 								<br />
-								<div className="text-yellow-400">
-									⚡ Deploying safe version...
-								</div>
+								<div className="text-yellow-400">⚡ Deploying safe version...</div>
 							</>
 						)}
 
@@ -653,12 +579,9 @@ export const SnapBackTerminalUltimate = memo(() => {
 									✅ <span className="font-bold">RECOVERY COMPLETE</span>
 								</div>
 								<br />
+								<div className="text-white">System restored to last known good state.</div>
 								<div className="text-white">
-									System restored to last known good state.
-								</div>
-								<div className="text-white">
-									Production is now running version{" "}
-									<span className="text-cyan-400">v1.2.1</span>
+									Production is now running version <span className="text-cyan-400">v1.2.1</span>
 								</div>
 								<br />
 								<div className="text-green-400">✓ 0 users affected</div>
@@ -666,16 +589,12 @@ export const SnapBackTerminalUltimate = memo(() => {
 								<div className="text-green-400">✓ 100% uptime maintained</div>
 								<br />
 								<div className="text-white">
-									Lesson learned: Always test payment flows before merging to
-									main.
+									Lesson learned: Always test payment flows before merging to main.
 								</div>
 								<br />
 								<div className="text-cyan-400">$ snapback status</div>
 								<div className="text-green-400"> 🛡️ 3 files protected</div>
-								<div className="text-green-400">
-									{" "}
-									💾 12 checkpoints available
-								</div>
+								<div className="text-green-400"> 💾 12 checkpoints available</div>
 								<div className="text-green-400"> ⚡ Auto-recovery enabled</div>
 							</>
 						)}
@@ -690,9 +609,7 @@ SnapBackTerminalUltimate.displayName = "SnapBackTerminalUltimate";
 
 // Mobile version of the terminal
 export const SnapBackTerminalMobile = memo(() => {
-	const [stage, setStage] = useState<
-		"init" | "working" | "disaster" | "prompt"
-	>("init");
+	const [stage, setStage] = useState<"init" | "working" | "disaster" | "prompt">("init");
 	const { playSound } = useSound();
 
 	useEffect(() => {
@@ -749,9 +666,7 @@ export const SnapBackTerminalMobile = memo(() => {
 				{stage === "prompt" && (
 					<div>
 						<div className="text-red-400 mb-2">💥 EMERGENCY RECOVERY</div>
-						<div className="text-white text-xs mb-3">
-							Restore from 3min ago?
-						</div>
+						<div className="text-white text-xs mb-3">Restore from 3min ago?</div>
 						<button
 							type="button"
 							onClick={handleRecovery}

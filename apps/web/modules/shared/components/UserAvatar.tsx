@@ -23,20 +23,14 @@ export const UserAvatar = ({
 
 	const avatarSrc = useMemo(
 		() =>
-			avatarUrl
-				? avatarUrl.startsWith("http")
-					? avatarUrl
-					: `/image-proxy/avatars/${avatarUrl}`
-				: undefined,
+			avatarUrl ? (avatarUrl.startsWith("http") ? avatarUrl : `/image-proxy/avatars/${avatarUrl}`) : undefined,
 		[avatarUrl],
 	);
 
 	return (
 		<Avatar ref={ref} className={className}>
 			<AvatarImage src={avatarSrc} />
-			<AvatarFallback className="bg-secondary/10 text-secondary">
-				{initials}
-			</AvatarFallback>
+			<AvatarFallback className="bg-secondary/10 text-secondary">{initials}</AvatarFallback>
 		</Avatar>
 	);
 };

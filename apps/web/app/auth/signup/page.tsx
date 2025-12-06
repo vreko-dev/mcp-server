@@ -30,11 +30,7 @@ export default async function SignupPage({
 	if (invitationId) {
 		const invitation = (await getInvitation(invitationId)) as any;
 
-		if (
-			!invitation ||
-			invitation?.status !== "pending" ||
-			invitation?.expiresAt?.getTime() < Date.now()
-		) {
+		if (!invitation || invitation?.status !== "pending" || invitation?.expiresAt?.getTime() < Date.now()) {
 			redirect(withQuery("/auth/login", params));
 		}
 

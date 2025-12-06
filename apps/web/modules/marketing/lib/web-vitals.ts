@@ -58,13 +58,8 @@ function reportVital(metric: BasicMetric) {
 
 	// Log to console in development
 	if (process.env.NODE_ENV === "development") {
-		const emoji =
-			rating === "good" ? "✅" : rating === "needs-improvement" ? "⚠️" : "❌";
-		console.group(
-			`${emoji} ${vitalName}: ${metric.value.toFixed(2)}${
-				vitalName === "CLS" ? "" : "ms"
-			}`,
-		);
+		const emoji = rating === "good" ? "✅" : rating === "needs-improvement" ? "⚠️" : "❌";
+		console.group(`${emoji} ${vitalName}: ${metric.value.toFixed(2)}${vitalName === "CLS" ? "" : "ms"}`);
 		console.log(`Rating: ${rating}`);
 		console.log(`Threshold: ${JSON.stringify(threshold)}`);
 		console.log(`Full report: ${JSON.stringify(report)}`);
@@ -177,37 +172,21 @@ export function debugPerformance() {
 	console.group("🔍 Performance Debug");
 
 	// Navigation timing
-	const navigation = performance.getEntriesByType(
-		"navigation",
-	)[0] as PerformanceNavigationTiming;
+	const navigation = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming;
 	if (navigation) {
 		console.log("Navigation timing:");
 		console.table({
-			"DNS Lookup": `${(
-				navigation.domainLookupEnd - navigation.domainLookupStart
-			).toFixed(2)}ms`,
-			Connection: `${(navigation.connectEnd - navigation.connectStart).toFixed(
-				2,
-			)}ms`,
-			Request: `${(navigation.responseStart - navigation.requestStart).toFixed(
-				2,
-			)}ms`,
-			Response: `${(navigation.responseEnd - navigation.responseStart).toFixed(
-				2,
-			)}ms`,
-			"DOM Processing": `${(
-				navigation.domComplete - navigation.responseEnd
-			).toFixed(2)}ms`,
-			"Load Event": `${(
-				navigation.loadEventEnd - navigation.loadEventStart
-			).toFixed(2)}ms`,
+			"DNS Lookup": `${(navigation.domainLookupEnd - navigation.domainLookupStart).toFixed(2)}ms`,
+			Connection: `${(navigation.connectEnd - navigation.connectStart).toFixed(2)}ms`,
+			Request: `${(navigation.responseStart - navigation.requestStart).toFixed(2)}ms`,
+			Response: `${(navigation.responseEnd - navigation.responseStart).toFixed(2)}ms`,
+			"DOM Processing": `${(navigation.domComplete - navigation.responseEnd).toFixed(2)}ms`,
+			"Load Event": `${(navigation.loadEventEnd - navigation.loadEventStart).toFixed(2)}ms`,
 		});
 	}
 
 	// Resource timing for images
-	const resources = performance.getEntriesByType(
-		"resource",
-	) as PerformanceResourceTiming[];
+	const resources = performance.getEntriesByType("resource") as PerformanceResourceTiming[];
 	const images = resources.filter((r) => r.initiatorType === "img");
 	if (images.length > 0) {
 		console.log("\nImage loading times:");

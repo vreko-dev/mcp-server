@@ -17,11 +17,7 @@ export function StoryScroll() {
 		<section className="relative py-20 bg-gradient-to-b from-black to-slate-900 overflow-hidden">
 			<div className="max-w-4xl mx-auto px-4">
 				{content.story.chapters.map((chapter) => (
-					<ChapterSection
-						key={chapter.id}
-						chapter={chapter}
-						isMounted={isMounted}
-					/>
+					<ChapterSection key={chapter.id} chapter={chapter} isMounted={isMounted} />
 				))}
 			</div>
 		</section>
@@ -126,23 +122,15 @@ function ChapterSection({ chapter, isMounted }: ChapterSectionProps) {
 	};
 
 	return (
-		<m.div
-			ref={ref}
-			style={styleProps}
-			className="min-h-[80vh] flex items-center justify-center py-16 mb-20"
-		>
+		<m.div ref={ref} style={styleProps} className="min-h-[80vh] flex items-center justify-center py-16 mb-20">
 			<div className="bg-gray-900/50 backdrop-blur-sm rounded-2xl p-8 md:p-12 border border-gray-700">
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
 					<div>
 						<m.h3
-							initial={
-								isMounted ? { opacity: 0, x: -20 } : { opacity: 1, x: 0 }
-							}
+							initial={isMounted ? { opacity: 0, x: -20 } : { opacity: 1, x: 0 }}
 							whileInView={{ opacity: 1, x: 0 }}
 							viewport={{ once: true }}
-							className={`text-2xl md:text-3xl font-bold mb-4 ${getEmotionColor(
-								chapter.emotion,
-							)}`}
+							className={`text-2xl md:text-3xl font-bold mb-4 ${getEmotionColor(chapter.emotion)}`}
 						>
 							{chapter.title}
 						</m.h3>
@@ -182,20 +170,14 @@ function ChapterSection({ chapter, isMounted }: ChapterSectionProps) {
 								transition={{ delay: 0.4, type: "spring" }}
 								className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4"
 							>
-								<div className="text-lg font-semibold text-yellow-400">
-									{chapter.stat}
-								</div>
+								<div className="text-lg font-semibold text-yellow-400">{chapter.stat}</div>
 							</m.div>
 						)}
 					</div>
 
 					<div className="flex justify-center items-center">
 						<m.div
-							initial={
-								isMounted
-									? { opacity: 0, scale: 0.5 }
-									: { opacity: 1, scale: 1 }
-							}
+							initial={isMounted ? { opacity: 0, scale: 0.5 } : { opacity: 1, scale: 1 }}
 							whileInView={{ opacity: 1, scale: 1 }}
 							viewport={{ once: true }}
 							transition={{ delay: 0.6 }}

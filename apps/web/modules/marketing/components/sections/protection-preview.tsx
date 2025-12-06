@@ -65,8 +65,7 @@ app.listen(3000)`;
 						</span>
 					</m.h2>
 					<p className="text-xl text-gray-300 max-w-3xl mx-auto mb-4">
-						Watch the same AI prompt create destruction on the left, protection
-						on the right.
+						Watch the same AI prompt create destruction on the left, protection on the right.
 					</p>
 					<p className="text-lg text-gray-400 max-w-2xl mx-auto">
 						Click the SnapBack button to see the magic happen.
@@ -105,12 +104,8 @@ app.listen(3000)`;
 							Never lose another line of working code
 						</h3>
 						<p className="text-lg text-gray-300">
-							Every AI interaction is automatically protected. Every change can
-							be instantly reverted.
-							<span className="text-matrix-green font-semibold">
-								{" "}
-								Zero configuration required.
-							</span>
+							Every AI interaction is automatically protected. Every change can be instantly reverted.
+							<span className="text-matrix-green font-semibold"> Zero configuration required.</span>
 						</p>
 					</div>
 

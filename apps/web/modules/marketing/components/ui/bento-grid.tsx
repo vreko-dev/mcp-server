@@ -5,23 +5,8 @@ import { useReducedMotion } from "@ui/lib/motion";
 import { motion } from "motion/react";
 import type React from "react";
 
-export const BentoGrid = ({
-	className,
-	children,
-}: {
-	className?: string;
-	children?: React.ReactNode;
-}) => {
-	return (
-		<div
-			className={cn(
-				"grid grid-cols-1 md:grid-cols-3 gap-4 max-w-7xl mx-auto",
-				className,
-			)}
-		>
-			{children}
-		</div>
-	);
+export const BentoGrid = ({ className, children }: { className?: string; children?: React.ReactNode }) => {
+	return <div className={cn("grid grid-cols-1 md:grid-cols-3 gap-4 max-w-7xl mx-auto", className)}>{children}</div>;
 };
 
 export const BentoGridItem = ({
@@ -65,11 +50,7 @@ export const BentoGridItem = ({
 				<motion.div
 					className="mb-4"
 					whileHover={reducedMotion ? {} : { y: -5 }}
-					transition={
-						reducedMotion
-							? { duration: 0 }
-							: { type: "spring", stiffness: 400, damping: 17 }
-					}
+					transition={reducedMotion ? { duration: 0 } : { type: "spring", stiffness: 400, damping: 17 }}
 				>
 					{header}
 				</motion.div>
@@ -77,9 +58,7 @@ export const BentoGridItem = ({
 			{icon && (
 				<motion.div
 					whileHover={reducedMotion ? {} : { scale: 1.2, rotate: 10 }}
-					transition={
-						reducedMotion ? { duration: 0 } : { type: "spring", stiffness: 300 }
-					}
+					transition={reducedMotion ? { duration: 0 } : { type: "spring", stiffness: 300 }}
 					className="mb-4"
 				>
 					{icon}

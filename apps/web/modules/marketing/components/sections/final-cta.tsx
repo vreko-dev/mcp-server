@@ -31,8 +31,7 @@ const FinalCTA = () => {
 						transition={{ duration: 0.8, delay: 0.2 }}
 						viewport={{ once: true }}
 					>
-						Snap back to{" "}
-						<span className="text-primary font-semibold">building</span>.
+						Snap back to <span className="text-primary font-semibold">building</span>.
 					</m.h2>
 
 					<m.p
@@ -42,8 +41,8 @@ const FinalCTA = () => {
 						transition={{ duration: 0.8, delay: 0.4 }}
 						viewport={{ once: true }}
 					>
-						Join the beta and start automating your development workflow today.
-						No credit card required, no lengthy setup.
+						Join the beta and start automating your development workflow today. No credit card required, no
+						lengthy setup.
 					</m.p>
 
 					{/* CTAs */}

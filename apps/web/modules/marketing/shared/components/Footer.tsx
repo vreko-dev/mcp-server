@@ -9,8 +9,7 @@ export function Footer() {
 				<div>
 					<Logo className="opacity-70 grayscale footer-logo" />
 					<p className="mt-3 text-sm opacity-70">
-						© {new Date().getFullYear()} {appConfig.appName}. Protecting
-						developers from AI mistakes.
+						© {new Date().getFullYear()} {appConfig.appName}. Protecting developers from AI mistakes.
 					</p>
 				</div>
 

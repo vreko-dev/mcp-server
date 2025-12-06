@@ -21,10 +21,8 @@ export default async function AppStartPage() {
 
 	if (organizationsEnable && organizationsRequireOrganization && session) {
 		const organization =
-			organizations.find(
-				(org: any) =>
-					org.id === (session as any)?.session?.activeOrganizationId,
-			) || organizations[0];
+			organizations.find((org: any) => org.id === (session as any)?.session?.activeOrganizationId) ||
+			organizations[0];
 
 		if (!organization) {
 			redirect("/new-organization");

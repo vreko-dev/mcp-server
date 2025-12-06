@@ -28,9 +28,7 @@ export function FinalCTASection() {
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.8 }}
 				>
-					<h2 className="text-display font-black text-white mb-6">
-						Never lose code to AI again
-					</h2>
+					<h2 className="text-display font-black text-white mb-6">Never lose code to AI again</h2>
 					<p className="text-xl text-muted-foreground mb-12 max-w-2xl mx-auto">
 						Join 50,000+ developers who code fearlessly with SnapBack protection
 					</p>
@@ -57,15 +55,11 @@ export function FinalCTASection() {
 							whileTap={{ scale: 0.95 }}
 							disabled={isSubmitted}
 						>
-							{isSubmitted
-								? "Welcome aboard! 🚀"
-								: "Start protecting your code"}
+							{isSubmitted ? "Welcome aboard! 🚀" : "Start protecting your code"}
 						</m.button>
 					</m.form>
 
-					<p className="text-sm text-muted-foreground mb-12">
-						Free forever. No credit card required.
-					</p>
+					<p className="text-sm text-muted-foreground mb-12">Free forever. No credit card required.</p>
 
 					{/* Trust indicators */}
 					<div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-3xl mx-auto">
@@ -76,13 +70,7 @@ export function FinalCTASection() {
 							transition={{ delay: 0.4 }}
 						>
 							<div className="w-6 h-6 bg-primary/20 rounded-full flex items-center justify-center">
-								<svg
-									width="16"
-									height="16"
-									viewBox="0 0 16 16"
-									fill="none"
-									className="text-primary"
-								>
+								<svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-primary">
 									<path
 										d="M13.5 4.5L6 12L2.5 8.5"
 										stroke="currentColor"
@@ -102,13 +90,7 @@ export function FinalCTASection() {
 							transition={{ delay: 0.5 }}
 						>
 							<div className="w-6 h-6 bg-primary/20 rounded-full flex items-center justify-center">
-								<svg
-									width="16"
-									height="16"
-									viewBox="0 0 16 16"
-									fill="none"
-									className="text-primary"
-								>
+								<svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-primary">
 									<rect
 										x="3"
 										y="6"
@@ -137,26 +119,9 @@ export function FinalCTASection() {
 							transition={{ delay: 0.6 }}
 						>
 							<div className="w-6 h-6 bg-primary/20 rounded-full flex items-center justify-center">
-								<svg
-									width="16"
-									height="16"
-									viewBox="0 0 16 16"
-									fill="none"
-									className="text-primary"
-								>
-									<circle
-										cx="8"
-										cy="8"
-										r="6"
-										stroke="currentColor"
-										strokeWidth="2"
-									/>
-									<path
-										d="M8 4v4l3 2"
-										stroke="currentColor"
-										strokeWidth="2"
-										strokeLinecap="round"
-									/>
+								<svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-primary">
+									<circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="2" />
+									<path d="M8 4v4l3 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
 								</svg>
 							</div>
 							<span className="text-muted-foreground">24/7 Monitoring</span>
@@ -170,8 +135,7 @@ export function FinalCTASection() {
 
 // Matrix rain effect component
 const MatrixRain = () => {
-	const chars =
-		"ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ０１２３４５６７８９";
+	const chars = "ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ０１２３４５６７８９";
 
 	return (
 		<div className="absolute inset-0 overflow-hidden">

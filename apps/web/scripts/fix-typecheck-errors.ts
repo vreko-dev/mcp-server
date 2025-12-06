@@ -10,12 +10,7 @@ function fixArrayAccessIssues() {
 	console.log("Fixing array access issues...");
 
 	// Fix device-trials.ts
-	const deviceTrialsPath = join(
-		__dirname,
-		"..",
-		"services",
-		"device-trials.ts",
-	);
+	const deviceTrialsPath = join(__dirname, "..", "services", "device-trials.ts");
 	let content = readFileSync(deviceTrialsPath, "utf8");
 
 	// Add guards for array access
@@ -59,25 +54,8 @@ function fixConfettiColor() {
 
 	// Fix both confetti files
 	const confettiPaths = [
-		join(
-			__dirname,
-			"..",
-			"modules",
-			"ui",
-			"components",
-			"magic",
-			"confetti.tsx",
-		),
-		join(
-			__dirname,
-			"..",
-			"modules",
-			"ui",
-			"components",
-			"motion",
-			"magic",
-			"confetti.tsx",
-		),
+		join(__dirname, "..", "modules", "ui", "components", "magic", "confetti.tsx"),
+		join(__dirname, "..", "modules", "ui", "components", "motion", "magic", "confetti.tsx"),
 	];
 
 	confettiPaths.forEach((path) => {
@@ -98,14 +76,7 @@ function fixConfettiColor() {
 function fixSlugify() {
 	console.log("Fixing slugify replacement option...");
 
-	const contentPath = join(
-		__dirname,
-		"..",
-		"modules",
-		"shared",
-		"lib",
-		"content.ts",
-	);
+	const contentPath = join(__dirname, "..", "modules", "shared", "lib", "content.ts");
 	let content = readFileSync(contentPath, "utf8");
 
 	// Replace replacement with separator

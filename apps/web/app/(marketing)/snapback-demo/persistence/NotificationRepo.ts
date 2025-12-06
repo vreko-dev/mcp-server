@@ -4,14 +4,9 @@ import { db } from "./db";
 /**
  * Repository for managing notifications in IndexedDB
  */
-const generateId = () =>
-	crypto?.randomUUID
-		? crypto.randomUUID()
-		: Math.random().toString(36).slice(2, 11);
+const generateId = () => (crypto?.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2, 11));
 
-type NotificationInput =
-	| Notification
-	| (Omit<Notification, "id"> & { id?: string });
+type NotificationInput = Notification | (Omit<Notification, "id"> & { id?: string });
 
 export class NotificationRepo {
 	/**
@@ -66,11 +61,7 @@ export class NotificationRepo {
 	 * Gets recent notifications
 	 */
 	async getRecent(limit = 10): Promise<Notification[]> {
-		return db.notifications
-			.orderBy("timestamp")
-			.reverse()
-			.limit(limit)
-			.toArray();
+		return db.notifications.orderBy("timestamp").reverse().limit(limit).toArray();
 	}
 
 	/**

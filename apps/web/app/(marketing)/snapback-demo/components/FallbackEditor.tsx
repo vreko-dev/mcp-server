@@ -11,12 +11,7 @@ interface FallbackEditorProps {
 	options?: any;
 }
 
-export function FallbackEditor({
-	value,
-	onChange,
-	onMount,
-	language = "typescript",
-}: FallbackEditorProps) {
+export function FallbackEditor({ value, onChange, onMount, language = "typescript" }: FallbackEditorProps) {
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
 
 	useEffect(() => {

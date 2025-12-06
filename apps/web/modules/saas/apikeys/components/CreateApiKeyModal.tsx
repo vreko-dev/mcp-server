@@ -22,10 +22,7 @@ interface CreateApiKeyModalProps {
 	trigger?: React.ReactNode;
 }
 
-export function CreateApiKeyModal({
-	onKeyCreated,
-	trigger,
-}: CreateApiKeyModalProps) {
+export function CreateApiKeyModal({ onKeyCreated, trigger }: CreateApiKeyModalProps) {
 	const [open, setOpen] = useState(false);
 	const [keyName, setKeyName] = useState("");
 	const [createdKey, setCreatedKey] = useState<string | null>(null);
@@ -109,8 +106,7 @@ export function CreateApiKeyModal({
 					<DialogHeader>
 						<DialogTitle>Create API Key</DialogTitle>
 						<DialogDescription>
-							This key will be used to authenticate your SnapBack tools and
-							extensions
+							This key will be used to authenticate your SnapBack tools and extensions
 						</DialogDescription>
 					</DialogHeader>
 
@@ -146,10 +142,7 @@ export function CreateApiKeyModal({
 							>
 								{isPending ? (
 									<>
-										<Loader2
-											className="h-4 w-4 mr-2 animate-spin"
-											data-testid="loading-spinner"
-										/>
+										<Loader2 className="h-4 w-4 mr-2 animate-spin" data-testid="loading-spinner" />
 										Creating...
 									</>
 								) : (
@@ -174,12 +167,7 @@ export function CreateApiKeyModal({
 									>
 										{createdKey}
 									</code>
-									<Button
-										size="sm"
-										variant="outline"
-										onClick={handleCopy}
-										className="shrink-0"
-									>
+									<Button size="sm" variant="outline" onClick={handleCopy} className="shrink-0">
 										{copied ? (
 											<>
 												<Check className="h-4 w-4 mr-1" />
@@ -201,12 +189,10 @@ export function CreateApiKeyModal({
 							>
 								<AlertTriangle className="h-4 w-4" />
 								<AlertDescription>
-									<div className="font-medium mb-1">
-										Save this key securely!
-									</div>
+									<div className="font-medium mb-1">Save this key securely!</div>
 									<div className="text-sm">
-										You won't be able to see it again. Store it in a safe place
-										like your password manager.
+										You won't be able to see it again. Store it in a safe place like your password
+										manager.
 									</div>
 								</AlertDescription>
 							</Alert>

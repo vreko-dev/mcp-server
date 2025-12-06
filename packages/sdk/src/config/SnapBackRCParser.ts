@@ -41,7 +41,7 @@ import { isProtectionLevel, legacyToCanonical } from "@snapback/contracts";
 
 // Legacy protection levels for backward compatibility with config files
 const LEGACY_PROTECTION_LEVELS = ["Watched", "Warning", "Protected"] as const;
-type LegacyProtectionLevel = typeof LEGACY_PROTECTION_LEVELS[number];
+type LegacyProtectionLevel = (typeof LEGACY_PROTECTION_LEVELS)[number];
 
 /**
  * SnapBackRCParser - Parses and validates .snapbackrc configuration files
@@ -159,7 +159,9 @@ export class SnapBackRCParser {
 			// Convert legacy to canonical for validation
 			const canonicalLevel = legacyToCanonical(rule.level as LegacyProtectionLevel);
 			if (!isProtectionLevel(canonicalLevel)) {
-				errors.push(`${prefix}: level must be one of ${LEGACY_PROTECTION_LEVELS.join(", ")} or canonical levels (got "${rule.level}")`);
+				errors.push(
+					`${prefix}: level must be one of ${LEGACY_PROTECTION_LEVELS.join(", ")} or canonical levels (got "${rule.level}")`,
+				);
 			}
 		}
 
@@ -201,7 +203,9 @@ export class SnapBackRCParser {
 			// Convert legacy to canonical for validation
 			const canonicalLevel = legacyToCanonical(settings.defaultProtectionLevel as LegacyProtectionLevel);
 			if (!isProtectionLevel(canonicalLevel)) {
-				errors.push(`settings.defaultProtectionLevel must be one of ${LEGACY_PROTECTION_LEVELS.join(", ")} or canonical levels`);
+				errors.push(
+					`settings.defaultProtectionLevel must be one of ${LEGACY_PROTECTION_LEVELS.join(", ")} or canonical levels`,
+				);
 			}
 		}
 
@@ -245,7 +249,9 @@ export class SnapBackRCParser {
 			// Convert legacy to canonical for validation
 			const canonicalLevel = legacyToCanonical(policies.minimumProtectionLevel as LegacyProtectionLevel);
 			if (!isProtectionLevel(canonicalLevel)) {
-				errors.push(`policies.minimumProtectionLevel must be one of ${LEGACY_PROTECTION_LEVELS.join(", ")} or canonical levels`);
+				errors.push(
+					`policies.minimumProtectionLevel must be one of ${LEGACY_PROTECTION_LEVELS.join(", ")} or canonical levels`,
+				);
 			}
 		}
 

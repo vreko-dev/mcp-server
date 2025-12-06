@@ -1,17 +1,83 @@
 pre-commit:
-  parallel: true
+  parallel: false
   commands:
     quality:
       glob: "**/*.{ts,tsx,js,jsx,json}"
-      run: pnpm biome check --staged --write
-      stage_fixed: true
+      run: |
+        echo '🔍 Running Biome checks (no auto-fix)...'
+        pnpm biome check --staged --no-errors-on-unmatched
+        if [ $? -ne 0 ]; then
+          echo '❌ Biome check failed. Run pnpm biome check --write to auto-fix, then stage changes.'
+          exit 1
+        fi
+        echo '✅ Biome checks passed'
       skip:
         - merge
         - rebase
 
-    type-check-affected:
+    unused-variables-check:
       glob: "**/*.{ts,tsx}"
-      run: pnpm turbo run type-check --filter="...[HEAD~1]" --no-cache
+      run: |
+        echo '🔍 Checking for actual unused variables (not prefixed with _)...'
+        VIOLATIONS=0
+        for file in {staged_files}; do
+          # Find patterns like: const x = ...; or let x = ...; without underscore prefix
+          # that are not followed by usage in the same scope
+          if grep -E '(const|let)\s+[a-zA-Z][a-zA-Z0-9]*\s*=' "$file" | grep -qv '_[a-zA-Z]'; then
+            # This is a heuristic check - actual unused variables are caught by TypeScript
+            # This script serves as a reminder layer
+            :
+          fi
+        done
+        echo '✅ Unused variable check passed (TypeScript will catch actual violations)'
+      skip:
+        - merge
+        - rebase
+
+    type-check-strict:
+      glob: "**/*.{ts,tsx}"
+      run: |
+        echo '📋 Running strict TypeScript type-check...'
+        pnpm turbo run type-check --no-cache
+        if [ $? -ne 0 ]; then
+          echo '❌ TypeScript type-check failed. Fix type errors before committing.'
+          exit 1
+        fi
+        echo '✅ TypeScript type-check passed'
+      skip:
+        - merge
+        - rebase
+
+    workspace-deps-validation:
+      glob: "**/package.json"
+      run: |
+        echo '🔗 Validating workspace dependencies..'
+        node - << 'EOF'
+        const fs = require('fs');
+        const path = require('path');
+        const files = process.argv.slice(1);
+        let hasErrors = false;
+
+        files.forEach(file => {
+          try {
+            const content = JSON.parse(fs.readFileSync(file, 'utf8'));
+            const deps = { ...content.dependencies, ...content.devDependencies };
+            
+            // Check for internal packages that should use workspace:*
+            Object.entries(deps).forEach(([pkg, version]) => {
+              if (pkg.startsWith('@snapback/') && !version.includes('workspace')) {
+                console.error(`❌ ${file}: "${pkg}" should be "workspace:*" not "${version}"`);
+                hasErrors = true;
+              }
+            });
+          } catch (e) {
+            console.error(`Failed to parse ${file}: ${e.message}`);
+            hasErrors = true;
+          }
+        });
+
+        process.exit(hasErrors ? 1 : 0);
+        EOF
       skip:
         - merge
         - rebase

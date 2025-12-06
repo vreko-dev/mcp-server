@@ -77,9 +77,7 @@ export function CommandReference() {
 					viewport={{ once: true }}
 					className="text-center mb-12"
 				>
-					<h2 className="font-bold text-3xl md:text-4xl">
-						Every Command You Need
-					</h2>
+					<h2 className="font-bold text-3xl md:text-4xl">Every Command You Need</h2>
 					<p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
 						Complete reference for VS Code and CLI commands
 					</p>

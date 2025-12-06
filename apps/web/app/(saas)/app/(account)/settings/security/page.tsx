@@ -29,8 +29,7 @@ const ChangePasswordForm = dynamic(
 const ConnectedAccountsBlock = dynamic(
 	() =>
 		import("@saas/settings/components/ConnectedAccountsBlock").then(
-			(mod) =>
-				mod.ConnectedAccountsBlock as ComponentType<Record<string, never>>,
+			(mod) => mod.ConnectedAccountsBlock as ComponentType<Record<string, never>>,
 		),
 	{
 		ssr: false,

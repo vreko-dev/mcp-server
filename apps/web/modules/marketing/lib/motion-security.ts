@@ -84,13 +84,10 @@ class MotionSecurityManager {
 		this.circuitBreaker.lastFailure = now;
 
 		// Open circuit breaker if threshold exceeded
-		if (
-			this.circuitBreaker.failures >= SECURITY_CONFIG.CIRCUIT_BREAKER_THRESHOLD
-		) {
+		if (this.circuitBreaker.failures >= SECURITY_CONFIG.CIRCUIT_BREAKER_THRESHOLD) {
 			this.circuitBreaker.isOpen = true;
 			this.circuitBreaker.nextAttempt =
-				now +
-				SECURITY_CONFIG.RETRY_BACKOFF_MS * 2 ** this.circuitBreaker.failures;
+				now + SECURITY_CONFIG.RETRY_BACKOFF_MS * 2 ** this.circuitBreaker.failures;
 			this.reportSecurityEvent("motion_circuit_breaker_open", {
 				failures: this.circuitBreaker.failures,
 			});
@@ -115,10 +112,7 @@ class MotionSecurityManager {
 	recordSuccess(): void {
 		// Gradually recover circuit breaker
 		if (this.circuitBreaker.failures > 0) {
-			this.circuitBreaker.failures = Math.max(
-				0,
-				this.circuitBreaker.failures - 1,
-			);
+			this.circuitBreaker.failures = Math.max(0, this.circuitBreaker.failures - 1);
 		}
 		if (this.circuitBreaker.failures === 0) {
 			this.circuitBreaker.isOpen = false;
@@ -168,10 +162,7 @@ class MotionSecurityManager {
 	private reportSecurityEvent(event: string, data: Record<string, any>): void {
 		const sanitizedData = {
 			...data,
-			userAgent:
-				typeof navigator !== "undefined"
-					? navigator.userAgent.substring(0, 100)
-					: "unknown",
+			userAgent: typeof navigator !== "undefined" ? navigator.userAgent.substring(0, 100) : "unknown",
 			url: typeof window !== "undefined" ? window.location.pathname : "unknown",
 			timestamp: Date.now(),
 		};
@@ -205,10 +196,7 @@ class MotionSecurityManager {
 
 			// Use sendBeacon for reliability
 			if (navigator?.sendBeacon) {
-				navigator.sendBeacon(
-					"/api/security/motion-telemetry",
-					JSON.stringify(payload),
-				);
+				navigator.sendBeacon("/api/security/motion-telemetry", JSON.stringify(payload));
 			}
 		} catch (_error) {
 			// Silently fail - do not expose telemetry errors
@@ -246,9 +234,7 @@ export const secureMotionConfig = {
 export function isMotionEnabled(): boolean {
 	// Check user preferences first
 	if (typeof window !== "undefined") {
-		const prefersReducedMotion = window.matchMedia(
-			"(prefers-reduced-motion: reduce)",
-		).matches;
+		const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 		if (prefersReducedMotion) {
 			return false;
 		}
@@ -283,17 +269,11 @@ export async function loadMotionSecurely(): Promise<{
 			// Use dynamic import with timeout
 			const motionModule = (await Promise.race([
 				import("motion/react"),
-				new Promise((_, reject) =>
-					setTimeout(() => reject(new Error("Motion load timeout")), 5000),
-				),
+				new Promise((_, reject) => setTimeout(() => reject(new Error("Motion load timeout")), 5000)),
 			])) as any;
 
 			// Verify module integrity
-			if (
-				!motionModule.LazyMotion ||
-				!motionModule.MotionConfig ||
-				!motionModule.domAnimation
-			) {
+			if (!motionModule.LazyMotion || !motionModule.MotionConfig || !motionModule.domAnimation) {
 				throw new Error("Invalid motion module structure");
 			}
 
@@ -306,13 +286,9 @@ export async function loadMotionSecurely(): Promise<{
 			};
 		} catch (error) {
 			retryCount++;
-			const sanitizedError =
-				error instanceof Error ? error.constructor.name : "Unknown error";
+			const sanitizedError = error instanceof Error ? error.constructor.name : "Unknown error";
 
-			securityManager.recordFailure(
-				error instanceof Error ? error : new Error(sanitizedError),
-				"motion_load",
-			);
+			securityManager.recordFailure(error instanceof Error ? error : new Error(sanitizedError), "motion_load");
 
 			if (retryCount >= SECURITY_CONFIG.MAX_RETRY_ATTEMPTS) {
 				return {
@@ -323,10 +299,7 @@ export async function loadMotionSecurely(): Promise<{
 
 			// Exponential backoff
 			await new Promise((resolve) =>
-				setTimeout(
-					resolve,
-					SECURITY_CONFIG.RETRY_BACKOFF_MS * 2 ** (retryCount - 1),
-				),
+				setTimeout(resolve, SECURITY_CONFIG.RETRY_BACKOFF_MS * 2 ** (retryCount - 1)),
 			);
 		}
 	}
@@ -341,9 +314,7 @@ export async function loadMotionSecurely(): Promise<{
 export const motionSecurity = MotionSecurityManager.getInstance();
 
 // Types for external use
-export type MotionSecurityStatus = ReturnType<
-	typeof MotionSecurityManager.prototype.getSecurityStatus
->;
+export type MotionSecurityStatus = ReturnType<typeof MotionSecurityManager.prototype.getSecurityStatus>;
 /**
  * Client-side Motion Security Manager
  * Why: Disable or degrade motion under risky conditions while preserving UX.

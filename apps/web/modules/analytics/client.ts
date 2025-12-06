@@ -9,10 +9,7 @@ export interface AnalyticsEvent {
 	properties?: Record<string, unknown>;
 }
 
-export function captureAnalyticsEvent(
-	event: AnalyticsEvent | string,
-	properties?: Record<string, unknown>,
-): void {
+export function captureAnalyticsEvent(event: AnalyticsEvent | string, properties?: Record<string, unknown>): void {
 	if (typeof window === "undefined") {
 		return;
 	}
@@ -33,18 +30,11 @@ export function captureAnalyticsEvent(
 	if (window_.posthog) {
 		window_.posthog.capture(eventName, eventProperties);
 	} else if (process.env.NODE_ENV === "development") {
-		console.debug(
-			"[Analytics] PostHog not loaded, would track:",
-			eventName,
-			eventProperties,
-		);
+		console.debug("[Analytics] PostHog not loaded, would track:", eventName, eventProperties);
 	}
 }
 
-export function captureException(
-	error: Error,
-	context?: Record<string, unknown>,
-): void {
+export function captureException(error: Error, context?: Record<string, unknown>): void {
 	if (typeof window === "undefined") {
 		return;
 	}

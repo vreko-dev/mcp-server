@@ -3,10 +3,7 @@ import { db } from "./db";
 
 type SnapshotInput = Snapshot | (Omit<Snapshot, "id"> & { id?: string });
 
-const generateId = () =>
-	crypto?.randomUUID
-		? crypto.randomUUID()
-		: Math.random().toString(36).slice(2, 11);
+const generateId = () => (crypto?.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2, 11));
 
 /**
  * Repository for managing snapshots in IndexedDB
@@ -82,10 +79,7 @@ export class SnapshotRepo {
 	 * Cleans up old snapshots based on retention policy
 	 * Keeps last N snapshots per file and removes snapshots older than TTL
 	 */
-	async cleanupSnapshots(
-		maxSnapshotsPerFile = 10,
-		ttlDays = 30,
-	): Promise<void> {
+	async cleanupSnapshots(maxSnapshotsPerFile = 10, ttlDays = 30): Promise<void> {
 		const cutoffDate = new Date();
 		cutoffDate.setDate(cutoffDate.getDate() - ttlDays);
 
@@ -111,9 +105,7 @@ export class SnapshotRepo {
 		for (const fileId in snapshotsByFile) {
 			const fileSnapshots = snapshotsByFile[fileId];
 			if (!fileSnapshots) continue;
-			const snapshots = fileSnapshots.sort(
-				(a, b) => b.timestamp.getTime() - a.timestamp.getTime(),
-			);
+			const snapshots = fileSnapshots.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
 
 			// Remove snapshots older than TTL
 			for (const snapshot of snapshots) {

@@ -6,10 +6,7 @@
 "use client";
 
 import { useQueryClient } from "@tanstack/react-query";
-import {
-	useResourceMutation,
-	useResourceQuery,
-} from "@/lib/use-resource-query";
+import { useResourceMutation, useResourceQuery } from "@/lib/use-resource-query";
 
 // Define types for API keys
 export interface ApiKey {
@@ -71,19 +68,11 @@ export function useApiKeys(): ReturnType<typeof useResourceQuery<ApiKey[]>> {
  * Create API key with optimistic update
  */
 export function useCreateApiKey(): ReturnType<
-	typeof useResourceMutation<
-		ApiKey & { fullKey: string },
-		CreateApiKeyInput,
-		OptimisticContext
-	>
+	typeof useResourceMutation<ApiKey & { fullKey: string }, CreateApiKeyInput, OptimisticContext>
 > {
 	const queryClient = useQueryClient();
 
-	return useResourceMutation<
-		ApiKey & { fullKey: string },
-		CreateApiKeyInput,
-		OptimisticContext
-	>(
+	return useResourceMutation<ApiKey & { fullKey: string }, CreateApiKeyInput, OptimisticContext>(
 		async (input) => {
 			const res = await fetch("/api/v1/api-keys/create", {
 				method: "POST",
@@ -108,10 +97,7 @@ export function useCreateApiKey(): ReturnType<
 				});
 
 				// Snapshot current state for rollback
-				const previousKeys = queryClient.getQueryData<ApiKey[]>([
-					"api-keys",
-					"list",
-				]);
+				const previousKeys = queryClient.getQueryData<ApiKey[]>(["api-keys", "list"]);
 
 				// Optimistically add API key (without the full key for security)
 				queryClient.setQueryData<ApiKey[]>(["api-keys", "list"], (old = []) => {
@@ -121,9 +107,7 @@ export function useCreateApiKey(): ReturnType<
 						keyPreview: "sk_****",
 						createdAt: new Date().toISOString(),
 						expiresAt: input.expiresInDays
-							? new Date(
-									Date.now() + input.expiresInDays * 24 * 60 * 60 * 1000,
-								).toISOString()
+							? new Date(Date.now() + input.expiresInDays * 24 * 60 * 60 * 1000).toISOString()
 							: null,
 						revokedAt: null,
 						scopes: input.scopes || [],
@@ -155,9 +139,7 @@ export function useCreateApiKey(): ReturnType<
 /**
  * Revoke API key with optimistic update
  */
-export function useRevokeApiKey(): ReturnType<
-	typeof useResourceMutation<void, RevokeApiKeyInput, OptimisticContext>
-> {
+export function useRevokeApiKey(): ReturnType<typeof useResourceMutation<void, RevokeApiKeyInput, OptimisticContext>> {
 	const queryClient = useQueryClient();
 
 	return useResourceMutation<void, RevokeApiKeyInput, OptimisticContext>(
@@ -177,10 +159,7 @@ export function useRevokeApiKey(): ReturnType<
 					queryKey: ["api-keys", "list"],
 				});
 
-				const previousKeys = queryClient.getQueryData<ApiKey[]>([
-					"api-keys",
-					"list",
-				]);
+				const previousKeys = queryClient.getQueryData<ApiKey[]>(["api-keys", "list"]);
 
 				// Optimistically mark key as revoked
 				queryClient.setQueryData<ApiKey[]>(["api-keys", "list"], (old = []) =>

@@ -13,12 +13,10 @@ export function CustomerPortalButton({ purchaseId }: { purchaseId: string }) {
 
 	const createCustomerPortal = async () => {
 		try {
-			const { customerPortalLink } = await createPortalLinkMutation.mutateAsync(
-				{
-					purchaseId,
-					redirectUrl: window.location.href,
-				},
-			);
+			const { customerPortalLink } = await createPortalLinkMutation.mutateAsync({
+				purchaseId,
+				redirectUrl: window.location.href,
+			});
 
 			window.location.href = customerPortalLink;
 		} catch {

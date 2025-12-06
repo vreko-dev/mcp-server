@@ -43,12 +43,8 @@ export function OrganzationSelect({ className }: { className?: string }) {
 									logoUrl={activeOrganization.logo}
 									className="hidden size-6 sm:block"
 								/>
-								<span className="block flex-1 truncate">
-									{activeOrganization.name}
-								</span>
-								{true && (
-									<ActivePlanBadge organizationId={activeOrganization.id} />
-								)}
+								<span className="block flex-1 truncate">{activeOrganization.name}</span>
+								{true && <ActivePlanBadge organizationId={activeOrganization.id} />}
 							</>
 						) : (
 							<>
@@ -85,11 +81,7 @@ export function OrganzationSelect({ className }: { className?: string }) {
 									className="flex cursor-pointer items-center justify-center gap-2 pl-3"
 								>
 									<div className="flex flex-1 items-center justify-start gap-2">
-										<UserAvatar
-											className="size-8"
-											name={user.name ?? ""}
-											avatarUrl={user.image}
-										/>
+										<UserAvatar className="size-8" name={user.name ?? ""} avatarUrl={user.image} />
 										{user.name}
 									</div>
 								</DropdownMenuRadioItem>
@@ -104,9 +96,7 @@ export function OrganzationSelect({ className }: { className?: string }) {
 							setActiveOrganization(organizationSlug);
 						}}
 					>
-						<DropdownMenuLabel className="text-foreground/60 text-xs">
-							Organizations
-						</DropdownMenuLabel>
+						<DropdownMenuLabel className="text-foreground/60 text-xs">Organizations</DropdownMenuLabel>
 						{(allOrganizations as any)?.map((organization: any) => (
 							<DropdownMenuRadioItem
 								key={organization.slug}
@@ -127,10 +117,7 @@ export function OrganzationSelect({ className }: { className?: string }) {
 
 					{true && (
 						<DropdownMenuGroup>
-							<DropdownMenuItem
-								asChild
-								className="text-primary! cursor-pointer text-sm"
-							>
+							<DropdownMenuItem asChild className="text-primary! cursor-pointer text-sm">
 								<Link href="/new-organization">
 									<PlusIcon className="mr-2 size-6 rounded-md bg-primary/20 p-1" />
 									Create New Organization

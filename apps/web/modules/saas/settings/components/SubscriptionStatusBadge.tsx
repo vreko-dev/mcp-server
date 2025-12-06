@@ -3,12 +3,7 @@
 import type { BadgeProps } from "@ui/components/badge";
 import { Badge } from "@ui/components/badge";
 
-export function SubscriptionStatusBadge({
-	status,
-}: {
-	status: string;
-	className?: string;
-}) {
+export function SubscriptionStatusBadge({ status }: { status: string; className?: string }) {
 	const badgeLabels: Record<string, string> = {
 		active: "Active",
 		canceled: "Canceled",

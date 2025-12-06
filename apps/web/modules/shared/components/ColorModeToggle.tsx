@@ -33,12 +33,7 @@ export function ColorModeToggle() {
 	return (
 		<DropdownMenu modal={false}>
 			<DropdownMenuTrigger asChild>
-				<Button
-					variant="ghost"
-					size="icon"
-					data-test="color-mode-toggle"
-					aria-label="Color mode"
-				>
+				<Button variant="ghost" size="icon" data-test="color-mode-toggle" aria-label="Color mode">
 					<MoonIcon className="size-4" />
 				</Button>
 			</DropdownMenuTrigger>

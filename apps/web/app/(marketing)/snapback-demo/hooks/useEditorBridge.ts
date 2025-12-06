@@ -15,11 +15,7 @@ interface EditorBridge {
 /**
  * Hook to bridge different editor implementations (Monaco vs Sandpack)
  */
-export function useEditorBridge({
-	impl,
-	onSave,
-	onContentChange,
-}: EditorBridgeOptions): EditorBridge {
+export function useEditorBridge({ impl, onSave, onContentChange }: EditorBridgeOptions): EditorBridge {
 	const editorRef = useRef<any>(null);
 
 	const handleMount = (editor: any) => {

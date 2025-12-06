@@ -15,14 +15,7 @@ import { useRouter } from "@shared/hooks/router";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@ui/components/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@ui/components/card";
-import {
-	Form,
-	FormControl,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from "@ui/components/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@ui/components/form";
 import { Input } from "@ui/components/input";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -34,11 +27,7 @@ const organizationFormSchema = z.object({
 
 type OrganizationFormValues = z.infer<typeof organizationFormSchema>;
 
-export function OrganizationForm({
-	organizationId,
-}: {
-	organizationId: string;
-}) {
+export function OrganizationForm({ organizationId }: { organizationId: string }) {
 	const router = useRouter();
 
 	const { data: organization } = useFullOrganizationQuery(organizationId);
@@ -54,54 +43,45 @@ export function OrganizationForm({
 		},
 	});
 
-	const onSubmit = form.handleSubmit(
-		async ({ name }: OrganizationFormValues) => {
-			try {
-				const org = organization as any;
-				const newOrganization = org
-					? await updateOrganizationMutation.mutateAsync({
-							id: org.id,
-							name,
-							updateSlug: org.name !== name,
-						})
-					: await createOrganizationMutation.mutateAsync({
-							name,
-						});
+	const onSubmit = form.handleSubmit(async ({ name }: OrganizationFormValues) => {
+		try {
+			const org = organization as any;
+			const newOrganization = org
+				? await updateOrganizationMutation.mutateAsync({
+						id: org.id,
+						name,
+						updateSlug: org.name !== name,
+					})
+				: await createOrganizationMutation.mutateAsync({
+						name,
+					});
 
-				if (!newOrganization) {
-					throw new Error("Could not save organization");
-				}
-
-				queryClient.setQueryData(
-					fullOrganizationQueryKey(organizationId),
-					newOrganization,
-				);
-
-				// TODO: Re-enable when admin API is available
-				// queryClient.invalidateQueries({
-				// 	queryKey: orpc.admin.organizations.list.key(),
-				// });
-
-				toast.success("Organization saved successfully");
-
-				if (!organization) {
-					router.replace(
-						getAdminPath(`/organizations/${(newOrganization as any).id}`),
-					);
-				}
-			} catch {
-				toast.error("Failed to save organization");
+			if (!newOrganization) {
+				throw new Error("Could not save organization");
 			}
-		},
-	);
+
+			queryClient.setQueryData(fullOrganizationQueryKey(organizationId), newOrganization);
+
+			// TODO: Re-enable when admin API is available
+			// queryClient.invalidateQueries({
+			// 	queryKey: orpc.admin.organizations.list.key(),
+			// });
+
+			toast.success("Organization saved successfully");
+
+			if (!organization) {
+				router.replace(getAdminPath(`/organizations/${(newOrganization as any).id}`));
+			}
+		} catch {
+			toast.error("Failed to save organization");
+		}
+	});
 
 	return (
 		<div className="grid grid-cols-1 gap-4">
 			<Card>
 				<CardHeader>
-					<CardTitle>
-						{organization ? "Update Organization" : "Create Organization"}
-					</CardTitle>
+					<CardTitle>{organization ? "Update Organization" : "Create Organization"}</CardTitle>
 				</CardHeader>
 				<CardContent>
 					<Form {...form}>
@@ -124,8 +104,7 @@ export function OrganizationForm({
 								<Button
 									type="submit"
 									loading={
-										updateOrganizationMutation.isPending ||
-										createOrganizationMutation.isPending
+										updateOrganizationMutation.isPending || createOrganizationMutation.isPending
 									}
 								>
 									Save

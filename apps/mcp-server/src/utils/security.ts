@@ -121,8 +121,8 @@ export function validateFilePath(filePath: string, workspaceRoot: string): strin
 		// Reject paths that traverse upward by checking segments
 		// This correctly handles legitimate filenames like "config..json"
 		// Support both Unix (/) and Windows (\) path separators
-		const unixSegments = normalized.split('/');
-		const windowsSegments = normalized.split('\\');
+		const unixSegments = normalized.split("/");
+		const windowsSegments = normalized.split("\\");
 		const allSegments = [...unixSegments, ...windowsSegments];
 
 		if (allSegments.some((seg) => seg === "..")) {
@@ -165,13 +165,13 @@ export function validateFilePath(filePath: string, workspaceRoot: string): strin
 			const error = _error as Error;
 
 			// Handle circular symlinks (ELOOP error)
-			if (error.message && error.message.includes('ELOOP')) {
+			if (error.message && error.message.includes("ELOOP")) {
 				const violationDetails = {
 					filePath: absolutePath.substring(0, 100),
-					reason: 'circular_symlink',
+					reason: "circular_symlink",
 				};
-				trackSecurityViolation('path_validation_failed', violationDetails);
-				throw new SecurityError('Circular symlink detected');
+				trackSecurityViolation("path_validation_failed", violationDetails);
+				throw new SecurityError("Circular symlink detected");
 			}
 
 			// File doesn't exist - validate parent directory instead

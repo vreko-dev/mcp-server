@@ -29,24 +29,16 @@ import { SnapshotTimeline } from "./SnapshotTimeline";
 import { StatusBar } from "./StatusBar";
 
 // Dynamically import Monaco Editor to avoid SSR issues
-const MonacoEditor = dynamic(
-	() => import("@monaco-editor/react").then((mod) => mod.default),
-	{
-		ssr: false,
-		loading: () => <div>Loading editor...</div>,
-	},
-);
+const MonacoEditor = dynamic(() => import("@monaco-editor/react").then((mod) => mod.default), {
+	ssr: false,
+	loading: () => <div>Loading editor...</div>,
+});
 
 // Dynamically import Sandpack to avoid SSR issues
 const SandpackEditor = dynamic(
 	() =>
 		import("@codesandbox/sandpack-react").then((mod) => {
-			const {
-				SandpackProvider,
-				SandpackLayout,
-				SandpackCodeEditor,
-				SandpackPreview,
-			} = mod;
+			const { SandpackProvider, SandpackLayout, SandpackCodeEditor, SandpackPreview } = mod;
 			return function SandpackWrapper({ files, activeFile }: any) {
 				return (
 					<SandpackProvider
@@ -59,11 +51,7 @@ const SandpackEditor = dynamic(
 						}}
 					>
 						<SandpackLayout>
-							<SandpackCodeEditor
-								showTabs={true}
-								showLineNumbers={true}
-								showInlineErrors={true}
-							/>
+							<SandpackCodeEditor showTabs={true} showLineNumbers={true} showInlineErrors={true} />
 							<SandpackPreview />
 						</SandpackLayout>
 					</SandpackProvider>
@@ -75,26 +63,18 @@ const SandpackEditor = dynamic(
 
 // Flag to use Sandpack instead of Monaco (helpful for tests)
 const USE_SANDBOX_EDITOR =
-	(typeof window !== "undefined" &&
-		(window as any).__USE_SANDBACK_EDITOR__ === true) ||
+	(typeof window !== "undefined" && (window as any).__USE_SANDBACK_EDITOR__ === true) ||
 	process.env.NEXT_PUBLIC_USE_SANDBACK_EDITOR === "true";
 
-const generateId = () =>
-	crypto?.randomUUID
-		? crypto.randomUUID()
-		: Math.random().toString(36).slice(2, 11);
+const generateId = () => (crypto?.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2, 11));
 
 interface SnapBackDemoProps {
 	useSimpleEditor?: boolean;
 }
 
-export function SnapBackDemo({
-	useSimpleEditor = false,
-}: SnapBackDemoProps = {}) {
+export function SnapBackDemo({ useSimpleEditor = false }: SnapBackDemoProps = {}) {
 	const { state, dispatch } = useSnapBack();
-	const [activeView, setActiveView] = useState<
-		"snapshots" | "protected-files" | "getting-started"
-	>("snapshots");
+	const [activeView, setActiveView] = useState<"snapshots" | "protected-files" | "getting-started">("snapshots");
 	const [showProtectionPrompt, setShowProtectionPrompt] = useState(false);
 	const [promptLevel, setPromptLevel] = useState<ProtectionLevel>("warn");
 	const [isEditorReady, setIsEditorReady] = useState(false);
@@ -145,9 +125,7 @@ export function SnapBackDemo({
 					message:
 						level === "unprotected"
 							? `Removed protection from ${currentState.currentFilePath}`
-							: `Set ${
-									currentState.currentFilePath
-								} to ${level.toUpperCase()} protection`,
+							: `Set ${currentState.currentFilePath} to ${level.toUpperCase()} protection`,
 					timestamp: new Date(),
 				},
 			});
@@ -157,11 +135,7 @@ export function SnapBackDemo({
 
 	const updateEditorDecorations = useCallback(
 		(level: ProtectionLevel) => {
-			if (
-				!editorRef.current ||
-				typeof editorRef.current.deltaDecorations !== "function" ||
-				!monacoRef.current
-			) {
+			if (!editorRef.current || typeof editorRef.current.deltaDecorations !== "function" || !monacoRef.current) {
 				return;
 			}
 
@@ -201,10 +175,7 @@ export function SnapBackDemo({
 					]
 				: [];
 
-			decorationRef.current = editorRef.current.deltaDecorations(
-				decorationRef.current,
-				decorations,
-			);
+			decorationRef.current = editorRef.current.deltaDecorations(decorationRef.current, decorations);
 		},
 		[editorRef, monacoRef],
 	);
@@ -214,12 +185,7 @@ export function SnapBackDemo({
 			return;
 		}
 		updateEditorDecorations(state.currentProtectionLevel);
-	}, [
-		state.currentProtectionLevel,
-		state.currentFileId,
-		isEditorReady,
-		updateEditorDecorations,
-	]);
+	}, [state.currentProtectionLevel, state.currentFileId, isEditorReady, updateEditorDecorations]);
 
 	// Handle file selection from explorer
 	const handleFileSelect = useCallback(
@@ -313,11 +279,7 @@ export function SnapBackDemo({
 				await performSave();
 				break;
 		}
-	}, [
-		state.currentFileId,
-		state.currentFilePath,
-		state.currentProtectionLevel,
-	]);
+	}, [state.currentFileId, state.currentFilePath, state.currentProtectionLevel]);
 
 	type SaveOptions = {
 		forceSnapshot?: boolean;
@@ -374,13 +336,7 @@ export function SnapBackDemo({
 				},
 			});
 		},
-		[
-			state.currentFileId,
-			state.currentFilePath,
-			state.currentFileContent,
-			state.currentProtectionLevel,
-			dispatch,
-		],
+		[state.currentFileId, state.currentFilePath, state.currentFileContent, state.currentProtectionLevel, dispatch],
 	);
 
 	// Handle protection prompt actions
@@ -453,13 +409,7 @@ export function SnapBackDemo({
 				},
 			});
 		}
-	}, [
-		state.currentFileId,
-		state.currentFilePath,
-		state.currentFileContent,
-		state.currentProtectionLevel,
-		dispatch,
-	]);
+	}, [state.currentFileId, state.currentFilePath, state.currentFileContent, state.currentProtectionLevel, dispatch]);
 
 	const handleRestoreLatestSnapshot = useCallback(async () => {
 		if (!state.currentFileId) {
@@ -550,10 +500,7 @@ The cloud stores your snapshot metadata. Actual file restoration happens on your
 				return;
 			}
 
-			const result = await snapBackCommands.compareWithCheckpoint(
-				state.currentFileContent,
-				snapshotId,
-			);
+			const result = await snapBackCommands.compareWithCheckpoint(state.currentFileContent, snapshotId);
 
 			dispatch({
 				type: "ADD_NOTIFICATION",
@@ -571,24 +518,16 @@ The cloud stores your snapshot metadata. Actual file restoration happens on your
 
 	const handleRenameSnapshot = useCallback(
 		async (snapshotId: string) => {
-			const target = state.snapshots.find(
-				(snapshot) => snapshot.id === snapshotId,
-			);
+			const target = state.snapshots.find((snapshot) => snapshot.id === snapshotId);
 			const currentName = target?.name ?? "";
 
-			const newName =
-				typeof window !== "undefined"
-					? window.prompt("Rename checkpoint", currentName)
-					: null;
+			const newName = typeof window !== "undefined" ? window.prompt("Rename checkpoint", currentName) : null;
 
 			if (!newName || newName.trim() === currentName.trim()) {
 				return;
 			}
 
-			const updated = await snapBackCommands.renameCheckpoint(
-				snapshotId,
-				newName,
-			);
+			const updated = await snapBackCommands.renameCheckpoint(snapshotId, newName);
 			if (updated) {
 				dispatch({
 					type: "UPDATE_SNAPSHOT",
@@ -601,15 +540,11 @@ The cloud stores your snapshot metadata. Actual file restoration happens on your
 
 	const handleDeleteSnapshot = useCallback(
 		async (snapshotId: string) => {
-			const target = state.snapshots.find(
-				(snapshot) => snapshot.id === snapshotId,
-			);
+			const target = state.snapshots.find((snapshot) => snapshot.id === snapshotId);
 			const confirmed =
 				typeof window !== "undefined"
 					? window.confirm(
-							`Delete checkpoint${
-								target ? ` "${target.name}"` : ""
-							}? This action cannot be undone.`,
+							`Delete checkpoint${target ? ` "${target.name}"` : ""}? This action cannot be undone.`,
 						)
 					: false;
 
@@ -648,10 +583,7 @@ The cloud stores your snapshot metadata. Actual file restoration happens on your
 						) : (
 							<ul className="space-y-2">
 								{state.protectedFiles.map((file) => (
-									<li
-										key={file.id}
-										className="flex justify-between items-center p-2 border-b"
-									>
+									<li key={file.id} className="flex justify-between items-center p-2 border-b">
 										<span>{file.path}</span>
 										<span className="px-2 py-1 bg-gray-200 rounded text-sm">
 											{file.protectionLevel}
@@ -665,36 +597,31 @@ The cloud stores your snapshot metadata. Actual file restoration happens on your
 			case "getting-started":
 				return (
 					<div className="p-4">
-						<h3 className="font-semibold mb-4">
-							Getting Started with SnapBack
-						</h3>
+						<h3 className="font-semibold mb-4">Getting Started with SnapBack</h3>
 						<div className="space-y-4">
 							<div>
 								<h4 className="font-medium">1. Protection Levels</h4>
 								<p className="text-sm text-gray-600">
-									Set protection levels (Watch, Warn, Block) on files to control
-									how changes are handled.
+									Set protection levels (Watch, Warn, Block) on files to control how changes are
+									handled.
 								</p>
 							</div>
 							<div>
 								<h4 className="font-medium">2. Snapshots</h4>
 								<p className="text-sm text-gray-600">
-									Automatic or manual snapshots capture your code state for safe
-									rollback.
+									Automatic or manual snapshots capture your code state for safe rollback.
 								</p>
 							</div>
 							<div>
 								<h4 className="font-medium">3. AI Monitoring</h4>
 								<p className="text-sm text-gray-600">
-									Ambient AI detects risky changes and suggests protection
-									upgrades.
+									Ambient AI detects risky changes and suggests protection upgrades.
 								</p>
 							</div>
 							<div>
 								<h4 className="font-medium">4. Policies</h4>
 								<p className="text-sm text-gray-600">
-									Use .snapbackprotected and .snapbackignore files to apply
-									protection rules.
+									Use .snapbackprotected and .snapbackignore files to apply protection rules.
 								</p>
 							</div>
 						</div>
@@ -766,8 +693,7 @@ The cloud stores your snapshot metadata. Actual file restoration happens on your
 								USE_SANDBOX_EDITOR ? (
 									<SandpackEditor
 										files={{
-											[state.currentFilePath || "/example.tsx"]:
-												state.currentFileContent,
+											[state.currentFilePath || "/example.tsx"]: state.currentFileContent,
 										}}
 										activeFile={state.currentFilePath || "/example.tsx"}
 										onFileChange={(_file: string, content: string) => {
@@ -799,12 +725,8 @@ The cloud stores your snapshot metadata. Actual file restoration happens on your
 								// Show a lightweight preview with a button to load the editor
 								<div className="flex flex-col items-center justify-center h-full text-gray-400 bg-[#1e1e1e]">
 									<div className="text-center p-8 max-w-md">
-										<h3 className="text-xl font-semibold mb-4">
-											File Selected
-										</h3>
-										<p className="mb-6 text-gray-500">
-											{state.currentFilePath || "Selected file"}
-										</p>
+										<h3 className="text-xl font-semibold mb-4">File Selected</h3>
+										<p className="mb-6 text-gray-500">{state.currentFilePath || "Selected file"}</p>
 										<button
 											type="button"
 											onClick={() => setEditorLoaded(true)}
@@ -826,9 +748,7 @@ The cloud stores your snapshot metadata. Actual file restoration happens on your
 					</div>
 
 					{/* Bottom Panel */}
-					<div className="h-64 border-t border-gray-800 bg-[#1e1e1e]">
-						{renderActiveView()}
-					</div>
+					<div className="h-64 border-t border-gray-800 bg-[#1e1e1e]">{renderActiveView()}</div>
 				</div>
 			</div>
 

@@ -4,16 +4,8 @@ import { cn } from "@ui/lib";
 import { type MotionProps, m } from "motion/react";
 import type * as React from "react";
 
-function Skeleton({
-	className,
-	...props
-}: React.HTMLAttributes<HTMLDivElement>) {
-	return (
-		<div
-			className={cn("animate-pulse rounded-md bg-muted", className)}
-			{...props}
-		/>
-	);
+function Skeleton({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+	return <div className={cn("animate-pulse rounded-md bg-muted", className)} {...props} />;
 }
 
 type SkeletonMotionProps = Omit<
@@ -22,16 +14,9 @@ type SkeletonMotionProps = Omit<
 > &
 	MotionProps;
 
-function SkeletonMotion({
-	className,
-	children,
-	...props
-}: SkeletonMotionProps) {
+function SkeletonMotion({ className, children, ...props }: SkeletonMotionProps) {
 	return (
-		<m.div
-			className={cn("animate-pulse rounded-md bg-muted", className)}
-			{...props}
-		>
+		<m.div className={cn("animate-pulse rounded-md bg-muted", className)} {...props}>
 			{children}
 		</m.div>
 	);

@@ -1,13 +1,9 @@
 "use client";
 
-import { m } from "motion/react";
-import {
-	AlertCircle,
-	RotateCcw,
-	Zap,
-} from "lucide-react";
-import { useEffect, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
+import { AlertCircle, RotateCcw, Zap } from "lucide-react";
+import { m } from "motion/react";
+import { useEffect, useState } from "react";
 
 interface Win {
 	id: string;
@@ -24,10 +20,7 @@ interface RecentWinsTimelineProps {
 	onWinClick?: (win: Win) => void;
 }
 
-export function RecentWinsTimeline({
-	wins,
-	onWinClick,
-}: RecentWinsTimelineProps) {
+export function RecentWinsTimeline({ wins, onWinClick }: RecentWinsTimelineProps) {
 	const [isMounted, setIsMounted] = useState(false);
 
 	useEffect(() => {
@@ -84,9 +77,7 @@ export function RecentWinsTimeline({
 				<div className="space-y-3">
 					{wins.length === 0 ? (
 						<div className="text-center py-8 text-slate-500">
-							<p>
-								No recent wins yet. Create a snapshot to get started!
-							</p>
+							<p>No recent wins yet. Create a snapshot to get started!</p>
 						</div>
 					) : (
 						wins.map((win) => (
@@ -95,26 +86,19 @@ export function RecentWinsTimeline({
 								className={`rounded-lg border p-4 cursor-pointer transition-all ${getWinColor(win.type)}`}
 							>
 								<div className="flex gap-4">
-									<div className="flex-shrink-0 mt-1">
-										{getWinIcon(win.type)}
-									</div>
+									<div className="flex-shrink-0 mt-1">{getWinIcon(win.type)}</div>
 
 									<div className="flex-1 min-w-0">
 										<div className="flex items-start justify-between gap-2 mb-1">
 											<div>
-												<p className="font-semibold text-white truncate">
-													{win.description}
-												</p>
-												<p className="text-sm text-slate-400 truncate">
-													{win.fileName}
-												</p>
+												<p className="font-semibold text-white truncate">{win.description}</p>
+												<p className="text-sm text-slate-400 truncate">{win.fileName}</p>
 											</div>
 											{win.severity && (
 												<span
 													className={`text-xs font-medium flex-shrink-0 ${getSeverityColor(win.severity)}`}
 												>
-													{win.severity.charAt(0).toUpperCase() +
-														win.severity.slice(1)}
+													{win.severity.charAt(0).toUpperCase() + win.severity.slice(1)}
 												</span>
 											)}
 										</div>
@@ -152,9 +136,7 @@ export function RecentWinsTimeline({
 			<div className="space-y-3">
 				{wins.length === 0 ? (
 					<div className="text-center py-8 text-slate-500">
-						<p>
-							No recent wins yet. Create a snapshot to get started!
-						</p>
+						<p>No recent wins yet. Create a snapshot to get started!</p>
 					</div>
 				) : (
 					wins.map((win, index) => (
@@ -173,26 +155,19 @@ export function RecentWinsTimeline({
 							className={`rounded-lg border p-4 cursor-pointer transition-all ${getWinColor(win.type)}`}
 						>
 							<div className="flex gap-4">
-								<div className="flex-shrink-0 mt-1">
-									{getWinIcon(win.type)}
-								</div>
+								<div className="flex-shrink-0 mt-1">{getWinIcon(win.type)}</div>
 
 								<div className="flex-1 min-w-0">
 									<div className="flex items-start justify-between gap-2 mb-1">
 										<div>
-											<p className="font-semibold text-white truncate">
-												{win.description}
-											</p>
-											<p className="text-sm text-slate-400 truncate">
-												{win.fileName}
-											</p>
+											<p className="font-semibold text-white truncate">{win.description}</p>
+											<p className="text-sm text-slate-400 truncate">{win.fileName}</p>
 										</div>
 										{win.severity && (
 											<span
 												className={`text-xs font-medium flex-shrink-0 ${getSeverityColor(win.severity)}`}
 											>
-												{win.severity.charAt(0).toUpperCase() +
-													win.severity.slice(1)}
+												{win.severity.charAt(0).toUpperCase() + win.severity.slice(1)}
 											</span>
 										)}
 									</div>

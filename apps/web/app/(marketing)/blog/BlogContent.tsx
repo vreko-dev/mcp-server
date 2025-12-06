@@ -27,9 +27,7 @@ export function BlogContent({ publishedPosts }: { publishedPosts: Post[] }) {
 
 			{publishedPosts.length === 0 ? (
 				<div className="text-center py-12">
-					<h2 className="text-2xl font-semibold mb-4 text-white">
-						No posts yet
-					</h2>
+					<h2 className="text-2xl font-semibold mb-4 text-white">No posts yet</h2>
 					<p className="text-gray-500">Check back soon for updates.</p>
 				</div>
 			) : (

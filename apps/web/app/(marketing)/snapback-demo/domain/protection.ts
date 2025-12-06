@@ -5,9 +5,7 @@ import type { Policy, ProtectionLevel } from "./types";
  * Cycles through protection levels in order
  * unprotected → watch → warn → block → unprotected
  */
-export function cycleProtectionLevel(
-	currentLevel: ProtectionLevel,
-): ProtectionLevel {
+export function cycleProtectionLevel(currentLevel: ProtectionLevel): ProtectionLevel {
 	const levels: ProtectionLevel[] = ["unprotected", "watch", "warn", "block"];
 	const currentIndex = levels.indexOf(currentLevel);
 
@@ -43,10 +41,7 @@ export function matchPolicy(path: string, policy: Policy): boolean {
 /**
  * Determines if a file should be protected based on policies
  */
-export function shouldProtectFile(
-	path: string,
-	policies: Policy[],
-): ProtectionLevel | null {
+export function shouldProtectFile(path: string, policies: Policy[]): ProtectionLevel | null {
 	// Check ignore policies first (they take precedence)
 	for (const policy of policies) {
 		if (policy.type === "ignore" && matchPolicy(path, policy)) {
@@ -99,10 +94,7 @@ export function getProtectionBadgeColor(level: ProtectionLevel): string {
 /**
  * Debounces a function call
  */
-export function debounce<T extends (...args: any[]) => any>(
-	func: T,
-	delay: number,
-): (...args: Parameters<T>) => void {
+export function debounce<T extends (...args: any[]) => any>(func: T, delay: number): (...args: Parameters<T>) => void {
 	let timeoutId: NodeJS.Timeout | null = null;
 
 	return (...args: Parameters<T>) => {

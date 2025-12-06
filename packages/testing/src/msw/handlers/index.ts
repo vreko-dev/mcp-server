@@ -13,20 +13,6 @@
  */
 
 export {
-	errorHandlers as oauthErrorHandlers,
-	githubHandlers,
-	googleHandlers,
-	oauthHandlers,
-} from "./oauth";
-
-export { posthogHandlers } from "./posthog";
-
-export {
-	resendErrorHandlers,
-	resendHandlers,
-} from "./resend";
-
-export {
 	authErrorHandlers,
 	authHandlers,
 	loginHandlers,
@@ -34,6 +20,17 @@ export {
 	registrationHandlers,
 	sessionHandlers,
 } from "./auth";
+export {
+	errorHandlers as oauthErrorHandlers,
+	githubHandlers,
+	googleHandlers,
+	oauthHandlers,
+} from "./oauth";
+export { posthogHandlers } from "./posthog";
+export {
+	resendErrorHandlers,
+	resendHandlers,
+} from "./resend";
 
 import { authHandlers } from "./auth";
 import { oauthHandlers } from "./oauth";
@@ -44,9 +41,4 @@ import { resendHandlers } from "./resend";
  * All default handlers combined
  * Includes Auth, OAuth, PostHog, and Resend handlers
  */
-export const handlers = [
-	...authHandlers,
-	...oauthHandlers,
-	...posthogHandlers,
-	...resendHandlers,
-];
+export const handlers = [...authHandlers, ...oauthHandlers, ...posthogHandlers, ...resendHandlers];

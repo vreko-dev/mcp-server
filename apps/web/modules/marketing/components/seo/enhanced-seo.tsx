@@ -9,10 +9,7 @@ interface EnhancedSEOProps {
 	content?: string;
 }
 
-export function EnhancedSEO({
-	metadata,
-	slug,
-}: Omit<EnhancedSEOProps, "content">) {
+export function EnhancedSEO({ metadata, slug }: Omit<EnhancedSEOProps, "content">) {
 	useEffect(() => {
 		// Track page view with PostHog if available
 		if (window?.posthog) {
@@ -41,19 +38,13 @@ export function EnhancedSEO({
 
 			const articleProgress = Math.max(
 				0,
-				Math.min(
-					100,
-					((scrolled + windowHeight - articleTop) / articleHeight) * 100,
-				),
+				Math.min(100, ((scrolled + windowHeight - articleTop) / articleHeight) * 100),
 			);
 
 			// Track milestone percentages
 			const milestones = [25, 50, 75, 90, 100];
 			for (const milestone of milestones) {
-				if (
-					articleProgress >= milestone &&
-					!window.readingMilestones?.[milestone]
-				) {
+				if (articleProgress >= milestone && !window.readingMilestones?.[milestone]) {
 					window.readingMilestones = window.readingMilestones || {};
 					window.readingMilestones[milestone] = true;
 
@@ -111,9 +102,7 @@ export function EnhancedSEO({
 			"@type": "BlogPosting",
 			headline: metadata.title.main,
 			description: metadata.description.meta,
-			image: metadata.visuals?.heroImage
-				? [metadata.visuals.heroImage]
-				: undefined,
+			image: metadata.visuals?.heroImage ? [metadata.visuals.heroImage] : undefined,
 			author: {
 				"@type": "Person",
 				name: metadata.schema.author.name,
@@ -121,14 +110,9 @@ export function EnhancedSEO({
 				description: metadata.schema.author.bio,
 				sameAs: [
 					metadata.schema.author.twitter
-						? `https://twitter.com/${metadata.schema.author.twitter.replace(
-								"@",
-								"",
-							)}`
+						? `https://twitter.com/${metadata.schema.author.twitter.replace("@", "")}`
 						: "",
-					metadata.schema.author.github
-						? `https://github.com/${metadata.schema.author.github}`
-						: "",
+					metadata.schema.author.github ? `https://github.com/${metadata.schema.author.github}` : "",
 				].filter(Boolean),
 			},
 			publisher: {
@@ -140,8 +124,7 @@ export function EnhancedSEO({
 				},
 			},
 			datePublished: metadata.workflow.publishDate,
-			dateModified:
-				metadata.workflow.updateDate || metadata.workflow.publishDate,
+			dateModified: metadata.workflow.updateDate || metadata.workflow.publishDate,
 			mainEntityOfPage: {
 				"@type": "WebPage",
 				"@id": `https://snapback.dev/blog/${slug}`,

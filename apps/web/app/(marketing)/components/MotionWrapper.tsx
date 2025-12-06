@@ -7,9 +7,5 @@ import type { PropsWithChildren } from "react";
 export function MotionWrapper({ children }: PropsWithChildren) {
 	const shouldReduceMotion = useReducedMotion();
 
-	return (
-		<MotionConfig reducedMotion={shouldReduceMotion ? "always" : "never"}>
-			{children}
-		</MotionConfig>
-	);
+	return <MotionConfig reducedMotion={shouldReduceMotion ? "always" : "never"}>{children}</MotionConfig>;
 }

@@ -95,18 +95,7 @@ export const SNAP_TRANSITIONS = {
  */
 export const GPU_ACCELERATED_PROPS = {
 	// Transform properties (GPU-friendly)
-	TRANSFORM: [
-		"x",
-		"y",
-		"z",
-		"scale",
-		"scaleX",
-		"scaleY",
-		"rotate",
-		"rotateX",
-		"rotateY",
-		"rotateZ",
-	] as const,
+	TRANSFORM: ["x", "y", "z", "scale", "scaleX", "scaleY", "rotate", "rotateX", "rotateY", "rotateZ"] as const,
 
 	// Opacity (compositing layer)
 	OPACITY: ["opacity"] as const,
@@ -120,16 +109,7 @@ export const GPU_ACCELERATED_PROPS = {
  */
 export const EXPENSIVE_PROPS = {
 	// Layout-triggering properties
-	LAYOUT: [
-		"width",
-		"height",
-		"top",
-		"left",
-		"right",
-		"bottom",
-		"margin",
-		"padding",
-	] as const,
+	LAYOUT: ["width", "height", "top", "left", "right", "bottom", "margin", "padding"] as const,
 
 	// Paint-triggering properties
 	PAINT: ["color", "background", "border", "boxShadow"] as const,
@@ -267,10 +247,7 @@ export const getOptimizedTransition = (
 	if (isMobileDevice() || forceFast) {
 		return {
 			...baseTransition,
-			duration:
-				typeof baseTransition.duration === "number"
-					? Math.min(baseTransition.duration, 0.3)
-					: 0.3,
+			duration: typeof baseTransition.duration === "number" ? Math.min(baseTransition.duration, 0.3) : 0.3,
 		};
 	}
 
@@ -280,9 +257,7 @@ export const getOptimizedTransition = (
 /**
  * Create performance-optimized motion props
  */
-export const createOptimizedMotionProps = (
-	overrides?: Record<string, any>,
-) => ({
+export const createOptimizedMotionProps = (overrides?: Record<string, any>) => ({
 	// GPU acceleration hints
 	style: {
 		willChange: "transform",

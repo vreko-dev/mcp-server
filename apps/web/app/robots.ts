@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 
 /**
  * Robots.txt configuration for SnapBack web app
- * 
+ *
  * Best practices:
  * - Explicitly reference sitemap
  * - Block non-public routes
@@ -17,12 +17,7 @@ export default function robots(): MetadataRoute.Robots {
 			{
 				userAgent: "*",
 				allow: "/",
-				disallow: [
-					"/api/",
-					"/_next/",
-					"/auth/",
-					"/dashboard/",
-				],
+				disallow: ["/api/", "/_next/", "/auth/", "/dashboard/"],
 			},
 			// Specific rules for aggressive crawlers
 			{

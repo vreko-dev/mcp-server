@@ -13,12 +13,8 @@ export function InteractiveDemo() {
 					<div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-500 text-xs font-medium uppercase tracking-wider">
 						{interactive_demo.content.label}
 					</div>
-					<h2 className="text-3xl lg:text-5xl font-bold text-white">
-						{interactive_demo.content.headline}
-					</h2>
-					<p className="text-lg text-[#A0A0A0] max-w-2xl mx-auto">
-						{interactive_demo.content.description}
-					</p>
+					<h2 className="text-3xl lg:text-5xl font-bold text-white">{interactive_demo.content.headline}</h2>
+					<p className="text-lg text-[#A0A0A0] max-w-2xl mx-auto">{interactive_demo.content.description}</p>
 				</div>
 
 				{/* Interactive Code Editor Demo */}

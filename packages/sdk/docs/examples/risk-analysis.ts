@@ -5,8 +5,7 @@
  * security risks in code changes before applying them.
  */
 
-import { RiskAnalyzer, THRESHOLDS, updateThresholds } from "@snapback/sdk";
-import { describeRiskFactors } from "@snapback/sdk";
+import { describeRiskFactors, RiskAnalyzer, THRESHOLDS, updateThresholds } from "@snapback/sdk";
 
 // Configure SDK for strict security
 updateThresholds({

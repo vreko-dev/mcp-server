@@ -23,7 +23,10 @@
 					"level": "error",
 					"fix": "safe"
 				},
-				"noUnusedFunctionParameters": "warn",
+				"noUnusedFunctionParameters": {
+					"level": "error",
+					"fix": "safe"
+				},
 				"useUniqueElementIds": "off"
 			},
 			"style": {

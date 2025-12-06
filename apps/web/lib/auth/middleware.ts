@@ -30,9 +30,7 @@ interface SessionResponse {
  * @param request - Next.js request object
  * @returns Session data if valid, null if invalid/expired
  */
-async function getSession(
-	request: NextRequest,
-): Promise<SessionResponse | null> {
+async function getSession(request: NextRequest): Promise<SessionResponse | null> {
 	const sessionCookie = request.cookies.get("better_auth.session_token");
 
 	if (!sessionCookie) {
@@ -83,14 +81,7 @@ export interface AuthMiddlewareConfig {
  * Default configuration
  */
 const defaultConfig: AuthMiddlewareConfig = {
-	protectedRoutes: [
-		"/dashboard",
-		"/settings",
-		"/admin",
-		"/api-keys",
-		"/choose-plan",
-		"/onboarding",
-	],
+	protectedRoutes: ["/dashboard", "/settings", "/admin", "/api-keys", "/choose-plan", "/onboarding"],
 	authRoutes: ["/auth/login", "/auth/signup"],
 	loginPath: "/auth/login",
 	dashboardPath: "/dashboard",
@@ -99,10 +90,7 @@ const defaultConfig: AuthMiddlewareConfig = {
 /**
  * Check if path matches protected routes
  */
-function isProtectedRoute(
-	pathname: string,
-	protectedRoutes: string[],
-): boolean {
+function isProtectedRoute(pathname: string, protectedRoutes: string[]): boolean {
 	return protectedRoutes.some((route) => pathname.startsWith(route));
 }
 
@@ -145,8 +133,7 @@ export async function authMiddleware(
 	const { pathname } = request.nextUrl;
 	const mergedConfig = { ...defaultConfig, ...config };
 
-	const { protectedRoutes, authRoutes, loginPath, dashboardPath } =
-		mergedConfig;
+	const { protectedRoutes, authRoutes, loginPath, dashboardPath } = mergedConfig;
 
 	// Check if route requires authentication
 	const isProtected = isProtectedRoute(pathname, protectedRoutes);
@@ -196,9 +183,7 @@ export async function authMiddlewareWithMonitoring(
 
 	// Log slow session validations (>100ms)
 	if (duration > 100) {
-		console.warn(
-			`Slow session validation: ${duration}ms for ${request.nextUrl.pathname}`,
-		);
+		console.warn(`Slow session validation: ${duration}ms for ${request.nextUrl.pathname}`);
 	}
 
 	return response;

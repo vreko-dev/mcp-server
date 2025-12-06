@@ -11,11 +11,7 @@ interface AlphaBadgeProps {
 	pulseAnimation?: boolean;
 }
 
-export function AlphaBadge({
-	variant = "default",
-	className,
-	pulseAnimation = true,
-}: AlphaBadgeProps) {
+export function AlphaBadge({ variant = "default", className, pulseAnimation = true }: AlphaBadgeProps) {
 	if (variant === "minimal") {
 		return (
 			<span

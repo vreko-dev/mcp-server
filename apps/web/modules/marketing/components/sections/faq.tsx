@@ -8,70 +8,42 @@ import { useEffect, useState } from "react";
 const faqs = [
 	{
 		question: "How does SnapBack differ from Git?",
-		answer:
-			"Git tracks commits (deliberate saves), while SnapBack captures every save automatically—even before you commit. It's designed for instant restore, not version control. SnapBack is specifically built for protecting against AI coding mistakes, with automatic snapshots before AI assistants like Copilot or Cursor make changes.",
+		answer: "Git tracks commits (deliberate saves), while SnapBack captures every save automatically—even before you commit. It's designed for instant restore, not version control. SnapBack is specifically built for protecting against AI coding mistakes, with automatic snapshots before AI assistants like Copilot or Cursor make changes.",
 		keywords: ["git alternative", "vscode snapshot", "automatic code backup"],
 	},
 	{
 		question: "Does SnapBack work with GitHub Copilot and Cursor?",
-		answer:
-			"Yes. SnapBack detects AI activity from GitHub Copilot, Cursor, Claude, Windsurf, and other AI coding assistants. It creates checkpoints automatically before AI-generated changes, giving you instant rollback capability if something breaks.",
-		keywords: [
-			"github copilot safety",
-			"cursor alternative",
-			"ai coding safety",
-		],
+		answer: "Yes. SnapBack detects AI activity from GitHub Copilot, Cursor, Claude, Windsurf, and other AI coding assistants. It creates checkpoints automatically before AI-generated changes, giving you instant rollback capability if something breaks.",
+		keywords: ["github copilot safety", "cursor alternative", "ai coding safety"],
 	},
 	{
 		question: "How do I recover code after AI breaks it?",
-		answer:
-			"Open the SnapBack Explorer in VS Code, select your most recent session, click 'Preview Restore' to see what changed, then click 'Restore'. The entire process takes less than 5 seconds and recovers your code instantly.",
-		keywords: [
-			"recover from ai code error",
-			"undo ai changes",
-			"ai broke my code",
-		],
+		answer: "Open the SnapBack Explorer in VS Code, select your most recent session, click 'Preview Restore' to see what changed, then click 'Restore'. The entire process takes less than 5 seconds and recovers your code instantly.",
+		keywords: ["recover from ai code error", "undo ai changes", "ai broke my code"],
 	},
 	{
 		question: "Is my code stored in the cloud?",
-		answer:
-			"No. SnapBack stores all snapshots locally on your machine. Your code never leaves your computer. This ensures privacy, speed (<50ms overhead), and works offline. For teams, optional cloud backup is available but not required.",
-		keywords: [
-			"local code backup",
-			"privacy focused code tool",
-			"offline code protection",
-		],
+		answer: "No. SnapBack stores all snapshots locally on your machine. Your code never leaves your computer. This ensures privacy, speed (<50ms overhead), and works offline. For teams, optional cloud backup is available but not required.",
+		keywords: ["local code backup", "privacy focused code tool", "offline code protection"],
 	},
 	{
 		question: "Will SnapBack slow down my editor?",
-		answer:
-			"No. SnapBack adds less than 50ms overhead per save—completely imperceptible. It uses efficient delta compression and runs asynchronously, so your coding experience remains smooth even on large projects.",
+		answer: "No. SnapBack adds less than 50ms overhead per save—completely imperceptible. It uses efficient delta compression and runs asynchronously, so your coding experience remains smooth even on large projects.",
 		keywords: ["vscode performance", "fast code backup", "zero latency backup"],
 	},
 	{
 		question: "What is the Guardian feature?",
-		answer:
-			"Guardian is SnapBack's AI-powered code analysis that detects dangerous patterns in real-time: exposed secrets (API keys, passwords), test mocks in production code, and phantom dependencies. It warns you before these issues reach production.",
-		keywords: [
-			"guardian code analysis",
-			"secret detection",
-			"ai code security",
-		],
+		answer: "Guardian is SnapBack's AI-powered code analysis that detects dangerous patterns in real-time: exposed secrets (API keys, passwords), test mocks in production code, and phantom dependencies. It warns you before these issues reach production.",
+		keywords: ["guardian code analysis", "secret detection", "ai code security"],
 	},
 	{
 		question: "Can I use SnapBack for production code?",
-		answer:
-			"Yes. SnapBack is designed for production environments. It helps prevent AI-generated bugs from reaching production by providing instant rollback when AI suggestions break tests, corrupt configs, or introduce security issues.",
-		keywords: [
-			"ai coding for production",
-			"production code safety",
-			"safe ai refactoring",
-		],
+		answer: "Yes. SnapBack is designed for production environments. It helps prevent AI-generated bugs from reaching production by providing instant rollback when AI suggestions break tests, corrupt configs, or introduce security issues.",
+		keywords: ["ai coding for production", "production code safety", "safe ai refactoring"],
 	},
 	{
 		question: "How much storage does SnapBack use?",
-		answer:
-			"SnapBack uses delta compression to store only what changed between snapshots. A typical project with 1,000 files uses ~10-50MB for 100 snapshots. Automatic pruning keeps storage efficient.",
+		answer: "SnapBack uses delta compression to store only what changed between snapshots. A typical project with 1,000 files uses ~10-50MB for 100 snapshots. Automatic pruning keeps storage efficient.",
 		keywords: ["vscode storage", "efficient code backup", "local code history"],
 	},
 ];
@@ -118,10 +90,7 @@ const FAQ = () => {
 	return (
 		<section className="section bg-muted/10" aria-labelledby="faq-heading">
 			{/* Schema markup for AI search engines and featured snippets */}
-			<script
-				type="application/ld+json"
-				dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
-			/>
+			<script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }} />
 			<div className="container">
 				<m.div
 					className="text-center mb-16"
@@ -141,8 +110,7 @@ const FAQ = () => {
 						</span>
 					</h2>
 					<p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-						Got questions? We've got answers. Can't find what you're looking
-						for?{" "}
+						Got questions? We've got answers. Can't find what you're looking for?{" "}
 						<a
 							href="https://new-docs.snapback.dev/faq"
 							className="text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm"
@@ -169,9 +137,7 @@ const FAQ = () => {
 							const isOpen = openIndex === index;
 							return (
 								<div
-									key={`faq-${index}-${faq.question
-										.replace(/\s+/g, "-")
-										.toLowerCase()}`}
+									key={`faq-${index}-${faq.question.replace(/\s+/g, "-").toLowerCase()}`}
 									className="bg-card/50 backdrop-blur-sm border border-border rounded-lg hover:border-primary/30 transition-colors focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 focus-within:ring-offset-background"
 								>
 									<button
@@ -212,9 +178,7 @@ const FAQ = () => {
 										aria-labelledby={`faq-question-${index}`}
 										aria-hidden={!isOpen}
 									>
-										<div className="px-6 pb-4 text-muted-foreground">
-											{faq.answer}
-										</div>
+										<div className="px-6 pb-4 text-muted-foreground">{faq.answer}</div>
 									</m.div>
 								</div>
 							);
@@ -230,9 +194,7 @@ const FAQ = () => {
 					transition={{ duration: 0.6, delay: 0.4 }}
 					viewport={{ once: true }}
 				>
-					<p className="text-muted-foreground mb-6">
-						Still have questions? Our team is here to help.
-					</p>
+					<p className="text-muted-foreground mb-6">Still have questions? Our team is here to help.</p>
 					<m.button
 						className="btn-ghost focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 						whileHover={{ scale: 1.05 }}

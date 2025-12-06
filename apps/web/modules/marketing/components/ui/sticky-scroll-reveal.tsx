@@ -27,26 +27,20 @@ export const StickyScrollReveal = ({
 	useEffect(() => {
 		const unsubscribe = scrollYProgress.onChange((latest) => {
 			const cardsBreakpoints = content.map((_, index) => index / cardLength);
-			const closestBreakpointIndex = cardsBreakpoints.reduce(
-				(acc, breakpoint, index) => {
-					const distance = Math.abs(latest - breakpoint);
-					if (distance < Math.abs(latest - (cardsBreakpoints[acc] ?? 0))) {
-						return index;
-					}
-					return acc;
-				},
-				0,
-			);
+			const closestBreakpointIndex = cardsBreakpoints.reduce((acc, breakpoint, index) => {
+				const distance = Math.abs(latest - breakpoint);
+				if (distance < Math.abs(latest - (cardsBreakpoints[acc] ?? 0))) {
+					return index;
+				}
+				return acc;
+			}, 0);
 			setActiveCard(closestBreakpointIndex);
 		});
 
 		return unsubscribe;
 	}, [scrollYProgress, cardLength, content]);
 
-	const backgroundColors = useMemo(
-		() => ["hsl(0 0% 4%)", "hsl(0 0% 5%)", "hsl(0 0% 6%)"],
-		[],
-	);
+	const backgroundColors = useMemo(() => ["hsl(0 0% 4%)", "hsl(0 0% 5%)", "hsl(0 0% 6%)"], []);
 
 	const linearGradients = useMemo(
 		() => [
@@ -57,9 +51,7 @@ export const StickyScrollReveal = ({
 		[],
 	);
 
-	const [backgroundGradient, setBackgroundGradient] = useState(
-		linearGradients[0],
-	);
+	const [backgroundGradient, setBackgroundGradient] = useState(linearGradients[0]);
 
 	useEffect(() => {
 		setBackgroundGradient(linearGradients[activeCard % linearGradients.length]);
@@ -68,8 +60,7 @@ export const StickyScrollReveal = ({
 	return (
 		<m.div
 			animate={{
-				backgroundColor:
-					backgroundColors[activeCard % backgroundColors.length] || "#000000",
+				backgroundColor: backgroundColors[activeCard % backgroundColors.length] || "#000000",
 			}}
 			className="relative h-[30rem] overflow-y-auto flex justify-center"
 			ref={ref}

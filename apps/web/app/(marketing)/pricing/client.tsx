@@ -3,10 +3,7 @@
 import { AnalyticsEvents } from "@analytics";
 import { useTimeOnPage } from "@analytics/hooks/use-time-on-page";
 import { ComingSoonBadge } from "@marketing/components/ui/coming-soon-badge";
-import {
-	PricingCard,
-	type PricingCardData,
-} from "@marketing/components/ui/pricing-card";
+import { PricingCard, type PricingCardData } from "@marketing/components/ui/pricing-card";
 import { ChevronDown } from "lucide-react";
 import { m } from "motion/react";
 import Link from "next/link";
@@ -52,8 +49,7 @@ const pricingTiers: PricingCardData[] = [
 				{
 					text: (
 						<span className="flex items-center gap-2">
-							Local MCP scan{" "}
-							<ComingSoonBadge variant="inline" text="Coming Soon" />
+							Local MCP scan <ComingSoonBadge variant="inline" text="Coming Soon" />
 						</span>
 					),
 					category: "intelligence",
@@ -68,11 +64,7 @@ const pricingTiers: PricingCardData[] = [
 				},
 			],
 		},
-		limitations: [
-			"No cloud backup",
-			"No team sharing",
-			"No Guardian AI detection",
-		],
+		limitations: ["No cloud backup", "No team sharing", "No Guardian AI detection"],
 		cta: {
 			text: "Install Extension",
 			href: "https://marketplace.visualstudio.com/items?itemName=MarcelleLabs.snapback-vscode",
@@ -119,8 +111,7 @@ const pricingTiers: PricingCardData[] = [
 				{
 					text: (
 						<span className="flex items-center gap-2">
-							Backend MCP server{" "}
-							<ComingSoonBadge variant="inline" text="Coming Soon" />
+							Backend MCP server <ComingSoonBadge variant="inline" text="Coming Soon" />
 						</span>
 					),
 					category: "intelligence",
@@ -226,50 +217,40 @@ const pricingTiers: PricingCardData[] = [
 const faqs = [
 	{
 		question: "Do I need a credit card to start?",
-		answer:
-			"No! The Free plan is completely free forever with no credit card required. Pro and Team plans offer a 14-day free trial, also with no credit card needed upfront.",
+		answer: "No! The Free plan is completely free forever with no credit card required. Pro and Team plans offer a 14-day free trial, also with no credit card needed upfront.",
 	},
 	{
 		question: "What's included in the Free plan?",
-		answer:
-			"The Free plan includes the full VS Code extension and CLI with unlimited local snapshots. You get basic AI detection, manual snapshot creation, and community support. It's perfect for trying SnapBack or solo developers who don't need cloud backup.",
+		answer: "The Free plan includes the full VS Code extension and CLI with unlimited local snapshots. You get basic AI detection, manual snapshot creation, and community support. It's perfect for trying SnapBack or solo developers who don't need cloud backup.",
 	},
 	{
 		question: "How does Guardian AI detection work?",
-		answer:
-			"Guardian uses multiple detection plugins (secrets, mocks, phantom dependencies) with 94% accuracy on Day 1. Accuracy improves as it learns your codebase. It analyzes code changes in real-time using regex patterns, Shannon entropy analysis, and import/package.json validation. Available in Pro and Team plans.",
+		answer: "Guardian uses multiple detection plugins (secrets, mocks, phantom dependencies) with 94% accuracy on Day 1. Accuracy improves as it learns your codebase. It analyzes code changes in real-time using regex patterns, Shannon entropy analysis, and import/package.json validation. Available in Pro and Team plans.",
 	},
 	{
 		question: "Can I switch plans later?",
-		answer:
-			"Yes! You can upgrade or downgrade anytime. Upgrades take effect immediately, and downgrades apply at the end of your current billing cycle. All your snapshots and data are preserved during plan changes.",
+		answer: "Yes! You can upgrade or downgrade anytime. Upgrades take effect immediately, and downgrades apply at the end of your current billing cycle. All your snapshots and data are preserved during plan changes.",
 	},
 	{
 		question: "What's the difference between Pro and Team?",
-		answer:
-			"Pro is for individual power users and includes cloud backup, Guardian detection, and session time-travel. Team adds shared snapshots, team policies via .snapbackrc, analytics dashboard, SSO, and collaboration features for teams of 3+.",
+		answer: "Pro is for individual power users and includes cloud backup, Guardian detection, and session time-travel. Team adds shared snapshots, team policies via .snapbackrc, analytics dashboard, SSO, and collaboration features for teams of 3+.",
 	},
 	{
 		question: "Do you offer refunds?",
-		answer:
-			"Yes! We offer a 30-day money-back guarantee on all paid plans. If you're not satisfied for any reason within the first 30 days, contact support for a full refund—no questions asked.",
+		answer: "Yes! We offer a 30-day money-back guarantee on all paid plans. If you're not satisfied for any reason within the first 30 days, contact support for a full refund—no questions asked.",
 	},
 	{
 		question: "How does MCP integration work?",
-		answer:
-			"The MCP server (coming soon, planned for Pro+) will expose Guardian detection, dependency checks, and snapshot creation to AI assistants like Claude and Cursor. Your AI will be able to analyze risks before making changes and create checkpoints automatically.",
+		answer: "The MCP server (coming soon, planned for Pro+) will expose Guardian detection, dependency checks, and snapshot creation to AI assistants like Claude and Cursor. Your AI will be able to analyze risks before making changes and create checkpoints automatically.",
 	},
 	{
 		question: "What happens to my data if I downgrade to Free?",
-		answer:
-			"Your local snapshots remain intact. Cloud backups are retained for 30 days after downgrade in case you want to re-upgrade. After 30 days, cloud data is permanently deleted but your local snapshots are never affected.",
+		answer: "Your local snapshots remain intact. Cloud backups are retained for 30 days after downgrade in case you want to re-upgrade. After 30 days, cloud data is permanently deleted but your local snapshots are never affected.",
 	},
 ];
 
 export default function PricingClient() {
-	const [billingCycle, setBillingCycle] = React.useState<"monthly" | "annual">(
-		"monthly",
-	);
+	const [billingCycle, setBillingCycle] = React.useState<"monthly" | "annual">("monthly");
 	const [openFaqIndex, setOpenFaqIndex] = React.useState<number | null>(null);
 
 	useTimeOnPage("pricing");
@@ -307,8 +288,7 @@ export default function PricingClient() {
 						<button
 							type="button"
 							onClick={() => {
-								const newValue =
-									billingCycle === "monthly" ? "annual" : "monthly";
+								const newValue = billingCycle === "monthly" ? "annual" : "monthly";
 								setBillingCycle(newValue);
 								posthog.capture(AnalyticsEvents.PRICING_TOGGLE_CHANGED, {
 									value_before: billingCycle,
@@ -327,10 +307,7 @@ export default function PricingClient() {
 						<span
 							className={`text-sm ${billingCycle === "annual" ? "text-white font-medium" : "text-gray-400"}`}
 						>
-							Annual{" "}
-							<span className="text-emerald-400 text-xs font-semibold">
-								(Save 17%)
-							</span>
+							Annual <span className="text-emerald-400 text-xs font-semibold">(Save 17%)</span>
 						</span>
 					</div>
 				</m.div>
@@ -340,12 +317,7 @@ export default function PricingClient() {
 			<section className="container max-w-7xl mx-auto pb-24 px-4">
 				<div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 					{pricingTiers.map((tier, index) => (
-						<PricingCard
-							key={tier.id}
-							tier={tier}
-							billingCycle={billingCycle}
-							index={index}
-						/>
+						<PricingCard key={tier.id} tier={tier} billingCycle={billingCycle} index={index} />
 					))}
 				</div>
 
@@ -383,9 +355,7 @@ export default function PricingClient() {
 					transition={{ duration: 0.6 }}
 					className="text-center mb-12"
 				>
-					<h2 className="text-4xl lg:text-5xl font-bold text-white mb-4">
-						Frequently Asked Questions
-					</h2>
+					<h2 className="text-4xl lg:text-5xl font-bold text-white mb-4">Frequently Asked Questions</h2>
 					<p className="text-lg text-gray-300">
 						Got questions? Check our{" "}
 						<Link
@@ -424,9 +394,7 @@ export default function PricingClient() {
 									aria-expanded={isOpen}
 									aria-controls={`faq-answer-${index}`}
 								>
-									<span className="text-lg font-semibold text-white">
-										{faq.question}
-									</span>
+									<span className="text-lg font-semibold text-white">{faq.question}</span>
 									<m.div
 										animate={{ rotate: isOpen ? 180 : 0 }}
 										transition={{ duration: 0.2 }}
@@ -451,9 +419,7 @@ export default function PricingClient() {
 									role="region"
 									aria-labelledby={`faq-question-${index}`}
 								>
-									<div className="px-6 pb-5 text-gray-300 leading-relaxed">
-										{faq.answer}
-									</div>
+									<div className="px-6 pb-5 text-gray-300 leading-relaxed">{faq.answer}</div>
 								</m.div>
 							</m.div>
 						);
@@ -468,9 +434,7 @@ export default function PricingClient() {
 					transition={{ duration: 0.6, delay: 0.4 }}
 					className="mt-12 text-center"
 				>
-					<p className="text-gray-300 mb-4">
-						Still have questions? Our team is here to help.
-					</p>
+					<p className="text-gray-300 mb-4">Still have questions? Our team is here to help.</p>
 					<Link
 						href="https://new-docs.snapback.dev/faq"
 						target="_blank"
@@ -491,12 +455,9 @@ export default function PricingClient() {
 					transition={{ duration: 0.6 }}
 					className="bg-gradient-to-r from-emerald-400/20 to-emerald-500/20 border border-emerald-400/30 rounded-2xl p-12 text-center"
 				>
-					<h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
-						Ready to protect your code?
-					</h2>
+					<h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">Ready to protect your code?</h2>
 					<p className="text-xl text-gray-300 mb-8">
-						Start with the free plan. Upgrade anytime for cloud backup and team
-						features.
+						Start with the free plan. Upgrade anytime for cloud backup and team features.
 					</p>
 					<div className="flex flex-wrap justify-center gap-4">
 						<a

@@ -5,13 +5,7 @@ import type React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 // Terminal base components
-const Terminal = ({
-	children,
-	className = "",
-}: {
-	children: React.ReactNode;
-	className?: string;
-}) => (
+const Terminal = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
 	<div
 		className={`bg-black/95 backdrop-blur-sm rounded-lg border border-green-500/20 shadow-2xl overflow-hidden ${className}`}
 	>
@@ -87,13 +81,10 @@ const AnimatedSpan = ({
 
 // Custom hook for sound effects
 const useSound = () => {
-	const playSound = useCallback(
-		(type: "typing" | "error" | "success" | "warning" | "click") => {
-			// In production, you'd play actual sounds here
-			console.log(`🔊 Playing sound: ${type}`);
-		},
-		[],
-	);
+	const playSound = useCallback((type: "typing" | "error" | "success" | "warning" | "click") => {
+		// In production, you'd play actual sounds here
+		console.log(`🔊 Playing sound: ${type}`);
+	}, []);
 
 	return { playSound };
 };
@@ -178,9 +169,7 @@ const InteractivePrompt = ({
 					animate={{ opacity: 0.5 }}
 					className="absolute -bottom-6 left-0 text-xs text-gray-500"
 				>
-					{hovering
-						? "← Click to recover"
-						: `Auto-continuing in ${countdown}...`}
+					{hovering ? "← Click to recover" : `Auto-continuing in ${countdown}...`}
 				</motion.div>
 			)}
 		</div>
@@ -200,15 +189,7 @@ const ProgressBar = ({ progress }: { progress: number }) => (
 );
 
 // Diff view component
-const DiffLine = ({
-	type,
-	content,
-	delay,
-}: {
-	type: "remove" | "add";
-	content: string;
-	delay: number;
-}) => {
+const DiffLine = ({ type, content, delay }: { type: "remove" | "add"; content: string; delay: number }) => {
 	const [visible, setVisible] = useState(false);
 
 	useEffect(() => {
@@ -225,9 +206,7 @@ const DiffLine = ({
 			initial={{ opacity: 0, x: type === "remove" ? -20 : 20 }}
 			animate={{ opacity: 1, x: 0 }}
 			transition={{ duration: 0.3 }}
-			className={`font-mono text-sm ml-4 ${
-				type === "remove" ? "text-red-400" : "text-green-400"
-			}`}
+			className={`font-mono text-sm ml-4 ${type === "remove" ? "text-red-400" : "text-green-400"}`}
 		>
 			{type === "remove" ? "-" : "+"} {content}
 		</motion.div>
@@ -236,9 +215,7 @@ const DiffLine = ({
 
 // Main terminal component
 export function SnapBackTerminalUltimate() {
-	const [stage, setStage] = useState<
-		"init" | "working" | "disaster" | "prompt" | "recovery" | "complete"
-	>("init");
+	const [stage, setStage] = useState<"init" | "working" | "disaster" | "prompt" | "recovery" | "complete">("init");
 	const [progress, setProgress] = useState(0);
 	const [isRecovering, setIsRecovering] = useState(false);
 	const [isMobile, setIsMobile] = useState(false);
@@ -257,11 +234,7 @@ export function SnapBackTerminalUltimate() {
 		const observer = new IntersectionObserver(
 			([entry]) => {
 				// Only trigger when terminal is fully visible (threshold 0.8 = 80% visible)
-				if (
-					entry?.isIntersecting &&
-					entry.intersectionRatio >= 0.8 &&
-					!hasStarted
-				) {
+				if (entry?.isIntersecting && entry.intersectionRatio >= 0.8 && !hasStarted) {
 					setIsInView(true);
 					setHasStarted(true);
 				}
@@ -320,9 +293,7 @@ export function SnapBackTerminalUltimate() {
 			{ name: "prompt", delay: 17000 },
 		];
 
-		const timers = stages.map(({ name, delay }) =>
-			setTimeout(() => setStage(name as typeof stage), delay),
-		);
+		const timers = stages.map(({ name, delay }) => setTimeout(() => setStage(name as typeof stage), delay));
 
 		return () => timers.forEach(clearTimeout);
 	}, [isInView]);
@@ -382,27 +353,14 @@ export function SnapBackTerminalUltimate() {
 			<ProgressBar progress={progress} />
 
 			<div ref={containerRef}>
-				<Terminal
-					className={`${isMobile ? "text-xs" : "text-sm"} max-w-5xl mx-auto`}
-				>
+				<Terminal className={`${isMobile ? "text-xs" : "text-sm"} max-w-5xl mx-auto`}>
 					<div className="flex items-center gap-2 px-4 py-3 border-b border-white/10 bg-black/40">
 						<div className="flex gap-2">
-							<motion.div
-								className="w-3 h-3 rounded-full bg-red-500/80"
-								whileHover={{ scale: 1.2 }}
-							/>
-							<motion.div
-								className="w-3 h-3 rounded-full bg-yellow-500/80"
-								whileHover={{ scale: 1.2 }}
-							/>
-							<motion.div
-								className="w-3 h-3 rounded-full bg-green-500/80"
-								whileHover={{ scale: 1.2 }}
-							/>
+							<motion.div className="w-3 h-3 rounded-full bg-red-500/80" whileHover={{ scale: 1.2 }} />
+							<motion.div className="w-3 h-3 rounded-full bg-yellow-500/80" whileHover={{ scale: 1.2 }} />
+							<motion.div className="w-3 h-3 rounded-full bg-green-500/80" whileHover={{ scale: 1.2 }} />
 						</div>
-						<span className="text-xs text-white/40 ml-2">
-							snapback-terminal
-						</span>
+						<span className="text-xs text-white/40 ml-2">snapback-terminal</span>
 						<motion.div
 							className="ml-auto flex items-center gap-1"
 							animate={{ opacity: [0.5, 1, 0.5] }}
@@ -458,12 +416,8 @@ export function SnapBackTerminalUltimate() {
 							stage === "complete") && (
 							<>
 								<div className="text-cyan-400">$ snapback status</div>
-								<div className="text-green-400">
-									✓ Status: ACTIVELY MONITORING
-								</div>
-								<div className="text-white/70">
-									Last checkpoint: 43 seconds ago
-								</div>
+								<div className="text-green-400">✓ Status: ACTIVELY MONITORING</div>
+								<div className="text-white/70">Last checkpoint: 43 seconds ago</div>
 								<div className="text-white/70">Files monitored: 247</div>
 								<div className="my-2" />
 								<AnimatedSpan delay={4000} className="text-yellow-400">
@@ -528,9 +482,7 @@ export function SnapBackTerminalUltimate() {
 						)}
 
 						{/* Stage 4: Prompt */}
-						{(stage === "prompt" ||
-							stage === "recovery" ||
-							stage === "complete") && (
+						{(stage === "prompt" || stage === "recovery" || stage === "complete") && (
 							<AnimatedSpan delay={17000}>
 								<div className="my-2" />
 								<InteractivePrompt onAction={handleRecovery} />
@@ -545,44 +497,24 @@ export function SnapBackTerminalUltimate() {
 									🔄 Restoring from checkpoint...
 								</AnimatedSpan>
 								<AnimatedSpan delay={1000}>
-									<div className="text-white/70 ml-4">
-										Analyzing file diff...
-									</div>
+									<div className="text-white/70 ml-4">Analyzing file diff...</div>
 								</AnimatedSpan>
 								<AnimatedSpan delay={2000}>
-									<div className="text-white/60 ml-4">
-										src/components/Header.tsx:
-									</div>
+									<div className="text-white/60 ml-4">src/components/Header.tsx:</div>
 								</AnimatedSpan>
-								<DiffLine
-									type="remove"
-									content="export const Header = () => {"
-									delay={2500}
-								/>
-								<DiffLine
-									type="remove"
-									content="  const [state, setState] = useState()"
-									delay={2800}
-								/>
-								<DiffLine
-									type="add"
-									content="export const Header = () => {"
-									delay={3100}
-								/>
+								<DiffLine type="remove" content="export const Header = () => {" delay={2500} />
+								<DiffLine type="remove" content="  const [state, setState] = useState()" delay={2800} />
+								<DiffLine type="add" content="export const Header = () => {" delay={3100} />
 								<DiffLine
 									type="add"
 									content="  const [state, setState] = useState(null);"
 									delay={3400}
 								/>
 								<AnimatedSpan delay={4000}>
-									<div className="text-white/70 ml-4">
-										✓ Header.tsx restored
-									</div>
+									<div className="text-white/70 ml-4">✓ Header.tsx restored</div>
 								</AnimatedSpan>
 								<AnimatedSpan delay={4500}>
-									<div className="text-white/70 ml-4">
-										Restoring 46 more files...
-									</div>
+									<div className="text-white/70 ml-4">Restoring 46 more files...</div>
 								</AnimatedSpan>
 								<AnimatedSpan delay={5500} className="text-green-400">
 									✓ 47 files restored successfully
@@ -655,11 +587,7 @@ export function SnapBackTerminalMobile() {
 				)}
 
 				{stage >= 2 && (
-					<motion.div
-						initial={{ opacity: 0, y: 10 }}
-						animate={{ opacity: 1, y: 0 }}
-						className="text-red-500"
-					>
+					<motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-red-500">
 						❌ Build failed
 					</motion.div>
 				)}

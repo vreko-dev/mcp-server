@@ -35,11 +35,7 @@ export function EnhancedButton({
 
 	// Create static version for SSR
 	const staticButtonContent = (
-		<button
-			className={`${baseClasses} ${className} relative overflow-hidden`}
-			onClick={onClick}
-			{...props}
-		>
+		<button className={`${baseClasses} ${className} relative overflow-hidden`} onClick={onClick} {...props}>
 			<span className="relative z-10">{children}</span>
 		</button>
 	);

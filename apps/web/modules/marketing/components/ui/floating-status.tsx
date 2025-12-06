@@ -187,10 +187,8 @@ export function FloatingStatus({
 
 								<p className="text-red-300 text-xs leading-relaxed mb-3">
 									Your code is currently{" "}
-									<span className="font-semibold text-red-200">
-										unprotected
-									</span>
-									. Vulnerabilities detected in real-time.
+									<span className="font-semibold text-red-200">unprotected</span>. Vulnerabilities
+									detected in real-time.
 								</p>
 
 								<m.div
@@ -230,12 +228,7 @@ export function FloatingStatus({
 								className="flex-shrink-0 text-red-400/60 hover:text-red-400 transition-colors duration-200 p-1"
 								aria-label="Close alert"
 							>
-								<svg
-									className="w-4 h-4"
-									fill="none"
-									stroke="currentColor"
-									viewBox="0 0 24 24"
-								>
+								<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<title>Close</title>
 									<path
 										strokeLinecap="round"

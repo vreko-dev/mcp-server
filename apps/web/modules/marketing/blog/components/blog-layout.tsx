@@ -21,13 +21,7 @@ const navItems = [
 	{ name: "Blog", link: "/blog" },
 ];
 
-export function BlogLayout({
-	children,
-	title,
-	readingTime,
-	publishDate,
-	author,
-}: BlogLayoutProps) {
+export function BlogLayout({ children, title, readingTime, publishDate, author }: BlogLayoutProps) {
 	return (
 		<div className="min-h-screen bg-black">
 			{/* Background effects */}
@@ -47,15 +41,11 @@ export function BlogLayout({
 					>
 						{/* Category badge */}
 						<div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-primary/20 to-secondary/20 border border-primary/30 rounded-full mb-6">
-							<span className="text-primary text-sm font-semibold">
-								AI Coding Safety
-							</span>
+							<span className="text-primary text-sm font-semibold">AI Coding Safety</span>
 						</div>
 
 						{/* Title */}
-						<h1 className="text-4xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-							{title}
-						</h1>
+						<h1 className="text-4xl lg:text-6xl font-bold text-white mb-6 leading-tight">{title}</h1>
 
 						{/* Meta information */}
 						<div className="flex flex-col sm:flex-row items-center justify-center gap-6 text-neutral-400">
@@ -153,21 +143,14 @@ export function BlogLayout({
 
 						{/* Author details */}
 						<div className="flex-1">
-							<h3 className="text-2xl font-bold text-white mb-2">
-								About {author.name}
-							</h3>
-							<p className="text-neutral-300 mb-4 leading-relaxed">
-								{author.bio}
-							</p>
+							<h3 className="text-2xl font-bold text-white mb-2">About {author.name}</h3>
+							<p className="text-neutral-300 mb-4 leading-relaxed">{author.bio}</p>
 
 							{/* Social links */}
 							<div className="flex items-center gap-4">
 								{author.twitter && (
 									<a
-										href={`https://twitter.com/${author.twitter.replace(
-											"@",
-											"",
-										)}`}
+										href={`https://twitter.com/${author.twitter.replace("@", "")}`}
 										target="_blank"
 										rel="noopener noreferrer"
 										className="flex items-center gap-2 text-neutral-400 hover:text-primary transition-colors"
@@ -223,12 +206,10 @@ export function BlogLayout({
 						transition={{ duration: 0.6 }}
 						viewport={{ once: true }}
 					>
-						<h3 className="text-2xl font-bold text-white mb-4">
-							Want more AI coding insights?
-						</h3>
+						<h3 className="text-2xl font-bold text-white mb-4">Want more AI coding insights?</h3>
 						<p className="text-neutral-400 mb-8 max-w-2xl mx-auto">
-							Get weekly insights on AI coding safety and be the first to know
-							about new threats and protection strategies.
+							Get weekly insights on AI coding safety and be the first to know about new threats and
+							protection strategies.
 						</p>
 
 						<div className="flex flex-col sm:flex-row gap-4 justify-center">

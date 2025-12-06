@@ -16,9 +16,7 @@ import { useEffect, useState } from "react";
 
 export function PricingSection() {
 	const [isMounted, setIsMounted] = useState(false);
-	const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">(
-		"annual",
-	);
+	const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("annual");
 	const [expandedPlan, setExpandedPlan] = useState<string | null>(null);
 
 	useEffect(() => {
@@ -62,8 +60,7 @@ export function PricingSection() {
 				monthly: "$12",
 				annual: "$10",
 			},
-			period:
-				billingCycle === "annual" ? "per month, billed annually" : "per month",
+			period: billingCycle === "annual" ? "per month, billed annually" : "per month",
 			features: [
 				"Unlimited projects",
 				"Advanced AI detection",
@@ -210,12 +207,8 @@ export function PricingSection() {
 									<p className="mt-1">{plan.description}</p>
 
 									<div className="mt-4">
-										<span className="font-bold text-4xl">
-											{plan.price[billingCycle]}
-										</span>
-										{plan.period && (
-											<span className="text-sm">/{plan.period}</span>
-										)}
+										<span className="font-bold text-4xl">{plan.price[billingCycle]}</span>
+										{plan.period && <span className="text-sm">/{plan.period}</span>}
 									</div>
 
 									<ul className="mt-6 space-y-3">
@@ -271,10 +264,7 @@ export function PricingSection() {
 											)}
 										</Button>
 
-										<Button
-											className="w-full"
-											variant={plan.popular ? "primary" : "outline"}
-										>
+										<Button className="w-full" variant={plan.popular ? "primary" : "outline"}>
 											{plan.cta}
 										</Button>
 									</div>
@@ -317,19 +307,15 @@ export function PricingSection() {
 					<h3 className="font-bold text-xl">Frequently Asked Questions</h3>
 					<div className="mt-6 grid gap-4 md:grid-cols-2">
 						<div className="rounded-xl border bg-card p-4 text-left">
-							<h4 className="font-semibold">
-								Can I upgrade or downgrade my plan?
-							</h4>
+							<h4 className="font-semibold">Can I upgrade or downgrade my plan?</h4>
 							<p className="mt-2 text-sm">
-								Yes, you can change your plan at any time. Your billing will be
-								prorated accordingly.
+								Yes, you can change your plan at any time. Your billing will be prorated accordingly.
 							</p>
 						</div>
 						<div className="rounded-xl border bg-card p-4 text-left">
 							<h4 className="font-semibold">Is there a free trial?</h4>
 							<p className="mt-2 text-sm">
-								The Pro plan includes a 14-day free trial with full access to
-								all features.
+								The Pro plan includes a 14-day free trial with full access to all features.
 							</p>
 						</div>
 					</div>

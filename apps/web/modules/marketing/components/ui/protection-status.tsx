@@ -9,20 +9,13 @@ export interface ProtectionStatusProps {
 	label?: string;
 }
 
-export function ProtectionStatus({
-	active,
-	className,
-	label,
-}: ProtectionStatusProps) {
+export function ProtectionStatus({ active, className, label }: ProtectionStatusProps) {
 	return (
 		<div className={cn("flex items-center gap-2", className)}>
 			<div className="relative w-3 h-3">
 				{/* Outer glow ring */}
 				<motion.div
-					className={cn(
-						"absolute inset-0 rounded-full",
-						active ? "bg-snapback-500" : "bg-gray-500",
-					)}
+					className={cn("absolute inset-0 rounded-full", active ? "bg-snapback-500" : "bg-gray-500")}
 					animate={
 						active
 							? {
@@ -39,10 +32,7 @@ export function ProtectionStatus({
 
 				{/* Inner dot */}
 				<motion.div
-					className={cn(
-						"w-3 h-3 rounded-full",
-						active ? "bg-snapback-400" : "bg-gray-400",
-					)}
+					className={cn("w-3 h-3 rounded-full", active ? "bg-snapback-400" : "bg-gray-400")}
 					animate={
 						active
 							? {
@@ -57,9 +47,7 @@ export function ProtectionStatus({
 				/>
 			</div>
 
-			<span className="text-sm">
-				{label || (active ? "Protected" : "Inactive")}
-			</span>
+			<span className="text-sm">{label || (active ? "Protected" : "Inactive")}</span>
 		</div>
 	);
 }

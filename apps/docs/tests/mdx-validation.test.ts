@@ -1,7 +1,7 @@
-import { describe, expect, it } from "vitest";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import matter from "gray-matter";
+import { describe, expect, it } from "vitest";
 
 const DOCS_DIR = join(process.cwd(), "content/docs");
 
@@ -105,7 +105,7 @@ describe("SEO Documentation Pages - MDX Validation", () => {
 		it("should use Callout components", () => {
 			const content = readFileSync(filePath, "utf-8");
 
-			expect(content).toContain('import { Callout }');
+			expect(content).toContain("import { Callout }");
 			expect(content).toContain("<Callout");
 		});
 
@@ -142,7 +142,7 @@ describe("SEO Documentation Pages - MDX Validation", () => {
 		it("should use Accordion components", () => {
 			const content = readFileSync(filePath, "utf-8");
 
-			expect(content).toContain('import { Accordion, Accordions }');
+			expect(content).toContain("import { Accordion, Accordions }");
 			expect(content).toContain("<Accordions>");
 			expect(content).toContain("<Accordion");
 		});
@@ -200,7 +200,9 @@ describe("SEO Documentation Pages - MDX Validation", () => {
 
 		it.each(allNewFiles)("%s should not have broken internal links", (file) => {
 			const filePath = join(DOCS_DIR, file);
-			if (!existsSync(filePath)) { return; }
+			if (!existsSync(filePath)) {
+				return;
+			}
 
 			const content = readFileSync(filePath, "utf-8");
 
@@ -209,7 +211,9 @@ describe("SEO Documentation Pages - MDX Validation", () => {
 
 			for (const link of links) {
 				const url = link.match(/\((.*?)\)/)?.[1];
-				if (!url) { continue; }
+				if (!url) {
+					continue;
+				}
 
 				// Internal links should start with / or #
 				if (!url.startsWith("http") && !url.startsWith("mailto:")) {
@@ -220,7 +224,9 @@ describe("SEO Documentation Pages - MDX Validation", () => {
 
 		it.each(allNewFiles)("%s should have proper heading hierarchy", (file) => {
 			const filePath = join(DOCS_DIR, file);
-			if (!existsSync(filePath)) { return; }
+			if (!existsSync(filePath)) {
+				return;
+			}
 
 			const content = readFileSync(filePath, "utf-8");
 			const { content: bodyContent } = matter(content);
@@ -254,7 +260,9 @@ describe("SEO Documentation Pages - MDX Validation", () => {
 
 		it.each(seoFiles)("%s should have description under 160 characters", (file) => {
 			const filePath = join(DOCS_DIR, file);
-			if (!existsSync(filePath)) { return; }
+			if (!existsSync(filePath)) {
+				return;
+			}
 
 			const content = readFileSync(filePath, "utf-8");
 			const { data } = matter(content);
@@ -265,7 +273,9 @@ describe("SEO Documentation Pages - MDX Validation", () => {
 
 		it.each(seoFiles)("%s should have title under 60 characters", (file) => {
 			const filePath = join(DOCS_DIR, file);
-			if (!existsSync(filePath)) { return; }
+			if (!existsSync(filePath)) {
+				return;
+			}
 
 			const content = readFileSync(filePath, "utf-8");
 			const { data } = matter(content);

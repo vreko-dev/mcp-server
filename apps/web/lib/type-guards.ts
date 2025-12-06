@@ -1,11 +1,7 @@
 /**
  * Type-safe array access with fallback
  */
-export function getArrayItem<T>(
-	array: T[],
-	index: number,
-	fallback?: T,
-): T | undefined {
+export function getArrayItem<T>(array: T[], index: number, fallback?: T): T | undefined {
 	const item = array[index];
 	return item ?? fallback;
 }
@@ -13,10 +9,7 @@ export function getArrayItem<T>(
 /**
  * Assert item exists or throw
  */
-export function assertDefined<T>(
-	value: T | undefined | null,
-	message: string,
-): asserts value is T {
+export function assertDefined<T>(value: T | undefined | null, message: string): asserts value is T {
 	if (value === undefined || value === null) {
 		throw new Error(message);
 	}

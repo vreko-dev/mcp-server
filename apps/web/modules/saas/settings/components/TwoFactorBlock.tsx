@@ -5,23 +5,12 @@ import { SettingsItem } from "@saas/shared/components/SettingsItem";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "@ui/components/button";
 import { Card } from "@ui/components/card";
-import {
-	Dialog,
-	DialogContent,
-	DialogHeader,
-	DialogTitle,
-} from "@ui/components/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@ui/components/dialog";
 import { FormItem } from "@ui/components/form";
 import { Input } from "@ui/components/input";
 import { Label } from "@ui/components/label";
 import { PasswordInput } from "@ui/components/password-input";
-import {
-	ArrowRightIcon,
-	CheckIcon,
-	ShieldCheckIcon,
-	TabletSmartphoneIcon,
-	XIcon,
-} from "lucide-react";
+import { ArrowRightIcon, CheckIcon, ShieldCheckIcon, TabletSmartphoneIcon, XIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import QRCode from "react-qr-code";
 
@@ -33,9 +22,7 @@ export function TwoFactorBlock() {
 	const { user, reloadSession } = useSession();
 
 	const [dialogOpen, setDialogOpen] = useState(false);
-	const [dialogView, setDialogView] = useState<"password" | "totp-url">(
-		"password",
-	);
+	const [dialogView, setDialogView] = useState<"password" | "totp-url">("password");
 	const [totpURI, setTotpURI] = useState("");
 	const [password, setPassword] = useState("");
 	const [totpCode, setTotpCode] = useState("");
@@ -137,26 +124,17 @@ export function TwoFactorBlock() {
 		verifyTwoFactorMutation.mutate();
 	};
 
-	if (
-		!(accounts as any)?.some(
-			(account: any) => account.providerId === "credential",
-		)
-	) {
+	if (!(accounts as any)?.some((account: any) => account.providerId === "credential")) {
 		return null;
 	}
 
 	return (
-		<SettingsItem
-			title="Two-Factor Authentication"
-			description="Add an extra layer of security to your account"
-		>
+		<SettingsItem title="Two-Factor Authentication" description="Add an extra layer of security to your account">
 			{user?.twoFactorEnabled ? (
 				<div className="flex items-start flex-col gap-4">
 					<div className="flex items-center gap-1.5">
 						<ShieldCheckIcon className="size-6 text-green-500" />
-						<p className="text-sm text-foreground">
-							Two-factor authentication is enabled
-						</p>
+						<p className="text-sm text-foreground">Two-factor authentication is enabled</p>
 					</div>
 					<Button variant="light" onClick={verifyPassword}>
 						<XIcon className="mr-1.5 size-4" />
@@ -175,26 +153,17 @@ export function TwoFactorBlock() {
 			<Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
 				<DialogContent>
 					<DialogHeader>
-						<DialogTitle>
-							{dialogView === "password"
-								? "Verify Your Password"
-								: "Scan QR Code"}
-						</DialogTitle>
+						<DialogTitle>{dialogView === "password" ? "Verify Your Password" : "Scan QR Code"}</DialogTitle>
 					</DialogHeader>
 
 					{dialogView === "password" ? (
 						<form onSubmit={handleSubmit}>
 							<div className="grid grid-cols-1 gap-4">
-								<p className="text-sm text-foreground/60">
-									Please enter your password to continue
-								</p>
+								<p className="text-sm text-foreground/60">Please enter your password to continue</p>
 
 								<FormItem>
 									<Label className="block">Password</Label>
-									<PasswordInput
-										value={password}
-										onChange={(value) => setPassword(value)}
-									/>
+									<PasswordInput value={password} onChange={(value) => setPassword(value)} />
 								</FormItem>
 							</div>
 							<div className="mt-4">
@@ -202,10 +171,7 @@ export function TwoFactorBlock() {
 									type="submit"
 									variant="secondary"
 									className="w-full"
-									loading={
-										enableTwoFactorMutation.isPending ||
-										disableTwoFactorMutation.isPending
-									}
+									loading={enableTwoFactorMutation.isPending || disableTwoFactorMutation.isPending}
 								>
 									Continue
 									<ArrowRightIcon className="ml-1.5 size-4" />
@@ -222,9 +188,7 @@ export function TwoFactorBlock() {
 									<QRCodeComponent title={totpURI} value={totpURI} />
 
 									{totpURISecret && (
-										<p className="text-xs text-muted-foreground text-center">
-											{totpURISecret}
-										</p>
+										<p className="text-xs text-muted-foreground text-center">{totpURISecret}</p>
 									)}
 								</Card>
 
@@ -233,10 +197,7 @@ export function TwoFactorBlock() {
 								<div className="grid grid-cols-1 gap-4">
 									<FormItem>
 										<Label className="block">Verification Code</Label>
-										<Input
-											value={totpCode}
-											onChange={(e) => setTotpCode(e.target.value)}
-										/>
+										<Input value={totpCode} onChange={(e) => setTotpCode(e.target.value)} />
 									</FormItem>
 								</div>
 							</div>

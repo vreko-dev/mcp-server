@@ -13,10 +13,7 @@ interface OptimizedMotionProviderProps {
 	features?: "minimal" | "full";
 }
 
-export function OptimizedMotionProvider({
-	children,
-	features = "full",
-}: OptimizedMotionProviderProps) {
+export function OptimizedMotionProvider({ children, features = "full" }: OptimizedMotionProviderProps) {
 	// Use domAnimation for minimal features (basic animations)
 	// Use domMax for full features (complex animations, drag, etc.)
 	const featureSet = features === "minimal" ? domAnimation : domMax;

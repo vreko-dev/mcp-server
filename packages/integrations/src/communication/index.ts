@@ -1,9 +1,9 @@
 // Email service for subscription lifecycle emails
 export {
-	sendEmail,
-	sendWelcomeEmail,
-	sendCancellationEmail,
-	sendPaymentReceipt,
-	sendPaymentFailedEmail,
 	type EmailServiceResult,
+	sendCancellationEmail,
+	sendEmail,
+	sendPaymentFailedEmail,
+	sendPaymentReceipt,
+	sendWelcomeEmail,
 } from "./lib/email-service";

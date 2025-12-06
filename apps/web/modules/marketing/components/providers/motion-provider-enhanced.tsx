@@ -71,9 +71,7 @@ const loadFramerMotion = async (): Promise<
 	| { success: false; error: unknown }
 > => {
 	try {
-		const { LazyMotion, MotionConfig, domAnimation } = await import(
-			"motion/react"
-		);
+		const { LazyMotion, MotionConfig, domAnimation } = await import("motion/react");
 		return { LazyMotion, MotionConfig, domAnimation, success: true };
 	} catch (error) {
 		console.warn("Failed to load motion/react", { error });
@@ -113,10 +111,7 @@ function MotionFallback({
 	}, [message, reducedMotion]);
 
 	return (
-		<div
-			data-testid="motion-fallback"
-			className={reducedMotion ? "no-motion" : "motion-fallback"}
-		>
+		<div data-testid="motion-fallback" className={reducedMotion ? "no-motion" : "motion-fallback"}>
 			{process.env.NODE_ENV === "development" && (
 				<div
 					style={{
@@ -176,9 +171,7 @@ export function MotionProviderWithErrorBoundary({
 						duration: 0.3,
 					},
 			// Dynamic reduced motion based on user preference
-			reducedMotion: motionState.reducedMotion
-				? ("always" as const)
-				: ("user" as const),
+			reducedMotion: motionState.reducedMotion ? ("always" as const) : ("user" as const),
 		}),
 		[motionState.reducedMotion],
 	);
@@ -188,12 +181,7 @@ export function MotionProviderWithErrorBoundary({
 		try {
 			const result = await loadFramerMotion();
 
-			if (
-				result.success &&
-				result.LazyMotion &&
-				result.MotionConfig &&
-				result.domAnimation
-			) {
+			if (result.success && result.LazyMotion && result.MotionConfig && result.domAnimation) {
 				setMotionComponents({
 					LazyMotion: result.LazyMotion,
 					MotionConfig: result.MotionConfig,
@@ -210,8 +198,7 @@ export function MotionProviderWithErrorBoundary({
 			throw new Error("Failed to load motion components");
 		} catch (error) {
 			const newRetryCount = motionState.retryCount + 1;
-			const errorMessage =
-				error instanceof Error ? error.message : "Unknown error";
+			const errorMessage = error instanceof Error ? error.message : "Unknown error";
 
 			console.warn(
 				`MotionProvider ${
@@ -264,9 +251,7 @@ export function MotionProviderWithErrorBoundary({
 		// Listen for changes in reduced motion preference
 		if (typeof window !== "undefined" && respectReducedMotion) {
 			try {
-				const mediaQuery = window.matchMedia(
-					"(prefers-reduced-motion: reduce)",
-				);
+				const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 				const handleChange = (e: MediaQueryListEvent) => {
 					setMotionState((prevState) => ({
 						...prevState,
@@ -295,19 +280,10 @@ export function MotionProviderWithErrorBoundary({
 
 	// Additional effect for loading motion components
 	useEffect(() => {
-		if (
-			!motionState.reducedMotion &&
-			motionState.supportsMotion &&
-			!motionComponents.LazyMotion
-		) {
+		if (!motionState.reducedMotion && motionState.supportsMotion && !motionComponents.LazyMotion) {
 			attemptMotionLoad();
 		}
-	}, [
-		motionState.reducedMotion,
-		motionState.supportsMotion,
-		motionComponents.LazyMotion,
-		attemptMotionLoad,
-	]);
+	}, [motionState.reducedMotion, motionState.supportsMotion, motionComponents.LazyMotion, attemptMotionLoad]);
 
 	// Error boundary for runtime motion errors
 	const MotionErrorBoundary = ({ children }: { children: React.ReactNode }) => {
@@ -315,21 +291,14 @@ export function MotionProviderWithErrorBoundary({
 			return <>{children}</>;
 		} catch (error) {
 			console.warn("Runtime motion error caught", { error });
-			return (
-				<MotionFallback message="Runtime motion error">
-					{children}
-				</MotionFallback>
-			);
+			return <MotionFallback message="Runtime motion error">{children}</MotionFallback>;
 		}
 	};
 
 	// Render reduced motion fallback if user prefers reduced motion
 	if (motionState.reducedMotion) {
 		return (
-			<MotionFallback
-				message="Reduced motion active - respecting user preference"
-				reducedMotion={true}
-			>
+			<MotionFallback message="Reduced motion active - respecting user preference" reducedMotion={true}>
 				{children}
 			</MotionFallback>
 		);
@@ -337,47 +306,32 @@ export function MotionProviderWithErrorBoundary({
 
 	// Render fallback if motion not supported
 	if (!motionState.supportsMotion) {
-		return (
-			<MotionFallback message="Motion not supported in this environment">
-				{children}
-			</MotionFallback>
-		);
+		return <MotionFallback message="Motion not supported in this environment">{children}</MotionFallback>;
 	}
 
 	// Render fallback if motion failed to load or has errors
 	if (motionState.hasError && motionState.retryCount >= maxRetries) {
-		return (
-			<MotionFallback message={fallbackMessage}>{children}</MotionFallback>
-		);
+		return <MotionFallback message={fallbackMessage}>{children}</MotionFallback>;
 	}
 
 	// Render loading state while retrying
 	if (motionState.hasError && motionState.retryCount < maxRetries) {
 		return (
-			<MotionFallback
-				message={`Loading motion (attempt ${motionState.retryCount + 1})`}
-			>
+			<MotionFallback message={`Loading motion (attempt ${motionState.retryCount + 1})`}>
 				{children}
 			</MotionFallback>
 		);
 	}
 
 	// Render with motion if components loaded successfully
-	if (
-		motionComponents.LazyMotion &&
-		motionComponents.MotionConfig &&
-		motionComponents.domAnimation
-	) {
+	if (motionComponents.LazyMotion && motionComponents.MotionConfig && motionComponents.domAnimation) {
 		const { LazyMotion, MotionConfig, domAnimation } = motionComponents;
 
 		try {
 			return (
 				<MotionErrorBoundary>
 					<LazyMotion features={domAnimation} strict>
-						<MotionConfig
-							transition={motionConfig.transition}
-							reducedMotion={motionConfig.reducedMotion}
-						>
+						<MotionConfig transition={motionConfig.transition} reducedMotion={motionConfig.reducedMotion}>
 							{children}
 						</MotionConfig>
 					</LazyMotion>
@@ -385,20 +339,12 @@ export function MotionProviderWithErrorBoundary({
 			);
 		} catch (error) {
 			console.warn("Motion component rendering error", { error });
-			return (
-				<MotionFallback message="Motion rendering error">
-					{children}
-				</MotionFallback>
-			);
+			return <MotionFallback message="Motion rendering error">{children}</MotionFallback>;
 		}
 	}
 
 	// Default loading state
-	return (
-		<MotionFallback message="Loading motion components">
-			{children}
-		</MotionFallback>
-	);
+	return <MotionFallback message="Loading motion components">{children}</MotionFallback>;
 }
 
 // Default export for easier importing

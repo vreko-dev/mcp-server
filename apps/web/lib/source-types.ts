@@ -68,8 +68,7 @@ export interface FumadocsSource {
 /**
  * MDX component prop types
  */
-export interface AnchorProps
-	extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
+export interface AnchorProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
 	href?: string;
 	children?: React.ReactNode;
 }

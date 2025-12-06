@@ -16,11 +16,7 @@ export function getAiSuggestions(context: {
 		: { added: context.content, removed: "" };
 
 	// Simple heuristics for demo purposes
-	const riskFactors = analyzeRiskFactors(
-		context.content,
-		changes,
-		context.filePath,
-	);
+	const riskFactors = analyzeRiskFactors(context.content, changes, context.filePath);
 
 	// Calculate confidence based on risk factors
 	const confidence = calculateConfidence(riskFactors);
@@ -39,8 +35,7 @@ export function getAiSuggestions(context: {
 				confidence,
 				suggestLevelUpgrade: getNextProtectionLevel(context.protectionLevel),
 				requireCheckpoint: false,
-				reason:
-					"Very high-risk changes detected, consider increasing protection",
+				reason: "Very high-risk changes detected, consider increasing protection",
 			});
 		}
 	} else if (confidence >= 0.5) {
@@ -58,10 +53,7 @@ export function getAiSuggestions(context: {
 /**
  * Detects changes between two versions of content
  */
-function detectChanges(
-	oldContent: string,
-	newContent: string,
-): { added: string; removed: string } {
+function detectChanges(oldContent: string, newContent: string): { added: string; removed: string } {
 	// This is a simplified change detection for demo purposes
 	// A real implementation would use a diffing algorithm
 
@@ -130,10 +122,7 @@ function calculateConfidence(riskFactors: Record<string, number>): number {
 	}
 
 	// Simple weighted average for demo purposes
-	const totalWeight = Object.values(riskFactors).reduce(
-		(sum, weight) => sum + weight,
-		0,
-	);
+	const totalWeight = Object.values(riskFactors).reduce((sum, weight) => sum + weight, 0);
 	const maxPossibleWeight = Object.keys(riskFactors).length;
 
 	return Math.min(1, totalWeight / maxPossibleWeight);
@@ -142,9 +131,7 @@ function calculateConfidence(riskFactors: Record<string, number>): number {
 /**
  * Gets the next protection level in the cycle
  */
-function getNextProtectionLevel(
-	currentLevel: ProtectionLevel,
-): ProtectionLevel {
+function getNextProtectionLevel(currentLevel: ProtectionLevel): ProtectionLevel {
 	const levels: ProtectionLevel[] = ["watch", "warn", "block"];
 	const currentIndex = levels.indexOf(currentLevel);
 

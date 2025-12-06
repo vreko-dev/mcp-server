@@ -16,10 +16,10 @@
  * @group msw
  */
 
-import { http, HttpResponse } from "msw";
+import { HttpResponse, http } from "msw";
 import { setupServer } from "msw/node";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
-import { TEST_CREDENTIALS, authHandlers, authErrorHandlers } from "../auth";
+import { authErrorHandlers, authHandlers, TEST_CREDENTIALS } from "../auth";
 
 // Create server with only auth handlers (avoid GraphQL dependency)
 const server = setupServer(...authHandlers);

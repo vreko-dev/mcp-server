@@ -9,10 +9,7 @@ interface SocialProofMetricsProps {
 	variant?: "default" | "compact";
 }
 
-export function SocialProofMetrics({
-	className,
-	variant = "default",
-}: SocialProofMetricsProps) {
+export function SocialProofMetrics({ className, variant = "default" }: SocialProofMetricsProps) {
 	const metrics = [
 		{
 			icon: (
@@ -45,22 +42,14 @@ export function SocialProofMetrics({
 
 	if (variant === "compact") {
 		return (
-			<div
-				className={cn(
-					"flex flex-wrap items-center justify-center gap-6 text-sm",
-					className,
-				)}
-			>
+			<div className={cn("flex flex-wrap items-center justify-center gap-6 text-sm", className)}>
 				{metrics.map((metric, index) => (
 					<div key={index} className="flex items-center gap-2">
 						{metric.icon}
 						{metric.showNumber && (
 							<>
 								{metric.prefix}
-								<AnimatedNumber
-									value={metric.value}
-									className="font-semibold text-white"
-								/>
+								<AnimatedNumber value={metric.value} className="font-semibold text-white" />
 								{metric.suffix}
 							</>
 						)}
@@ -72,12 +61,7 @@ export function SocialProofMetrics({
 	}
 
 	return (
-		<div
-			className={cn(
-				"flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-8 text-sm",
-				className,
-			)}
-		>
+		<div className={cn("flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-8 text-sm", className)}>
 			{metrics.map((metric, index) => (
 				<div
 					key={index}
@@ -86,11 +70,8 @@ export function SocialProofMetrics({
 					{metric.icon}
 					<span className="text-white font-medium">
 						{metric.prefix}
-						{metric.showNumber && (
-							<AnimatedNumber value={metric.value} className="font-semibold" />
-						)}
-						{metric.suffix}{" "}
-						<span className="text-[#A0A0A0] font-normal">{metric.label}</span>
+						{metric.showNumber && <AnimatedNumber value={metric.value} className="font-semibold" />}
+						{metric.suffix} <span className="text-[#A0A0A0] font-normal">{metric.label}</span>
 					</span>
 				</div>
 			))}

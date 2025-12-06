@@ -179,7 +179,9 @@ describe("RateLimiter", () => {
 			// Should allow exactly 20 (the capacity)
 			let successCount = 0;
 			for (const result of results) {
-				if (result.allowed) { successCount++; }
+				if (result.allowed) {
+					successCount++;
+				}
 			}
 			expect(successCount).toBe(20);
 

@@ -20,8 +20,7 @@ export const useOrganizationListQuery = () => {
 	});
 };
 
-export const activeOrganizationQueryKey = (slug: string) =>
-	["user", "activeOrganization", slug] as const;
+export const activeOrganizationQueryKey = (slug: string) => ["user", "activeOrganization", slug] as const;
 export const useActiveOrganizationQuery = (
 	slug: string,
 	options?: {
@@ -45,8 +44,7 @@ export const useActiveOrganizationQuery = (
 	});
 };
 
-export const fullOrganizationQueryKey = (id: string) =>
-	["fullOrganization", id] as const;
+export const fullOrganizationQueryKey = (id: string) => ["fullOrganization", id] as const;
 export const useFullOrganizationQuery = (id: string) => {
 	return useQuery({
 		queryKey: fullOrganizationQueryKey(id),
@@ -71,13 +69,7 @@ export const createOrganizationMutationKey = ["create-organization"] as const;
 export const useCreateOrganizationMutation = () => {
 	return useMutation({
 		mutationKey: createOrganizationMutationKey,
-		mutationFn: async ({
-			name,
-			metadata: _metadata,
-		}: {
-			name: string;
-			metadata?: any;
-		}) => {
+		mutationFn: async ({ name, metadata: _metadata }: { name: string; metadata?: any }) => {
 			const { slug: _slug } = await orpcClient.organizations.generateSlug({
 				name,
 			});

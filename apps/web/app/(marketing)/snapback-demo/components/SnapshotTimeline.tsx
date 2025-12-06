@@ -31,19 +31,11 @@ export function SnapshotTimeline({
 		.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
 
 	if (!state.currentFileId) {
-		return (
-			<div className="p-4 text-center text-gray-500">
-				Select a file to view its snapshot timeline
-			</div>
-		);
+		return <div className="p-4 text-center text-gray-500">Select a file to view its snapshot timeline</div>;
 	}
 
 	if (currentFileSnapshots.length === 0) {
-		return (
-			<div className="p-4 text-center text-gray-500">
-				No snapshots available for this file
-			</div>
-		);
+		return <div className="p-4 text-center text-gray-500">No snapshots available for this file</div>;
 	}
 
 	return (
@@ -76,16 +68,11 @@ export function SnapshotTimeline({
 			</div>
 			<div className="space-y-3">
 				{currentFileSnapshots.map((snapshot) => (
-					<div
-						key={snapshot.id}
-						className="border border-gray-200 rounded-lg p-3 hover:bg-gray-50"
-					>
+					<div key={snapshot.id} className="border border-gray-200 rounded-lg p-3 hover:bg-gray-50">
 						<div className="flex justify-between items-start">
 							<div>
 								<div className="font-medium">{snapshot.name}</div>
-								<div className="text-sm text-gray-500">
-									{snapshot.timestamp.toLocaleString()}
-								</div>
+								<div className="text-sm text-gray-500">{snapshot.timestamp.toLocaleString()}</div>
 							</div>
 							<div className="flex flex-wrap items-center justify-end gap-2">
 								<button

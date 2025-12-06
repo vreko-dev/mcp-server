@@ -9,12 +9,9 @@ const alertVariants = cva(
 		variants: {
 			variant: {
 				default: "bg-background text-foreground",
-				primary:
-					"border-primary/20 bg-primary/10 text-primary [&>svg]:text-primary",
-				error:
-					"border-destructive/20 bg-destructive/10 text-destructive [&>svg]:text-destructive",
-				success:
-					"border-success/20 bg-success/10 text-success [&>svg]:text-success",
+				primary: "border-primary/20 bg-primary/10 text-primary [&>svg]:text-primary",
+				error: "border-destructive/20 bg-destructive/10 text-destructive [&>svg]:text-destructive",
+				success: "border-success/20 bg-success/10 text-success [&>svg]:text-success",
 			},
 		},
 		defaultVariants: {
@@ -27,36 +24,16 @@ const Alert = ({
 	className,
 	variant,
 	...props
-}: React.HTMLAttributes<HTMLDivElement> &
-	VariantProps<typeof alertVariants>) => (
-	<div
-		role="alert"
-		className={cn(alertVariants({ variant }), className)}
-		{...props}
-	/>
+}: React.HTMLAttributes<HTMLDivElement> & VariantProps<typeof alertVariants>) => (
+	<div role="alert" className={cn(alertVariants({ variant }), className)} {...props} />
 );
 
-const AlertTitle = ({
-	className,
-	...props
-}: React.HTMLAttributes<HTMLHeadingElement>) => (
-	<h5
-		className={cn(
-			"font-semibold text-sm leading-tight tracking-tight",
-			className,
-		)}
-		{...props}
-	/>
+const AlertTitle = ({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
+	<h5 className={cn("font-semibold text-sm leading-tight tracking-tight", className)} {...props} />
 );
 
-const AlertDescription = ({
-	className,
-	...props
-}: React.HTMLAttributes<HTMLParagraphElement>) => (
-	<div
-		className={cn("text-sm [&_p]:leading-relaxed mt-1", className)}
-		{...props}
-	/>
+const AlertDescription = ({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) => (
+	<div className={cn("text-sm [&_p]:leading-relaxed mt-1", className)} {...props} />
 );
 
 export { Alert, AlertDescription, AlertTitle };

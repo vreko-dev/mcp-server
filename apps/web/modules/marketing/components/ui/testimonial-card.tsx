@@ -33,8 +33,7 @@ export const TestimonialCard = forwardRef<HTMLDivElement, TestimonialCardProps>(
 						: {
 								y: -10,
 								scale: 1.02,
-								boxShadow:
-									"0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1)",
+								boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1)",
 							}
 				}
 				transition={{ type: "spring", stiffness: 300, damping: 20 }}
@@ -81,23 +80,15 @@ export const TestimonialCard = forwardRef<HTMLDivElement, TestimonialCardProps>(
 							whileHover={reducedMotion ? {} : { scale: 1.1 }}
 							transition={{ type: "spring", stiffness: 300 }}
 						>
-							<span className="font-bold text-snapback-green">
-								{author.charAt(0)}
-							</span>
+							<span className="font-bold text-snapback-green">{author.charAt(0)}</span>
 						</motion.div>
 					)}
 
 					<div>
-						<motion.h4
-							className="font-bold text-foreground"
-							whileHover={reducedMotion ? {} : { x: 5 }}
-						>
+						<motion.h4 className="font-bold text-foreground" whileHover={reducedMotion ? {} : { x: 5 }}>
 							{author}
 						</motion.h4>
-						<motion.p
-							className="text-sm text-foreground/60"
-							whileHover={reducedMotion ? {} : { x: 3 }}
-						>
+						<motion.p className="text-sm text-foreground/60" whileHover={reducedMotion ? {} : { x: 3 }}>
 							{role}, {company}
 						</motion.p>
 					</div>

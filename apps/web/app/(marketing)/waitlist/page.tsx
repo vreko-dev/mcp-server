@@ -19,33 +19,27 @@ export const metadata: Metadata = {
 const FAQ_ITEMS = [
 	{
 		question: "How long until I'm approved?",
-		answer:
-			"Most developers get access within 48-72 hours. Complete queue tasks to move up faster - some get access same-day.",
+		answer: "Most developers get access within 48-72 hours. Complete queue tasks to move up faster - some get access same-day.",
 	},
 	{
 		question: "What do I get as an alpha user?",
-		answer:
-			"• Full VS Code extension (Pro features)\n• Cloud backup (10GB)\n• Priority support (< 2hr response)\n• 6 months Pro free ($174 value)\n• Exclusive Founders Discord\n• Vote on roadmap features",
+		answer: "• Full VS Code extension (Pro features)\n• Cloud backup (10GB)\n• Priority support (< 2hr response)\n• 6 months Pro free ($174 value)\n• Exclusive Founders Discord\n• Vote on roadmap features",
 	},
 	{
 		question: "How does the referral system work?",
-		answer:
-			"Both you and your friend get 1 month of Pro when they sign up. You can unlock up to 6 months total through referrals.",
+		answer: "Both you and your friend get 1 month of Pro when they sign up. You can unlock up to 6 months total through referrals.",
 	},
 	{
 		question: "Is the free tier always free?",
-		answer:
-			"Yes! Open-source core is always free. Pro features are $29/mo after your 6-month alpha bonus.",
+		answer: "Yes! Open-source core is always free. Pro features are $29/mo after your 6-month alpha bonus.",
 	},
 	{
 		question: "Do you access my code?",
-		answer:
-			"Never. SnapBack is 100% local-first. Only metadata (file counts, timestamps) for analytics. Zero code content ever leaves your machine.",
+		answer: "Never. SnapBack is 100% local-first. Only metadata (file counts, timestamps) for analytics. Zero code content ever leaves your machine.",
 	},
 	{
 		question: "Can I use SnapBack with Cursor/Copilot?",
-		answer:
-			"Yes! That's the point. SnapBack protects you FROM AI assistants breaking things. It works alongside any AI tool.",
+		answer: "Yes! That's the point. SnapBack protects you FROM AI assistants breaking things. It works alongside any AI tool.",
 	},
 ];
 
@@ -84,9 +78,8 @@ export default function WaitlistPage() {
 					</div>
 
 					<p className="text-lg text-snapback-text-secondary max-w-2xl mx-auto">
-						Limited to 5,000 developers. Priority access for early adopters. Get
-						early access to SnapBack Pro features and be part of shaping the
-						future of AI-powered development safety.
+						Limited to 5,000 developers. Priority access for early adopters. Get early access to SnapBack
+						Pro features and be part of shaping the future of AI-powered development safety.
 					</p>
 
 					<div className="pt-4">
@@ -95,13 +88,7 @@ export default function WaitlistPage() {
 				</div>
 
 				{/* Content - Only show tabs when multiple options exist */}
-				<div className="mb-16">
-					{tabItems.length > 1 ? (
-						<Tabs tabs={tabItems} />
-					) : (
-						tabItems[0]?.content
-					)}
-				</div>
+				<div className="mb-16">{tabItems.length > 1 ? <Tabs tabs={tabItems} /> : tabItems[0]?.content}</div>
 
 				{/* FAQ */}
 				<div className="mt-16">

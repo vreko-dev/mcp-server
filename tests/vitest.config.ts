@@ -5,14 +5,7 @@ export default defineConfig({
 		globals: true,
 		environment: "node",
 		include: ["**/*.test.ts"],
-		exclude: [
-			"node_modules",
-			"dist",
-			"build",
-			".next",
-			"**/apps/**",
-			"**/packages/**",
-		],
+		exclude: ["node_modules", "dist", "build", ".next", "**/apps/**", "**/packages/**"],
 		// Disable workspace projects to avoid conflicts
 		projects: undefined,
 	},

@@ -103,9 +103,7 @@ export function getOrganizationSchema(options: OrganizationSchemaOptions = {}) {
  * @param options - Optional customization options
  * @returns SoftwareApplication schema object
  */
-export function getSoftwareApplicationSchema(
-	options: SoftwareApplicationSchemaOptions = {},
-) {
+export function getSoftwareApplicationSchema(options: SoftwareApplicationSchemaOptions = {}) {
 	const {
 		name = SITE_NAME,
 		price = "0",

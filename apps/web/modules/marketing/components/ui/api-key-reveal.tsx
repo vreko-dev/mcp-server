@@ -27,10 +27,7 @@ export function ApiKeyReveal({ apiKey, className }: ApiKeyRevealProps) {
 		<motion.div
 			initial={{ opacity: 0, scale: 0.95 }}
 			animate={{ opacity: 1, scale: 1 }}
-			className={cn(
-				"bg-terminal-bg border border-snapback-500/20 rounded-lg p-6",
-				className,
-			)}
+			className={cn("bg-terminal-bg border border-snapback-500/20 rounded-lg p-6", className)}
 		>
 			<div className="space-y-4">
 				<motion.div
@@ -55,11 +52,7 @@ export function ApiKeyReveal({ apiKey, className }: ApiKeyRevealProps) {
 				)}
 
 				{revealed && (
-					<motion.div
-						initial={{ opacity: 0, y: 10 }}
-						animate={{ opacity: 1, y: 0 }}
-						className="flex gap-2"
-					>
+					<motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex gap-2">
 						<button
 							type="button"
 							onClick={handleCopy}

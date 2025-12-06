@@ -105,20 +105,30 @@ export class PhantomDependencyDetector {
 		const phantomDeps: string[] = [];
 		for (const [dep, usage] of Object.entries(usageReport)) {
 			// Skip if used
-			if (usage > 0) { continue; }
+			if (usage > 0) {
+				continue;
+			}
 
 			// Skip build tools
-			if (BUILD_TOOL_EXCEPTIONS.includes(dep)) { continue; }
+			if (BUILD_TOOL_EXCEPTIONS.includes(dep)) {
+				continue;
+			}
 
 			// Skip framework exceptions
-			if (frameworkExceptions.includes(dep)) { continue; }
+			if (frameworkExceptions.includes(dep)) {
+				continue;
+			}
 
 			// Skip @types packages (TypeScript type definitions)
-			if (dep.startsWith("@types/")) { continue; }
+			if (dep.startsWith("@types/")) {
+				continue;
+			}
 
 			// Skip transitive dependencies (packages starting with @)
 			// This is a heuristic - in production you'd use dependency tree analysis
-			if (dep.startsWith("@") && !dep.includes("/")) { continue; }
+			if (dep.startsWith("@") && !dep.includes("/")) {
+				continue;
+			}
 
 			// It's a phantom dependency
 			phantomDeps.push(dep);
@@ -215,7 +225,9 @@ export class PhantomDependencyDetector {
 	 * Calculate risk score (0-10)
 	 */
 	private calculateRiskScore(phantomCount: number, totalCount: number): number {
-		if (totalCount === 0) { return 0; }
+		if (totalCount === 0) {
+			return 0;
+		}
 
 		const ratio = phantomCount / totalCount;
 

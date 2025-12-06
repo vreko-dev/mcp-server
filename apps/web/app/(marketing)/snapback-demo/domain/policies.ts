@@ -73,9 +73,7 @@ export function combinePolicies(...policySets: Policy[][]): Policy[] {
 
 	for (const policy of allPolicies) {
 		// Check if we already have a policy for this pattern
-		const existingIndex = combined.findIndex(
-			(p) => p.pattern === policy.pattern,
-		);
+		const existingIndex = combined.findIndex((p) => p.pattern === policy.pattern);
 
 		if (existingIndex >= 0) {
 			// Replace existing policy
@@ -107,10 +105,7 @@ export function parseSnapbackRc(content: string): Policy[] {
 		hat?: "critical" | "protected" | "watched";
 	} | null = null;
 
-	const pushPolicy = (
-		pattern: string,
-		hat: "critical" | "protected" | "watched",
-	) => {
+	const pushPolicy = (pattern: string, hat: "critical" | "protected" | "watched") => {
 		const protectionLevel = hatToProtectionLevel(hat);
 		if (!pattern || !protectionLevel) {
 			return;
@@ -130,10 +125,7 @@ export function parseSnapbackRc(content: string): Policy[] {
 		}
 
 		// Strip surrounding quotes if present
-		if (
-			(trimmed.startsWith('"') && trimmed.endsWith('"')) ||
-			(trimmed.startsWith("'") && trimmed.endsWith("'"))
-		) {
+		if ((trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
 			trimmed = trimmed.slice(1, -1);
 		}
 
@@ -163,11 +155,7 @@ export function parseSnapbackRc(content: string): Policy[] {
 		if (inHatsSection) {
 			if (!line.startsWith("-") && line.endsWith(":")) {
 				const sectionHat = line.slice(0, -1).trim().toLowerCase();
-				if (
-					sectionHat === "critical" ||
-					sectionHat === "protected" ||
-					sectionHat === "watched"
-				) {
+				if (sectionHat === "critical" || sectionHat === "protected" || sectionHat === "watched") {
 					currentHat = sectionHat;
 				} else {
 					currentHat = null;
@@ -195,21 +183,13 @@ export function parseSnapbackRc(content: string): Policy[] {
 
 				const inline = normalizePattern(line);
 				if (inline.toLowerCase().startsWith("pattern:")) {
-					const patternValue = normalizePattern(
-						inline.replace(/pattern:/i, "").trim(),
-					);
+					const patternValue = normalizePattern(inline.replace(/pattern:/i, "").trim());
 					if (patternValue) {
 						pendingRule.pattern = patternValue;
 					}
 				} else if (inline.toLowerCase().startsWith("hat:")) {
-					const hatValue = normalizePattern(
-						inline.replace(/hat:/i, "").trim(),
-					).toLowerCase();
-					if (
-						hatValue === "critical" ||
-						hatValue === "protected" ||
-						hatValue === "watched"
-					) {
+					const hatValue = normalizePattern(inline.replace(/hat:/i, "").trim()).toLowerCase();
+					if (hatValue === "critical" || hatValue === "protected" || hatValue === "watched") {
 						pendingRule.hat = hatValue;
 					}
 				}
@@ -223,9 +203,7 @@ export function parseSnapbackRc(content: string): Policy[] {
 
 			const lower = line.toLowerCase();
 			if (lower.startsWith("pattern:")) {
-				const patternValue = normalizePattern(
-					line.replace(/pattern:/i, "").trim(),
-				);
+				const patternValue = normalizePattern(line.replace(/pattern:/i, "").trim());
 				if (patternValue) {
 					pendingRule.pattern = patternValue;
 				}
@@ -233,14 +211,8 @@ export function parseSnapbackRc(content: string): Policy[] {
 			}
 
 			if (lower.startsWith("hat:")) {
-				const hatValue = normalizePattern(
-					line.replace(/hat:/i, "").trim(),
-				).toLowerCase();
-				if (
-					hatValue === "critical" ||
-					hatValue === "protected" ||
-					hatValue === "watched"
-				) {
+				const hatValue = normalizePattern(line.replace(/hat:/i, "").trim()).toLowerCase();
+				if (hatValue === "critical" || hatValue === "protected" || hatValue === "watched") {
 					pendingRule.hat = hatValue;
 				}
 			}
@@ -254,9 +226,7 @@ export function parseSnapbackRc(content: string): Policy[] {
 	return policies;
 }
 
-function hatToProtectionLevel(
-	hat: "critical" | "protected" | "watched",
-): ProtectionLevel | null {
+function hatToProtectionLevel(hat: "critical" | "protected" | "watched"): ProtectionLevel | null {
 	switch (hat) {
 		case "critical":
 			return "block";

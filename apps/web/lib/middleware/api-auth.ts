@@ -47,9 +47,7 @@ export async function withApiAuth(
 ): Promise<NextResponse> {
 	// Apply rate limiting based on IP address or user identifier
 	const identifier =
-		request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-		request.headers.get("x-real-ip") ||
-		"unknown";
+		request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || request.headers.get("x-real-ip") || "unknown";
 
 	const rateLimitResult = checkRateLimit(identifier);
 
@@ -59,9 +57,7 @@ export async function withApiAuth(
 			{
 				status: 429,
 				headers: {
-					"Retry-After": String(
-						Math.ceil((rateLimitResult.resetAt - Date.now()) / 1000),
-					),
+					"Retry-After": String(Math.ceil((rateLimitResult.resetAt - Date.now()) / 1000)),
 					"X-RateLimit-Limit": "10",
 					"X-RateLimit-Remaining": "0",
 					"X-RateLimit-Reset": String(rateLimitResult.resetAt),
@@ -73,10 +69,7 @@ export async function withApiAuth(
 	// Use token from Authorization header for basic auth validation
 	const authHeader = request.headers.get("authorization");
 	if (!authHeader) {
-		return NextResponse.json(
-			{ error: "Authentication required" },
-			{ status: 401 },
-		);
+		return NextResponse.json({ error: "Authentication required" }, { status: 401 });
 	}
 
 	// For now, create a basic auth context

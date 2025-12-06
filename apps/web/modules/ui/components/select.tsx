@@ -12,11 +12,7 @@ const SelectGroup = SelectPrimitive.Group;
 
 const SelectValue = SelectPrimitive.Value;
 
-const SelectTrigger = ({
-	className,
-	children,
-	...props
-}: React.ComponentProps<typeof SelectPrimitive.Trigger>) => (
+const SelectTrigger = ({ className, children, ...props }: React.ComponentProps<typeof SelectPrimitive.Trigger>) => (
 	<SelectPrimitive.Trigger
 		className={cn(
 			"flex h-9 w-full items-center justify-between rounded-md bg-card shadow-xs border border-input px-3 py-2 text-base ring-offset-background placeholder:text-foreground/60 focus:outline-hidden focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
@@ -66,21 +62,11 @@ const SelectContent = ({
 	</SelectPrimitive.Portal>
 );
 
-const SelectLabel = ({
-	className,
-	...props
-}: React.ComponentProps<typeof SelectPrimitive.Label>) => (
-	<SelectPrimitive.Label
-		className={cn("px-2 py-1.5 font-semibold text-sm", className)}
-		{...props}
-	/>
+const SelectLabel = ({ className, ...props }: React.ComponentProps<typeof SelectPrimitive.Label>) => (
+	<SelectPrimitive.Label className={cn("px-2 py-1.5 font-semibold text-sm", className)} {...props} />
 );
 
-const SelectItem = ({
-	className,
-	children,
-	...props
-}: React.ComponentProps<typeof SelectPrimitive.Item>) => (
+const SelectItem = ({ className, children, ...props }: React.ComponentProps<typeof SelectPrimitive.Item>) => (
 	<SelectPrimitive.Item
 		className={cn(
 			"relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 pr-8 pl-3 text-sm outline-none",
@@ -101,23 +87,8 @@ const SelectItem = ({
 	</SelectPrimitive.Item>
 );
 
-const SelectSeparator = ({
-	className,
-	...props
-}: React.ComponentProps<typeof SelectPrimitive.Separator>) => (
-	<SelectPrimitive.Separator
-		className={cn("-mx-1 my-1 h-px bg-muted", className)}
-		{...props}
-	/>
+const SelectSeparator = ({ className, ...props }: React.ComponentProps<typeof SelectPrimitive.Separator>) => (
+	<SelectPrimitive.Separator className={cn("-mx-1 my-1 h-px bg-muted", className)} {...props} />
 );
 
-export {
-	Select,
-	SelectContent,
-	SelectGroup,
-	SelectItem,
-	SelectLabel,
-	SelectSeparator,
-	SelectTrigger,
-	SelectValue,
-};
+export { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue };

@@ -52,15 +52,9 @@ export const InfiniteMovingCards = ({
 	const getDirection = () => {
 		if (containerRef.current) {
 			if (direction === "left") {
-				containerRef.current.style.setProperty(
-					"--animation-direction",
-					"forwards",
-				);
+				containerRef.current.style.setProperty("--animation-direction", "forwards");
 			} else {
-				containerRef.current.style.setProperty(
-					"--animation-direction",
-					"reverse",
-				);
+				containerRef.current.style.setProperty("--animation-direction", "reverse");
 			}
 		}
 	};
@@ -102,14 +96,12 @@ export const InfiniteMovingCards = ({
 						}}
 						onMouseEnter={(e) => {
 							if (!reducedMotion) {
-								e.currentTarget.style.transform =
-									"perspective(1000px) rotateX(-5deg) translateY(-5px)";
+								e.currentTarget.style.transform = "perspective(1000px) rotateX(-5deg) translateY(-5px)";
 							}
 						}}
 						onMouseLeave={(e) => {
 							if (!reducedMotion) {
-								e.currentTarget.style.transform =
-									"perspective(1000px) rotateX(0deg) translateY(0px)";
+								e.currentTarget.style.transform = "perspective(1000px) rotateX(0deg) translateY(0px)";
 							}
 						}}
 					>
@@ -118,14 +110,10 @@ export const InfiniteMovingCards = ({
 								aria-hidden="true"
 								className="user-select-none pointer-events-none absolute -top-0.5 -left-0.5 -z-1 h-[calc(100%_+_4px)] w-[calc(100%_+_4px)]"
 							/>
-							<span className="relative z-20 text-sm font-medium text-white">
-								"{item.name}"
-							</span>
+							<span className="relative z-20 text-sm font-medium text-white">"{item.name}"</span>
 							<div className="relative z-20 mt-4 flex flex-row items-center justify-start">
 								<span className="flex flex-col">
-									<span className="text-xs font-normal text-white/70">
-										{item.title}
-									</span>
+									<span className="text-xs font-normal text-white/70">{item.title}</span>
 								</span>
 							</div>
 						</blockquote>

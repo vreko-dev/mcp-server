@@ -121,6 +121,7 @@
     "quality:all": "turbo run quality",
     "lint": "turbo lint",
     "lint:fix": "biome check --apply .",
+    "fix:biome": "bash scripts/fix-biome.sh",
     "analyze": "turbo run analyze",
     "scan": "turbo run scan",
     "health": "tsx .github/scripts/health-check.ts",

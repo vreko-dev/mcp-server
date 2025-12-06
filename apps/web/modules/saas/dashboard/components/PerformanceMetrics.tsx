@@ -25,22 +25,10 @@ export function PerformanceMetrics({
 	const ACTIVATION_TIME_TARGET = 300;
 
 	// Calculate percentages
-	const vsixSizePercentage = Math.min(
-		(vsixSizeMB / VSIX_SIZE_TARGET) * 100,
-		100,
-	);
-	const bundleSizePercentage = Math.min(
-		(bundleSizeMB / BUNDLE_SIZE_TARGET) * 100,
-		100,
-	);
-	const loadTimePercentage = Math.min(
-		(loadTimeMs / LOAD_TIME_TARGET) * 100,
-		100,
-	);
-	const activationTimePercentage = Math.min(
-		(activationTimeMs / ACTIVATION_TIME_TARGET) * 100,
-		100,
-	);
+	const vsixSizePercentage = Math.min((vsixSizeMB / VSIX_SIZE_TARGET) * 100, 100);
+	const bundleSizePercentage = Math.min((bundleSizeMB / BUNDLE_SIZE_TARGET) * 100, 100);
+	const loadTimePercentage = Math.min((loadTimeMs / LOAD_TIME_TARGET) * 100, 100);
+	const activationTimePercentage = Math.min((activationTimeMs / ACTIVATION_TIME_TARGET) * 100, 100);
 
 	// Determine status colors
 	const getStatusColor = (percentage: number): string => {
@@ -81,16 +69,10 @@ export function PerformanceMetrics({
 						</div>
 						<div className="text-sm">
 							<span className="font-mono">{vsixSizeMB.toFixed(2)} MB</span>
-							<span className="text-muted-foreground">
-								{" "}
-								/ {VSIX_SIZE_TARGET} MB
-							</span>
+							<span className="text-muted-foreground"> / {VSIX_SIZE_TARGET} MB</span>
 						</div>
 					</div>
-					<Progress
-						value={vsixSizePercentage}
-						className={getStatusColor(vsixSizePercentage)}
-					/>
+					<Progress value={vsixSizePercentage} className={getStatusColor(vsixSizePercentage)} />
 					<div className="text-xs text-muted-foreground flex justify-between">
 						<span>{getStatusText(vsixSizePercentage)}</span>
 						<span>{vsixSizePercentage.toFixed(1)}% of budget</span>
@@ -106,16 +88,10 @@ export function PerformanceMetrics({
 						</div>
 						<div className="text-sm">
 							<span className="font-mono">{bundleSizeMB.toFixed(2)} MB</span>
-							<span className="text-muted-foreground">
-								{" "}
-								/ {BUNDLE_SIZE_TARGET} MB
-							</span>
+							<span className="text-muted-foreground"> / {BUNDLE_SIZE_TARGET} MB</span>
 						</div>
 					</div>
-					<Progress
-						value={bundleSizePercentage}
-						className={getStatusColor(bundleSizePercentage)}
-					/>
+					<Progress value={bundleSizePercentage} className={getStatusColor(bundleSizePercentage)} />
 					<div className="text-xs text-muted-foreground flex justify-between">
 						<span>{getStatusText(bundleSizePercentage)}</span>
 						<span>{bundleSizePercentage.toFixed(1)}% of budget</span>
@@ -131,16 +107,10 @@ export function PerformanceMetrics({
 						</div>
 						<div className="text-sm">
 							<span className="font-mono">{loadTimeMs} ms</span>
-							<span className="text-muted-foreground">
-								{" "}
-								/ {LOAD_TIME_TARGET} ms
-							</span>
+							<span className="text-muted-foreground"> / {LOAD_TIME_TARGET} ms</span>
 						</div>
 					</div>
-					<Progress
-						value={loadTimePercentage}
-						className={getStatusColor(loadTimePercentage)}
-					/>
+					<Progress value={loadTimePercentage} className={getStatusColor(loadTimePercentage)} />
 					<div className="text-xs text-muted-foreground flex justify-between">
 						<span>{getStatusText(loadTimePercentage)}</span>
 						<span>{loadTimePercentage.toFixed(1)}% of budget</span>
@@ -156,16 +126,10 @@ export function PerformanceMetrics({
 						</div>
 						<div className="text-sm">
 							<span className="font-mono">{activationTimeMs} ms</span>
-							<span className="text-muted-foreground">
-								{" "}
-								/ {ACTIVATION_TIME_TARGET} ms
-							</span>
+							<span className="text-muted-foreground"> / {ACTIVATION_TIME_TARGET} ms</span>
 						</div>
 					</div>
-					<Progress
-						value={activationTimePercentage}
-						className={getStatusColor(activationTimePercentage)}
-					/>
+					<Progress value={activationTimePercentage} className={getStatusColor(activationTimePercentage)} />
 					<div className="text-xs text-muted-foreground flex justify-between">
 						<span>{getStatusText(activationTimePercentage)}</span>
 						<span>{activationTimePercentage.toFixed(1)}% of budget</span>

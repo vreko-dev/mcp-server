@@ -154,9 +154,7 @@ export function validatePassword(password: string): PasswordValidationResult {
  * @param password - Password to analyze
  * @returns Strength rating (weak/medium/strong)
  */
-function calculatePasswordStrength(
-	password: string,
-): "weak" | "medium" | "strong" {
+function calculatePasswordStrength(password: string): "weak" | "medium" | "strong" {
 	let score = 0;
 
 	// Length scoring
@@ -225,14 +223,11 @@ export async function checkPasswordPwned(password: string): Promise<boolean> {
 		const prefix = hashHex.substring(0, 5);
 		const suffix = hashHex.substring(5);
 
-		const response = await fetch(
-			`https://api.pwnedpasswords.com/range/${prefix}`,
-			{
-				headers: {
-					"User-Agent": "SnapBack-Auth-Check",
-				},
+		const response = await fetch(`https://api.pwnedpasswords.com/range/${prefix}`, {
+			headers: {
+				"User-Agent": "SnapBack-Auth-Check",
 			},
-		);
+		});
 
 		if (!response.ok) {
 			console.warn("[Auth] Failed to check password against haveibeenpwned");

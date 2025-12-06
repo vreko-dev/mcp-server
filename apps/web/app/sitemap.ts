@@ -4,7 +4,7 @@ import { getAllLegalPages } from "@/lib/legal-loader";
 
 /**
  * Sitemap generation for SnapBack web app
- * 
+ *
  * Industry best practices:
  * - Includes changeFrequency for crawl optimization
  * - Priority scores guide crawler importance

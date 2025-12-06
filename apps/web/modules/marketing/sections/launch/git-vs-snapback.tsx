@@ -82,9 +82,8 @@ export function GitVsSnapback() {
 						Git vs SnapBack: Different Tools, Different Jobs
 					</h2>
 					<p className="text-lg text-[#A0A0A0] max-w-2xl mx-auto">
-						SnapBack works alongside Git. It handles the moments Git can't—the
-						experimental edits, the AI suggestions, the mid-thought code
-						changes.
+						SnapBack works alongside Git. It handles the moments Git can't—the experimental edits, the AI
+						suggestions, the mid-thought code changes.
 					</p>
 				</div>
 
@@ -116,9 +115,7 @@ export function GitVsSnapback() {
 											<div className="text-sm text-[#888] font-medium uppercase tracking-wider">
 												{row.aspect}
 											</div>
-											<p className="text-white text-base leading-relaxed">
-												{row.git}
-											</p>
+											<p className="text-white text-base leading-relaxed">{row.git}</p>
 										</div>
 									))}
 								</div>
@@ -139,9 +136,7 @@ export function GitVsSnapback() {
 					<m.div
 						ref={snapbackCardRef}
 						initial={{ opacity: 1, x: 0 }}
-						animate={
-							snapbackInView ? { opacity: 1, x: 0 } : { opacity: 1, x: 0 }
-						}
+						animate={snapbackInView ? { opacity: 1, x: 0 } : { opacity: 1, x: 0 }}
 						transition={{ duration: 0.5, delay: 0.1 }}
 					>
 						<NeonCard
@@ -166,17 +161,14 @@ export function GitVsSnapback() {
 													{row.aspect}
 												</div>
 											</div>
-											<p className="text-white text-base leading-relaxed">
-												{row.snapback}
-											</p>
+											<p className="text-white text-base leading-relaxed">{row.snapback}</p>
 										</div>
 									))}
 								</div>
 
 								<div className="pt-8 border-t border-[var(--snapback-green)]/30">
 									<p className="text-sm text-[var(--snapback-green)]">
-										✓ Best for: Personal experimentation, AI safety,
-										mid-workflow recovery
+										✓ Best for: Personal experimentation, AI safety, mid-workflow recovery
 									</p>
 									<p className="text-sm text-[var(--snapback-green)] mt-2">
 										✓ Strength: Speed & instant recovery
@@ -191,19 +183,14 @@ export function GitVsSnapback() {
 				<m.div
 					ref={integrationMsgRef}
 					initial={{ opacity: 1, y: 0 }}
-					animate={
-						integrationMsgInView ? { opacity: 1, y: 0 } : { opacity: 1, y: 0 }
-					}
+					animate={integrationMsgInView ? { opacity: 1, y: 0 } : { opacity: 1, y: 0 }}
 					transition={{ duration: 0.5, delay: 0.2 }}
 					className="mt-20 text-center max-w-2xl mx-auto p-8 rounded-2xl bg-[var(--snapback-green)]/5 border border-[var(--snapback-green)]/20"
 				>
-					<h3 className="text-xl font-bold text-white mb-3">
-						Use Them Together
-					</h3>
+					<h3 className="text-xl font-bold text-white mb-3">Use Them Together</h3>
 					<p className="text-[#A0A0A0]">
-						Git for long-term history and team collaboration. SnapBack for
-						instant recovery from mid-workflow mistakes. The best workflow uses
-						both.
+						Git for long-term history and team collaboration. SnapBack for instant recovery from
+						mid-workflow mistakes. The best workflow uses both.
 					</p>
 				</m.div>
 			</div>

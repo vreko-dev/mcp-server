@@ -1,8 +1,5 @@
 import type { Metadata } from "next";
-import {
-	getSoftwareApplicationSchema,
-	serializeSchema,
-} from "@/lib/seo/structuredData";
+import { getSoftwareApplicationSchema, serializeSchema } from "@/lib/seo/structuredData";
 import FeaturesClient from "./client";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://snapback.dev";
@@ -21,8 +18,7 @@ export const metadata: Metadata = {
 	],
 	openGraph: {
 		title: "Features | SnapBack - Learns Your Codebase",
-		description:
-			"Pattern Memory • Learns from Your Mistakes • Detects What Breaks • Gets Smarter Daily",
+		description: "Pattern Memory • Learns from Your Mistakes • Detects What Breaks • Gets Smarter Daily",
 		url: `${SITE_URL}/features`,
 		siteName: "SnapBack",
 		type: "website",

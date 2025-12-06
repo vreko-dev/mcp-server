@@ -1,11 +1,7 @@
 import { getSession } from "@saas/auth/lib/server";
 import { orpcClient } from "@shared/lib/orpc-client";
 import { redirect } from "next/navigation";
-import {
-	fetchAIDetectionStats,
-	fetchRecentActivity,
-	fetchUserMetrics,
-} from "@/lib/dashboard/api";
+import { fetchAIDetectionStats, fetchRecentActivity, fetchUserMetrics } from "@/lib/dashboard/api";
 import { DashboardClient } from "./components/DashboardClient";
 
 export default async function DashboardPage() {
@@ -48,9 +44,7 @@ export default async function DashboardPage() {
 		return (
 			<div className="p-8">
 				<h1 className="text-3xl font-bold mb-4">Dashboard</h1>
-				<div className="text-destructive">
-					Failed to load dashboard data. Please try refreshing the page.
-				</div>
+				<div className="text-destructive">Failed to load dashboard data. Please try refreshing the page.</div>
 			</div>
 		);
 	}

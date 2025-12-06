@@ -20,9 +20,7 @@ import { useEffect, useState } from "react";
 export function OAuthCallbackHandler() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
-	const [validationState, setValidationState] = useState<
-		"idle" | "validating" | "success" | "error"
-	>("idle");
+	const [validationState, setValidationState] = useState<"idle" | "validating" | "success" | "error">("idle");
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
 	useEffect(() => {
@@ -37,9 +35,7 @@ export function OAuthCallbackHandler() {
 				// Map common OAuth errors to user-friendly messages
 				switch (error) {
 					case "access_denied":
-						setErrorMessage(
-							"You denied access to your account. Please try again and allow access.",
-						);
+						setErrorMessage("You denied access to your account. Please try again and allow access.");
 						break;
 					case "account_linking_conflict":
 						setErrorMessage(
@@ -47,20 +43,13 @@ export function OAuthCallbackHandler() {
 						);
 						break;
 					case "invalid_request":
-						setErrorMessage(
-							"Invalid OAuth request. Please try signing in again.",
-						);
+						setErrorMessage("Invalid OAuth request. Please try signing in again.");
 						break;
 					case "server_error":
-						setErrorMessage(
-							"OAuth provider error. Please try again later or contact support.",
-						);
+						setErrorMessage("OAuth provider error. Please try again later or contact support.");
 						break;
 					default:
-						setErrorMessage(
-							errorDescription ||
-								`Authentication failed: ${error}. Please try again.`,
-						);
+						setErrorMessage(errorDescription || `Authentication failed: ${error}. Please try again.`);
 				}
 
 				// Clean up URL parameters after displaying error
@@ -113,9 +102,7 @@ export function OAuthCallbackHandler() {
 				} catch (e) {
 					console.error("Session validation error:", e);
 					setValidationState("error");
-					setErrorMessage(
-						"Failed to validate session. Please try signing in again.",
-					);
+					setErrorMessage("Failed to validate session. Please try signing in again.");
 
 					// Redirect to login after 3 seconds
 					setTimeout(() => {

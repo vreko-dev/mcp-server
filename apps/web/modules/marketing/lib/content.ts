@@ -10,8 +10,7 @@ export function getActivePathFromUrlParam(path: string | string[]): string {
 }
 
 export const BRAND_SLOGAN = "Code Breaks.\nSnap Back.";
-export const BRAND_TAGLINE =
-	"Visual protection for every file. AI-aware checkpoints. Instant recovery.";
+export const BRAND_TAGLINE = "Visual protection for every file. AI-aware checkpoints. Instant recovery.";
 
 export interface BlogAuthor {
 	name: string;
@@ -159,10 +158,7 @@ const blogPosts: BlogPost[] = [
 					],
 				},
 				progression: {
-					relatedReading: [
-						"ai-coding-safety-report-2025",
-						"why-git-isnt-enough",
-					],
+					relatedReading: ["ai-coding-safety-report-2025", "why-git-isnt-enough"],
 					nextSteps: [
 						"Set up automatic checkpoints before AI changes",
 						"Configure AI detection for your development environment",
@@ -412,10 +408,7 @@ const blogPosts: BlogPost[] = [
 					],
 				},
 				progression: {
-					relatedReading: [
-						"cursor-broke-production-the-12000-mistake",
-						"copilot-vs-cursor-vs-windsurf",
-					],
+					relatedReading: ["cursor-broke-production-the-12000-mistake", "copilot-vs-cursor-vs-windsurf"],
 					nextSteps: [
 						"Implement AI detection in your development workflow",
 						"Set up automatic checkpointing before AI changes",
@@ -699,29 +692,19 @@ export async function getBlogPost(slug: string): Promise<BlogPost | null> {
 export async function getAllBlogPosts(): Promise<BlogPost[]> {
 	return blogPosts.sort(
 		(a, b) =>
-			new Date(b.metadata.workflow.publishDate).getTime() -
-			new Date(a.metadata.workflow.publishDate).getTime(),
+			new Date(b.metadata.workflow.publishDate).getTime() - new Date(a.metadata.workflow.publishDate).getTime(),
 	);
 }
 
-export async function getBlogPostsByKeyword(
-	keyword: string,
-): Promise<BlogPost[]> {
+export async function getBlogPostsByKeyword(keyword: string): Promise<BlogPost[]> {
 	return blogPosts.filter(
 		(post) =>
-			post.metadata.seo.secondaryKeywords.some((k) =>
-				k.toLowerCase().includes(keyword.toLowerCase()),
-			) ||
-			post.metadata.seo.primaryKeyword
-				.toLowerCase()
-				.includes(keyword.toLowerCase()),
+			post.metadata.seo.secondaryKeywords.some((k) => k.toLowerCase().includes(keyword.toLowerCase())) ||
+			post.metadata.seo.primaryKeyword.toLowerCase().includes(keyword.toLowerCase()),
 	);
 }
 
-export async function getRelatedPosts(
-	currentSlug: string,
-	limit = 3,
-): Promise<BlogPost[]> {
+export async function getRelatedPosts(currentSlug: string, limit = 3): Promise<BlogPost[]> {
 	const currentPost = await getBlogPost(currentSlug);
 	if (!currentPost) {
 		return [];

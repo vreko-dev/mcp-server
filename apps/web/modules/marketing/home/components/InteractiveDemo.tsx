@@ -6,15 +6,7 @@ import { marketingAnalytics } from "@marketing/lib/track-event";
 import { Badge } from "@ui/components/badge";
 import { Button } from "@ui/components/button";
 import { Card, CardContent } from "@ui/components/card";
-import {
-	Activity,
-	Bolt,
-	CheckCircle,
-	Clock3,
-	ShieldCheck,
-	Undo2,
-	Users2,
-} from "lucide-react";
+import { Activity, Bolt, CheckCircle, Clock3, ShieldCheck, Undo2, Users2 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import Image from "next/image";
 import { useMemo, useRef, useState } from "react";
@@ -107,8 +99,7 @@ export function InteractiveDemo() {
 	const [selectedHat, setSelectedHat] = useState<ProtectionHat>("protected");
 	const [files, setFiles] = useState(initialFiles);
 	const [assignmentCue, setAssignmentCue] = useState<string | null>(null);
-	const [activityLog, setActivityLog] =
-		useState<ActivityLogEntry[]>(initialActivityLog);
+	const [activityLog, setActivityLog] = useState<ActivityLogEntry[]>(initialActivityLog);
 	const logCounter = useRef(initialActivityLog.length + 1);
 
 	const hatMap = useMemo(
@@ -150,9 +141,7 @@ export function InteractiveDemo() {
 	};
 
 	const assignHat = (filePath: string) => {
-		const nextFiles = files.map((file) =>
-			file.path === filePath ? { ...file, hat: selectedHat } : file,
-		);
+		const nextFiles = files.map((file) => (file.path === filePath ? { ...file, hat: selectedHat } : file));
 		setFiles(nextFiles);
 
 		const hat = hatMap.get(selectedHat);
@@ -303,9 +292,7 @@ export function InteractiveDemo() {
 			content: (
 				<div className="w-full">
 					<div className="bg-card border rounded-xl p-6">
-						<h3 className="font-semibold text-lg mb-4">
-							Command Line Interface
-						</h3>
+						<h3 className="font-semibold text-lg mb-4">Command Line Interface</h3>
 						<Terminal lines={cliLines} className="text-xs" />
 					</div>
 				</div>
@@ -317,9 +304,7 @@ export function InteractiveDemo() {
 			content: (
 				<div className="w-full">
 					<div className="bg-card border rounded-xl p-6">
-						<h3 className="font-semibold text-lg mb-4">
-							Enhanced Notifications
-						</h3>
+						<h3 className="font-semibold text-lg mb-4">Enhanced Notifications</h3>
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 							<div>
 								<h4 className="font-medium mb-2">Collapsed View</h4>
@@ -343,9 +328,7 @@ export function InteractiveDemo() {
 										<span className="px-2 py-0.5 bg-yellow-500/20 text-yellow-700 dark:text-yellow-300 rounded">
 											MEDIUM RISK
 										</span>
-										<span className="text-muted-foreground">
-											92% Confidence
-										</span>
+										<span className="text-muted-foreground">92% Confidence</span>
 									</div>
 								</div>
 							</div>
@@ -375,9 +358,7 @@ export function InteractiveDemo() {
 		<section className="py-24 bg-gradient-to-b from-black to-slate-900">
 			<div className="container max-w-5xl">
 				<div className="text-center mb-12">
-					<h2 className="font-bold text-3xl md:text-4xl">
-						See SnapBack in Action
-					</h2>
+					<h2 className="font-bold text-3xl md:text-4xl">See SnapBack in Action</h2>
 					<p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
 						Tab-based demo viewer showing real SnapBack functionality
 					</p>
@@ -387,13 +368,10 @@ export function InteractiveDemo() {
 					<div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
 						<div className="space-y-6">
 							<div>
-								<h3 className="text-xl font-semibold">
-									Assign protection hats in seconds
-								</h3>
+								<h3 className="text-xl font-semibold">Assign protection hats in seconds</h3>
 								<p className="text-sm text-muted-foreground">
-									Choose a hat, then click a file to update its protection
-									level. SnapBack syncs these rules across SnapBack IDE plugins,
-									CLI, and CI.
+									Choose a hat, then click a file to update its protection level. SnapBack syncs these
+									rules across SnapBack IDE plugins, CLI, and CI.
 								</p>
 							</div>
 
@@ -442,9 +420,7 @@ export function InteractiveDemo() {
 											className="flex w-full items-center justify-between rounded-xl border border-muted bg-muted/40 px-4 py-3 text-left transition hover:-translate-y-0.5 hover:border-primary/60 hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
 											whileHover={{ scale: 1.01 }}
 											whileTap={{ scale: 0.99 }}
-											onKeyDown={(
-												event: React.KeyboardEvent<HTMLButtonElement>,
-											) => {
+											onKeyDown={(event: React.KeyboardEvent<HTMLButtonElement>) => {
 												if (event.key === "Enter" || event.key === " ") {
 													event.preventDefault();
 													assignHat(file.path);
@@ -455,9 +431,7 @@ export function InteractiveDemo() {
 											<div className="flex items-center gap-3">
 												<span className="relative flex h-6 w-7 items-center justify-center">
 													<Image
-														src={
-															hat?.iconSrc ?? "/assets/icons/hat-watched.svg"
-														}
+														src={hat?.iconSrc ?? "/assets/icons/hat-watched.svg"}
 														alt={`${hat?.label ?? "Watched"} protection icon`}
 														width={28}
 														height={20}
@@ -466,19 +440,14 @@ export function InteractiveDemo() {
 													/>
 												</span>
 												<div>
-													<div className="text-sm font-medium md:text-base">
-														{file.path}
-													</div>
+													<div className="text-sm font-medium md:text-base">{file.path}</div>
 													<p className="text-xs text-muted-foreground">
-														Click to apply{" "}
-														{hat?.label.toLowerCase() ?? "watched"} hat
+														Click to apply {hat?.label.toLowerCase() ?? "watched"} hat
 													</p>
 												</div>
 											</div>
 											{hat && (
-												<Badge
-													className={`${hat.badgeClass} flex items-center gap-1`}
-												>
+												<Badge className={`${hat.badgeClass} flex items-center gap-1`}>
 													<Image
 														src={hat.iconSrc}
 														alt={`${hat.label} protection icon`}
@@ -511,9 +480,7 @@ export function InteractiveDemo() {
 										</Badge>
 									</div>
 									<div className="space-y-3">
-										{(
-											["critical", "protected", "watched"] as ProtectionHat[]
-										).map((hatId) => {
+										{(["critical", "protected", "watched"] as ProtectionHat[]).map((hatId) => {
 											const hat = hatMap.get(hatId);
 											const count = coverage.counts[hatId];
 											const percent = coverage.total
@@ -524,10 +491,7 @@ export function InteractiveDemo() {
 													<div className="flex items-center justify-between text-xs text-muted-foreground">
 														<div className="flex items-center gap-2">
 															<Image
-																src={
-																	hat?.iconSrc ??
-																	"/assets/icons/hat-watched.svg"
-																}
+																src={hat?.iconSrc ?? "/assets/icons/hat-watched.svg"}
 																alt={`${hat?.label ?? hatId} protection icon`}
 																width={24}
 																height={18}
@@ -592,9 +556,7 @@ export function InteractiveDemo() {
 														className="flex items-start gap-3 rounded-xl border border-muted-foreground/20 bg-muted/40 px-3 py-3"
 													>
 														<Image
-															src={
-																hat?.iconSrc ?? "/assets/icons/hat-watched.svg"
-															}
+															src={hat?.iconSrc ?? "/assets/icons/hat-watched.svg"}
 															alt={`${hat?.label ?? entry.hat} icon`}
 															width={24}
 															height={18}
@@ -626,21 +588,16 @@ export function InteractiveDemo() {
 				<div className="mt-12 grid gap-6 md:grid-cols-2">
 					<Card className="border-slate-800/70 bg-slate-900/80">
 						<CardContent className="p-6">
-							<h3 className="text-lg font-semibold text-slate-100 mb-4">
-								Recovery Flow
-							</h3>
+							<h3 className="text-lg font-semibold text-slate-100 mb-4">Recovery Flow</h3>
 							<div className="space-y-4">
 								<div className="flex items-start gap-3">
 									<div className="mt-1 flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400">
 										<Activity className="h-4 w-4" />
 									</div>
 									<div>
-										<h4 className="font-medium text-slate-100">
-											Diff at a glance
-										</h4>
+										<h4 className="font-medium text-slate-100">Diff at a glance</h4>
 										<p className="text-sm text-slate-400">
-											Compare AI output with your last good checkpoint in a
-											human-friendly view
+											Compare AI output with your last good checkpoint in a human-friendly view
 										</p>
 									</div>
 								</div>
@@ -660,9 +617,7 @@ export function InteractiveDemo() {
 										<Undo2 className="h-4 w-4" />
 									</div>
 									<div>
-										<h4 className="font-medium text-slate-100">
-											One-click snapback
-										</h4>
+										<h4 className="font-medium text-slate-100">One-click snapback</h4>
 										<p className="text-sm text-slate-400">
 											Instantly restore files with filesystem rehydration
 										</p>
@@ -673,18 +628,14 @@ export function InteractiveDemo() {
 								<div className="flex items-center gap-3">
 									<Clock3 className="h-5 w-5 text-emerald-400" />
 									<div>
-										<p className="text-sm font-semibold text-slate-100">
-											Average recovery time
-										</p>
+										<p className="text-sm font-semibold text-slate-100">Average recovery time</p>
 										<p className="text-xs text-slate-400">2.3 seconds</p>
 									</div>
 								</div>
 								<div className="flex items-center gap-3">
 									<Bolt className="h-5 w-5 text-amber-400" />
 									<div>
-										<p className="text-sm font-semibold text-slate-100">
-											Downtime prevented
-										</p>
+										<p className="text-sm font-semibold text-slate-100">Downtime prevented</p>
 										<p className="text-xs text-slate-400">$892K this week</p>
 									</div>
 								</div>
@@ -694,18 +645,14 @@ export function InteractiveDemo() {
 
 					<Card className="border-slate-800/70 bg-slate-900/80">
 						<CardContent className="p-6">
-							<h3 className="text-lg font-semibold text-slate-100 mb-4">
-								Team Configuration
-							</h3>
+							<h3 className="text-lg font-semibold text-slate-100 mb-4">Team Configuration</h3>
 							<div className="space-y-4">
 								<div className="flex items-start gap-3">
 									<div className="mt-1 flex h-6 w-6 items-center justify-center rounded-full bg-sky-500/20 text-sky-400">
 										<ShieldCheck className="h-4 w-4" />
 									</div>
 									<div>
-										<h4 className="font-medium text-slate-100">
-											Declarative config
-										</h4>
+										<h4 className="font-medium text-slate-100">Declarative config</h4>
 										<p className="text-sm text-slate-400">
 											Drop .snapbackrc into main for automatic team alignment
 										</p>
@@ -716,9 +663,7 @@ export function InteractiveDemo() {
 										<Users2 className="h-4 w-4" />
 									</div>
 									<div>
-										<h4 className="font-medium text-slate-100">
-											Commit & share
-										</h4>
+										<h4 className="font-medium text-slate-100">Commit & share</h4>
 										<p className="text-sm text-slate-400">
 											One commit protects your entire team automatically
 										</p>
@@ -729,9 +674,7 @@ export function InteractiveDemo() {
 										<CheckCircle className="h-4 w-4" />
 									</div>
 									<div>
-										<h4 className="font-medium text-slate-100">
-											Enforce without friction
-										</h4>
+										<h4 className="font-medium text-slate-100">Enforce without friction</h4>
 										<p className="text-sm text-slate-400">
 											Slack alerts and PR checks stay in sync automatically
 										</p>
@@ -741,15 +684,11 @@ export function InteractiveDemo() {
 							<div className="mt-6 rounded-xl bg-slate-900/60 p-4">
 								<div className="flex items-center justify-between">
 									<div>
-										<p className="text-sm font-semibold text-slate-100">
-											Onboarding time
-										</p>
+										<p className="text-sm font-semibold text-slate-100">Onboarding time</p>
 										<p className="text-xs text-slate-400">12 → 1 minutes</p>
 									</div>
 									<div>
-										<p className="text-sm font-semibold text-slate-100">
-											Teams using SnapBack
-										</p>
+										<p className="text-sm font-semibold text-slate-100">Teams using SnapBack</p>
 										<p className="text-xs text-slate-400">42 teams</p>
 									</div>
 								</div>

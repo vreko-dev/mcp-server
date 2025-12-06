@@ -1,8 +1,4 @@
-import {
-	CopyButton,
-	ExpandableSection,
-	StatusBadge,
-} from "@/components/docs/MicroInteractions";
+import { CopyButton, ExpandableSection, StatusBadge } from "@/components/docs/MicroInteractions";
 
 // Enhanced code block with copy functionality
 function PreWithCopy(props: any) {
@@ -42,9 +38,7 @@ function AlertInfo(props: any) {
 
 function AlertWarning(props: any) {
 	const { className, ...rest } = props;
-	return (
-		<div {...rest} className={`callout alert-warning ${className || ""}`} />
-	);
+	return <div {...rest} className={`callout alert-warning ${className || ""}`} />;
 }
 
 function AlertError(props: any) {

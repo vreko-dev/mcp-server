@@ -1,11 +1,5 @@
 "use client";
-import {
-	type RefObject,
-	useCallback,
-	useEffect,
-	useRef,
-	useState,
-} from "react";
+import { type RefObject, useCallback, useEffect, useRef, useState } from "react";
 
 interface UseIntersectionObserverProps {
 	threshold?: number | number[];
@@ -18,23 +12,15 @@ function useIntersectionObserver(
 	elementRef: RefObject<Element>,
 	options: UseIntersectionObserverProps = {},
 ): IntersectionObserverEntry | null {
-	const {
-		threshold = 0,
-		root = null,
-		rootMargin = "0%",
-		freezeOnceVisible = false,
-	} = options;
+	const { threshold = 0, root = null, rootMargin = "0%", freezeOnceVisible = false } = options;
 
 	const [entry, setEntry] = useState<IntersectionObserverEntry | null>(null);
 
 	const frozen = entry?.isIntersecting && freezeOnceVisible;
 
-	const updateEntry = useCallback(
-		([entry]: IntersectionObserverEntry[]): void => {
-			setEntry(entry || null);
-		},
-		[],
-	);
+	const updateEntry = useCallback(([entry]: IntersectionObserverEntry[]): void => {
+		setEntry(entry || null);
+	}, []);
 
 	useEffect(() => {
 		const node = elementRef?.current; // DOM node
@@ -56,9 +42,7 @@ function useIntersectionObserver(
 }
 
 // Simplified hook for just checking visibility
-export function useInView(
-	options: UseIntersectionObserverProps = {},
-): [RefObject<HTMLDivElement>, boolean] {
+export function useInView(options: UseIntersectionObserverProps = {}): [RefObject<HTMLDivElement>, boolean] {
 	const ref = useRef<HTMLDivElement>(null);
 	const entry = useIntersectionObserver(ref as RefObject<Element>, {
 		threshold: 0.1,
@@ -70,9 +54,7 @@ export function useInView(
 }
 
 // Hook for scroll-triggered animations with progress
-export function useScrollProgress(
-	options: UseIntersectionObserverProps = {},
-): [RefObject<HTMLDivElement>, number] {
+export function useScrollProgress(options: UseIntersectionObserverProps = {}): [RefObject<HTMLDivElement>, number] {
 	const ref = useRef<HTMLDivElement>(null);
 	const [progress, setProgress] = useState(0);
 
@@ -90,14 +72,8 @@ export function useScrollProgress(
 					const elementHeight = rect.height;
 
 					// Calculate progress based on how much of the element is visible
-					const visibleHeight = Math.min(
-						windowHeight - Math.max(0, rect.top),
-						elementHeight,
-					);
-					const progressValue = Math.max(
-						0,
-						Math.min(1, visibleHeight / elementHeight),
-					);
+					const visibleHeight = Math.min(windowHeight - Math.max(0, rect.top), elementHeight);
+					const progressValue = Math.max(0, Math.min(1, visibleHeight / elementHeight));
 
 					setProgress(progressValue);
 				}

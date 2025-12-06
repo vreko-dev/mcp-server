@@ -7,53 +7,53 @@
  * Based on MSW v2 best practices from mswjs.io
  */
 
-import { afterAll, afterEach, beforeAll } from "vitest";
+import { HttpResponse, http } from "msw";
 import { setupServer } from "msw/node";
-import { http, HttpResponse } from "msw";
+import { afterAll, afterEach, beforeAll } from "vitest";
 
 /**
  * Default MSW handlers for common API endpoints
  */
 const handlers = [
-  // Mock SnapBack API endpoints
-  http.post("https://api.snapback.dev/analyze/fast", () => {
-    return HttpResponse.json({
-      riskLevel: "low",
-      score: 0.2,
-      factors: [],
-      analysisTimeMs: 45,
-      issues: [],
-    });
-  }),
+	// Mock SnapBack API endpoints
+	http.post("https://api.snapback.dev/analyze/fast", () => {
+		return HttpResponse.json({
+			riskLevel: "low",
+			score: 0.2,
+			factors: [],
+			analysisTimeMs: 45,
+			issues: [],
+		});
+	}),
 
-  // Mock Context7 API
-  http.post("https://api.context7.com/resolve", () => {
-    return HttpResponse.json({
-      libraryId: "/test/library",
-      name: "Test Library",
-      description: "Mock library for testing",
-    });
-  }),
+	// Mock Context7 API
+	http.post("https://api.context7.com/resolve", () => {
+		return HttpResponse.json({
+			libraryId: "/test/library",
+			name: "Test Library",
+			description: "Mock library for testing",
+		});
+	}),
 
-  http.post("https://api.context7.com/docs", () => {
-    return HttpResponse.json({
-      content: [
-        {
-          type: "text",
-          text: "Mock documentation content",
-        },
-      ],
-    });
-  }),
+	http.post("https://api.context7.com/docs", () => {
+		return HttpResponse.json({
+			content: [
+				{
+					type: "text",
+					text: "Mock documentation content",
+				},
+			],
+		});
+	}),
 
-  // Mock PostHog telemetry
-  http.post("https://telemetry.snapback.dev/capture", () => {
-    return new HttpResponse(null, { status: 200 });
-  }),
+	// Mock PostHog telemetry
+	http.post("https://telemetry.snapback.dev/capture", () => {
+		return new HttpResponse(null, { status: 200 });
+	}),
 
-  http.post("https://telemetry.snapback.dev/batch", () => {
-    return new HttpResponse(null, { status: 200 });
-  }),
+	http.post("https://telemetry.snapback.dev/batch", () => {
+		return new HttpResponse(null, { status: 200 });
+	}),
 ];
 
 /**
@@ -70,19 +70,19 @@ export const server = setupServer(...handlers);
  * - afterAll: Clean up and restore native modules
  */
 beforeAll(() => {
-  server.listen({
-    onUnhandledRequest: "warn", // Warn on unmocked requests (use 'error' in strict mode)
-  });
+	server.listen({
+		onUnhandledRequest: "warn", // Warn on unmocked requests (use 'error' in strict mode)
+	});
 });
 
 afterEach(() => {
-  // Reset any runtime handlers added in individual tests
-  server.resetHandlers();
+	// Reset any runtime handlers added in individual tests
+	server.resetHandlers();
 });
 
 afterAll(() => {
-  // Clean up and restore native modules
-  server.close();
+	// Clean up and restore native modules
+	server.close();
 });
 
 /**
@@ -104,7 +104,7 @@ afterAll(() => {
  * ```
  */
 export function addHandlers(...customHandlers: Parameters<typeof server.use>) {
-  server.use(...customHandlers);
+	server.use(...customHandlers);
 }
 
 /**

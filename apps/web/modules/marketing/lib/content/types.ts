@@ -72,14 +72,7 @@ export interface BlogPostMetadata {
 
 	// Enhanced Structured Data
 	schema: {
-		type:
-			| "BlogPosting"
-			| "TechArticle"
-			| "NewsArticle"
-			| "Report"
-			| "HowTo"
-			| "FAQPage"
-			| "Case Study";
+		type: "BlogPosting" | "TechArticle" | "NewsArticle" | "Report" | "HowTo" | "FAQPage" | "Case Study";
 
 		// Rich Results Optimization
 		howTo?: {
@@ -149,14 +142,7 @@ export interface BlogPostMetadata {
 			socialMedia: boolean;
 		};
 		distribution: Array<
-			| "blog"
-			| "newsletter"
-			| "linkedin"
-			| "twitter"
-			| "hackernews"
-			| "reddit"
-			| "devto"
-			| "producthunt"
+			"blog" | "newsletter" | "linkedin" | "twitter" | "hackernews" | "reddit" | "devto" | "producthunt"
 		>;
 	};
 
@@ -173,9 +159,7 @@ export interface BlogPostMetadata {
 	// Content Monetization & CTA Strategy
 	conversion?: {
 		primaryCTA: "free-trial" | "demo" | "newsletter" | "cap-giveaway";
-		ctaPlacement: Array<
-			"after-intro" | "mid-content" | "conclusion" | "floating"
-		>;
+		ctaPlacement: Array<"after-intro" | "mid-content" | "conclusion" | "floating">;
 		leadMagnet?: {
 			title: string;
 			description: string;
@@ -255,9 +239,7 @@ export interface PillarContentMetadata {
 	// Content Monetization & CTA Strategy
 	conversion: {
 		primaryCTA: "free-trial" | "demo" | "newsletter" | "cap-giveaway";
-		ctaPlacement: Array<
-			"after-intro" | "mid-content" | "conclusion" | "floating"
-		>;
+		ctaPlacement: Array<"after-intro" | "mid-content" | "conclusion" | "floating">;
 		leadMagnet?: {
 			title: string;
 			description: string;
@@ -320,14 +302,7 @@ export interface DisasterStory {
 export interface ResourceMetadata {
 	title: string;
 	description: string;
-	type:
-		| "whitepaper"
-		| "checklist"
-		| "template"
-		| "calculator"
-		| "infographic"
-		| "report"
-		| "ebook";
+	type: "whitepaper" | "checklist" | "template" | "calculator" | "infographic" | "report" | "ebook";
 	preview?: string;
 	downloadUrl: string;
 	gatedContent: boolean;

@@ -67,22 +67,16 @@ export function ComparisonTable() {
 	return (
 		<section className="py-20 bg-black">
 			{/* Schema markup */}
-			<script
-				type="application/ld+json"
-				dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
-			/>
+			<script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }} />
 
 			<div className="container mx-auto px-4">
 				<div className="max-w-5xl mx-auto">
 					{/* Header */}
 					<div className="text-center mb-12">
-						<h2 className="text-4xl font-bold mb-4">
-							SnapBack vs Git: What's the Difference?
-						</h2>
+						<h2 className="text-4xl font-bold mb-4">SnapBack vs Git: What's the Difference?</h2>
 						<p className="text-xl text-zinc-400 max-w-2xl mx-auto">
-							Git is for version control. SnapBack is for instant protection.
-							They work together—SnapBack protects you <em>before</em> you
-							commit.
+							Git is for version control. SnapBack is for instant protection. They work together—SnapBack
+							protects you <em>before</em> you commit.
 						</p>
 					</div>
 
@@ -96,9 +90,7 @@ export function ComparisonTable() {
 								<div className="text-xs text-zinc-600">Version Control</div>
 							</div>
 							<div className="text-center">
-								<div className="text-lg font-semibold text-emerald-400">
-									SnapBack
-								</div>
+								<div className="text-lg font-semibold text-emerald-400">SnapBack</div>
 								<div className="text-xs text-emerald-700">AI Protection</div>
 							</div>
 						</div>
@@ -112,9 +104,7 @@ export function ComparisonTable() {
 								>
 									{/* Feature Name */}
 									<div>
-										<div className="font-medium text-white mb-1">
-											{comparison.feature}
-										</div>
+										<div className="font-medium text-white mb-1">{comparison.feature}</div>
 									</div>
 
 									{/* Git Column */}
@@ -146,18 +136,12 @@ export function ComparisonTable() {
 														/>
 													</svg>
 												)}
-												<span className="text-xs text-zinc-500">
-													{comparison.git.note}
-												</span>
+												<span className="text-xs text-zinc-500">{comparison.git.note}</span>
 											</div>
 										) : (
 											<div className="flex flex-col items-center gap-2">
-												<span className="text-white font-medium">
-													{comparison.git.value}
-												</span>
-												<span className="text-xs text-zinc-500">
-													{comparison.git.note}
-												</span>
+												<span className="text-white font-medium">{comparison.git.value}</span>
+												<span className="text-xs text-zinc-500">{comparison.git.note}</span>
 											</div>
 										)}
 									</div>
@@ -215,8 +199,8 @@ export function ComparisonTable() {
 					<div className="mt-12 text-center">
 						<div className="bg-zinc-900 border border-zinc-800 rounded-lg p-8 inline-block">
 							<p className="text-lg text-zinc-400 mb-4">
-								<strong className="text-white">TL;DR:</strong> Keep using Git
-								for commits. Add SnapBack for instant protection.
+								<strong className="text-white">TL;DR:</strong> Keep using Git for commits. Add SnapBack
+								for instant protection.
 							</p>
 							<button className="px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-black font-semibold rounded-xl transition-colors">
 								Get Protected Now →

@@ -49,11 +49,7 @@ export const siteMap: RouteGroup[] = [
 				label: "Features",
 				description: "Automatic snapshots, AI detection, instant recovery",
 				inFooter: true,
-				keywords: [
-					"code protection features",
-					"ai activity detection",
-					"guardian code analysis",
-				],
+				keywords: ["code protection features", "ai activity detection", "guardian code analysis"],
 			},
 			{
 				path: "/pricing",
@@ -67,12 +63,7 @@ export const siteMap: RouteGroup[] = [
 				label: "Integrations",
 				description: "Works with GitHub Copilot, Cursor, Claude, and more",
 				inFooter: true,
-				keywords: [
-					"github copilot integration",
-					"cursor ai",
-					"claude desktop",
-					"mcp integration",
-				],
+				keywords: ["github copilot integration", "cursor ai", "claude desktop", "mcp integration"],
 			},
 		],
 	},
@@ -147,8 +138,7 @@ export const siteMap: RouteGroup[] = [
 			{
 				path: "/about",
 				label: "About",
-				description:
-					"Our story, mission, and the $12K disaster that started it all",
+				description: "Our story, mission, and the $12K disaster that started it all",
 				inFooter: true,
 				keywords: ["about", "story", "mission", "team"],
 			},

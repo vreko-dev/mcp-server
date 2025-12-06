@@ -17,11 +17,7 @@ const prefixes: Record<ToastType, string> = {
 	info: "→",
 };
 
-export function TerminalToast({
-	message,
-	type,
-	className,
-}: TerminalToastProps) {
+export function TerminalToast({ message, type, className }: TerminalToastProps) {
 	return (
 		<motion.div
 			initial={{ x: 300, opacity: 0 }}

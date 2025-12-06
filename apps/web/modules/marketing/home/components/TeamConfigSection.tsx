@@ -4,16 +4,7 @@ import { marketingAnalytics } from "@marketing/lib/track-event";
 import { Badge } from "@ui/components/badge";
 import { Button } from "@ui/components/button";
 import { Card, CardContent } from "@ui/components/card";
-import {
-	Check,
-	Copy,
-	Download,
-	Link2,
-	ShieldCheck,
-	Sparkles,
-	Timer,
-	Users2,
-} from "lucide-react";
+import { Check, Copy, Download, Link2, ShieldCheck, Sparkles, Timer, Users2 } from "lucide-react";
 import { motion } from "motion/react";
 import Image from "next/image";
 import { useState } from "react";
@@ -57,15 +48,13 @@ const setupSteps = [
 	{
 		icon: Users2,
 		title: "Commit & share with the team",
-		description:
-			"Drop .snapbackrc into main. IDE extensions, CLI, and CI/CD load updates automatically.",
+		description: "Drop .snapbackrc into main. IDE extensions, CLI, and CI/CD load updates automatically.",
 		metric: "1 commit",
 	},
 	{
 		icon: Sparkles,
 		title: "Enforce without friction",
-		description:
-			"Slack alerts, PR checks, and AI guardrails stay in sync—even when new teammates join.",
+		description: "Slack alerts, PR checks, and AI guardrails stay in sync—even when new teammates join.",
 		metric: "Always on",
 	},
 ];
@@ -174,15 +163,13 @@ export function TeamConfigSection() {
 					transition={{ duration: 0.5 }}
 					className="mx-auto mb-14 max-w-3xl text-center"
 				>
-					<Badge className="mb-4 border-emerald-400/40 text-emerald-200">
-						Team Configuration
-					</Badge>
+					<Badge className="mb-4 border-emerald-400/40 text-emerald-200">Team Configuration</Badge>
 					<h2 className="text-balance text-4xl font-bold tracking-tight text-slate-50 sm:text-5xl">
 						Standardize protection across every workspace
 					</h2>
 					<p className="mt-4 text-lg text-slate-300 sm:text-xl">
-						SnapBack reads one declarative file, auto-assigns hats, and keeps
-						your entire org aligned—IDEs, CI, and AI agents included.
+						SnapBack reads one declarative file, auto-assigns hats, and keeps your entire org aligned—IDEs,
+						CI, and AI agents included.
 					</p>
 				</motion.div>
 
@@ -198,12 +185,7 @@ export function TeamConfigSection() {
 								<span>.snapbackrc</span>
 							</div>
 							<div className="flex items-center gap-2">
-								<Button
-									variant="ghost"
-									size="sm"
-									className="gap-2 text-slate-200"
-									onClick={handleCopy}
-								>
+								<Button variant="ghost" size="sm" className="gap-2 text-slate-200" onClick={handleCopy}>
 									{copied ? (
 										<>
 											<Check className="h-4 w-4" />
@@ -246,9 +228,7 @@ export function TeamConfigSection() {
 											<step.icon className="h-4 w-4 text-emerald-300" />
 											<span className="font-semibold">{step.title}</span>
 										</div>
-										<p className="mt-3 text-xs sm:text-sm">
-											{step.description}
-										</p>
+										<p className="mt-3 text-xs sm:text-sm">{step.description}</p>
 										<p className="mt-4 text-xs uppercase tracking-wide text-emerald-200">
 											{step.metric}
 										</p>
@@ -257,10 +237,9 @@ export function TeamConfigSection() {
 							</div>
 
 							<div className="rounded-3xl border border-emerald-400/30 bg-emerald-400/10 p-5 text-sm text-emerald-100">
-								<strong className="font-semibold">Ops bonus:</strong> SnapBack
-								validates configuration on PRs, so no one can merge without the
-								latest hats. GitHub, GitLab, Bitbucket, and Azure DevOps
-								supported.
+								<strong className="font-semibold">Ops bonus:</strong> SnapBack validates configuration
+								on PRs, so no one can merge without the latest hats. GitHub, GitLab, Bitbucket, and
+								Azure DevOps supported.
 							</div>
 
 							<div className="grid gap-4 sm:grid-cols-3">
@@ -270,15 +249,9 @@ export function TeamConfigSection() {
 										className="rounded-2xl border border-slate-800/60 bg-slate-950/70 px-4 py-5 text-center"
 									>
 										<metric.icon className="mx-auto mb-2 h-5 w-5 text-emerald-300" />
-										<p className="text-xl font-semibold text-slate-50">
-											{metric.value}
-										</p>
-										<p className="text-xs uppercase tracking-wide text-slate-400">
-											{metric.label}
-										</p>
-										<p className="mt-2 text-xs text-slate-500">
-											{metric.detail}
-										</p>
+										<p className="text-xl font-semibold text-slate-50">{metric.value}</p>
+										<p className="text-xs uppercase tracking-wide text-slate-400">{metric.label}</p>
+										<p className="mt-2 text-xs text-slate-500">{metric.detail}</p>
 									</div>
 								))}
 							</div>
@@ -301,9 +274,7 @@ export function TeamConfigSection() {
 									className="h-8 w-auto"
 									loading="lazy"
 								/>
-								<p
-									className={`text-sm font-semibold uppercase tracking-wide ${highlight.tone}`}
-								>
+								<p className={`text-sm font-semibold uppercase tracking-wide ${highlight.tone}`}>
 									{highlight.name}
 								</p>
 							</div>
@@ -335,8 +306,7 @@ export function TeamConfigSection() {
 				</motion.div>
 
 				<p className="mt-6 text-center text-xs text-slate-500">
-					Need SSO, SCIM, or custom environments? SnapBack Enterprise syncs hats
-					with IAM and HRIS providers.
+					Need SSO, SCIM, or custom environments? SnapBack Enterprise syncs hats with IAM and HRIS providers.
 				</p>
 			</div>
 		</section>

@@ -93,9 +93,7 @@ export function useSmoothScroll() {
 		// Custom smooth scroll for anchor links
 		const handleAnchorClick = (e: MouseEvent) => {
 			const target = e.target as HTMLElement;
-			const href =
-				target.getAttribute("href") ||
-				target.closest("a")?.getAttribute("href");
+			const href = target.getAttribute("href") || target.closest("a")?.getAttribute("href");
 
 			if (href?.startsWith("#")) {
 				e.preventDefault();

@@ -10,11 +10,7 @@ export async function generateMetadata() {
 	};
 }
 
-export default async function OrganizationSettingsPage({
-	params,
-}: {
-	params: Promise<{ organizationSlug: string }>;
-}) {
+export default async function OrganizationSettingsPage({ params }: { params: Promise<{ organizationSlug: string }> }) {
 	const session = await getSession();
 	const { organizationSlug } = await params;
 	const organization = (await getActiveOrganization(organizationSlug)) as any;

@@ -29,12 +29,9 @@ export function InteractiveDemo() {
 	return (
 		<div className="container mx-auto px-4">
 			<div className="text-center mb-16">
-				<h2 className="text-display font-black text-white mb-6">
-					See SnapBack in action
-				</h2>
+				<h2 className="text-display font-black text-white mb-6">See SnapBack in action</h2>
 				<p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-					Watch how SnapBack detects AI changes and creates instant recovery
-					points
+					Watch how SnapBack detects AI changes and creates instant recovery points
 				</p>
 			</div>
 
@@ -63,9 +60,7 @@ export function InteractiveDemo() {
 									<div className="w-3 h-3 bg-yellow-500 rounded-full" />
 									<div className="w-3 h-3 bg-green-500 rounded-full" />
 								</div>
-								<span className="ml-4 text-sm text-muted-foreground">
-									src/auth.js
-								</span>
+								<span className="ml-4 text-sm text-muted-foreground">src/auth.js</span>
 							</div>
 
 							<m.div
@@ -83,12 +78,12 @@ export function InteractiveDemo() {
 											animate={
 												isSnapping
 													? {
-														backgroundColor: [
-															"rgba(239, 68, 68, 0.3)",
-															"rgba(16, 185, 129, 0.3)",
-															"transparent",
-														],
-													}
+															backgroundColor: [
+																"rgba(239, 68, 68, 0.3)",
+																"rgba(16, 185, 129, 0.3)",
+																"transparent",
+															],
+														}
 													: {}
 											}
 											transition={{ duration: 1.5 }}
@@ -100,12 +95,12 @@ export function InteractiveDemo() {
 											animate={
 												isSnapping
 													? {
-														backgroundColor: [
-															"rgba(239, 68, 68, 0.3)",
-															"rgba(16, 185, 129, 0.3)",
-															"transparent",
-														],
-													}
+															backgroundColor: [
+																"rgba(239, 68, 68, 0.3)",
+																"rgba(16, 185, 129, 0.3)",
+																"transparent",
+															],
+														}
 													: {}
 											}
 											transition={{ duration: 1.5, delay: 0.1 }}
@@ -117,12 +112,12 @@ export function InteractiveDemo() {
 											animate={
 												isSnapping
 													? {
-														backgroundColor: [
-															"rgba(239, 68, 68, 0.3)",
-															"rgba(16, 185, 129, 0.3)",
-															"transparent",
-														],
-													}
+															backgroundColor: [
+																"rgba(239, 68, 68, 0.3)",
+																"rgba(16, 185, 129, 0.3)",
+																"transparent",
+															],
+														}
 													: {}
 											}
 											transition={{ duration: 1.5, delay: 0.2 }}
@@ -134,12 +129,12 @@ export function InteractiveDemo() {
 											animate={
 												isSnapping
 													? {
-														backgroundColor: [
-															"rgba(239, 68, 68, 0.3)",
-															"rgba(16, 185, 129, 0.3)",
-															"transparent",
-														],
-													}
+															backgroundColor: [
+																"rgba(239, 68, 68, 0.3)",
+																"rgba(16, 185, 129, 0.3)",
+																"transparent",
+															],
+														}
 													: {}
 											}
 											transition={{ duration: 1.5, delay: 0.3 }}
@@ -151,10 +146,16 @@ export function InteractiveDemo() {
 								{/* SAFE CODE - Only shows when restored */}
 								{isRestored && (
 									<>
-										<div className="text-emerald-400">3 &nbsp;&nbsp;// Secure password comparison with bcrypt</div>
-										<div className="text-emerald-400">{'4 \u00a0\u00a0function authenticate(user, password) {'}</div>
-										<div className="text-emerald-400">5 &nbsp;&nbsp;&nbsp;&nbsp;return await bcrypt.compare(password, user.hash);</div>
-										<div className="text-emerald-400">{'6 \u00a0\u00a0}'}</div>
+										<div className="text-emerald-400">
+											3 &nbsp;&nbsp;// Secure password comparison with bcrypt
+										</div>
+										<div className="text-emerald-400">
+											{"4 \u00a0\u00a0function authenticate(user, password) {"}
+										</div>
+										<div className="text-emerald-400">
+											5 &nbsp;&nbsp;&nbsp;&nbsp;return await bcrypt.compare(password, user.hash);
+										</div>
+										<div className="text-emerald-400">{"6 \u00a0\u00a0}"}</div>
 									</>
 								)}
 								<div className="text-muted-foreground">7</div>
@@ -163,8 +164,12 @@ export function InteractiveDemo() {
 
 						<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
 							<div className="flex items-center space-x-2">
-								<div className={`w-2 h-2 rounded-full animate-pulse ${isRestored ? "bg-green-400" : "bg-orange-400"}`} />
-								<span className={`text-sm font-medium ${isRestored ? "text-green-400" : "text-orange-400"}`}>
+								<div
+									className={`w-2 h-2 rounded-full animate-pulse ${isRestored ? "bg-green-400" : "bg-orange-400"}`}
+								/>
+								<span
+									className={`text-sm font-medium ${isRestored ? "text-green-400" : "text-orange-400"}`}
+								>
 									{isRestored ? "Code restored safely" : "AI modifying code..."}
 								</span>
 							</div>
@@ -176,9 +181,7 @@ export function InteractiveDemo() {
 
 					{/* Right: SnapBack Timeline */}
 					<div className="p-4 md:p-6 flex flex-col">
-						<h3 className="text-lg font-semibold text-white mb-4">
-							SnapBack Timeline
-						</h3>
+						<h3 className="text-lg font-semibold text-white mb-4">SnapBack Timeline</h3>
 
 						<div className="space-y-3 flex-grow">
 							<m.div
@@ -187,9 +190,7 @@ export function InteractiveDemo() {
 							>
 								<div className="w-2 h-2 bg-emerald-400 rounded-full flex-shrink-0" />
 								<div className="min-w-0">
-									<div className="text-sm font-medium text-white">
-										Safe checkpoint created
-									</div>
+									<div className="text-sm font-medium text-white">Safe checkpoint created</div>
 									<div className="text-xs text-muted-foreground">
 										{isRestored ? "Just now" : "2 minutes ago"}
 									</div>
@@ -203,9 +204,7 @@ export function InteractiveDemo() {
 							>
 								<div className="w-2 h-2 bg-blue-400 rounded-full flex-shrink-0 animate-pulse" />
 								<div className="min-w-0">
-									<div className="text-sm font-medium text-white">
-										AI changes detected
-									</div>
+									<div className="text-sm font-medium text-white">AI changes detected</div>
 									<div className="text-xs text-muted-foreground">
 										{isRestored ? "Reverted" : "1 line modified by Copilot"}
 									</div>
@@ -215,14 +214,14 @@ export function InteractiveDemo() {
 							{/* SECURITY RISK - Red when danger, Green when averted */}
 							<m.div
 								className={`flex items-center space-x-3 p-3 rounded-lg border-l-4 ${
-									isRestored
-										? "bg-emerald-500/20 border-emerald-400"
-										: "bg-red-500/20 border-red-400"
+									isRestored ? "bg-emerald-500/20 border-emerald-400" : "bg-red-500/20 border-red-400"
 								}`}
 								animate={isSnapping ? { scale: [1, 1.02, 1] } : {}}
 								transition={{ delay: 0.2 }}
 							>
-								<div className={`w-2 h-2 rounded-full flex-shrink-0 ${isRestored ? "bg-emerald-400" : "bg-red-400"}`} />
+								<div
+									className={`w-2 h-2 rounded-full flex-shrink-0 ${isRestored ? "bg-emerald-400" : "bg-red-400"}`}
+								/>
 								<div className="min-w-0">
 									<div className="text-sm font-medium text-white">
 										{isRestored ? "Risk averted" : "Security risk identified"}
@@ -261,7 +260,9 @@ export function InteractiveDemo() {
 												}
 									}
 									transition={
-										isSnapping ? { duration: 0.6 } : { duration: 2, repeat: Number.POSITIVE_INFINITY }
+										isSnapping
+											? { duration: 0.6 }
+											: { duration: 2, repeat: Number.POSITIVE_INFINITY }
 									}
 								>
 									{isSnapping ? "Restoring code..." : "Snap Back"}
@@ -294,11 +295,7 @@ export function InteractiveDemo() {
 				{(isSnapping || isRestored) && (
 					<m.div
 						className="border-t border-slate-700 p-4 md:p-6 bg-slate-900/40"
-						initial={
-							isMounted
-								? { opacity: 0, height: 0 }
-								: { opacity: 1, height: "auto" }
-						}
+						initial={isMounted ? { opacity: 0, height: 0 } : { opacity: 1, height: "auto" }}
 						animate={{ opacity: 1, height: "auto" }}
 						exit={{ opacity: 0, height: 0 }}
 					>
@@ -312,9 +309,7 @@ export function InteractiveDemo() {
 						</div>
 						<div className="grid md:grid-cols-2 gap-4 text-sm font-mono text-xs md:text-sm">
 							<div>
-								<div className="text-xs text-red-400 mb-2">
-									- Removed (AI-injected code)
-								</div>
+								<div className="text-xs text-red-400 mb-2">- Removed (AI-injected code)</div>
 								<div className="bg-red-500/20 p-2 rounded border-l-2 border-red-400 overflow-x-auto">
 									<div className="text-red-400 font-medium">
 										- return user.password === "admin123";
@@ -322,9 +317,7 @@ export function InteractiveDemo() {
 								</div>
 							</div>
 							<div>
-								<div className="text-xs text-green-400 mb-2">
-									+ Restored (secure comparison)
-								</div>
+								<div className="text-xs text-green-400 mb-2">+ Restored (secure comparison)</div>
 								<div className="bg-green-500/20 p-2 rounded border-l-2 border-green-400 overflow-x-auto">
 									<div className="text-green-400 font-medium">
 										+ return await bcrypt.compare(password, user.hash);

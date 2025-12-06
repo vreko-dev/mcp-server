@@ -66,11 +66,7 @@ export function useResourceQuery<TData>(
 }
 
 // Mutation adapter
-export function useResourceMutation<
-	TData,
-	TVariables = void,
-	TContext = unknown,
->(
+export function useResourceMutation<TData, TVariables = void, TContext = unknown>(
 	mutationFn: (variables: TVariables) => Promise<TData | null | undefined>,
 	options?: UseMutationOptions<TData, AppError, TVariables, TContext> & {
 		schema?: z.ZodSchema<TData>;

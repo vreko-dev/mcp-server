@@ -93,10 +93,7 @@ export const useMagneticHover = (strength = 0.3, radius = 30) => {
 		x: springX,
 		y: springY,
 		style: {
-			transform: useTransform(
-				[springX, springY],
-				([x, y]) => `translate3d(${x}px, ${y}px, 0)`,
-			),
+			transform: useTransform([springX, springY], ([x, y]) => `translate3d(${x}px, ${y}px, 0)`),
 		},
 	};
 };
@@ -165,8 +162,7 @@ export const usePerformanceMonitor = () => {
 			// Update metrics every second
 			if (deltaTime >= 1000) {
 				const avgFrameTime =
-					frameTimes.current.reduce((sum, time) => sum + time, 0) /
-					frameTimes.current.length;
+					frameTimes.current.reduce((sum, time) => sum + time, 0) / frameTimes.current.length;
 				const currentFps = Math.round(1000 / avgFrameTime);
 
 				setMetrics({
@@ -195,10 +191,7 @@ export const useParallax = (speed = 0.5, threshold = 100) => {
 	const y = useMotionValue(0);
 	const [isInView, setIsInView] = useState(false);
 
-	const transform = useTransform(
-		y,
-		(value) => `translate3d(0, ${value * speed}px, 0)`,
-	);
+	const transform = useTransform(y, (value) => `translate3d(0, ${value * speed}px, 0)`);
 
 	useEffect(() => {
 		const element = ref.current;
@@ -357,13 +350,9 @@ export const useAdaptiveMotion = () => {
 	useEffect(() => {
 		// Detect device capabilities
 		const detectCapabilities = () => {
-			const isTouchDevice =
-				"ontouchstart" in window || navigator.maxTouchPoints > 0;
-			const prefersReducedMotion = window.matchMedia(
-				"(prefers-reduced-motion: reduce)",
-			).matches;
-			const isHighPerformance =
-				performance.fps >= 55 && performance.frameTime <= 18;
+			const isTouchDevice = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+			const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+			const isHighPerformance = performance.fps >= 55 && performance.frameTime <= 18;
 
 			setCapabilities({
 				highPerformance: isHighPerformance,

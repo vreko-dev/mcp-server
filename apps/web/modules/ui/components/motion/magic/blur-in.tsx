@@ -10,12 +10,7 @@ interface BlurInProps {
 	duration?: number;
 }
 
-export const BlurIn = ({
-	children,
-	className,
-	delay = 0,
-	duration = 0.5,
-}: BlurInProps) => {
+export const BlurIn = ({ children, className, delay = 0, duration = 0.5 }: BlurInProps) => {
 	return (
 		<motion.div
 			initial={{ opacity: 0, filter: "blur(10px)" }}

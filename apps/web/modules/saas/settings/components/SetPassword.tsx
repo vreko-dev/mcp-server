@@ -23,10 +23,7 @@ export function SetPasswordForm() {
 	};
 
 	return (
-		<SettingsItem
-			title="Set Password"
-			description="Set a password for your account to enable password-based login"
-		>
+		<SettingsItem title="Set Password" description="Set a password for your account to enable password-based login">
 			<div className="flex justify-end">
 				<Button type="submit" loading={submitting} onClick={onSubmit}>
 					Send Password Reset Email

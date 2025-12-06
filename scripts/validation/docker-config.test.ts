@@ -100,7 +100,9 @@ function parseEnvFile(envPath: string): Record<string, string> {
 
 	for (const line of content.split("\n")) {
 		const trimmed = line.trim();
-		if (!trimmed || trimmed.startsWith("#")) { continue; }
+		if (!trimmed || trimmed.startsWith("#")) {
+			continue;
+		}
 
 		const [key, ...valueParts] = trimmed.split("=");
 		if (key) {
@@ -213,7 +215,9 @@ describe("Docker Configuration Validation - RED Phase", () => {
 
 			for (const dockerfileName of dockerfiles) {
 				const dockerfilePath = path.join(PROJECT_ROOT, dockerfileName);
-				if (!fs.existsSync(dockerfilePath)) { continue; }
+				if (!fs.existsSync(dockerfilePath)) {
+					continue;
+				}
 
 				const filters = getDockerfilePnpmFilters(dockerfilePath);
 

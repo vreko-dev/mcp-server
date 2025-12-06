@@ -13,12 +13,7 @@ export const BackgroundBeams = ({ className }: { className?: string }) => {
 	const pathCount = isMobile ? 10 : 20;
 
 	return (
-		<div
-			className={cn(
-				"absolute inset-0 overflow-hidden pointer-events-none",
-				className,
-			)}
-		>
+		<div className={cn("absolute inset-0 overflow-hidden pointer-events-none", className)}>
 			<svg
 				className="hidden lg:block absolute -top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%] opacity-10"
 				viewBox="0 0 1200 1200"
@@ -36,9 +31,7 @@ export const BackgroundBeams = ({ className }: { className?: string }) => {
 					return (
 						<motion.path
 							key={i}
-							d={`M${100 + ((i * 50) % 1000)},${
-								100 + ((i * 30) % 1000)
-							} C${200 + ((i * 70) % 1000)},${
+							d={`M${100 + ((i * 50) % 1000)},${100 + ((i * 30) % 1000)} C${200 + ((i * 70) % 1000)},${
 								150 + ((i * 40) % 1000)
 							} ${300 + ((i * 90) % 1000)},${
 								200 + ((i * 50) % 1000)

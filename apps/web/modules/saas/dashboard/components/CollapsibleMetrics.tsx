@@ -34,19 +34,11 @@ export interface CollapsibleMetricsProps {
  * </CollapsibleMetrics>
  * ```
  */
-export function CollapsibleMetrics({
-	title,
-	icon,
-	children,
-	defaultOpen = false,
-}: CollapsibleMetricsProps) {
+export function CollapsibleMetrics({ title, icon, children, defaultOpen = false }: CollapsibleMetricsProps) {
 	const [isOpen, setIsOpen] = useState(defaultOpen);
 
 	return (
-		<section
-			className="border border-slate-700 rounded-lg overflow-hidden bg-slate-900/20"
-			aria-label={title}
-		>
+		<section className="border border-slate-700 rounded-lg overflow-hidden bg-slate-900/20" aria-label={title}>
 			{/* Header / Trigger Button */}
 			<button
 				type="button"
@@ -61,10 +53,7 @@ export function CollapsibleMetrics({
 				</div>
 
 				{/* Rotating Chevron */}
-				<m.div
-					animate={{ rotate: isOpen ? 180 : 0 }}
-					transition={{ duration: 0.3 }}
-				>
+				<m.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.3 }}>
 					<ChevronDown className="w-5 h-5 text-slate-400" />
 				</m.div>
 			</button>

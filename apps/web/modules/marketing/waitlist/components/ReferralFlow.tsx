@@ -54,12 +54,9 @@ export function ReferralFlow() {
 		>
 			{/* Referral Link Card */}
 			<div className="rounded-lg border border-snapback-border bg-snapback-bg-secondary p-8 space-y-4">
-				<h3 className="text-xl font-semibold text-snapback-text-primary">
-					Your Referral Link
-				</h3>
+				<h3 className="text-xl font-semibold text-snapback-text-primary">Your Referral Link</h3>
 				<p className="text-snapback-text-secondary">
-					Share this link with your friends. When they sign up, you both get 1
-					month of Pro free!
+					Share this link with your friends. When they sign up, you both get 1 month of Pro free!
 				</p>
 
 				<div className="flex gap-2">
@@ -68,16 +65,8 @@ export function ReferralFlow() {
 						readOnly
 						className="bg-snapback-bg-primary border-snapback-border font-mono text-sm"
 					/>
-					<Button
-						onClick={() => handleCopy(referralLink)}
-						variant="outline"
-						className="flex-shrink-0"
-					>
-						{copied ? (
-							<Check className="w-4 h-4 mr-2" />
-						) : (
-							<Copy className="w-4 h-4 mr-2" />
-						)}
+					<Button onClick={() => handleCopy(referralLink)} variant="outline" className="flex-shrink-0">
+						{copied ? <Check className="w-4 h-4 mr-2" /> : <Copy className="w-4 h-4 mr-2" />}
 						{copied ? "Copied!" : "Copy"}
 					</Button>
 				</div>
@@ -88,11 +77,7 @@ export function ReferralFlow() {
 						readOnly
 						className="bg-snapback-bg-primary border-snapback-border font-mono text-sm"
 					/>
-					<Button
-						onClick={() => handleCopy(referralCode)}
-						variant="outline"
-						className="flex-shrink-0"
-					>
+					<Button onClick={() => handleCopy(referralCode)} variant="outline" className="flex-shrink-0">
 						Copy Code
 					</Button>
 				</div>
@@ -101,9 +86,7 @@ export function ReferralFlow() {
 			{/* Rewards Milestones */}
 			<div className="rounded-lg border border-snapback-border bg-snapback-bg-secondary p-8 space-y-6">
 				<div>
-					<h3 className="text-xl font-semibold text-snapback-text-primary mb-2">
-						Unlock Rewards
-					</h3>
+					<h3 className="text-xl font-semibold text-snapback-text-primary mb-2">Unlock Rewards</h3>
 					<p className="text-snapback-text-secondary">
 						Invite friends to unlock Pro features. Cap at 6 months total.
 					</p>
@@ -117,8 +100,7 @@ export function ReferralFlow() {
 							referralCount < milestone.referrals &&
 							(index === 0 ||
 								(MILESTONES[index - 1] &&
-									referralCount >=
-										(MILESTONES[index - 1] as typeof milestone).referrals));
+									referralCount >= (MILESTONES[index - 1] as typeof milestone).referrals));
 
 						return (
 							<div
@@ -147,9 +129,7 @@ export function ReferralFlow() {
 										{milestone.referrals} Referral
 										{milestone.referrals > 1 ? "s" : ""}
 									</p>
-									<p className="text-sm text-snapback-text-secondary">
-										{milestone.reward}
-									</p>
+									<p className="text-sm text-snapback-text-secondary">{milestone.reward}</p>
 								</div>
 								{isUnlocked && (
 									<div
@@ -160,9 +140,7 @@ export function ReferralFlow() {
 									</div>
 								)}
 								{isNext && !isUnlocked && (
-									<div className="text-sm font-semibold text-snapback-green">
-										Next
-									</div>
+									<div className="text-sm font-semibold text-snapback-green">Next</div>
 								)}
 							</div>
 						);
@@ -172,29 +150,19 @@ export function ReferralFlow() {
 				{/* Stats */}
 				<div className="grid grid-cols-2 gap-4 pt-4 border-t border-snapback-border">
 					<div className="text-center">
-						<p className="text-3xl font-bold text-snapback-green">
-							{referralCount}
-						</p>
-						<p className="text-sm text-snapback-text-secondary">
-							Successful Referrals
-						</p>
+						<p className="text-3xl font-bold text-snapback-green">{referralCount}</p>
+						<p className="text-sm text-snapback-text-secondary">Successful Referrals</p>
 					</div>
 					<div className="text-center">
-						<p className="text-3xl font-bold text-snapback-green">
-							{Math.min(referralCount, 6)}
-						</p>
-						<p className="text-sm text-snapback-text-secondary">
-							Months of Pro Unlocked
-						</p>
+						<p className="text-3xl font-bold text-snapback-green">{Math.min(referralCount, 6)}</p>
+						<p className="text-sm text-snapback-text-secondary">Months of Pro Unlocked</p>
 					</div>
 				</div>
 			</div>
 
 			{/* How It Works */}
 			<div className="rounded-lg border border-snapback-border bg-snapback-bg-secondary p-8 space-y-4">
-				<h3 className="text-xl font-semibold text-snapback-text-primary">
-					How It Works
-				</h3>
+				<h3 className="text-xl font-semibold text-snapback-text-primary">How It Works</h3>
 				<ol className="space-y-3 text-snapback-text-secondary">
 					<li className="flex items-start gap-3">
 						<span

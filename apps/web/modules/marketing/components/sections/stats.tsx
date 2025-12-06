@@ -42,9 +42,7 @@ export function StatsSection() {
 	return (
 		<div className="container mx-auto">
 			<div className="text-center mb-16">
-				<h2 className="text-display font-black text-white mb-6">
-					Trusted by the community
-				</h2>
+				<h2 className="text-display font-black text-white mb-6">Trusted by the community</h2>
 				<p className="text-xl text-muted-foreground max-w-2xl mx-auto">
 					Real numbers from real developers using SnapBack every day
 				</p>
@@ -52,27 +50,14 @@ export function StatsSection() {
 
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
 				{stats.map((stat, index) => (
-					<StatCard
-						key={index}
-						stat={stat}
-						index={index}
-						isMounted={isMounted}
-					/>
+					<StatCard key={index} stat={stat} index={index} isMounted={isMounted} />
 				))}
 			</div>
 		</div>
 	);
 }
 
-const StatCard = ({
-	stat,
-	index,
-	isMounted,
-}: {
-	stat: any;
-	index: number;
-	isMounted: boolean;
-}) => {
+const StatCard = ({ stat, index, isMounted }: { stat: any; index: number; isMounted: boolean }) => {
 	const [count, setCount] = useState(0);
 	const ref = useRef(null);
 	const isInView = useInView(ref, { once: true });

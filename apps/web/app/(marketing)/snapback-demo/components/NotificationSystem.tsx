@@ -6,16 +6,12 @@ import type { Notification } from "../domain/types";
 
 export function NotificationSystem() {
 	const { state, dispatch } = useSnapBack();
-	const [visibleNotifications, setVisibleNotifications] = useState<
-		Notification[]
-	>([]);
+	const [visibleNotifications, setVisibleNotifications] = useState<Notification[]>([]);
 	const [showHistory, setShowHistory] = useState(false);
 
 	// Manage notification visibility and timeouts
 	useEffect(() => {
-		const newNotifications = state.notifications.filter(
-			(n) => !visibleNotifications.some((vn) => vn.id === n.id),
-		);
+		const newNotifications = state.notifications.filter((n) => !visibleNotifications.some((vn) => vn.id === n.id));
 
 		if (newNotifications.length > 0) {
 			setVisibleNotifications((prev) => [...prev, ...newNotifications]);
@@ -24,8 +20,7 @@ export function NotificationSystem() {
 			newNotifications.forEach((notification) => {
 				if (notification.duration !== 0) {
 					// 0 means no auto-dismissal
-					const timeout =
-						notification.duration || state.settings.notifications.duration;
+					const timeout = notification.duration || state.settings.notifications.duration;
 					setTimeout(() => {
 						removeNotification(notification.id);
 					}, timeout);
@@ -60,12 +55,7 @@ export function NotificationSystem() {
 						stroke="currentColor"
 					>
 						<title>Success</title>
-						<path
-							strokeLinecap="round"
-							strokeLinejoin="round"
-							strokeWidth={2}
-							d="M5 13l4 4L19 7"
-						/>
+						<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
 					</svg>
 				);
 			case "warning":
@@ -96,12 +86,7 @@ export function NotificationSystem() {
 						stroke="currentColor"
 					>
 						<title>Error</title>
-						<path
-							strokeLinecap="round"
-							strokeLinejoin="round"
-							strokeWidth={2}
-							d="M6 18L18 6M6 6l12 12"
-						/>
+						<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
 					</svg>
 				);
 			default:
@@ -137,9 +122,7 @@ export function NotificationSystem() {
 						<div className="flex items-start">
 							<div className="flex-shrink-0">{getIcon(notification.type)}</div>
 							<div className="ml-3 w-0 flex-1">
-								<div className="text-sm font-medium text-gray-100">
-									{notification.title}
-								</div>
+								<div className="text-sm font-medium text-gray-100">{notification.title}</div>
 								<div className="mt-1 text-sm text-gray-300 whitespace-pre-line">
 									{notification.message}
 								</div>
@@ -191,8 +174,7 @@ export function NotificationSystem() {
 						onClick={toggleHistory}
 						className="w-full text-center text-sm text-cyan-300 hover:text-cyan-200"
 					>
-						{showHistory ? "Hide History" : "Show History"} (
-						{state.notifications.length})
+						{showHistory ? "Hide History" : "Show History"} ({state.notifications.length})
 					</button>
 				</div>
 			</div>
@@ -221,9 +203,7 @@ export function NotificationSystem() {
 					</div>
 					<div className="p-2">
 						{state.notifications.length === 0 ? (
-							<div className="p-4 text-center text-gray-400">
-								No notifications
-							</div>
+							<div className="p-4 text-center text-gray-400">No notifications</div>
 						) : (
 							<ul className="space-y-2">
 								{state.notifications.map((notification) => (
@@ -232,9 +212,7 @@ export function NotificationSystem() {
 										className="p-3 border-b border-[#2d2d2d] hover:bg-[#252526] rounded"
 									>
 										<div className="flex items-start">
-											<div className="flex-shrink-0 mt-0.5">
-												{getIcon(notification.type)}
-											</div>
+											<div className="flex-shrink-0 mt-0.5">{getIcon(notification.type)}</div>
 											<div className="ml-3 flex-1">
 												<div className="flex justify-between">
 													<div className="text-sm font-medium text-gray-100">

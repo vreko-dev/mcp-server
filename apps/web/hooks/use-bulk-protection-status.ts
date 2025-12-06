@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
-import type { RealtimeChannel } from '@supabase/supabase-js';
+import type { RealtimeChannel } from "@supabase/supabase-js";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
 
 export interface FileProtectionStatus {
 	id: string;
-	protection: 'enabled' | 'disabled';
+	protection: "enabled" | "disabled";
 	updatedAt: string;
 }
 
@@ -24,11 +24,9 @@ interface UseBulkProtectionStatusReturn {
  */
 export function useBulkProtectionStatus(
 	fileIds: string[],
-	onChange?: (fileId: string, protection: 'enabled' | 'disabled') => void
+	onChange?: (fileId: string, protection: "enabled" | "disabled") => void,
 ): UseBulkProtectionStatusReturn {
-	const [statuses, setStatuses] = useState<Map<string, FileProtectionStatus>>(
-		new Map()
-	);
+	const [statuses, setStatuses] = useState<Map<string, FileProtectionStatus>>(new Map());
 	const [isLoading, setIsLoading] = useState(fileIds.length > 0);
 	const [channel, setChannel] = useState<RealtimeChannel | null>(null);
 
@@ -44,12 +42,12 @@ export function useBulkProtectionStatus(
 		const fetchAll = async () => {
 			try {
 				const { data, error } = await supabase
-					.from('protected_files')
-					.select('id, protection, updated_at')
-					.in('id', fileIds);
+					.from("protected_files")
+					.select("id, protection, updated_at")
+					.in("id", fileIds);
 
 				if (error) {
-					console.error('Failed to fetch bulk protection statuses:', error);
+					console.error("Failed to fetch bulk protection statuses:", error);
 					setIsLoading(false);
 					return;
 				}
@@ -59,16 +57,16 @@ export function useBulkProtectionStatus(
 						item.id,
 						{
 							id: item.id,
-							protection: item.protection as 'enabled' | 'disabled',
+							protection: item.protection as "enabled" | "disabled",
 							updatedAt: item.updated_at,
 						},
-					]) ?? []
+					]) ?? [],
 				);
 
 				setStatuses(statusMap);
 				setIsLoading(false);
 			} catch (error) {
-				console.error('Failed to fetch bulk protection statuses:', error);
+				console.error("Failed to fetch bulk protection statuses:", error);
 				setIsLoading(false);
 			}
 		};
@@ -77,18 +75,18 @@ export function useBulkProtectionStatus(
 
 		// Subscribe to all file changes
 		const chan = supabase
-			.channel('bulk_protection_changes')
+			.channel("bulk_protection_changes")
 			.on(
-				'postgres_changes',
+				"postgres_changes",
 				{
-					event: '*',
-					schema: 'public',
-					table: 'protected_files',
+					event: "*",
+					schema: "public",
+					table: "protected_files",
 				},
 				(payload: any) => {
 					// Update if file is in our watched list
-					if (payload.new && 'id' in payload.new && fileIds.includes(payload.new.id)) {
-						const newProtection = payload.new.protection as 'enabled' | 'disabled';
+					if (payload.new && "id" in payload.new && fileIds.includes(payload.new.id)) {
+						const newProtection = payload.new.protection as "enabled" | "disabled";
 						setStatuses((prev: Map<string, FileProtectionStatus>) => {
 							const updated = new Map(prev);
 							updated.set(payload.new.id, {
@@ -103,7 +101,7 @@ export function useBulkProtectionStatus(
 							onChange(payload.new.id, newProtection);
 						}
 					}
-				}
+				},
 			)
 			.subscribe();
 
@@ -112,7 +110,7 @@ export function useBulkProtectionStatus(
 		return () => {
 			supabase.removeChannel(chan);
 		};
-	}, [fileIds.join(',')]);
+	}, [fileIds.join(",")]);
 
 	return { statuses, isLoading, channel };
 }

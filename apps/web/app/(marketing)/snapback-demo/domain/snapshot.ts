@@ -43,11 +43,7 @@ export function createSnapshot(
 	const interval = options?.checkpointInterval ?? CHECKPOINT_INTERVAL;
 
 	// Check debounce window (unless forceCreate is true)
-	if (
-		!options?.forceCreate &&
-		lastSnapshotTs[fileId] &&
-		now - lastSnapshotTs[fileId] < interval
-	) {
+	if (!options?.forceCreate && lastSnapshotTs[fileId] && now - lastSnapshotTs[fileId] < interval) {
 		return null; // Too soon since last snapshot
 	}
 
@@ -104,10 +100,7 @@ function simpleHash(content: string): string {
 export function generateSnapshotName(gitContext?: GitContext): string {
 	if (gitContext) {
 		// Use git context for naming if available
-		return `${gitContext.branch}-${gitContext.commit.substring(
-			0,
-			7,
-		)}-${Date.now()}`;
+		return `${gitContext.branch}-${gitContext.commit.substring(0, 7)}-${Date.now()}`;
 	}
 
 	// Default to timestamp-based naming
@@ -124,11 +117,6 @@ export function restoreSnapshot(snapshot: Snapshot): string {
 /**
  * Gets snapshots for a specific file, sorted newest first
  */
-export function getSnapshotsForFile(
-	snapshots: Snapshot[],
-	fileId: string,
-): Snapshot[] {
-	return snapshots
-		.filter((s) => s.fileId === fileId)
-		.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+export function getSnapshotsForFile(snapshots: Snapshot[], fileId: string): Snapshot[] {
+	return snapshots.filter((s) => s.fileId === fileId).sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
 }

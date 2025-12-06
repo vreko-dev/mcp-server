@@ -3,12 +3,7 @@
 import { OAuthCallbackHandler } from "@saas/auth/components/OAuthCallbackHandler";
 import { memo } from "react";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import type {
-	Activity,
-	AIDetectionStat,
-	DashboardMetrics,
-	SessionMetrics,
-} from "@/lib/dashboard/metrics";
+import type { Activity, AIDetectionStat, DashboardMetrics, SessionMetrics } from "@/lib/dashboard/metrics";
 import { ActivityFeed } from "@/modules/saas/dashboard/components/ActivityFeed";
 import { AIDetectionStats } from "@/modules/saas/dashboard/components/AIDetectionStats";
 import { DashboardHeroCard } from "@/modules/saas/dashboard/components/DashboardHeroCard";
@@ -58,9 +53,7 @@ export const DashboardClient = memo(function DashboardClient({
 			{/* Dashboard Header */}
 			<div className="mb-8">
 				<h1 className="text-3xl font-bold">Dashboard</h1>
-				<p className="text-muted-foreground mt-2">
-					Welcome back, {userName || userEmail}
-				</p>
+				<p className="text-muted-foreground mt-2">Welcome back, {userName || userEmail}</p>
 			</div>
 
 			{/* Hero Card */}

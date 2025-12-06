@@ -1,24 +1,119 @@
-export { createChangeSummary, type FileChange, FileChangeAnalyzer, type FileChangeType, type IFileSystemProvider as IFileSystemProviderAnalysis, } from "./analysis/FileChangeAnalyzer";
-export { type AnalysisResult, DEFAULT_RISK_THRESHOLDS, RiskAnalyzer, type RiskFactor, type RiskSeverity, } from "./analysis/RiskAnalyzer";
+export {
+	createChangeSummary,
+	type FileChange,
+	FileChangeAnalyzer,
+	type FileChangeType,
+	type IFileSystemProvider as IFileSystemProviderAnalysis,
+} from "./analysis/FileChangeAnalyzer";
+export {
+	type AnalysisResult,
+	DEFAULT_RISK_THRESHOLDS,
+	RiskAnalyzer,
+	type RiskFactor,
+	type RiskSeverity,
+} from "./analysis/RiskAnalyzer";
 export * from "./cache/lru-cache";
 export { ProtectionClient } from "./client/ProtectionClient";
 export { SnapshotClient } from "./client/SnapshotClient";
 export { type Envelope, SnapbackAnalyticsClient, SnapbackClient } from "./client";
-export { type CloudBackupConfig, CloudBackupService, type DownloadResult, type UploadResult, } from "./cloud/CloudBackupService";
-export { type ConfigChange, ConfigDetector, type ConfigDetectorOptions, type ConfigFile, type ConfigParseResult, type ConfigValidationResult, type IFileSystemProvider, } from "./config/ConfigDetector";
+export {
+	type CloudBackupConfig,
+	CloudBackupService,
+	type DownloadResult,
+	type UploadResult,
+} from "./cloud/CloudBackupService";
+export {
+	type ConfigChange,
+	ConfigDetector,
+	type ConfigDetectorOptions,
+	type ConfigFile,
+	type ConfigParseResult,
+	type ConfigValidationResult,
+	type IFileSystemProvider,
+} from "./config/ConfigDetector";
 export { type MergeOptions, type ParseResult, SnapBackRCParser } from "./config/SnapBackRCParser";
-export { type BurstThresholds, createThresholds, DEFAULT_THRESHOLDS, type DetectionThresholds, type ExperienceThresholds, type ProtectionThresholds, type QoSThresholds, type ResourceThresholds, type RiskThresholds, resetThresholds, type SecurityPatternScores, type SessionThresholds, type TaggingThresholds, THRESHOLDS, type ThresholdsConfig, updateThresholds, } from "./config/Thresholds";
-export type { ProtectionLevel, ProtectionRule, SnapBackHooks, SnapBackPolicies, SnapBackRC, SnapBackSettings, SnapshotTemplate, } from "./config/types";
+export {
+	type BurstThresholds,
+	createThresholds,
+	DEFAULT_THRESHOLDS,
+	type DetectionThresholds,
+	type ExperienceThresholds,
+	type ProtectionThresholds,
+	type QoSThresholds,
+	type ResourceThresholds,
+	type RiskThresholds,
+	resetThresholds,
+	type SecurityPatternScores,
+	type SessionThresholds,
+	type TaggingThresholds,
+	THRESHOLDS,
+	type ThresholdsConfig,
+	updateThresholds,
+} from "./config/Thresholds";
+export type {
+	ProtectionLevel,
+	ProtectionRule,
+	SnapBackHooks,
+	SnapBackPolicies,
+	SnapBackRC,
+	SnapBackSettings,
+	SnapshotTemplate,
+} from "./config/types";
 export * from "./config";
-export { AI_EXTENSION_IDS, type AIAssistantName, AIPresenceDetector, type IExtensionProvider, } from "./core/detection/AIPresenceDetector";
-export { type BurstDetectionResult, type BurstDetectorConfig, BurstHeuristicsDetector, } from "./core/detection/BurstHeuristicsDetector";
-export { CursorDetector, type IEnvironmentProvider, } from "./core/detection/CursorDetector";
-export { DEFAULT_EXPERIENCE_THRESHOLDS, ExperienceClassifier, type ExperienceClassifierOptions, type ExperienceThresholdsConfig, type ExperienceTier, type IKeyValueStorage, } from "./core/session/ExperienceClassifier";
-export { type IDisposable, type IEventEmitter, type ILogger, type ISessionStorage, type ITimerService, NodeTimerService, NoOpLogger, } from "./core/session/interfaces";
-export { SessionCoordinator, type SessionCoordinatorConfig, type SessionCoordinatorOptions, } from "./core/session/SessionCoordinator";
-export { type ISnapshotProvider, SessionSummaryGenerator, type SessionSummaryGeneratorOptions, } from "./core/session/SessionSummaryGenerator";
-export { type AIPresenceInfo, type SessionTag, SessionTagger, type SessionTaggerConfig, type SessionTaggerOptions, type SessionTaggingResult, } from "./core/session/SessionTagger";
-export type { SessionCandidate, SessionFileEntry, SessionFinalizeReason, SessionId, SessionManifest, } from "./core/session/types";
+export {
+	AI_EXTENSION_IDS,
+	type AIAssistantName,
+	AIPresenceDetector,
+	type IExtensionProvider,
+} from "./core/detection/AIPresenceDetector";
+export {
+	type BurstDetectionResult,
+	type BurstDetectorConfig,
+	BurstHeuristicsDetector,
+} from "./core/detection/BurstHeuristicsDetector";
+export { CursorDetector, type IEnvironmentProvider } from "./core/detection/CursorDetector";
+export {
+	DEFAULT_EXPERIENCE_THRESHOLDS,
+	ExperienceClassifier,
+	type ExperienceClassifierOptions,
+	type ExperienceThresholdsConfig,
+	type ExperienceTier,
+	type IKeyValueStorage,
+} from "./core/session/ExperienceClassifier";
+export {
+	type IDisposable,
+	type IEventEmitter,
+	type ILogger,
+	type ISessionStorage,
+	type ITimerService,
+	NodeTimerService,
+	NoOpLogger,
+} from "./core/session/interfaces";
+export {
+	SessionCoordinator,
+	type SessionCoordinatorConfig,
+	type SessionCoordinatorOptions,
+} from "./core/session/SessionCoordinator";
+export {
+	type ISnapshotProvider,
+	SessionSummaryGenerator,
+	type SessionSummaryGeneratorOptions,
+} from "./core/session/SessionSummaryGenerator";
+export {
+	type AIPresenceInfo,
+	type SessionTag,
+	SessionTagger,
+	type SessionTaggerConfig,
+	type SessionTaggerOptions,
+	type SessionTaggingResult,
+} from "./core/session/SessionTagger";
+export type {
+	SessionCandidate,
+	SessionFileEntry,
+	SessionFinalizeReason,
+	SessionId,
+	SessionManifest,
+} from "./core/session/types";
 export { EncryptionService } from "./encryption/EncryptionService";
 export { analyze, evaluatePolicy, ingestTelemetry } from "./helpers";
 export * from "./privacy/hasher";
@@ -33,7 +128,13 @@ export { MemoryStorage } from "./storage/MemoryStorage";
 export type { StorageAdapter } from "./storage/StorageAdapter";
 export { StorageBroker } from "./storage/StorageBroker";
 export { StorageBrokerAdapter } from "./storage/StorageBrokerAdapter";
-export { CorruptedDataError, StorageConnectionError, StorageError, StorageFullError, StorageLockError, } from "./storage/StorageErrors";
+export {
+	CorruptedDataError,
+	StorageConnectionError,
+	StorageError,
+	StorageFullError,
+	StorageLockError,
+} from "./storage/StorageErrors";
 export type { ExperienceMetrics } from "./types/experience";
 export type { SDKConfig } from "./types";
 export { toError } from "./utils/errorHelpers";

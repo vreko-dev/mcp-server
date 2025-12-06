@@ -68,7 +68,6 @@ try {
 	);
 }
 
-
 export interface CircuitBreakerOptions {
 	failureThreshold?: number;
 	successThreshold?: number;
@@ -245,10 +244,7 @@ export class AnalysisRouter {
 		return {
 			...result,
 			upgradePrompt: true,
-			recommendations: [
-				...result.recommendations,
-				`💡 ${message} for advanced analysis capabilities.`,
-			],
+			recommendations: [...result.recommendations, `💡 ${message} for advanced analysis capabilities.`],
 		};
 	}
 

@@ -1,17 +1,10 @@
 "use client";
 import { useSession } from "@saas/auth/hooks/use-session";
 import { useOrganizationMemberRoles } from "@saas/organizations/hooks/member-roles";
-import {
-	fullOrganizationQueryKey,
-	useFullOrganizationQuery,
-} from "@saas/organizations/lib/api";
+import { fullOrganizationQueryKey, useFullOrganizationQuery } from "@saas/organizations/lib/api";
 import { UserAvatar } from "@shared/components/UserAvatar";
 import { useQueryClient } from "@tanstack/react-query";
-import type {
-	ColumnDef,
-	ColumnFiltersState,
-	SortingState,
-} from "@tanstack/react-table";
+import type { ColumnDef, ColumnFiltersState, SortingState } from "@tanstack/react-table";
 import {
 	flexRender,
 	getCoreRowModel,
@@ -21,12 +14,7 @@ import {
 	useReactTable,
 } from "@tanstack/react-table";
 import { Button } from "@ui/components/button";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from "@ui/components/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@ui/components/dropdown-menu";
 import { Table, TableBody, TableCell, TableRow } from "@ui/components/table";
 import { LogOutIcon, MoreVerticalIcon, TrashIcon } from "lucide-react";
 import { useState } from "react";
@@ -34,11 +22,7 @@ import { toast } from "sonner";
 import { isOrganizationAdmin } from "@/lib/auth/helpers";
 import { OrganizationRoleSelect } from "./OrganizationRoleSelect";
 
-export function OrganizationMembersList({
-	organizationId,
-}: {
-	organizationId: string;
-}) {
+export function OrganizationMembersList({ organizationId }: { organizationId: string }) {
 	const queryClient = useQueryClient();
 	const { user } = useSession();
 	const { data: organization } = useFullOrganizationQuery(organizationId);
@@ -104,9 +88,7 @@ export function OrganizationMembersList({
 						/>
 						<div>
 							<strong className="block">{row.original.user.name}</strong>
-							<small className="text-foreground/60">
-								{row.original.user.email}
-							</small>
+							<small className="text-foreground/60">{row.original.user.email}</small>
 						</div>
 					</div>
 				) : null,
@@ -121,12 +103,8 @@ export function OrganizationMembersList({
 							<>
 								<OrganizationRoleSelect
 									value={row.original.role}
-									onSelect={async (value) =>
-										updateMemberRole(row.original.id, value)
-									}
-									disabled={
-										!userIsOrganizationAdmin || row.original.role === "owner"
-									}
+									onSelect={async (value) => updateMemberRole(row.original.id, value)}
+									disabled={!userIsOrganizationAdmin || row.original.role === "owner"}
 								/>
 								<DropdownMenu>
 									<DropdownMenuTrigger asChild>
@@ -190,10 +168,7 @@ export function OrganizationMembersList({
 				<TableBody>
 					{table.getRowModel().rows?.length ? (
 						table.getRowModel().rows.map((row) => (
-							<TableRow
-								key={row.id}
-								data-state={row.getIsSelected() && "selected"}
-							>
+							<TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
 								{row.getVisibleCells().map((cell) => (
 									<TableCell key={cell.id}>
 										{flexRender(cell.column.columnDef.cell, cell.getContext())}

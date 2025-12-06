@@ -31,17 +31,11 @@ export function getContentStructure({
 		subPath: string,
 		item: (typeof documents)[number],
 	) {
-		const pathParts = item.path
-			.replace(new RegExp(`^${subPath}[/]*`), "")
-			.split("/");
+		const pathParts = item.path.replace(new RegExp(`^${subPath}[/]*`), "").split("/");
 
-		const rootItemPath = subPath
-			? [subPath, pathParts[0]].join("/")
-			: (pathParts[0] ?? "");
+		const rootItemPath = subPath ? [subPath, pathParts[0]].join("/") : (pathParts[0] ?? "");
 
-		let rootItem = contentItemsArray.find(
-			(contentItem) => contentItem.path === rootItemPath,
-		);
+		let rootItem = contentItemsArray.find((contentItem) => contentItem.path === rootItemPath);
 
 		const isPage = pathParts.length === 1;
 		if (!rootItem) {
@@ -111,10 +105,7 @@ export function getContentStructure({
 			).findIndex(([key]) => key === b.path.replace(`${basePath}/`, ""));
 
 			// use position index from meta file or put the item at the end of the list
-			return (
-				(aIndex > -1 ? aIndex : items.length) -
-				(bIndex > -1 ? bIndex : items.length)
-			);
+			return (aIndex > -1 ? aIndex : items.length) - (bIndex > -1 ? bIndex : items.length);
 		});
 
 		items.forEach((item) => {
@@ -133,12 +124,12 @@ export function getActivePathFromUrlParam(path: string | string[]) {
 	return Array.isArray(path) ? path.join("/") : path || "";
 }
 
-export function getLocalizedDocumentWithFallback<
-	T extends { path: string; locale: string },
->(documents: T[], path: string, locale: string) {
-	return documents
-		.filter((doc) => doc.path === path)
-		.sort((doc) => (doc.locale === locale ? -1 : 1))[0];
+export function getLocalizedDocumentWithFallback<T extends { path: string; locale: string }>(
+	documents: T[],
+	path: string,
+	locale: string,
+) {
+	return documents.filter((doc) => doc.path === path).sort((doc) => (doc.locale === locale ? -1 : 1))[0];
 }
 
 export function slugifyHeadline(headline: string) {

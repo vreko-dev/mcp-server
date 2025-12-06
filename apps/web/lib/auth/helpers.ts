@@ -53,10 +53,7 @@ function isValidEmail(email: string): boolean {
  * }
  * ```
  */
-export async function signInWithEmail(
-	email: string,
-	password: string,
-): Promise<AuthResult> {
+export async function signInWithEmail(email: string, password: string): Promise<AuthResult> {
 	try {
 		// Validate inputs
 		if (!email || email.trim().length === 0) {
@@ -111,9 +108,7 @@ export async function signInWithEmail(
  * @param callbackURL - Optional callback URL (defaults to /dashboard)
  * @returns Authentication result
  */
-export async function signInWithGithub(
-	_callbackURL = "/dashboard",
-): Promise<AuthResult> {
+export async function signInWithGithub(_callbackURL = "/dashboard"): Promise<AuthResult> {
 	try {
 		// TODO: Implement proper API call to backend auth service
 		// await authClient.signIn.social({ provider: "github", callbackURL });
@@ -123,8 +118,7 @@ export async function signInWithGithub(
 		console.error("GitHub sign in error:", error);
 		return {
 			success: false,
-			error:
-				error instanceof Error ? error.message : "GitHub authentication failed",
+			error: error instanceof Error ? error.message : "GitHub authentication failed",
 		};
 	}
 }
@@ -137,9 +131,7 @@ export async function signInWithGithub(
  * @param callbackURL - Optional callback URL (defaults to /dashboard)
  * @returns Authentication result
  */
-export async function signInWithGoogle(
-	_callbackURL = "/dashboard",
-): Promise<AuthResult> {
+export async function signInWithGoogle(_callbackURL = "/dashboard"): Promise<AuthResult> {
 	try {
 		// TODO: Implement proper API call to backend auth service
 		// await authClient.signIn.social({ provider: "google", callbackURL });
@@ -149,8 +141,7 @@ export async function signInWithGoogle(
 		console.error("Google sign in error:", error);
 		return {
 			success: false,
-			error:
-				error instanceof Error ? error.message : "Google authentication failed",
+			error: error instanceof Error ? error.message : "Google authentication failed",
 		};
 	}
 }
@@ -165,11 +156,7 @@ export async function signInWithGoogle(
  * @param name - Optional display name
  * @returns Authentication result with user data or error
  */
-export async function signUpWithEmail(
-	email: string,
-	password: string,
-	name?: string,
-): Promise<AuthResult> {
+export async function signUpWithEmail(email: string, password: string, name?: string): Promise<AuthResult> {
 	try {
 		// Validate inputs
 		if (!email || email.trim().length === 0) {
@@ -237,9 +224,7 @@ export async function signUpWithEmail(
  * @param email - User email address
  * @returns Result indicating if email was sent
  */
-export async function sendPasswordResetEmail(
-	email: string,
-): Promise<AuthResult> {
+export async function sendPasswordResetEmail(email: string): Promise<AuthResult> {
 	try {
 		// Validate email
 		if (!email || email.trim().length === 0) {
@@ -266,8 +251,7 @@ export async function sendPasswordResetEmail(
 		if (response.error !== null) {
 			return {
 				success: false,
-				error:
-					(response.error as Error).message || "Failed to send reset email",
+				error: (response.error as Error).message || "Failed to send reset email",
 			};
 		}
 
@@ -276,8 +260,7 @@ export async function sendPasswordResetEmail(
 		console.error("Password reset error:", error);
 		return {
 			success: false,
-			error:
-				error instanceof Error ? error.message : "Failed to send reset email",
+			error: error instanceof Error ? error.message : "Failed to send reset email",
 		};
 	}
 }
@@ -341,10 +324,7 @@ export async function signInWithPasskey(): Promise<AuthResult> {
 		console.error("Passkey sign in error:", error);
 		return {
 			success: false,
-			error:
-				error instanceof Error
-					? error.message
-					: "Passkey authentication failed",
+			error: error instanceof Error ? error.message : "Passkey authentication failed",
 		};
 	}
 }
@@ -356,10 +336,7 @@ export async function signInWithPasskey(): Promise<AuthResult> {
  * @param _callbackURL - Optional callback URL
  * @returns Result indicating if magic link was sent
  */
-export async function sendMagicLink(
-	email: string,
-	_callbackURL = "/dashboard",
-): Promise<AuthResult> {
+export async function sendMagicLink(email: string, _callbackURL = "/dashboard"): Promise<AuthResult> {
 	try {
 		// Validate email
 		if (!email || email.trim().length === 0) {
@@ -395,8 +372,7 @@ export async function sendMagicLink(
 		console.error("Magic link error:", error);
 		return {
 			success: false,
-			error:
-				error instanceof Error ? error.message : "Failed to send magic link",
+			error: error instanceof Error ? error.message : "Failed to send magic link",
 		};
 	}
 }
@@ -414,9 +390,7 @@ export function isOrganizationAdmin(
 ): boolean {
 	if (!organization || !user) return false;
 	const member = organization.members.find((m) => m.userId === user.id);
-	return (
-		["owner", "admin"].includes(member?.role ?? "") || user.role === "admin"
-	);
+	return ["owner", "admin"].includes(member?.role ?? "") || user.role === "admin";
 }
 
 /**

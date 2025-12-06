@@ -9,15 +9,9 @@ export interface AnimatedNumberProps {
 	duration?: number;
 }
 
-export function AnimatedNumber({
-	value,
-	className,
-	duration = 1,
-}: AnimatedNumberProps) {
+export function AnimatedNumber({ value, className, duration = 1 }: AnimatedNumberProps) {
 	const spring = useSpring(value, { duration: duration * 1000 });
-	const display = useTransform(spring, (current) =>
-		Math.round(current).toLocaleString(),
-	);
+	const display = useTransform(spring, (current) => Math.round(current).toLocaleString());
 
 	useEffect(() => {
 		spring.set(value);

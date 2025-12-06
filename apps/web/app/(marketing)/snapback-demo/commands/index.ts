@@ -1,18 +1,8 @@
 import { getAiSuggestions } from "../domain/ai";
-import {
-	parseIgnoreFile,
-	parsePolicyFile,
-	parseSnapbackRc,
-} from "../domain/policies";
+import { parseIgnoreFile, parsePolicyFile, parseSnapbackRc } from "../domain/policies";
 import { shouldProtectFile } from "../domain/protection";
 import { createSnapshot } from "../domain/snapshot";
-import type {
-	GitContext,
-	Policy,
-	ProtectedFile,
-	ProtectionLevel,
-	Snapshot,
-} from "../domain/types";
+import type { GitContext, Policy, ProtectedFile, ProtectionLevel, Snapshot } from "../domain/types";
 import { NotificationRepo } from "../persistence/NotificationRepo";
 import { PolicyRepo } from "../persistence/PolicyRepo";
 import { ProtectionRepo } from "../persistence/ProtectionRepo";
@@ -24,10 +14,7 @@ const protectionRepo = new ProtectionRepo();
 const notificationRepo = new NotificationRepo();
 const policyRepo = new PolicyRepo();
 
-const generateId = () =>
-	crypto?.randomUUID
-		? crypto.randomUUID()
-		: Math.random().toString(36).slice(2, 11);
+const generateId = () => (crypto?.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2, 11));
 
 /**
  * SnapBack Commands Registry
@@ -70,19 +57,12 @@ export class SnapBackCommands {
 		const existingSnapshots = await snapshotRepo.getByFileId(fileId);
 
 		// Create snapshot with deduplication
-		const snapshot = createSnapshot(
-			fileId,
-			content,
-			existingSnapshots,
-			protectionLevel,
-			gitContext,
-			{
-				...(options?.checkpointInterval !== undefined && {
-					checkpointInterval: options.checkpointInterval,
-				}),
-				forceCreate: options?.force ?? false,
-			},
-		);
+		const snapshot = createSnapshot(fileId, content, existingSnapshots, protectionLevel, gitContext, {
+			...(options?.checkpointInterval !== undefined && {
+				checkpointInterval: options.checkpointInterval,
+			}),
+			forceCreate: options?.force ?? false,
+		});
 
 		if (snapshot) {
 			// Save to repository (idempotent)
@@ -147,10 +127,7 @@ export class SnapBackCommands {
 	/**
 	 * Renames a snapshot
 	 */
-	async renameSnapshot(
-		snapshotId: string,
-		newName: string,
-	): Promise<Snapshot | null> {
+	async renameSnapshot(snapshotId: string, newName: string): Promise<Snapshot | null> {
 		const trimmedName = newName.trim();
 		if (!trimmedName) {
 			return null;
@@ -183,9 +160,7 @@ export class SnapBackCommands {
 			id: generateId(),
 			type: "warning",
 			title: "Snapshot Deleted",
-			message: snapshot
-				? `Snapshot ${snapshot.name} removed`
-				: "Snapshot removed",
+			message: snapshot ? `Snapshot ${snapshot.name} removed` : "Snapshot removed",
 			timestamp: new Date(),
 		});
 	}
@@ -215,10 +190,7 @@ export class SnapBackCommands {
 	/**
 	 * Protects a file with a specific protection level
 	 */
-	async protectFile(
-		path: string,
-		level: ProtectionLevel,
-	): Promise<ProtectedFile> {
+	async protectFile(path: string, level: ProtectionLevel): Promise<ProtectedFile> {
 		const protectedFile = await protectionRepo.save({
 			id: generateId(),
 			path,
@@ -240,10 +212,7 @@ export class SnapBackCommands {
 	/**
 	 * Changes protection level for a file
 	 */
-	async changeProtectionLevel(
-		path: string,
-		level: ProtectionLevel,
-	): Promise<void> {
+	async changeProtectionLevel(path: string, level: ProtectionLevel): Promise<void> {
 		await protectionRepo.updateProtectionLevel(path, level);
 
 		// Show notification
@@ -275,10 +244,7 @@ export class SnapBackCommands {
 	/**
 	 * Quick sets protection level
 	 */
-	async quickSetProtection(
-		path: string,
-		level: "watch" | "warn" | "block",
-	): Promise<void> {
+	async quickSetProtection(path: string, level: "watch" | "warn" | "block"): Promise<void> {
 		await this.changeProtectionLevel(path, level);
 	}
 
@@ -362,11 +328,7 @@ rules:
 		const rcPolicies = parseSnapbackRc(snapbackRcContent);
 
 		// Combine and save policies
-		const allPolicies = [
-			...protectedPolicies,
-			...ignorePolicies,
-			...rcPolicies,
-		];
+		const allPolicies = [...protectedPolicies, ...ignorePolicies, ...rcPolicies];
 		await policyRepo.saveAll(allPolicies);
 		return allPolicies;
 	}
@@ -405,14 +367,7 @@ rules:
 			checkpointInterval?: number;
 		},
 	): Promise<Snapshot | null> {
-		return this.createSnapshot(
-			fileId,
-			filePath,
-			content,
-			protectionLevel,
-			gitContext,
-			options,
-		);
+		return this.createSnapshot(fileId, filePath, content, protectionLevel, gitContext, options);
 	}
 
 	async viewCheckpoint(checkpointId: string): Promise<Snapshot | null> {
@@ -426,10 +381,7 @@ rules:
 		return this.compareWithSnapshot(currentContent, checkpointId);
 	}
 
-	async renameCheckpoint(
-		checkpointId: string,
-		newName: string,
-	): Promise<Snapshot | null> {
+	async renameCheckpoint(checkpointId: string, newName: string): Promise<Snapshot | null> {
 		return this.renameSnapshot(checkpointId, newName);
 	}
 

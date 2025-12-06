@@ -14,13 +14,7 @@ type Props = {
 	trend?: number;
 };
 
-export function StatsTile({
-	title,
-	value,
-	context,
-	trend,
-	valueFormat,
-}: Props) {
+export function StatsTile({ title, value, context, trend, valueFormat }: Props) {
 	const localeCurrency = useLocaleCurrency();
 
 	const formattedValue = useMemo(() => {
@@ -61,11 +55,7 @@ export function StatsTile({
 						{formattedValue}
 						{context && <small>{context}</small>}
 					</strong>
-					{trend && (
-						<Badge status={trend > 0 ? "success" : "error"}>
-							{formattedTrend}
-						</Badge>
-					)}
+					{trend && <Badge status={trend > 0 ? "success" : "error"}>{formattedTrend}</Badge>}
 				</div>
 			</CardContent>
 		</Card>

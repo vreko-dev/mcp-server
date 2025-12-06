@@ -1,5 +1,5 @@
-import { defineConfig } from "vitest/config";
 import path from "node:path";
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
 	resolve: {
@@ -24,12 +24,7 @@ export default defineConfig({
 		coverage: {
 			provider: "v8",
 			reporter: ["text", "json", "html"],
-			include: [
-				"src/communication/**/*.ts",
-				"src/email/**/*.ts",
-				"!src/**/*.test.ts",
-				"!src/**/*.test.tsx",
-			],
+			include: ["src/communication/**/*.ts", "src/email/**/*.ts", "!src/**/*.test.ts", "!src/**/*.test.tsx"],
 			thresholds: {
 				lines: 80,
 				functions: 80,

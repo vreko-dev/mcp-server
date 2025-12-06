@@ -1,16 +1,7 @@
 "use client";
 
-import {
-	ProtectiveHover,
-	SnapButton,
-	SnapEntrance,
-	SnapStagger,
-} from "@marketing/components/ui/snap-motion";
-import {
-	type PricingTier,
-	type Stat,
-	useContent,
-} from "@marketing/hooks/use-content";
+import { ProtectiveHover, SnapButton, SnapEntrance, SnapStagger } from "@marketing/components/ui/snap-motion";
+import { type PricingTier, type Stat, useContent } from "@marketing/hooks/use-content";
 import { marketingAnalytics } from "@marketing/lib/track-event";
 import { Badge } from "@ui/components/badge";
 import { Button } from "@ui/components/button";
@@ -32,14 +23,10 @@ export function PricingSection() {
 				{/* Header with SnapBack animations */}
 				<div className="text-center mb-12">
 					<SnapEntrance direction="up" intensity="normal">
-						<h2 className="text-4xl md:text-6xl font-bold text-white mb-6">
-							{pricing.header.title}
-						</h2>
+						<h2 className="text-4xl md:text-6xl font-bold text-white mb-6">{pricing.header.title}</h2>
 					</SnapEntrance>
 					<SnapEntrance direction="up" delay={0.1}>
-						<p className="text-xl text-gray-300 max-w-3xl mx-auto">
-							{pricing.header.description}
-						</p>
+						<p className="text-xl text-gray-300 max-w-3xl mx-auto">{pricing.header.description}</p>
 					</SnapEntrance>
 				</div>
 
@@ -80,15 +67,9 @@ export function PricingSection() {
 				</SnapEntrance>
 
 				{/* Pricing Cards with SnapBack stagger */}
-				<SnapStagger
-					stagger={0.08}
-					className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16"
-				>
+				<SnapStagger stagger={0.08} className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
 					{pricing.tiers.map((tier: PricingTier) => (
-						<div
-							key={tier.id}
-							className={`relative ${tier.popular ? "lg:-mt-8" : ""}`}
-						>
+						<div key={tier.id} className={`relative ${tier.popular ? "lg:-mt-8" : ""}`}>
 							{/* Popular Badge */}
 							{tier.popular && (
 								<div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
@@ -110,9 +91,7 @@ export function PricingSection() {
 							>
 								{/* Header */}
 								<div className="mb-6">
-									<h3 className="text-xl font-bold text-white mb-2">
-										{tier.name}
-									</h3>
+									<h3 className="text-xl font-bold text-white mb-2">{tier.name}</h3>
 									<div className="flex items-baseline mb-2">
 										<span className="text-4xl font-bold text-white">
 											{typeof tier.price === "string"
@@ -127,9 +106,7 @@ export function PricingSection() {
 									</div>
 									<p className="text-sm text-gray-400">{tier.description}</p>
 									{tier.savings && (
-										<div className="mt-2 text-[#10B981] text-sm font-medium">
-											💰 {tier.savings}
-										</div>
+										<div className="mt-2 text-[#10B981] text-sm font-medium">💰 {tier.savings}</div>
 									)}
 								</div>
 
@@ -160,9 +137,7 @@ export function PricingSection() {
 								{/* Expand/Collapse Button */}
 								<button
 									type="button"
-									onClick={() =>
-										setExpandedTier(expandedTier === tier.id ? null : tier.id)
-									}
+									onClick={() => setExpandedTier(expandedTier === tier.id ? null : tier.id)}
 									className="flex items-center text-sm text-gray-400 hover:text-white mb-6 transition-colors"
 								>
 									{expandedTier === tier.id ? (
@@ -171,8 +146,7 @@ export function PricingSection() {
 										</>
 									) : (
 										<>
-											See all features{" "}
-											<ChevronDownIcon className="ml-1 w-4 h-4" />
+											See all features <ChevronDownIcon className="ml-1 w-4 h-4" />
 										</>
 									)}
 								</button>
@@ -203,9 +177,7 @@ export function PricingSection() {
 																	className="text-sm mb-1 text-gray-300"
 																>
 																	{category === "limitations" ? (
-																		<span className="text-red-400">
-																			✗ {item}
-																		</span>
+																		<span className="text-red-400">✗ {item}</span>
 																	) : (
 																		<span className="text-[#10B981]">✓ </span>
 																	)}
@@ -269,9 +241,7 @@ export function PricingSection() {
 						))}
 					</div>
 
-					<p className="text-gray-300 text-lg">
-						{pricing.trust_signals.incentive}
-					</p>
+					<p className="text-gray-300 text-lg">{pricing.trust_signals.incentive}</p>
 				</div>
 			</div>
 		</section>

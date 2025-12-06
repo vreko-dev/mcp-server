@@ -33,11 +33,7 @@ export async function generateMetadata(props: { params: Promise<Params> }) {
 			title: post?.title,
 			description: post?.excerpt,
 			images: post?.image
-				? [
-						post.image.startsWith("http")
-							? post.image
-							: new URL(post.image, getBaseUrl()).toString(),
-					]
+				? [post.image.startsWith("http") ? post.image : new URL(post.image, getBaseUrl()).toString()]
 				: [],
 		},
 	};
@@ -68,9 +64,7 @@ export default async function BlogPostPage(props: { params: Promise<Params> }) {
 						</Link>
 					</div>
 
-					<h1 className="font-bold text-4xl lg:text-5xl text-white mb-6">
-						{title}
-					</h1>
+					<h1 className="font-bold text-4xl lg:text-5xl text-white mb-6">{title}</h1>
 
 					<div className="flex flex-wrap items-center gap-6 mb-8">
 						{authorName && (

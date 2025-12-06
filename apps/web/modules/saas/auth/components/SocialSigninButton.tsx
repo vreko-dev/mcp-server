@@ -46,8 +46,7 @@ export function SocialSigninButton({
 			if (e instanceof Error) {
 				// Network errors
 				if (e.message.includes("fetch") || e.message.includes("network")) {
-					errorMessage =
-						"Network error. Please check your connection and try again.";
+					errorMessage = "Network error. Please check your connection and try again.";
 				}
 				// Configuration errors
 				else if (e.message.includes("client") || e.message.includes("config")) {

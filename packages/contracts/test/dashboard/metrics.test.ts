@@ -1,11 +1,11 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
-	DashboardMetricsSchema,
-	AIActivityBreakdownSchema,
-	RecentActivitySchema,
-	type DashboardMetrics,
 	type AIActivityBreakdown,
+	AIActivityBreakdownSchema,
+	type DashboardMetrics,
+	DashboardMetricsSchema,
 	type RecentActivity,
+	RecentActivitySchema,
 } from "../../src/dashboard/metrics";
 
 describe("Dashboard Metrics Contracts (RED - Type Validation)", () => {

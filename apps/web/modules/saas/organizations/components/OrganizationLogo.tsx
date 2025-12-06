@@ -30,12 +30,7 @@ export const OrganizationLogo = ({
 	}, []);
 
 	const logoSrc = useMemo(
-		() =>
-			logoUrl
-				? logoUrl.startsWith("http")
-					? logoUrl
-					: `/image-proxy/avatars/${logoUrl}`
-				: undefined,
+		() => (logoUrl ? (logoUrl.startsWith("http") ? logoUrl : `/image-proxy/avatars/${logoUrl}`) : undefined),
 		[logoUrl],
 	);
 
@@ -47,13 +42,7 @@ export const OrganizationLogo = ({
 		<Avatar ref={ref} className={className}>
 			<AvatarImage src={logoSrc} />
 			<AvatarFallback>
-				<BoringAvatar
-					size={96}
-					name={name}
-					variant="sunset"
-					colors={avatarColors}
-					square
-				/>
+				<BoringAvatar size={96} name={name} variant="sunset" colors={avatarColors} square />
 			</AvatarFallback>
 		</Avatar>
 	);

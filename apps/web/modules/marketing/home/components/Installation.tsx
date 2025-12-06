@@ -20,14 +20,10 @@ export function Installation() {
 			content: (
 				<div className="w-full">
 					<div className="bg-card border rounded-xl p-6">
-						<h3 className="font-semibold text-lg mb-4">
-							Install VS Code Extension
-						</h3>
+						<h3 className="font-semibold text-lg mb-4">Install VS Code Extension</h3>
 						<div className="space-y-4">
 							<div>
-								<h4 className="font-medium mb-2">
-									Method 1: VS Code Marketplace
-								</h4>
+								<h4 className="font-medium mb-2">Method 1: VS Code Marketplace</h4>
 								<ol className="list-decimal list-inside space-y-2 text-sm">
 									<li>Open Extensions (Cmd+Shift+X)</li>
 									<li>Search "SnapBack"</li>
@@ -42,9 +38,7 @@ export function Installation() {
 										code --install-extension snapback
 									</div>
 									<button
-										onClick={() =>
-											copyToClipboard("code --install-extension snapback", 0)
-										}
+										onClick={() => copyToClipboard("code --install-extension snapback", 0)}
 										className="absolute top-2 right-2 p-1 hover:bg-muted-foreground/10 rounded"
 										aria-label="Copy command"
 									>
@@ -56,9 +50,7 @@ export function Installation() {
 									</button>
 								</div>
 								{copiedIndex === 0 && (
-									<div className="text-xs text-green-600 mt-1">
-										Copied to clipboard!
-									</div>
+									<div className="text-xs text-green-600 mt-1">Copied to clipboard!</div>
 								)}
 							</div>
 						</div>
@@ -81,9 +73,7 @@ export function Installation() {
 										npm install -g @snapback/cli
 									</div>
 									<button
-										onClick={() =>
-											copyToClipboard("npm install -g @snapback/cli", 1)
-										}
+										onClick={() => copyToClipboard("npm install -g @snapback/cli", 1)}
 										className="absolute top-2 right-2 p-1 hover:bg-muted-foreground/10 rounded"
 										aria-label="Copy command"
 									>
@@ -95,9 +85,7 @@ export function Installation() {
 									</button>
 								</div>
 								{copiedIndex === 1 && (
-									<div className="text-xs text-green-600 mt-1">
-										Copied to clipboard!
-									</div>
+									<div className="text-xs text-green-600 mt-1">Copied to clipboard!</div>
 								)}
 							</div>
 
@@ -108,9 +96,7 @@ export function Installation() {
 										pnpm add -g @snapback/cli
 									</div>
 									<button
-										onClick={() =>
-											copyToClipboard("pnpm add -g @snapback/cli", 2)
-										}
+										onClick={() => copyToClipboard("pnpm add -g @snapback/cli", 2)}
 										className="absolute top-2 right-2 p-1 hover:bg-muted-foreground/10 rounded"
 										aria-label="Copy command"
 									>
@@ -122,9 +108,7 @@ export function Installation() {
 									</button>
 								</div>
 								{copiedIndex === 2 && (
-									<div className="text-xs text-green-600 mt-1">
-										Copied to clipboard!
-									</div>
+									<div className="text-xs text-green-600 mt-1">Copied to clipboard!</div>
 								)}
 							</div>
 						</div>
@@ -145,12 +129,7 @@ export function Installation() {
 									git clone https://github.com/snapback/snapback
 								</div>
 								<button
-									onClick={() =>
-										copyToClipboard(
-											"git clone https://github.com/snapback/snapback",
-											3,
-										)
-									}
+									onClick={() => copyToClipboard("git clone https://github.com/snapback/snapback", 3)}
 									className="absolute top-2 right-2 p-1 hover:bg-muted-foreground/10 rounded"
 									aria-label="Copy command"
 								>
@@ -167,9 +146,7 @@ export function Installation() {
 									cd snapback && pnpm install
 								</div>
 								<button
-									onClick={() =>
-										copyToClipboard("cd snapback && pnpm install", 4)
-									}
+									onClick={() => copyToClipboard("cd snapback && pnpm install", 4)}
 									className="absolute top-2 right-2 p-1 hover:bg-muted-foreground/10 rounded"
 									aria-label="Copy command"
 								>
@@ -182,9 +159,7 @@ export function Installation() {
 							</div>
 
 							<div className="relative">
-								<div className="font-mono text-sm bg-muted p-3 rounded-lg">
-									pnpm build
-								</div>
+								<div className="font-mono text-sm bg-muted p-3 rounded-lg">pnpm build</div>
 								<button
 									onClick={() => copyToClipboard("pnpm build", 5)}
 									className="absolute top-2 right-2 p-1 hover:bg-muted-foreground/10 rounded"
@@ -199,9 +174,7 @@ export function Installation() {
 							</div>
 
 							{copiedIndex !== null && copiedIndex >= 3 && (
-								<div className="text-xs text-green-600">
-									Copied to clipboard!
-								</div>
+								<div className="text-xs text-green-600">Copied to clipboard!</div>
 							)}
 						</div>
 					</div>
@@ -214,11 +187,10 @@ export function Installation() {
 		<section className="py-16 bg-muted/50">
 			<div className="container max-w-5xl">
 				<div className="text-center mb-12">
-					<h2 className="font-bold text-3xl md:text-4xl">
-						Pattern Memory Starts in 60 Seconds
-					</h2>
+					<h2 className="font-bold text-3xl md:text-4xl">Pattern Memory Starts in 60 Seconds</h2>
 					<p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-						Install SnapBack, and pattern memory immediately begins learning from your edits. Zero setup required.
+						Install SnapBack, and pattern memory immediately begins learning from your edits. Zero setup
+						required.
 					</p>
 				</div>
 

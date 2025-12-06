@@ -10,12 +10,7 @@ import {
 	AlertDialogTitle,
 } from "@ui/components/alert-dialog";
 import { Button } from "@ui/components/button";
-import {
-	createContext,
-	type PropsWithChildren,
-	useContext,
-	useState,
-} from "react";
+import { createContext, type PropsWithChildren, useContext, useState } from "react";
 
 type ConfirmOptions = {
 	title: string;
@@ -32,9 +27,7 @@ const ConfirmationAlertContext = createContext<{
 });
 
 export function ConfirmationAlertProvider({ children }: PropsWithChildren) {
-	const [confirmOptions, setConfirmOptions] = useState<ConfirmOptions | null>(
-		null,
-	);
+	const [confirmOptions, setConfirmOptions] = useState<ConfirmOptions | null>(null);
 
 	const confirm = (options: ConfirmOptions) => {
 		setConfirmOptions(options);
@@ -52,14 +45,10 @@ export function ConfirmationAlertProvider({ children }: PropsWithChildren) {
 					<AlertDialogHeader>
 						<AlertDialogTitle>{confirmOptions?.title}</AlertDialogTitle>
 					</AlertDialogHeader>
-					<AlertDialogDescription>
-						{confirmOptions?.message}
-					</AlertDialogDescription>
+					<AlertDialogDescription>{confirmOptions?.message}</AlertDialogDescription>
 
 					<AlertDialogFooter>
-						<AlertDialogCancel>
-							{confirmOptions?.cancelLabel ?? "Cancel"}
-						</AlertDialogCancel>
+						<AlertDialogCancel>{confirmOptions?.cancelLabel ?? "Cancel"}</AlertDialogCancel>
 						<Button
 							variant={confirmOptions?.destructive ? "error" : "primary"}
 							onClick={async () => {
@@ -80,9 +69,7 @@ export const useConfirmationAlert = () => {
 	const context = useContext(ConfirmationAlertContext);
 
 	if (!context) {
-		throw new Error(
-			"useConfirmationAlert must be used within a ConfirmationAlertProvider",
-		);
+		throw new Error("useConfirmationAlert must be used within a ConfirmationAlertProvider");
 	}
 
 	return context;

@@ -33,8 +33,7 @@ export function TrustBar() {
 					{/* Testimonial */}
 					<div className="flex items-center gap-2 max-w-md">
 						<span className="text-[#A0A0A0]">
-							&quot;Cursor rewrote my config. SnapBack recovered it in 3
-							seconds.&quot;
+							&quot;Cursor rewrote my config. SnapBack recovered it in 3 seconds.&quot;
 						</span>
 						<span className="text-[#00FF41]">@brent_redd</span>
 					</div>

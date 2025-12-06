@@ -23,9 +23,7 @@ export default async function ChangelogPage() {
 		<div className="container max-w-3xl pt-32 pb-16">
 			<div className="mb-12 text-balance pt-8 text-center">
 				<h1 className="mb-2 font-bold text-5xl">Changelog</h1>
-				<p className="text-lg opacity-50">
-					Stay up to date with our latest improvements
-				</p>
+				<p className="text-lg opacity-50">Stay up to date with our latest improvements</p>
 			</div>
 			<ChangelogSection
 				items={[

@@ -1,12 +1,7 @@
 "use client";
 
 import { Button } from "@ui/components/button";
-import {
-	Dialog,
-	DialogContent,
-	DialogHeader,
-	DialogTitle,
-} from "@ui/components/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@ui/components/dialog";
 import { Input } from "@ui/components/input";
 import { useEffect, useState } from "react";
 
@@ -39,16 +34,9 @@ export function ExitIntentModal() {
 				<DialogHeader>
 					<DialogTitle>Wait! Your code isn't protected yet 🛡️</DialogTitle>
 				</DialogHeader>
-				<p>
-					Visual protection for every file. AI-aware checkpoints. Instant
-					recovery.
-				</p>
+				<p>Visual protection for every file. AI-aware checkpoints. Instant recovery.</p>
 				<div className="space-y-2 mt-4">
-					<Input
-						type="email"
-						placeholder="Enter your email for exclusive early access"
-						className="w-full"
-					/>
+					<Input type="email" placeholder="Enter your email for exclusive early access" className="w-full" />
 					<Button
 						className="w-full bg-green-600 hover:bg-green-700"
 						onClick={() => {
@@ -60,9 +48,7 @@ export function ExitIntentModal() {
 						Get 50% Off Launch Week Pricing
 					</Button>
 				</div>
-				<p className="text-xs text-gray-500 mt-2">
-					No spam. Unsubscribe anytime.
-				</p>
+				<p className="text-xs text-gray-500 mt-2">No spam. Unsubscribe anytime.</p>
 			</DialogContent>
 		</Dialog>
 	);

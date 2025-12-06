@@ -63,10 +63,7 @@ export function FeatureCards() {
 	}, []);
 
 	return (
-		<section
-			id="features"
-			className="py-20 px-4 bg-gradient-to-b from-slate-900 to-black"
-		>
+		<section id="features" className="py-20 px-4 bg-gradient-to-b from-slate-900 to-black">
 			<div className="max-w-7xl mx-auto">
 				<m.div
 					initial={isMounted ? { opacity: 0, y: 20 } : { opacity: 1, y: 0 }}
@@ -81,8 +78,7 @@ export function FeatureCards() {
 						</span>
 					</h2>
 					<p className="text-xl text-gray-300 max-w-3xl mx-auto">
-						Every AI action triggers our protection protocol. Detection,
-						checkpoint, recovery.
+						Every AI action triggers our protection protocol. Detection, checkpoint, recovery.
 					</p>
 				</m.div>
 

@@ -20,8 +20,7 @@ export function TracingBeam({ children, className }: TracingBeamProps) {
 				<m.div
 					className="absolute top-0 left-1/2 w-1 h-20 -translate-x-1/2"
 					style={{
-						background:
-							"linear-gradient(180deg, transparent, #00FF41, transparent)",
+						background: "linear-gradient(180deg, transparent, #00FF41, transparent)",
 						filter: "blur(2px)",
 					}}
 					animate={{

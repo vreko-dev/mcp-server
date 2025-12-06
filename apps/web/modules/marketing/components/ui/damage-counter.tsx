@@ -12,14 +12,7 @@ interface DamageCounterProps {
 	delay?: number;
 }
 
-export function DamageCounter({
-	start,
-	end,
-	duration,
-	prefix = "",
-	onComplete,
-	delay = 0,
-}: DamageCounterProps) {
+export function DamageCounter({ start, end, duration, prefix = "", onComplete, delay = 0 }: DamageCounterProps) {
 	const [count, setCount] = useState(start);
 	const [isAnimating, setIsAnimating] = useState(false);
 	const [hasCompleted, setHasCompleted] = useState(false);
@@ -70,11 +63,7 @@ export function DamageCounter({
 			animate={{
 				scale: 1,
 				rotateX: 0,
-				color: isCriticalDamage
-					? "#DC2626"
-					: isHighDamage
-						? "#EF4444"
-						: "#FF6B35",
+				color: isCriticalDamage ? "#DC2626" : isHighDamage ? "#EF4444" : "#FF6B35",
 			}}
 			transition={{
 				scale: {
@@ -122,9 +111,7 @@ export function DamageCounter({
 				}}
 				style={{
 					background: `radial-gradient(circle, ${
-						isCriticalDamage
-							? "rgba(220, 38, 38, 0.2)"
-							: "rgba(239, 68, 68, 0.1)"
+						isCriticalDamage ? "rgba(220, 38, 38, 0.2)" : "rgba(239, 68, 68, 0.1)"
 					} 0%, transparent 70%)`,
 				}}
 			/>

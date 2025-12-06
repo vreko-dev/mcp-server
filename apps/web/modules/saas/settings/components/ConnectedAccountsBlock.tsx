@@ -1,8 +1,5 @@
 "use client";
-import {
-	type OAuthProvider,
-	oAuthProviders,
-} from "@saas/auth/constants/oauth-providers";
+import { type OAuthProvider, oAuthProviders } from "@saas/auth/constants/oauth-providers";
 import { useUserAccountsQuery } from "@saas/auth/lib/api";
 import { SettingsItem } from "@saas/shared/components/SettingsItem";
 import { Button } from "@ui/components/button";
@@ -31,10 +28,7 @@ export function ConnectedAccountsBlock() {
 					const isLinked = isProviderLinked(provider as OAuthProvider);
 
 					return (
-						<div
-							key={provider}
-							className="flex h-14 items-center justify-between gap-2 py-2"
-						>
+						<div key={provider} className="flex h-14 items-center justify-between gap-2 py-2">
 							<div className="flex items-center gap-2">
 								<providerData.icon className="size-4 text-primary/50" />
 								<span className="text-sm">{providerData.name}</span>

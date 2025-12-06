@@ -6,13 +6,7 @@ import { fullOrganizationQueryKey } from "@saas/organizations/lib/api";
 import { SettingsItem } from "@saas/shared/components/SettingsItem";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@ui/components/button";
-import {
-	Form,
-	FormControl,
-	FormField,
-	FormItem,
-	FormLabel,
-} from "@ui/components/form";
+import { Form, FormControl, FormField, FormItem, FormLabel } from "@ui/components/form";
 import { Input } from "@ui/components/input";
 import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
@@ -26,11 +20,7 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-export function InviteMemberForm({
-	organizationId,
-}: {
-	organizationId: string;
-}) {
+export function InviteMemberForm({ organizationId }: { organizationId: string }) {
 	const queryClient = useQueryClient();
 
 	const form = useForm<FormValues>({
@@ -64,10 +54,7 @@ export function InviteMemberForm({
 	};
 
 	return (
-		<SettingsItem
-			title="Invite Member"
-			description="Invite a new member to join your organization"
-		>
+		<SettingsItem title="Invite Member" description="Invite a new member to join your organization">
 			<Form {...form}>
 				<form onSubmit={form.handleSubmit(onSubmit)} className="@container">
 					<div className="flex @md:flex-row flex-col gap-2">
@@ -94,10 +81,7 @@ export function InviteMemberForm({
 									<FormItem>
 										<FormLabel>Role</FormLabel>
 										<FormControl>
-											<OrganizationRoleSelect
-												value={field.value}
-												onSelect={field.onChange}
-											/>
+											<OrganizationRoleSelect value={field.value} onSelect={field.onChange} />
 										</FormControl>
 									</FormItem>
 								)}

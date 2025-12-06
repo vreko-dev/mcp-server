@@ -3,12 +3,7 @@ import { OrganizationLogo } from "@saas/organizations/components/OrganizationLog
 import { SettingsMenu } from "@saas/settings/components/SettingsMenu";
 import { PageHeader } from "@saas/shared/components/PageHeader";
 import { SidebarContentLayout } from "@saas/shared/components/SidebarContentLayout";
-import {
-	CreditCardIcon,
-	Settings2Icon,
-	TriangleAlertIcon,
-	Users2Icon,
-} from "lucide-react";
+import { CreditCardIcon, Settings2Icon, TriangleAlertIcon, Users2Icon } from "lucide-react";
 import { redirect } from "next/navigation";
 import type { PropsWithChildren } from "react";
 import { isOrganizationAdmin } from "@/lib/auth/helpers";
@@ -35,22 +30,14 @@ export default async function SettingsLayout({
 		redirect("/app");
 	}
 
-	const userIsOrganizationAdmin = isOrganizationAdmin(
-		organization,
-		(session as any)?.user,
-	);
+	const userIsOrganizationAdmin = isOrganizationAdmin(organization, (session as any)?.user);
 
 	const organizationSettingsBasePath = `/app/${organizationSlug}/settings`;
 
 	const menuItems = [
 		{
 			title: "Organization",
-			avatar: (
-				<OrganizationLogo
-					name={organization.name}
-					logoUrl={organization.logo}
-				/>
-			),
+			avatar: <OrganizationLogo name={organization.name} logoUrl={organization.logo} />,
 			items: [
 				{
 					title: "General",
@@ -62,9 +49,7 @@ export default async function SettingsLayout({
 					href: `${organizationSettingsBasePath}/members`,
 					icon: <Users2Icon className="size-4 opacity-50" />,
 				},
-				...(config.organizations.enable &&
-				config.organizations.enableBilling &&
-				userIsOrganizationAdmin
+				...(config.organizations.enable && config.organizations.enableBilling && userIsOrganizationAdmin
 					? [
 							{
 								title: "Billing",
@@ -88,13 +73,8 @@ export default async function SettingsLayout({
 
 	return (
 		<>
-			<PageHeader
-				title="Organization Settings"
-				subtitle="Manage your organization settings and members"
-			/>
-			<SidebarContentLayout sidebar={<SettingsMenu menuItems={menuItems} />}>
-				{children}
-			</SidebarContentLayout>
+			<PageHeader title="Organization Settings" subtitle="Manage your organization settings and members" />
+			<SidebarContentLayout sidebar={<SettingsMenu menuItems={menuItems} />}>{children}</SidebarContentLayout>
 		</>
 	);
 }

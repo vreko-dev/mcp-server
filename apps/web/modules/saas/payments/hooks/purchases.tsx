@@ -10,13 +10,11 @@ export const usePurchases = (organizationId?: string) => {
 
 	const purchases = data?.purchases ?? [];
 
-	const { activePlan, hasSubscription, hasPurchase } =
-		createPurchasesHelper(purchases);
+	const { activePlan, hasSubscription, hasPurchase } = createPurchasesHelper(purchases);
 
 	return { purchases, activePlan, hasSubscription, hasPurchase };
 };
 
 export const useUserPurchases = () => usePurchases();
 
-export const useOrganizationPurchases = (organizationId: string) =>
-	usePurchases(organizationId);
+export const useOrganizationPurchases = (organizationId: string) => usePurchases(organizationId);

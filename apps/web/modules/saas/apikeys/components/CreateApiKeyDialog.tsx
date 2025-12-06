@@ -17,11 +17,7 @@ import { useTransition } from "react";
 import { toast } from "sonner";
 import { apiClient as api } from "@/lib/api-client";
 
-export function CreateApiKeyDialog({
-	onKeyCreated,
-}: {
-	onKeyCreated?: () => void;
-}) {
+export function CreateApiKeyDialog({ onKeyCreated }: { onKeyCreated?: () => void }) {
 	const [isPending, startTransition] = useTransition();
 
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -67,22 +63,14 @@ export function CreateApiKeyDialog({
 							<KeyIcon className="h-5 w-5" />
 							Create API Key
 						</DialogTitle>
-						<DialogDescription>
-							Create a new API key to authenticate with SnapBack tools.
-						</DialogDescription>
+						<DialogDescription>Create a new API key to authenticate with SnapBack tools.</DialogDescription>
 					</DialogHeader>
 					<div className="grid gap-4 py-4">
 						<div className="grid grid-cols-4 items-center gap-4">
 							<Label htmlFor="name" className="text-right">
 								Name
 							</Label>
-							<Input
-								id="name"
-								name="name"
-								defaultValue="Default Key"
-								className="col-span-3"
-								required
-							/>
+							<Input id="name" name="name" defaultValue="Default Key" className="col-span-3" required />
 						</div>
 					</div>
 					<DialogFooter>

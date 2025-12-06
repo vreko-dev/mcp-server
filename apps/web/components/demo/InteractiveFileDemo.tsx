@@ -19,9 +19,7 @@ export function InteractiveFileDemo() {
 		{ id: "5", name: "tests/auth.test.ts", status: "good", isSelected: false },
 	]);
 
-	const [phase, setPhase] = useState<"initial" | "ai_editing" | "restored">(
-		"initial",
-	);
+	const [phase, setPhase] = useState<"initial" | "ai_editing" | "restored">("initial");
 	const [isAnimating, setIsAnimating] = useState(false);
 
 	// Auto-play demo on mount
@@ -43,9 +41,7 @@ export function InteractiveFileDemo() {
 
 		// Step 2: Show restored
 		setPhase("restored");
-		setFiles((prev) =>
-			prev.map((f) => (f.status === "bad" ? { ...f, isSelected: true } : f)),
-		);
+		setFiles((prev) => prev.map((f) => (f.status === "bad" ? { ...f, isSelected: true } : f)));
 
 		await new Promise((resolve) => setTimeout(resolve, 2000));
 
@@ -75,12 +71,8 @@ export function InteractiveFileDemo() {
 						<div className="flex items-center gap-3">
 							<div className="text-2xl">📦</div>
 							<div>
-								<h3 className="text-sm font-semibold text-white">
-									Session: "Claude refactored auth"
-								</h3>
-								<p className="text-xs text-slate-400 mt-0.5">
-									14:05 - 14:23 UTC
-								</p>
+								<h3 className="text-sm font-semibold text-white">Session: "Claude refactored auth"</h3>
+								<p className="text-xs text-slate-400 mt-0.5">14:05 - 14:23 UTC</p>
 							</div>
 						</div>
 
@@ -93,9 +85,7 @@ export function InteractiveFileDemo() {
 									exit={{ opacity: 0, scale: 0.8 }}
 									className="flex items-center gap-2 px-3 py-1.5 bg-purple-500/25 border border-purple-400/50 rounded-md"
 								>
-									<span className="text-xs text-purple-300 font-medium">
-										🤖 AI editing
-									</span>
+									<span className="text-xs text-purple-300 font-medium">🤖 AI editing</span>
 									<div className="flex gap-1">
 										{[0, 1, 2].map((i) => (
 											<motion.div
@@ -120,9 +110,7 @@ export function InteractiveFileDemo() {
 									exit={{ opacity: 0, scale: 0.8 }}
 									className="flex items-center gap-2 px-3 py-1.5 bg-emerald-500/25 border border-emerald-400/50 rounded-md"
 								>
-									<span className="text-xs text-emerald-300 font-medium">
-										✓ Restored
-									</span>
+									<span className="text-xs text-emerald-300 font-medium">✓ Restored</span>
 								</motion.div>
 							)}
 						</AnimatePresence>
@@ -145,14 +133,10 @@ export function InteractiveFileDemo() {
 						>
 							{/* File Icon & Name */}
 							<div className="flex items-center gap-3 min-w-0">
-								<span className="text-lg flex-shrink-0">
-									{file.name.endsWith(".ts") ? "📄" : "🧪"}
-								</span>
+								<span className="text-lg flex-shrink-0">{file.name.endsWith(".ts") ? "📄" : "🧪"}</span>
 								<span
 									className={`text-sm font-mono truncate ${
-										file.status === "good" || file.isSelected
-											? "text-emerald-300"
-											: "text-red-300"
+										file.status === "good" || file.isSelected ? "text-emerald-300" : "text-red-300"
 									}`}
 								>
 									{file.name}
@@ -209,10 +193,7 @@ export function InteractiveFileDemo() {
 							</motion.span>
 						) : (
 							<span>
-								<span className="text-red-400 font-semibold">
-									{badFileCount}
-								</span>{" "}
-								files to restore
+								<span className="text-red-400 font-semibold">{badFileCount}</span> files to restore
 							</span>
 						)}
 					</div>
@@ -239,8 +220,7 @@ export function InteractiveFileDemo() {
 				transition={{ delay: 0.6 }}
 				className="text-center text-sm text-slate-400 mt-4"
 			>
-				Watch the demo: AI edits 5 files, 2 have issues, restore them instantly
-				without losing good changes.
+				Watch the demo: AI edits 5 files, 2 have issues, restore them instantly without losing good changes.
 			</motion.p>
 		</div>
 	);

@@ -22,8 +22,8 @@ export async function generateMetadata() {
 
 export default async function BillingSettingsPage() {
 	const session = await getSession();
-	const [error, data] = await attemptAsync<{ purchases: Purchase[] }, Error>(
-		() => orpcClient.payments.listPurchases({}),
+	const [error, data] = await attemptAsync<{ purchases: Purchase[] }, Error>(() =>
+		orpcClient.payments.listPurchases({}),
 	);
 
 	if (error) {
@@ -46,10 +46,7 @@ export default async function BillingSettingsPage() {
 		<SettingsList>
 			{activePlan && <ActivePlan />}
 			{activePlan?.id && typeof activePlan.id === "string" && (
-				<ChangePlan
-					userId={(session as any)?.user?.id}
-					activePlanId={activePlan.id}
-				/>
+				<ChangePlan userId={(session as any)?.user?.id} activePlanId={activePlan.id} />
 			)}
 		</SettingsList>
 	);

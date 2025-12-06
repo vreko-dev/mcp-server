@@ -37,21 +37,17 @@ describe("Diagnostic Telemetry Events - RED Test", () => {
 		it("should define auth.provider.selected event for tracking OAuth vs Device flow choice", () => {
 			// RED: FAILING - event doesn't exist yet
 			// This event allows us to see if users prefer OAuth or device flow
-			expect(CORE_TELEMETRY_EVENTS).toHaveProperty(
-				"AUTH_PROVIDER_SELECTED",
+			expect(CORE_TELEMETRY_EVENTS).toHaveProperty("AUTH_PROVIDER_SELECTED");
+			expect(CORE_TELEMETRY_EVENTS.AUTH_PROVIDER_SELECTED || "auth.provider.selected").toBe(
+				"auth.provider.selected",
 			);
-			expect(
-				CORE_TELEMETRY_EVENTS.AUTH_PROVIDER_SELECTED || "auth.provider.selected",
-			).toBe("auth.provider.selected");
 		});
 
 		it("should define auth.browser.opened event for tracking browser launches", () => {
 			// RED: FAILING - event doesn't exist yet
 			// Allows us to see if browser actually opened when user clicked "Open Browser"
 			expect(CORE_TELEMETRY_EVENTS).toHaveProperty("AUTH_BROWSER_OPENED");
-			expect(CORE_TELEMETRY_EVENTS.AUTH_BROWSER_OPENED || "auth.browser.opened").toBe(
-				"auth.browser.opened",
-			);
+			expect(CORE_TELEMETRY_EVENTS.AUTH_BROWSER_OPENED || "auth.browser.opened").toBe("auth.browser.opened");
 		});
 
 		it("should define auth.code.entry event for tracking user code entry", () => {
@@ -59,9 +55,7 @@ describe("Diagnostic Telemetry Events - RED Test", () => {
 			// Tracks when user enters the device code in browser
 			// Helps us see if the code entry form is discoverable
 			expect(CORE_TELEMETRY_EVENTS).toHaveProperty("AUTH_CODE_ENTRY");
-			expect(CORE_TELEMETRY_EVENTS.AUTH_CODE_ENTRY || "auth.code.entry").toBe(
-				"auth.code.entry",
-			);
+			expect(CORE_TELEMETRY_EVENTS.AUTH_CODE_ENTRY || "auth.code.entry").toBe("auth.code.entry");
 		});
 
 		it("should define auth.approval.received event for tracking successful approval", () => {
@@ -89,9 +83,9 @@ describe("Diagnostic Telemetry Events - RED Test", () => {
 			// Tracks when user clicks CTA in welcome panel
 			// Helps us measure feature adoption from education
 			expect(CORE_TELEMETRY_EVENTS).toHaveProperty("WELCOME_ACTION_TRIGGERED");
-			expect(
-				CORE_TELEMETRY_EVENTS.WELCOME_ACTION_TRIGGERED || "welcome.action.triggered",
-			).toBe("welcome.action.triggered");
+			expect(CORE_TELEMETRY_EVENTS.WELCOME_ACTION_TRIGGERED || "welcome.action.triggered").toBe(
+				"welcome.action.triggered",
+			);
 		});
 	});
 
@@ -103,10 +97,7 @@ describe("Diagnostic Telemetry Events - RED Test", () => {
 			// - trigger: 'user_selected' | 'fallback' | 'auto'
 
 			const eventName = "auth.provider.selected";
-			expect(CORE_TELEMETRY_EVENTS).toHaveProperty(
-				"AUTH_PROVIDER_SELECTED",
-				eventName,
-			);
+			expect(CORE_TELEMETRY_EVENTS).toHaveProperty("AUTH_PROVIDER_SELECTED", eventName);
 		});
 
 		it("should provide schema validator for auth.browser.opened", async () => {
@@ -117,10 +108,7 @@ describe("Diagnostic Telemetry Events - RED Test", () => {
 			// - error?: string
 
 			const eventName = "auth.browser.opened";
-			expect(CORE_TELEMETRY_EVENTS).toHaveProperty(
-				"AUTH_BROWSER_OPENED",
-				eventName,
-			);
+			expect(CORE_TELEMETRY_EVENTS).toHaveProperty("AUTH_BROWSER_OPENED", eventName);
 		});
 
 		it("should provide schema validator for auth.code.entry", async () => {
@@ -142,10 +130,7 @@ describe("Diagnostic Telemetry Events - RED Test", () => {
 			// - device_code_expired: boolean
 
 			const eventName = "auth.approval.received";
-			expect(CORE_TELEMETRY_EVENTS).toHaveProperty(
-				"AUTH_APPROVAL_RECEIVED",
-				eventName,
-			);
+			expect(CORE_TELEMETRY_EVENTS).toHaveProperty("AUTH_APPROVAL_RECEIVED", eventName);
 		});
 
 		it("should provide schema validator for welcome.feature.viewed", async () => {
@@ -156,10 +141,7 @@ describe("Diagnostic Telemetry Events - RED Test", () => {
 			// - trigger: 'onboarding' | 'nudge' | 'manual'
 
 			const eventName = "welcome.feature.viewed";
-			expect(CORE_TELEMETRY_EVENTS).toHaveProperty(
-				"WELCOME_FEATURE_VIEWED",
-				eventName,
-			);
+			expect(CORE_TELEMETRY_EVENTS).toHaveProperty("WELCOME_FEATURE_VIEWED", eventName);
 		});
 
 		it("should provide schema validator for welcome.action.triggered", async () => {
@@ -170,10 +152,7 @@ describe("Diagnostic Telemetry Events - RED Test", () => {
 			// - time_viewed_ms: number
 
 			const eventName = "welcome.action.triggered";
-			expect(CORE_TELEMETRY_EVENTS).toHaveProperty(
-				"WELCOME_ACTION_TRIGGERED",
-				eventName,
-			);
+			expect(CORE_TELEMETRY_EVENTS).toHaveProperty("WELCOME_ACTION_TRIGGERED", eventName);
 		});
 	});
 
@@ -212,9 +191,7 @@ describe("Diagnostic Telemetry Events - RED Test", () => {
 
 		it("should group auth events under 'auth' category", () => {
 			// RED: FAILING - until constants exist
-			const authEvents = Object.values(EXPECTED_DIAGNOSTIC_EVENTS).filter((e) =>
-				e.startsWith("auth."),
-			);
+			const authEvents = Object.values(EXPECTED_DIAGNOSTIC_EVENTS).filter((e) => e.startsWith("auth."));
 
 			expect(authEvents).toHaveLength(4);
 			authEvents.forEach((event) => {
@@ -224,9 +201,7 @@ describe("Diagnostic Telemetry Events - RED Test", () => {
 
 		it("should group welcome events under 'welcome' category", () => {
 			// RED: FAILING - until constants exist
-			const welcomeEvents = Object.values(EXPECTED_DIAGNOSTIC_EVENTS).filter((e) =>
-				e.startsWith("welcome."),
-			);
+			const welcomeEvents = Object.values(EXPECTED_DIAGNOSTIC_EVENTS).filter((e) => e.startsWith("welcome."));
 
 			expect(welcomeEvents).toHaveLength(2);
 			welcomeEvents.forEach((event) => {

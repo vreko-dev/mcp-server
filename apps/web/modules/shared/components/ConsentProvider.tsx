@@ -13,13 +13,7 @@ export const ConsentContext = createContext<{
 	declineCookies: () => {},
 });
 
-export function ConsentProvider({
-	children,
-	initialConsent,
-}: {
-	children: React.ReactNode;
-	initialConsent?: boolean;
-}) {
+export function ConsentProvider({ children, initialConsent }: { children: React.ReactNode; initialConsent?: boolean }) {
 	const [userHasConsented, setUserHasConsented] = useState(!!initialConsent);
 
 	const allowCookies = () => {
@@ -33,9 +27,7 @@ export function ConsentProvider({
 	};
 
 	return (
-		<ConsentContext.Provider
-			value={{ userHasConsented, allowCookies, declineCookies }}
-		>
+		<ConsentContext.Provider value={{ userHasConsented, allowCookies, declineCookies }}>
 			{children}
 		</ConsentContext.Provider>
 	);

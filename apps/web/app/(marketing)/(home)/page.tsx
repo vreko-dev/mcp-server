@@ -17,8 +17,7 @@ import type { Metadata } from "next";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://snapback.dev";
 
 export const metadata: Metadata = {
-	title:
-		"SnapBack - AI Code Protection for VS Code | Automatic Snapshots & Recovery",
+	title: "SnapBack - AI Code Protection for VS Code | Automatic Snapshots & Recovery",
 	description:
 		"VS Code extension that protects your code from AI mistakes. Automatic snapshots before GitHub Copilot, Cursor, or Claude make changes. Instant restore when AI breaks something. Free for alpha users.",
 	keywords: [

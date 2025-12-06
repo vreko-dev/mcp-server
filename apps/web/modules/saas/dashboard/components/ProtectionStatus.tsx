@@ -8,10 +8,7 @@ interface ProtectionStatusProps {
 	isActive: boolean;
 }
 
-export function ProtectionStatus({
-	snapshotCount,
-	isActive,
-}: ProtectionStatusProps) {
+export function ProtectionStatus({ snapshotCount, isActive }: ProtectionStatusProps) {
 	if (!isActive) {
 		return null;
 	}
@@ -29,18 +26,12 @@ export function ProtectionStatus({
 						<div className="absolute inset-0 h-12 w-12 bg-[var(--snapback-green)] blur-xl opacity-30 animate-pulse" />
 					</div>
 					<div>
-						<h2 className="text-2xl font-bold text-white flex items-center gap-2">
-							Protection Active
-						</h2>
-						<p className="text-neutral-400 mt-1">
-							Your code is being monitored and protected
-						</p>
+						<h2 className="text-2xl font-bold text-white flex items-center gap-2">Protection Active</h2>
+						<p className="text-neutral-400 mt-1">Your code is being monitored and protected</p>
 					</div>
 				</div>
 				<div className="text-right">
-					<div className="text-4xl font-mono font-bold text-white">
-						{snapshotCount}
-					</div>
+					<div className="text-4xl font-mono font-bold text-white">{snapshotCount}</div>
 					<div className="text-sm text-neutral-400">Snapshots Created</div>
 				</div>
 			</div>

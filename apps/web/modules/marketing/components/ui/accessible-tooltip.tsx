@@ -20,11 +20,7 @@ interface AccessibleTooltipProps {
 	delay?: number;
 }
 
-export function AccessibleTooltip({
-	children,
-	content,
-	delay = 700,
-}: AccessibleTooltipProps) {
+export function AccessibleTooltip({ children, content, delay = 700 }: AccessibleTooltipProps) {
 	const [isOpen, setIsOpen] = useState(false);
 	const ariaId = useId();
 
@@ -51,20 +47,11 @@ export function AccessibleTooltip({
 	const dismiss = useDismiss(context);
 	const role = useRole(context, { role: "tooltip" });
 
-	const { getReferenceProps, getFloatingProps } = useInteractions([
-		hover,
-		focus,
-		dismiss,
-		role,
-	]);
+	const { getReferenceProps, getFloatingProps } = useInteractions([hover, focus, dismiss, role]);
 
 	return (
 		<>
-			<div
-				ref={refs.setReference}
-				{...getReferenceProps()}
-				aria-describedby={isOpen ? ariaId : undefined}
-			>
+			<div ref={refs.setReference} {...getReferenceProps()} aria-describedby={isOpen ? ariaId : undefined}>
 				{children}
 			</div>
 

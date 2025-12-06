@@ -4,16 +4,7 @@ import { cva } from "class-variance-authority";
 import type React from "react";
 
 export const badge = cva(
-	[
-		"inline-block",
-		"rounded-full",
-		"px-3",
-		"py-1",
-		"text-xs",
-		"uppercase",
-		"font-semibold",
-		"leading-tight",
-	],
+	["inline-block", "rounded-full", "px-3", "py-1", "text-xs", "uppercase", "font-semibold", "leading-tight"],
 	{
 		variants: {
 			status: {
@@ -29,15 +20,9 @@ export const badge = cva(
 	},
 );
 
-export type BadgeProps = React.HtmlHTMLAttributes<HTMLDivElement> &
-	VariantProps<typeof badge>;
+export type BadgeProps = React.HtmlHTMLAttributes<HTMLDivElement> & VariantProps<typeof badge>;
 
-export const Badge = ({
-	children,
-	className,
-	status,
-	...props
-}: BadgeProps) => (
+export const Badge = ({ children, className, status, ...props }: BadgeProps) => (
 	<span className={cn(badge({ status }), className)} {...props}>
 		{children}
 	</span>

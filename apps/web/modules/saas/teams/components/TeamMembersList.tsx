@@ -12,20 +12,8 @@ import {
 	AlertDialogTitle,
 } from "@ui/components/alert-dialog";
 import { Button } from "@ui/components/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@ui/components/card";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@ui/components/select";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@ui/components/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@ui/components/select";
 import { AlertCircleIcon, LoaderIcon, PlusIcon, TrashIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -38,13 +26,7 @@ interface TeamMember {
 	joinedAt: string;
 }
 
-export function TeamMembersList({
-	teamId,
-	onAddMemberClick,
-}: {
-	teamId: string;
-	onAddMemberClick?: () => void;
-}) {
+export function TeamMembersList({ teamId, onAddMemberClick }: { teamId: string; onAddMemberClick?: () => void }) {
 	const queryClient = useQueryClient();
 	const [members, setMembers] = useState<TeamMember[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
@@ -79,8 +61,7 @@ export function TeamMembersList({
 
 				setMembers(membersList);
 			} catch (err: unknown) {
-				const message =
-					err instanceof Error ? err.message : "Failed to load team members";
+				const message = err instanceof Error ? err.message : "Failed to load team members";
 				setError(message);
 				setMembers([]);
 			} finally {
@@ -126,31 +107,25 @@ export function TeamMembersList({
 		setRemovingId(null);
 	};
 
-	const handleRoleChange = async (
-		member: TeamMember,
-		newRole: "owner" | "admin" | "member",
-	) => {
+	const handleRoleChange = async (member: TeamMember, newRole: "owner" | "admin" | "member") => {
 		if (member.role === newRole) return;
 
 		setUpdatingId(member.id);
 
 		toast.promise(
 			(async () => {
-				const { error: apiError } =
-					await authClient.organization.updateMemberRole({
-						organizationId: teamId,
-						memberId: member.id,
-						role: newRole,
-					});
+				const { error: apiError } = await authClient.organization.updateMemberRole({
+					organizationId: teamId,
+					memberId: member.id,
+					role: newRole,
+				});
 
 				if (apiError) {
 					throw new Error(apiError.message || "Failed to update role");
 				}
 
 				// Update in list
-				setMembers((prev) =>
-					prev.map((m) => (m.id === member.id ? { ...m, role: newRole } : m)),
-				);
+				setMembers((prev) => prev.map((m) => (m.id === member.id ? { ...m, role: newRole } : m)));
 
 				// Invalidate cache
 				queryClient.invalidateQueries({
@@ -216,9 +191,7 @@ export function TeamMembersList({
 					<CardDescription>Manage team members and their roles</CardDescription>
 				</CardHeader>
 				<CardContent className="text-center py-8">
-					<p className="text-muted-foreground mb-4">
-						No members in this team yet
-					</p>
+					<p className="text-muted-foreground mb-4">No members in this team yet</p>
 					<Button onClick={onAddMemberClick}>
 						<PlusIcon className="size-4 mr-2" />
 						Add Members
@@ -259,24 +232,16 @@ export function TeamMembersList({
 							</thead>
 							<tbody>
 								{members.map((member, idx) => (
-									<tr
-										key={member.id}
-										className={idx !== members.length - 1 ? "border-b" : ""}
-									>
+									<tr key={member.id} className={idx !== members.length - 1 ? "border-b" : ""}>
 										<td className="p-4">
 											<div className="font-medium">{member.name}</div>
 										</td>
-										<td className="p-4 text-muted-foreground">
-											{member.email}
-										</td>
+										<td className="p-4 text-muted-foreground">{member.email}</td>
 										<td className="p-4">
 											<Select
 												value={member.role}
 												onValueChange={(newRole: string) =>
-													handleRoleChange(
-														member,
-														newRole as "owner" | "admin" | "member",
-													)
+													handleRoleChange(member, newRole as "owner" | "admin" | "member")
 												}
 												disabled={updatingId === member.id}
 											>
@@ -318,17 +283,13 @@ export function TeamMembersList({
 			</Card>
 
 			{/* Confirm Remove Dialog */}
-			<AlertDialog
-				open={confirmRemove !== null}
-				onOpenChange={() => setConfirmRemove(null)}
-			>
+			<AlertDialog open={confirmRemove !== null} onOpenChange={() => setConfirmRemove(null)}>
 				<AlertDialogContent>
 					<AlertDialogHeader>
 						<AlertDialogTitle>Remove Member?</AlertDialogTitle>
 						<AlertDialogDescription>
-							Are you sure you want to remove{" "}
-							<span className="font-semibold">{confirmRemove?.name}</span> from
-							the team? This action cannot be undone.
+							Are you sure you want to remove <span className="font-semibold">{confirmRemove?.name}</span>{" "}
+							from the team? This action cannot be undone.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<div className="flex gap-3">

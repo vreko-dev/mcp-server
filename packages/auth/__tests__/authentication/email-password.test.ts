@@ -1,9 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import {
-	invalidUsers,
-	securityTestUsers,
-	validUsers,
-} from "../fixtures/users";
+import { invalidUsers, securityTestUsers, validUsers } from "../fixtures/users";
 import { createMockDatabase } from "../utils/mock-db";
 import { createMockEmailService } from "../utils/mock-email";
 import {

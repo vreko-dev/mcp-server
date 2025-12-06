@@ -42,10 +42,7 @@ export default async function Layout({ children }: PropsWithChildren) {
 		redirect("/auth/login");
 	}
 
-	if (
-		config.users.enableOnboarding &&
-		!(session as any)?.user?.onboardingComplete
-	) {
+	if (config.users.enableOnboarding && !(session as any)?.user?.onboardingComplete) {
 		redirect("/onboarding");
 	}
 
@@ -53,35 +50,28 @@ export default async function Layout({ children }: PropsWithChildren) {
 
 	if (config.organizations.enable && config.organizations.requireOrganization) {
 		const organization =
-			organizations.find(
-				(org: { id: string }) =>
-					org.id === (session as any)?.session?.activeOrganizationId,
-			) || organizations[0];
+			organizations.find((org: { id: string }) => org.id === (session as any)?.session?.activeOrganizationId) ||
+			organizations[0];
 
 		if (!organization) {
 			redirect("/new-organization");
 		}
 	}
 
-	const hasFreePlan = Object.values(config.payments.plans).some(
-		(plan) => "isFree" in plan,
-	);
+	const hasFreePlan = Object.values(config.payments.plans).some((plan) => "isFree" in plan);
 
 	if (
-		((config.organizations.enable && config.organizations.enableBilling) ||
-			config.users.enableBilling) &&
+		((config.organizations.enable && config.organizations.enableBilling) || config.users.enableBilling) &&
 		!hasFreePlan
 	) {
 		const organizationId = config.organizations.enable
-			? (session as any)?.session?.activeOrganizationId ||
-				(organizations as any)?.at(0)?.id
+			? (session as any)?.session?.activeOrganizationId || (organizations as any)?.at(0)?.id
 			: undefined;
 
-		const [error, data] = await attemptAsync<{ purchases: Purchase[] }, Error>(
-			() =>
-				orpcClient.payments.listPurchases({
-					organizationId,
-				}),
+		const [error, data] = await attemptAsync<{ purchases: Purchase[] }, Error>(() =>
+			orpcClient.payments.listPurchases({
+				organizationId,
+			}),
 		);
 
 		if (error) {

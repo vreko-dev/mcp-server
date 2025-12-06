@@ -8,14 +8,14 @@
  * @see packages/auth/__tests__/api-key-lifecycle.test.ts
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
+	createApiKey,
 	generateApiKey,
 	hashApiKey,
-	verifyApiKey,
-	createApiKey,
-	validateApiKey,
 	revokeApiKey,
+	validateApiKey,
+	verifyApiKey,
 } from "../src/index";
 
 // ============================================================================
@@ -29,12 +29,12 @@ interface TestContext {
 	keyHash: string;
 }
 
-function createTestUser(userId: string = "user_test_123"): string {
+function createTestUser(userId = "user_test_123"): string {
 	return userId;
 }
 
 async function setupApiKey(
-	userId: string
+	userId: string,
 ): Promise<Omit<TestContext, "userId">> {
 	const plainKey = generateApiKey();
 	const keyHash = await hashApiKey(plainKey);
@@ -72,9 +72,7 @@ describe("API Key Lifecycle - Happy Path", () => {
 			expect(key).toMatch(/^sk_live_[a-zA-Z0-9]{32,}$/);
 
 			// ✅ Verify uniqueness (high entropy)
-			const keys = new Set(
-				Array.from({ length: 100 }, () => generateApiKey())
-			);
+			const keys = new Set(Array.from({ length: 100 }, () => generateApiKey()));
 			expect(keys.size).toBe(100); // All unique
 		});
 
@@ -94,7 +92,7 @@ describe("API Key Lifecycle - Happy Path", () => {
 			expect(result).toHaveProperty("id");
 			expect(result.name).toBe("VS Code - Main");
 			expect(result.scopes).toEqual(
-				expect.arrayContaining(["snapshots:read", "snapshots:write"])
+				expect.arrayContaining(["snapshots:read", "snapshots:write"]),
 			);
 			expect(result.rateLimit).toBe(1000);
 			expect(result.createdAt).toBeInstanceOf(Date);
@@ -203,7 +201,7 @@ describe("API Key Lifecycle - Sad Path", () => {
 				const result = await validateApiKey(badKey);
 				expect(result.valid).toBe(false);
 				expect(result.error).toContain(
-					"Authentication failed" // Generic error
+					"Authentication failed", // Generic error
 				);
 			}
 		});
@@ -234,7 +232,7 @@ describe("API Key Lifecycle - Sad Path", () => {
 					userId,
 					name: "", // Empty name
 					scopes: ["snapshots:read"],
-				})
+				}),
 			).rejects.toThrow(/name/i);
 		});
 
@@ -244,7 +242,7 @@ describe("API Key Lifecycle - Sad Path", () => {
 					userId,
 					name: "ab", // Too short
 					scopes: ["snapshots:read"],
-				})
+				}),
 			).rejects.toThrow(/3 characters/i);
 		});
 
@@ -254,7 +252,7 @@ describe("API Key Lifecycle - Sad Path", () => {
 					userId,
 					name: "Test Key",
 					scopes: [], // Empty scopes
-				})
+				}),
 			).rejects.toThrow(/scopes/i);
 		});
 
@@ -264,7 +262,7 @@ describe("API Key Lifecycle - Sad Path", () => {
 					userId,
 					name: "Test Key",
 					scopes: ["invalid_scope_format"], // Not resource:action
-				})
+				}),
 			).rejects.toThrow(/scope/i);
 		});
 
@@ -347,8 +345,8 @@ describe("API Key Lifecycle - Edge Cases", () => {
 						userId,
 						name: `Key ${i + 1}`,
 						scopes: ["snapshots:read"],
-					})
-				)
+					}),
+				),
 			);
 
 			expect(keys).toHaveLength(keyCount);
@@ -359,7 +357,7 @@ describe("API Key Lifecycle - Edge Cases", () => {
 
 			// ✅ All keys validate independently
 			const results = await Promise.all(
-				keys.map((k) => validateApiKey(k.fullKey))
+				keys.map((k) => validateApiKey(k.fullKey)),
 			);
 			results.forEach((r) => expect(r.valid).toBe(true));
 		});
@@ -371,7 +369,7 @@ describe("API Key Lifecycle - Edge Cases", () => {
 			const hash = await hashApiKey(plainKey);
 
 			const validations = await Promise.all(
-				Array.from({ length: 100 }, () => verifyApiKey(plainKey, hash))
+				Array.from({ length: 100 }, () => verifyApiKey(plainKey, hash)),
 			);
 
 			// ✅ All concurrent validations succeed

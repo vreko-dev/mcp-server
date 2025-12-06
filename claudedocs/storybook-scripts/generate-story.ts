@@ -10,23 +10,21 @@
  *   tsx generate-story.ts HeroSection apps/web/modules/marketing/components Marketing
  */
 
-import { writeFileSync, existsSync, readFileSync } from 'fs';
-import { join, basename } from 'path';
+import { existsSync, readFileSync, writeFileSync } from "fs";
+import { basename, join } from "path";
 
 interface StoryConfig {
-  componentName: string;
-  componentPath: string;
-  category: 'UI' | 'Marketing' | 'Layout' | 'Forms';
-  subCategory?: string;
+	componentName: string;
+	componentPath: string;
+	category: "UI" | "Marketing" | "Layout" | "Forms";
+	subCategory?: string;
 }
 
 function generateStory(config: StoryConfig): string {
-  const { componentName, category, subCategory } = config;
-  const title = subCategory
-    ? `${category}/${subCategory}/${componentName}`
-    : `${category}/${componentName}`;
+	const { componentName, category, subCategory } = config;
+	const title = subCategory ? `${category}/${subCategory}/${componentName}` : `${category}/${componentName}`;
 
-  return `import type { Meta, StoryObj } from '@storybook/react';
+	return `import type { Meta, StoryObj } from '@storybook/react';
 import { ${componentName} } from './${componentName}';
 
 const meta = {
@@ -93,49 +91,49 @@ export const DarkMode: Story = {
 `;
 }
 
-function inferCategory(path: string): 'UI' | 'Marketing' | 'Layout' | 'Forms' {
-  if (path.includes('/ui/')) return 'UI';
-  if (path.includes('/marketing/')) return 'Marketing';
-  if (path.includes('/layout/')) return 'Layout';
-  if (path.includes('/forms/')) return 'Forms';
-  return 'UI';
+function inferCategory(path: string): "UI" | "Marketing" | "Layout" | "Forms" {
+	if (path.includes("/ui/")) return "UI";
+	if (path.includes("/marketing/")) return "Marketing";
+	if (path.includes("/layout/")) return "Layout";
+	if (path.includes("/forms/")) return "Forms";
+	return "UI";
 }
 
 function inferSubCategory(path: string): string | undefined {
-  if (path.includes('/ui/components/')) {
-    // Check for common subcategories
-    if (path.includes('/primitives/')) return 'Primitives';
-    if (path.includes('/composed/')) return 'Composed';
-    if (path.includes('/magic/')) return 'Magic';
-  }
-  if (path.includes('/marketing/components/')) {
-    if (path.includes('/sections/')) return 'Sections';
-    if (path.includes('/ui/')) return 'Components';
-  }
-  return undefined;
+	if (path.includes("/ui/components/")) {
+		// Check for common subcategories
+		if (path.includes("/primitives/")) return "Primitives";
+		if (path.includes("/composed/")) return "Composed";
+		if (path.includes("/magic/")) return "Magic";
+	}
+	if (path.includes("/marketing/components/")) {
+		if (path.includes("/sections/")) return "Sections";
+		if (path.includes("/ui/")) return "Components";
+	}
+	return undefined;
 }
 
 function extractComponentName(filePath: string): string | null {
-  try {
-    const content = readFileSync(filePath, 'utf-8');
+	try {
+		const content = readFileSync(filePath, "utf-8");
 
-    // Try to find export pattern
-    const exportMatch = content.match(/export\s+(?:const|function)\s+(\w+)/);
-    if (exportMatch) return exportMatch[1];
+		// Try to find export pattern
+		const exportMatch = content.match(/export\s+(?:const|function)\s+(\w+)/);
+		if (exportMatch) return exportMatch[1];
 
-    // Try to find component name from file
-    const fileName = basename(filePath, '.tsx');
-    return fileName.charAt(0).toUpperCase() + fileName.slice(1);
-  } catch {
-    return null;
-  }
+		// Try to find component name from file
+		const fileName = basename(filePath, ".tsx");
+		return fileName.charAt(0).toUpperCase() + fileName.slice(1);
+	} catch {
+		return null;
+	}
 }
 
 function main() {
-  const args = process.argv.slice(2);
+	const args = process.argv.slice(2);
 
-  if (args.length < 2) {
-    console.error(`
+	if (args.length < 2) {
+		console.error(`
 Usage: tsx generate-story.ts <ComponentName> <path> [category]
 
 Arguments:
@@ -151,58 +149,60 @@ Examples:
 Auto-discovery mode:
   tsx generate-story.ts --scan apps/web/modules/ui/components
     `);
-    process.exit(1);
-  }
+		process.exit(1);
+	}
 
-  // Scan mode
-  if (args[0] === '--scan') {
-    const scanPath = args[1];
-    console.log(`Scanning ${scanPath} for components without stories...`);
-    // TODO: Implement scanning logic
-    console.log('Scan mode not yet implemented');
-    return;
-  }
+	// Scan mode
+	if (args[0] === "--scan") {
+		const scanPath = args[1];
+		console.log(`Scanning ${scanPath} for components without stories...`);
+		// TODO: Implement scanning logic
+		console.log("Scan mode not yet implemented");
+		return;
+	}
 
-  const componentName = args[0];
-  const componentPath = args[1];
-  const category = (args[2] || inferCategory(componentPath)) as StoryConfig['category'];
-  const subCategory = inferSubCategory(componentPath);
+	const componentName = args[0];
+	const componentPath = args[1];
+	const category = (args[2] || inferCategory(componentPath)) as StoryConfig["category"];
+	const subCategory = inferSubCategory(componentPath);
 
-  const config: StoryConfig = {
-    componentName,
-    componentPath,
-    category,
-    subCategory,
-  };
+	const config: StoryConfig = {
+		componentName,
+		componentPath,
+		category,
+		subCategory,
+	};
 
-  // Determine story file path
-  let storyPath: string;
+	// Determine story file path
+	let storyPath: string;
 
-  // If path ends with .tsx, replace extension
-  if (componentPath.endsWith('.tsx') || componentPath.endsWith('.ts')) {
-    storyPath = componentPath.replace(/\.tsx?$/, '.stories.tsx');
-  } else {
-    // Assume it's a directory
-    storyPath = join(componentPath, `${componentName}.stories.tsx`);
-  }
+	// If path ends with .tsx, replace extension
+	if (componentPath.endsWith(".tsx") || componentPath.endsWith(".ts")) {
+		storyPath = componentPath.replace(/\.tsx?$/, ".stories.tsx");
+	} else {
+		// Assume it's a directory
+		storyPath = join(componentPath, `${componentName}.stories.tsx`);
+	}
 
-  if (existsSync(storyPath)) {
-    console.error(`❌ Story already exists: ${storyPath}`);
-    console.error('   Use --force to overwrite (not implemented)');
-    process.exit(1);
-  }
+	if (existsSync(storyPath)) {
+		console.error(`❌ Story already exists: ${storyPath}`);
+		console.error("   Use --force to overwrite (not implemented)");
+		process.exit(1);
+	}
 
-  const storyContent = generateStory(config);
-  writeFileSync(storyPath, storyContent, 'utf-8');
+	const storyContent = generateStory(config);
+	writeFileSync(storyPath, storyContent, "utf-8");
 
-  console.log(`✅ Created story: ${storyPath}`);
-  console.log(`   Title: ${config.subCategory ? `${config.category}/${config.subCategory}/${componentName}` : `${config.category}/${componentName}`}`);
-  console.log(`\nNext steps:`);
-  console.log(`1. Open ${storyPath}`);
-  console.log(`2. Update argTypes based on component props`);
-  console.log(`3. Add realistic example data to Default story`);
-  console.log(`4. Create stories for all component variants`);
-  console.log(`5. Test in Storybook: pnpm --filter @snapback/web storybook`);
+	console.log(`✅ Created story: ${storyPath}`);
+	console.log(
+		`   Title: ${config.subCategory ? `${config.category}/${config.subCategory}/${componentName}` : `${config.category}/${componentName}`}`,
+	);
+	console.log("\nNext steps:");
+	console.log(`1. Open ${storyPath}`);
+	console.log("2. Update argTypes based on component props");
+	console.log("3. Add realistic example data to Default story");
+	console.log("4. Create stories for all component variants");
+	console.log("5. Test in Storybook: pnpm --filter @snapback/web storybook");
 }
 
 main();

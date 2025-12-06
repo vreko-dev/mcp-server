@@ -1,8 +1,8 @@
+// @ts-expect-error - Config types should be available after build
+import type { PlanTier } from "@snapback/config";
 import { logger } from "@snapback/infrastructure";
 import { send as sendResendEmail } from "../../email/provider/resend";
 import type { SendEmailParams } from "../../email/types";
-// @ts-ignore - Config types should be available after build
-import type { PlanTier } from "@snapback/config";
 
 export interface EmailServiceResult {
 	success: boolean;
@@ -49,11 +49,7 @@ export async function sendEmail(params: SendEmailParams): Promise<EmailServiceRe
 /**
  * Send welcome email to new subscriber
  */
-export async function sendWelcomeEmail(
-	customerId: string,
-	plan: PlanTier,
-	email?: string
-): Promise<void> {
+export async function sendWelcomeEmail(customerId: string, plan: PlanTier, email?: string): Promise<void> {
 	if (!email) {
 		logger.warn("Cannot send welcome email: no email address", { customerId });
 		return;
@@ -69,10 +65,7 @@ export async function sendWelcomeEmail(
 /**
  * Send cancellation email
  */
-export async function sendCancellationEmail(
-	customerId: string,
-	email?: string
-): Promise<void> {
+export async function sendCancellationEmail(customerId: string, email?: string): Promise<void> {
 	if (!email) {
 		logger.warn("Cannot send cancellation email: no email address", { customerId });
 		return;
@@ -88,11 +81,7 @@ export async function sendCancellationEmail(
 /**
  * Send payment receipt email
  */
-export async function sendPaymentReceipt(
-	customerId: string,
-	amount: number,
-	email?: string
-): Promise<void> {
+export async function sendPaymentReceipt(customerId: string, amount: number, email?: string): Promise<void> {
 	if (!email) {
 		logger.warn("Cannot send payment receipt: no email address", { customerId });
 		return;
@@ -108,11 +97,7 @@ export async function sendPaymentReceipt(
 /**
  * Send payment failed email
  */
-export async function sendPaymentFailedEmail(
-	customerId: string,
-	amount: number,
-	email?: string
-): Promise<void> {
+export async function sendPaymentFailedEmail(customerId: string, amount: number, email?: string): Promise<void> {
 	if (!email) {
 		logger.warn("Cannot send payment failed email: no email address", { customerId });
 		return;

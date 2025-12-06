@@ -11,9 +11,7 @@ export const hoverEffects = {
 			const rect = e.currentTarget.getBoundingClientRect();
 			const x = e.clientX - rect.left - rect.width / 2;
 			const y = e.clientY - rect.top - rect.height / 2;
-			e.currentTarget.style.transform = `translate(${x * strength}px, ${
-				y * strength
-			}px)`;
+			e.currentTarget.style.transform = `translate(${x * strength}px, ${y * strength}px)`;
 		},
 		onMouseLeave: (e: React.MouseEvent<HTMLElement>) => {
 			e.currentTarget.style.transform = "";

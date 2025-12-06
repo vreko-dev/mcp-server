@@ -8,15 +8,9 @@ export interface SpotlightProps {
 	fill?: string;
 }
 
-export const Spotlight: React.FC<SpotlightProps> = ({
-	className,
-	fill = "hsl(140 100% 50%)",
-}) => {
+export const Spotlight: React.FC<SpotlightProps> = ({ className, fill = "hsl(140 100% 50%)" }) => {
 	// Use stable ID for SSR compatibility
-	const filterId = useMemo(
-		() => `spotlight-filter-${className || "default"}`,
-		[className],
-	);
+	const filterId = useMemo(() => `spotlight-filter-${className || "default"}`, [className]);
 
 	return (
 		<m.svg
@@ -49,16 +43,8 @@ export const Spotlight: React.FC<SpotlightProps> = ({
 					colorInterpolationFilters="sRGB"
 				>
 					<feFlood floodOpacity="0" result="BackgroundImageFix" />
-					<feBlend
-						mode="normal"
-						in="SourceGraphic"
-						in2="BackgroundImageFix"
-						result="shape"
-					/>
-					<feGaussianBlur
-						stdDeviation="151"
-						result="effect1_foregroundBlur_1065_8"
-					/>
+					<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+					<feGaussianBlur stdDeviation="151" result="effect1_foregroundBlur_1065_8" />
 				</filter>
 			</defs>
 			<g filter={`url(#${filterId})`}>
@@ -83,10 +69,7 @@ export interface SpotlightCardProps {
 	children: React.ReactNode;
 }
 
-export const SpotlightCard: React.FC<SpotlightCardProps> = ({
-	className,
-	children,
-}) => {
+export const SpotlightCard: React.FC<SpotlightCardProps> = ({ className, children }) => {
 	return (
 		<div className={`relative overflow-hidden ${className}`}>
 			<Spotlight className="absolute -top-40 -left-40 md:-left-32 lg:-left-10" />

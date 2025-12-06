@@ -20,9 +20,7 @@ const isBrowser = typeof window !== "undefined";
  */
 export async function getClientFingerprint() {
 	if (!isBrowser) {
-		throw new Error(
-			"getClientFingerprint can only be called in browser environment",
-		);
+		throw new Error("getClientFingerprint can only be called in browser environment");
 	}
 
 	// Collect browser-specific attributes

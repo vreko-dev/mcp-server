@@ -62,9 +62,7 @@ export function StatusBar({ onSave }: StatusBarProps) {
 						type="button"
 						onClick={() => dispatch({ type: "TOGGLE_AI_MONITORING" })}
 						className={`px-2 py-1 rounded ${
-							state.isAiMonitoringEnabled
-								? "bg-green-500 text-white"
-								: "bg-[#146aa3]"
+							state.isAiMonitoringEnabled ? "bg-green-500 text-white" : "bg-[#146aa3]"
 						}`}
 					>
 						{state.isAiMonitoringEnabled ? "ON" : "OFF"}
@@ -83,16 +81,8 @@ export function StatusBar({ onSave }: StatusBarProps) {
 			</div>
 
 			<div className="flex items-center space-x-4 text-xs">
-				{state.policyStatusMessage && (
-					<div className="opacity-90">{state.policyStatusMessage}</div>
-				)}
-				<div>
-					Snapshots:{" "}
-					{
-						state.snapshots.filter((s) => s.fileId === state.currentFileId)
-							.length
-					}
-				</div>
+				{state.policyStatusMessage && <div className="opacity-90">{state.policyStatusMessage}</div>}
+				<div>Snapshots: {state.snapshots.filter((s) => s.fileId === state.currentFileId).length}</div>
 				<div>Protected Files: {state.protectedFiles.length}</div>
 			</div>
 		</div>

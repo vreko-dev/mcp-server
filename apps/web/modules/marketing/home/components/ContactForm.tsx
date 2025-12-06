@@ -20,14 +20,7 @@ type ContactFormValues = z.infer<typeof contactFormSchema>;
 
 import { Alert, AlertTitle } from "@ui/components/alert";
 import { Button } from "@ui/components/button";
-import {
-	Form,
-	FormControl,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from "@ui/components/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@ui/components/form";
 import { Input } from "@ui/components/input";
 import { Textarea } from "@ui/components/textarea";
 import { MailCheckIcon, MailIcon } from "lucide-react";
@@ -71,10 +64,7 @@ export function ContactForm() {
 				</Alert>
 			) : (
 				<Form {...form}>
-					<form
-						onSubmit={onSubmit}
-						className="flex flex-col items-stretch gap-4"
-					>
+					<form onSubmit={onSubmit} className="flex flex-col items-stretch gap-4">
 						{form.formState.errors.root?.message && (
 							<Alert variant="error">
 								<MailIcon />
@@ -124,11 +114,7 @@ export function ContactForm() {
 							)}
 						/>
 
-						<Button
-							type="submit"
-							className="w-full"
-							loading={form.formState.isSubmitting}
-						>
+						<Button type="submit" className="w-full" loading={form.formState.isSubmitting}>
 							Send Message
 						</Button>
 					</form>

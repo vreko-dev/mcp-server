@@ -63,10 +63,7 @@ export async function getPostBySlug(
 	const posts = loadAllPosts();
 	return (
 		posts.find(
-			(post) =>
-				post.path === slug &&
-				(!options?.locale || post.locale === options.locale) &&
-				post.published,
+			(post) => post.path === slug && (!options?.locale || post.locale === options.locale) && post.published,
 		) ?? null
 	);
 }

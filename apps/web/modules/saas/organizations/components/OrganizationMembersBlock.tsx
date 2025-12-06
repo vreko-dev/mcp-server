@@ -5,18 +5,11 @@ import { useState } from "react";
 import { OrganizationInvitationsList } from "./OrganizationInvitationsList";
 import { OrganizationMembersList } from "./OrganizationMembersList";
 
-export function OrganizationMembersBlock({
-	organizationId,
-}: {
-	organizationId: string;
-}) {
+export function OrganizationMembersBlock({ organizationId }: { organizationId: string }) {
 	const [activeTab, setActiveTab] = useState("members");
 
 	return (
-		<SettingsItem
-			title="Members"
-			description="Manage organization members and invitations"
-		>
+		<SettingsItem title="Members" description="Manage organization members and invitations">
 			<Tabs value={activeTab} onValueChange={(tab) => setActiveTab(tab)}>
 				<TabsList className="mb-4">
 					<TabsTrigger value="members">Active Members</TabsTrigger>

@@ -17,9 +17,7 @@ type FormFieldContextValue<
 	name: TName;
 };
 
-const FormFieldContext = React.createContext<FormFieldContextValue>(
-	{} as FormFieldContextValue,
-);
+const FormFieldContext = React.createContext<FormFieldContextValue>({} as FormFieldContextValue);
 
 const FormField = <
 	TFieldValues extends FieldValues = FieldValues,
@@ -61,14 +59,9 @@ type FormItemContextValue = {
 	id: string;
 };
 
-const FormItemContext = React.createContext<FormItemContextValue>(
-	{} as FormItemContextValue,
-);
+const FormItemContext = React.createContext<FormItemContextValue>({} as FormItemContextValue);
 
-const FormItem = ({
-	className,
-	...props
-}: React.HTMLAttributes<HTMLDivElement>) => {
+const FormItem = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => {
 	const id = React.useId();
 
 	return (
@@ -78,19 +71,12 @@ const FormItem = ({
 	);
 };
 
-const FormLabel = ({
-	className,
-	...props
-}: React.ComponentProps<typeof LabelPrimitive.Root>) => {
+const FormLabel = ({ className, ...props }: React.ComponentProps<typeof LabelPrimitive.Root>) => {
 	const { error, formItemId } = useFormField();
 
 	return (
 		<Label
-			className={cn(
-				"block font-medium",
-				error && "text-destructive",
-				className,
-			)}
+			className={cn("block font-medium", error && "text-destructive", className)}
 			htmlFor={formItemId}
 			{...props}
 		/>
@@ -98,41 +84,25 @@ const FormLabel = ({
 };
 
 const FormControl = ({ ...props }: React.ComponentProps<typeof Slot>) => {
-	const { error, formItemId, formDescriptionId, formMessageId } =
-		useFormField();
+	const { error, formItemId, formDescriptionId, formMessageId } = useFormField();
 
 	return (
 		<Slot
 			id={formItemId}
-			aria-describedby={
-				error ? `${formDescriptionId} ${formMessageId}` : `${formDescriptionId}`
-			}
+			aria-describedby={error ? `${formDescriptionId} ${formMessageId}` : `${formDescriptionId}`}
 			aria-invalid={!!error}
 			{...props}
 		/>
 	);
 };
 
-const FormDescription = ({
-	className,
-	...props
-}: React.HTMLAttributes<HTMLParagraphElement>) => {
+const FormDescription = ({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) => {
 	const { formDescriptionId } = useFormField();
 
-	return (
-		<p
-			id={formDescriptionId}
-			className={cn("text-foreground/60 text-sm", className)}
-			{...props}
-		/>
-	);
+	return <p id={formDescriptionId} className={cn("text-foreground/60 text-sm", className)} {...props} />;
 };
 
-const FormMessage = ({
-	className,
-	children,
-	...props
-}: React.HTMLAttributes<HTMLParagraphElement>) => {
+const FormMessage = ({ className, children, ...props }: React.HTMLAttributes<HTMLParagraphElement>) => {
 	const { error, formMessageId } = useFormField();
 	const body = error ? String(error?.message) : children;
 
@@ -141,23 +111,10 @@ const FormMessage = ({
 	}
 
 	return (
-		<p
-			id={formMessageId}
-			className={cn("font-normal text-destructive text-sm", className)}
-			{...props}
-		>
+		<p id={formMessageId} className={cn("font-normal text-destructive text-sm", className)} {...props}>
 			{body}
 		</p>
 	);
 };
 
-export {
-	Form,
-	FormControl,
-	FormDescription,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-	useFormField,
-};
+export { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, useFormField };

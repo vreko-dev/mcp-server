@@ -46,9 +46,7 @@ export function HowItWorks() {
 										<div className="text-5xl mb-2 text-[var(--snapback-green)] group-hover:scale-110 transition-transform">
 											{step.step_number === 1 && <Save className="w-12 h-12" />}
 											{step.step_number === 2 && <Zap className="w-12 h-12" />}
-											{step.step_number === 3 && (
-												<RotateCcw className="w-12 h-12" />
-											)}
+											{step.step_number === 3 && <RotateCcw className="w-12 h-12" />}
 										</div>
 										{step.tag && (
 											<div className="text-xs text-[#666] bg-[#111] px-2 py-1 rounded border border-[#222]">

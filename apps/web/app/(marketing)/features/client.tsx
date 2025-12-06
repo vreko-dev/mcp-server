@@ -124,9 +124,8 @@ export default function FeaturesClient() {
 						</span>
 					</h1>
 					<p className="text-xl lg:text-2xl text-gray-300 max-w-3xl mx-auto mb-8">
-						Every time you undo a mistake, SnapBack gets smarter. Day 1 catches
-						94% of issues. Day 30 knows YOUR codebase. Month 3 prevents what you
-						didn't even know could break.
+						Every time you undo a mistake, SnapBack gets smarter. Day 1 catches 94% of issues. Day 30 knows
+						YOUR codebase. Month 3 prevents what you didn't even know could break.
 					</p>
 					<div className="flex flex-wrap justify-center gap-4">
 						<Link
@@ -166,29 +165,18 @@ export default function FeaturesClient() {
 
 								{/* Icon */}
 								<div className="mb-6">
-									<feature.icon
-										className={`w-12 h-12 ${feature.color}`}
-										strokeWidth={1.5}
-									/>
+									<feature.icon className={`w-12 h-12 ${feature.color}`} strokeWidth={1.5} />
 								</div>
 
 								{/* Title & Subtitle */}
 								<div className="flex items-center gap-3 mb-2">
-									<h2 className="text-2xl font-bold text-white">
-										{feature.title}
-									</h2>
-									{(feature as any).comingSoon && (
-										<ComingSoonBadge variant="inline" />
-									)}
+									<h2 className="text-2xl font-bold text-white">{feature.title}</h2>
+									{(feature as any).comingSoon && <ComingSoonBadge variant="inline" />}
 								</div>
-								<p className={`text-sm font-mono ${feature.color} mb-4`}>
-									{feature.subtitle}
-								</p>
+								<p className={`text-sm font-mono ${feature.color} mb-4`}>{feature.subtitle}</p>
 
 								{/* Description */}
-								<p className="text-gray-300 mb-6 leading-relaxed">
-									{feature.description}
-								</p>
+								<p className="text-gray-300 mb-6 leading-relaxed">{feature.description}</p>
 
 								{/* Benefits List */}
 								<ul className="space-y-3 mb-6">
@@ -222,9 +210,7 @@ export default function FeaturesClient() {
 					transition={{ duration: 0.6 }}
 					className="bg-gradient-to-r from-emerald-400/20 to-emerald-500/20 border border-emerald-400/30 rounded-2xl p-12 text-center"
 				>
-					<h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
-						Ready to learn smarter?
-					</h2>
+					<h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">Ready to learn smarter?</h2>
 					<p className="text-xl text-gray-300 mb-8">
 						Install SnapBack for VS Code. It learns from your first mistake.
 					</p>

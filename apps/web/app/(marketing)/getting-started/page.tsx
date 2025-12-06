@@ -8,20 +8,15 @@ import posthog from "posthog-js";
 
 export default function GettingStartedPage() {
 	const { getting_started } = siteSpec.pages;
-	const { intro, install, first_restore, best_practices, alpha } =
-		getting_started.sections;
+	const { intro, install, first_restore, best_practices, alpha } = getting_started.sections;
 
 	return (
 		<main className="min-h-screen bg-background pt-24 pb-24">
 			<div className="container mx-auto px-4 max-w-4xl">
 				{/* Intro */}
 				<section className="text-center mb-20 space-y-6">
-					<h1 className="text-4xl lg:text-6xl font-bold text-foreground">
-						{intro.content.headline}
-					</h1>
-					<p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-						{intro.content.body}
-					</p>
+					<h1 className="text-4xl lg:text-6xl font-bold text-foreground">{intro.content.headline}</h1>
+					<p className="text-xl text-muted-foreground max-w-2xl mx-auto">{intro.content.body}</p>
 				</section>
 
 				{/* Install */}
@@ -30,9 +25,7 @@ export default function GettingStartedPage() {
 						<div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center text-accent-foreground font-bold text-xl">
 							1
 						</div>
-						<h2 className="text-3xl font-bold text-foreground">
-							{install.content.headline}
-						</h2>
+						<h2 className="text-3xl font-bold text-foreground">{install.content.headline}</h2>
 					</div>
 					<div className="grid gap-6">
 						{install.content.steps.map((step) => (
@@ -41,9 +34,7 @@ export default function GettingStartedPage() {
 								className="p-6 rounded-2xl bg-card-dark border border-border-subtle flex flex-col md:flex-row gap-6 items-start md:items-center"
 							>
 								<div className="flex-1 space-y-2">
-									<h3 className="text-xl font-semibold text-foreground">
-										{step.title}
-									</h3>
+									<h3 className="text-xl font-semibold text-foreground">{step.title}</h3>
 									<p className="text-muted-foreground">{step.body}</p>
 								</div>
 								{step.cta && (
@@ -71,17 +62,13 @@ export default function GettingStartedPage() {
 						<div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center text-accent-foreground font-bold text-xl">
 							2
 						</div>
-						<h2 className="text-3xl font-bold text-foreground">
-							{first_restore.content.headline}
-						</h2>
+						<h2 className="text-3xl font-bold text-foreground">{first_restore.content.headline}</h2>
 					</div>
 					<div className="relative border-l-2 border-border-subtle ml-5 pl-10 space-y-12 py-4">
 						{first_restore.content.steps.map((step) => (
 							<div key={`restore-step-${step.title}`} className="relative">
 								<div className="absolute -left-[49px] top-1 w-4 h-4 rounded-full bg-border-subtle border-2 border-background" />
-								<h3 className="text-xl font-semibold text-foreground mb-2">
-									{step.title}
-								</h3>
+								<h3 className="text-xl font-semibold text-foreground mb-2">{step.title}</h3>
 								<p className="text-muted-foreground">{step.body}</p>
 							</div>
 						))}
@@ -103,9 +90,7 @@ export default function GettingStartedPage() {
 								className="p-6 rounded-2xl bg-card-dark border border-border-subtle hover:border-accent/30 transition-colors"
 							>
 								<div className="text-2xl mb-4">💡</div>
-								<h3 className="text-lg font-semibold text-foreground mb-2">
-									{tip.title}
-								</h3>
+								<h3 className="text-lg font-semibold text-foreground mb-2">{tip.title}</h3>
 								<p className="text-muted-foreground text-sm">{tip.body}</p>
 							</div>
 						))}
@@ -114,12 +99,8 @@ export default function GettingStartedPage() {
 
 				{/* Alpha CTA */}
 				<section className="text-center p-12 rounded-3xl bg-gradient-to-b from-card-dark to-background border border-border-subtle">
-					<h2 className="text-3xl font-bold text-foreground mb-4">
-						{alpha.content.headline}
-					</h2>
-					<p className="text-muted-foreground mb-8 max-w-xl mx-auto">
-						{alpha.content.body}
-					</p>
+					<h2 className="text-3xl font-bold text-foreground mb-4">{alpha.content.headline}</h2>
+					<p className="text-muted-foreground mb-8 max-w-xl mx-auto">{alpha.content.body}</p>
 					<Link
 						href={alpha.content.primary_cta.href}
 						onClick={() =>

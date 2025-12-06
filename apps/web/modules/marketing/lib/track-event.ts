@@ -13,10 +13,7 @@ const getPosthog = (): PosthogLike | undefined => {
 	return posthog;
 };
 
-export const trackMarketingEvent = (
-	event: string,
-	properties?: Record<string, unknown>,
-): void => {
+export const trackMarketingEvent = (event: string, properties?: Record<string, unknown>): void => {
 	const posthog = getPosthog();
 	if (!posthog || typeof posthog.capture !== "function") {
 		return;

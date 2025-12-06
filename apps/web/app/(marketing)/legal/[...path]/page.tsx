@@ -14,9 +14,7 @@ export async function generateMetadata(props: { params: Promise<Params> }) {
 
 	const activePath = getActivePathFromUrlParam(path);
 	const allPages = getAllLegalPages();
-	const page = allPages
-		.filter((doc) => doc.path === activePath)
-		.sort((doc) => (doc.locale === "en" ? -1 : 1))[0];
+	const page = allPages.filter((doc) => doc.path === activePath).sort((doc) => (doc.locale === "en" ? -1 : 1))[0];
 
 	return {
 		title: page?.title,
@@ -33,9 +31,7 @@ export default async function BlogPostPage(props: { params: Promise<Params> }) {
 
 	const activePath = getActivePathFromUrlParam(path);
 	const allPages = getAllLegalPages();
-	const page = allPages
-		.filter((doc) => doc.path === activePath)
-		.sort((doc) => (doc.locale === "en" ? -1 : 1))[0];
+	const page = allPages.filter((doc) => doc.path === activePath).sort((doc) => (doc.locale === "en" ? -1 : 1))[0];
 
 	if (!page) {
 		redirect("/");
@@ -47,9 +43,7 @@ export default async function BlogPostPage(props: { params: Promise<Params> }) {
 		<div className="min-h-screen bg-gradient-to-b from-slate-900 via-black to-slate-900">
 			<div className="container max-w-6xl pt-32 pb-24">
 				<div className="mx-auto mb-12 max-w-3xl">
-					<h1 className="text-center font-bold text-5xl lg:text-6xl text-white mb-4">
-						{title}
-					</h1>
+					<h1 className="text-center font-bold text-5xl lg:text-6xl text-white mb-4">{title}</h1>
 				</div>
 
 				<PostContent content={body} />

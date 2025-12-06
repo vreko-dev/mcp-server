@@ -2,10 +2,7 @@
 
 import { useState } from "react";
 import { useSnapBack } from "../context/SnapBackContext";
-import {
-	getProtectionBadgeColor,
-	getProtectionBadgeText,
-} from "../domain/protection";
+import { getProtectionBadgeColor, getProtectionBadgeText } from "../domain/protection";
 import type { ProtectionLevel } from "../domain/types";
 
 interface FileExplorerProps {
@@ -14,9 +11,7 @@ interface FileExplorerProps {
 
 export function FileExplorer({ onFileSelect }: FileExplorerProps) {
 	const { state, dispatch } = useSnapBack();
-	const [_expandedFolders, setExpandedFolders] = useState<
-		Record<string, boolean>
-	>({});
+	const [_expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>({});
 
 	// Mock file structure for demo purposes
 	const mockFiles = [
@@ -59,10 +54,7 @@ export function FileExplorer({ onFileSelect }: FileExplorerProps) {
 					const badgeColor = getProtectionBadgeColor(protectionLevel);
 
 					return (
-						<li
-							key={file.id}
-							className="flex items-center py-1 text-sm text-gray-200"
-						>
+						<li key={file.id} className="flex items-center py-1 text-sm text-gray-200">
 							{file.type === "file" ? (
 								<FileIcon className="mr-2 text-gray-400" />
 							) : (
@@ -75,9 +67,7 @@ export function FileExplorer({ onFileSelect }: FileExplorerProps) {
 							<button
 								type="button"
 								className="flex-1 text-left cursor-pointer hover:bg-[#2d2d2d] px-2 py-1 rounded transition-colors"
-								onClick={() =>
-									file.type === "file" && handleFileSelect(file.id, file.path)
-								}
+								onClick={() => file.type === "file" && handleFileSelect(file.id, file.path)}
 							>
 								{file.path.split("/").pop()}
 							</button>
@@ -107,9 +97,7 @@ export function FileExplorer({ onFileSelect }: FileExplorerProps) {
 
 	return (
 		<div className="border-r border-[#2d2d2d] h-full bg-[#252526]">
-			<div className="p-3 border-b border-[#2d2d2d] font-semibold text-gray-100">
-				Explorer
-			</div>
+			<div className="p-3 border-b border-[#2d2d2d] font-semibold text-gray-100">Explorer</div>
 			<div className="p-2">{renderFileTree(mockFiles)}</div>
 		</div>
 	);
@@ -121,11 +109,7 @@ interface ProtectionMenuProps {
 	onChange: (filePath: string, level: ProtectionLevel) => void;
 }
 
-function ProtectionMenu({
-	filePath,
-	currentLevel,
-	onChange,
-}: ProtectionMenuProps) {
+function ProtectionMenu({ filePath, currentLevel, onChange }: ProtectionMenuProps) {
 	const levels: ProtectionLevel[] = ["unprotected", "watch", "warn", "block"];
 
 	return (
@@ -166,13 +150,7 @@ function FileIcon({ className }: { className?: string }) {
 	);
 }
 
-function FolderIcon({
-	className,
-	onClick,
-}: {
-	className?: string;
-	onClick?: () => void;
-}) {
+function FolderIcon({ className, onClick }: { className?: string; onClick?: () => void }) {
 	return (
 		<svg
 			xmlns="http://www.w3.org/2000/svg"

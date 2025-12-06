@@ -1,11 +1,5 @@
 import { Logo } from "@shared/components/Logo";
-import {
-	BookOpen,
-	FileText,
-	Github,
-	MessageSquare,
-	Shield,
-} from "lucide-react";
+import { BookOpen, FileText, Github, MessageSquare, Shield } from "lucide-react";
 import Link from "next/link";
 import { marketingConfig } from "../../config";
 
@@ -26,13 +20,11 @@ export function DocsFooter() {
 					<div className="space-y-4">
 						<div className="flex items-center gap-3">
 							<Logo className="h-8 w-8 opacity-90" />
-							<span className="text-lg font-semibold text-foreground">
-								{marketingConfig.appName}
-							</span>
+							<span className="text-lg font-semibold text-foreground">{marketingConfig.appName}</span>
 						</div>
 						<p className="text-sm text-muted-foreground leading-relaxed">
-							AI-aware code protection system. Protecting developers from AI
-							mistakes, one checkpoint at a time.
+							AI-aware code protection system. Protecting developers from AI mistakes, one checkpoint at a
+							time.
 						</p>
 						<div className="flex items-center gap-3 pt-2">
 							<a
@@ -186,8 +178,8 @@ export function DocsFooter() {
 				<div className="mt-12 pt-8 border-t border-snapback-border/50">
 					<div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
 						<p className="text-xs text-muted-foreground">
-							© {currentYear} {marketingConfig.appName}. Built for developers
-							who trust AI but verify results.
+							© {currentYear} {marketingConfig.appName}. Built for developers who trust AI but verify
+							results.
 						</p>
 						<div className="flex items-center gap-4 text-xs text-muted-foreground">
 							<span className="flex items-center gap-1.5">
@@ -195,10 +187,7 @@ export function DocsFooter() {
 								Documentation v1.0
 							</span>
 							<span className="hidden md:inline">•</span>
-							<a
-								href="https://new-docs.snapback.dev"
-								className="hover:text-primary transition-colors"
-							>
+							<a href="https://new-docs.snapback.dev" className="hover:text-primary transition-colors">
 								View all docs
 							</a>
 						</div>

@@ -20,11 +20,7 @@ interface RevokeConfirmDialogProps {
 	disabled?: boolean;
 }
 
-export function RevokeConfirmDialog({
-	keyName,
-	onConfirm,
-	disabled = false,
-}: RevokeConfirmDialogProps) {
+export function RevokeConfirmDialog({ keyName, onConfirm, disabled = false }: RevokeConfirmDialogProps) {
 	return (
 		<AlertDialog>
 			<AlertDialogTrigger asChild>
@@ -49,8 +45,7 @@ export function RevokeConfirmDialog({
 							This will revoke the API key <strong>"{keyName}"</strong>.
 						</p>
 						<p className="text-[var(--snapback-danger)]">
-							This action cannot be undone. Any tools using this key will stop
-							working immediately.
+							This action cannot be undone. Any tools using this key will stop working immediately.
 						</p>
 					</AlertDialogDescription>
 				</AlertDialogHeader>

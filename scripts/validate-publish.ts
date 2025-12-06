@@ -46,7 +46,7 @@ function validatePackage(pkgPath: string): boolean {
 		// Check for catalog: references
 		const content = readFileSync(packageJsonPath, "utf-8");
 		if (content.includes('"catalog:"')) {
-			errors.push(`❌ Contains catalog: protocol (workspace-only)`);
+			errors.push("❌ Contains catalog: protocol (workspace-only)");
 			isValid = false;
 		}
 

@@ -6,10 +6,7 @@ interface UseSmoothScrollProps {
 	duration?: number;
 }
 
-export function useSmoothScroll({
-	offset = 80,
-	duration = 1000,
-}: UseSmoothScrollProps = {}) {
+export function useSmoothScroll({ offset = 80, duration = 1000 }: UseSmoothScrollProps = {}) {
 	const [activeSection, setActiveSection] = useState<string>("");
 
 	// Smooth scroll to element
@@ -33,12 +30,7 @@ export function useSmoothScroll({
 					startTime = currentTime;
 				}
 				const timeElapsed = currentTime - startTime;
-				const run = easeInOutCubic(
-					timeElapsed,
-					startPosition,
-					distance,
-					duration,
-				);
+				const run = easeInOutCubic(timeElapsed, startPosition, distance, duration);
 				window.scrollTo(0, run);
 				if (timeElapsed < duration) {
 					requestAnimationFrame(animation);
@@ -96,9 +88,7 @@ export function useScrollProgress() {
 	useEffect(() => {
 		const handleScroll = () => {
 			const totalScroll = document.documentElement.scrollTop;
-			const windowHeight =
-				document.documentElement.scrollHeight -
-				document.documentElement.clientHeight;
+			const windowHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
 			const scroll = totalScroll / windowHeight;
 
 			setProgress(scroll);

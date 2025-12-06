@@ -17,9 +17,7 @@ export function UsageChart({ metrics, className = "" }: UsageChartProps) {
 	if (!isClient) {
 		return (
 			<div className={`bg-gray-100 rounded p-4 ${className}`}>
-				<div className="h-48 flex items-center justify-center text-gray-500">
-					Loading usage data...
-				</div>
+				<div className="h-48 flex items-center justify-center text-gray-500">Loading usage data...</div>
 			</div>
 		);
 	}
@@ -41,9 +39,7 @@ export function UsageChart({ metrics, className = "" }: UsageChartProps) {
 						<span className="text-sm font-medium">Snapshots</span>
 						<span className="text-sm text-gray-500">
 							{metrics.snapshotsUsed}{" "}
-							{metrics.snapshotsLimit
-								? `/ ${metrics.snapshotsLimit}`
-								: "unlimited"}
+							{metrics.snapshotsLimit ? `/ ${metrics.snapshotsLimit}` : "unlimited"}
 						</span>
 					</div>
 					{metrics.snapshotsLimit ? (
@@ -74,9 +70,7 @@ export function UsageChart({ metrics, className = "" }: UsageChartProps) {
 							<span className="text-sm font-medium">Cloud Storage</span>
 							<span className="text-sm text-gray-500">
 								{metrics.cloudStorageUsedMb} MB{" "}
-								{metrics.cloudStorageLimitMb
-									? `/ ${metrics.cloudStorageLimitMb} MB`
-									: ""}
+								{metrics.cloudStorageLimitMb ? `/ ${metrics.cloudStorageLimitMb} MB` : ""}
 							</span>
 						</div>
 						{metrics.cloudStorageLimitMb ? (
@@ -86,9 +80,7 @@ export function UsageChart({ metrics, className = "" }: UsageChartProps) {
 									style={{
 										width: `${Math.min(
 											Math.round(
-												(metrics.cloudStorageUsedMb /
-													metrics.cloudStorageLimitMb) *
-													100,
+												(metrics.cloudStorageUsedMb / metrics.cloudStorageLimitMb) * 100,
 											),
 											100,
 										)}%`,
@@ -113,15 +105,13 @@ export function UsageChart({ metrics, className = "" }: UsageChartProps) {
 					>
 						{isCritical ? (
 							<p className="font-medium">
-								⚠️ Critical: Only{" "}
-								{metrics.snapshotsLimit - metrics.snapshotsUsed} snapshots
-								remaining. Please upgrade your plan to continue creating
-								snapshots.
+								⚠️ Critical: Only {metrics.snapshotsLimit - metrics.snapshotsUsed} snapshots remaining.
+								Please upgrade your plan to continue creating snapshots.
 							</p>
 						) : (
 							<p>
-								⚠️ You're approaching your snapshot limit ({usagePercentage}%
-								used). Consider upgrading your plan for unlimited snapshots.
+								⚠️ You're approaching your snapshot limit ({usagePercentage}% used). Consider upgrading
+								your plan for unlimited snapshots.
 							</p>
 						)}
 					</div>

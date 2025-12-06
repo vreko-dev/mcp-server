@@ -55,9 +55,7 @@ export function ComingSoonBadge({
 			) : (
 				<Clock className="w-3.5 h-3.5 text-blue-400" />
 			)}
-			<span className="text-xs font-medium text-blue-400 uppercase tracking-wide">
-				{text}
-			</span>
+			<span className="text-xs font-medium text-blue-400 uppercase tracking-wide">{text}</span>
 		</motion.div>
 	);
 }

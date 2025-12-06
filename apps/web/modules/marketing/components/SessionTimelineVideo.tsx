@@ -86,8 +86,7 @@ export function SessionTimelineVideo({
 				<div
 					className="absolute inset-0 z-20"
 					style={{
-						background:
-							"linear-gradient(135deg, rgba(0, 0, 0, 0.45) 0%, rgba(74, 124, 89, 0.35) 100%)",
+						background: "linear-gradient(135deg, rgba(0, 0, 0, 0.45) 0%, rgba(74, 124, 89, 0.35) 100%)",
 					}}
 				/>
 			)}

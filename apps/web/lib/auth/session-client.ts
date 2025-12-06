@@ -42,8 +42,7 @@ function isLoading(state: AuthState): state is { status: "loading" } {
 	return state.status === "loading";
 }
 
-const API_BASE_URL =
-	process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
 const SESSION_KEY = "snapback:session";
 const SESSION_REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
 
@@ -151,10 +150,7 @@ class SessionClient {
 	/**
 	 * Sign in with email and password
 	 */
-	async signInWithEmail(
-		email: string,
-		password: string,
-	): Promise<{ success: boolean; error?: string }> {
+	async signInWithEmail(email: string, password: string): Promise<{ success: boolean; error?: string }> {
 		try {
 			// Fixed: Use correct Better Auth endpoint (hyphenated)
 			const response = await fetch(`${API_BASE_URL}/auth/sign-in/email`, {

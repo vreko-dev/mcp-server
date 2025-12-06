@@ -48,12 +48,10 @@ export function Newsletter() {
 			<div className="container">
 				<div className="mb-8 text-center">
 					<KeyIcon className="mx-auto mb-3 size-8 text-primary" />
-					<h1 className="font-bold text-3xl lg:text-4xl">
-						Stay updated on AI protection
-					</h1>
+					<h1 className="font-bold text-3xl lg:text-4xl">Stay updated on AI protection</h1>
 					<p className="mt-3 text-lg opacity-70">
-						Join our newsletter to get tips on protecting your code from AI
-						mistakes and early access to new features.
+						Join our newsletter to get tips on protecting your code from AI mistakes and early access to new
+						features.
 					</p>
 				</div>
 
@@ -62,9 +60,7 @@ export function Newsletter() {
 						<Alert variant="success">
 							<CheckCircleIcon />
 							<AlertTitle>Successfully subscribed!</AlertTitle>
-							<AlertDescription>
-								Thank you for subscribing to our newsletter.
-							</AlertDescription>
+							<AlertDescription>Thank you for subscribing to our newsletter.</AlertDescription>
 						</Alert>
 					) : (
 						<form onSubmit={onSubmit}>
@@ -76,18 +72,12 @@ export function Newsletter() {
 									{...form.register("email")}
 								/>
 
-								<Button
-									type="submit"
-									className="ml-4"
-									loading={form.formState.isSubmitting}
-								>
+								<Button type="submit" className="ml-4" loading={form.formState.isSubmitting}>
 									Subscribe
 								</Button>
 							</div>
 							{form.formState.errors.email && (
-								<p className="mt-1 text-destructive text-xs">
-									{form.formState.errors.email.message}
-								</p>
+								<p className="mt-1 text-destructive text-xs">{form.formState.errors.email.message}</p>
 							)}
 						</form>
 					)}

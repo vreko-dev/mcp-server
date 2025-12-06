@@ -11,18 +11,7 @@
 
 import { Button } from "@ui/components/button";
 import { Input } from "@ui/components/input";
-import {
-	AlertCircle,
-	ArrowRight,
-	CheckCircle2,
-	Eye,
-	EyeOff,
-	Key,
-	Loader2,
-	Mail,
-	Shield,
-	XCircle,
-} from "lucide-react";
+import { AlertCircle, ArrowRight, CheckCircle2, Eye, EyeOff, Key, Loader2, Mail, Shield, XCircle } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -33,10 +22,7 @@ import {
 	signInWithGoogle,
 	signUpWithEmail,
 } from "@/lib/auth/helpers";
-import {
-	getPasswordRequirements,
-	validatePassword,
-} from "@/lib/auth/password-validation";
+import { getPasswordRequirements, validatePassword } from "@/lib/auth/password-validation";
 
 /**
  * Inline media query hook for motion preferences
@@ -60,14 +46,7 @@ function useMediaQuery(query: string) {
 /**
  * Stage progression for login flow
  */
-type Stage =
-	| "idle"
-	| "email-input"
-	| "processing"
-	| "password-input"
-	| "success"
-	| "error"
-	| "magic-link-sent";
+type Stage = "idle" | "email-input" | "processing" | "password-input" | "success" | "error" | "magic-link-sent";
 
 /**
  * Authentication provider
@@ -111,9 +90,7 @@ interface TerminalLine {
  */
 export default function ProtectionSnapshotLogin() {
 	const router = useRouter();
-	const prefersReducedMotion = useMediaQuery(
-		"(prefers-reduced-motion: reduce)",
-	);
+	const prefersReducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
 
 	// State
 	const [state, setState] = useState<LoginState>({
@@ -127,9 +104,7 @@ export default function ProtectionSnapshotLogin() {
 	const [password, setPassword] = useState("");
 	const [showPassword, setShowPassword] = useState(false);
 	const [terminalLines, setTerminalLines] = useState<TerminalLine[]>([]);
-	const [passwordStrength, setPasswordStrength] = useState<
-		"weak" | "medium" | "strong" | null
-	>(null);
+	const [passwordStrength, setPasswordStrength] = useState<"weak" | "medium" | "strong" | null>(null);
 
 	// Refs
 	const politeAnnouncerRef = useRef<HTMLDivElement>(null);
@@ -202,10 +177,7 @@ export default function ProtectionSnapshotLogin() {
 		announce(`Redirecting to ${provider} for authorization. Please wait.`);
 
 		try {
-			const result =
-				provider === "github"
-					? await signInWithGithub()
-					: await signInWithGoogle();
+			const result = provider === "github" ? await signInWithGithub() : await signInWithGoogle();
 
 			if (result.success) {
 				await addTerminalLine("✅ OAuth initialized", "success", 50);
@@ -356,10 +328,7 @@ export default function ProtectionSnapshotLogin() {
 			await addTerminalLine("🎉 Protection activated", "success", 300);
 
 			setState((prev) => ({ ...prev, stage: "success" }));
-			announce(
-				"Success! Authentication complete. Redirecting to dashboard.",
-				true,
-			);
+			announce("Success! Authentication complete. Redirecting to dashboard.", true);
 
 			// Redirect after success
 			setTimeout(() => {
@@ -397,13 +366,7 @@ export default function ProtectionSnapshotLogin() {
 	return (
 		<div className="h-screen overflow-hidden bg-gradient-to-br from-gray-950 via-gray-900 to-black flex items-center justify-center p-4">
 			{/* ARIA Live Regions */}
-			<div
-				ref={politeAnnouncerRef}
-				role="status"
-				aria-live="polite"
-				aria-atomic="true"
-				className="sr-only"
-			/>
+			<div ref={politeAnnouncerRef} role="status" aria-live="polite" aria-atomic="true" className="sr-only" />
 			<div
 				ref={assertiveAnnouncerRef}
 				role="alert"
@@ -432,9 +395,7 @@ export default function ProtectionSnapshotLogin() {
 					>
 						<Shield className="w-12 h-12 text-green-500" />
 					</motion.div>
-					<h1 className="text-2xl font-bold text-white mb-1">
-						Protection Snapshot
-					</h1>
+					<h1 className="text-2xl font-bold text-white mb-1">Protection Snapshot</h1>
 					<p className="text-sm text-gray-400">
 						{state.mode === "signin" && "Verify your identity to continue"}
 						{state.mode === "signup" && "Create your protected account"}
@@ -456,19 +417,14 @@ export default function ProtectionSnapshotLogin() {
 							>
 								<form onSubmit={handleEmailSubmit} className="space-y-4">
 									<div>
-										<label
-											htmlFor="email"
-											className="block text-sm font-medium text-gray-300 mb-2"
-										>
+										<label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
 											Email Address
 										</label>
 										<Input
 											id="email"
 											type="email"
 											value={state.email}
-											onChange={(e) =>
-												setState((prev) => ({ ...prev, email: e.target.value }))
-											}
+											onChange={(e) => setState((prev) => ({ ...prev, email: e.target.value }))}
 											placeholder="you@example.com"
 											className="w-full bg-gray-800 border-gray-700 text-white"
 											autoFocus
@@ -479,9 +435,7 @@ export default function ProtectionSnapshotLogin() {
 									<div className="flex gap-2">
 										<Button
 											type="submit"
-											onClick={() =>
-												setState((prev) => ({ ...prev, provider: "password" }))
-											}
+											onClick={() => setState((prev) => ({ ...prev, provider: "password" }))}
 											className="flex-1 bg-green-600 hover:bg-green-700"
 										>
 											<Key className="w-4 h-4 mr-2" />
@@ -489,9 +443,7 @@ export default function ProtectionSnapshotLogin() {
 										</Button>
 										<Button
 											type="submit"
-											onClick={() =>
-												setState((prev) => ({ ...prev, provider: "email" }))
-											}
+											onClick={() => setState((prev) => ({ ...prev, provider: "email" }))}
 											variant="outline"
 											className="flex-1"
 										>
@@ -506,9 +458,7 @@ export default function ProtectionSnapshotLogin() {
 										<div className="w-full border-t border-gray-700" />
 									</div>
 									<div className="relative flex justify-center text-sm">
-										<span className="px-2 bg-gray-900/50 text-gray-400">
-											Or continue with
-										</span>
+										<span className="px-2 bg-gray-900/50 text-gray-400">Or continue with</span>
 									</div>
 								</div>
 
@@ -519,11 +469,7 @@ export default function ProtectionSnapshotLogin() {
 										variant="outline"
 										className="w-full"
 									>
-										<svg
-											className="w-4 h-4 mr-2"
-											viewBox="0 0 24 24"
-											fill="currentColor"
-										>
+										<svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="currentColor">
 											<path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
 										</svg>
 										GitHub
@@ -562,9 +508,7 @@ export default function ProtectionSnapshotLogin() {
 											Don't have an account?{" "}
 											<button
 												type="button"
-												onClick={() =>
-													setState((prev) => ({ ...prev, mode: "signup" }))
-												}
+												onClick={() => setState((prev) => ({ ...prev, mode: "signup" }))}
 												className="text-green-500 hover:text-green-400"
 											>
 												Create one
@@ -575,9 +519,7 @@ export default function ProtectionSnapshotLogin() {
 											Already have an account?{" "}
 											<button
 												type="button"
-												onClick={() =>
-													setState((prev) => ({ ...prev, mode: "signin" }))
-												}
+												onClick={() => setState((prev) => ({ ...prev, mode: "signin" }))}
 												className="text-green-500 hover:text-green-400"
 											>
 												Sign in
@@ -627,9 +569,7 @@ export default function ProtectionSnapshotLogin() {
 												type="button"
 												onClick={() => setShowPassword(!showPassword)}
 												className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-300"
-												aria-label={
-													showPassword ? "Hide password" : "Show password"
-												}
+												aria-label={showPassword ? "Hide password" : "Show password"}
 											>
 												{showPassword ? (
 													<EyeOff className="w-4 h-4" />
@@ -688,10 +628,7 @@ export default function ProtectionSnapshotLogin() {
 										>
 											Back
 										</Button>
-										<Button
-											type="submit"
-											className="flex-1 bg-green-600 hover:bg-green-700"
-										>
+										<Button type="submit" className="flex-1 bg-green-600 hover:bg-green-700">
 											{state.mode === "signin" && "Sign In"}
 											{state.mode === "signup" && "Create Account"}
 											{state.mode === "reset" && "Reset Password"}
@@ -704,9 +641,7 @@ export default function ProtectionSnapshotLogin() {
 									<div className="text-center">
 										<button
 											type="button"
-											onClick={() =>
-												setState((prev) => ({ ...prev, mode: "reset" }))
-											}
+											onClick={() => setState((prev) => ({ ...prev, mode: "reset" }))}
 											className="text-sm text-gray-400 hover:text-gray-300"
 										>
 											Forgot password?
@@ -770,9 +705,7 @@ export default function ProtectionSnapshotLogin() {
 								>
 									<CheckCircle2 className="w-12 h-12 text-green-500" />
 								</motion.div>
-								<h2 className="text-xl font-bold text-white mb-2">
-									Authentication Successful
-								</h2>
+								<h2 className="text-xl font-bold text-white mb-2">Authentication Successful</h2>
 								<p className="text-sm text-gray-400">
 									Protection activated. Redirecting to dashboard...
 								</p>
@@ -796,18 +729,11 @@ export default function ProtectionSnapshotLogin() {
 								>
 									<Mail className="w-12 h-12 text-blue-500" />
 								</motion.div>
-								<h2 className="text-xl font-bold text-white mb-2">
-									Check Your Email
-								</h2>
+								<h2 className="text-xl font-bold text-white mb-2">Check Your Email</h2>
 								<p className="text-sm text-gray-400 mb-4">
 									We've sent a magic link to <strong>{state.email}</strong>
 								</p>
-								<Button
-									type="button"
-									onClick={handleReset}
-									variant="outline"
-									className="mx-auto"
-								>
+								<Button type="button" onClick={handleReset} variant="outline" className="mx-auto">
 									Back to Login
 								</Button>
 							</motion.div>
@@ -826,12 +752,8 @@ export default function ProtectionSnapshotLogin() {
 									<XCircle className="w-12 h-12 text-red-500" />
 								</div>
 								<div className="text-center">
-									<h2 className="text-lg font-bold text-white mb-2">
-										Authentication Failed
-									</h2>
-									{state.error && (
-										<p className="text-sm text-red-400 mb-4">{state.error}</p>
-									)}
+									<h2 className="text-lg font-bold text-white mb-2">Authentication Failed</h2>
+									{state.error && <p className="text-sm text-red-400 mb-4">{state.error}</p>}
 								</div>
 								<Button type="button" onClick={handleReset} className="w-full">
 									Try Again

@@ -5,11 +5,7 @@ import { redirect } from "next/navigation";
 // This page requires authentication from the backend API
 // In frontend-only mode, redirect to app dashboard
 
-export default async function OrganizationInvitationPage({
-	params,
-}: {
-	params: Promise<{ invitationId: string }>;
-}) {
+export default async function OrganizationInvitationPage({ params }: { params: Promise<{ invitationId: string }> }) {
 	await params; // consume params to avoid unused variable warning
 
 	// STUB: Cannot process invitation without backend auth

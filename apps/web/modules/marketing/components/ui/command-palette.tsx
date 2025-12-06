@@ -86,13 +86,8 @@ export function CommandPalette({ isOpen, onOpenChange }: CommandPaletteProps) {
 							className="w-full px-4 py-3 bg-transparent text-white placeholder:text-gray-500 focus:outline-none"
 						/>
 
-						<Command.List
-							className="max-h-96 overflow-y-auto p-2"
-							role="listbox"
-						>
-							<Command.Empty className="p-6 text-center text-gray-500">
-								No results found
-							</Command.Empty>
+						<Command.List className="max-h-96 overflow-y-auto p-2" role="listbox">
+							<Command.Empty className="p-6 text-center text-gray-500">No results found</Command.Empty>
 
 							<Command.Group heading="Navigation" role="group">
 								{navItems.map((item) => (

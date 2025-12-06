@@ -9,18 +9,9 @@ interface PricingToggleProps {
 	className?: string;
 }
 
-export const PricingToggle = ({
-	value,
-	onChange,
-	className,
-}: PricingToggleProps) => {
+export const PricingToggle = ({ value, onChange, className }: PricingToggleProps) => {
 	return (
-		<div
-			className={cn(
-				"inline-flex items-center bg-gray-900 p-1 rounded-full border border-gray-700",
-				className,
-			)}
-		>
+		<div className={cn("inline-flex items-center bg-gray-900 p-1 rounded-full border border-gray-700", className)}>
 			<button
 				type="button"
 				onClick={() => onChange("monthly")}

@@ -1,15 +1,4 @@
-import {
-	Body,
-	Container,
-	Head,
-	Heading,
-	Hr,
-	Html,
-	Link,
-	Preview,
-	Section,
-	Text,
-} from "@react-email/components";
+import { Body, Container, Head, Heading, Hr, Html, Link, Preview, Section, Text } from "@react-email/components";
 
 interface PaymentReceiptEmailProps {
 	amount: string;
@@ -34,8 +23,7 @@ export default function PaymentReceiptEmail({
 				<Container style={container}>
 					<Heading style={h1}>Payment Receipt</Heading>
 					<Text style={text}>
-						Thank you for your payment! Your SnapBack subscription is active and
-						your code is protected.
+						Thank you for your payment! Your SnapBack subscription is active and your code is protected.
 					</Text>
 
 					<Section style={receiptSection}>
@@ -99,8 +87,7 @@ export default function PaymentReceiptEmail({
 
 const main = {
 	backgroundColor: "#f6f9fc",
-	fontFamily:
-		'-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
+	fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
 };
 
 const container = {

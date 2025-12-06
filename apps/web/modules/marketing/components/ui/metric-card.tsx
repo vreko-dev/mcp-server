@@ -14,14 +14,7 @@ export interface MetricCardProps {
 	className?: string;
 }
 
-export function MetricCard({
-	icon,
-	label,
-	value,
-	trend = "neutral",
-	change,
-	className,
-}: MetricCardProps) {
+export function MetricCard({ icon, label, value, trend = "neutral", change, className }: MetricCardProps) {
 	const [isHovered, setIsHovered] = useState(false);
 
 	return (
@@ -53,10 +46,7 @@ export function MetricCard({
 				</motion.div>
 
 				{/* Value with number animation */}
-				<motion.div
-					className="text-3xl font-bold font-code"
-					animate={{ scale: isHovered ? 1.05 : 1 }}
-				>
+				<motion.div className="text-3xl font-bold font-code" animate={{ scale: isHovered ? 1.05 : 1 }}>
 					<AnimatedNumber value={value} />
 				</motion.div>
 

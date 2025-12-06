@@ -60,11 +60,7 @@ const TrafficLight = ({ color }: { color: "red" | "yellow" | "green" }) => {
 		yellow: "bg-[#FFBD2E]",
 		green: "bg-[#27CA40]",
 	};
-	return (
-		<div
-			className={`w-3 h-3 rounded-full ${colors[color]} transition-transform hover:scale-110`}
-		/>
-	);
+	return <div className={`w-3 h-3 rounded-full ${colors[color]} transition-transform hover:scale-110`} />;
 };
 
 // File Status Badge
@@ -79,23 +75,11 @@ const FileStatus = ({ status }: { status: "saved" | "modified" | "error" }) => {
 		modified: "Modified",
 		error: "Error",
 	};
-	return (
-		<span
-			className={`text-[11px] px-2 py-0.5 rounded font-medium ${styles[status]}`}
-		>
-			{labels[status]}
-		</span>
-	);
+	return <span className={`text-[11px] px-2 py-0.5 rounded font-medium ${styles[status]}`}>{labels[status]}</span>;
 };
 
 // Code Display with Line Numbers
-const CodeDisplay = ({
-	code,
-	isTyping,
-}: {
-	code: string;
-	isTyping: boolean;
-}) => {
+const CodeDisplay = ({ code, isTyping }: { code: string; isTyping: boolean }) => {
 	const lines = code.split("\n");
 
 	return (
@@ -154,12 +138,12 @@ const TimelineEntryComponent = ({
         group relative flex items-start gap-3 p-3 rounded-lg transition-colors duration-200
         ${entry.canRestore ? "cursor-pointer" : "cursor-not-allowed opacity-70"}
         ${
-					isSelected
-						? "bg-emerald-500/10 border border-emerald-500/30"
-						: entry.canRestore
-							? "hover:bg-zinc-800/50 border border-transparent"
-							: "border border-zinc-700/50 bg-zinc-950/50"
-				}
+			isSelected
+				? "bg-emerald-500/10 border border-emerald-500/30"
+				: entry.canRestore
+					? "hover:bg-zinc-800/50 border border-transparent"
+					: "border border-zinc-700/50 bg-zinc-950/50"
+		}
       `}
 			onClick={entry.canRestore ? onRestore : undefined}
 			role="button"
@@ -182,9 +166,7 @@ const TimelineEntryComponent = ({
 
 			{/* Info */}
 			<div className="flex-1 min-w-0">
-				<div className="text-[11px] font-mono text-zinc-600 mb-0.5">
-					{entry.time}
-				</div>
+				<div className="text-[11px] font-mono text-zinc-600 mb-0.5">{entry.time}</div>
 				<div
 					className={`text-[13px] truncate ${
 						entry.type === "error"
@@ -196,9 +178,7 @@ const TimelineEntryComponent = ({
 				>
 					{entry.description}
 				</div>
-				{!entry.canRestore && (
-					<div className="text-[11px] text-zinc-600 mt-1">Not restorable</div>
-				)}
+				{!entry.canRestore && <div className="text-[11px] text-zinc-600 mt-1">Not restorable</div>}
 			</div>
 
 			{/* Restore Button - Always visible on mobile, shows on hover on desktop */}
@@ -237,9 +217,7 @@ const AITypingIndicator = ({ visible }: { visible: boolean }) => (
 				className="absolute top-3 right-3 flex items-center gap-2 px-3 py-1.5
                    bg-purple-500/25 border border-purple-400/50 rounded-md"
 			>
-				<span className="text-xs text-purple-300 font-medium">
-					🤖 AI editing
-				</span>
+				<span className="text-xs text-purple-300 font-medium">🤖 AI editing</span>
 				<div className="flex gap-1">
 					{[0, 1, 2].map((i) => (
 						<motion.div
@@ -272,8 +250,7 @@ const ErrorOverlay = ({ visible }: { visible: boolean }) => (
                    bg-red-500/20 border-t border-red-400/50
                    font-mono text-[13px] text-red-300"
 			>
-				<strong className="text-red-200">Error:</strong> Cannot find name
-				'getDbUrl'. Did you mean 'getDB'?
+				<strong className="text-red-200">Error:</strong> Cannot find name 'getDbUrl'. Did you mean 'getDB'?
 			</motion.div>
 		)}
 	</AnimatePresence>
@@ -351,18 +328,15 @@ export function InteractiveEditorDemo() {
 	}, []);
 
 	// Add timeline entry
-	const addTimelineEntry = useCallback(
-		(entry: Omit<TimelineEntry, "id" | "time">) => {
-			const newEntry: TimelineEntry = {
-				...entry,
-				id: crypto.randomUUID(),
-				time: formatTime(),
-			};
-			setTimeline((prev) => [newEntry, ...prev].slice(0, 8)); // Keep max 8 entries
-			return newEntry;
-		},
-		[],
-	);
+	const addTimelineEntry = useCallback((entry: Omit<TimelineEntry, "id" | "time">) => {
+		const newEntry: TimelineEntry = {
+			...entry,
+			id: crypto.randomUUID(),
+			time: formatTime(),
+		};
+		setTimeline((prev) => [newEntry, ...prev].slice(0, 8)); // Keep max 8 entries
+		return newEntry;
+	}, []);
 
 	// Typewriter effect - simplified to avoid closure issues
 	const typeCode = useCallback(async (targetCode: string): Promise<void> => {
@@ -530,11 +504,7 @@ export function InteractiveEditorDemo() {
 
 	// Compute derived state
 	const fileStatus: "saved" | "modified" | "error" =
-		demoState === "error"
-			? "error"
-			: demoState === "ai_editing"
-				? "modified"
-				: "saved";
+		demoState === "error" ? "error" : demoState === "ai_editing" ? "modified" : "saved";
 
 	const statusIndicatorClass =
 		demoState === "error"
@@ -596,8 +566,7 @@ export function InteractiveEditorDemo() {
 						</span>
 						<FileStatus status={fileStatus} />
 					</div>
-					<div className="w-[20px] sm:w-[30px] md:w-[52px] flex-shrink-0" />{" "}
-					{/* Spacer for centering */}
+					<div className="w-[20px] sm:w-[30px] md:w-[52px] flex-shrink-0" /> {/* Spacer for centering */}
 				</div>
 
 				{/* Content - Stack vertically on mobile and tablet */}
@@ -691,23 +660,19 @@ export function InteractiveEditorDemo() {
             flex items-center gap-0.5 sm:gap-1.5 md:gap-2 px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 text-[9px] sm:text-xs md:text-sm font-medium
             border rounded-lg transition-all duration-200 flex-shrink-0
             ${
-							isPlaying
-								? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20"
-								: "bg-zinc-800 border-zinc-700 text-zinc-300 hover:bg-zinc-700"
-						}
+				isPlaying
+					? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20"
+					: "bg-zinc-800 border-zinc-700 text-zinc-300 hover:bg-zinc-700"
+			}
           `}
 				>
 					<span>{isPlaying ? "⏸" : "▶"}</span>
-					<span className="hidden sm:inline">
-						{isPlaying ? "Pause Demo" : "Play Demo"}
-					</span>
+					<span className="hidden sm:inline">{isPlaying ? "Pause Demo" : "Play Demo"}</span>
 					<span className="sm:hidden">{isPlaying ? "Pause" : "Play"}</span>
 				</button>
 
 				<span className="text-[8px] sm:text-[10px] md:text-xs text-zinc-600 text-center flex-1 px-1">
-					<span className="hidden sm:inline">
-						Click any timeline entry to restore
-					</span>
+					<span className="hidden sm:inline">Click any timeline entry to restore</span>
 					<span className="sm:hidden">Tap to restore</span>
 				</span>
 			</div>

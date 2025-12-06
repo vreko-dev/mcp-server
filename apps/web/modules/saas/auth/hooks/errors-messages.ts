@@ -1,8 +1,5 @@
 // TODO: Import AuthClientErrorCodes when available in better-auth types
-import {
-	getOAuthErrorMessage,
-	isRecoverableOAuthError,
-} from "../lib/oauth-error-handler";
+import { getOAuthErrorMessage, isRecoverableOAuthError } from "../lib/oauth-error-handler";
 
 // Temporary type definition until better-auth exports AuthClientErrorCodes
 type AuthClientErrorCodes = Record<string, string>;
@@ -36,10 +33,7 @@ export function useAuthErrorMessages() {
 	};
 
 	const getAuthErrorMessage = (errorCode: string | undefined) => {
-		return (
-			authErrorMessages[errorCode as keyof typeof authErrorMessages] ||
-			"An unknown error occurred"
-		);
+		return authErrorMessages[errorCode as keyof typeof authErrorMessages] || "An unknown error occurred";
 	};
 
 	return {

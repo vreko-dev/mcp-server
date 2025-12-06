@@ -10,5 +10,12 @@
 		"emitDeclarationOnly": false
 	},
 	"include": ["src/**/*", "types/**/*.d.ts"],
-	"exclude": ["node_modules", "dist", "build", "scripts", "**/node_modules/@types/glob/**", "**/node_modules/@types/mdx/**"]
+	"exclude": [
+		"node_modules",
+		"dist",
+		"build",
+		"scripts",
+		"**/node_modules/@types/glob/**",
+		"**/node_modules/@types/mdx/**"
+	]
 }

@@ -2,11 +2,7 @@
 
 import { PageHeader } from "@saas/shared/components/PageHeader";
 import { useState } from "react";
-import {
-	useApiKeys,
-	useCreateApiKey,
-	useRevokeApiKey,
-} from "@/hooks/use-api-keys";
+import { useApiKeys, useCreateApiKey, useRevokeApiKey } from "@/hooks/use-api-keys";
 import { matchResource } from "@/lib/resource";
 
 export function ApiKeysClient() {
@@ -49,19 +45,13 @@ export function ApiKeysClient() {
 
 	return (
 		<main className="space-y-6">
-			<PageHeader
-				title="API Keys"
-				subtitle="Manage your API keys for SnapBack protection tools"
-			/>
+			<PageHeader title="API Keys" subtitle="Manage your API keys for SnapBack protection tools" />
 
 			{newKeyFullKey && (
 				<div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-					<h3 className="font-semibold text-yellow-800 mb-2">
-						⚠️ Save your API key now!
-					</h3>
+					<h3 className="font-semibold text-yellow-800 mb-2">⚠️ Save your API key now!</h3>
 					<p className="text-sm text-yellow-700 mb-3">
-						This is the only time you'll see the full key. Copy it and store it
-						securely.
+						This is the only time you'll see the full key. Copy it and store it securely.
 					</p>
 					<div className="bg-white p-3 rounded border border-yellow-300 font-mono text-sm break-all">
 						{newKeyFullKey}
@@ -90,10 +80,7 @@ export function ApiKeysClient() {
 				<h2 className="text-xl font-semibold mb-4">Create New API Key</h2>
 				<form onSubmit={handleCreateKey} className="space-y-4">
 					<div>
-						<label
-							htmlFor="name"
-							className="block text-sm font-medium text-gray-700"
-						>
+						<label htmlFor="name" className="block text-sm font-medium text-gray-700">
 							Key Name
 						</label>
 						<input
@@ -107,10 +94,7 @@ export function ApiKeysClient() {
 						/>
 					</div>
 					<div>
-						<label
-							htmlFor="rateLimit"
-							className="block text-sm font-medium text-gray-700"
-						>
+						<label htmlFor="rateLimit" className="block text-sm font-medium text-gray-700">
 							Rate Limit (requests per minute)
 						</label>
 						<input
@@ -139,26 +123,17 @@ export function ApiKeysClient() {
 					loading: () => (
 						<div className="space-y-4">
 							{[
-								<div
-									key="loading-skeleton-1"
-									className="p-4 border rounded-lg animate-pulse"
-								>
+								<div key="loading-skeleton-1" className="p-4 border rounded-lg animate-pulse">
 									<div className="h-4 bg-gray-200 rounded w-1/4 mb-2" />
 									<div className="h-3 bg-gray-200 rounded w-1/2 mb-1" />
 									<div className="h-3 bg-gray-200 rounded w-1/3" />
 								</div>,
-								<div
-									key="loading-skeleton-2"
-									className="p-4 border rounded-lg animate-pulse"
-								>
+								<div key="loading-skeleton-2" className="p-4 border rounded-lg animate-pulse">
 									<div className="h-4 bg-gray-200 rounded w-1/4 mb-2" />
 									<div className="h-3 bg-gray-200 rounded w-1/2 mb-1" />
 									<div className="h-3 bg-gray-200 rounded w-1/3" />
 								</div>,
-								<div
-									key="loading-skeleton-3"
-									className="p-4 border rounded-lg animate-pulse"
-								>
+								<div key="loading-skeleton-3" className="p-4 border rounded-lg animate-pulse">
 									<div className="h-4 bg-gray-200 rounded w-1/4 mb-2" />
 									<div className="h-3 bg-gray-200 rounded w-1/2 mb-1" />
 									<div className="h-3 bg-gray-200 rounded w-1/3" />
@@ -166,11 +141,7 @@ export function ApiKeysClient() {
 							]}
 						</div>
 					),
-					empty: () => (
-						<p className="text-gray-500">
-							You haven't created any API keys yet.
-						</p>
-					),
+					empty: () => <p className="text-gray-500">You haven't created any API keys yet.</p>,
 					error: (error) => (
 						<div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
 							<p>Error loading API keys: {error.message}</p>
@@ -185,9 +156,7 @@ export function ApiKeysClient() {
 					),
 					ready: (keys) =>
 						keys.length === 0 ? (
-							<p className="text-gray-500">
-								You haven't created any API keys yet.
-							</p>
+							<p className="text-gray-500">You haven't created any API keys yet.</p>
 						) : (
 							<div className="space-y-4">
 								{keys.map((key) => (
@@ -195,12 +164,9 @@ export function ApiKeysClient() {
 										<div className="flex justify-between items-center">
 											<div>
 												<h3 className="font-medium">{key.name}</h3>
+												<p className="text-sm text-gray-500">Preview: {key.keyPreview}</p>
 												<p className="text-sm text-gray-500">
-													Preview: {key.keyPreview}
-												</p>
-												<p className="text-sm text-gray-500">
-													Created:{" "}
-													{new Date(key.createdAt).toLocaleDateString()}
+													Created: {new Date(key.createdAt).toLocaleDateString()}
 												</p>
 												{key.scopes && key.scopes.length > 0 && (
 													<p className="text-xs text-gray-500">
@@ -209,8 +175,7 @@ export function ApiKeysClient() {
 												)}
 												{key.revokedAt && (
 													<p className="text-xs text-red-500 font-semibold">
-														REVOKED:{" "}
-														{new Date(key.revokedAt).toLocaleDateString()}
+														REVOKED: {new Date(key.revokedAt).toLocaleDateString()}
 													</p>
 												)}
 											</div>
@@ -221,9 +186,7 @@ export function ApiKeysClient() {
 													disabled={revokeKeyMutation.isPending}
 													className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
 												>
-													{revokeKeyMutation.isPending
-														? "Revoking..."
-														: "Revoke"}
+													{revokeKeyMutation.isPending ? "Revoking..." : "Revoke"}
 												</button>
 											)}
 										</div>

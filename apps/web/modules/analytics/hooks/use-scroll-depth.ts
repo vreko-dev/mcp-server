@@ -10,8 +10,7 @@ export function useScrollDepth(pageName: string) {
 	useEffect(() => {
 		const handleScroll = () => {
 			const scrollTop = window.scrollY;
-			const docHeight =
-				document.documentElement.scrollHeight - window.innerHeight;
+			const docHeight = document.documentElement.scrollHeight - window.innerHeight;
 			const scrollPercent = (scrollTop / docHeight) * 100;
 
 			const depths = [25, 50, 75, 100];

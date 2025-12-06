@@ -10,11 +10,7 @@ export const contentType = "image/png";
 const baseGradient =
 	"linear-gradient(135deg, rgba(14, 165, 233, 0.45) 0%, rgba(29, 78, 216, 0.35) 25%, rgba(8, 47, 73, 0.9) 60%, rgba(15, 23, 42, 1) 100%)";
 
-export default async function TwitterImage({
-	searchParams,
-}: {
-	searchParams: { variant?: string };
-}) {
+export default async function TwitterImage({ searchParams }: { searchParams: { variant?: string } }) {
 	const isAlt = searchParams?.variant === "alt";
 	const headline = isAlt ? "Recover in Seconds" : "Code Breaks.\nSnap Back.";
 	const subline = isAlt

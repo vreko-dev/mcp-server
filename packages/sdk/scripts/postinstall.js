@@ -36,23 +36,13 @@ function log(message, color = "reset") {
 
 function main() {
 	try {
-		log(
-			"🔧 SDK Post-install: Rebuilding better-sqlite3 for Node.js...",
-			"blue"
-		);
+		log("🔧 SDK Post-install: Rebuilding better-sqlite3 for Node.js...", "blue");
 
 		const sdkRoot = path.join(__dirname, "..");
-		const betterSqlite3Path = path.join(
-			sdkRoot,
-			"node_modules",
-			"better-sqlite3"
-		);
+		const betterSqlite3Path = path.join(sdkRoot, "node_modules", "better-sqlite3");
 
 		if (!fs.existsSync(betterSqlite3Path)) {
-			log(
-				"  ℹ better-sqlite3 not found in SDK package, skipping rebuild",
-				"yellow"
-			);
+			log("  ℹ better-sqlite3 not found in SDK package, skipping rebuild", "yellow");
 			return;
 		}
 
@@ -68,20 +58,11 @@ function main() {
 				encoding: "utf8",
 			});
 
-			log(
-				"  ✅ better-sqlite3 rebuilt successfully for Node.js!",
-				"green"
-			);
+			log("  ✅ better-sqlite3 rebuilt successfully for Node.js!", "green");
 		} catch (error) {
 			log(`  ⚠️  Warning: Rebuild failed: ${error.message}`, "yellow");
-			log(
-				"  ℹ SDK tests may fail with MODULE_VERSION mismatch errors",
-				"yellow"
-			);
-			log(
-				"  ℹ Run 'pnpm rebuild better-sqlite3' manually in packages/sdk",
-				"yellow"
-			);
+			log("  ℹ SDK tests may fail with MODULE_VERSION mismatch errors", "yellow");
+			log("  ℹ Run 'pnpm rebuild better-sqlite3' manually in packages/sdk", "yellow");
 			// Don't fail postinstall - let it continue
 		}
 

@@ -71,9 +71,7 @@ function MotionProvider({ children }: MotionProviderProps) {
 	// Simple wrapper without complex motion components
 	return (
 		<div
-			className={
-				shouldReduceMotion ? "motion-reduced" : isClient ? "lenis-smooth" : ""
-			}
+			className={shouldReduceMotion ? "motion-reduced" : isClient ? "lenis-smooth" : ""}
 			suppressHydrationWarning={true}
 		>
 			{children}

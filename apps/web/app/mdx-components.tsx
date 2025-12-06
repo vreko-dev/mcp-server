@@ -2,11 +2,7 @@ import defaultMdxComponents from "fumadocs-ui/mdx";
 import Image from "next/image";
 import Link from "next/link";
 import { CustomMDXComponents } from "@/components/docs/CustomMDXComponents";
-import type {
-	AnchorProps,
-	ImageProps,
-	MDXComponents,
-} from "@/lib/source-types";
+import type { AnchorProps, ImageProps, MDXComponents } from "@/lib/source-types";
 
 /**
  * MDX Components for Fumadocs
@@ -27,8 +23,7 @@ const components: MDXComponents = {
 	// Custom component overrides
 	a: (props: AnchorProps) => {
 		const { href, children, className, ...rest } = props;
-		const isInternalLink =
-			href && (href.startsWith("/") || href.startsWith("#"));
+		const isInternalLink = href && (href.startsWith("/") || href.startsWith("#"));
 
 		// Handle special card links with custom styling
 		if (className?.includes("card")) {

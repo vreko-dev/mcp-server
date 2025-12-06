@@ -1,8 +1,5 @@
 import type { ApiKey } from "../types";
-import {
-	useResourceMutation,
-	useResourceQuery,
-} from "../use-resource-query";
+import { useResourceMutation, useResourceQuery } from "../use-resource-query";
 
 // Mock API functions - these would be replaced with actual API calls
 const fetchApiKeys = async (): Promise<ApiKey[]> => {
@@ -27,13 +24,9 @@ const fetchApiKeys = async (): Promise<ApiKey[]> => {
 	]);
 };
 
-const createApiKey = async (
-	name: string,
-): Promise<ApiKey & { fullKey: string }> => {
+const createApiKey = async (name: string): Promise<ApiKey & { fullKey: string }> => {
 	// In a real implementation, this would create an API key via API
-	const fullKey = `sb_${Math.random()
-		.toString(36)
-		.substring(2, 15)}${Math.random().toString(36).substring(2, 15)}`;
+	const fullKey = `sb_${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 15)}`;
 	const preview = `sb_${fullKey.substring(2, 6)}...`;
 
 	return Promise.resolve({
@@ -56,10 +49,7 @@ const revokeApiKey = async (_id: string): Promise<void> => {
 export function useApiKeys() {
 	const apiKeysQuery = useResourceQuery<ApiKey[]>(["api-keys"], fetchApiKeys);
 
-	const createApiKeyMutation = useResourceMutation<
-		ApiKey & { fullKey: string },
-		string
-	>(createApiKey, {
+	const createApiKeyMutation = useResourceMutation<ApiKey & { fullKey: string }, string>(createApiKey, {
 		// Optimistic update example
 		onMutate: (name) => {
 			// Optimistic update logic would go here

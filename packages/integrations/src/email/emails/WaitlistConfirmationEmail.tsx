@@ -1,25 +1,11 @@
-import {
-	Body,
-	Button,
-	Container,
-	Head,
-	Heading,
-	Hr,
-	Html,
-	Preview,
-	Section,
-	Text,
-} from "@react-email/components";
+import { Body, Button, Container, Head, Heading, Hr, Html, Preview, Section, Text } from "@react-email/components";
 
 interface WaitlistConfirmationEmailProps {
 	queuePosition: number;
 	email: string;
 }
 
-export function WaitlistConfirmationEmail({
-	queuePosition,
-	email,
-}: WaitlistConfirmationEmailProps) {
+export function WaitlistConfirmationEmail({ queuePosition, email }: WaitlistConfirmationEmailProps) {
 	const previewText = `You're #${queuePosition} on the SnapBack waitlist!`;
 
 	return (
@@ -43,8 +29,8 @@ export function WaitlistConfirmationEmail({
 						<Heading style={h1}>🎉 You're on the list!</Heading>
 
 						<Text style={paragraph}>
-							Welcome to the SnapBack Private Alpha. You're moving fast, and
-							we're building the safety net so AI can't break your code.
+							Welcome to the SnapBack Private Alpha. You're moving fast, and we're building the safety net
+							so AI can't break your code.
 						</Text>
 
 						{/* Queue Position - Large and Prominent */}
@@ -60,16 +46,14 @@ export function WaitlistConfirmationEmail({
 							<Section style={timelineItem}>
 								<Text style={timelineStep}>📧 Now</Text>
 								<Text style={timelineText}>
-									You're confirmed! Check your queue position and complete tasks
-									to jump ahead.
+									You're confirmed! Check your queue position and complete tasks to jump ahead.
 								</Text>
 							</Section>
 
 							<Section style={timelineItem}>
 								<Text style={timelineStep}>⏰ Within 24 hours</Text>
 								<Text style={timelineText}>
-									We'll send you installation instructions and your exclusive
-									alpha access key.
+									We'll send you installation instructions and your exclusive alpha access key.
 								</Text>
 							</Section>
 
@@ -84,17 +68,13 @@ export function WaitlistConfirmationEmail({
 						{/* Queue Tasks */}
 						<Section style={tasksSection}>
 							<Text style={tasksHeading}>⚡ Jump the Queue</Text>
-							<Text style={tasksSubheading}>
-								Complete these tasks to move up in line
-							</Text>
+							<Text style={tasksSubheading}>Complete these tasks to move up in line</Text>
 
 							<Section style={taskItem}>
 								<Text style={taskIcon}>⭐</Text>
 								<Section style={taskContent}>
 									<Text style={taskTitle}>Star on GitHub</Text>
-									<Text style={taskDescription}>
-										Show us some love on GitHub
-									</Text>
+									<Text style={taskDescription}>Show us some love on GitHub</Text>
 								</Section>
 								<Text style={taskPoints}>+50 points</Text>
 							</Section>
@@ -140,8 +120,7 @@ export function WaitlistConfirmationEmail({
 						</Text>
 
 						<Text style={footer}>
-							You're receiving this because you joined the SnapBack waitlist
-							with {email}.
+							You're receiving this because you joined the SnapBack waitlist with {email}.
 						</Text>
 					</Section>
 				</Container>

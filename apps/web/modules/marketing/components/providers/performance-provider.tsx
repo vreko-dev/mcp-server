@@ -92,8 +92,7 @@ export function PerformanceProvider({
 			}, reportingInterval);
 
 			// Store cleanup function
-			(unsubscribe as any).analyticsCleanup = () =>
-				clearInterval(analyticsInterval);
+			(unsubscribe as any).analyticsCleanup = () => clearInterval(analyticsInterval);
 		}
 
 		setIsMonitoring(true);
@@ -129,19 +128,13 @@ export function PerformanceProvider({
 		stopMonitoring,
 	};
 
-	return (
-		<PerformanceContext.Provider value={value}>
-			{children}
-		</PerformanceContext.Provider>
-	);
+	return <PerformanceContext.Provider value={value}>{children}</PerformanceContext.Provider>;
 }
 
 export function usePerformanceContext() {
 	const context = useContext(PerformanceContext);
 	if (!context) {
-		throw new Error(
-			"usePerformanceContext must be used within a PerformanceProvider",
-		);
+		throw new Error("usePerformanceContext must be used within a PerformanceProvider");
 	}
 	return context;
 }
@@ -154,9 +147,7 @@ function getSessionId(): string {
 
 	let sessionId = sessionStorage.getItem("snapback-session-id");
 	if (!sessionId) {
-		sessionId = `session-${Date.now()}-${Math.random()
-			.toString(36)
-			.substring(2)}`;
+		sessionId = `session-${Date.now()}-${Math.random().toString(36).substring(2)}`;
 		sessionStorage.setItem("snapback-session-id", sessionId);
 	}
 	return sessionId;

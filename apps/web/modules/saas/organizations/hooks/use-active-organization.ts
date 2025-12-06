@@ -4,9 +4,7 @@ import { ActiveOrganizationContext } from "../lib/active-organization-context";
 export const useActiveOrganization = () => {
 	const activeOrganizationContext = useContext(ActiveOrganizationContext);
 
-	type ActiveOrganizationContextType = NonNullable<
-		typeof activeOrganizationContext
-	>;
+	type ActiveOrganizationContextType = NonNullable<typeof activeOrganizationContext>;
 
 	if (activeOrganizationContext === undefined) {
 		return {

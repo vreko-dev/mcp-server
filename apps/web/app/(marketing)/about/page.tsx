@@ -7,17 +7,10 @@ export const metadata: Metadata = {
 	title: "About | SnapBack - Our Mission",
 	description:
 		"SnapBack exists because we've all lost work to AI mistakes. Learn about our mission to protect developers while they ship fast.",
-	keywords: [
-		"about snapback",
-		"company mission",
-		"developer protection",
-		"code safety",
-		"ai code protection",
-	],
+	keywords: ["about snapback", "company mission", "developer protection", "code safety", "ai code protection"],
 	openGraph: {
 		title: "About | SnapBack - Our Mission",
-		description:
-			"Developer-first safety • Performance obsessed • Community driven • Built with empathy",
+		description: "Developer-first safety • Performance obsessed • Community driven • Built with empathy",
 		url: `${SITE_URL}/about`,
 		siteName: "SnapBack",
 		type: "website",
@@ -33,8 +26,7 @@ export const metadata: Metadata = {
 	twitter: {
 		card: "summary_large_image",
 		title: "About | SnapBack - Our Mission",
-		description:
-			"Developer-first safety • Performance obsessed • Community driven",
+		description: "Developer-first safety • Performance obsessed • Community driven",
 		images: [`${SITE_URL}/og-about.png`],
 		creator: "@snapbackdev",
 	},

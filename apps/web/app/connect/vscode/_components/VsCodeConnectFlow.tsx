@@ -75,9 +75,7 @@ export function VsCodeConnectFlow({ user }: VsCodeConnectFlowProps) {
 					<div className="text-center">
 						<Loader2 className="h-16 w-16 text-primary mx-auto mb-4 animate-spin" />
 						<h1 className="text-2xl font-bold mb-2">Connecting VS Code...</h1>
-						<p className="text-muted-foreground mb-4">
-							Preparing to redirect to VS Code extension...
-						</p>
+						<p className="text-muted-foreground mb-4">Preparing to redirect to VS Code extension...</p>
 						<p className="text-sm text-muted-foreground">
 							Logged in as <span className="font-medium">{user.email}</span>
 						</p>
@@ -88,13 +86,9 @@ export function VsCodeConnectFlow({ user }: VsCodeConnectFlowProps) {
 					<div className="text-center">
 						<CheckCircle2 className="h-16 w-16 text-green-500 mx-auto mb-4" />
 						<h1 className="text-2xl font-bold mb-2">Connection Initiated</h1>
-						<p className="text-muted-foreground mb-4">
-							Return to VS Code to complete the connection.
-						</p>
+						<p className="text-muted-foreground mb-4">Return to VS Code to complete the connection.</p>
 						<div className="bg-muted rounded-lg p-4 mb-4">
-							<p className="text-sm text-muted-foreground">
-								If VS Code didn't open automatically:
-							</p>
+							<p className="text-sm text-muted-foreground">If VS Code didn't open automatically:</p>
 							<ol className="text-sm text-muted-foreground text-left mt-2 space-y-1">
 								<li>1. Make sure you have the SnapBack extension installed</li>
 								<li>2. Open VS Code manually</li>
@@ -127,10 +121,7 @@ export function VsCodeConnectFlow({ user }: VsCodeConnectFlowProps) {
 			<div className="mt-6 text-center">
 				<p className="text-sm text-muted-foreground">
 					Need help?{" "}
-					<a
-						href="/docs/extension/setup"
-						className="text-primary hover:underline"
-					>
+					<a href="/docs/extension/setup" className="text-primary hover:underline">
 						View setup guide
 					</a>
 				</p>

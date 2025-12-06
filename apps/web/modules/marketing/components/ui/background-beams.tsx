@@ -8,10 +8,7 @@ interface BackgroundBeamsProps {
 	pathCount?: number;
 }
 
-export function BackgroundBeams({
-	className = "",
-	pathCount = 12,
-}: BackgroundBeamsProps) {
+export function BackgroundBeams({ className = "", pathCount = 12 }: BackgroundBeamsProps) {
 	const reducedMotion = useReducedMotion();
 
 	// Generate paths only on client to prevent hydration mismatch

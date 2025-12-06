@@ -1,4 +1,4 @@
-// @ts-ignore - Config types should be available after build
+// @ts-expect-error - Config types should be available after build
 import { type Config, config } from "@snapback/config";
 import type { PurchaseSchema } from "@snapback/platform/db/zod";
 import type { z } from "zod";
@@ -13,7 +13,9 @@ function getActivePlanFromPurchases(purchases?: PurchaseWithoutTimestamps[]) {
 
 	if (subscriptionPurchase) {
 		const planEntry = Object.entries(plans).find(([_key, plan]: [string, any]) =>
-			(plan.prices as Array<any>)?.some((price: { productId: string }) => price.productId === subscriptionPurchase.productId),
+			(plan.prices as Array<any>)?.some(
+				(price: { productId: string }) => price.productId === subscriptionPurchase.productId,
+			),
 		);
 
 		return {
@@ -30,7 +32,9 @@ function getActivePlanFromPurchases(purchases?: PurchaseWithoutTimestamps[]) {
 
 	if (oneTimePurchase) {
 		const planEntry = Object.entries(plans).find(([_key, plan]: [string, any]) =>
-			(plan.prices as Array<any>)?.some((price: { productId: string }) => price.productId === oneTimePurchase.productId),
+			(plan.prices as Array<any>)?.some(
+				(price: { productId: string }) => price.productId === oneTimePurchase.productId,
+			),
 		);
 
 		return {
@@ -62,9 +66,9 @@ export function createPurchasesHelper(purchases: PurchaseWithoutTimestamps[]) {
 
 	const hasPurchase = (planId: PlanId) => {
 		return !!purchases?.some((purchase) =>
-			(Object.entries(plans)
-				.find(([id]) => id === planId)?.[1] as any)
-				?.prices?.some((price: { productId: string }) => price.productId === purchase.productId),
+			(Object.entries(plans).find(([id]) => id === planId)?.[1] as any)?.prices?.some(
+				(price: { productId: string }) => price.productId === purchase.productId,
+			),
 		);
 	};
 

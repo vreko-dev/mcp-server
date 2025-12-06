@@ -51,12 +51,9 @@ class ErrorBoundary extends Component<Props, State> {
 				this.props.fallback || (
 					<div className="min-h-screen flex items-center justify-center bg-background">
 						<div className="text-center max-w-md mx-auto px-6">
-							<h2 className="text-2xl font-bold text-foreground mb-4">
-								Something went wrong
-							</h2>
+							<h2 className="text-2xl font-bold text-foreground mb-4">Something went wrong</h2>
 							<p className="text-muted-foreground mb-6">
-								We apologize for the inconvenience. Please try refreshing the
-								page.
+								We apologize for the inconvenience. Please try refreshing the page.
 							</p>
 							<button
 								onClick={() => this.setState({ hasError: false })}

@@ -2,13 +2,7 @@
 
 import { AnalyticsEvents } from "@analytics";
 import { Button } from "@ui/components/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@ui/components/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@ui/components/card";
 import { Book, Download, Terminal } from "lucide-react";
 import Link from "next/link";
 import posthog from "posthog-js";
@@ -45,12 +39,8 @@ export function QuickActions() {
 						<Download className="h-6 w-6 text-[var(--snapback-green)]" />
 					</div>
 					<div className="flex-1">
-						<div className="font-medium text-white">
-							Download VS Code Extension
-						</div>
-						<div className="text-sm text-neutral-400">
-							Get protected in your editor
-						</div>
+						<div className="font-medium text-white">Download VS Code Extension</div>
+						<div className="text-sm text-neutral-400">Get protected in your editor</div>
 					</div>
 					<Button variant="outline" size="sm" asChild>
 						<span>Download</span>
@@ -67,9 +57,7 @@ export function QuickActions() {
 					</div>
 					<div className="flex-1">
 						<div className="font-medium text-white">Install CLI Tool</div>
-						<div className="text-sm text-neutral-400 font-mono">
-							npm install -g @snapback/cli
-						</div>
+						<div className="text-sm text-neutral-400 font-mono">npm install -g @snapback/cli</div>
 					</div>
 					<Button variant="outline" size="sm">
 						Install
@@ -86,9 +74,7 @@ export function QuickActions() {
 					</div>
 					<div className="flex-1">
 						<div className="font-medium text-white">Documentation</div>
-						<div className="text-sm text-neutral-400">
-							Learn advanced features
-						</div>
+						<div className="text-sm text-neutral-400">Learn advanced features</div>
 					</div>
 					<Button variant="outline" size="sm" asChild>
 						<span>Docs</span>

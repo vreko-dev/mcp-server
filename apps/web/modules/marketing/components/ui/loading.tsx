@@ -7,10 +7,7 @@ interface LoadingSpinnerProps {
 	className?: string;
 }
 
-export function LoadingSpinner({
-	size = "md",
-	className = "",
-}: LoadingSpinnerProps) {
+export function LoadingSpinner({ size = "md", className = "" }: LoadingSpinnerProps) {
 	const sizeClasses = {
 		sm: "w-4 h-4",
 		md: "w-8 h-8",
@@ -40,19 +37,13 @@ interface SkeletonProps {
 	animate?: boolean;
 }
 
-export function Skeleton({
-	className = "",
-	lines = 1,
-	animate = true,
-}: SkeletonProps) {
+export function Skeleton({ className = "", lines = 1, animate = true }: SkeletonProps) {
 	return (
 		<div className={className}>
 			{Array.from({ length: lines }, (_, i) => (
 				<div
 					key={i}
-					className={`bg-muted/20 rounded h-4 mb-2 last:mb-0 ${
-						animate ? "animate-pulse" : ""
-					}`}
+					className={`bg-muted/20 rounded h-4 mb-2 last:mb-0 ${animate ? "animate-pulse" : ""}`}
 					style={{
 						// Prevent layout shift with consistent dimensions
 						width: i === lines - 1 ? "60%" : "100%",
@@ -72,12 +63,7 @@ interface LazyLoadWrapperProps {
 	threshold?: number;
 }
 
-export function LazyLoadWrapper({
-	children,
-	fallback,
-	className = "",
-	threshold = 0.1,
-}: LazyLoadWrapperProps) {
+export function LazyLoadWrapper({ children, fallback, className = "", threshold = 0.1 }: LazyLoadWrapperProps) {
 	const [isVisible, setIsVisible] = React.useState(false);
 	const [isLoaded, setIsLoaded] = React.useState(false);
 	const ref = React.useRef<HTMLDivElement>(null);
@@ -125,12 +111,7 @@ interface ImagePlaceholderProps {
 	alt?: string;
 }
 
-export function ImagePlaceholder({
-	width,
-	height,
-	className = "",
-	alt = "Loading image",
-}: ImagePlaceholderProps) {
+export function ImagePlaceholder({ width, height, className = "", alt = "Loading image" }: ImagePlaceholderProps) {
 	return (
 		<div
 			className={`bg-muted/10 flex items-center justify-center ${className}`}

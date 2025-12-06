@@ -20,11 +20,7 @@ interface ShareDialogProps {
 	linesRecovered: number;
 }
 
-export function ShareDialog({
-	open,
-	onOpenChange,
-	linesRecovered,
-}: ShareDialogProps) {
+export function ShareDialog({ open, onOpenChange, linesRecovered }: ShareDialogProps) {
 	const [copied, setCopied] = useState(false);
 	const { trackEvent } = useAnalytics();
 
@@ -72,9 +68,7 @@ If you're using AI coding tools, you need this foundation. 🛡️
 			<DialogContent className="sm:max-w-md">
 				<DialogHeader>
 					<DialogTitle>Share your save</DialogTitle>
-					<DialogDescription>
-						Celebrate your recovery and let others know about SnapBack.
-					</DialogDescription>
+					<DialogDescription>Celebrate your recovery and let others know about SnapBack.</DialogDescription>
 				</DialogHeader>
 
 				<div className="grid gap-4 py-4">
@@ -84,24 +78,12 @@ If you're using AI coding tools, you need this foundation. 🛡️
 				</div>
 
 				<DialogFooter className="flex-col sm:justify-start gap-2">
-					<Button
-						variant="primary"
-						className="w-full sm:w-auto"
-						onClick={handleTwitterShare}
-					>
+					<Button variant="primary" className="w-full sm:w-auto" onClick={handleTwitterShare}>
 						<Twitter className="mr-2 h-4 w-4" />
 						Share on Twitter
 					</Button>
-					<Button
-						variant="outline"
-						className="w-full sm:w-auto"
-						onClick={handleCopy}
-					>
-						{copied ? (
-							<Check className="mr-2 h-4 w-4" />
-						) : (
-							<Copy className="mr-2 h-4 w-4" />
-						)}
+					<Button variant="outline" className="w-full sm:w-auto" onClick={handleCopy}>
+						{copied ? <Check className="mr-2 h-4 w-4" /> : <Copy className="mr-2 h-4 w-4" />}
 						{copied ? "Copied" : "Copy Text"}
 					</Button>
 				</DialogFooter>

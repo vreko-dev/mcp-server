@@ -7,12 +7,7 @@ import { BadgeCheckIcon, CheckIcon } from "lucide-react";
 import { CustomerPortalButton } from "../../settings/components/CustomerPortalButton";
 import { SubscriptionStatusBadge } from "../../settings/components/SubscriptionStatusBadge";
 
-export function ActivePlan({
-	organizationId,
-}: {
-	organizationId?: string;
-	seats?: number;
-}) {
+export function ActivePlan({ organizationId }: { organizationId?: string; seats?: number }) {
 	const { planData } = usePlanData();
 	const { activePlan } = usePurchases(organizationId);
 
@@ -37,9 +32,7 @@ export function ActivePlan({
 						<h4 className="font-bold text-lg text-primary">
 							<span>{activePlanData.title}</span>
 						</h4>
-						{activePlan.status && (
-							<SubscriptionStatusBadge status={activePlan.status} />
-						)}
+						{activePlan.status && <SubscriptionStatusBadge status={activePlan.status} />}
 					</div>
 
 					{!!activePlanData.features?.length && (
@@ -62,9 +55,7 @@ export function ActivePlan({
 								style: "currency",
 								currency: (price as any).currency,
 							}).format((price as any).amount)}
-							{typeof price === "object" &&
-							price !== null &&
-							"interval" in price ? (
+							{typeof price === "object" && price !== null && "interval" in price ? (
 								<span className="font-normal text-xs opacity-60">
 									{" / "}
 									{(price as any).interval === "month"
@@ -92,9 +83,7 @@ export function ActivePlan({
 				(activePlan as any).purchaseId ? (
 					<div className="mt-4 flex justify-end">
 						<div className="flex w-full flex-col flex-wrap gap-2 md:flex-row">
-							<CustomerPortalButton
-								purchaseId={(activePlan as any).purchaseId}
-							/>
+							<CustomerPortalButton purchaseId={(activePlan as any).purchaseId} />
 						</div>
 					</div>
 				) : null}

@@ -8,13 +8,9 @@ interface FeedbackWidgetProps {
 	position?: "bottom-right" | "bottom-left";
 }
 
-export function FeedbackWidget({
-	position = "bottom-right",
-}: FeedbackWidgetProps) {
+export function FeedbackWidget({ position = "bottom-right" }: FeedbackWidgetProps) {
 	const [isOpen, setIsOpen] = useState(false);
-	const [category, setCategory] = useState<
-		"bug" | "feature" | "question" | "other"
-	>("bug");
+	const [category, setCategory] = useState<"bug" | "feature" | "question" | "other">("bug");
 	const [message, setMessage] = useState("");
 	const [email, setEmail] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
@@ -70,8 +66,7 @@ export function FeedbackWidget({
 		}
 	};
 
-	const positionClass =
-		position === "bottom-right" ? "bottom-6 right-6" : "bottom-6 left-6";
+	const positionClass = position === "bottom-right" ? "bottom-6 right-6" : "bottom-6 left-6";
 
 	return (
 		<div className={`fixed ${positionClass} z-50`}>
@@ -135,17 +130,13 @@ export function FeedbackWidget({
 						<div className="p-6 text-center">
 							<div className="text-4xl mb-3">✅</div>
 							<p className="text-emerald-400 font-medium">Thank you!</p>
-							<p className="text-slate-400 text-sm mt-1">
-								Your feedback has been received.
-							</p>
+							<p className="text-slate-400 text-sm mt-1">Your feedback has been received.</p>
 						</div>
 					) : (
 						<form onSubmit={handleSubmit} className="p-4 space-y-4">
 							{/* Category */}
 							<div>
-								<label className="block text-sm font-medium text-slate-300 mb-2">
-									Category
-								</label>
+								<label className="block text-sm font-medium text-slate-300 mb-2">Category</label>
 								<select
 									value={category}
 									onChange={(e) => setCategory(e.target.value as any)}
@@ -160,9 +151,7 @@ export function FeedbackWidget({
 
 							{/* Message */}
 							<div>
-								<label className="block text-sm font-medium text-slate-300 mb-2">
-									Message *
-								</label>
+								<label className="block text-sm font-medium text-slate-300 mb-2">Message *</label>
 								<textarea
 									value={message}
 									onChange={(e) => setMessage(e.target.value)}
@@ -172,9 +161,7 @@ export function FeedbackWidget({
 									rows={4}
 									className="w-full bg-slate-900 border border-slate-600 rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
 								/>
-								<p className="text-xs text-slate-500 mt-1">
-									{message.length}/1000 characters
-								</p>
+								<p className="text-xs text-slate-500 mt-1">{message.length}/1000 characters</p>
 							</div>
 
 							{/* Email (optional) */}
@@ -200,11 +187,7 @@ export function FeedbackWidget({
 								>
 									{isSubmitting ? "Sending..." : "Send Feedback"}
 								</Button>
-								<Button
-									type="button"
-									onClick={() => setIsOpen(false)}
-									variant="outline"
-								>
+								<Button type="button" onClick={() => setIsOpen(false)} variant="outline">
 									Cancel
 								</Button>
 							</div>

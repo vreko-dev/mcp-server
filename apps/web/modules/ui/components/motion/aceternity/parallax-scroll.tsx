@@ -2,18 +2,9 @@
 import { m } from "motion/react";
 import Image from "next/image";
 
-export const ParallaxScroll = ({
-	images,
-	className,
-}: {
-	images: string[];
-	className?: string;
-}) => {
+export const ParallaxScroll = ({ images, className }: { images: string[]; className?: string }) => {
 	const firstRow = images.slice(0, Math.ceil(images.length / 3));
-	const secondRow = images.slice(
-		Math.ceil(images.length / 3),
-		Math.ceil((2 * images.length) / 3),
-	);
+	const secondRow = images.slice(Math.ceil(images.length / 3), Math.ceil((2 * images.length) / 3));
 	const thirdRow = images.slice(Math.ceil((2 * images.length) / 3));
 
 	return (
@@ -79,9 +70,7 @@ export const ParallaxScroll = ({
 						<div key={idx} className="h-20 w-40 overflow-hidden rounded-lg">
 							<Image
 								src={image}
-								alt={`Partner company logo ${
-									idx + firstRow.length + secondRow.length + 1
-								}`}
+								alt={`Partner company logo ${idx + firstRow.length + secondRow.length + 1}`}
 								width={160}
 								height={80}
 								className="h-full w-full object-contain filter grayscale opacity-60 hover:opacity-100 transition-all duration-300"

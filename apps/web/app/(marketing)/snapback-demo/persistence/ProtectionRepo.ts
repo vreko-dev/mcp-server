@@ -4,14 +4,9 @@ import { db } from "./db";
 /**
  * Repository for managing protected files in IndexedDB
  */
-type ProtectedFileInput =
-	| ProtectedFile
-	| (Omit<ProtectedFile, "id"> & { id?: string });
+type ProtectedFileInput = ProtectedFile | (Omit<ProtectedFile, "id"> & { id?: string });
 
-const generateId = () =>
-	crypto?.randomUUID
-		? crypto.randomUUID()
-		: Math.random().toString(36).slice(2, 11);
+const generateId = () => (crypto?.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2, 11));
 
 export class ProtectionRepo {
 	/**
@@ -34,9 +29,7 @@ export class ProtectionRepo {
 	/**
 	 * Creates or updates multiple protected files in a batch
 	 */
-	async saveMany(
-		protectedFiles: ProtectedFileInput[],
-	): Promise<ProtectedFile[]> {
+	async saveMany(protectedFiles: ProtectedFileInput[]): Promise<ProtectedFile[]> {
 		const records: ProtectedFile[] = protectedFiles.map((file) => ({
 			id: file.id ?? generateId(),
 			path: file.path,
@@ -67,10 +60,7 @@ export class ProtectionRepo {
 	/**
 	 * Updates protection level for a file
 	 */
-	async updateProtectionLevel(
-		path: string,
-		protectionLevel: string,
-	): Promise<void> {
+	async updateProtectionLevel(path: string, protectionLevel: string): Promise<void> {
 		const existing = await this.getByPath(path);
 		const record: ProtectedFile = existing
 			? {

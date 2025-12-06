@@ -26,13 +26,7 @@ interface StepIndicatorProps {
 	onClick: () => void;
 }
 
-function StepIndicator({
-	step,
-	index: _index,
-	active,
-	completed,
-	onClick,
-}: StepIndicatorProps) {
+function StepIndicator({ step, index: _index, active, completed, onClick }: StepIndicatorProps) {
 	return (
 		<button
 			type="button"
@@ -69,12 +63,7 @@ function StepIndicator({
 	);
 }
 
-export function OnboardingWizard({
-	steps,
-	currentStep,
-	onStepChange,
-	className,
-}: OnboardingWizardProps) {
+export function OnboardingWizard({ steps, currentStep, onStepChange, className }: OnboardingWizardProps) {
 	return (
 		<div className={cn("space-y-8", className)}>
 			{/* Progress indicator */}

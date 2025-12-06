@@ -35,10 +35,7 @@ export function PasskeysBlock() {
 	};
 
 	return (
-		<SettingsItem
-			title="Passkeys"
-			description="Manage passkeys for passwordless authentication"
-		>
+		<SettingsItem title="Passkeys" description="Manage passkeys for passwordless authentication">
 			<div className="grid grid-cols-1 gap-2">
 				{isPending ? (
 					<div className="flex gap-2">

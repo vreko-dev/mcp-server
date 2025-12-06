@@ -20,7 +20,5 @@ function getQueryClient() {
 export function ApiClientProvider({ children }: PropsWithChildren) {
 	const queryClient = getQueryClient();
 
-	return (
-		<QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-	);
+	return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
 }

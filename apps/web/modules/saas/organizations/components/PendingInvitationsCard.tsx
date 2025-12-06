@@ -3,13 +3,7 @@
 import { authClient } from "@snapback/auth/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@ui/components/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@ui/components/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@ui/components/card";
 import { AlertCircleIcon, CheckIcon, ClockIcon, XIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -42,8 +36,7 @@ export function PendingInvitationsCard() {
 
 			try {
 				// biome-ignore lint/suspicious/noExplicitAny: Better Auth response type varies
-				const result =
-					(await authClient.organization.listUserInvitations()) as any;
+				const result = (await authClient.organization.listUserInvitations()) as any;
 
 				// Better Auth returns invitations directly as array or in data property
 				const invitationsList = Array.isArray(result)
@@ -61,15 +54,11 @@ export function PendingInvitationsCard() {
 				// Filter pending invitations and sort by expiration date
 				const pending = (invitationsList as Invitation[])
 					.filter((inv) => inv.status === "pending")
-					.sort(
-						(a, b) =>
-							new Date(a.expiresAt).getTime() - new Date(b.expiresAt).getTime(),
-					);
+					.sort((a, b) => new Date(a.expiresAt).getTime() - new Date(b.expiresAt).getTime());
 
 				setInvitations(pending);
 			} catch (err: unknown) {
-				const message =
-					err instanceof Error ? err.message : "Failed to load invitations";
+				const message = err instanceof Error ? err.message : "Failed to load invitations";
 				setError(message);
 				setInvitations([]);
 			} finally {
@@ -152,9 +141,7 @@ export function PendingInvitationsCard() {
 			<Card>
 				<CardHeader>
 					<CardTitle>Organization Invitations</CardTitle>
-					<CardDescription>
-						Pending invitations to join organizations
-					</CardDescription>
+					<CardDescription>Pending invitations to join organizations</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<div className="space-y-3">
@@ -193,16 +180,12 @@ export function PendingInvitationsCard() {
 			<Card>
 				<CardHeader>
 					<CardTitle>Organization Invitations</CardTitle>
-					<CardDescription>
-						Pending invitations to join organizations
-					</CardDescription>
+					<CardDescription>Pending invitations to join organizations</CardDescription>
 				</CardHeader>
 				<CardContent className="text-center py-8 text-muted-foreground">
 					<CheckIcon className="size-12 mx-auto mb-3 opacity-30" />
 					<p>You don't have any pending invitations</p>
-					<p className="text-sm">
-						Invitations will appear here when organizations invite you to join
-					</p>
+					<p className="text-sm">Invitations will appear here when organizations invite you to join</p>
 				</CardContent>
 			</Card>
 		);
@@ -214,16 +197,14 @@ export function PendingInvitationsCard() {
 			<CardHeader>
 				<CardTitle>Organization Invitations</CardTitle>
 				<CardDescription>
-					You have {invitations.length} pending{" "}
-					{invitations.length === 1 ? "invitation" : "invitations"}
+					You have {invitations.length} pending {invitations.length === 1 ? "invitation" : "invitations"}
 				</CardDescription>
 			</CardHeader>
 			<CardContent className="space-y-4">
 				{invitations.map((invitation) => {
 					const expiresAt = new Date(invitation.expiresAt);
 					const now = new Date();
-					const hoursUntilExpire =
-						(expiresAt.getTime() - now.getTime()) / 3600000;
+					const hoursUntilExpire = (expiresAt.getTime() - now.getTime()) / 3600000;
 					const isExpiringSoon = hoursUntilExpire < 24 && hoursUntilExpire > 0;
 					const isExpired = expiresAt.getTime() < now.getTime();
 
@@ -235,12 +216,8 @@ export function PendingInvitationsCard() {
 							{/* Header: Org name + role */}
 							<div className="flex items-start justify-between mb-3">
 								<div className="flex-1">
-									<h4 className="font-semibold text-sm">
-										{invitation.organizationName}
-									</h4>
-									<p className="text-xs text-muted-foreground">
-										{invitation.email}
-									</p>
+									<h4 className="font-semibold text-sm">{invitation.organizationName}</h4>
+									<p className="text-xs text-muted-foreground">{invitation.email}</p>
 								</div>
 								<div className="flex gap-2 ml-3">
 									<span className="inline-block px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-medium capitalize">
@@ -278,9 +255,7 @@ export function PendingInvitationsCard() {
 									size="sm"
 									onClick={() => handleAccept(invitation.id)}
 									disabled={
-										isExpired ||
-										acceptingId === invitation.id ||
-										rejectingId === invitation.id
+										isExpired || acceptingId === invitation.id || rejectingId === invitation.id
 									}
 									className="flex-1"
 								>
@@ -291,10 +266,7 @@ export function PendingInvitationsCard() {
 									size="sm"
 									variant="outline"
 									onClick={() => handleReject(invitation.id)}
-									disabled={
-										acceptingId === invitation.id ||
-										rejectingId === invitation.id
-									}
+									disabled={acceptingId === invitation.id || rejectingId === invitation.id}
 									className="flex-1"
 								>
 									<XIcon className="size-4 mr-1" />

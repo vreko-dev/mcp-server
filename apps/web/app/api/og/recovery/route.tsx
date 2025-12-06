@@ -10,9 +10,7 @@ export async function GET(request: Request) {
 		const lines = searchParams.get("lines") || "???";
 		const hasLines = searchParams.has("lines");
 
-		const message = hasLines
-			? `Recovered ${lines} lines of code`
-			: "SnapBack saved the day";
+		const message = hasLines ? `Recovered ${lines} lines of code` : "SnapBack saved the day";
 
 		return new ImageResponse(
 			<div

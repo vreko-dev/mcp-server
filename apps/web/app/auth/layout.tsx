@@ -11,9 +11,5 @@ export default async function AuthLayout({ children }: PropsWithChildren) {
 	// Skip AuthWrapper for full-screen login page
 	const isFullScreenLogin = pathname === "/auth/login";
 
-	return (
-		<Document locale={locale}>
-			{isFullScreenLogin ? children : <AuthWrapper>{children}</AuthWrapper>}
-		</Document>
-	);
+	return <Document locale={locale}>{isFullScreenLogin ? children : <AuthWrapper>{children}</AuthWrapper>}</Document>;
 }

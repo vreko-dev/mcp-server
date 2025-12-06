@@ -5,8 +5,8 @@
  * ensuring consistent error handling across all SnapBack applications.
  */
 
-import { describe, expect, it } from "vitest";
 import { toError } from "@snapback-oss/sdk";
+import { describe, expect, it } from "vitest";
 
 describe("errorHelpers", () => {
 	describe("toError", () => {

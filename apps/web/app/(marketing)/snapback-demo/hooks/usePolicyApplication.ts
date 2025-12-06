@@ -16,9 +16,7 @@ export function usePolicyApplication() {
 
 			try {
 				// Check if file should be protected based on policies
-				const protectionLevel = await snapBackCommands.checkFileProtection(
-					state.currentFilePath,
-				);
+				const protectionLevel = await snapBackCommands.checkFileProtection(state.currentFilePath);
 				if (protectionLevel) {
 					if (state.currentProtectionLevel === protectionLevel) {
 						return;

@@ -103,9 +103,7 @@ const Navbar = () => {
 	useEffect(() => {
 		if (typeof window !== "undefined") {
 			// Check if we're in local development
-			const isLocalhost =
-				window.location.hostname === "localhost" ||
-				window.location.hostname === "127.0.0.1";
+			const isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
 
 			if (isLocalhost) {
 				// For local development, use port 3001 for docs app
@@ -113,8 +111,7 @@ const Navbar = () => {
 				setDocsUrl("http://localhost:3001");
 			} else {
 				// For production, use the docs subdomain
-				const rootDomain =
-					process.env.NEXT_PUBLIC_ROOT_DOMAIN || "snapback.dev";
+				const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "snapback.dev";
 				setDocsUrl(`https://new-docs.${rootDomain}`);
 			}
 		}
@@ -132,9 +129,7 @@ const Navbar = () => {
 		<>
 			{/* Frosted glass floating navbar with scroll behavior */}
 			<m.nav
-				className={`fixed top-0 left-0 right-0 z-50 w-full ${
-					isScrolled ? "scrolled" : ""
-				}`}
+				className={`fixed top-0 left-0 right-0 z-50 w-full ${isScrolled ? "scrolled" : ""}`}
 				initial={isMounted ? { opacity: 0, y: -20 } : { opacity: 1, y: 0 }}
 				animate={{
 					opacity: 1,
@@ -178,11 +173,7 @@ const Navbar = () => {
 								if (window.innerWidth < 1024) {
 									const target = e.target as HTMLElement;
 									// Don't trigger if clicking on a link or button
-									if (
-										!target.closest("a") &&
-										!target.closest("button") &&
-										!isMenuOpen
-									) {
+									if (!target.closest("a") && !target.closest("button") && !isMenuOpen) {
 										toggleMenu();
 									}
 								}
@@ -224,11 +215,7 @@ const Navbar = () => {
 											ease: [0.16, 1, 0.3, 1],
 										}}
 									>
-										<Logo
-											wordmark={true}
-											withLabel={false}
-											wordmarkSize="normal"
-										/>
+										<Logo wordmark={true} withLabel={false} wordmarkSize="normal" />
 									</m.div>
 								</Link>
 							</m.div>
@@ -252,16 +239,12 @@ const Navbar = () => {
 												}
 
 												// Use Lenis for smooth scrolling if available
-												if (
-													typeof window !== "undefined" &&
-													(window as any).lenis
-												) {
+												if (typeof window !== "undefined" && (window as any).lenis) {
 													e.preventDefault();
 													(window as any).lenis.scrollTo(item.href, {
 														offset: -80,
 														duration: 1.5,
-														easing: (t: number) =>
-															Math.min(1, 1.001 - 2 ** (-10 * t)),
+														easing: (t: number) => Math.min(1, 1.001 - 2 ** (-10 * t)),
 													});
 												}
 												closeMenu();
@@ -348,16 +331,12 @@ const Navbar = () => {
 												}
 
 												// Use Lenis for smooth scrolling if available
-												if (
-													typeof window !== "undefined" &&
-													(window as any).lenis
-												) {
+												if (typeof window !== "undefined" && (window as any).lenis) {
 													e.preventDefault();
 													(window as any).lenis.scrollTo(item.href, {
 														offset: -80,
 														duration: 1.5,
-														easing: (t: number) =>
-															Math.min(1, 1.001 - 2 ** (-10 * t)),
+														easing: (t: number) => Math.min(1, 1.001 - 2 ** (-10 * t)),
 													});
 												}
 												closeMenu();

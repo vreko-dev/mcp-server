@@ -2,13 +2,7 @@
 
 import { Badge } from "@ui/components/badge";
 import { Button } from "@ui/components/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@ui/components/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@ui/components/card";
 import { AlertCircle, Clock, KeyIcon, PlusIcon } from "lucide-react";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
@@ -103,17 +97,13 @@ export function ApiKeyList({ apiKeys, onRefresh }: ApiKeyListProps) {
 						}
 					/>
 				</CardTitle>
-				<CardDescription>
-					Manage your API keys for SnapBack tools
-				</CardDescription>
+				<CardDescription>Manage your API keys for SnapBack tools</CardDescription>
 			</CardHeader>
 			<CardContent>
 				{apiKeys.length === 0 ? (
 					<div className="text-center py-12">
 						<KeyIcon className="h-16 w-16 mx-auto mb-4 text-neutral-700" />
-						<h3 className="text-lg font-semibold text-white mb-2">
-							No API Keys Yet
-						</h3>
+						<h3 className="text-lg font-semibold text-white mb-2">No API Keys Yet</h3>
 						<p className="text-neutral-400 mb-6">
 							Create your first API key to start using SnapBack protection
 						</p>
@@ -140,9 +130,7 @@ export function ApiKeyList({ apiKeys, onRefresh }: ApiKeyListProps) {
 									<div className="flex items-center justify-between gap-4">
 										<div className="flex-1 min-w-0">
 											<div className="flex items-center gap-2 mb-1">
-												<div className="font-medium text-white">
-													{apiKey.name}
-												</div>
+												<div className="font-medium text-white">{apiKey.name}</div>
 												{isRevoked && (
 													<Badge status="error" className="text-xs">
 														Revoked

@@ -30,12 +30,7 @@ export interface BentoGridItemProps {
  */
 export const BentoGrid = ({ className, children }: BentoGridProps) => {
 	return (
-		<div
-			className={cn(
-				"grid md:auto-rows-[18rem] grid-cols-1 md:grid-cols-3 gap-4 max-w-7xl mx-auto",
-				className,
-			)}
-		>
+		<div className={cn("grid md:auto-rows-[18rem] grid-cols-1 md:grid-cols-3 gap-4 max-w-7xl mx-auto", className)}>
 			{children}
 		</div>
 	);
@@ -49,13 +44,7 @@ export const BentoGrid = ({ className, children }: BentoGridProps) => {
  * - Smooth hover effects
  * - Accessible and keyboard-friendly
  */
-export const BentoGridItem = ({
-	className,
-	title,
-	description,
-	icon,
-	header,
-}: BentoGridItemProps) => {
+export const BentoGridItem = ({ className, title, description, icon, header }: BentoGridItemProps) => {
 	const reducedMotion = useReducedMotion();
 
 	return (
@@ -82,11 +71,7 @@ export const BentoGridItem = ({
 				<motion.div
 					className="mb-4"
 					whileHover={reducedMotion ? {} : { y: -5 }}
-					transition={
-						reducedMotion
-							? { duration: 0 }
-							: { type: "spring", stiffness: 400, damping: 17 }
-					}
+					transition={reducedMotion ? { duration: 0 } : { type: "spring", stiffness: 400, damping: 17 }}
 				>
 					{header}
 				</motion.div>
@@ -96,28 +81,16 @@ export const BentoGridItem = ({
 				{icon && (
 					<motion.div
 						whileHover={reducedMotion ? {} : { scale: 1.2, rotate: 10 }}
-						transition={
-							reducedMotion
-								? { duration: 0 }
-								: { type: "spring", stiffness: 300 }
-						}
+						transition={reducedMotion ? { duration: 0 } : { type: "spring", stiffness: 300 }}
 						className="mb-4"
 					>
 						{icon}
 					</motion.div>
 				)}
 
-				{title && (
-					<div className="font-sans font-bold text-neutral-200 mb-2 mt-2">
-						{title}
-					</div>
-				)}
+				{title && <div className="font-sans font-bold text-neutral-200 mb-2 mt-2">{title}</div>}
 
-				{description && (
-					<div className="font-sans font-normal text-neutral-400 text-xs">
-						{description}
-					</div>
-				)}
+				{description && <div className="font-sans font-normal text-neutral-400 text-xs">{description}</div>}
 			</div>
 		</motion.div>
 	);

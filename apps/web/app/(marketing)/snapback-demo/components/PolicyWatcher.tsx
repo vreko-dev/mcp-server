@@ -5,10 +5,7 @@ import { snapBackCommands } from "../commands";
 import { useSnapBack } from "../context/SnapBackContext";
 import { debounce } from "../domain/protection";
 
-const generateId = () =>
-	crypto?.randomUUID
-		? crypto.randomUUID()
-		: Math.random().toString(36).slice(2, 11);
+const generateId = () => (crypto?.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2, 11));
 
 interface PolicyWatcherProps {
 	onPolicyChange?: () => void;

@@ -148,11 +148,7 @@
 						"Protection for critical configs",
 						"Community support"
 					],
-					"limitations": [
-						"No context awareness",
-						"No smart recovery",
-						"Limited to config files"
-					]
+					"limitations": ["No context awareness", "No smart recovery", "Limited to config files"]
 				},
 				"cta": "Start Free",
 				"ctaStyle": "outline"

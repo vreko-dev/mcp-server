@@ -3,12 +3,7 @@ import { SettingsMenu } from "@saas/settings/components/SettingsMenu";
 import { PageHeader } from "@saas/shared/components/PageHeader";
 import { SidebarContentLayout } from "@saas/shared/components/SidebarContentLayout";
 import { UserAvatar } from "@shared/components/UserAvatar";
-import {
-	CreditCardIcon,
-	LockKeyholeIcon,
-	SettingsIcon,
-	TriangleAlertIcon,
-} from "lucide-react";
+import { CreditCardIcon, LockKeyholeIcon, SettingsIcon, TriangleAlertIcon } from "lucide-react";
 import { redirect } from "next/navigation";
 import type { PropsWithChildren } from "react";
 
@@ -29,12 +24,7 @@ export default async function SettingsLayout({ children }: PropsWithChildren) {
 	const menuItems = [
 		{
 			title: "Account",
-			avatar: (
-				<UserAvatar
-					name={(session as any)?.user?.name ?? ""}
-					avatarUrl={(session as any)?.user?.image}
-				/>
-			),
+			avatar: <UserAvatar name={(session as any)?.user?.name ?? ""} avatarUrl={(session as any)?.user?.image} />,
 			items: [
 				{
 					title: "General",
@@ -66,13 +56,8 @@ export default async function SettingsLayout({ children }: PropsWithChildren) {
 
 	return (
 		<>
-			<PageHeader
-				title="Account Settings"
-				subtitle="Manage your account settings and preferences"
-			/>
-			<SidebarContentLayout sidebar={<SettingsMenu menuItems={menuItems} />}>
-				{children}
-			</SidebarContentLayout>
+			<PageHeader title="Account Settings" subtitle="Manage your account settings and preferences" />
+			<SidebarContentLayout sidebar={<SettingsMenu menuItems={menuItems} />}>{children}</SidebarContentLayout>
 		</>
 	);
 }

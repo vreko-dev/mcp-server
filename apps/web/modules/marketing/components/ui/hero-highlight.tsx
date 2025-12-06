@@ -24,13 +24,7 @@ export const HeroHighlight = ({
 	};
 
 	return (
-		<div
-			className={cn(
-				"relative h-full w-full overflow-hidden",
-				containerClassName,
-			)}
-			onMouseMove={handleMouseMove}
-		>
+		<div className={cn("relative h-full w-full overflow-hidden", containerClassName)} onMouseMove={handleMouseMove}>
 			<m.div
 				className="absolute inset-0 transition-all duration-300"
 				style={{
@@ -42,13 +36,7 @@ export const HeroHighlight = ({
 	);
 };
 
-export const Highlight = ({
-	children,
-	className,
-}: {
-	children: React.ReactNode;
-	className?: string;
-}) => {
+export const Highlight = ({ children, className }: { children: React.ReactNode; className?: string }) => {
 	return (
 		<m.span
 			initial={{ backgroundSize: "0% 100%" }}
@@ -58,8 +46,7 @@ export const Highlight = ({
 				backgroundRepeat: "no-repeat",
 				backgroundPosition: "left center",
 				display: "inline",
-				backgroundImage:
-					"linear-gradient(90deg, hsl(140 100% 50% / 0.3), hsl(191 100% 50% / 0.3))",
+				backgroundImage: "linear-gradient(90deg, hsl(140 100% 50% / 0.3), hsl(191 100% 50% / 0.3))",
 				zIndex: -1,
 			}}
 			className={cn("relative", className)}

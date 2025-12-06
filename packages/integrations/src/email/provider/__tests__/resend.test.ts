@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { send } from "../resend";
 
 // Mock fetch globally
@@ -58,7 +58,7 @@ describe("Resend Email Provider", () => {
 						Authorization: "Bearer re_test_key_123",
 					},
 					body: expect.stringContaining("user@example.com"),
-				})
+				}),
 			);
 
 			// Verify success logging
@@ -67,14 +67,14 @@ describe("Resend Email Provider", () => {
 				expect.objectContaining({
 					to: "user@example.com",
 					subject: "Test Email",
-				})
+				}),
 			);
 
 			expect(logger.info).toHaveBeenCalledWith(
 				"✅ Resend: Email sent successfully",
 				expect.objectContaining({
 					emailId: "email_123",
-				})
+				}),
 			);
 		});
 
@@ -104,9 +104,7 @@ describe("Resend Email Provider", () => {
 				ok: false,
 				status: 400,
 				statusText: "Bad Request",
-				json: vi
-					.fn()
-					.mockResolvedValue({ error: "Invalid email address" }),
+				json: vi.fn().mockResolvedValue({ error: "Invalid email address" }),
 			};
 			mockFetch.mockResolvedValueOnce(errorResponse);
 
@@ -116,7 +114,7 @@ describe("Resend Email Provider", () => {
 					subject: "Test",
 					text: "Test",
 					html: "<p>Test</p>",
-				})
+				}),
 			).rejects.toThrow("Could not send email");
 
 			// Verify error logging
@@ -126,7 +124,7 @@ describe("Resend Email Provider", () => {
 					status: 400,
 					statusText: "Bad Request",
 					error: { error: "Invalid email address" },
-				})
+				}),
 			);
 		});
 
@@ -145,14 +143,14 @@ describe("Resend Email Provider", () => {
 					subject: "Test",
 					text: "Test",
 					html: "<p>Test</p>",
-				})
+				}),
 			).rejects.toThrow("Could not send email");
 
 			expect(logger.error).toHaveBeenCalledWith(
 				"❌ Resend: Email send failed",
 				expect.objectContaining({
 					status: 500,
-				})
+				}),
 			);
 		});
 
@@ -165,7 +163,7 @@ describe("Resend Email Provider", () => {
 					subject: "Test",
 					text: "Test",
 					html: "<p>Test</p>",
-				})
+				}),
 			).rejects.toThrow("Network timeout");
 		});
 
@@ -184,7 +182,7 @@ describe("Resend Email Provider", () => {
 					subject: "Test",
 					text: "Test",
 					html: "<p>Test</p>",
-				})
+				}),
 			).rejects.toThrow("Could not send email");
 
 			expect(logger.error).toHaveBeenCalledWith(
@@ -192,7 +190,7 @@ describe("Resend Email Provider", () => {
 				expect.objectContaining({
 					status: 401,
 					error: { error: "Invalid API key" },
-				})
+				}),
 			);
 		});
 
@@ -211,7 +209,7 @@ describe("Resend Email Provider", () => {
 					subject: "Test",
 					text: "Test",
 					html: "<p>Test</p>",
-				})
+				}),
 			).rejects.toThrow("Could not send email");
 		});
 
@@ -278,7 +276,7 @@ describe("Resend Email Provider", () => {
 					subject: "Test",
 					text: "Test",
 					html: "<p>Test</p>",
-				})
+				}),
 			).rejects.toThrow();
 
 			// Verify Authorization header contains 'undefined'
@@ -301,7 +299,7 @@ describe("Resend Email Provider", () => {
 					subject: "Test",
 					text: "Test",
 					html: "<p>Test</p>",
-				})
+				}),
 			).rejects.toThrow("Invalid JSON");
 		});
 
@@ -320,7 +318,7 @@ describe("Resend Email Provider", () => {
 					subject: "Test",
 					text: "Test",
 					html: "<p>Test</p>",
-				})
+				}),
 			).rejects.toThrow("Invalid JSON");
 		});
 	});
@@ -344,14 +342,14 @@ describe("Resend Email Provider", () => {
 				"https://api.resend.com/emails",
 				expect.objectContaining({
 					method: "POST",
-				})
+				}),
 			);
 
 			expect(logger.info).toHaveBeenCalledWith(
 				"✅ Resend: Email sent successfully",
 				expect.objectContaining({
 					emailId: "welcome_email_123",
-				})
+				}),
 			);
 		});
 
@@ -374,7 +372,7 @@ describe("Resend Email Provider", () => {
 				expect.objectContaining({
 					to: "customer@example.com",
 					emailId: "receipt_email_123",
-				})
+				}),
 			);
 		});
 	});

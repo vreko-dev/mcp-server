@@ -33,9 +33,7 @@ export default function NumberTicker({
 	useEffect(() => {
 		const unsubscribe = springValue.on("change", (latest) => {
 			if (ref.current) {
-				ref.current.textContent = Intl.NumberFormat("en-US").format(
-					Math.round(latest),
-				);
+				ref.current.textContent = Intl.NumberFormat("en-US").format(Math.round(latest));
 			}
 		});
 

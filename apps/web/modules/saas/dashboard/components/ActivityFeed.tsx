@@ -84,11 +84,7 @@ ActivityFeed.Empty = function ActivityFeedEmpty() {
 };
 
 // Error state component
-ActivityFeed.Error = function ActivityFeedError({
-	error,
-}: {
-	error: AppError;
-}) {
+ActivityFeed.Error = function ActivityFeedError({ error }: { error: AppError }) {
 	const queryClient = useQueryClient();
 	const errorRef = useRef<HTMLDivElement>(null);
 
@@ -118,9 +114,7 @@ ActivityFeed.Error = function ActivityFeedError({
 					role="alert"
 					aria-live="polite"
 				>
-					<div className="text-lg text-red-400">
-						Error loading activity feed
-					</div>
+					<div className="text-lg text-red-400">Error loading activity feed</div>
 					<div className="text-sm text-red-500 mt-2">{error.message}</div>
 					<button
 						type="button"
@@ -174,22 +168,16 @@ export function ActivityFeed({ activities }: ActivityFeedProps) {
 										<Icon className="h-4 w-4" />
 									</div>
 									<div className="flex-1 min-w-0">
-										<div className="font-medium text-white">
-											{activity.message}
-										</div>
-										<div className="text-sm text-neutral-400 mt-1">
-											{activity.timestamp}
-										</div>
+										<div className="font-medium text-white">{activity.message}</div>
+										<div className="text-sm text-neutral-400 mt-1">{activity.timestamp}</div>
 										{activity.metadata && (
 											<div className="text-xs text-neutral-500 mt-1">
-												{activity.type === "snapshot" &&
-													`${activity.metadata.files} files`}
+												{activity.type === "snapshot" && `${activity.metadata.files} files`}
 												{activity.type === "ai_detection" &&
 													`${Math.round(
 														(Number(activity.metadata.confidence) || 0) * 100,
 													)}% confidence`}
-												{activity.type === "recovery" &&
-													`From ${activity.metadata.snapshot}`}
+												{activity.type === "recovery" && `From ${activity.metadata.snapshot}`}
 											</div>
 										)}
 									</div>

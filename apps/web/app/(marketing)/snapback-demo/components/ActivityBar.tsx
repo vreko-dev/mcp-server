@@ -4,9 +4,7 @@ import { useSnapBack } from "../context/SnapBackContext";
 
 interface ActivityBarProps {
 	activeView: "snapshots" | "protected-files" | "getting-started";
-	onViewChange: (
-		view: "snapshots" | "protected-files" | "getting-started",
-	) => void;
+	onViewChange: (view: "snapshots" | "protected-files" | "getting-started") => void;
 }
 
 export function ActivityBar({ activeView, onViewChange }: ActivityBarProps) {
@@ -17,9 +15,7 @@ export function ActivityBar({ activeView, onViewChange }: ActivityBarProps) {
 			<button
 				type="button"
 				onClick={() => onViewChange("snapshots")}
-				className={`p-2 rounded-lg ${
-					activeView === "snapshots" ? "bg-blue-600" : "hover:bg-gray-700"
-				}`}
+				className={`p-2 rounded-lg ${activeView === "snapshots" ? "bg-blue-600" : "hover:bg-gray-700"}`}
 				title="Snapshots"
 			>
 				<SnapshotIcon />
@@ -33,9 +29,7 @@ export function ActivityBar({ activeView, onViewChange }: ActivityBarProps) {
 			<button
 				type="button"
 				onClick={() => onViewChange("protected-files")}
-				className={`p-2 rounded-lg ${
-					activeView === "protected-files" ? "bg-blue-600" : "hover:bg-gray-700"
-				}`}
+				className={`p-2 rounded-lg ${activeView === "protected-files" ? "bg-blue-600" : "hover:bg-gray-700"}`}
 				title="Protected Files"
 			>
 				<ProtectedFilesIcon />
@@ -49,9 +43,7 @@ export function ActivityBar({ activeView, onViewChange }: ActivityBarProps) {
 			<button
 				type="button"
 				onClick={() => onViewChange("getting-started")}
-				className={`p-2 rounded-lg ${
-					activeView === "getting-started" ? "bg-blue-600" : "hover:bg-gray-700"
-				}`}
+				className={`p-2 rounded-lg ${activeView === "getting-started" ? "bg-blue-600" : "hover:bg-gray-700"}`}
 				title="Getting Started"
 			>
 				<HelpIcon />

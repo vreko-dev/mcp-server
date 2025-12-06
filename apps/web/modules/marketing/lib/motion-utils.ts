@@ -32,9 +32,7 @@ export function createTransition(
 	options: {
 		duration?: number;
 		delay?: number;
-		ease?:
-			| [number, number, number, number]
-			| [number, number, number, number][];
+		ease?: [number, number, number, number] | [number, number, number, number][];
 	},
 ): Transition {
 	if (reducedMotion) {

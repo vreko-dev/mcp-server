@@ -9,13 +9,7 @@ export type PaginatioProps = {
 	onChangeCurrentPage: (page: number) => void;
 };
 
-const Pagination = ({
-	currentPage,
-	totalItems,
-	itemsPerPage,
-	className,
-	onChangeCurrentPage,
-}: PaginatioProps) => {
+const Pagination = ({ currentPage, totalItems, itemsPerPage, className, onChangeCurrentPage }: PaginatioProps) => {
 	const numberOfPages = Math.ceil(totalItems / itemsPerPage);
 
 	return (
@@ -31,10 +25,7 @@ const Pagination = ({
 				</Button>
 				<span className="text-gray-500 text-sm">
 					{currentPage * itemsPerPage - itemsPerPage + 1} -{" "}
-					{currentPage * itemsPerPage > totalItems
-						? totalItems
-						: currentPage * itemsPerPage}{" "}
-					of {totalItems}
+					{currentPage * itemsPerPage > totalItems ? totalItems : currentPage * itemsPerPage} of {totalItems}
 				</span>
 				<Button
 					variant="ghost"

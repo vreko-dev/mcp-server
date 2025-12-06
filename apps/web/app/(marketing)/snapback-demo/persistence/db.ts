@@ -1,10 +1,5 @@
 import Dexie, { type EntityTable } from "dexie";
-import type {
-	Notification,
-	Policy,
-	ProtectedFile,
-	Snapshot,
-} from "../domain/types";
+import type { Notification, Policy, ProtectedFile, Snapshot } from "../domain/types";
 
 /**
  * SnapBack database schema using Dexie

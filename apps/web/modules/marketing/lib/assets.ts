@@ -52,26 +52,15 @@ export const ASSETS = {
 } as const;
 
 // Type safety for asset paths
-export type AssetPath =
-	(typeof ASSETS)[keyof typeof ASSETS][keyof (typeof ASSETS)[keyof typeof ASSETS]];
+export type AssetPath = (typeof ASSETS)[keyof typeof ASSETS][keyof (typeof ASSETS)[keyof typeof ASSETS]];
 
 // Helper functions for dynamic asset loading
-export const getAssetUrl = (
-	category: keyof typeof ASSETS,
-	asset: string,
-): string => {
+export const getAssetUrl = (category: keyof typeof ASSETS, asset: string): string => {
 	const categoryAssets = ASSETS[category] as Record<string, any>;
 	return categoryAssets[asset] || "";
 };
 
 // Asset preloading utilities
-export const CRITICAL_ASSETS = [
-	ASSETS.brand.logoWordmark,
-	ASSETS.favicon.ico,
-	ASSETS.ui.grid,
-] as const;
+export const CRITICAL_ASSETS = [ASSETS.brand.logoWordmark, ASSETS.favicon.ico, ASSETS.ui.grid] as const;
 
-export const SOCIAL_ASSETS = [
-	ASSETS.social.ogDefault,
-	ASSETS.social.ogTwitter,
-] as const;
+export const SOCIAL_ASSETS = [ASSETS.social.ogDefault, ASSETS.social.ogTwitter] as const;

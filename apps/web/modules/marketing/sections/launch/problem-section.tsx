@@ -18,12 +18,8 @@ export function ProblemSection() {
 						<h2 className="text-3xl lg:text-5xl font-bold text-white leading-tight">
 							{problem.content.headline}
 						</h2>
-						<p className="text-lg text-[#A0A0A0] leading-relaxed">
-							{problem.content.body}
-						</p>
-						<p className="text-lg font-medium text-white">
-							{problem.content.closing}
-						</p>
+						<p className="text-lg text-[#A0A0A0] leading-relaxed">{problem.content.body}</p>
+						<p className="text-lg font-medium text-white">{problem.content.closing}</p>
 					</div>
 
 					{/* Right: Timeline Visual */}

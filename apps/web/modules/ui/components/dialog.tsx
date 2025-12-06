@@ -9,14 +9,9 @@ const Dialog = DialogPrimitive.Root;
 
 const DialogTrigger = DialogPrimitive.Trigger;
 
-const DialogPortal = ({ ...props }: DialogPrimitive.DialogPortalProps) => (
-	<DialogPrimitive.Portal {...props} />
-);
+const DialogPortal = ({ ...props }: DialogPrimitive.DialogPortalProps) => <DialogPrimitive.Portal {...props} />;
 
-const DialogOverlay = ({
-	className,
-	...props
-}: React.ComponentProps<typeof DialogPrimitive.Overlay>) => (
+const DialogOverlay = ({ className, ...props }: React.ComponentProps<typeof DialogPrimitive.Overlay>) => (
 	<DialogPrimitive.Overlay
 		className={cn(
 			"data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-background/80 backdrop-blur-xs data-[state=closed]:animate-out data-[state=open]:animate-in",
@@ -26,11 +21,7 @@ const DialogOverlay = ({
 	/>
 );
 
-const DialogContent = ({
-	className,
-	children,
-	...props
-}: React.ComponentProps<typeof DialogPrimitive.Content>) => (
+const DialogContent = ({ className, children, ...props }: React.ComponentProps<typeof DialogPrimitive.Content>) => (
 	<DialogPortal>
 		<DialogOverlay />
 		<DialogPrimitive.Content
@@ -49,61 +40,20 @@ const DialogContent = ({
 	</DialogPortal>
 );
 
-const DialogHeader = ({
-	className,
-	...props
-}: React.HTMLAttributes<HTMLDivElement>) => (
-	<div
-		className={cn(
-			"flex flex-col space-y-1.5 text-center sm:text-left",
-			className,
-		)}
-		{...props}
-	/>
+const DialogHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
+	<div className={cn("flex flex-col space-y-1.5 text-center sm:text-left", className)} {...props} />
 );
 
-const DialogFooter = ({
-	className,
-	...props
-}: React.HTMLAttributes<HTMLDivElement>) => (
-	<div
-		className={cn(
-			"flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2",
-			className,
-		)}
-		{...props}
-	/>
+const DialogFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
+	<div className={cn("flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2", className)} {...props} />
 );
 
-const DialogTitle = ({
-	className,
-	...props
-}: React.ComponentProps<typeof DialogPrimitive.Title>) => (
-	<DialogPrimitive.Title
-		className={cn(
-			"font-semibold text-lg leading-none tracking-tight",
-			className,
-		)}
-		{...props}
-	/>
+const DialogTitle = ({ className, ...props }: React.ComponentProps<typeof DialogPrimitive.Title>) => (
+	<DialogPrimitive.Title className={cn("font-semibold text-lg leading-none tracking-tight", className)} {...props} />
 );
 
-const DialogDescription = ({
-	className,
-	...props
-}: React.ComponentProps<typeof DialogPrimitive.Description>) => (
-	<DialogPrimitive.Description
-		className={cn("text-muted-foreground text-sm", className)}
-		{...props}
-	/>
+const DialogDescription = ({ className, ...props }: React.ComponentProps<typeof DialogPrimitive.Description>) => (
+	<DialogPrimitive.Description className={cn("text-muted-foreground text-sm", className)} {...props} />
 );
 
-export {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger,
-};
+export { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger };

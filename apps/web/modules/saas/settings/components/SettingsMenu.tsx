@@ -28,9 +28,7 @@ export function SettingsMenu({
 				<div key={i}>
 					<div className="flex items-center justify-start gap-2">
 						{item.avatar}
-						<h2 className="font-semibold text-foreground/60 text-xs">
-							{item.title}
-						</h2>
+						<h2 className="font-semibold text-foreground/60 text-xs">{item.title}</h2>
 					</div>
 
 					<ul className="mt-2 flex list-none flex-row gap-6 lg:mt-4 lg:flex-col lg:gap-2">

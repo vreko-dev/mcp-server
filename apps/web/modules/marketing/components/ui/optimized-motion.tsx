@@ -1,13 +1,7 @@
 "use client";
 
 import { cn } from "@ui/lib";
-import {
-	m,
-	useAnimationControls,
-	useMotionValue,
-	useSpring,
-	useTransform,
-} from "motion/react";
+import { m, useAnimationControls, useMotionValue, useSpring, useTransform } from "motion/react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
 // Performance-optimized motion tokens aligned with SnapBack brand promises
@@ -80,8 +74,7 @@ export const OptimizedMotion = ({
 	...props
 }: OptimizedMotionProps & React.ComponentProps<typeof m.div>) => {
 	const prefersReducedMotion = useCustomReducedMotion();
-	const motionConfig =
-		MOTION_TOKENS[variant as "instant" | "quick" | "snapBack" | "protective"];
+	const motionConfig = MOTION_TOKENS[variant as "instant" | "quick" | "snapBack" | "protective"];
 
 	// Base animations with GPU optimization
 	const baseAnimations = {
@@ -259,13 +252,10 @@ export const ProtectiveContainer = ({
 	const glowOpacity = useMotionValue(0);
 	const glowScale = useSpring(1, SPRING_CONFIGS.smooth);
 
-	const glowStyle = useTransform(
-		[glowOpacity, glowScale] as any,
-		([opacity, scale]: any) => ({
-			opacity,
-			transform: `scale(${scale})`,
-		}),
-	) as any;
+	const glowStyle = useTransform([glowOpacity, glowScale] as any, ([opacity, scale]: any) => ({
+		opacity,
+		transform: `scale(${scale})`,
+	})) as any;
 
 	return (
 		<m.div
@@ -278,9 +268,7 @@ export const ProtectiveContainer = ({
 			)}
 			initial={{ opacity: 0, scale: 0.95 }}
 			animate={{ opacity: 1, scale: 1 }}
-			transition={
-				prefersReducedMotion ? { duration: 0.01 } : MOTION_TOKENS.protective
-			}
+			transition={prefersReducedMotion ? { duration: 0.01 } : MOTION_TOKENS.protective}
 			whileHover={
 				glowOnHover && !prefersReducedMotion
 					? {
@@ -320,11 +308,7 @@ export const ProtectiveContainer = ({
 					className="absolute top-2 right-2 w-3 h-3 rounded-full bg-primary/60"
 					initial={{ scale: 0 }}
 					animate={{ scale: 1 }}
-					transition={
-						prefersReducedMotion
-							? { duration: 0.01 }
-							: { ...MOTION_TOKENS.snapBack, delay: 0.2 }
-					}
+					transition={prefersReducedMotion ? { duration: 0.01 } : { ...MOTION_TOKENS.snapBack, delay: 0.2 }}
 					aria-hidden="true"
 				/>
 			)}
@@ -342,16 +326,9 @@ interface InstantTextProps {
 	typing?: boolean;
 }
 
-export const InstantText = ({
-	children,
-	className,
-	highlight = false,
-	typing = false,
-}: InstantTextProps) => {
+export const InstantText = ({ children, className, highlight = false, typing = false }: InstantTextProps) => {
 	const prefersReducedMotion = useCustomReducedMotion();
-	const [displayText, setDisplayText] = useState(
-		typing ? "" : String(children),
-	);
+	const [displayText, setDisplayText] = useState(typing ? "" : String(children));
 	const [isTyping, setIsTyping] = useState(typing);
 
 	useEffect(() => {
@@ -380,16 +357,10 @@ export const InstantText = ({
 
 	return (
 		<m.span
-			className={cn(
-				"inline-block will-change-transform",
-				highlight && "text-primary font-semibold",
-				className,
-			)}
+			className={cn("inline-block will-change-transform", highlight && "text-primary font-semibold", className)}
 			initial={{ opacity: 0, y: 2 }}
 			animate={{ opacity: 1, y: 0 }}
-			transition={
-				prefersReducedMotion ? { duration: 0.01 } : MOTION_TOKENS.instant
-			}
+			transition={prefersReducedMotion ? { duration: 0.01 } : MOTION_TOKENS.instant}
 			style={{
 				transform: "translateZ(0)",
 			}}
@@ -455,9 +426,7 @@ export const StaggerContainer = ({
 			opacity: 1,
 			x: 0,
 			y: 0,
-			transition: prefersReducedMotion
-				? { duration: 0.01 }
-				: MOTION_TOKENS.quick,
+			transition: prefersReducedMotion ? { duration: 0.01 } : MOTION_TOKENS.quick,
 		},
 	};
 
@@ -472,11 +441,7 @@ export const StaggerContainer = ({
 			}}
 		>
 			{React.Children.map(children, (child, index) => (
-				<m.div
-					key={index}
-					variants={item}
-					style={{ transform: "translateZ(0)" }}
-				>
+				<m.div key={index} variants={item} style={{ transform: "translateZ(0)" }}>
 					{child}
 				</m.div>
 			))}
@@ -498,9 +463,7 @@ export const useMotionPerformance = () => {
 			const now = performance.now();
 
 			if (now - lastTime.current >= 1000) {
-				setFps(
-					Math.round((frameCount.current * 1000) / (now - lastTime.current)),
-				);
+				setFps(Math.round((frameCount.current * 1000) / (now - lastTime.current)));
 				frameCount.current = 0;
 				lastTime.current = now;
 			}
@@ -516,10 +479,4 @@ export const useMotionPerformance = () => {
 };
 
 // Export all motion utilities
-export {
-	m as motion,
-	useAnimationControls,
-	useMotionValue,
-	useSpring,
-	useTransform,
-};
+export { m as motion, useAnimationControls, useMotionValue, useSpring, useTransform };

@@ -13,9 +13,7 @@ import { useSession } from "@/modules/saas/auth/hooks/use-session";
 /**
  * Fetch session metrics with Resource pattern
  */
-export function useSessionMetrics(): ReturnType<
-	typeof useResourceQuery<SessionMetrics>
-> {
+export function useSessionMetrics(): ReturnType<typeof useResourceQuery<SessionMetrics>> {
 	const { user } = useSession();
 
 	return useResourceQuery<SessionMetrics>(

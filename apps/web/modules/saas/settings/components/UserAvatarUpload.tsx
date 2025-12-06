@@ -9,13 +9,7 @@ import { useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { CropImageDialog } from "./CropImageDialog";
 
-export function UserAvatarUpload({
-	onSuccess,
-	onError,
-}: {
-	onSuccess: () => void;
-	onError: () => void;
-}) {
+export function UserAvatarUpload({ onSuccess, onError }: { onSuccess: () => void; onError: () => void }) {
 	const { user, reloadSession } = useSession();
 	const [uploading, setUploading] = useState(false);
 	const [cropDialogOpen, setCropDialogOpen] = useState(false);
@@ -53,8 +47,7 @@ export function UserAvatarUpload({
 
 		setUploading(true);
 		try {
-			const { signedUploadUrl, path: _path } =
-				await getSignedUploadUrlMutation.mutateAsync({});
+			const { signedUploadUrl, path: _path } = await getSignedUploadUrlMutation.mutateAsync({});
 
 			const response = await fetch(signedUploadUrl, {
 				method: "PUT",
@@ -90,11 +83,7 @@ export function UserAvatarUpload({
 		<>
 			<div className="relative size-24 rounded-full" {...getRootProps()}>
 				<input {...(getInputProps() as any)} />
-				<UserAvatar
-					className="size-24 cursor-pointer text-xl"
-					avatarUrl={user.image}
-					name={user.name ?? ""}
-				/>
+				<UserAvatar className="size-24 cursor-pointer text-xl" avatarUrl={user.image} name={user.name ?? ""} />
 
 				{uploading && (
 					<div className="absolute inset-0 z-20 flex items-center justify-center bg-card/90">
@@ -103,12 +92,7 @@ export function UserAvatarUpload({
 				)}
 			</div>
 
-			<CropImageDialog
-				image={image}
-				open={cropDialogOpen}
-				onOpenChange={setCropDialogOpen}
-				onCrop={onCrop}
-			/>
+			<CropImageDialog image={image} open={cropDialogOpen} onOpenChange={setCropDialogOpen} onCrop={onCrop} />
 		</>
 	);
 }

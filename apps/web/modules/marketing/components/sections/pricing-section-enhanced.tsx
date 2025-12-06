@@ -10,9 +10,7 @@ import { useState } from "react";
 
 export function PricingSectionEnhanced() {
 	const content = useContent();
-	const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">(
-		"monthly",
-	);
+	const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly");
 
 	const { pricing } = content;
 
@@ -25,10 +23,7 @@ export function PricingSectionEnhanced() {
 	}));
 
 	return (
-		<section
-			className="py-24 bg-gradient-to-b from-black to-slate-900 relative overflow-hidden"
-			id="pricing"
-		>
+		<section className="py-24 bg-gradient-to-b from-black to-slate-900 relative overflow-hidden" id="pricing">
 			{/* Background Effects */}
 			<div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#FF6B35]/10 via-transparent to-transparent" />
 			<div className="absolute inset-0 bg-grid-white/[0.02]" />
@@ -37,14 +32,10 @@ export function PricingSectionEnhanced() {
 				{/* Header */}
 				<div className="text-center mb-12">
 					<SnapEntrance direction="up" intensity="normal">
-						<h2 className="text-4xl md:text-6xl font-bold text-white mb-6">
-							{pricing.header.title}
-						</h2>
+						<h2 className="text-4xl md:text-6xl font-bold text-white mb-6">{pricing.header.title}</h2>
 					</SnapEntrance>
 					<SnapEntrance direction="up" delay={0.1}>
-						<p className="text-xl text-gray-300 max-w-3xl mx-auto">
-							{pricing.header.description}
-						</p>
+						<p className="text-xl text-gray-300 max-w-3xl mx-auto">{pricing.header.description}</p>
 					</SnapEntrance>
 				</div>
 
@@ -58,12 +49,7 @@ export function PricingSectionEnhanced() {
 				{/* Pricing Cards Grid */}
 				<div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
 					{pricingCards.map((tier, index) => (
-						<PricingCard
-							key={tier.id}
-							tier={tier as any}
-							billingCycle={billingCycle}
-							index={index}
-						/>
+						<PricingCard key={tier.id} tier={tier as any} billingCycle={billingCycle} index={index} />
 					))}
 				</div>
 
@@ -93,30 +79,26 @@ export function PricingSectionEnhanced() {
 							))}
 						</div>
 
-						<p className="text-gray-300 text-lg mb-6">
-							{pricing.trust_signals.incentive}
-						</p>
+						<p className="text-gray-300 text-lg mb-6">{pricing.trust_signals.incentive}</p>
 
 						{/* Guarantees */}
 						<div className="flex flex-wrap justify-center gap-6 mt-8">
-							{(pricing.trust_signals as any).guarantees?.map(
-								(guarantee: any, index: number) => (
-									<m.div
-										key={guarantee.text}
-										initial={{ opacity: 0, scale: 0.9 }}
-										whileInView={{ opacity: 1, scale: 1 }}
-										viewport={{ once: true }}
-										transition={{
-											delay: index * 0.1 + 0.5,
-											duration: 0.3,
-										}}
-										className="flex items-center gap-2 text-gray-400"
-									>
-										<span className="text-2xl">{guarantee.icon}</span>
-										<span className="text-sm">{guarantee.text}</span>
-									</m.div>
-								),
-							)}
+							{(pricing.trust_signals as any).guarantees?.map((guarantee: any, index: number) => (
+								<m.div
+									key={guarantee.text}
+									initial={{ opacity: 0, scale: 0.9 }}
+									whileInView={{ opacity: 1, scale: 1 }}
+									viewport={{ once: true }}
+									transition={{
+										delay: index * 0.1 + 0.5,
+										duration: 0.3,
+									}}
+									className="flex items-center gap-2 text-gray-400"
+								>
+									<span className="text-2xl">{guarantee.icon}</span>
+									<span className="text-sm">{guarantee.text}</span>
+								</m.div>
+							))}
 						</div>
 					</div>
 				</SnapEntrance>
@@ -124,9 +106,7 @@ export function PricingSectionEnhanced() {
 				{/* FAQ Section */}
 				<SnapEntrance direction="up" delay={0.4}>
 					<div className="max-w-3xl mx-auto mt-20">
-						<h3 className="text-3xl font-bold text-white text-center mb-12">
-							Frequently Asked Questions
-						</h3>
+						<h3 className="text-3xl font-bold text-white text-center mb-12">Frequently Asked Questions</h3>
 
 						<div className="space-y-6">
 							{(pricing as any).faq?.map((item: any, index: number) => (
@@ -145,9 +125,7 @@ export function PricingSectionEnhanced() {
 										"hover:border-gray-600 transition-colors",
 									)}
 								>
-									<h4 className="text-lg font-semibold text-white mb-3">
-										{item.question}
-									</h4>
+									<h4 className="text-lg font-semibold text-white mb-3">{item.question}</h4>
 									<p className="text-gray-400 leading-relaxed">{item.answer}</p>
 								</m.div>
 							))}
@@ -158,9 +136,7 @@ export function PricingSectionEnhanced() {
 				{/* CTA Footer */}
 				<SnapEntrance direction="up" delay={0.5}>
 					<div className="text-center mt-16 py-12 border-t border-gray-800">
-						<h3 className="text-2xl font-bold text-white mb-4">
-							Still have questions?
-						</h3>
+						<h3 className="text-2xl font-bold text-white mb-4">Still have questions?</h3>
 						<p className="text-gray-400 mb-6">
 							Our team is here to help you choose the right plan for your needs.
 						</p>

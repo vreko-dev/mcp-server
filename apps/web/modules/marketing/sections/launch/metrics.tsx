@@ -48,41 +48,26 @@ export function Metrics() {
 	}, []);
 
 	return (
-		<section
-			className="py-24 bg-background relative overflow-hidden"
-			aria-labelledby="metrics-heading"
-		>
+		<section className="py-24 bg-background relative overflow-hidden" aria-labelledby="metrics-heading">
 			<div className="container mx-auto px-4">
 				<div className="text-center mb-16 space-y-4">
 					<div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-500 text-caption font-medium uppercase tracking-wider">
 						By the Numbers
 					</div>
-					<h2
-						id="metrics-heading"
-						className="text-heading-1 font-bold text-foreground"
-					>
+					<h2 id="metrics-heading" className="text-heading-1 font-bold text-foreground">
 						Real Numbers, No Fluff
 					</h2>
 				</div>
 
 				<m.div
-					initial={
-						prefersReducedMotion
-							? { opacity: 1, scale: 1 }
-							: { opacity: 0, scale: 0.95 }
-					}
+					initial={prefersReducedMotion ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.95 }}
 					whileInView={{ opacity: 1, scale: 1 }}
-					transition={
-						prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }
-					}
+					transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
 					viewport={{ once: true }}
 					className="max-w-4xl mx-auto"
 				>
 					<div className="border border-border rounded-xl bg-card p-6 md:p-12">
-						<div
-							className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 md:gap-12"
-							role="list"
-						>
+						<div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 md:gap-12" role="list">
 							{metrics.map((metric, index) => (
 								<div
 									key={index}
@@ -99,16 +84,12 @@ export function Metrics() {
 										) : metric.value === "100%" ? (
 											<>
 												100
-												<span className="text-2xl sm:text-3xl md:text-4xl">
-													%
-												</span>
+												<span className="text-2xl sm:text-3xl md:text-4xl">%</span>
 											</>
 										) : (
 											<>
 												&lt;200
-												<span className="text-2xl sm:text-3xl md:text-4xl">
-													ms
-												</span>
+												<span className="text-2xl sm:text-3xl md:text-4xl">ms</span>
 											</>
 										)}
 									</div>
@@ -127,8 +108,7 @@ export function Metrics() {
 				</m.div>
 
 				<p className="text-center text-body-sm text-muted-foreground/60 mt-8">
-					The waitlist number is a live count from our database. Real signups,
-					updated daily.
+					The waitlist number is a live count from our database. Real signups, updated daily.
 				</p>
 			</div>
 		</section>

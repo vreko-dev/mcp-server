@@ -9,9 +9,7 @@ export function FooterComplete() {
 	useEffect(() => {
 		if (typeof window !== "undefined") {
 			// Check if we're in local development
-			const isLocalhost =
-				window.location.hostname === "localhost" ||
-				window.location.hostname === "127.0.0.1";
+			const isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
 
 			if (isLocalhost) {
 				// For local development, use docs.localhost subdomain
@@ -19,8 +17,7 @@ export function FooterComplete() {
 				setDocsUrl(`http://docs.localhost${port}`);
 			} else {
 				// For production, use the docs subdomain
-				const rootDomain =
-					process.env.NEXT_PUBLIC_ROOT_DOMAIN || "snapback.dev";
+				const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "snapback.dev";
 				setDocsUrl(`https://new-docs.${rootDomain}`);
 			}
 		}
@@ -89,13 +86,7 @@ export function FooterComplete() {
 						>
 							<div className="flex items-center space-x-4 mb-6">
 								<div className="w-20 h-20 bg-primary rounded-2xl flex items-center justify-center">
-									<svg
-										width="48"
-										height="48"
-										viewBox="0 0 24 24"
-										fill="none"
-										className="text-black"
-									>
+									<svg width="48" height="48" viewBox="0 0 24 24" fill="none" className="text-black">
 										<path
 											d="M12 2L15.09 8.26L22 9L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9L8.91 8.26L12 2Z"
 											fill="currentColor"
@@ -105,8 +96,7 @@ export function FooterComplete() {
 								<span className="text-3xl font-bold text-white">SnapBack</span>
 							</div>
 							<p className="text-muted-foreground mb-6 max-w-sm">
-								Visual protection for every file. AI-aware checkpoints. Instant
-								recovery.
+								Visual protection for every file. AI-aware checkpoints. Instant recovery.
 							</p>
 
 							{/* Social links */}
@@ -132,32 +122,30 @@ export function FooterComplete() {
 					</div>
 
 					{/* Footer links */}
-					{Object.entries(footerLinks).map(
-						([category, links], categoryIndex) => (
-							<m.div
-								key={category}
-								initial={{ opacity: 0, y: 20 }}
-								animate={{ opacity: 1, y: 0 }}
-								transition={{
-									delay: 0.1 * (categoryIndex + 1),
-								}}
-							>
-								<h3 className="text-white font-semibold mb-4">{category}</h3>
-								<ul className="space-y-2">
-									{links.map((link) => (
-										<li key={link.name}>
-											<a
-												href={link.href}
-												className="text-muted-foreground hover:text-primary transition-colors text-sm"
-											>
-												{link.name}
-											</a>
-										</li>
-									))}
-								</ul>
-							</m.div>
-						),
-					)}
+					{Object.entries(footerLinks).map(([category, links], categoryIndex) => (
+						<m.div
+							key={category}
+							initial={{ opacity: 0, y: 20 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{
+								delay: 0.1 * (categoryIndex + 1),
+							}}
+						>
+							<h3 className="text-white font-semibold mb-4">{category}</h3>
+							<ul className="space-y-2">
+								{links.map((link) => (
+									<li key={link.name}>
+										<a
+											href={link.href}
+											className="text-muted-foreground hover:text-primary transition-colors text-sm"
+										>
+											{link.name}
+										</a>
+									</li>
+								))}
+							</ul>
+						</m.div>
+					))}
 				</div>
 
 				{/* Bottom section */}
@@ -167,20 +155,14 @@ export function FooterComplete() {
 					animate={{ opacity: 1 }}
 					transition={{ delay: 0.5 }}
 				>
-					<p className="text-muted-foreground text-sm">
-						© 2025 SnapBack. All rights reserved.
-					</p>
+					<p className="text-muted-foreground text-sm">© 2025 SnapBack. All rights reserved.</p>
 
 					<div className="flex items-center space-x-6 mt-4 md:mt-0">
 						<div className="flex items-center space-x-2">
 							<div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-							<span className="text-xs text-muted-foreground">
-								All systems operational
-							</span>
+							<span className="text-xs text-muted-foreground">All systems operational</span>
 						</div>
-						<span className="text-xs text-muted-foreground">
-							Made with ❤️ for developers
-						</span>
+						<span className="text-xs text-muted-foreground">Made with ❤️ for developers</span>
 					</div>
 				</m.div>
 			</div>

@@ -10,11 +10,7 @@ interface AnimatedListProps {
 	children: React.ReactNode;
 }
 
-export const AnimatedList = ({
-	className,
-	delay = 1000,
-	children,
-}: AnimatedListProps) => {
+export const AnimatedList = ({ className, delay = 1000, children }: AnimatedListProps) => {
 	return (
 		<div className={cn("space-y-4", className)}>
 			{React.Children.map(children, (child, index) => (
@@ -68,12 +64,7 @@ export const NotificationItem = ({
 	};
 
 	return (
-		<div
-			className={cn(
-				"flex items-start gap-3 p-3 rounded-lg bg-card border",
-				className,
-			)}
-		>
+		<div className={cn("flex items-start gap-3 p-3 rounded-lg bg-card border", className)}>
 			<div className="text-lg">{icon}</div>
 			<div className="flex-1 min-w-0">
 				<div className="flex items-center justify-between">
@@ -82,9 +73,7 @@ export const NotificationItem = ({
 				</div>
 				<p className="text-sm text-muted-foreground mt-1">{description}</p>
 				<div className="flex items-center gap-2 mt-2">
-					<span className={cn("text-xs font-medium", getRiskColor())}>
-						{riskLevel} RISK
-					</span>
+					<span className={cn("text-xs font-medium", getRiskColor())}>{riskLevel} RISK</span>
 				</div>
 			</div>
 		</div>

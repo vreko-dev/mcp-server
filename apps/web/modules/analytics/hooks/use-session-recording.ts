@@ -72,9 +72,7 @@ export interface UseSessionRecordingReturn {
  * @param props - Configuration options
  * @returns Session recording controls and status
  */
-export function useSessionRecording(
-	props: UseSessionRecordingProps = {},
-): UseSessionRecordingReturn {
+export function useSessionRecording(props: UseSessionRecordingProps = {}): UseSessionRecordingReturn {
 	const { autoStart = false, recordErrors = true } = props;
 	// const context = props.context || {};  // Disabled until SessionReplayManager is available
 

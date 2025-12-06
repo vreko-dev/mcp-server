@@ -122,10 +122,7 @@ export const registrationHandlers = [
 
 		// Validate required fields
 		if (!body || typeof body !== "object") {
-			return HttpResponse.json(
-				{ error: "Invalid request body" },
-				{ status: 400 },
-			);
+			return HttpResponse.json({ error: "Invalid request body" }, { status: 400 });
 		}
 
 		const { email, password, name } = body as {
@@ -135,10 +132,7 @@ export const registrationHandlers = [
 		};
 
 		if (!email || !password) {
-			return HttpResponse.json(
-				{ error: "Email and password are required" },
-				{ status: 400 },
-			);
+			return HttpResponse.json({ error: "Email and password are required" }, { status: 400 });
 		}
 
 		// OWASP 2025: Generic error for duplicate email (no user enumeration)
@@ -152,10 +146,7 @@ export const registrationHandlers = [
 		// Password validation (matches PasswordSchema)
 		const passwordError = validatePassword(password);
 		if (passwordError) {
-			return HttpResponse.json(
-				{ error: passwordError },
-				{ status: 400 },
-			);
+			return HttpResponse.json({ error: passwordError }, { status: 400 });
 		}
 
 		// Success: Return user without password
@@ -219,18 +210,12 @@ export const loginHandlers = [
 		const { email, password } = body as { email?: string; password?: string };
 
 		if (!email || !password) {
-			return HttpResponse.json(
-				{ error: "Email and password are required" },
-				{ status: 400 },
-			);
+			return HttpResponse.json({ error: "Email and password are required" }, { status: 400 });
 		}
 
 		// OWASP 2025: Generic error message (no user enumeration)
 		if (email !== TEST_CREDENTIALS.email || password !== TEST_CREDENTIALS.password) {
-			return HttpResponse.json(
-				{ error: "Invalid email or password" },
-				{ status: 401 },
-			);
+			return HttpResponse.json({ error: "Invalid email or password" }, { status: 401 });
 		}
 
 		// Success
@@ -282,10 +267,7 @@ export const sessionHandlers = [
 
 		// Require existing valid session
 		if (!cookieHeader?.includes(`${SESSION_COOKIE_NAME}=${mockSession.token}`)) {
-			return HttpResponse.json(
-				{ error: "No active session" },
-				{ status: 401 },
-			);
+			return HttpResponse.json({ error: "No active session" }, { status: 401 });
 		}
 
 		const newSession = {
@@ -333,10 +315,7 @@ export const passwordResetHandlers = [
 		const { token, password } = body as { token?: string; password?: string };
 
 		if (!token || !password) {
-			return HttpResponse.json(
-				{ error: "Token and password are required" },
-				{ status: 400 },
-			);
+			return HttpResponse.json({ error: "Token and password are required" }, { status: 400 });
 		}
 
 		// Simulate expired token
@@ -351,10 +330,7 @@ export const passwordResetHandlers = [
 
 		// Weak password check
 		if (password.length < 8) {
-			return HttpResponse.json(
-				{ error: "Password must be at least 8 characters" },
-				{ status: 400 },
-			);
+			return HttpResponse.json({ error: "Password must be at least 8 characters" }, { status: 400 });
 		}
 
 		// Success
@@ -373,10 +349,7 @@ export const authErrorHandlers = {
 	),
 
 	// Server error during login
-	serverError: http.post(
-		"*/api/auth/sign-in/email",
-		() => new HttpResponse(null, { status: 500 }),
-	),
+	serverError: http.post("*/api/auth/sign-in/email", () => new HttpResponse(null, { status: 500 })),
 
 	// Network timeout (simulated)
 	networkTimeout: http.post("*/api/auth/sign-in/email", async () => {
@@ -399,18 +372,12 @@ export const authErrorHandlers = {
 
 	// Account locked
 	accountLocked: http.post("*/api/auth/sign-in/email", () =>
-		HttpResponse.json(
-			{ error: "Account locked due to too many failed attempts" },
-			{ status: 423 },
-		),
+		HttpResponse.json({ error: "Account locked due to too many failed attempts" }, { status: 423 }),
 	),
 
 	// Email not verified
 	emailNotVerified: http.post("*/api/auth/sign-in/email", () =>
-		HttpResponse.json(
-			{ error: "Please verify your email before logging in" },
-			{ status: 403 },
-		),
+		HttpResponse.json({ error: "Please verify your email before logging in" }, { status: 403 }),
 	),
 
 	// Session expired
@@ -422,9 +389,4 @@ export const authErrorHandlers = {
 /**
  * All auth handlers combined (happy path)
  */
-export const authHandlers = [
-	...registrationHandlers,
-	...loginHandlers,
-	...sessionHandlers,
-	...passwordResetHandlers,
-];
+export const authHandlers = [...registrationHandlers, ...loginHandlers, ...sessionHandlers, ...passwordResetHandlers];

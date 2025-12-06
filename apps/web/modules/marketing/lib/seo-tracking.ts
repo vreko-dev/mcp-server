@@ -1,13 +1,7 @@
 // SEO Tracking System - SnapBack Marketing
 // Comprehensive SEO metrics tracking with Core Web Vitals integration
 
-import type {
-	CLSMetric,
-	FCPMetric,
-	INPMetric,
-	LCPMetric,
-	TTFBMetric,
-} from "web-vitals";
+import type { CLSMetric, FCPMetric, INPMetric, LCPMetric, TTFBMetric } from "web-vitals";
 
 // Network Information API types (not in standard DOM types)
 interface NetworkInformation {
@@ -135,9 +129,7 @@ function setupScrollTracking() {
 		const winHeight = window.innerHeight;
 		const docHeight = document.documentElement.scrollHeight;
 		const scrollTop = window.scrollY;
-		const scrollPercent = Math.round(
-			(scrollTop / (docHeight - winHeight)) * 100,
-		);
+		const scrollPercent = Math.round((scrollTop / (docHeight - winHeight)) * 100);
 
 		// Update max scroll depth
 		maxScrollDepth = Math.max(maxScrollDepth, scrollPercent);
@@ -201,11 +193,7 @@ function setupFormTracking() {
 	// Track form starts (first interaction)
 	document.addEventListener("focusin", (event) => {
 		const target = event.target as HTMLElement;
-		if (
-			target.tagName === "INPUT" ||
-			target.tagName === "TEXTAREA" ||
-			target.tagName === "SELECT"
-		) {
+		if (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.tagName === "SELECT") {
 			const form = target.closest("form");
 			if (form && !tracked[`form_start_${form.id || "unnamed"}`]) {
 				trackSEOEvent("form_start", {
@@ -287,8 +275,7 @@ function sendSEOMetric(metric: SEOMetric) {
 		},
 		connection: (navigator as NavigatorWithConnection).connection
 			? {
-					effectiveType: (navigator as NavigatorWithConnection).connection
-						?.effectiveType,
+					effectiveType: (navigator as NavigatorWithConnection).connection?.effectiveType,
 					downlink: (navigator as NavigatorWithConnection).connection?.downlink,
 				}
 			: null,

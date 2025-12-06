@@ -12,14 +12,9 @@ function isValidEmail(email: string): boolean {
 	return emailRegex.test(email);
 }
 
-export function NewsletterForm({
-	variant = "default",
-	onSuccess,
-}: NewsletterFormProps) {
+export function NewsletterForm({ variant = "default", onSuccess }: NewsletterFormProps) {
 	const [email, setEmail] = useState("");
-	const [formState, setFormState] = useState<
-		"idle" | "loading" | "success" | "error"
-	>("idle");
+	const [formState, setFormState] = useState<"idle" | "loading" | "success" | "error">("idle");
 	const [errorMessage, setErrorMessage] = useState("");
 
 	const handleSubmit = async (e: React.FormEvent) => {
@@ -83,10 +78,10 @@ export function NewsletterForm({
               placeholder-[#71717A]
               transition-all duration-200
               ${
-								errorMessage
-									? "border-[#EF4444] focus:ring-1 focus:ring-[#EF4444]"
-									: "border-[#262626] focus:ring-1 focus:ring-[#10B981] focus:border-[#10B981]"
-							}
+					errorMessage
+						? "border-[#EF4444] focus:ring-1 focus:ring-[#EF4444]"
+						: "border-[#262626] focus:ring-1 focus:ring-[#10B981] focus:border-[#10B981]"
+				}
               disabled:opacity-50 disabled:cursor-not-allowed
             `}
 					/>
@@ -97,12 +92,12 @@ export function NewsletterForm({
               px-4 py-2 rounded-lg font-medium text-sm
               transition-all duration-200
               ${
-								formState === "success"
-									? "bg-[#10B981] text-black"
-									: formState === "error"
-										? "bg-[#EF4444] text-white"
-										: "bg-[#10B981] text-black hover:bg-[#34D399]"
-							}
+					formState === "success"
+						? "bg-[#10B981] text-black"
+						: formState === "error"
+							? "bg-[#EF4444] text-white"
+							: "bg-[#10B981] text-black hover:bg-[#34D399]"
+				}
               disabled:opacity-50 disabled:cursor-not-allowed
             `}
 					>
@@ -147,10 +142,10 @@ export function NewsletterForm({
               placeholder-[#71717A]
               transition-all duration-200
               ${
-								errorMessage
-									? "border-[#EF4444] focus:ring-1 focus:ring-[#EF4444]"
-									: "border-[#262626] focus:ring-1 focus:ring-[#10B981] focus:border-[#10B981]"
-							}
+					errorMessage
+						? "border-[#EF4444] focus:ring-1 focus:ring-[#EF4444]"
+						: "border-[#262626] focus:ring-1 focus:ring-[#10B981] focus:border-[#10B981]"
+				}
               disabled:opacity-50 disabled:cursor-not-allowed
             `}
 					/>
@@ -168,12 +163,12 @@ export function NewsletterForm({
             w-full px-4 py-3 rounded-lg font-medium
             transition-all duration-200
             ${
-							formState === "success"
-								? "bg-[#10B981] text-black"
-								: formState === "error"
-									? "bg-[#EF4444] text-white"
-									: "bg-[#10B981] text-black hover:bg-[#34D399]"
-						}
+				formState === "success"
+					? "bg-[#10B981] text-black"
+					: formState === "error"
+						? "bg-[#EF4444] text-white"
+						: "bg-[#10B981] text-black hover:bg-[#34D399]"
+			}
             disabled:opacity-50 disabled:cursor-not-allowed
           `}
 				>
@@ -184,15 +179,11 @@ export function NewsletterForm({
 				</button>
 
 				{formState === "success" && (
-					<p className="text-sm text-[#10B981] text-center">
-						Check your inbox to confirm your subscription.
-					</p>
+					<p className="text-sm text-[#10B981] text-center">Check your inbox to confirm your subscription.</p>
 				)}
 			</form>
 
-			<p className="text-xs text-[#71717A] text-center">
-				No spam. Unsubscribe anytime.
-			</p>
+			<p className="text-xs text-[#71717A] text-center">No spam. Unsubscribe anytime.</p>
 		</div>
 	);
 }

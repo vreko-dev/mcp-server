@@ -12,8 +12,7 @@ export function AnalyticsScript() {
 		}
 
 		posthog.init(posthogKey, {
-			api_host:
-				process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com",
+			api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com",
 			person_profiles: "identified_only",
 			autocapture: true,
 

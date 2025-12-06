@@ -64,23 +64,13 @@ export function BenefitMetricCard({
 						</div>
 					)
 				}
-				icon={
-					<div className={`text-3xl ${iconColorClasses[color]}`}>
-						{icon}
-					</div>
-				}
+				icon={<div className={`text-3xl ${iconColorClasses[color]}`}>{icon}</div>}
 				title={
 					<div className="space-y-1">
-						<p className="text-sm uppercase tracking-wider text-slate-400">
-							{label}
-						</p>
+						<p className="text-sm uppercase tracking-wider text-slate-400">{label}</p>
 						<div className="flex items-baseline gap-2">
-							<span className="text-3xl font-bold text-slate-50">
-								{value}
-							</span>
-							{unit && (
-								<span className="text-lg text-slate-400">{unit}</span>
-							)}
+							<span className="text-3xl font-bold text-slate-50">{value}</span>
+							{unit && <span className="text-lg text-slate-400">{unit}</span>}
 						</div>
 					</div>
 				}
@@ -90,9 +80,7 @@ export function BenefitMetricCard({
 						{trend && (
 							<div
 								className={`text-sm font-medium flex items-center gap-1 ${
-									trend.direction === "up"
-										? "text-emerald-400"
-										: "text-rose-400"
+									trend.direction === "up" ? "text-emerald-400" : "text-rose-400"
 								}`}
 							>
 								{trend.direction === "up" ? "↑" : "↓"} {trend.amount}
@@ -129,28 +117,18 @@ export function BenefitMetricCard({
 					)
 				}
 				icon={
-					<m.div
-						whileHover={{ scale: 1.2, rotate: 10 }}
-						className={`text-3xl ${iconColorClasses[color]}`}
-					>
+					<m.div whileHover={{ scale: 1.2, rotate: 10 }} className={`text-3xl ${iconColorClasses[color]}`}>
 						{icon}
 					</m.div>
 				}
 				title={
 					<div className="space-y-1">
-						<p className="text-sm uppercase tracking-wider text-slate-400">
-							{label}
-						</p>
+						<p className="text-sm uppercase tracking-wider text-slate-400">{label}</p>
 						<div className="flex items-baseline gap-2">
 							<span className="text-3xl font-bold text-slate-50">
-								<NumberTicker
-									value={value}
-									className="text-3xl font-bold"
-								/>
+								<NumberTicker value={value} className="text-3xl font-bold" />
 							</span>
-							{unit && (
-								<span className="text-lg text-slate-400">{unit}</span>
-							)}
+							{unit && <span className="text-lg text-slate-400">{unit}</span>}
 						</div>
 					</div>
 				}
@@ -164,9 +142,7 @@ export function BenefitMetricCard({
 								viewport={{ once: true }}
 								transition={{ delay: 0.5 }}
 								className={`text-sm font-medium flex items-center gap-1 ${
-									trend.direction === "up"
-										? "text-emerald-400"
-										: "text-rose-400"
+									trend.direction === "up" ? "text-emerald-400" : "text-rose-400"
 								}`}
 							>
 								{trend.direction === "up" ? "↑" : "↓"} {trend.amount}

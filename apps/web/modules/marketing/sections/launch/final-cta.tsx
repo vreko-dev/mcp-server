@@ -16,13 +16,9 @@ export function FinalCTA() {
 
 			<div className="container mx-auto px-4 relative z-10">
 				<div className="text-center max-w-2xl mx-auto">
-					<h2 className="text-4xl lg:text-5xl font-bold mb-6 text-white">
-						{final_cta.content.headline}
-					</h2>
+					<h2 className="text-4xl lg:text-5xl font-bold mb-6 text-white">{final_cta.content.headline}</h2>
 
-					<p className="text-lg text-[#A0A0A0] mb-12">
-						{final_cta.content.body}
-					</p>
+					<p className="text-lg text-[#A0A0A0] mb-12">{final_cta.content.body}</p>
 
 					{/* Primary CTA */}
 					<div className="mb-4">

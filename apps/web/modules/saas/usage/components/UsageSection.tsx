@@ -79,9 +79,7 @@ UsageSection.Empty = function UsageSectionEmpty() {
 UsageSection.Error = function UsageSectionError({ error }: { error: Error }) {
 	return (
 		<div className="bg-red-500/10 border border-red-500/30 rounded-lg p-6">
-			<div className="text-red-400 font-semibold mb-2">
-				Error loading usage data
-			</div>
+			<div className="text-red-400 font-semibold mb-2">Error loading usage data</div>
 			<p className="text-red-300 text-sm mb-4">{error.message}</p>
 			<button
 				type="button"
@@ -117,26 +115,15 @@ export function UsageSection({ limits, subscription }: UsageSectionProps) {
 		<div className="space-y-6">
 			{/* Checkpoint usage warning */}
 			{checkpointPercentage >= 80 && checkpointPercentage < 100 && (
-				<UsageWarningBanner
-					percentage={checkpointPercentage}
-					resourceType="checkpoints"
-				/>
+				<UsageWarningBanner percentage={checkpointPercentage} resourceType="checkpoints" />
 			)}
 
 			{/* At limit warning */}
-			{isAtLimit && (
-				<UsageWarningBanner
-					percentage={100}
-					resourceType="checkpoints"
-					upgradeUrl="/choose-plan"
-				/>
-			)}
+			{isAtLimit && <UsageWarningBanner percentage={100} resourceType="checkpoints" upgradeUrl="/choose-plan" />}
 
 			{/* Usage metrics card */}
 			<div className="bg-neutral-900/50 border border-neutral-800 rounded-lg p-6">
-				<h3 className="text-lg font-semibold text-white mb-4">
-					Usage & Limits
-				</h3>
+				<h3 className="text-lg font-semibold text-white mb-4">Usage & Limits</h3>
 
 				<div className="space-y-6">
 					{/* Checkpoint usage */}
@@ -148,23 +135,20 @@ export function UsageSection({ limits, subscription }: UsageSectionProps) {
 					/>
 
 					{/* Storage usage (for paid plans with cloud backup) */}
-					{limitsData.cloudStorageUsedMb !== undefined &&
-						limitsData.cloudStorageLimitMb !== undefined && (
-							<UsageProgressBar
-								used={limitsData.cloudStorageUsedMb}
-								limit={limitsData.cloudStorageLimitMb}
-								label="Cloud Storage"
-								unit="MB"
-							/>
-						)}
+					{limitsData.cloudStorageUsedMb !== undefined && limitsData.cloudStorageLimitMb !== undefined && (
+						<UsageProgressBar
+							used={limitsData.cloudStorageUsedMb}
+							limit={limitsData.cloudStorageLimitMb}
+							label="Cloud Storage"
+							unit="MB"
+						/>
+					)}
 
 					{/* Plan info */}
 					<div className="pt-4 border-t border-neutral-800">
 						<div className="flex justify-between items-center text-sm">
 							<span className="text-neutral-400">Current plan:</span>
-							<span className="font-medium text-white capitalize">
-								{subData.plan}
-							</span>
+							<span className="font-medium text-white capitalize">{subData.plan}</span>
 						</div>
 						{subData.currentPeriodEnd && (
 							<div className="flex justify-between items-center text-sm mt-2">

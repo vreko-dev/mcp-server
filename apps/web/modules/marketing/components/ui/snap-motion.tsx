@@ -48,8 +48,7 @@ const getMotionStyles = () => {
 
 // ===== SNAP ENTRANCE ANIMATIONS =====
 
-interface SnapEntranceProps
-	extends Omit<HTMLMotionProps<"div">, "initial" | "animate"> {
+interface SnapEntranceProps extends Omit<HTMLMotionProps<"div">, "initial" | "animate"> {
 	children: React.ReactNode;
 	delay?: number;
 	direction?: "up" | "down" | "left" | "right" | "scale";
@@ -63,18 +62,7 @@ interface SnapEntranceProps
  * Reinforces the "snap back" brand concept with <100ms feeling
  */
 export const SnapEntrance = forwardRef<HTMLDivElement, SnapEntranceProps>(
-	(
-		{
-			children,
-			delay = 0,
-			direction = "up",
-			intensity = "normal",
-			once = true,
-			className,
-			...props
-		},
-		ref,
-	) => {
+	({ children, delay = 0, direction = "up", intensity = "normal", once = true, className, ...props }, ref) => {
 		const [isMounted, setIsMounted] = useState(false);
 		const { shouldReduceAnimations } = useMobileOptimization();
 
@@ -97,8 +85,7 @@ export const SnapEntrance = forwardRef<HTMLDivElement, SnapEntranceProps>(
 			strong: { distance: 50, scale: 0.9 },
 		};
 
-		const { distance, scale } =
-			intensityMap[intensity as "subtle" | "normal" | "strong"];
+		const { distance, scale } = intensityMap[intensity as "subtle" | "normal" | "strong"];
 
 		const getInitial = () => {
 			switch (direction) {
@@ -157,16 +144,7 @@ interface ProtectiveHoverProps extends HTMLMotionProps<"div"> {
  * Scales slightly and adds protective glow effect
  */
 export const ProtectiveHover = forwardRef<HTMLDivElement, ProtectiveHoverProps>(
-	(
-		{
-			children,
-			intensity = "normal",
-			protectionGlow = false,
-			className,
-			...props
-		},
-		ref,
-	) => {
+	({ children, intensity = "normal", protectionGlow = false, className, ...props }, ref) => {
 		const [isMounted, setIsMounted] = useState(false);
 		const { shouldReduceAnimations } = useMobileOptimization();
 
@@ -180,8 +158,7 @@ export const ProtectiveHover = forwardRef<HTMLDivElement, ProtectiveHoverProps>(
 			strong: { scale: 1.08, glow: 0.3 },
 		};
 
-		const { scale: hoverScale, glow } =
-			intensityMap[intensity as "subtle" | "normal" | "strong"];
+		const { scale: hoverScale, glow } = intensityMap[intensity as "subtle" | "normal" | "strong"];
 
 		// For SSR or when animations are reduced, render without motion
 		if (shouldReduceAnimations || !isMounted) {
@@ -211,9 +188,7 @@ export const ProtectiveHover = forwardRef<HTMLDivElement, ProtectiveHoverProps>(
 
 		const glowStyle = protectionGlow
 			? {
-					filter: `drop-shadow(0 0 ${
-						glow * 20
-					}px hsl(var(--primary) / ${glow}))`,
+					filter: `drop-shadow(0 0 ${glow * 20}px hsl(var(--primary) / ${glow}))`,
 				}
 			: {};
 
@@ -253,17 +228,7 @@ interface ElasticSnapProps extends HTMLMotionProps<"div"> {
  * Simulates the feeling of instant protection and recovery
  */
 export const ElasticSnap = forwardRef<HTMLDivElement, ElasticSnapProps>(
-	(
-		{
-			children,
-			trigger = false,
-			direction = "y",
-			intensity = 10,
-			className,
-			...props
-		},
-		ref,
-	) => {
+	({ children, trigger = false, direction = "y", intensity = 10, className, ...props }, ref) => {
 		const [isMounted, setIsMounted] = useState(false);
 		const { shouldReduceAnimations } = useMobileOptimization();
 		const controls = useAnimation();
@@ -294,14 +259,7 @@ export const ElasticSnap = forwardRef<HTMLDivElement, ElasticSnapProps>(
 			};
 
 			snapAnimation();
-		}, [
-			trigger,
-			controls,
-			direction,
-			intensity,
-			shouldReduceAnimations,
-			isMounted,
-		]);
+		}, [trigger, controls, direction, intensity, shouldReduceAnimations, isMounted]);
 
 		if (shouldReduceAnimations || !isMounted) {
 			return (
@@ -406,10 +364,7 @@ interface RecoveryTimelineProps {
  * RecoveryTimeline - Animated timeline showing <2s recovery process
  * Reinforces speed and efficiency brand promises
  */
-export const RecoveryTimeline: React.FC<RecoveryTimelineProps> = ({
-	steps,
-	className,
-}) => {
+export const RecoveryTimeline: React.FC<RecoveryTimelineProps> = ({ steps, className }) => {
 	const [isMounted, setIsMounted] = useState(false);
 	const { shouldReduceAnimations } = useMobileOptimization();
 
@@ -504,13 +459,7 @@ interface PerformanceMetricProps {
  * PerformanceMetric - Animated metric display emphasizing speed
  * Shows performance numbers with satisfying animations
  */
-export const PerformanceMetric: React.FC<PerformanceMetricProps> = ({
-	value,
-	label,
-	target,
-	status,
-	className,
-}) => {
+export const PerformanceMetric: React.FC<PerformanceMetricProps> = ({ value, label, target, status, className }) => {
 	const [isMounted, setIsMounted] = useState(false);
 	const { shouldReduceAnimations } = useMobileOptimization();
 
@@ -526,12 +475,7 @@ export const PerformanceMetric: React.FC<PerformanceMetricProps> = ({
 
 	return (
 		<div className={cn("text-center", className)}>
-			<div
-				className={cn(
-					"text-3xl font-bold font-mono transition-colors",
-					statusColors[status],
-				)}
-			>
+			<div className={cn("text-3xl font-bold font-mono transition-colors", statusColors[status])}>
 				{!shouldReduceAnimations && isMounted ? (
 					<m.span
 						initial={{ opacity: 0, scale: 0.5 }}
@@ -653,17 +597,7 @@ interface SnapButtonProps extends HTMLMotionProps<"button"> {
  * Reinforces the protection and speed brand promises
  */
 export const SnapButton = forwardRef<HTMLButtonElement, SnapButtonProps>(
-	(
-		{
-			children,
-			variant = "primary",
-			size = "md",
-			protective = false,
-			className,
-			...props
-		},
-		ref,
-	) => {
+	({ children, variant = "primary", size = "md", protective = false, className, ...props }, ref) => {
 		const [isMounted, setIsMounted] = useState(false);
 		const { shouldReduceAnimations } = useMobileOptimization();
 

@@ -4,22 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { authClient } from "@snapback/auth/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@ui/components/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@ui/components/card";
-import {
-	Form,
-	FormControl,
-	FormDescription,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from "@ui/components/form";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@ui/components/card";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@ui/components/form";
 import { Input } from "@ui/components/input";
 import { Textarea } from "@ui/components/textarea";
 import { AlertCircleIcon, LoaderIcon, SaveIcon } from "lucide-react";
@@ -29,15 +15,8 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 const editOrgSchema = z.object({
-	name: z
-		.string()
-		.min(2, "Name must be at least 2 characters")
-		.max(100, "Name must be less than 100 characters"),
-	description: z
-		.string()
-		.max(500, "Description must be less than 500 characters")
-		.optional()
-		.nullable(),
+	name: z.string().min(2, "Name must be at least 2 characters").max(100, "Name must be less than 100 characters"),
+	description: z.string().max(500, "Description must be less than 500 characters").optional().nullable(),
 });
 
 type EditOrgFormValues = z.infer<typeof editOrgSchema>;
@@ -77,9 +56,7 @@ export function EditOrganizationForm({
 		toast.promise(
 			(async () => {
 				// biome-ignore lint/suspicious/noExplicitAny: Better Auth API varies
-				const { error: apiError } = (await (
-					authClient.organization as any
-				).updateOrganization?.({
+				const { error: apiError } = (await (authClient.organization as any).updateOrganization?.({
 					organizationId,
 					...values,
 				})) || { error: null };
@@ -99,8 +76,7 @@ export function EditOrganizationForm({
 			{
 				loading: "Updating organization settings...",
 				success: "Organization settings updated successfully",
-				error: (err: unknown) =>
-					`Failed to update: ${err instanceof Error ? err.message : "Unknown error"}`,
+				error: (err: unknown) => `Failed to update: ${err instanceof Error ? err.message : "Unknown error"}`,
 			},
 		);
 
@@ -113,9 +89,7 @@ export function EditOrganizationForm({
 		<Card>
 			<CardHeader>
 				<CardTitle>Organization Settings</CardTitle>
-				<CardDescription>
-					Update your organization's name and description
-				</CardDescription>
+				<CardDescription>Update your organization's name and description</CardDescription>
 			</CardHeader>
 			<CardContent>
 				{error && (
@@ -137,11 +111,7 @@ export function EditOrganizationForm({
 								<FormItem>
 									<FormLabel>Organization Name</FormLabel>
 									<FormControl>
-										<Input
-											{...field}
-											placeholder="Your organization name"
-											disabled={isLoading}
-										/>
+										<Input {...field} placeholder="Your organization name" disabled={isLoading} />
 									</FormControl>
 									<FormDescription>
 										The name of your organization, visible to all members
@@ -168,8 +138,7 @@ export function EditOrganizationForm({
 										/>
 									</FormControl>
 									<FormDescription>
-										A brief description of your organization (max 500
-										characters)
+										A brief description of your organization (max 500 characters)
 									</FormDescription>
 									<FormMessage />
 								</FormItem>
@@ -178,11 +147,7 @@ export function EditOrganizationForm({
 
 						{/* Action Buttons */}
 						<div className="flex gap-3 pt-2">
-							<Button
-								type="submit"
-								disabled={!isDirty || isLoading}
-								className="flex-1"
-							>
+							<Button type="submit" disabled={!isDirty || isLoading} className="flex-1">
 								{isLoading ? (
 									<>
 										<LoaderIcon className="size-4 mr-2 animate-spin" />

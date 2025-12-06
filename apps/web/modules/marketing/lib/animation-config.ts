@@ -290,8 +290,7 @@ export const gradientHover: Variants = {
 		scale: 1,
 	},
 	hover: {
-		background:
-			"linear-gradient(45deg, rgba(0, 255, 65, 0.1), rgba(0, 212, 255, 0.1))",
+		background: "linear-gradient(45deg, rgba(0, 255, 65, 0.1), rgba(0, 212, 255, 0.1))",
 		scale: 1.02,
 		transition: {
 			duration: ANIMATION_DURATION.fast,

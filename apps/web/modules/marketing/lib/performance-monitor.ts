@@ -119,12 +119,7 @@ class PerformanceMonitor {
 				});
 
 				observer.observe({
-					entryTypes: [
-						"navigation",
-						"paint",
-						"layout-shift",
-						"largest-contentful-paint",
-					],
+					entryTypes: ["navigation", "paint", "layout-shift", "largest-contentful-paint"],
 				});
 				this.observers.push(observer);
 			} catch (error) {
@@ -152,11 +147,7 @@ class PerformanceMonitor {
 	}
 
 	private setupMemoryMonitoring(): void {
-		if (
-			typeof window !== "undefined" &&
-			typeof performance !== "undefined" &&
-			"memory" in performance
-		) {
+		if (typeof window !== "undefined" && typeof performance !== "undefined" && "memory" in performance) {
 			const interval = setInterval(() => {
 				const memory = (performance as any).memory;
 				if (memory) {
@@ -242,13 +233,11 @@ class PerformanceMonitor {
 		// Simulate checkpoint creation monitoring
 		// In real implementation, this would hook into actual checkpoint creation
 		const simulateCheckpoint = () => {
-			const startTime =
-				typeof performance !== "undefined" ? performance.now() : Date.now();
+			const startTime = typeof performance !== "undefined" ? performance.now() : Date.now();
 
 			// Simulate checkpoint creation work
 			setTimeout(() => {
-				const endTime =
-					typeof performance !== "undefined" ? performance.now() : Date.now();
+				const endTime = typeof performance !== "undefined" ? performance.now() : Date.now();
 				const latency = endTime - startTime;
 				this.updateMetric("checkpointLatency", latency);
 
@@ -266,14 +255,12 @@ class PerformanceMonitor {
 	}
 
 	private simulateRecovery(): void {
-		const startTime =
-			typeof performance !== "undefined" ? performance.now() : Date.now();
+		const startTime = typeof performance !== "undefined" ? performance.now() : Date.now();
 
 		// Simulate recovery process
 		setTimeout(
 			() => {
-				const endTime =
-					typeof performance !== "undefined" ? performance.now() : Date.now();
+				const endTime = typeof performance !== "undefined" ? performance.now() : Date.now();
 				const recoveryTime = endTime - startTime;
 				this.updateMetric("recoveryTime", recoveryTime);
 			},
@@ -309,10 +296,7 @@ class PerformanceMonitor {
 			}
 
 			case "first-input":
-				this.updateMetric(
-					"fid",
-					(entry as any).processingStart - entry.startTime,
-				);
+				this.updateMetric("fid", (entry as any).processingStart - entry.startTime);
 				break;
 		}
 	}
@@ -323,10 +307,7 @@ class PerformanceMonitor {
 		this.notifyCallbacks();
 	}
 
-	private checkViolations(
-		metric: keyof PerformanceMetrics,
-		value: number,
-	): void {
+	private checkViolations(metric: keyof PerformanceMetrics, value: number): void {
 		const threshold = this.config.thresholds[metric];
 		if (threshold === undefined) {
 			return;
@@ -367,9 +348,7 @@ class PerformanceMonitor {
 		const ratio = actual / target;
 
 		// Brand promise violations are critical
-		if (
-			["checkpointLatency", "recoveryTime", "dataLossEvents"].includes(metric)
-		) {
+		if (["checkpointLatency", "recoveryTime", "dataLossEvents"].includes(metric)) {
 			if (ratio > 2) {
 				return "critical";
 			}
@@ -420,9 +399,7 @@ class PerformanceMonitor {
 
 	private handleViolation(violation: PromiseViolation): void {
 		// Log violation
-		console.warn(
-			`🚨 Brand Promise Violation: ${violation.metric} - ${violation.severity}`,
-		);
+		console.warn(`🚨 Brand Promise Violation: ${violation.metric} - ${violation.severity}`);
 
 		// Send to monitoring endpoint
 		if (this.shouldReport()) {
@@ -515,30 +492,16 @@ class PerformanceMonitor {
 		const thresholds = this.config.thresholds;
 
 		return {
-			checkpoint_latency:
-				metrics.checkpointLatency <= (thresholds.checkpointLatency || 100)
-					? "pass"
-					: "fail",
-			recovery_time:
-				metrics.recoveryTime <= (thresholds.recoveryTime || 2000)
-					? "pass"
-					: "fail",
-			cpu_usage:
-				metrics.cpuUsage <= (thresholds.cpuUsage || 1) ? "pass" : "fail",
-			memory_usage:
-				metrics.memoryUsage <= (thresholds.memoryUsage || 50) ? "pass" : "fail",
-			frame_rate:
-				metrics.frameRate >= (thresholds.frameRate || 60) ? "pass" : "fail",
-			data_loss:
-				metrics.dataLossEvents === (thresholds.dataLossEvents || 0)
-					? "pass"
-					: "fail",
+			checkpoint_latency: metrics.checkpointLatency <= (thresholds.checkpointLatency || 100) ? "pass" : "fail",
+			recovery_time: metrics.recoveryTime <= (thresholds.recoveryTime || 2000) ? "pass" : "fail",
+			cpu_usage: metrics.cpuUsage <= (thresholds.cpuUsage || 1) ? "pass" : "fail",
+			memory_usage: metrics.memoryUsage <= (thresholds.memoryUsage || 50) ? "pass" : "fail",
+			frame_rate: metrics.frameRate >= (thresholds.frameRate || 60) ? "pass" : "fail",
+			data_loss: metrics.dataLossEvents === (thresholds.dataLossEvents || 0) ? "pass" : "fail",
 		};
 	}
 
-	public subscribe(
-		callback: (metrics: PerformanceMetrics) => void,
-	): () => void {
+	public subscribe(callback: (metrics: PerformanceMetrics) => void): () => void {
 		this.callbacks.add(callback);
 		return () => this.callbacks.delete(callback);
 	}
@@ -560,53 +523,36 @@ class PerformanceMonitor {
 		return report;
 	}
 
-	private calculateOverallScore(
-		status: Record<string, "pass" | "fail">,
-	): number {
+	private calculateOverallScore(status: Record<string, "pass" | "fail">): number {
 		const total = Object.keys(status).length;
 		const passed = Object.values(status).filter((s) => s === "pass").length;
 		return Math.round((passed / total) * 100);
 	}
 
-	private generateRecommendations(
-		violations: PromiseViolation[],
-		metrics: PerformanceMetrics,
-	): string[] {
+	private generateRecommendations(violations: PromiseViolation[], metrics: PerformanceMetrics): string[] {
 		const recommendations: string[] = [];
 
 		// Analyze recent violations
-		const recentViolations = violations.filter(
-			(v) => Date.now() - v.timestamp < 60000,
-		);
+		const recentViolations = violations.filter((v) => Date.now() - v.timestamp < 60000);
 
 		if (recentViolations.some((v) => v.metric === "checkpointLatency")) {
-			recommendations.push(
-				"Optimize checkpoint creation algorithm - currently exceeding <100ms promise",
-			);
+			recommendations.push("Optimize checkpoint creation algorithm - currently exceeding <100ms promise");
 		}
 
 		if (recentViolations.some((v) => v.metric === "recoveryTime")) {
-			recommendations.push(
-				"Improve recovery process - currently exceeding <2s promise",
-			);
+			recommendations.push("Improve recovery process - currently exceeding <2s promise");
 		}
 
 		if (metrics.frameRate < 50) {
-			recommendations.push(
-				"Reduce animation complexity or enable reduced motion mode",
-			);
+			recommendations.push("Reduce animation complexity or enable reduced motion mode");
 		}
 
 		if (metrics.memoryUsage > 40) {
-			recommendations.push(
-				"Memory usage approaching 50MB limit - consider cleanup",
-			);
+			recommendations.push("Memory usage approaching 50MB limit - consider cleanup");
 		}
 
 		if (metrics.cpuUsage > 0.8) {
-			recommendations.push(
-				"CPU usage approaching 1% limit - optimize background tasks",
-			);
+			recommendations.push("CPU usage approaching 1% limit - optimize background tasks");
 		}
 
 		return recommendations;
@@ -633,9 +579,7 @@ export interface PerformanceReport {
 // Singleton instance
 let monitorInstance: PerformanceMonitor | null = null;
 
-export function getPerformanceMonitor(
-	config?: Partial<MonitoringConfig>,
-): PerformanceMonitor {
+export function getPerformanceMonitor(config?: Partial<MonitoringConfig>): PerformanceMonitor {
 	if (!monitorInstance) {
 		monitorInstance = new PerformanceMonitor(config);
 	}

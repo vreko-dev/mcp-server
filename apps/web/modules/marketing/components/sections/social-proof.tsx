@@ -5,8 +5,7 @@ import { useContent } from "@marketing/hooks/use-content";
 import { m } from "motion/react";
 import { useEffect, useMemo, useState } from "react";
 
-const DEFAULT_SITE_URL =
-	process.env.NEXT_PUBLIC_SITE_URL ?? "https://snapback.dev";
+const DEFAULT_SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://snapback.dev";
 
 function AnimatedCounter({
 	value,
@@ -55,9 +54,7 @@ function AnimatedCounter({
 
 	return (
 		<m.div
-			initial={
-				isMounted ? { opacity: 0, scale: 0.8 } : { opacity: 1, scale: 1 }
-			}
+			initial={isMounted ? { opacity: 0, scale: 0.8 } : { opacity: 1, scale: 1 }}
 			whileInView={{
 				opacity: 1,
 				scale: 1,
@@ -101,13 +98,11 @@ export function SocialProof() {
 		}
 	}, []);
 
-	const testimonialItems = content.social_proof.testimonials.map(
-		(testimonial) => ({
-			quote: testimonial.quote,
-			name: testimonial.author,
-			title: testimonial.role,
-		}),
-	);
+	const testimonialItems = content.social_proof.testimonials.map((testimonial) => ({
+		quote: testimonial.quote,
+		name: testimonial.author,
+		title: testimonial.role,
+	}));
 
 	const structuredData = useMemo(() => {
 		const offers =
@@ -145,12 +140,7 @@ export function SocialProof() {
 				},
 			})),
 		};
-	}, [
-		content.pricing?.tiers,
-		content.social_proof.stats,
-		testimonialItems,
-		siteOrigin,
-	]);
+	}, [content.pricing?.tiers, content.social_proof.stats, testimonialItems, siteOrigin]);
 
 	return (
 		<section className="relative py-20 px-4 bg-gradient-to-b from-black to-slate-900 z-10 mt-16">
@@ -182,11 +172,7 @@ export function SocialProof() {
 						{content.social_proof.stats.map((stat, index) => (
 							<m.div
 								key={stat.label}
-								initial={
-									isMounted
-										? { opacity: 0, y: 30, scale: 0.9 }
-										: { opacity: 1, y: 0, scale: 1 }
-								}
+								initial={isMounted ? { opacity: 0, y: 30, scale: 0.9 } : { opacity: 1, y: 0, scale: 1 }}
 								whileInView={{
 									opacity: 1,
 									y: 0,
@@ -216,9 +202,7 @@ export function SocialProof() {
 									suffix={stat.suffix || ""}
 									duration={2000 + index * 500}
 								/>
-								<p className="text-gray-400 text-lg font-medium">
-									{stat.label}
-								</p>
+								<p className="text-gray-400 text-lg font-medium">{stat.label}</p>
 							</m.div>
 						))}
 					</div>
@@ -243,26 +227,18 @@ export function SocialProof() {
 						What Protected Developers Say
 					</h3>
 
-					<InfiniteMovingCards
-						items={testimonialItems}
-						direction="right"
-						speed="slow"
-						className="mb-8"
-					/>
+					<InfiniteMovingCards items={testimonialItems} direction="right" speed="slow" className="mb-8" />
 
 					<div className="mx-auto grid max-w-5xl gap-6 text-left lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
 						<div className="rounded-3xl border border-gray-700/70 bg-gray-900/60 p-6 md:p-8">
-							<p className="text-xs uppercase tracking-wide text-emerald-300">
-								Case Study
-							</p>
+							<p className="text-xs uppercase tracking-wide text-emerald-300">Case Study</p>
 							<h4 className="mt-2 text-2xl font-semibold text-white">
 								Luma Labs eliminated $12K weekly AI outages
 							</h4>
 							<p className="mt-3 text-sm text-gray-300 leading-relaxed">
-								After a Cursor refactor deleted their env vars, Luma Labs rolled
-								SnapBack across 24 repos. Critical hats blocked AI from touching
-								secrets, while protected hats gave engineers self-service
-								rollbacks in under three seconds.
+								After a Cursor refactor deleted their env vars, Luma Labs rolled SnapBack across 24
+								repos. Critical hats blocked AI from touching secrets, while protected hats gave
+								engineers self-service rollbacks in under three seconds.
 							</p>
 							<ul className="mt-5 space-y-2 text-sm text-gray-300">
 								<li>• 38% faster incident response</li>
@@ -271,9 +247,7 @@ export function SocialProof() {
 							</ul>
 						</div>
 						<div className="rounded-3xl border border-gray-700/70 bg-gray-900/60 p-6 md:p-8">
-							<p className="text-xs uppercase tracking-wide text-sky-300">
-								Teams shipping with SnapBack
-							</p>
+							<p className="text-xs uppercase tracking-wide text-sky-300">Teams shipping with SnapBack</p>
 							<div className="mt-4 grid grid-cols-2 gap-4 text-sm text-gray-300">
 								<span>Stripe platform security</span>
 								<span>Vercel DX enablement</span>
@@ -281,8 +255,7 @@ export function SocialProof() {
 								<span>Linear product ops</span>
 							</div>
 							<p className="mt-6 text-xs text-gray-400">
-								Need references? We&apos;ll connect you with a team running
-								SnapBack at scale.
+								Need references? We&apos;ll connect you with a team running SnapBack at scale.
 							</p>
 						</div>
 					</div>
@@ -349,12 +322,8 @@ export function SocialProof() {
 										.join("")}
 								</div>
 								<div>
-									<div className="font-semibold text-white">
-										{testimonial.author}
-									</div>
-									<div className="text-gray-400 text-sm">
-										{testimonial.role}
-									</div>
+									<div className="font-semibold text-white">{testimonial.author}</div>
+									<div className="text-gray-400 text-sm">{testimonial.role}</div>
 								</div>
 							</div>
 						</m.div>

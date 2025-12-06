@@ -16,15 +16,7 @@ import {
 	DropdownMenuSubTrigger,
 	DropdownMenuTrigger,
 } from "@ui/components/dropdown-menu";
-import {
-	BookIcon,
-	HomeIcon,
-	LogOutIcon,
-	MoonIcon,
-	MoreVerticalIcon,
-	SettingsIcon,
-	SunIcon,
-} from "lucide-react";
+import { BookIcon, HomeIcon, LogOutIcon, MoonIcon, MoreVerticalIcon, SettingsIcon, SunIcon } from "lucide-react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { useState } from "react";
@@ -100,10 +92,7 @@ export function UserMenu({ showUserName }: { showUserName?: boolean }) {
 								}}
 							>
 								{colorModeOptions.map((option) => (
-									<DropdownMenuRadioItem
-										key={option.value}
-										value={option.value}
-									>
+									<DropdownMenuRadioItem key={option.value} value={option.value}>
 										<option.icon className="mr-2 size-4 opacity-50" />
 										{option.label}
 									</DropdownMenuRadioItem>

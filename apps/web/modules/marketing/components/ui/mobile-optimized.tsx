@@ -78,38 +78,36 @@ export const MobileOptimized = forwardRef<HTMLDivElement, MobileOptimizedProps>(
 MobileOptimized.displayName = "MobileOptimized";
 
 // Utility components for common patterns
-export const MobileStack = forwardRef<
-	HTMLDivElement,
-	Omit<MobileOptimizedProps, "children"> & { children: ReactNode }
->(({ children, className, ...props }, ref) => (
-	<MobileOptimized
-		ref={ref}
-		className={cn("flex flex-col", className)}
-		mobileClassName="gap-4"
-		tabletClassName="gap-6"
-		desktopClassName="gap-8"
-		{...props}
-	>
-		{children}
-	</MobileOptimized>
-));
+export const MobileStack = forwardRef<HTMLDivElement, Omit<MobileOptimizedProps, "children"> & { children: ReactNode }>(
+	({ children, className, ...props }, ref) => (
+		<MobileOptimized
+			ref={ref}
+			className={cn("flex flex-col", className)}
+			mobileClassName="gap-4"
+			tabletClassName="gap-6"
+			desktopClassName="gap-8"
+			{...props}
+		>
+			{children}
+		</MobileOptimized>
+	),
+);
 
 MobileStack.displayName = "MobileStack";
 
-export const MobileGrid = forwardRef<
-	HTMLDivElement,
-	Omit<MobileOptimizedProps, "children"> & { children: ReactNode }
->(({ children, className, ...props }, ref) => (
-	<MobileOptimized
-		ref={ref}
-		className={cn("grid", className)}
-		mobileClassName="grid-cols-1 gap-4"
-		tabletClassName="grid-cols-2 gap-6"
-		desktopClassName="grid-cols-3 gap-8"
-		{...props}
-	>
-		{children}
-	</MobileOptimized>
-));
+export const MobileGrid = forwardRef<HTMLDivElement, Omit<MobileOptimizedProps, "children"> & { children: ReactNode }>(
+	({ children, className, ...props }, ref) => (
+		<MobileOptimized
+			ref={ref}
+			className={cn("grid", className)}
+			mobileClassName="grid-cols-1 gap-4"
+			tabletClassName="grid-cols-2 gap-6"
+			desktopClassName="grid-cols-3 gap-8"
+			{...props}
+		>
+			{children}
+		</MobileOptimized>
+	),
+);
 
 MobileGrid.displayName = "MobileGrid";

@@ -334,11 +334,7 @@
 										"price_monthly": 0,
 										"price_yearly": 0,
 										"description": "For individual developers who want a personal safety net.",
-										"features": [
-											"Local snapshots",
-											"VS Code extension",
-											"Basic restore history"
-										],
+										"features": ["Local snapshots", "VS Code extension", "Basic restore history"],
 										"cta": {
 											"label": "Start free",
 											"href": "/getting-started#install",
@@ -526,12 +522,7 @@
 			},
 			"DEMO_SNAPSHOT_SELECTED": {
 				"description": "Snapshot selected in interactive demo",
-				"properties": [
-					"snapshot_id",
-					"snapshot_label",
-					"index",
-					"time_spent_on_demo"
-				]
+				"properties": ["snapshot_id", "snapshot_label", "index", "time_spent_on_demo"]
 			},
 			"DEMO_TIMELINE_DRAGGED": {
 				"description": "Timeline dragged in interactive demo",

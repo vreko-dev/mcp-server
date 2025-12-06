@@ -43,13 +43,7 @@ export function CopyButton({ code }: { code: string }) {
 	);
 }
 
-export function ExpandableSection({
-	title,
-	children,
-}: {
-	title: string;
-	children: React.ReactNode;
-}) {
+export function ExpandableSection({ title, children }: { title: string; children: React.ReactNode }) {
 	const [expanded, setExpanded] = useState(false);
 	const contentId = useId();
 
@@ -97,9 +91,7 @@ export function ProgressBar() {
 	useEffect(() => {
 		const handleScroll = () => {
 			const totalScroll = document.documentElement.scrollTop;
-			const windowHeight =
-				document.documentElement.scrollHeight -
-				document.documentElement.clientHeight;
+			const windowHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
 			const progress = (totalScroll / windowHeight) * 100;
 			setScrollProgress(progress);
 		};
@@ -110,19 +102,12 @@ export function ProgressBar() {
 
 	return (
 		<div className="progress-bar">
-			<div
-				className="progress-bar-fill"
-				style={{ width: `${scrollProgress}%` }}
-			/>
+			<div className="progress-bar-fill" style={{ width: `${scrollProgress}%` }} />
 		</div>
 	);
 }
 
-export function StatusBadge({
-	status,
-}: {
-	status: "online" | "offline" | "warning";
-}) {
+export function StatusBadge({ status }: { status: "online" | "offline" | "warning" }) {
 	const statusConfig = {
 		online: {
 			text: "System Online",

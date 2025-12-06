@@ -15,9 +15,7 @@ export function PrivacySection() {
 						<div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#111] border border-[#222] mb-4">
 							<Lock className="w-6 h-6 text-[var(--snapback-green)]" />
 						</div>
-						<h2 className="text-3xl lg:text-4xl font-bold text-white">
-							{privacy.content.headline}
-						</h2>
+						<h2 className="text-3xl lg:text-4xl font-bold text-white">{privacy.content.headline}</h2>
 						<p className="text-[#A0A0A0]">{privacy.content.footer}</p>
 					</div>
 
@@ -31,12 +29,8 @@ export function PrivacySection() {
 								transition={{ delay: index * 0.1 }}
 								className="p-6 rounded-2xl bg-[#0A0A0A] border border-[#222] hover:border-[var(--snapback-green)]/30 transition-colors"
 							>
-								<h3 className="text-lg font-semibold text-white mb-3">
-									{item.title}
-								</h3>
-								<p className="text-[#888] text-sm leading-relaxed">
-									{item.description}
-								</p>
+								<h3 className="text-lg font-semibold text-white mb-3">{item.title}</h3>
+								<p className="text-[#888] text-sm leading-relaxed">{item.description}</p>
 							</m.div>
 						))}
 					</div>

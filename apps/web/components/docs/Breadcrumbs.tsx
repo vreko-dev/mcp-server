@@ -5,11 +5,7 @@ import Link from "next/link";
 import { Fragment } from "react";
 import type { BreadcrumbItem } from "@/lib/source-types";
 
-export function Breadcrumbs({
-	items = [],
-}: {
-	items?: BreadcrumbItem[];
-}): React.ReactElement {
+export function Breadcrumbs({ items = [] }: { items?: BreadcrumbItem[] }): React.ReactElement {
 	return (
 		<nav className="flex items-center gap-1 text-sm text-muted-foreground">
 			<Link href="/docs" className="font-medium">

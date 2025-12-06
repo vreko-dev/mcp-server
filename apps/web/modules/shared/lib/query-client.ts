@@ -1,7 +1,4 @@
-import {
-	defaultShouldDehydrateQuery,
-	QueryClient,
-} from "@tanstack/react-query";
+import { defaultShouldDehydrateQuery, QueryClient } from "@tanstack/react-query";
 
 export function createQueryClient() {
 	return new QueryClient({
@@ -17,9 +14,7 @@ export function createQueryClient() {
 				refetchOnMount: true,
 			},
 			dehydrate: {
-				shouldDehydrateQuery: (query) =>
-					defaultShouldDehydrateQuery(query) ||
-					query.state.status === "pending",
+				shouldDehydrateQuery: (query) => defaultShouldDehydrateQuery(query) || query.state.status === "pending",
 			},
 			mutations: {
 				retry: 1,
@@ -28,10 +23,7 @@ export function createQueryClient() {
 	});
 }
 
-export function createQueryKeyWithParams(
-	key: string | string[],
-	params: Record<string, string | number>,
-) {
+export function createQueryKeyWithParams(key: string | string[], params: Record<string, string | number>) {
 	return [
 		...(Array.isArray(key) ? key : [key]),
 		Object.entries(params)

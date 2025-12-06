@@ -73,9 +73,7 @@ export default async function OpenGraphImage() {
 					}}
 				>
 					<span>{config.appName}</span>
-					<span style={{ fontSize: "22px", color: "#9ca3af" }}>
-						Visual AI protection
-					</span>
+					<span style={{ fontSize: "22px", color: "#9ca3af" }}>Visual AI protection</span>
 				</div>
 			</header>
 
@@ -125,15 +123,9 @@ export default async function OpenGraphImage() {
 						alignItems: "center",
 					}}
 				>
-					<div style={{ fontWeight: 600, color: "#38bdf8" }}>
-						AI-aware checkpoints
-					</div>
-					<div style={{ fontWeight: 600, color: "#fbbf24" }}>
-						Hat system for every file
-					</div>
-					<div style={{ fontWeight: 600, color: "#f87171" }}>
-						Instant recovery
-					</div>
+					<div style={{ fontWeight: 600, color: "#38bdf8" }}>AI-aware checkpoints</div>
+					<div style={{ fontWeight: 600, color: "#fbbf24" }}>Hat system for every file</div>
+					<div style={{ fontWeight: 600, color: "#f87171" }}>Instant recovery</div>
 				</div>
 				<div style={{ fontWeight: 500 }}>snapback.dev</div>
 			</footer>

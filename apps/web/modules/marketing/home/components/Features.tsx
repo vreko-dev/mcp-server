@@ -24,25 +24,21 @@ const featureTabs = [
 		title: "AI Pattern Detection",
 		icon: CpuIcon,
 		subtitle: "94% Accuracy",
-		description:
-			"Detects Copilot, Cursor, and Windsurf patterns. Shows detection confidence on every change.",
+		description: "Detects Copilot, Cursor, and Windsurf patterns. Shows detection confidence on every change.",
 		highlights: [
 			{
 				title: "Multi-Platform Support",
-				description:
-					"Detects activity from GitHub Copilot, Cursor, Windsurf, and other AI coding assistants.",
+				description: "Detects activity from GitHub Copilot, Cursor, Windsurf, and other AI coding assistants.",
 				icon: GlobeIcon,
 			},
 			{
 				title: "Confidence Scoring",
-				description:
-					"Real-time confidence percentage on every detected change with 94% accuracy.",
+				description: "Real-time confidence percentage on every detected change with 94% accuracy.",
 				icon: ZapIcon,
 			},
 			{
 				title: "Pattern Recognition",
-				description:
-					"Identifies specific AI behavior patterns like multi-file refactoring and bulk changes.",
+				description: "Identifies specific AI behavior patterns like multi-file refactoring and bulk changes.",
 				icon: CodeIcon,
 			},
 		],
@@ -63,14 +59,12 @@ const featureTabs = [
 			},
 			{
 				title: "File Watching",
-				description:
-					"Monitors 247 files per project with real-time change detection.",
+				description: "Monitors 247 files per project with real-time change detection.",
 				icon: FileIcon,
 			},
 			{
 				title: "Performance Optimized",
-				description:
-					"Lightweight monitoring with <100ms checkpoint creation speed.",
+				description: "Lightweight monitoring with <100ms checkpoint creation speed.",
 				icon: ZapIcon,
 			},
 		],
@@ -80,25 +74,21 @@ const featureTabs = [
 		title: "One-Click Snap Back",
 		icon: TerminalIcon,
 		subtitle: "Instant Recovery",
-		description:
-			"VS Code command palette: 'SnapBack: Snap Back'. Right-click context menu integration.",
+		description: "VS Code command palette: 'SnapBack: Snap Back'. Right-click context menu integration.",
 		highlights: [
 			{
 				title: "VS Code Integration",
-				description:
-					"Full extension with command palette and context menu integration.",
+				description: "Full extension with command palette and context menu integration.",
 				icon: CodeIcon,
 			},
 			{
 				title: "CLI Tool",
-				description:
-					"Command-line interface for terminal-based recovery operations (Coming Soon).",
+				description: "Command-line interface for terminal-based recovery operations (Coming Soon).",
 				icon: TerminalIcon,
 			},
 			{
 				title: "Instant Restore",
-				description:
-					"Restore to any checkpoint in milliseconds with zero data loss.",
+				description: "Restore to any checkpoint in milliseconds with zero data loss.",
 				icon: RotateCcwIcon,
 			},
 		],
@@ -108,13 +98,11 @@ const featureTabs = [
 		title: "Rich Notification System",
 		icon: LayersIcon,
 		subtitle: "Progressive Disclosure",
-		description:
-			"Progressive disclosure with collapsed/expanded views. Actionable buttons for immediate recovery.",
+		description: "Progressive disclosure with collapsed/expanded views. Actionable buttons for immediate recovery.",
 		highlights: [
 			{
 				title: "Multi-Level Views",
-				description:
-					"Collapsed and expanded notification states for optimal information density.",
+				description: "Collapsed and expanded notification states for optimal information density.",
 				icon: LayersIcon,
 			},
 			{
@@ -134,25 +122,21 @@ const featureTabs = [
 		title: "Workspace-Aware Protection",
 		icon: LockIcon,
 		subtitle: "Monorepo Support",
-		description:
-			"Monorepo support. Per-project checkpoint isolation. .snapback/checkpoints encrypted storage.",
+		description: "Monorepo support. Per-project checkpoint isolation. .snapback/checkpoints encrypted storage.",
 		highlights: [
 			{
 				title: "Monorepo Support",
-				description:
-					"Full support for complex monorepo structures with isolated project protection.",
+				description: "Full support for complex monorepo structures with isolated project protection.",
 				icon: LayersIcon,
 			},
 			{
 				title: "Project Isolation",
-				description:
-					"Per-project checkpoint isolation to prevent cross-contamination.",
+				description: "Per-project checkpoint isolation to prevent cross-contamination.",
 				icon: LockIcon,
 			},
 			{
 				title: "Encrypted Storage",
-				description:
-					"AES-256 encrypted .snapback/checkpoints directory for maximum security.",
+				description: "AES-256 encrypted .snapback/checkpoints directory for maximum security.",
 				icon: ShieldIcon,
 			},
 		],
@@ -167,20 +151,17 @@ const featureTabs = [
 		highlights: [
 			{
 				title: "VS Code Extension",
-				description:
-					"Full-featured extension with real-time monitoring and recovery.",
+				description: "Full-featured extension with real-time monitoring and recovery.",
 				icon: CodeIcon,
 			},
 			{
 				title: "CLI Tool",
-				description:
-					"Powerful command-line interface for advanced users and automation (Coming Soon).",
+				description: "Powerful command-line interface for advanced users and automation (Coming Soon).",
 				icon: TerminalIcon,
 			},
 			{
 				title: "CI/CD Integration",
-				description:
-					"GitHub Actions workflows for automated protection in your pipeline.",
+				description: "GitHub Actions workflows for automated protection in your pipeline.",
 				icon: GlobeIcon,
 			},
 		],
@@ -199,12 +180,9 @@ export function Features() {
 					transition={{ duration: 0.5 }}
 					className="mx-auto mb-6 lg:mb-0 lg:max-w-5xl lg:text-center"
 				>
-					<h2 className="font-bold text-4xl lg:text-5xl">
-						Pattern Memory. Gets Smarter.
-					</h2>
+					<h2 className="font-bold text-4xl lg:text-5xl">Pattern Memory. Gets Smarter.</h2>
 					<p className="mt-6 text-balance text-lg">
-						Every restore teaches SnapBack. Accuracy improves: Day 1 (94%) → Day
-						30 (98%) → Month 3 (99%+)
+						Every restore teaches SnapBack. Accuracy improves: Day 1 (94%) → Day 30 (98%) → Month 3 (99%+)
 					</p>
 				</motion.div>
 
@@ -244,16 +222,11 @@ export function Features() {
 									<tab.icon
 										className={cn(
 											"size-6 md:size-8 transition-all duration-200",
-											selectedTab === tab.id
-												? "text-primary"
-												: "text-muted-foreground",
+											selectedTab === tab.id ? "text-primary" : "text-muted-foreground",
 										)}
 									/>
 								</motion.div>
-								<motion.span
-									className="text-xs md:text-sm"
-									whileHover={{ y: -2 }}
-								>
+								<motion.span className="text-xs md:text-sm" whileHover={{ y: -2 }}>
 									{tab.title}
 								</motion.span>
 							</motion.button>
@@ -276,17 +249,15 @@ export function Features() {
 							title={
 								<div className="flex items-center gap-3">
 									<CpuIcon className="size-8 text-snapback-green" />
-									<span className="font-bold text-2xl text-white">
-										Pattern Memory
-									</span>
+									<span className="font-bold text-2xl text-white">Pattern Memory</span>
 								</div>
 							}
 							description={
 								<div className="mt-4">
 									<p className="text-white/70">
-										Learns what breaks in YOUR codebase. Catches hardcoded
-										secrets, phantom dependencies, test code in prod, and risky
-										patterns. Accuracy improves with every restore.
+										Learns what breaks in YOUR codebase. Catches hardcoded secrets, phantom
+										dependencies, test code in prod, and risky patterns. Accuracy improves with
+										every restore.
 									</p>
 									<div className="mt-6 flex items-center gap-4">
 										<div className="flex items-center gap-2">
@@ -299,9 +270,7 @@ export function Features() {
 										</div>
 										<div className="flex items-center gap-2">
 											<div className="size-3 rounded-full bg-snapback-green animate-pulse" />
-											<span className="text-sm text-white/80">
-												Month 3: 99%+
-											</span>
+											<span className="text-sm text-white/80">Month 3: 99%+</span>
 										</div>
 									</div>
 								</div>
@@ -320,15 +289,13 @@ export function Features() {
 							title={
 								<div className="flex items-center gap-3">
 									<RotateCcwIcon className="size-6 text-snapback-green" />
-									<span className="font-bold text-lg text-white">
-										Learns from Outcomes
-									</span>
+									<span className="font-bold text-lg text-white">Learns from Outcomes</span>
 								</div>
 							}
 							description={
 								<p className="mt-2 text-sm text-white/70">
-									Every restore teaches what patterns broke. Pattern memory uses
-									outcome data to improve.
+									Every restore teaches what patterns broke. Pattern memory uses outcome data to
+									improve.
 								</p>
 							}
 						/>
@@ -345,9 +312,7 @@ export function Features() {
 							title={
 								<div className="flex items-center gap-3">
 									<GlobeIcon className="size-6 text-snapback-green" />
-									<span className="font-bold text-lg text-white">
-										Cloud Learning
-									</span>
+									<span className="font-bold text-lg text-white">Cloud Learning</span>
 								</div>
 							}
 							description={
@@ -369,9 +334,7 @@ export function Features() {
 							title={
 								<div className="flex items-center gap-3">
 									<LayersIcon className="size-6 text-snapback-green" />
-									<span className="font-bold text-lg text-white">
-										Team Patterns
-									</span>
+									<span className="font-bold text-lg text-white">Team Patterns</span>
 								</div>
 							}
 							description={
@@ -489,9 +452,7 @@ export function Features() {
 												delay: 0.3,
 											}}
 										>
-											<h4 className="font-semibold text-lg mb-3">
-												Key Benefits
-											</h4>
+											<h4 className="font-semibold text-lg mb-3">Key Benefits</h4>
 											<ul className="space-y-2">
 												{filteredHighlights.map((highlight, k) => (
 													<motion.li
@@ -553,10 +514,7 @@ export function Features() {
 												>
 													<tab.icon className="mx-auto size-12 text-muted-foreground" />
 												</motion.div>
-												<motion.p
-													className="mt-2 text-muted-foreground"
-													whileHover={{ y: -2 }}
-												>
+												<motion.p className="mt-2 text-muted-foreground" whileHover={{ y: -2 }}>
 													{tab.title}
 												</motion.p>
 											</div>

@@ -3,10 +3,7 @@ import { snapBackCommands } from "../commands";
 import { useSnapBack } from "../context/SnapBackContext";
 import { debounce } from "../domain/protection";
 
-const generateId = () =>
-	crypto?.randomUUID
-		? crypto.randomUUID()
-		: Math.random().toString(36).slice(2, 11);
+const generateId = () => (crypto?.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2, 11));
 
 /**
  * Hook to monitor code changes with AI and provide suggestions
@@ -70,8 +67,7 @@ export function useAiMonitoring() {
 							id: generateId(),
 							type: "info",
 							title: "Checkpoint Suggestion",
-							message:
-								"AI detected significant changes. Consider creating a checkpoint.",
+							message: "AI detected significant changes. Consider creating a checkpoint.",
 							timestamp: new Date(),
 							actions: [
 								{

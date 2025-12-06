@@ -3,14 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { SettingsItem } from "@saas/shared/components/SettingsItem";
 import { useRouter } from "@shared/hooks/router";
 import { Button } from "@ui/components/button";
-import {
-	Form,
-	FormControl,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from "@ui/components/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@ui/components/form";
 import { PasswordInput } from "@ui/components/password-input";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -85,12 +78,7 @@ export function ChangePasswordForm() {
 							<Button
 								type="submit"
 								loading={form.formState.isSubmitting}
-								disabled={
-									!(
-										form.formState.isValid &&
-										Object.keys(form.formState.dirtyFields).length
-									)
-								}
+								disabled={!(form.formState.isValid && Object.keys(form.formState.dirtyFields).length)}
 							>
 								Save
 							</Button>

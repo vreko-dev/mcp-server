@@ -1,10 +1,7 @@
 import { ORPCError } from "@orpc/server";
 import { getOrganizationById } from "@snapback/platform";
 import { z } from "zod";
-import {
-	getPresignedUploadUrl,
-	isS3Configured,
-} from "../../../lib/s3-client";
+import { getPresignedUploadUrl, isS3Configured } from "../../../lib/s3-client";
 import { protectedProcedure } from "../../../orpc/procedures";
 import { verifyOrganizationMembership } from "../lib/membership";
 

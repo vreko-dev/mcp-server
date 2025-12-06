@@ -82,12 +82,7 @@ export function MagneticButton({
 	// Render static version on server-side
 	if (!isMounted) {
 		const StaticButton = (
-			<m.button
-				className={buttonClasses}
-				onClick={handleClick}
-				disabled={disabled}
-				{...props}
-			>
+			<m.button className={buttonClasses} onClick={handleClick} disabled={disabled} {...props}>
 				<span className="relative z-10">{children}</span>
 			</m.button>
 		);
@@ -155,9 +150,7 @@ export function MagneticButton({
 				<m.div
 					className="absolute inset-0 rounded-lg"
 					style={{
-						background: `radial-gradient(circle at ${
-							50 + (position.x / radius) * 100
-						}% ${
+						background: `radial-gradient(circle at ${50 + (position.x / radius) * 100}% ${
 							50 + (position.y / radius) * 100
 						}%, rgba(0, 255, 65, 0.2) 0%, transparent 60%)`,
 					}}

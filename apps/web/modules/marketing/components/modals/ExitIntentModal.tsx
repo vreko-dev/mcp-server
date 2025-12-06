@@ -38,9 +38,7 @@ export function ExitIntentModal() {
 				// Track with PostHog
 				if (typeof window !== "undefined" && (window as any).posthog) {
 					const timeOnPage = Math.floor((Date.now() - pageLoadTime) / 1000);
-					const scrollDepth = Math.floor(
-						(window.scrollY / document.body.scrollHeight) * 100,
-					);
+					const scrollDepth = Math.floor((window.scrollY / document.body.scrollHeight) * 100);
 
 					(window as any).posthog.capture("exit_intent_shown", {
 						time_on_page: timeOnPage,
@@ -75,9 +73,7 @@ export function ExitIntentModal() {
 
 			// Track with PostHog
 			if (typeof window !== "undefined" && (window as any).posthog) {
-				const timeToConvert = Math.floor(
-					(Date.now() - (window as any).pageLoadTime) / 1000,
-				);
+				const timeToConvert = Math.floor((Date.now() - (window as any).pageLoadTime) / 1000);
 
 				(window as any).posthog.capture("email_submit", {
 					source: "exit_intent",
@@ -146,8 +142,8 @@ export function ExitIntentModal() {
 										Wait! Before you go...
 									</h3>
 									<p className="text-snapback-text-secondary mb-6">
-										Get notified when we launch AI detection and cloud backup.
-										Plus, early access to Pro features.
+										Get notified when we launch AI detection and cloud backup. Plus, early access to
+										Pro features.
 									</p>
 
 									<form onSubmit={handleSubmit} className="space-y-4">
@@ -175,10 +171,7 @@ export function ExitIntentModal() {
 								</>
 							) : (
 								<div className="text-center py-4">
-									<div
-										className="text-4xl mb-2"
-										style={{ color: snapbackColors.green.DEFAULT }}
-									>
+									<div className="text-4xl mb-2" style={{ color: snapbackColors.green.DEFAULT }}>
 										✓
 									</div>
 									<p className="text-lg font-semibold text-snapback-text-primary">

@@ -18,9 +18,7 @@ interface SnapBackMetrics {
 type MetricStatus = "excellent" | "good" | "warning";
 
 // Helper functions to reduce component complexity
-const useWebVitalsMonitoring = (
-	setMetrics: React.Dispatch<React.SetStateAction<SnapBackMetrics>>,
-) => {
+const useWebVitalsMonitoring = (setMetrics: React.Dispatch<React.SetStateAction<SnapBackMetrics>>) => {
 	useEffect(() => {
 		if (typeof window === "undefined") {
 			return;
@@ -57,23 +55,18 @@ const useWebVitalsMonitoring = (
 	}, [setMetrics]);
 };
 
-const usePerformanceMonitoring = (
-	setMetrics: React.Dispatch<React.SetStateAction<SnapBackMetrics>>,
-) => {
+const usePerformanceMonitoring = (setMetrics: React.Dispatch<React.SetStateAction<SnapBackMetrics>>) => {
 	useEffect(() => {
 		const monitorMemory = () => {
 			if ((performance as any).memory) {
-				const memoryMB =
-					(performance as any).memory.usedJSHeapSize / 1024 / 1024;
+				const memoryMB = (performance as any).memory.usedJSHeapSize / 1024 / 1024;
 				setMetrics((prev) => ({
 					...prev,
 					memoryFootprint: Math.round(memoryMB),
 				}));
 
 				if (memoryMB > 50 && document.hidden) {
-					console.warn(
-						`🚨 Memory usage exceeds idle target: ${Math.round(memoryMB)}MB`,
-					);
+					console.warn(`🚨 Memory usage exceeds idle target: ${Math.round(memoryMB)}MB`);
 				}
 			}
 		};
@@ -145,11 +138,7 @@ export function SnapBackPerformanceMonitor() {
 	usePerformanceMonitoring(setMetrics);
 
 	// Helper to determine metric status
-	const getMetricStatus = (
-		value: number,
-		target: number,
-		isLowerBetter = true,
-	): MetricStatus => {
+	const getMetricStatus = (value: number, target: number, isLowerBetter = true): MetricStatus => {
 		if (isLowerBetter) {
 			if (value <= target * 0.8) {
 				return "excellent";
@@ -225,9 +214,7 @@ export function SnapBackPerformanceMonitor() {
 					<CheckpointPulse speed="fast">
 						<div className="w-3 h-3 bg-[#10B981] rounded-full" />
 					</CheckpointPulse>
-					<span className="font-bold text-[#10B981] text-sm">
-						SnapBack Performance
-					</span>
+					<span className="font-bold text-[#10B981] text-sm">SnapBack Performance</span>
 				</div>
 
 				<div className="grid grid-cols-2 gap-4">
@@ -245,12 +232,7 @@ export function SnapBackPerformanceMonitor() {
 						unit="s"
 						formatter={(v) => v.toFixed(2)}
 					/>
-					<MetricDisplay
-						label="Memory"
-						value={metrics.memoryFootprint}
-						target={50}
-						unit="MB"
-					/>
+					<MetricDisplay label="Memory" value={metrics.memoryFootprint} target={50} unit="MB" />
 					<MetricDisplay
 						label="Animation"
 						value={metrics.animationFPS}
@@ -265,12 +247,7 @@ export function SnapBackPerformanceMonitor() {
 						unit="%"
 						formatter={(v) => v.toFixed(1)}
 					/>
-					<MetricDisplay
-						label="Startup"
-						value={metrics.devServerStartup}
-						target={2000}
-						unit="ms"
-					/>
+					<MetricDisplay label="Startup" value={metrics.devServerStartup} target={2000} unit="ms" />
 				</div>
 
 				{/* Brand Promise Summary */}
@@ -303,11 +280,7 @@ export function SnapBackPerformanceMonitor() {
 }
 
 // Export for layout.tsx integration
-export function BrandPromiseValidator({
-	children,
-}: {
-	children: React.ReactNode;
-}) {
+export function BrandPromiseValidator({ children }: { children: React.ReactNode }) {
 	return (
 		<>
 			{children}

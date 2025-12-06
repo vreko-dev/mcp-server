@@ -2,10 +2,10 @@
 
 // Communication Hub (lifecycle emails for subscriptions)
 export {
-	sendWelcomeEmail,
 	sendCancellationEmail,
-	sendPaymentReceipt,
 	sendPaymentFailedEmail,
+	sendPaymentReceipt,
+	sendWelcomeEmail,
 } from "./communication/index";
 // Email (template-based emails)
 export * from "./email/index";

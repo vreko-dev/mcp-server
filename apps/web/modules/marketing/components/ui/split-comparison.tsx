@@ -74,25 +74,17 @@ export function SplitComparison({
 				<div className="grid md:grid-cols-2 gap-8">
 					{/* Before Column */}
 					<div className="space-y-4">
-						<div className="text-red-400 font-mono text-lg font-bold">
-							{beforeTitle}
-						</div>
+						<div className="text-red-400 font-mono text-lg font-bold">{beforeTitle}</div>
 						<div className="bg-black/50 border border-red-500/30 rounded-lg p-6">
-							<pre className="text-sm text-red-300 overflow-x-auto">
-								{beforeCode}
-							</pre>
+							<pre className="text-sm text-red-300 overflow-x-auto">{beforeCode}</pre>
 						</div>
 					</div>
 
 					{/* After Column */}
 					<div className="space-y-4">
-						<div className="text-matrix-green font-mono text-lg font-bold">
-							{afterTitle}
-						</div>
+						<div className="text-matrix-green font-mono text-lg font-bold">{afterTitle}</div>
 						<div className="bg-black/50 border border-matrix-green/30 rounded-lg p-6">
-							<pre className="text-sm text-matrix-green overflow-x-auto">
-								{afterCode}
-							</pre>
+							<pre className="text-sm text-matrix-green overflow-x-auto">{afterCode}</pre>
 						</div>
 					</div>
 				</div>
@@ -139,14 +131,10 @@ export function SplitComparison({
 					<m.div
 						className="bg-black/50 border border-red-500/30 rounded-lg p-6 relative overflow-hidden"
 						animate={{
-							borderColor: isProtected
-								? "rgba(239, 68, 68, 0.2)"
-								: "rgba(239, 68, 68, 0.5)",
+							borderColor: isProtected ? "rgba(239, 68, 68, 0.2)" : "rgba(239, 68, 68, 0.5)",
 						}}
 					>
-						<pre className="text-sm text-red-300 overflow-x-auto relative z-10">
-							{beforeCode}
-						</pre>
+						<pre className="text-sm text-red-300 overflow-x-auto relative z-10">{beforeCode}</pre>
 
 						{/* Danger overlay */}
 						<AnimatePresence>
@@ -197,9 +185,7 @@ export function SplitComparison({
 								exit={{ opacity: 0, y: -20 }}
 								transition={{ duration: 0.5 }}
 							>
-								<div className="text-red-400 text-sm font-mono mb-2">
-									SECURITY VIOLATIONS DETECTED
-								</div>
+								<div className="text-red-400 text-sm font-mono mb-2">SECURITY VIOLATIONS DETECTED</div>
 								{isInView && (
 									<DamageCounter
 										start={damageStart}
@@ -209,9 +195,7 @@ export function SplitComparison({
 										delay={500}
 									/>
 								)}
-								<div className="text-red-300 text-xs font-mono mt-2">
-									Estimated damage per month
-								</div>
+								<div className="text-red-300 text-xs font-mono mt-2">Estimated damage per month</div>
 							</m.div>
 						)}
 					</AnimatePresence>
@@ -253,14 +237,10 @@ export function SplitComparison({
 					<m.div
 						className="bg-black/50 border border-matrix-green/30 rounded-lg p-6 relative overflow-hidden"
 						animate={{
-							borderColor: isProtected
-								? "rgba(0, 255, 65, 0.6)"
-								: "rgba(0, 255, 65, 0.2)",
+							borderColor: isProtected ? "rgba(0, 255, 65, 0.6)" : "rgba(0, 255, 65, 0.2)",
 						}}
 					>
-						<pre className="text-sm text-matrix-green overflow-x-auto relative z-10">
-							{afterCode}
-						</pre>
+						<pre className="text-sm text-matrix-green overflow-x-auto relative z-10">{afterCode}</pre>
 
 						{/* Protection overlay */}
 						<AnimatePresence>
@@ -311,9 +291,7 @@ export function SplitComparison({
 								exit={{ opacity: 0, y: -20 }}
 								transition={{ duration: 0.5 }}
 							>
-								<div className="text-matrix-green text-sm font-mono mb-2">
-									PROTECTION ACTIVE
-								</div>
+								<div className="text-matrix-green text-sm font-mono mb-2">PROTECTION ACTIVE</div>
 								<m.div
 									className="text-4xl md:text-6xl font-bold text-matrix-green"
 									initial={{ scale: 0 }}
@@ -376,11 +354,7 @@ export function SplitComparison({
 								strength={0.4}
 								radius={60}
 							>
-								<m.span
-									initial={{ opacity: 0 }}
-									animate={{ opacity: 1 }}
-									exit={{ opacity: 0 }}
-								>
+								<m.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
 									Reset Demo
 								</m.span>
 							</MagneticButton>

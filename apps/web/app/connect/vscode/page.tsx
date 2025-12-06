@@ -17,8 +17,6 @@ export const metadata = {
 export default async function ConnectVsCodePage() {
 	// STUB: @snapback/auth - requires backend API
 	// For frontend-only deployment, redirect to login
-	console.warn(
-		"[ConnectVsCode] Stub - requires backend API for authentication",
-	);
+	console.warn("[ConnectVsCode] Stub - requires backend API for authentication");
 	redirect("/auth/login?returnTo=/connect/vscode");
 }

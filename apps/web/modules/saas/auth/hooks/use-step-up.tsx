@@ -24,10 +24,7 @@ export function useStepUp() {
 	 * If the API returns 401 with STEPUP_REQUIRED, shows the modal
 	 */
 	const withStepUp = useCallback(
-		async <T,>(
-			apiCall: () => Promise<Response>,
-			actionDescription?: string,
-		): Promise<T> => {
+		async <T,>(apiCall: () => Promise<Response>, actionDescription?: string): Promise<T> => {
 			const response = await apiCall();
 
 			if (response.status === 401) {

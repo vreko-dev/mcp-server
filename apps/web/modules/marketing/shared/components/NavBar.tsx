@@ -4,12 +4,7 @@
 import { useSession } from "@saas/auth/hooks/use-session";
 import { Logo } from "@shared/components/Logo";
 import { Button } from "@ui/components/button";
-import {
-	Sheet,
-	SheetContent,
-	SheetTitle,
-	SheetTrigger,
-} from "@ui/components/sheet";
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@ui/components/sheet";
 import { cn } from "@ui/lib";
 import { MenuIcon } from "lucide-react";
 import { motion } from "motion/react";
@@ -59,10 +54,7 @@ export function NavBar() {
 	}, [pathname]);
 
 	// Menu items - docs URL changes based on environment
-	const docsUrl =
-		process.env.NODE_ENV === "development"
-			? "http://localhost:3001"
-			: "https://new-docs.snapback.dev";
+	const docsUrl = process.env.NODE_ENV === "development" ? "http://localhost:3001" : "https://new-docs.snapback.dev";
 
 	const menuItems = [
 		{
@@ -101,9 +93,7 @@ export function NavBar() {
 		<header
 			className={cn(
 				"fixed top-0 z-50 w-full transition-all duration-500",
-				isScrolled
-					? "bg-black/30 backdrop-blur-xl border-b border-white/10"
-					: "bg-transparent",
+				isScrolled ? "bg-black/30 backdrop-blur-xl border-b border-white/10" : "bg-transparent",
 			)}
 		>
 			<motion.nav
@@ -123,9 +113,7 @@ export function NavBar() {
 				<div
 					className={cn(
 						"flex items-center",
-						isScrolled
-							? "justify-between"
-							: "justify-between max-w-7xl mx-auto",
+						isScrolled ? "justify-between" : "justify-between max-w-7xl mx-auto",
 					)}
 				>
 					{/* Logo + Text */}
@@ -141,25 +129,14 @@ export function NavBar() {
 					</motion.div>
 
 					{/* Navigation items - hide some on mobile island */}
-					<div
-						className={cn(
-							"items-center gap-6 hidden lg:flex",
-							isScrolled && "gap-4",
-						)}
-					>
+					<div className={cn("items-center gap-6 hidden lg:flex", isScrolled && "gap-4")}>
 						{menuItems.map((menuItem) => (
-							<motion.div
-								key={menuItem.href}
-								whileHover={{ y: -2 }}
-								whileTap={{ y: 0 }}
-							>
+							<motion.div key={menuItem.href} whileHover={{ y: -2 }} whileTap={{ y: 0 }}>
 								<Link
 									href={menuItem.href}
 									className={cn(
 										"text-sm text-white/80 hover:text-green transition-colors duration-200 font-medium",
-										isMenuItemActive(menuItem.href)
-											? "font-bold text-green"
-											: "",
+										isMenuItemActive(menuItem.href) ? "font-bold text-green" : "",
 									)}
 									prefetch
 								>
@@ -180,10 +157,7 @@ export function NavBar() {
 									</NextLink>
 								</motion.div>
 
-								<motion.div
-									whileHover={{ scale: 1.05 }}
-									whileTap={{ scale: 0.95 }}
-								>
+								<motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
 									<NextLink
 										href={actionItems.join.href}
 										className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-full text-sm font-medium transition-all duration-200 border border-white/20"
@@ -206,10 +180,7 @@ export function NavBar() {
 					</div>
 
 					<div className="flex items-center gap-3 lg:hidden">
-						<Sheet
-							open={mobileMenuOpen}
-							onOpenChange={(open) => setMobileMenuOpen(open)}
-						>
+						<Sheet open={mobileMenuOpen} onOpenChange={(open) => setMobileMenuOpen(open)}>
 							<SheetTrigger asChild>
 								<Button
 									className="lg:hidden text-white hover:text-green"

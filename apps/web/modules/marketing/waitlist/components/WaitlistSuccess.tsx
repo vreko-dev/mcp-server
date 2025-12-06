@@ -2,14 +2,7 @@
 
 import { Button } from "@ui/components/button";
 import { cn } from "@ui/lib";
-import {
-	Camera,
-	CheckCircle2,
-	ExternalLink,
-	Github,
-	Play,
-	Twitter,
-} from "lucide-react";
+import { Camera, CheckCircle2, ExternalLink, Github, Play, Twitter } from "lucide-react";
 import { motion } from "motion/react";
 import { useEffect, useState } from "react";
 import ConfettiExplosion from "react-confetti-explosion";
@@ -31,10 +24,7 @@ interface WaitlistSuccessProps {
 	email: string;
 }
 
-export function WaitlistSuccess({
-	queuePosition,
-	email,
-}: WaitlistSuccessProps) {
+export function WaitlistSuccess({ queuePosition, email }: WaitlistSuccessProps) {
 	const { trackEvent } = useAnalytics();
 	const [showConfetti, setShowConfetti] = useState(true);
 	const [tasks, setTasks] = useState<QueueTask[]>([
@@ -77,18 +67,14 @@ export function WaitlistSuccess({
 	useEffect(() => {
 		async function fetchCompletedTasks() {
 			try {
-				const response = await fetch(
-					`/api/waitlist/task?email=${encodeURIComponent(email)}`,
-				);
+				const response = await fetch(`/api/waitlist/task?email=${encodeURIComponent(email)}`);
 				if (response.ok) {
 					const data = await response.json();
 					if (data.success && data.tasks) {
 						setTasks((prevTasks) =>
 							prevTasks.map((task) => ({
 								...task,
-								completed: data.tasks.some(
-									(t: { type: string }) => t.type === task.id,
-								),
+								completed: data.tasks.some((t: { type: string }) => t.type === task.id),
 							})),
 						);
 					}
@@ -103,11 +89,7 @@ export function WaitlistSuccess({
 
 	const handleTaskComplete = async (taskId: string) => {
 		// Optimistic update
-		setTasks((prevTasks) =>
-			prevTasks.map((task) =>
-				task.id === taskId ? { ...task, completed: true } : task,
-			),
-		);
+		setTasks((prevTasks) => prevTasks.map((task) => (task.id === taskId ? { ...task, completed: true } : task)));
 
 		try {
 			const response = await fetch("/api/waitlist/task", {
@@ -132,26 +114,20 @@ export function WaitlistSuccess({
 			} else {
 				// Revert optimistic update on error
 				setTasks((prevTasks) =>
-					prevTasks.map((task) =>
-						task.id === taskId ? { ...task, completed: false } : task,
-					),
+					prevTasks.map((task) => (task.id === taskId ? { ...task, completed: false } : task)),
 				);
 				console.error("Failed to complete task:", data.error);
 			}
 		} catch (error) {
 			// Revert optimistic update on error
 			setTasks((prevTasks) =>
-				prevTasks.map((task) =>
-					task.id === taskId ? { ...task, completed: false } : task,
-				),
+				prevTasks.map((task) => (task.id === taskId ? { ...task, completed: false } : task)),
 			);
 			console.error("Error completing task:", error);
 		}
 	};
 
-	const completedPoints = tasks
-		.filter((t) => t.completed)
-		.reduce((sum, t) => sum + t.points, 0);
+	const completedPoints = tasks.filter((t) => t.completed).reduce((sum, t) => sum + t.points, 0);
 	const totalPoints = tasks.reduce((sum, t) => sum + t.points, 0);
 
 	const shareOnTwitter = () => {
@@ -198,14 +174,9 @@ export function WaitlistSuccess({
 						className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full"
 						style={{ backgroundColor: snapbackColors.green.glow }}
 					>
-						<CheckCircle2
-							className="w-10 h-10"
-							style={{ color: snapbackColors.green.DEFAULT }}
-						/>
+						<CheckCircle2 className="w-10 h-10" style={{ color: snapbackColors.green.DEFAULT }} />
 					</motion.div>
-					<h2 className="text-3xl font-bold text-snapback-text-primary mb-2">
-						🎉 You're on the list!
-					</h2>
+					<h2 className="text-3xl font-bold text-snapback-text-primary mb-2">🎉 You're on the list!</h2>
 					<p className="text-snapback-text-secondary">
 						Welcome to the SnapBack Private Alpha • Beta launching Q1 2026
 					</p>
@@ -218,15 +189,11 @@ export function WaitlistSuccess({
 					transition={{ delay: 0.3 }}
 					className="text-center py-8 bg-snapback-bg-primary rounded-lg border-2 border-snapback-green/30"
 				>
-					<p className="text-sm text-snapback-text-secondary mb-2 uppercase tracking-wide">
-						Queue Position
-					</p>
+					<p className="text-sm text-snapback-text-secondary mb-2 uppercase tracking-wide">Queue Position</p>
 					<p className="text-6xl font-bold bg-gradient-to-r from-[#00FF41] via-[#34D399] to-[#00FF41] bg-clip-text text-transparent">
 						#{queuePosition}
 					</p>
-					<p className="text-sm text-snapback-text-secondary mt-2">
-						Check your email for next steps
-					</p>
+					<p className="text-sm text-snapback-text-secondary mt-2">Check your email for next steps</p>
 				</motion.div>
 
 				{/* Timeline */}
@@ -236,9 +203,7 @@ export function WaitlistSuccess({
 					transition={{ delay: 0.4 }}
 					className="space-y-4"
 				>
-					<h3 className="text-xl font-semibold text-snapback-text-primary">
-						What Happens Next
-					</h3>
+					<h3 className="text-xl font-semibold text-snapback-text-primary">What Happens Next</h3>
 
 					<div className="space-y-4">
 						{/* Timeline Item 1 */}
@@ -250,12 +215,9 @@ export function WaitlistSuccess({
 								<div className="flex-1 w-0.5 bg-snapback-border my-2" />
 							</div>
 							<div className="flex-1 pb-4">
-								<p className="text-sm font-semibold text-snapback-text-primary mb-1">
-									📧 Now
-								</p>
+								<p className="text-sm font-semibold text-snapback-text-primary mb-1">📧 Now</p>
 								<p className="text-sm text-snapback-text-secondary">
-									You're confirmed for private alpha! Complete tasks to jump
-									ahead in the queue.
+									You're confirmed for private alpha! Complete tasks to jump ahead in the queue.
 								</p>
 							</div>
 						</div>
@@ -273,8 +235,7 @@ export function WaitlistSuccess({
 									⏰ Within 48-72 hours
 								</p>
 								<p className="text-sm text-snapback-text-secondary">
-									We'll send you installation instructions and your alpha access
-									key as spots open up.
+									We'll send you installation instructions and your alpha access key as spots open up.
 								</p>
 							</div>
 						</div>
@@ -291,8 +252,7 @@ export function WaitlistSuccess({
 									🚀 Q1 2026 - Beta Launch
 								</p>
 								<p className="text-sm text-snapback-text-secondary">
-									Get 6 months of SnapBack Pro free when we launch beta. No
-									credit card needed.
+									Get 6 months of SnapBack Pro free when we launch beta. No credit card needed.
 								</p>
 							</div>
 						</div>
@@ -307,9 +267,7 @@ export function WaitlistSuccess({
 					className="space-y-4"
 				>
 					<div className="flex items-center justify-between">
-						<h3 className="text-xl font-semibold text-snapback-text-primary">
-							⚡ Jump the Queue
-						</h3>
+						<h3 className="text-xl font-semibold text-snapback-text-primary">⚡ Jump the Queue</h3>
 						<span className="text-sm text-snapback-text-secondary">
 							{completedPoints}/{totalPoints} points
 						</span>
@@ -352,18 +310,12 @@ export function WaitlistSuccess({
 										{task.icon}
 									</div>
 									<div>
-										<p className="font-medium text-snapback-text-primary">
-											{task.title}
-										</p>
-										<p className="text-sm text-snapback-text-secondary">
-											{task.description}
-										</p>
+										<p className="font-medium text-snapback-text-primary">{task.title}</p>
+										<p className="text-sm text-snapback-text-secondary">{task.description}</p>
 									</div>
 								</div>
 								<div className="flex items-center gap-2">
-									<span className="text-sm font-semibold text-snapback-green">
-										+{task.points}
-									</span>
+									<span className="text-sm font-semibold text-snapback-green">+{task.points}</span>
 									{!task.completed && (
 										<Button
 											size="sm"
@@ -396,19 +348,14 @@ export function WaitlistSuccess({
 					transition={{ delay: 0.6 }}
 					className="flex flex-col sm:flex-row gap-3 pt-4"
 				>
-					<Button
-						onClick={shareOnTwitter}
-						className="flex-1 bg-[#1DA1F2] hover:bg-[#1a8cd8] text-white"
-					>
+					<Button onClick={shareOnTwitter} className="flex-1 bg-[#1DA1F2] hover:bg-[#1a8cd8] text-white">
 						<Twitter className="w-4 h-4 mr-2" />
 						Share on Twitter
 					</Button>
 					<Button
 						variant="outline"
 						className="flex-1"
-						onClick={() =>
-							window.open("https://snapback.dev/dashboard", "_blank")
-						}
+						onClick={() => window.open("https://snapback.dev/dashboard", "_blank")}
 					>
 						<ExternalLink className="w-4 h-4 mr-2" />
 						View Dashboard

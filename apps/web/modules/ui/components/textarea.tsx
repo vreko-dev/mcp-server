@@ -1,10 +1,7 @@
 import { cn } from "@ui/lib";
 import type * as React from "react";
 
-const Textarea = ({
-	className,
-	...props
-}: React.ComponentProps<"textarea">) => {
+const Textarea = ({ className, ...props }: React.ComponentProps<"textarea">) => {
 	return (
 		<textarea
 			className={cn(

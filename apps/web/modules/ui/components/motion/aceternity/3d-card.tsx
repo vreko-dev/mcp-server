@@ -11,11 +11,7 @@ interface Card3DProps {
 	containerClassName?: string;
 }
 
-export const Card3D = ({
-	children,
-	className,
-	containerClassName,
-}: Card3DProps) => {
+export const Card3D = ({ children, className, containerClassName }: Card3DProps) => {
 	const ref = useRef<HTMLDivElement>(null);
 	const x = useMotionValue(0);
 	const y = useMotionValue(0);

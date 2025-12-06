@@ -102,10 +102,7 @@ export function Hero() {
 					}}
 				>
 					{/* Alpha announcement */}
-					<motion.div
-						variants={animations.fadeInUp}
-						className="mb-8 flex justify-center"
-					>
+					<motion.div variants={animations.fadeInUp} className="mb-8 flex justify-center">
 						<AlphaBadge />
 					</motion.div>
 
@@ -116,9 +113,7 @@ export function Hero() {
 					>
 						<span className="text-text-primary">Code Breaks.</span>
 						<br />
-						<span className="text-green drop-shadow-[0_0_25px_rgba(0,255,65,0.3)]">
-							Snap Back.
-						</span>
+						<span className="text-green drop-shadow-[0_0_25px_rgba(0,255,65,0.3)]">Snap Back.</span>
 					</motion.h1>
 
 					{/* Founder Story */}
@@ -198,16 +193,13 @@ export function Hero() {
 					className="flex flex-col items-center gap-2 text-text-tertiary cursor-pointer hover:text-green transition-colors"
 					onClick={() => {
 						const nextSection =
-							document.getElementById("trust-bar") ||
-							document.querySelector("section:nth-of-type(2)");
+							document.getElementById("trust-bar") || document.querySelector("section:nth-of-type(2)");
 						if (nextSection) {
 							nextSection.scrollIntoView({ behavior: "smooth" });
 						}
 					}}
 				>
-					<span className="text-xs uppercase tracking-wider font-mono">
-						Scroll to explore
-					</span>
+					<span className="text-xs uppercase tracking-wider font-mono">Scroll to explore</span>
 					<div className="w-px h-8 bg-gradient-to-b from-green to-transparent" />
 				</motion.div>
 			</div>

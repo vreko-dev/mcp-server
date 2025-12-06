@@ -6,9 +6,7 @@ import { useEffect, useState } from "react";
 // Lazy load the terminal component
 const SnapBackTerminalUltimate = dynamic(
 	() =>
-		import("@ui/components/domain/terminal/snapback-terminal-ultimate").then(
-			(mod) => mod.SnapBackTerminalUltimate,
-		),
+		import("@ui/components/domain/terminal/snapback-terminal-ultimate").then((mod) => mod.SnapBackTerminalUltimate),
 	{
 		loading: () => (
 			<div className="h-[600px] bg-black/90 rounded-lg animate-pulse flex items-center justify-center">
@@ -53,11 +51,7 @@ export function OptimizedTerminal() {
 	return (
 		<div id="terminal-container" data-testid="terminal-container">
 			{shouldLoad && (
-				<div
-					className={
-						isMobile ? "h-[50vh] max-h-[400px] text-xs" : "h-[600px] text-sm"
-					}
-				>
+				<div className={isMobile ? "h-[50vh] max-h-[400px] text-xs" : "h-[600px] text-sm"}>
 					<SnapBackTerminalUltimate />
 				</div>
 			)}

@@ -6,13 +6,7 @@ import { Turnstile } from "@marsidev/react-turnstile";
 import { Button } from "@ui/components/button";
 import { Input } from "@ui/components/input";
 import { Label } from "@ui/components/label";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@ui/components/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@ui/components/select";
 import { ArrowRight, Shield } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
@@ -36,24 +30,9 @@ const INITIAL_FORM_DATA: FormData = {
 	teamSize: "",
 };
 
-const EDITOR_OPTIONS = [
-	"VS Code",
-	"Cursor",
-	"Windsurf",
-	"JetBrains IDEs",
-	"Neovim",
-	"Other",
-];
+const EDITOR_OPTIONS = ["VS Code", "Cursor", "Windsurf", "JetBrains IDEs", "Neovim", "Other"];
 
-const LANGUAGE_OPTIONS = [
-	"TypeScript",
-	"JavaScript",
-	"Python",
-	"Go",
-	"Rust",
-	"Java",
-	"Other",
-];
+const LANGUAGE_OPTIONS = ["TypeScript", "JavaScript", "Python", "Go", "Rust", "Java", "Other"];
 
 const TEAM_SIZE_OPTIONS = ["Solo", "2-5", "6-20", "21-50", "51+"];
 
@@ -106,11 +85,7 @@ export function WaitlistFlow() {
 			});
 		} catch (error) {
 			console.error("Error joining waitlist:", error);
-			alert(
-				error instanceof Error
-					? error.message
-					: "Failed to join waitlist. Please try again.",
-			);
+			alert(error instanceof Error ? error.message : "Failed to join waitlist. Please try again.");
 		} finally {
 			setLoading(false);
 		}
@@ -155,9 +130,7 @@ export function WaitlistFlow() {
 										id="github"
 										type="text"
 										value={formData.githubUsername}
-										onChange={(e) =>
-											handleChange("githubUsername", e.target.value)
-										}
+										onChange={(e) => handleChange("githubUsername", e.target.value)}
 										placeholder="octocat"
 										className="bg-snapback-bg-primary border-snapback-border focus:border-[#00FF41] transition-colors"
 									/>
@@ -287,10 +260,7 @@ export function WaitlistFlow() {
 						<QueueTasksPreview />
 					</motion.div>
 				) : (
-					<WaitlistSuccess
-						queuePosition={queuePosition!}
-						email={formData.email}
-					/>
+					<WaitlistSuccess queuePosition={queuePosition!} email={formData.email} />
 				)}
 			</AnimatePresence>
 		</div>

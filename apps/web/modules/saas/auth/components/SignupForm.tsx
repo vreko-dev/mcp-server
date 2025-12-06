@@ -6,23 +6,9 @@ import { useAuthErrorMessages } from "@saas/auth/hooks/errors-messages";
 import { OrganizationInvitationAlert } from "@saas/organizations/components/OrganizationInvitationAlert";
 import { Alert, AlertDescription, AlertTitle } from "@ui/components/alert";
 import { Button } from "@ui/components/button";
-import {
-	Form,
-	FormControl,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from "@ui/components/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@ui/components/form";
 import { Input } from "@ui/components/input";
-import {
-	AlertTriangleIcon,
-	ArrowRightIcon,
-	EyeIcon,
-	EyeOffIcon,
-	MailboxIcon,
-	ShieldAlertIcon,
-} from "lucide-react";
+import { AlertTriangleIcon, ArrowRightIcon, EyeIcon, EyeOffIcon, MailboxIcon, ShieldAlertIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
@@ -30,10 +16,7 @@ import { useForm } from "react-hook-form";
 import { withQuery } from "ufo";
 import { z } from "zod";
 import { authConfig } from "../config";
-import {
-	type OAuthProvider,
-	oAuthProviders,
-} from "../constants/oauth-providers";
+import { type OAuthProvider, oAuthProviders } from "../constants/oauth-providers";
 import { DeviceFingerprint } from "./DeviceFingerprint";
 import { SocialSigninButton } from "./SocialSigninButton";
 
@@ -121,8 +104,7 @@ export function SignupForm({ prefillEmail }: { prefillEmail?: string }) {
 			if (!response.ok && data.code === "CHALLENGE_REQUIRED") {
 				setShowCaptcha(true);
 				form.setError("root", {
-					message:
-						"Security verification required. Please complete the challenge below.",
+					message: "Security verification required. Please complete the challenge below.",
 				});
 				return;
 			}
@@ -145,9 +127,7 @@ export function SignupForm({ prefillEmail }: { prefillEmail?: string }) {
 				} catch (e) {
 					form.setError("root", {
 						message: getAuthErrorMessage(
-							e && typeof e === "object" && "code" in e
-								? (e.code as string)
-								: undefined,
+							e && typeof e === "object" && "code" in e ? (e.code as string) : undefined,
 						),
 					});
 				}
@@ -156,9 +136,7 @@ export function SignupForm({ prefillEmail }: { prefillEmail?: string }) {
 		} catch (e) {
 			form.setError("root", {
 				message: getAuthErrorMessage(
-					e && typeof e === "object" && "code" in e
-						? (e.code as string)
-						: undefined,
+					e && typeof e === "object" && "code" in e ? (e.code as string) : undefined,
 				),
 			});
 		}
@@ -168,9 +146,7 @@ export function SignupForm({ prefillEmail }: { prefillEmail?: string }) {
 		<div>
 			<DeviceFingerprint onFingerprint={setFingerprint} />
 			<h1 className="font-bold text-xl md:text-2xl">Create your account</h1>
-			<p className="mt-1 mb-6 text-foreground/60">
-				Get started with your free account today.
-			</p>
+			<p className="mt-1 mb-6 text-foreground/60">Get started with your free account today.</p>
 
 			{form.formState.isSubmitSuccessful && !invitationOnlyMode ? (
 				<Alert variant="success">
@@ -182,16 +158,11 @@ export function SignupForm({ prefillEmail }: { prefillEmail?: string }) {
 					{invitationId && <OrganizationInvitationAlert className="mb-6" />}
 
 					<Form {...form}>
-						<form
-							className="flex flex-col items-stretch gap-4"
-							onSubmit={onSubmit}
-						>
+						<form className="flex flex-col items-stretch gap-4" onSubmit={onSubmit}>
 							{form.formState.isSubmitted && form.formState.errors.root && (
 								<Alert variant="error">
 									<AlertTriangleIcon />
-									<AlertDescription>
-										{form.formState.errors.root.message}
-									</AlertDescription>
+									<AlertDescription>{form.formState.errors.root.message}</AlertDescription>
 								</Alert>
 							)}
 
@@ -216,11 +187,7 @@ export function SignupForm({ prefillEmail }: { prefillEmail?: string }) {
 									<FormItem>
 										<FormLabel>Email</FormLabel>
 										<FormControl>
-											<Input
-												{...field}
-												autoComplete="email"
-												readOnly={!!prefillEmail}
-											/>
+											<Input {...field} autoComplete="email" readOnly={!!prefillEmail} />
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -291,8 +258,7 @@ export function SignupForm({ prefillEmail }: { prefillEmail?: string }) {
 										}}
 										onError={() => {
 											form.setError("root", {
-												message:
-													"Challenge verification failed. Please try again.",
+												message: "Challenge verification failed. Please try again.",
 											});
 											setTurnstileToken(undefined);
 											setIsChallengeLoading(false);
@@ -309,10 +275,7 @@ export function SignupForm({ prefillEmail }: { prefillEmail?: string }) {
 								</div>
 							)}
 
-							<Button
-								loading={form.formState.isSubmitting}
-								disabled={showCaptcha && !turnstileToken}
-							>
+							<Button loading={form.formState.isSubmitting} disabled={showCaptcha && !turnstileToken}>
 								Create account
 							</Button>
 						</form>
@@ -329,10 +292,7 @@ export function SignupForm({ prefillEmail }: { prefillEmail?: string }) {
 
 							<div className="grid grid-cols-1 items-stretch gap-2 sm:grid-cols-2">
 								{Object.keys(oAuthProviders).map((providerId) => (
-									<SocialSigninButton
-										key={providerId}
-										provider={providerId as OAuthProvider}
-									/>
+									<SocialSigninButton key={providerId} provider={providerId as OAuthProvider} />
 								))}
 							</div>
 						</>
@@ -342,12 +302,7 @@ export function SignupForm({ prefillEmail }: { prefillEmail?: string }) {
 
 			<div className="mt-6 text-center text-sm">
 				<span className="text-foreground/60">Already have an account? </span>
-				<Link
-					href={withQuery(
-						"/auth/login",
-						Object.fromEntries(searchParams.entries()),
-					)}
-				>
+				<Link href={withQuery("/auth/login", Object.fromEntries(searchParams.entries()))}>
 					Sign in
 					<ArrowRightIcon className="ml-1 inline size-4 align-middle" />
 				</Link>

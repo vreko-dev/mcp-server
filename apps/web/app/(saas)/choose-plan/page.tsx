@@ -41,9 +41,7 @@ export default async function ChoosePlanPage() {
 		organizationId = (organization as any)?.id;
 	}
 
-	const [error, purchases] = await attemptAsync(() =>
-		getPurchases(organizationId),
-	);
+	const [error, purchases] = await attemptAsync(() => getPurchases(organizationId));
 
 	if (error || !purchases) {
 		throw new Error("Failed to fetch purchases");
@@ -58,12 +56,8 @@ export default async function ChoosePlanPage() {
 	return (
 		<AuthWrapper contentClass="max-w-5xl">
 			<div className="mb-4 text-center">
-				<h1 className="text-center font-bold text-2xl lg:text-3xl">
-					Choose a Plan
-				</h1>
-				<p className="text-muted-foreground text-sm lg:text-base">
-					Select the plan that best fits your needs
-				</p>
+				<h1 className="text-center font-bold text-2xl lg:text-3xl">Choose a Plan</h1>
+				<p className="text-muted-foreground text-sm lg:text-base">Select the plan that best fits your needs</p>
 			</div>
 
 			<div>

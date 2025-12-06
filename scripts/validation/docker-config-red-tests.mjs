@@ -97,7 +97,9 @@ function parseEnvFile(envPath) {
 
 		for (const line of content.split("\n")) {
 			const trimmed = line.trim();
-			if (!trimmed || trimmed.startsWith("#")) { continue; }
+			if (!trimmed || trimmed.startsWith("#")) {
+				continue;
+			}
 
 			const [key, ...valueParts] = trimmed.split("=");
 			if (key) {
@@ -125,7 +127,9 @@ function getWorkspacePackages() {
 			if (fs.existsSync(pkgPath)) {
 				try {
 					const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf-8"));
-					if (pkg.name) { packages.push(pkg.name); }
+					if (pkg.name) {
+						packages.push(pkg.name);
+					}
 				} catch (_e) {}
 			}
 		}
@@ -139,7 +143,9 @@ function getWorkspacePackages() {
 			if (fs.existsSync(pkgPath)) {
 				try {
 					const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf-8"));
-					if (pkg.name) { packages.push(pkg.name); }
+					if (pkg.name) {
+						packages.push(pkg.name);
+					}
 				} catch (_e) {}
 			}
 		}
@@ -199,7 +205,9 @@ for (const [name, dockerfilePath] of Object.entries(dockerfiles)) {
 console.log("📦 Testing Package References\n");
 
 for (const [name, dockerfilePath] of Object.entries(dockerfiles)) {
-	if (!fs.existsSync(dockerfilePath)) { continue; }
+	if (!fs.existsSync(dockerfilePath)) {
+		continue;
+	}
 
 	console.log(`${name}:`);
 	const content = fs.readFileSync(dockerfilePath, "utf-8");

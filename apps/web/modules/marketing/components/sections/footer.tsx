@@ -60,8 +60,7 @@ const Footer = () => {
 							<Logo withLabel={true} />
 						</div>
 						<p className="text-muted-foreground mb-6 max-w-sm text-sm leading-relaxed">
-							Ship fast. Break things.{" "}
-							<span className="text-[#00FF41] font-semibold">SnapBack</span>{" "}
+							Ship fast. Break things. <span className="text-[#00FF41] font-semibold">SnapBack</span>{" "}
 							instantly. Your AI-proof safety net for fearless development.
 						</p>
 
@@ -87,9 +86,7 @@ const Footer = () => {
 						{Object.entries(links).map(([category, categoryLinks], index) => (
 							<m.div
 								key={category}
-								initial={
-									isMounted ? { opacity: 0, y: 20 } : { opacity: 1, y: 0 }
-								}
+								initial={isMounted ? { opacity: 0, y: 20 } : { opacity: 1, y: 0 }}
 								whileInView={{ opacity: 1, y: 0 }}
 								transition={{
 									duration: 0.6,

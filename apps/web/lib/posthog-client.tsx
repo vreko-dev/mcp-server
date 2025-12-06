@@ -30,8 +30,7 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
 
 	useEffect(() => {
 		const apiKey = process.env.NEXT_PUBLIC_POSTHOG_KEY;
-		const host =
-			process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com";
+		const host = process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com";
 
 		if (!apiKey) {
 			console.warn("PostHog not configured");
@@ -51,8 +50,7 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
 				},
 				session_recording: {
 					// Selective masking instead of maskAllInputs: true
-					maskTextSelector:
-						".sensitive, [data-sensitive], input[type='password'], input[type='email']",
+					maskTextSelector: ".sensitive, [data-sensitive], input[type='password'], input[type='email']",
 					maskInputOptions: {
 						password: true,
 					},
@@ -80,10 +78,7 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
 /**
  * Identify user after auth
  */
-export function identifyUser(
-	userId: string,
-	properties?: Record<string, unknown>,
-): void {
+export function identifyUser(userId: string, properties?: Record<string, unknown>): void {
 	if (posthog.__loaded) {
 		posthog.identify(userId, properties);
 	}
@@ -92,11 +87,7 @@ export function identifyUser(
 /**
  * Associate user with organization
  */
-export function setUserGroup(
-	groupType: string,
-	groupKey: string,
-	properties?: Record<string, unknown>,
-): void {
+export function setUserGroup(groupType: string, groupKey: string, properties?: Record<string, unknown>): void {
 	if (posthog.__loaded) {
 		posthog.group(groupType, groupKey, properties);
 	}
@@ -105,10 +96,7 @@ export function setUserGroup(
 /**
  * Capture custom event
  */
-export function captureEvent(
-	event: string,
-	properties?: Record<string, unknown>,
-): void {
+export function captureEvent(event: string, properties?: Record<string, unknown>): void {
 	if (posthog.__loaded) {
 		posthog.capture(event, properties);
 	}

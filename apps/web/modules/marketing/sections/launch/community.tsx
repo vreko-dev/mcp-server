@@ -1,12 +1,7 @@
 "use client";
 
 import { useReducedMotion } from "@ui/hooks/use-reduced-motion";
-import {
-	BookOpen,
-	Github as GithubIcon,
-	MessageCircle,
-	Video,
-} from "lucide-react";
+import { BookOpen, Github as GithubIcon, MessageCircle, Video } from "lucide-react";
 import { motion as m } from "motion/react";
 import Link from "next/link";
 
@@ -78,24 +73,17 @@ export function Community() {
 	};
 
 	return (
-		<section
-			className="py-24 bg-background relative overflow-hidden"
-			aria-labelledby="community-heading"
-		>
+		<section className="py-24 bg-background relative overflow-hidden" aria-labelledby="community-heading">
 			<div className="container mx-auto px-4">
 				<div className="text-center mb-20 space-y-4">
 					<div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-500 text-caption font-medium uppercase tracking-wider">
 						Build With Us
 					</div>
-					<h2
-						id="community-heading"
-						className="text-heading-1 font-bold text-foreground"
-					>
+					<h2 id="community-heading" className="text-heading-1 font-bold text-foreground">
 						We're Building This in Public
 					</h2>
 					<p className="text-body-lg text-muted-foreground max-w-2xl mx-auto">
-						No stealth mode. No surprise launches. Just honest development with
-						community input.
+						No stealth mode. No surprise launches. Just honest development with community input.
 					</p>
 				</div>
 
@@ -124,13 +112,9 @@ export function Community() {
 										{option.icon}
 									</div>
 
-									<h3 className="text-heading-3 font-bold text-foreground">
-										{option.title}
-									</h3>
+									<h3 className="text-heading-3 font-bold text-foreground">{option.title}</h3>
 
-									<p className="text-muted-foreground text-body-sm flex-grow">
-										{option.description}
-									</p>
+									<p className="text-muted-foreground text-body-sm flex-grow">{option.description}</p>
 
 									<div className="text-body-sm font-medium text-primary group-hover:text-primary/80 transition-colors motion-reduce:transition-none">
 										{option.cta}

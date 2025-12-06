@@ -8,13 +8,7 @@ import { useMutation } from "@tanstack/react-query";
 import { Button } from "@ui/components/button";
 import { Tabs, TabsList, TabsTrigger } from "@ui/components/tabs";
 import { cn } from "@ui/lib";
-import {
-	ArrowRightIcon,
-	BadgePercentIcon,
-	CheckIcon,
-	PhoneIcon,
-	StarIcon,
-} from "lucide-react";
+import { ArrowRightIcon, BadgePercentIcon, CheckIcon, PhoneIcon, StarIcon } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -54,9 +48,7 @@ export function PricingTable({
 			return;
 		}
 
-		const price = plan.prices?.find(
-			(price: any) => price && price.productId === productId,
-		);
+		const price = plan.prices?.find((price: any) => price && price.productId === productId);
 
 		if (!price) {
 			return;
@@ -81,14 +73,11 @@ export function PricingTable({
 	};
 
 	const filteredPlans = Object.entries(plans).filter(
-		([planId]) =>
-			planId !== activePlanId && (!activePlanId || planId !== "free"),
+		([planId]) => planId !== activePlanId && (!activePlanId || planId !== "free"),
 	);
 
 	const hasSubscriptions = filteredPlans.some(([_, plan]) =>
-		(plan as any).prices?.some(
-			(price: any) => price && price.type === "recurring",
-		),
+		(plan as any).prices?.some((price: any) => price && price.type === "recurring"),
 	);
 
 	return (
@@ -175,9 +164,7 @@ export function PricingTable({
 											{title}
 										</h3>
 										{description && (
-											<div className="prose mt-2 text-foreground/60 text-sm">
-												{description}
-											</div>
+											<div className="prose mt-2 text-foreground/60 text-sm">{description}</div>
 										)}
 
 										{!!features?.length && (
@@ -194,14 +181,12 @@ export function PricingTable({
 											</ul>
 										)}
 
-										{price &&
-											"trialPeriodDays" in price &&
-											price.trialPeriodDays && (
-												<div className="mt-4 flex items-center justify-start font-medium text-primary text-sm opacity-80">
-													<BadgePercentIcon className="mr-2 size-4" />
-													{price.trialPeriodDays} day free trial
-												</div>
-											)}
+										{price && "trialPeriodDays" in price && price.trialPeriodDays && (
+											<div className="mt-4 flex items-center justify-start font-medium text-primary text-sm opacity-80">
+												<BadgePercentIcon className="mr-2 size-4" />
+												{price.trialPeriodDays} day free trial
+											</div>
+										)}
 									</div>
 
 									<div>
@@ -218,22 +203,16 @@ export function PricingTable({
 													<span className="font-normal text-xs opacity-60">
 														{" / "}
 														{interval === "month"
-															? `month${
-																	(price.intervalCount ?? 1) > 1 ? "s" : ""
-																}`
-															: `year${
-																	(price.intervalCount ?? 1) > 1 ? "s" : ""
-																}`}
+															? `month${(price.intervalCount ?? 1) > 1 ? "s" : ""}`
+															: `year${(price.intervalCount ?? 1) > 1 ? "s" : ""}`}
 													</span>
 												)}
-												{organizationId &&
-													"seatBased" in price &&
-													price.seatBased && (
-														<span className="font-normal text-xs opacity-60">
-															{" / "}
-															per seat
-														</span>
-													)}
+												{organizationId && "seatBased" in price && price.seatBased && (
+													<span className="font-normal text-xs opacity-60">
+														{" / "}
+														per seat
+													</span>
+												)}
 											</strong>
 										)}
 
@@ -248,14 +227,10 @@ export function PricingTable({
 											<Button
 												className="mt-4 w-full"
 												variant={recommended ? "primary" : "secondary"}
-												onClick={() =>
-													onSelectPlan(planId as PlanId, price?.productId)
-												}
+												onClick={() => onSelectPlan(planId as PlanId, price?.productId)}
 												loading={loading === planId}
 											>
-												{userId || organizationId
-													? "Choose Plan"
-													: "Get Started"}
+												{userId || organizationId ? "Choose Plan" : "Get Started"}
 												<ArrowRightIcon className="ml-2 size-4" />
 											</Button>
 										)}

@@ -222,12 +222,7 @@ interface TreeNodeProps {
 	toggleExpand: (id: string) => void;
 }
 
-const TreeNode: React.FC<TreeNodeProps> = ({
-	node,
-	depth,
-	expandedNodes,
-	toggleExpand,
-}) => {
+const TreeNode: React.FC<TreeNodeProps> = ({ node, depth, expandedNodes, toggleExpand }) => {
 	const isExpanded = expandedNodes.has(node.id);
 	const hasChildren = node.children && node.children.length > 0;
 
@@ -262,15 +257,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({
 				)}
 
 				<div className="mr-2">
-					{node.type === "folder" ? (
-						isExpanded ? (
-							<FolderOpenIcon />
-						) : (
-							<FolderIcon />
-						)
-					) : (
-						<FileIcon />
-					)}
+					{node.type === "folder" ? isExpanded ? <FolderOpenIcon /> : <FolderIcon /> : <FileIcon />}
 				</div>
 
 				<span className="flex-1 text-sm truncate">{node.name}</span>
@@ -295,9 +282,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({
 };
 
 export function ProtectionHatsDemo() {
-	const [expandedNodes, setExpandedNodes] = useState<Set<string>>(
-		new Set(["1", "9", "12"]),
-	);
+	const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set(["1", "9", "12"]));
 	const [buttonHover, setButtonHover] = useState(false);
 
 	const toggleExpand = (id: string) => {
@@ -316,12 +301,10 @@ export function ProtectionHatsDemo() {
 		<section className="py-16 bg-gradient-to-b from-slate-900 to-slate-950">
 			<div className="container max-w-6xl">
 				<div className="text-center mb-12">
-					<h2 className="font-bold text-3xl md:text-4xl mb-4">
-						Protection Hats Demo
-					</h2>
+					<h2 className="font-bold text-3xl md:text-4xl mb-4">Protection Hats Demo</h2>
 					<p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-						See how SnapBack protects your code with visual hats. Right-click
-						files to assign hats and see real-time activity logging.
+						See how SnapBack protects your code with visual hats. Right-click files to assign hats and see
+						real-time activity logging.
 					</p>
 				</div>
 
@@ -346,9 +329,7 @@ export function ProtectionHatsDemo() {
 									EXPLORER
 								</div>
 								<div className="p-2 h-80 overflow-auto">
-									<div className="text-xs text-slate-400 mb-2 px-2">
-										PROJECT FILES
-									</div>
+									<div className="text-xs text-slate-400 mb-2 px-2">PROJECT FILES</div>
 									{demoProject.map((node) => (
 										<TreeNode
 											key={node.id}
@@ -367,44 +348,34 @@ export function ProtectionHatsDemo() {
 								</div>
 								<div className="p-2 h-80">
 									<div className="space-y-2">
-										<div className="text-xs text-slate-400 px-2">
-											RECENT ACTIVITY
-										</div>
+										<div className="text-xs text-slate-400 px-2">RECENT ACTIVITY</div>
 										<div className="text-sm p-2 rounded bg-slate-800/50">
 											<div className="flex items-center">
 												<span className="text-rose-500 mr-2">🛑</span>
 												<span>package.json marked as critical</span>
 											</div>
-											<div className="text-xs text-slate-400 mt-1">
-												2 minutes ago
-											</div>
+											<div className="text-xs text-slate-400 mt-1">2 minutes ago</div>
 										</div>
 										<div className="text-sm p-2 rounded bg-slate-800/50">
 											<div className="flex items-center">
 												<span className="text-amber-400 mr-2">⚠️</span>
 												<span>webpack.config.js protected</span>
 											</div>
-											<div className="text-xs text-slate-400 mt-1">
-												5 minutes ago
-											</div>
+											<div className="text-xs text-slate-400 mt-1">5 minutes ago</div>
 										</div>
 										<div className="text-sm p-2 rounded bg-slate-800/50">
 											<div className="flex items-center">
 												<span className="text-sky-400 mr-2">👁️</span>
 												<span>README.md now watched</span>
 											</div>
-											<div className="text-xs text-slate-400 mt-1">
-												12 minutes ago
-											</div>
+											<div className="text-xs text-slate-400 mt-1">12 minutes ago</div>
 										</div>
 										<div className="text-sm p-2 rounded bg-slate-800/50">
 											<div className="flex items-center">
 												<span className="text-rose-500 mr-2">🛑</span>
 												<span>App.tsx marked as critical</span>
 											</div>
-											<div className="text-xs text-slate-400 mt-1">
-												18 minutes ago
-											</div>
+											<div className="text-xs text-slate-400 mt-1">18 minutes ago</div>
 										</div>
 									</div>
 								</div>
@@ -417,9 +388,7 @@ export function ProtectionHatsDemo() {
 								target="_blank"
 								rel="noopener noreferrer"
 								className={`inline-flex items-center gap-2 px-6 py-3 rounded-md font-semibold transition-colors ${
-									buttonHover
-										? "bg-amber-500 text-slate-900"
-										: "bg-amber-600 text-white"
+									buttonHover ? "bg-amber-500 text-slate-900" : "bg-amber-600 text-white"
 								}`}
 								onMouseOver={() => setButtonHover(true)}
 								onMouseOut={() => setButtonHover(false)}

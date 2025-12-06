@@ -1,6 +1,6 @@
 # Link Standardization Guide
 
-**Last Updated**: 2025-12-06  
+**Last Updated**: 2025-12-06
 **Purpose**: Maintain consistent, SEO-friendly links across SnapBack ecosystem
 
 ## 🎯 Primary Ecosystem URLs (Always Use These)
@@ -161,7 +161,7 @@ These links are automatically validated by:
 - CI/CD pipeline (GitHub Actions)
 - SEO automation scripts
 
-If you see link inconsistencies, please file an issue at:  
+If you see link inconsistencies, please file an issue at:
 **https://github.com/snapback-dev/snapback.dev/issues**
 
 ---

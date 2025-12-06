@@ -123,38 +123,74 @@
 		"@snapback/infrastructure#build": {
 			"outputs": ["dist/**"],
 			"dependsOn": ["^build"],
-			"inputs": [
-				"$TURBO_DEFAULT$",
-				"tsup.config.ts",
-				"src/sentry/**/*"
-			],
+			"inputs": ["$TURBO_DEFAULT$", "tsup.config.ts", "src/sentry/**/*"],
+			"cache": true
+		},
+		"@snapback/auth#build": {
+			"outputs": ["dist/**"],
+			"dependsOn": ["^build"],
+			"inputs": ["$TURBO_DEFAULT$", "tsup.config.ts", "tsconfig.json", "package.json"],
+			"cache": true
+		},
+		"@snapback/core#build": {
+			"outputs": ["dist/**"],
+			"dependsOn": ["^build"],
+			"inputs": ["$TURBO_DEFAULT$", "tsup.config.ts", "tsconfig.json", "package.json"],
+			"cache": true
+		},
+		"@snapback/platform#build": {
+			"outputs": ["dist/**"],
+			"dependsOn": ["^build"],
+			"inputs": ["$TURBO_DEFAULT$", "tsup.config.ts", "tsconfig.json", "package.json"],
+			"cache": true
+		},
+		"@snapback/sdk#build": {
+			"outputs": ["dist/**"],
+			"dependsOn": ["^build"],
+			"inputs": ["$TURBO_DEFAULT$", "tsup.config.ts", "tsconfig.json", "package.json"],
+			"cache": true
+		},
+		"@snapback/events#build": {
+			"outputs": ["dist/**"],
+			"dependsOn": ["^build"],
+			"inputs": ["$TURBO_DEFAULT$", "tsup.config.ts", "package.json"],
+			"cache": true
+		},
+		"@snapback/config#build": {
+			"outputs": ["dist/**"],
+			"dependsOn": ["^build"],
+			"inputs": ["$TURBO_DEFAULT$", "tsup.config.ts", "package.json"],
 			"cache": true
 		},
 		"@snapback-oss/contracts#build": {
 			"outputs": ["dist/**"],
-			"dependsOn": ["^build"]
+			"dependsOn": ["^build"],
+			"inputs": ["$TURBO_DEFAULT$", "tsup.config.ts", "package.json"],
+			"cache": true
 		},
 		"@snapback-oss/infrastructure#build": {
 			"outputs": ["dist/**"],
 			"dependsOn": ["^build"],
-			"inputs": [
-				"$TURBO_DEFAULT$",
-				"tsup.config.ts",
-				"src/sentry/**/*"
-			],
+			"inputs": ["$TURBO_DEFAULT$", "tsup.config.ts", "src/sentry/**/*", "package.json"],
 			"cache": true
 		},
 		"@snapback-oss/config#build": {
 			"outputs": ["dist/**"],
-			"dependsOn": ["^build"]
+			"dependsOn": ["^build"],
+			"inputs": ["$TURBO_DEFAULT$", "tsup.config.ts", "package.json"],
+			"cache": true
 		},
 		"@snapback-oss/events#build": {
 			"outputs": ["dist/**"],
-			"dependsOn": ["^build"]
+			"dependsOn": ["^build"],
+			"inputs": ["$TURBO_DEFAULT$", "tsup.config.ts", "package.json"],
+			"cache": true
 		},
 		"@snapback-oss/sdk#build": {
 			"outputs": ["dist/**", "dist-types/**"],
-			"dependsOn": ["^build"]
+			"dependsOn": ["^build"],
+			"inputs": ["$TURBO_DEFAULT$", "tsup.config.ts", "package.json"],
+			"cache": true
 		}
 	}
 }

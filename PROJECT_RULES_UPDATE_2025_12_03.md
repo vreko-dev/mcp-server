@@ -111,7 +111,7 @@ Updated project rules and standards based on architectural insights gained from 
 
 **Issue:** RollupError during DTS generation - "RequestOptions" is not exported by "node:http"
 
-**Root Cause:** 
+**Root Cause:**
 - @sentry/node types import from Node.js http module types that don't export RequestOptions
 - Exporting full Sentry type caused tsup's DTS resolver to fail when bundling types
 - Rollup couldn't trace the import chain through node:http → node:https → RequestOptions

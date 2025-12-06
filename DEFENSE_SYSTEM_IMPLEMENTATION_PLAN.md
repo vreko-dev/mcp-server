@@ -1,10 +1,10 @@
 # Defense System Implementation Plan - TDD Red-Green-Refactor
 
-**Version**: 1.0  
-**Framework**: TDD Red-Green-Refactor  
-**Target Coverage**: 95%+ for critical paths (Happy + Sad paths), 80%+ for edge cases and error scenarios  
-**Timeline**: 5 days (14 task phases)  
-**Tech Stack**: Arcjet + ThumbmarkJS + Better Auth v1.3.34+ + Turnstile  
+**Version**: 1.0
+**Framework**: TDD Red-Green-Refactor
+**Target Coverage**: 95%+ for critical paths (Happy + Sad paths), 80%+ for edge cases and error scenarios
+**Timeline**: 5 days (14 task phases)
+**Tech Stack**: Arcjet + ThumbmarkJS + Better Auth v1.3.34+ + Turnstile
 **Workspace Rules**: Always import from `@snapback/*` packages, use Result<T,E> pattern, follow monorepo conventions
 
 ---
@@ -543,19 +543,19 @@ describe("Defense System - End-to-End", () => {
 │     - Hardware: CPU cores, memory, GPU
 │     - Browser: User agent, language, timezone
 │     - Canvas: Rendering differences
-│  
+│
 │  2. Arcjet Fingerprinting: Combines multiple signals
 │     - IP address (with VPN/proxy detection)
 │     - TLS fingerprint (browser crypto implementation)
 │     - Device token (persistent across sessions)
-│  
+│
 │  3. Better Auth Integration: Server-side validation
 │     - Store fingerprint in user schema
 │     - Detect concurrent devices
 │     - Require step-up auth for new devices
 │
 └─ FLOW
-    Device generates fingerprint (browser) 
+    Device generates fingerprint (browser)
          ↓
     Arcjet validates against bot list + rate limits
          ↓
@@ -612,7 +612,7 @@ const aj = arcjet({
 export async function handleSignup(request: NextRequest) {
   // 1. Arcjet checks request
   const decision = await aj.protect(request);
-  
+
   if (decision.isDenied()) {
     if (decision.reason.isRateLimit()) {
       // Arcjet tracked: ip.src + device
@@ -746,7 +746,7 @@ By following this plan, you'll implement:
 
 ---
 
-**Created**: December 6, 2025  
-**Status**: Ready for implementation  
+**Created**: December 6, 2025
+**Status**: Ready for implementation
 **Confidence**: 98% (based on existing codebase patterns)
 

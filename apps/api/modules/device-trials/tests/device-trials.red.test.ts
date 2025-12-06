@@ -134,7 +134,7 @@ describe("Device Trial Service (RED - Failing Tests)", () => {
 			// RED: Validate expected API key format
 			const expectedApiKeyPattern = /^sb_[a-zA-Z0-9]{32}$/;
 			const validApiKey = "sb_abcdef0123456789abcdef0123456789";
-			
+
 			expect(validApiKey).toMatch(expectedApiKeyPattern);
 			expect(validApiKey.split("_")).toHaveLength(2);
 			expect(validApiKey.startsWith("sb_")).toBe(true);
@@ -159,7 +159,7 @@ describe("Device Trial Service (RED - Failing Tests)", () => {
 			// RED: Validate quota constants
 			const TRIAL_SNAPSHOT_LIMIT = 50;
 			const TRIAL_API_CALL_LIMIT = 10000;
-			
+
 			expect(TRIAL_SNAPSHOT_LIMIT).toBe(50);
 			expect(TRIAL_API_CALL_LIMIT).toBe(10000);
 			expect(TRIAL_SNAPSHOT_LIMIT).toBeGreaterThan(0);
@@ -193,7 +193,7 @@ describe("Device Trial Service (RED - Failing Tests)", () => {
 				apiCallLimit: 10000,
 				createdAt: new Date(),
 			};
-			
+
 			expect(mockResponse).toHaveProperty("id");
 			expect(mockResponse).toHaveProperty("deviceFingerprint");
 			expect(mockResponse).toHaveProperty("apiKeyId");
@@ -281,7 +281,7 @@ describe("Device Trial Service (RED - Failing Tests)", () => {
 			// RED: Validate duplicate detection logic
 			const existingFingerprint = "existing_fp";
 			const newFingerprint = "existing_fp";
-			
+
 			expect(existingFingerprint).toBe(newFingerprint);
 			// Service should detect fingerprint match and reject with DUPLICATE_DEVICE error
 		});
@@ -299,7 +299,7 @@ describe("Device Trial Service (RED - Failing Tests)", () => {
 			// RED: Validate rate limit constants
 			const RATE_LIMIT_PER_MINUTE = 10;
 			const RATE_LIMIT_WINDOW_MS = 60 * 1000;
-			
+
 			expect(RATE_LIMIT_PER_MINUTE).toBe(10);
 			expect(RATE_LIMIT_WINDOW_MS).toBe(60000);
 			// Service should return RATE_LIMIT_EXCEEDED on 11th attempt within window
@@ -318,7 +318,7 @@ describe("Device Trial Service (RED - Failing Tests)", () => {
 			// RED: Validate blocklist structure
 			const blockedIps = ["10.0.0.1", "192.168.0.1"];
 			const testIp = "10.0.0.1";
-			
+
 			expect(blockedIps).toContain(testIp);
 			expect(blockedIps.length).toBeGreaterThan(0);
 			// Service should return RATE_LIMIT_EXCEEDED or INVALID_REQUEST
@@ -336,7 +336,7 @@ describe("Device Trial Service (RED - Failing Tests)", () => {
 			// RED: Validate disposable email detection
 			const disposableDomains = ["tempmail.com", "10minutemail.com", "guerrillamail.com"];
 			const emailDomain = input.email?.split("@")[1] || "";
-			
+
 			expect(disposableDomains).toContain(emailDomain);
 			// Service should reject with email validation error
 		});
@@ -359,7 +359,7 @@ describe("Device Trial Service (RED - Failing Tests)", () => {
 			// RED: Validate that different fingerprints are distinct
 			const fp1 = "fp_device1";
 			const fp2 = "fp_device2";
-			
+
 			expect(fp1).not.toBe(fp2);
 			expect(fp1.length).toBeGreaterThan(0);
 			expect(fp2.length).toBeGreaterThan(0);
@@ -379,7 +379,7 @@ describe("Device Trial Service (RED - Failing Tests)", () => {
 			// RED: Validate install count blocking logic
 			const MAX_INSTALLS_IN_24H = 3;
 			const INSTALL_COOLDOWN_MS = 24 * 60 * 60 * 1000;
-			
+
 			expect(MAX_INSTALLS_IN_24H).toBe(3);
 			expect(INSTALL_COOLDOWN_MS).toBe(86400000);
 			// Service should block 3rd attempt with INSTALL_BLOCKED error
@@ -399,7 +399,7 @@ describe("Device Trial Service (RED - Failing Tests)", () => {
 			const blockedTime = new Date();
 			const cooldownPeriod = 24 * 60 * 60 * 1000;
 			const unblockTime = new Date(blockedTime.getTime() + cooldownPeriod);
-			
+
 			expect(unblockTime.getTime()).toBeGreaterThan(blockedTime.getTime());
 			// Service should allow new trial after cooldown period
 		});
@@ -444,7 +444,7 @@ describe("Device Trial Service (RED - Failing Tests)", () => {
 			// RED: Validate expiration constants
 			const TRIAL_EXPIRATION_DAYS = 30;
 			const EXPIRATION_MS = TRIAL_EXPIRATION_DAYS * 24 * 60 * 60 * 1000;
-			
+
 			expect(TRIAL_EXPIRATION_DAYS).toBe(30);
 			expect(EXPIRATION_MS).toBe(2592000000);
 			// Service should mark trial as expired after this period
@@ -463,7 +463,7 @@ describe("Device Trial Service (RED - Failing Tests)", () => {
 				isExpired: true,
 				quotaAvailable: false,
 			};
-			
+
 			expect(mockExpiredTrial.apiKeyId).toBeDefined();
 			expect(mockExpiredTrial.isExpired).toBe(true);
 			expect(mockExpiredTrial.quotaAvailable).toBe(false);
@@ -486,7 +486,7 @@ describe("Device Trial Service (RED - Failing Tests)", () => {
 			// RED: Validate timeout and retry behavior
 			const DEFAULT_TIMEOUT_MS = 5000;
 			const MAX_RETRIES = 3;
-			
+
 			expect(DEFAULT_TIMEOUT_MS).toBe(5000);
 			expect(MAX_RETRIES).toBe(3);
 			// Service should return DATABASE_ERROR with retryable flag
@@ -505,7 +505,7 @@ describe("Device Trial Service (RED - Failing Tests)", () => {
 			// RED: Validate fallback strategy
 			const primaryStore = "redis";
 			const fallbackStore = "database";
-			
+
 			expect(primaryStore).toBe("redis");
 			expect(fallbackStore).toBe("database");
 			// Service should use database-based rate limiting when Redis is unavailable
@@ -526,7 +526,7 @@ describe("Device Trial Service (RED - Failing Tests)", () => {
 				rollsBackOnFailure: true,
 				commitsOnSuccess: true,
 			};
-			
+
 			expect(transactionBehavior.rollsBackOnFailure).toBe(true);
 			expect(transactionBehavior.commitsOnSuccess).toBe(true);
 			// Service should not create trial if email fails
@@ -549,10 +549,10 @@ describe("Device Trial Service (RED - Failing Tests)", () => {
 			const INITIAL_BACKOFF_MS = 1000;
 			const BACKOFF_MULTIPLIER = 2;
 			const MAX_ATTEMPTS = 3;
-			
+
 			const secondAttemptDelay = INITIAL_BACKOFF_MS * BACKOFF_MULTIPLIER; // 2000
 			const thirdAttemptDelay = secondAttemptDelay * BACKOFF_MULTIPLIER; // 4000
-			
+
 			expect(secondAttemptDelay).toBe(2000);
 			expect(thirdAttemptDelay).toBe(4000);
 			// Service should retry with these delays before failing
@@ -570,7 +570,7 @@ describe("Device Trial Service (RED - Failing Tests)", () => {
 			// RED: Validate pool configuration
 			const POOL_SIZE = 10;
 			const QUEUE_TIMEOUT_MS = 5000;
-			
+
 			expect(POOL_SIZE).toBe(10);
 			expect(QUEUE_TIMEOUT_MS).toBe(5000);
 			// Service should queue request or return DATABASE_ERROR
@@ -595,7 +595,7 @@ describe("Device Trial Service (RED - Failing Tests)", () => {
 					retryable: true,
 				},
 			};
-			
+
 			expect(mockError).toHaveProperty("code");
 			expect(mockError).toHaveProperty("message");
 			expect(mockError).toHaveProperty("details");
@@ -620,7 +620,7 @@ describe("Device Trial Service (RED - Failing Tests)", () => {
 				/token/i,
 				/path/i,
 			];
-			
+
 			const safeErrorMessage = "Database connection timeout";
 			sensitivePatterns.forEach((pattern) => {
 				expect(safeErrorMessage).not.toMatch(pattern);
@@ -648,7 +648,7 @@ describe("Device Trial Service (RED - Failing Tests)", () => {
 				userId: null,
 				convertedAt: null,
 			};
-			
+
 			expect(mockAnonymousTrial.userId).toBeNull();
 			expect(mockAnonymousTrial.convertedAt).toBeNull();
 			expect(mockAnonymousTrial.deviceFingerprint).toBeDefined();
@@ -672,7 +672,7 @@ describe("Device Trial Service (RED - Failing Tests)", () => {
 			// RED: Validate quota progression
 			const ANONYMOUS_QUOTA = 50;
 			const CONVERTED_QUOTA = 1000;
-			
+
 			expect(ANONYMOUS_QUOTA).toBe(50);
 			expect(CONVERTED_QUOTA).toBe(1000);
 			expect(CONVERTED_QUOTA).toBeGreaterThan(ANONYMOUS_QUOTA);
@@ -690,7 +690,7 @@ describe("Device Trial Service (RED - Failing Tests)", () => {
 			const TRIAL_QUOTA = 50;
 			const CONVERTED_QUOTA = 1000;
 			const PAID_QUOTA = Number.POSITIVE_INFINITY;
-			
+
 			expect(TRIAL_QUOTA).toBe(50);
 			expect(CONVERTED_QUOTA).toBe(1000);
 			expect(PAID_QUOTA).toBe(Number.POSITIVE_INFINITY);

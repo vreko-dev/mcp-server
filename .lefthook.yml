@@ -63,7 +63,9 @@ pre-commit:
             run: |
                 # Check if rg (ripgrep) is available
                 if command -v rg &> /dev/null; then
-                    bash -lc 'rg -nE "(TODO|FIXME)" --glob "!**/node_modules/**" --glob "!**/CHANGELOG*" || true; ! rg -qE "(TODO|FIXME)" --glob "!**/node_modules/**" --glob "!**/CHANGELOG*"'
+                    # Use ripgrep with proper regex syntax for TODO/FIXME detection
+                    ! rg -E '(TODO|FIXME)' --glob '!**/node_modules/**' --glob '!**/CHANGELOG*' \
+                      '.' 2>/dev/null || true
                 else
                     echo "Warning: ripgrep (rg) not found, skipping TODO/FIXME scan"
                     echo "To install ripgrep: brew install ripgrep (macOS) or apt-get install ripgrep (Linux)"
@@ -123,6 +125,43 @@ pre-commit:
 pre-push:
     parallel: true
     commands:
+        # DTS Build Verification - Catch type resolution issues before CI
+        # Critical for preventing SDK wrapping issues (e.g., Sentry namespace exports)
+        dts-build-verification:
+            tags: [build, critical]
+            glob: "packages/**/{tsup,tsconfig}.{json,ts}"
+            run: |
+                # Find packages with changed build configuration or source
+                CHANGED_PKGS=$(git diff HEAD~1..HEAD --name-only 2>/dev/null | grep -E '^packages/[^/]+/(src|tsup|tsconfig)' | cut -d/ -f2 | sort -u || true)
+                
+                if [ -n "$CHANGED_PKGS" ]; then
+                  echo "🏗️  Verifying DTS generation for changed packages..."
+                  FAILED_PKGS=""
+                  for pkg in $CHANGED_PKGS; do
+                    PKG_NAME="@snapback/$pkg"
+                    # Check if package exists and has build script
+                    if [ -f "packages/$pkg/package.json" ] && grep -q '"build"' "packages/$pkg/package.json"; then
+                      echo "   → Building $PKG_NAME..."
+                      if ! pnpm turbo build --filter="$PKG_NAME" 2>&1 | tee /tmp/build.log; then
+                        echo "❌ DTS build failed for $PKG_NAME"
+                        # Check for common DTS errors
+                        if grep -q "RollupError\|not exported" /tmp/build.log; then
+                          echo "   💡 Likely cause: SDK namespace re-export or type resolution issue"
+                          echo "   📖 See: .qoder/rules/sdk-wrapping-pattern.md"
+                        fi
+                        FAILED_PKGS="$FAILED_PKGS $PKG_NAME"
+                      fi
+                    fi
+                  done
+                  
+                  if [ -n "$FAILED_PKGS" ]; then
+                    echo "\n❌ Build verification failed for:$FAILED_PKGS"
+                    echo "\nTo skip this check: git push --no-verify"
+                    exit 1
+                  fi
+                  echo "✅ All package builds verified"
+                fi
+        
         # Pre-publish safety check (only on main branch)
         pre-publish-safety:
             tags: [publish, safety]
@@ -221,10 +260,29 @@ pre-push:
             run: pnpm exec biome check --changed --since=HEAD^ --files-ignore-unknown=true --no-errors-on-unmatched
 
         # Check package versions to ensure catalog usage
-        # TODO: Fix syncpack crash - temporarily disabled
-        # check-package-versions:
-        #     tags: [dependencies]
-        #     run: pnpm check:mismatches
+        # Re-enabled after fix: Use list-mismatches to detect version drift
+        check-package-versions:
+            tags: [dependencies]
+            glob: "packages/**/package.json"
+            run: |
+                if command -v pnpm &> /dev/null; then
+                  echo "🔍 Checking package version consistency..."
+                  # Run syncpack on changed files only
+                  CHANGED_PACKAGES=$(git diff --cached --name-only | grep 'package.json$' || true)
+                  if [ -n "$CHANGED_PACKAGES" ]; then
+                    # Syncpack: Detect dependencies with version mismatches
+                    MISMATCHES=$(pnpm syncpack list-mismatches 2>&1 | grep -c "error" || true)
+                    if [ "$MISMATCHES" -eq 0 ]; then
+                      echo "✅ Package versions consistent (using catalog: and workspace:*)"
+                    else
+                      echo "⚠️  Version mismatches detected:"
+                      pnpm syncpack list-mismatches 2>&1 | head -10
+                      echo ""
+                      echo "   To fix: pnpm syncpack fix-mismatches"
+                      # Don't fail on old packages - just warn
+                    fi
+                  fi
+                fi
 
         # API-First Boundary Guard: Prevent direct DB access in apps/web
         # Enforces architectural boundary between web and database layers

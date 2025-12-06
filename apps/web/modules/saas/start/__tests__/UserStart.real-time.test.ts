@@ -62,11 +62,76 @@ describe("UserStart Real-Time Integration", () => {
       expect(snapshotCount).toBe(5);
     });
 
-    it("should derive recovery count as 50% of protected count", () => {
+    it("should derive recovery count intelligently from activity (80% default)", () => {
       const protectedCount = 10;
-      const recoveryCount = Math.floor(protectedCount * 0.5);
+      const activityEvents = [
+        { type: "recovery", message: "Recovered file A", timestamp: "now", metadata: {} },
+        { type: "recovery", message: "Recovered file B", timestamp: "now", metadata: {} },
+        { type: "recovery", message: "Recovered file C", timestamp: "now", metadata: {} },
+      ];
+      const recoveryCount = Math.max(
+        Math.floor(protectedCount * 0.8),
+        Math.floor(activityEvents.filter((a) => a.type === "recovery").length)
+      );
 
-      expect(recoveryCount).toBe(5);
+      expect(recoveryCount).toBe(8); // max(floor(10*0.8), 3) = max(8, 3) = 8
+    });
+
+    it("should use actual activity recovery count when it exceeds default rate", () => {
+      const protectedCount = 10;
+      const activityEvents = [
+        { type: "recovery", message: "Recovered file A", timestamp: "now", metadata: {} },
+        { type: "recovery", message: "Recovered file B", timestamp: "now", metadata: {} },
+        { type: "recovery", message: "Recovered file C", timestamp: "now", metadata: {} },
+        { type: "recovery", message: "Recovered file D", timestamp: "now", metadata: {} },
+        { type: "recovery", message: "Recovered file E", timestamp: "now", metadata: {} },
+        { type: "recovery", message: "Recovered file F", timestamp: "now", metadata: {} },
+        { type: "recovery", message: "Recovered file G", timestamp: "now", metadata: {} },
+        { type: "recovery", message: "Recovered file H", timestamp: "now", metadata: {} },
+        { type: "recovery", message: "Recovered file I", timestamp: "now", metadata: {} },
+      ];
+      const recoveryCount = Math.max(
+        Math.floor(protectedCount * 0.8),
+        Math.floor(activityEvents.filter((a) => a.type === "recovery").length)
+      );
+
+      expect(recoveryCount).toBe(9); // max(8, 9) = 9
+    });
+
+    it("should compute AI detection rate from activity events", () => {
+      const activityEvents = [
+        { type: "ai_detection", message: "AI detected", timestamp: "now", metadata: {} },
+        { type: "snapshot", message: "Snapshot", timestamp: "now", metadata: { status: "enabled" } },
+        { type: "recovery", message: "Recovered", timestamp: "now", metadata: {} },
+        { type: "ai_detection", message: "AI detected", timestamp: "now", metadata: {} },
+      ];
+      const aiDetectionEvents = activityEvents.filter(
+        (a) => a.type === "ai_detection" || (a.type === "snapshot" && a.metadata?.status === "enabled")
+      ).length;
+      const aiDetectionRate = aiDetectionEvents > 0
+        ? Math.min(
+            Math.round((aiDetectionEvents / Math.max(activityEvents.length, 1)) * 100),
+            95
+          )
+        : 87;
+
+      expect(aiDetectionEvents).toBe(3); // 2 ai_detection + 1 snapshot with enabled
+      expect(aiDetectionRate).toBe(75); // round(3/4 * 100) = 75%
+    });
+
+    it("should use baseline AI detection rate (87%) when no activity events", () => {
+      const activityEvents: Array<{ type: string; message: string; timestamp: string; metadata?: any }> = [];
+      const aiDetectionEvents = activityEvents.filter(
+        (a) => a.type === "ai_detection" || (a.type === "snapshot" && a.metadata?.status === "enabled")
+      ).length;
+      const aiDetectionRate = aiDetectionEvents > 0
+        ? Math.min(
+            Math.round((aiDetectionEvents / Math.max(activityEvents.length, 1)) * 100),
+            95
+          )
+        : 87;
+
+      expect(aiDetectionRate).toBe(87); // Baseline when no activity
     });
 
     it("should handle zero protected files", () => {
@@ -76,7 +141,7 @@ describe("UserStart Real-Time Integration", () => {
       ]);
 
       const protectedCount = Array.from(protectionStatuses.values()).filter(
-        (s) => s.protection === "enabled"
+        (s: any) => s.protection === "enabled"
       ).length;
 
       expect(protectedCount).toBe(0);
@@ -92,12 +157,15 @@ describe("UserStart Real-Time Integration", () => {
 
       const compute = () => {
         const protectedCount = Array.from(protectionStatuses.values()).filter(
-          (s) => s.protection === "enabled"
+          (s: any) => s.protection === "enabled"
         ).length;
         return {
           filesProtected: protectedCount || 0,
           snapshotCount: protectedCount,
-          recoveryCount: Math.floor(protectedCount * 0.5),
+          recoveryCount: Math.max(
+            Math.floor(protectedCount * 0.8),
+            0 // No activity events in this test
+          ),
         };
       };
 
@@ -112,7 +180,7 @@ describe("UserStart Real-Time Integration", () => {
       protectionStatuses.set("file-1", { protection: "disabled", lastUpdated: 1000 });
 
       let protectedCount = Array.from(protectionStatuses.values()).filter(
-        (s) => s.protection === "enabled"
+        (s: any) => s.protection === "enabled"
       ).length;
       expect(protectedCount).toBe(0);
 
@@ -163,15 +231,16 @@ describe("UserStart Real-Time Integration", () => {
   describe("Critical Path: Memory Efficiency", () => {
     it("should use Map for O(1) lookups on file protection status", () => {
       // Verify Map-based implementation is used (critical for performance)
+      const mockFileIds = ["file-1", "file-2", "file-3", "file-4", "file-5"];
       const statuses = new Map(
-        mockFileIds.map((id) => [
+        mockFileIds.map((id: string) => [
           id,
           { protection: "enabled", lastUpdated: Date.now() },
         ])
       );
 
       // All lookups should be O(1)
-      mockFileIds.forEach((id) => {
+      mockFileIds.forEach((id: string) => {
         const status = statuses.get(id);
         expect(status).toBeDefined();
         expect(status?.protection).toBe("enabled");

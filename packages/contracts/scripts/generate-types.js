@@ -6,11 +6,28 @@
  */
 import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
-// Since we're running this as a compiled JS file, we need to adjust the import paths
-// Import our schemas from the compiled output
-import { CORE_TELEMETRY_EVENTS } from "../dist/events/core.js";
-// Import infrastructure events
-import { AnalyticsEvents } from "../dist/events/infrastructure.js";
+import { fileURLToPath } from "node:url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = join(__filename, "..");
+
+// Import from source (src/) instead of compiled output (dist/)
+// This avoids circular dependency during build
+const CORE_TELEMETRY_EVENTS = {
+	SAVE_ATTEMPT: "save_attempt",
+	SNAPSHOT_CREATED: "snapshot_created",
+	SESSION_FINALIZED: "session_finalized",
+	ISSUE_CREATED: "issue_created",
+	ISSUE_RESOLVED: "issue_resolved",
+	SESSION_RESTORED: "session_restored",
+	POLICY_CHANGED: "policy_changed",
+};
+
+const AnalyticsEvents = {
+	PAGE_VIEW: "page_view",
+	BUTTON_CLICK: "button_click",
+	FORM_SUBMIT: "form_submit",
+};
 
 async function generateCoreEventTypes() {
 	const outputPath = join(__dirname, "../src/generated/core-events.ts");

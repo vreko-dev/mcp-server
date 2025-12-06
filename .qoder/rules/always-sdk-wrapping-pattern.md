@@ -180,7 +180,7 @@ pnpm turbo build --filter="@snapback/infrastructure"
 ### Error: `"X" is not exported by "node:Y"`
 
 **Cause:** SDK imports non-exported types from Node.js built-ins
-**Fix:** 
+**Fix:**
 ```typescript
 // In tsup.config.ts
 external: ["node:http", "node:https", "diagnostics_channel"]

@@ -9,6 +9,6 @@
 		"noEmit": false,
 		"emitDeclarationOnly": false
 	},
-	"include": ["src/**/*", "types/**/*.d.ts", "src/events/**/*.ts"],
-	"exclude": ["node_modules", "dist", "build", "**/node_modules/@types/glob/**", "**/node_modules/@types/mdx/**"]
+	"include": ["src/**/*", "types/**/*.d.ts"],
+	"exclude": ["node_modules", "dist", "build", "scripts", "**/node_modules/@types/glob/**", "**/node_modules/@types/mdx/**"]
 }

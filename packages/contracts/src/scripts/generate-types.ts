@@ -14,12 +14,23 @@ import { fileURLToPath } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Since we're running this as a compiled JS file, we need to adjust the import paths
-// Import our schemas from the compiled output
-import { CORE_TELEMETRY_EVENTS } from "../events/core";
+// Define event constants inline to avoid circular dependency during build
+// These should match the definitions in src/events/core.ts and src/events/infrastructure.ts
+const CORE_TELEMETRY_EVENTS = {
+	SAVE_ATTEMPT: "save_attempt",
+	SNAPSHOT_CREATED: "snapshot_created",
+	SESSION_FINALIZED: "session_finalized",
+	ISSUE_CREATED: "issue_created",
+	ISSUE_RESOLVED: "issue_resolved",
+	SESSION_RESTORED: "session_restored",
+	POLICY_CHANGED: "policy_changed",
+};
 
-// Import infrastructure events
-import { AnalyticsEvents } from "../events/infrastructure";
+const AnalyticsEvents: Record<string, string> = {
+	PAGE_VIEW: "page_view",
+	BUTTON_CLICK: "button_click",
+	FORM_SUBMIT: "form_submit",
+};
 
 async function generateCoreEventTypes() {
 	const outputPath = join(__dirname, "../../generated/core-events.ts");

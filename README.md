@@ -1,6 +1,6 @@
 # SnapBack 🧢 - AI-Aware Code Protection System
 
-[![E2E Tests](https://github.com/Marcelle-Labs/snapback.dev/actions/workflows/e2e.yml/badge.svg)](https://github.com/Marcelle-Labs/snapback.dev/actions/workflows/e2e.yml)
+[![E2E Tests](https://github.com/snapback-dev/snapback.dev/actions/workflows/e2e.yml/badge.svg)](https://github.com/snapback-dev/snapback.dev/actions/workflows/e2e.yml)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![VS Code Extension](https://img.shields.io/visual-studio-marketplace/v/MarcelleLabs.snapback-vscode)](https://marketplace.visualstudio.com/items?itemName=MarcelleLabs.snapback-vscode)
 

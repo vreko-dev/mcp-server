@@ -209,8 +209,8 @@ npx @snapback/mcp-server
 ### Running Locally
 
 ```bash
-git clone https://github.com/snapback-dev/mcp-server.git
-cd mcp-server
+git clone https://github.com/snapback-dev/snapback.dev.git
+cd snapback-dev
 
 pnpm install
 pnpm build
@@ -282,6 +282,6 @@ Apache-2.0 © SnapBack
 
 ## Related
 
-- [`snapback` VS Code Extension](https://marketplace.visualstudio.com/items?itemName=snapback.snapback)
-- [`@snapback/sdk`](https://github.com/snapback-dev/sdk) - TypeScript SDK
-- [`@snapback/contracts`](https://github.com/snapback-dev/contracts) - Type definitions
+- [VS Code Extension](https://marketplace.visualstudio.com/items?itemName=snapback.snapback)
+- [`@snapback-oss/sdk`](https://www.npmjs.com/package/@snapback-oss/sdk) - TypeScript SDK
+- [`@snapback-oss/contracts`](https://www.npmjs.com/package/@snapback-oss/contracts) - Type definitions

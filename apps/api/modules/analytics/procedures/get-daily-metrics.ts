@@ -38,7 +38,7 @@ export const getDailyMetrics = protectedProcedure
 			}
 
 			let query = "SELECT * FROM daily_metrics";
-			const params: any[] = [];
+			const params: (string | number)[] = [];
 
 			query += " ORDER BY date DESC";
 
@@ -52,7 +52,7 @@ export const getDailyMetrics = protectedProcedure
 				params.push(input.offset);
 			}
 
-			// @ts-expect-error - Drizzle execute method signature
+			// Execute the query
 			const results = await getDb().execute(query, params);
 			return results;
 		} catch (error) {

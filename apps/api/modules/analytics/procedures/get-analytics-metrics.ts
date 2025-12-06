@@ -114,7 +114,7 @@ export const getAnalyticsMetrics = protectedProcedure
 				(p: any) => p.evaluationResult === "fail",
 			).length;
 			const totalLoops = loopData.length;
-			const successfulLoops = loopData.filter((l: any) => l.success).length;
+			const successfulLoops = loopData.filter((l: { success: boolean }) => l.success).length;
 			const feedbackCount = feedbackData.length;
 
 			// Calculate average times if we have outcomes data
@@ -123,7 +123,7 @@ export const getAnalyticsMetrics = protectedProcedure
 
 			if (outcomes.length > 0) {
 				const totalEditTime = outcomes.reduce(
-					(sum: number, outcome: any) => sum + (outcome.timeToEditMs || 0),
+					(sum: number, outcome: { timeToEditMs: number | null }) => sum + (outcome.timeToEditMs || 0),
 					0,
 				);
 				const totalSubmitTime = outcomes.reduce(

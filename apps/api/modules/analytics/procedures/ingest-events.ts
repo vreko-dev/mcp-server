@@ -12,6 +12,7 @@ import { protectedProcedure } from "../../../orpc/procedures";
 import { getDb } from "../../../src/services/database";
 
 // PostHog client (lazy initialized)
+// biome-ignore lint/suspicious/noExplicitAny: Lazy loaded optional dependency
 let posthog: any = null;
 
 function getPostHogClient() {

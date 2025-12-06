@@ -54,6 +54,7 @@ export const protectedProcedure = publicProcedure.use(
 			throw new ORPCError({
 				code: error.statusCode === 403 ? "FORBIDDEN" : "UNAUTHORIZED",
 				message: error.message,
+				// biome-ignore lint/suspicious/noExplicitAny: ORPCError type mismatch workaround
 			} as any);
 		}
 	},
@@ -65,6 +66,7 @@ export const adminProcedure = protectedProcedure.use(
 			throw new ORPCError({
 				code: "FORBIDDEN",
 				message: "Admin access required",
+				// biome-ignore lint/suspicious/noExplicitAny: ORPCError type mismatch workaround
 			} as any);
 		}
 
@@ -88,6 +90,7 @@ export const verifiedProcedure = protectedProcedure.use(
 			throw new ORPCError({
 				code: "FORBIDDEN",
 				message: "Email verification required",
+				// biome-ignore lint/suspicious/noExplicitAny: ORPCError type mismatch workaround
 			} as any);
 		}
 
@@ -115,6 +118,7 @@ export const stepUpProtectedProcedure = protectedProcedure.use(
 			throw new ORPCError({
 				code: "FORBIDDEN",
 				message: "Strong authentication required",
+				// biome-ignore lint/suspicious/noExplicitAny: ORPCError type mismatch workaround
 			} as any);
 		}
 
@@ -129,6 +133,7 @@ export const planProtectedProcedure = (requiredPlan: PlanId) =>
 			throw new ORPCError({
 				code: "UNAUTHORIZED",
 				message: "Authentication required",
+				// biome-ignore lint/suspicious/noExplicitAny: ORPCError type mismatch workaround
 			} as any);
 		}
 
@@ -152,6 +157,7 @@ export const planProtectedProcedure = (requiredPlan: PlanId) =>
 			throw new ORPCError({
 				code: "FORBIDDEN",
 				message: `Plan upgrade required (${requiredPlan})`,
+				// biome-ignore lint/suspicious/noExplicitAny: ORPCError type mismatch workaround
 			} as any);
 		}
 

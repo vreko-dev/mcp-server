@@ -71,6 +71,9 @@ export function requestIdMiddleware(request: NextRequest): NextResponse {
  * Get request ID from request context
  */
 export function extractRequestId(request: unknown): string | undefined {
-	const req = request as { __requestId?: string; headers?: { get?: (name: string) => string | undefined } };
+	const req = request as {
+		__requestId?: string;
+		headers?: { get?: (name: string) => string | undefined };
+	};
 	return req.__requestId || req.headers?.get?.(REQUEST_ID_HEADER);
 }

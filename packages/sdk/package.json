@@ -10,6 +10,7 @@
     "directory": "packages/sdk"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "catalog:",
     "@aws-sdk/s3-request-presigner": "catalog:",
     "@snapback-oss/sdk": "workspace:*",
     "@snapback/contracts": "workspace:*",

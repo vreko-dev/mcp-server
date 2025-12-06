@@ -6,7 +6,6 @@ import { ActivityFeed } from "@/modules/saas/dashboard/components/ActivityFeed";
 import { AIDetectionStats } from "@/modules/saas/dashboard/components/AIDetectionStats";
 import { MetricsGrid } from "@/modules/saas/dashboard/components/MetricsGrid";
 import { useBulkProtectionStatus } from '@/hooks/use-bulk-protection-status';
-import { logger } from "@snapback/infrastructure";
 
 // Define types for dashboard data
 interface AIDetectionStat {
@@ -87,7 +86,7 @@ export default function UserStart() {
 			};
 
 			setActivityEvents((prev) => [activity, ...prev.slice(0, 9)]);
-			logger.info("Protection status changed", { fileId, newStatus });
+			console.log("Protection status changed", { fileId, newStatus });
 		},
 		[]);
 
@@ -135,7 +134,7 @@ export default function UserStart() {
 	// Track real-time connection status
 	useEffect(() => {
 		if (!isLoading) {
-			logger.info("Dashboard metrics loaded from real-time", {
+			console.log("Dashboard metrics loaded from real-time", {
 				filesProtected: computedMetrics.filesProtected,
 			});
 		}

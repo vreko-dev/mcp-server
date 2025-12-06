@@ -1,7 +1,7 @@
 {
   "name": "@snapback/contracts",
   "description": "Type definitions and contracts for SnapBack",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "license": "Apache-2.0",
   "author": "SnapBack Team",
   "repository": {

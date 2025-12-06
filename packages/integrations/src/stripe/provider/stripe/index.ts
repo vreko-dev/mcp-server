@@ -17,7 +17,7 @@ let stripeClient: Stripe | null = null;
 
 // Cache environment variables at module level for performance
 const PRICE_ID_MAP = {
-	solo: process.env.STRIPE_SOLO_MONTHLY_PRICE_ID,
+	pro: process.env.STRIPE_PRO_MONTHLY_PRICE_ID,
 	team: process.env.STRIPE_TEAM_MONTHLY_PRICE_ID,
 	enterprise: process.env.STRIPE_ENTERPRISE_MONTHLY_PRICE_ID,
 } as const;
@@ -277,10 +277,10 @@ export const webhookHandler: WebhookHandler = async (req: Request) => {
 };
 
 // Helper function to map Stripe price IDs to plan names
-export function mapPriceIdToPlan(priceId: string): "free" | "solo" | "team" | "enterprise" {
+export function mapPriceIdToPlan(priceId: string): "free" | "pro" | "team" | "enterprise" {
 	// Use cached environment variables for better performance
-	if (priceId === PRICE_ID_MAP.solo) {
-		return "solo";
+	if (priceId === PRICE_ID_MAP.pro) {
+		return "pro";
 	}
 	if (priceId === PRICE_ID_MAP.team) {
 		return "team";

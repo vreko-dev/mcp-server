@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { ActiveOrganizationContext } from "../lib/active-organization-context.js";
+import { ActiveOrganizationContext } from "../lib/active-organization-context";
 
 export const useActiveOrganization = () => {
 	const activeOrganizationContext = useContext(ActiveOrganizationContext);

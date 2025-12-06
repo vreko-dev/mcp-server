@@ -68,6 +68,7 @@ export * from "./tiers.js";
 export * from "./session.js";
 export * from "./types/config.js";
 export * from "./types/protection.js";
+export * from "./types/protection-utils.js";
 // Note: Not exporting types/snapshot due to naming conflicts with schemas.ts
 
 // Required exports for SDK functionality

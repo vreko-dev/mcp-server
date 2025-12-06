@@ -1,6 +1,6 @@
 import React from "react";
 import { afterAll, afterEach, beforeAll, vi } from "vitest";
-import { server } from "./msw/server";
+import { server } from "@snapback/testing/msw/server";
 
 /**
  * MSW server lifecycle hooks

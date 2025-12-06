@@ -37,11 +37,7 @@
 		"node_modules",
 		"dist",
 		"build",
-		"__tests__/**/*",
-		"**/*.test.ts",
-		"**/*.test.tsx",
-		"**/*.spec.ts",
-		"**/*.spec.tsx",
+
 		"../../apps/api/**/*",
 		"final_launch_polish/**",
 		".next",

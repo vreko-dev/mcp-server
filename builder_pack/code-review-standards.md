@@ -2,8 +2,8 @@
 
 ## Comprehensive Blueprint for Implementation Excellence
 
-**Version:** 1.0  
-**Last Updated:** October 2025  
+**Version:** 1.0
+**Last Updated:** October 2025
 **Purpose:** Authoritative guide for code quality, DX, and architecture
 
 ---
@@ -19,7 +19,7 @@
 
 ---
 
-## 🧪 TESTING STANDARDS
+## 🧪 TESTING STANDARDS (2025)
 
 ### Philosophy: Tests Should Tell a Story
 
@@ -30,6 +30,8 @@
 -   ✅ **Fast** - Run in milliseconds (< 100ms per test)
 -   ✅ **Isolated** - No dependencies on other tests
 -   ✅ **Meaningful** - Catch real bugs, not implementation details
+-   ✅ **IP-Safe** - Public tests never expose proprietary logic (Open Core)
+-   ✅ **Deterministic** - Use `@snapback/testing` utilities to eliminate flakiness
 
 **Bad tests are:**
 
@@ -38,6 +40,370 @@
 -   ❌ Brittle (break when refactoring)
 -   ❌ Slow (>1s per test)
 -   ❌ Just for coverage numbers
+-   ❌ Exposing proprietary algorithms or business logic in OSS packages
+-   ❌ Flaky (non-deterministic timing, resource leaks)
+
+---
+
+### Testing Infrastructure (`@snapback/testing`)
+
+**Centralized Testing Utilities Package:**
+
+All deterministic testing infrastructure is consolidated in `@snapback/testing`:
+
+```typescript
+import { TestCleanupManager } from "@snapback/testing/utils/TestCleanupManager";
+import { DeterministicTime, toTimestamp, addTime } from "@snapback/testing/utils/DeterministicTime";
+import { createTestUser, createTestSnapshot, createTestOrganization } from "@snapback/testing/fixtures/factories";
+import { setupServer } from "msw/node";
+import { snapshotHandlers } from "@snapback/testing/msw/handlers";
+```
+
+**Key Utilities:**
+
+1. **TestCleanupManager** - LIFO cleanup callback manager (prevents resource leaks)
+2. **DeterministicTime** - Vitest fake timers wrapper (eliminates timing flakiness)
+3. **Test Data Factories** - IP-safe test data generation with `@faker-js/faker`
+4. **MSW Handlers** - Feature-specific network mocking by domain
+
+**Quick Example:**
+```typescript
+import { TestCleanupManager } from "@snapback/testing/utils/TestCleanupManager";
+import { DeterministicTime } from "@snapback/testing/utils/DeterministicTime";
+import { createTestUser } from "@snapback/testing/fixtures/factories";
+
+describe("SessionExpiration", () => {
+  let cleanup: TestCleanupManager;
+  let time: DeterministicTime;
+
+  beforeEach(() => {
+    cleanup = new TestCleanupManager();
+    time = new DeterministicTime();
+  });
+
+  afterEach(async () => {
+    time.restore();
+    await cleanup.runAll();
+  });
+
+  it("should expire session after 30 minutes", async () => {
+    const user = createTestUser();
+    const session = await sessionManager.create(user.id);
+    cleanup.register(() => session.destroy());
+
+    time.advanceBy(30 * 60 * 1000);
+
+    expect(session.isExpired()).toBe(true);
+  });
+});
+```
+
+**📖 Full Documentation:** See `builder_pack/test-infrastructure-patterns.md`
+
+---
+
+### Open Core Testing Strategy (CRITICAL)
+
+**SnapBack uses an open-core architecture with two categories:**
+
+#### 🌍 Public (Open Source) Packages
+- `@snapback/sdk` - Client SDK (MIT)
+- `@snapback/core` - Core snapshot logic (Apache 2.0)
+- `@snapback/contracts` - TypeScript types (MIT)
+- `@snapback/config` - Configuration utilities (MIT)
+- `@snapback/events` - Event system (MIT)
+- `@snapback/cli` - CLI tool (MIT)
+- `snapback-vscode` - VS Code extension (GPL-3.0)
+
+#### 🔒 Proprietary (Commercial) Packages
+- `@snapback/api` - API service
+- `@snapback/mcp-server` - MCP implementation
+- `@snapback/platform` - Database schemas
+- `@snapback/infrastructure` - Observability
+- `@snapback/integrations` - Stripe, email, feature flags
+- `@snapback/auth` - Authentication
+- `@snapback/analytics` - PostHog integration
+- `@snapback/policy-engine` - Enterprise features
+- `@snapback/web` - SaaS UI/UX
+
+#### ⚠️ IP Protection Rules for Tests
+
+**Public Package Tests MUST NOT:**
+- ❌ Expose proprietary algorithms or formulas
+- ❌ Reference subscription/tier logic
+- ❌ Include PostHog event names or analytics schemas
+- ❌ Show database schema details
+- ❌ Reference Stripe integration patterns
+- ❌ Expose pricing tiers or feature flags
+- ❌ Include internal service URLs or identifiers
+- ❌ Reference proprietary risk scoring formulas
+- ❌ Show enterprise-only feature implementations
+
+**Public Package Tests MUST:**
+- ✅ Test generic, framework-agnostic behavior
+- ✅ Use placeholder values for sensitive data
+- ✅ Focus on core functionality, not commercial features
+- ✅ Use generic identifiers (e.g., "test-org-123", not real org IDs)
+- ✅ Test public APIs only
+- ✅ Be safe for community inspection
+
+**Example: ❌ BAD (Exposes IP)**
+```typescript
+// packages/sdk/test/risk-scoring.test.ts
+describe("Risk Scoring", () => {
+  it("calculates enterprise risk score", () => {
+    // ❌ Exposes proprietary formula
+    const score = calculateRiskScore({
+      secretDetection: 0.9 * 2.5,  // ❌ Weighted multiplier exposed
+      tierMultiplier: isPro ? 1.5 : 1.0,  // ❌ Tier logic exposed
+      stripeCustomerId: "cus_123"  // ❌ Stripe reference
+    });
+    expect(score).toBe(3.375);  // ❌ Reveals exact calculation
+  });
+});
+```
+
+**Example: ✅ GOOD (IP-Safe)**
+```typescript
+// packages/sdk/test/snapshot-creation.test.ts
+describe("Snapshot Creation", () => {
+  it("should create snapshot when valid file path provided", async () => {
+    // ✅ Tests public API behavior only
+    const sdk = new SnapBackSDK({ apiKey: "test-key" });
+
+    const result = await sdk.snapshots.create({
+      filePath: "/test/file.ts",
+      content: "const x = 1;"
+    });
+
+    // ✅ Generic assertions, no IP exposure
+    expect(result.success).toBe(true);
+    expect(result.value.id).toBeDefined();
+    expect(result.value.timestamp).toBeGreaterThan(0);
+  });
+});
+```
+
+#### 🔍 OSS Sync Process
+
+**Automated Filtering (Lefthook + GitHub Actions):**
+
+Public packages are synced to `github.com/snapback-dev/snapback-oss` with automated IP leak detection:
+
+```bash
+# .lefthook.yml (runs on commit)
+ip-guard:
+  glob: "packages-oss/**/*.{ts,tsx,js,jsx}"
+  run: |
+    # Scans for forbidden imports
+    FORBIDDEN=$(grep -rE "from [\"']@snapback/(auth|infrastructure|platform)" packages-oss/)
+    if [ -n "$FORBIDDEN" ]; then
+      echo "❌ PROPRIETARY CODE LEAK DETECTED"
+      exit 1
+    fi
+
+    # Scans for sensitive keywords
+    SENSITIVE=$(grep -rE "(stripe|posthog|subscription|tier|enterprise)" packages-oss/test/ -i)
+    if [ -n "$SENSITIVE" ]; then
+      echo "⚠️  Sensitive terms found in tests - review required"
+    fi
+```
+
+**Manual Review Checklist (Before OSS Sync):**
+- [ ] No proprietary algorithm implementations
+- [ ] No hardcoded API keys, even if "test-" prefixed
+- [ ] No references to internal service names
+- [ ] No Stripe/PostHog/analytics integration details
+- [ ] No subscription tier checks
+- [ ] No database schema references
+- [ ] Test data uses generic placeholders
+- [ ] All test assertions are behavior-focused, not implementation-focused
+
+---
+
+### Test Organization & Naming (2025 Industry Standard)
+
+**File Naming Convention:**
+
+```
+[feature-name].test.ts                    // Unit tests
+[feature-name].integration.test.ts        // Integration tests
+[feature-name].e2e.test.ts               // End-to-end tests
+[feature-name].perf.test.ts              // Performance tests
+```
+
+**Directory Structure (Feature-Based):**
+
+```
+packages/core/test/
+├── detection/                     # Feature: Detection
+│   ├── secret-detection.test.ts   # Unit tests
+│   ├── secret-detection.integration.test.ts
+│   └── msw/                       # MSW handlers for this feature
+│       └── detection-handlers.ts
+├── analysis/                      # Feature: Analysis
+│   ├── risk-analysis.test.ts
+│   └── policy-engine.test.ts
+└── helpers/                       # Shared test utilities
+    ├── msw/                       # MSW handlers by feature
+    ├── factories/                 # Test data factories
+    └── fixtures/                  # Static test data
+```
+
+**Describe Block Hierarchy (BDD-Inspired):**
+
+```typescript
+describe("[Feature Name]", () => {           // Level 1: Feature
+  describe("[Component/Method]", () => {      // Level 2: Component
+    describe("[Specific Behavior]", () => {   // Level 3: Scenario (optional)
+      it("should [behavior] when [condition]", () => {  // Test case
+        // Arrange
+        // Act
+        // Assert
+      });
+    });
+  });
+});
+```
+
+**Test Case Naming (MUST Patterns):**
+- ✅ `should [verb] [expected result] when [condition]`
+- ✅ `should [verb] [expected result] given [precondition]`
+- ✅ `should [verb] [expected result] for [input/scenario]`
+
+**Examples:**
+```typescript
+// ✅ GOOD: Behavior-focused, hierarchical
+describe("Secret Detection", () => {
+  describe("AWS Credentials", () => {
+    // Test ID: SD-AWS-001 (as comment for traceability)
+    it("should detect access keys with AKIA prefix", async () => {
+      const code = `const awsKey = "AKIA_EXAMPLE_NOT_REAL_KEY_12345";`;
+
+      const result = await plugin.analyze(code, "/src/config.ts");
+
+      expect(result.score).toBeGreaterThan(0.7);
+      expect(result.severity).toBe("critical");
+    });
+
+    it("should ignore AWS keys in example configuration files", async () => {
+      const code = `AWS_ACCESS_KEY_ID=your-key-here`;
+
+      const result = await plugin.analyze(code, "/src/.env.example");
+
+      expect(result.score).toBeLessThan(0.3);
+    });
+  });
+
+  describe("False Positive Prevention", () => {
+    it("should ignore UUIDs in source code", async () => {
+      // ...
+    });
+  });
+});
+
+// ❌ BAD: Implementation-focused
+describe("SecretDetectionPlugin", () => {
+  it("should detect AWS keys", () => {});
+  it("test 1", () => {});  // Non-descriptive
+});
+```
+
+**Test Grouping Strategy:**
+
+1. **Group by behavior/feature**, not by file structure
+2. **Positive cases first**, negative cases second, edge cases last
+3. **Max 3 levels** of nested describe blocks for readability
+4. **Test IDs as comments** for traceability (e.g., `// Test ID: SD-AWS-001`)
+5. **AAA pattern** (Arrange-Act-Assert) within tests
+
+---
+
+### MSW Integration (Industry Best Practice 2025)
+
+**Feature-Specific Handler Organization:**
+
+```typescript
+// packages/core/test/msw/snapshot-handlers.ts
+import { http, HttpResponse } from "msw";
+
+export const snapshotHandlers = {
+  // Success handlers
+  success: [
+    http.get("https://api.snapback.dev/snapshots/:id", ({ params }) => {
+      return HttpResponse.json({
+        id: params.id,
+        filePath: "/test/file.ts",
+        content: "test content",
+        timestamp: Date.now(),
+      });
+    }),
+  ],
+
+  // Error handlers
+  errors: {
+    notFound: [
+      http.get("https://api.snapback.dev/snapshots/:id", () => {
+        return HttpResponse.json(
+          { error: "Snapshot not found" },
+          { status: 404 }
+        );
+      }),
+    ],
+  },
+};
+
+// Helper functions for clean test setup
+export function useSnapshotHandlers(server) {
+  server.use(...snapshotHandlers.success);
+}
+
+export function useSnapshotError(server, errorType) {
+  server.use(...snapshotHandlers.errors[errorType]);
+}
+```
+
+**Usage in Tests:**
+
+```typescript
+import { setupServer } from "msw/node";
+import { useSnapshotHandlers, useSnapshotError } from "./msw/snapshot-handlers";
+
+const server = setupServer();
+
+beforeAll(() => server.listen());
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
+
+describe("SnapshotManager", () => {
+  beforeEach(() => {
+    useSnapshotHandlers(server); // Clean, declarative setup
+  });
+
+  it("should create snapshot successfully", async () => {
+    const result = await snapshotManager.create("/path/file.ts");
+
+    expect(result.success).toBe(true);
+    expect(result.value.id).toBeDefined();
+  });
+
+  it("should handle 404 errors gracefully", async () => {
+    useSnapshotError(server, "notFound"); // Override for this test
+
+    const result = await snapshotManager.get("nonexistent");
+
+    expect(result.success).toBe(false);
+    expect(result.error.message).toContain("not found");
+  });
+});
+```
+
+**Benefits:**
+- Network-level mocking (more realistic than mocking fetch/axios)
+- Reusable handlers across tests
+- Clean test setup with helper functions
+- Easy error scenario testing
+- Production-like behavior testing
 
 ---
 

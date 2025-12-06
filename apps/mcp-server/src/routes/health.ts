@@ -1,4 +1,4 @@
-import { checkHttpService, createHealthCheck } from "@snapback/health";
+import { checkHttpService, createHealthCheck } from "@snapback/infrastructure/health";
 import type { Context } from "hono";
 import { Hono } from "hono";
 

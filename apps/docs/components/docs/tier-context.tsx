@@ -1,8 +1,8 @@
 "use client";
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 
-export type Tier = "all" | "free" | "solo" | "team" | "enterprise";
-const rank: Record<Exclude<Tier, "all">, number> = { free: 0, solo: 1, team: 2, enterprise: 3 };
+export type Tier = "all" | "free" | "pro" | "team" | "enterprise";
+const rank: Record<Exclude<Tier, "all">, number> = { free: 0, pro: 1, team: 2, enterprise: 3 };
 
 type Ctx = {
 	tier: Tier;
@@ -19,7 +19,9 @@ export function TierProvider({ children }: { children: React.ReactNode }) {
 
 	useEffect(() => {
 		const saved = typeof window !== "undefined" ? (localStorage.getItem(KEY) as Tier | null) : null;
-		if (saved) { setTierState(saved); }
+		if (saved) {
+			setTierState(saved);
+		}
 	}, []);
 
 	const setTier = (t: Tier) => {
@@ -46,6 +48,8 @@ export function TierProvider({ children }: { children: React.ReactNode }) {
 
 export const useTier = () => {
 	const ctx = useContext(TierContext);
-	if (!ctx) { throw new Error("useTier must be used within TierProvider"); }
+	if (!ctx) {
+		throw new Error("useTier must be used within TierProvider");
+	}
 	return ctx;
 };

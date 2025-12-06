@@ -1,7 +1,18 @@
 import { logger } from "@snapback/infrastructure";
 import { db, snapbackSchema } from "@snapback/platform";
 import { eq, sql } from "drizzle-orm";
-import type { NextRequest } from "next/server";
+
+// import type { NextRequest } from "next/server";
+
+// Temporary type to avoid Next.js dependency in API service
+interface NextRequest {
+	headers: {
+		get(name: string): string | null;
+	};
+	nextUrl: {
+		pathname: string;
+	};
+}
 
 /**
  * Usage Tracking Middleware

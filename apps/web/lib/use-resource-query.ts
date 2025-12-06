@@ -6,8 +6,8 @@ import {
 	useQuery,
 } from "@tanstack/react-query";
 import type { z } from "zod";
-import { type AppError, logError, toAppError } from "./error-handler.js";
-import { R, type Resource } from "./resource.js";
+import { type AppError, logError, toAppError } from "./error-handler";
+import { R, type Resource } from "./resource";
 
 // Query adapter
 export function useResourceQuery<TData>(

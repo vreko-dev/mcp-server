@@ -1,12 +1,12 @@
-# @snapback/events
+# @snapback-oss/events
 
-[![npm version](https://img.shields.io/npm/v/@snapback/events?style=flat&colorA=18181B&colorB=10B981)](https://www.npmjs.com/package/@snapback/events)
-[![npm downloads](https://img.shields.io/npm/dm/@snapback/events?style=flat&colorA=18181B&colorB=10B981)](https://www.npmjs.com/package/@snapback/events)
+[![npm version](https://img.shields.io/npm/v/@snapback-oss/events?style=flat&colorA=18181B&colorB=10B981)](https://www.npmjs.com/package/@snapback-oss/events)
+[![npm downloads](https://img.shields.io/npm/dm/@snapback-oss/events?style=flat&colorA=18181B&colorB=10B981)](https://www.npmjs.com/package/@snapback-oss/events)
 [![License](https://img.shields.io/badge/license-Apache%202.0-10B981?style=flat&colorA=18181B&colorB=10B981)](https://github.com/snapback-dev/events/blob/main/LICENSE)
 
 **Type-safe event bus for building reactive TypeScript applications**
 
-Part of [SnapBack](https://snapback.dev) - power your code safety systems with a high-performance event bus for real-time notifications and reactive workflows.
+Part of [SnapBack](https://snapback.dev?utm_source=npm&utm_medium=readme&utm_campaign=events) - power your code safety systems with a high-performance event bus for real-time notifications and reactive workflows.
 
 ---
 
@@ -14,7 +14,7 @@ Part of [SnapBack](https://snapback.dev) - power your code safety systems with a
 
 SnapBack is a **code safety platform** that prevents breaking changes through snapshots, file protection, and risk analysis. This event bus powers real-time notifications when snapshots are created, files are protected, or risks are detected.
 
-[Learn more about SnapBack →](https://snapback.dev)
+[Learn more about SnapBack →](https://snapback.dev?utm_source=npm&utm_medium=readme&utm_campaign=events)
 
 ---
 
@@ -33,7 +33,7 @@ Type-safe **event bus** built on EventEmitter2 with full async/await support. Pe
 - Want reactive workflows
 - Require async event handlers
 
-[API Reference →](https://docs.snapback.dev/api/events)
+[API Reference →](https://docs.snapback.dev/api/events?utm_source=npm&utm_medium=readme&utm_campaign=events)
 
 ---
 
@@ -65,7 +65,7 @@ events.emit('snapshot.created', {
 });
 ```
 
-[Event bus guide →](https://docs.snapback.dev/guides/events)
+[Event bus guide →](https://docs.snapback.dev/guides/events?utm_source=npm&utm_medium=readme&utm_campaign=events)
 
 ---
 
@@ -132,7 +132,7 @@ events.on('**', (data) => {
 });
 ```
 
-[Pattern matching guide →](https://docs.snapback.dev/guides/events/patterns)
+[Pattern matching guide →](https://docs.snapback.dev/guides/events/patterns?utm_source=npm&utm_medium=readme&utm_campaign=events)
 
 ### Event Namespaces
 
@@ -233,7 +233,7 @@ class EventBus<T = any> {
 }
 ```
 
-[Complete API docs →](https://docs.snapback.dev/api/events)
+[Complete API docs →](https://docs.snapback.dev/api/events?utm_source=npm&utm_medium=readme&utm_campaign=events)
 
 ---
 
@@ -243,19 +243,19 @@ Build complete event-driven code safety systems:
 
 | Package | Purpose | Documentation |
 |---------|---------|---------------|
-| **[@snapback/contracts](https://www.npmjs.com/package/@snapback/contracts)** | TypeScript types | [Docs](https://docs.snapback.dev/api/contracts) |
-| **[@snapback/sdk](https://www.npmjs.com/package/@snapback/sdk)** | Complete SDK | [Docs](https://docs.snapback.dev/api/sdk) |
-| **[@snapback/infrastructure](https://www.npmjs.com/package/@snapback/infrastructure)** | Observability | [Docs](https://docs.snapback.dev/api/infrastructure) |
-| **[@snapback/events](https://www.npmjs.com/package/@snapback/events)** | Event bus (you are here) | [Docs](https://docs.snapback.dev/api/events) |
-| **[@snapback/config](https://www.npmjs.com/package/@snapback/config)** | Configuration | [Docs](https://docs.snapback.dev/api/config) |
+| **[@snapback-oss/contracts](https://www.npmjs.com/package/@snapback-oss/contracts)** | TypeScript types | [Docs](https://docs.snapback.dev/api/contracts?utm_source=npm&utm_medium=readme&utm_campaign=events) |
+| **[@snapback-oss/sdk](https://www.npmjs.com/package/@snapback-oss/sdk)** | Complete SDK | [Docs](https://docs.snapback.dev/api/sdk?utm_source=npm&utm_medium=readme&utm_campaign=events) |
+| **[@snapback-oss/infrastructure](https://www.npmjs.com/package/@snapback-oss/infrastructure)** | Observability | [Docs](https://docs.snapback.dev/api/infrastructure?utm_source=npm&utm_medium=readme&utm_campaign=events) |
+| **[@snapback-oss/events](https://www.npmjs.com/package/@snapback-oss/events)** | Event bus (you are here) | [Docs](https://docs.snapback.dev/api/events?utm_source=npm&utm_medium=readme&utm_campaign=events) |
+| **[@snapback-oss/config](https://www.npmjs.com/package/@snapback-oss/config)** | Configuration | [Docs](https://docs.snapback.dev/api/config?utm_source=npm&utm_medium=readme&utm_campaign=events) |
 
-[Explore the platform →](https://snapback.dev)
+[Explore the platform →](https://snapback.dev?utm_source=npm&utm_medium=readme&utm_campaign=events)
 
 ---
 
 ## Resources
 
-- 🌐 **Website**: [snapback.dev](https://snapback.dev)
+- 🌐 **Website**: [snapback.dev](https://snapback.dev?utm_source=npm&utm_medium=readme&utm_campaign=events)
 - 📖 **Documentation**: [docs.snapback.dev](https://docs.snapback.dev)
 - 🐛 **Report Issues**: [GitHub Issues](https://github.com/snapback-dev/events/issues)
 - 💬 **Get Help**: [hello@snapback.dev](mailto:hello@snapback.dev)
@@ -270,7 +270,7 @@ See our [Contributing Guide](https://github.com/snapback-dev/events/blob/main/CO
 
 ## License
 
-Apache-2.0 © [SnapBack](https://snapback.dev)
+Apache-2.0 © [SnapBack](https://snapback.dev?utm_source=npm&utm_medium=readme&utm_campaign=events)
 
 **Commercial use allowed** • See [LICENSE](https://github.com/snapback-dev/events/blob/main/LICENSE)
 
@@ -278,7 +278,7 @@ Apache-2.0 © [SnapBack](https://snapback.dev)
 
 <div align="center">
 
-**[snapback.dev](https://snapback.dev)** • **[Documentation](https://docs.snapback.dev)** • **[@snapbackdev](https://twitter.com/snapbackdev)**
+**[snapback.dev](https://snapback.dev?utm_source=npm&utm_medium=readme&utm_campaign=events)** • **[Documentation](https://docs.snapback.dev)** • **[@snapbackdev](https://twitter.com/snapbackdev)**
 
 Made with ❤️ for developers who ship with confidence
 

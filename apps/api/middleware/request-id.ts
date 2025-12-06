@@ -7,8 +7,32 @@
  */
 
 import { randomUUID } from "node:crypto";
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+
+// import type { NextRequest } from "next/server";
+// import { NextResponse } from "next/server";
+
+// Temporary types to avoid Next.js dependency in API service
+interface NextRequest {
+	headers: {
+		get(name: string): string | null;
+	};
+}
+
+class NextResponse {
+	headers: Map<string, string>;
+
+	constructor() {
+		this.headers = new Map();
+	}
+
+	static next(): NextResponse {
+		return new NextResponse();
+	}
+
+	set(name: string, value: string): void {
+		this.headers.set(name, value);
+	}
+}
 
 export const REQUEST_ID_HEADER = "X-Request-ID";
 

@@ -11,6 +11,7 @@ import type {
 } from "@/lib/dashboard/metrics";
 import { ActivityFeed } from "@/modules/saas/dashboard/components/ActivityFeed";
 import { AIDetectionStats } from "@/modules/saas/dashboard/components/AIDetectionStats";
+import { DashboardHeroCard } from "@/modules/saas/dashboard/components/DashboardHeroCard";
 import { MetricsGrid } from "@/modules/saas/dashboard/components/MetricsGrid";
 import { WaitlistPositionTile } from "@/modules/saas/dashboard/components/WaitlistPositionTile";
 
@@ -61,6 +62,16 @@ export const DashboardClient = memo(function DashboardClient({
 					Welcome back, {userName || userEmail}
 				</p>
 			</div>
+
+			{/* Hero Card */}
+			<ErrorBoundary>
+				<DashboardHeroCard
+					threatsPreventedCount={metrics.snapshotCount}
+					protectionLevelPercent={metrics.filesProtected > 0 ? 98 : 0}
+					confidenceLevel="excellent"
+					period="week"
+				/>
+			</ErrorBoundary>
 
 			{/* Waitlist Position (if user is on waitlist) */}
 			<ErrorBoundary>

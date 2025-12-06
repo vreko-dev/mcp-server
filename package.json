@@ -62,6 +62,7 @@
     "lint-staged": "catalog:",
     "madge": "catalog:",
     "minimatch": "catalog:",
+    "msw": "^2.12.4",
     "syncpack": "catalog:",
     "tsup": "catalog:",
     "tsx": "catalog:",
@@ -129,11 +130,24 @@
     "type-check:tsc": "tsc --build --force",
     "validate": "tsx scripts/validate-project.ts",
     "validate:oss": "node scripts/validate-oss-builds.js",
+    "pre-publish": "tsx scripts/pre-publish.ts",
+    "pre-publish:dry-run": "tsx scripts/pre-publish.ts --dry-run",
+    "pre-publish:resume": "tsx scripts/pre-publish.ts --resume",
+    "recover": "tsx scripts/recover-pre-publish.ts",
+    "sync-oss-versions": "tsx scripts/sync-oss-versions.ts",
+    "sync-oss-versions:dry-run": "tsx scripts/sync-oss-versions.ts --dry-run",
     "publish:oss": "pnpm run build:oss && pnpm run publish:oss:packages && pnpm run publish:oss:apps",
     "publish:oss:packages": "pnpm --filter '@snapback/contracts' --filter '@snapback/sdk' --filter '@snapback/infrastructure' --filter '@snapback/events' --filter '@snapback/config' exec npm version patch && pnpm --filter '@snapback/contracts' --filter '@snapback/sdk' --filter '@snapback/infrastructure' --filter '@snapback/events' --filter '@snapback/config' exec npm publish --access public",
     "publish:oss:apps": "pnpm --filter '@snapback/mcp-server' --filter '@snapback/cli' exec npm version patch && pnpm --filter '@snapback/mcp-server' --filter '@snapback/cli' exec npm publish --access public",
     "publish:mcp": "pnpm --filter '@snapback/mcp-server' run build && pnpm --filter '@snapback/mcp-server' exec npm version patch && pnpm --filter '@snapback/mcp-server' exec npm publish --access public",
-    "publish:cli": "pnpm --filter '@snapback/cli' run build && pnpm --filter '@snapback/cli' exec npm version patch && pnpm --filter '@snapback/cli' exec npm publish --access public"
+    "publish:cli": "pnpm --filter '@snapback/cli' run build && pnpm --filter '@snapback/cli' exec npm version patch && pnpm --filter '@snapback/cli' exec npm publish --access public",
+    "deploy:affected": "turbo run deploy --filter=...[origin/main]",
+    "docker:affected": "turbo run docker-build --filter=...[origin/main]",
+    "test:affected": "turbo run test --filter=...[origin/main]",
+    "build:affected": "turbo run build --filter=...[origin/main]",
+    "deploy:web": "turbo run deploy --filter=@snapback/web",
+    "deploy:api": "turbo run deploy --filter=@snapback/api",
+    "deploy:mcp": "turbo run deploy --filter=@snapback/mcp-server"
   },
   "peerDependencies": {
     "drizzle-orm": "catalog:"

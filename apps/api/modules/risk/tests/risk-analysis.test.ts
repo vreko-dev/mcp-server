@@ -200,9 +200,9 @@ describe("Risk Analysis API - TDD", () => {
 		});
 	});
 
-	describe("Advanced Detection (Solo/Team Plans)", () => {
+	describe("Advanced Detection (Pro/Team Plans)", () => {
 		it("should detect complex refactoring patterns (advanced detection)", async () => {
-			// GIVEN: User with advanced detection enabled (Solo plan)
+			// GIVEN: User with advanced detection enabled (Pro plan)
 			const _permissions = {
 				advancedDetection: true,
 			};
@@ -350,8 +350,8 @@ describe("Risk Analysis API - TDD", () => {
 			expect(violations[0].severity).toBe("high");
 		});
 
-		it("should block custom rules for free/solo tier", async () => {
-			// GIVEN: Solo tier user
+		it("should block custom rules for free/pro tier", async () => {
+			// GIVEN: Pro tier user
 			const permissions = {
 				customRules: false,
 			};

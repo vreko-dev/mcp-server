@@ -1,9 +1,9 @@
+import { logger } from "@snapback/infrastructure";
 import {
 	checkDatabaseConnection,
 	checkRedisConnection,
 	createHealthCheck,
-} from "@snapback/health";
-import { logger } from "@snapback/infrastructure";
+} from "@snapback/infrastructure/health";
 import { Hono } from "hono";
 
 const app = new Hono();

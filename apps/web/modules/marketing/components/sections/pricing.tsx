@@ -8,67 +8,69 @@ const Pricing = () => {
 
 	const plans = [
 		{
-			name: "SnapBack Core",
-			description: "Perfect for individual developers getting started",
+			name: "Developer",
+			description: "Free forever for individual developers",
 			price: { monthly: 0, annual: 0 },
 			badge: "Free",
 			features: [
-				"Up to 5 automations",
-				"Basic workflow templates",
-				"GitHub integration",
+				"Unlimited local snapshots",
+				"VS Code extension",
+				"CLI tool included",
+				"7-day local history",
 				"Community support",
-				"Basic observability",
 			],
 			cta: "Start Free",
 			popular: false,
 		},
 		{
-			name: "Solo",
-			description: "For individual professionals and small projects",
-			price: { monthly: 29, annual: 290 },
+			name: "Pro",
+			description: "Cloud intelligence for serious developers",
+			price: { monthly: 12, annual: 120 },
 			badge: null,
 			features: [
-				"Unlimited automations",
-				"Advanced workflow builder",
-				"All integrations",
+				"Everything in Developer",
+				"5GB cloud backup storage",
+				"GitHub integration (personal repos)",
+				"30-day cloud history",
+				"Cross-repo intelligence",
+				"Advanced AI detection (94% accuracy)",
 				"Priority support",
-				"Advanced analytics",
-				"Custom templates",
 			],
 			cta: "Start Free Trial",
 			popular: true,
 		},
 		{
 			name: "Team",
-			description: "For growing teams that need collaboration",
-			price: { monthly: 79, annual: 790 },
+			description: "Governance & visibility for engineering teams",
+			price: { monthly: 29, annual: 290 },
 			badge: null,
 			features: [
-				"Everything in Solo",
-				"Team collaboration",
-				"Multi-user workspaces",
-				"Role-based permissions",
-				"Team analytics",
-				"Shared templates",
-				"Team onboarding",
+				"Everything in Pro",
+				"$29/user/month",
+				"Team dashboard",
+				"PR risk scoring",
+				"Block merge policies",
+				"1-year cloud history",
+				"25GB storage per user",
+				"Role-based access control",
 			],
 			cta: "Start Team Trial",
 			popular: false,
 		},
 		{
 			name: "Enterprise",
-			description: "For organizations with complex workflows",
-			price: { monthly: 249, annual: 2490 },
+			description: "Custom governance for large organizations",
+			price: { monthly: null, annual: null },
 			badge: null,
 			features: [
 				"Everything in Team",
-				"Enterprise integrations",
+				"Custom pricing (starts $49/user)",
+				"Unlimited storage",
+				"5-year retention",
 				"SOC2 compliance",
 				"Dedicated support",
-				"Custom onboarding",
-				"SLA guarantees",
-				"Advanced security",
-				"Custom contracts",
+				"Custom SLA",
+				"On-premise deployment available",
 			],
 			cta: "Contact Sales",
 			popular: false,
@@ -204,20 +206,24 @@ const Pricing = () => {
 											id={`plan-${index}-pricing`}
 											className="text-4xl font-black"
 										>
-											${isAnnual ? plan.price.annual : plan.price.monthly}
+											{plan.price.monthly === null
+												? "Custom"
+												: `$${isAnnual ? plan.price.annual : plan.price.monthly}`}
 										</span>
-										{plan.price.monthly > 0 && (
+										{plan.price.monthly !== null && plan.price.monthly > 0 && (
 											<span className="text-muted-foreground ml-2">
 												/{isAnnual ? "year" : "month"}
 											</span>
 										)}
 									</div>
-									{isAnnual && plan.price.monthly > 0 && (
-										<div className="text-sm text-muted-foreground">
-											${Math.round(plan.price.annual / 12)}
-											/month billed annually
-										</div>
-									)}
+									{isAnnual &&
+										plan.price.monthly !== null &&
+										plan.price.monthly > 0 && (
+											<div className="text-sm text-muted-foreground">
+												${Math.round(plan.price.annual / 12)}
+												/month billed annually
+											</div>
+										)}
 								</div>
 
 								<button

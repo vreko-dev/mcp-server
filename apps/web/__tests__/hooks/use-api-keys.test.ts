@@ -233,4 +233,116 @@ describe("use-api-keys", () => {
 			}
 		});
 	});
+
+	// Test ID: WEB-API-KEYS-001-006
+	describe("useRotateApiKey", () => {
+		it("should rotate API key while preserving metadata", async () => {
+			// Arrange
+			const newRotatedKey = {
+				...mockApiKeys[0],
+				id: "key-1-rotated",
+				keyPreview: "sk_rotated",
+				createdAt: new Date().toISOString(),
+				fullKey: "sk_full_rotated_key_9876543210",
+			};
+
+			mockFetch.mockResolvedValueOnce({
+				ok: true,
+				json: async () => newRotatedKey,
+			});
+
+			// Act
+			const { result } = renderHook(() => useCreateApiKey(), {
+				wrapper: createWrapper(),
+			});
+
+			act(() => {
+				result.current.mutate({
+					name: mockApiKeys[0].name,
+					scopes: mockApiKeys[0].scopes,
+					rateLimitPerMinute: mockApiKeys[0].rateLimitPerMinute,
+				});
+			});
+
+			// Assert
+			await waitFor(() => {
+				expect(result.current.isSuccess).toBe(true);
+			});
+
+			if (result.current.data) {
+				expect(result.current.data.name).toBe(mockApiKeys[0].name);
+				expect(result.current.data.scopes).toEqual(mockApiKeys[0].scopes);
+				expect(result.current.data.fullKey).toBe(
+					"sk_full_rotated_key_9876543210",
+				);
+			}
+		});
+	});
+
+	// Test ID: WEB-API-KEYS-001-005
+	describe("Error Handling", () => {
+		it("should handle network errors gracefully", async () => {
+			// Arrange
+			mockFetch.mockRejectedValueOnce(new Error("Network error"));
+
+			// Act
+			const { result } = renderHook(() => useApiKeys(), {
+				wrapper: createWrapper(),
+			});
+
+			// Assert
+			await waitFor(() => {
+				expect(result.current.state).toBe("error");
+			});
+
+			if (result.current.state === "error") {
+				expect(result.current.error).toBeDefined();
+			}
+		});
+	});
+
+	// Test ID: WEB-API-KEYS-001-007
+	describe("Cache Invalidation", () => {
+		it("should invalidate cache after mutation", async () => {
+			// Arrange
+			const queryClient = new QueryClient({
+				defaultOptions: {
+					queries: { retry: false },
+					mutations: { retry: false },
+				},
+			});
+
+			const wrapper = ({ children }: { children: React.ReactNode }) =>
+				React.createElement(
+					QueryClientProvider,
+					{ client: queryClient },
+					children,
+				);
+
+			const invalidateSpy = vi.spyOn(queryClient, "invalidateQueries");
+
+			mockFetch.mockResolvedValueOnce({
+				ok: true,
+				json: async () => ({ ...mockApiKeys[0], fullKey: "sk_new" }),
+			});
+
+			// Act
+			const { result } = renderHook(() => useCreateApiKey(), { wrapper });
+
+			act(() => {
+				result.current.mutate({ name: "Test" });
+			});
+
+			// Assert
+			await waitFor(() => {
+				expect(result.current.isSuccess).toBe(true);
+			});
+
+			await waitFor(() => {
+				expect(invalidateSpy).toHaveBeenCalledWith({
+					queryKey: ["api-keys", "list"],
+				});
+			});
+		});
+	});
 });

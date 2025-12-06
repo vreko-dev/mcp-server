@@ -1,7 +1,7 @@
 {
   "name": "snapback-vscode",
   "description": "Smart snapshot manager with Watch/Warn/Block protection levels. Code Breaks. SnapBack.",
-  "version": "1.2.9",
+  "version": "1.4.0",
   "activationEvents": [
     "onStartupFinished",
     "onCommand:snapback.*",
@@ -21,6 +21,33 @@
   },
   "categories": [
     "Other"
+  ],
+  "keywords": [
+    "snapshot",
+    "backup",
+    "code-safety",
+    "ai-protection",
+    "copilot",
+    "cursor",
+    "windsurf",
+    "recovery",
+    "rollback",
+    "file-protection",
+    "git",
+    "version-control",
+    "developer-tools",
+    "typescript",
+    "javascript",
+    "productivity",
+    "security",
+    "code-quality",
+    "automation",
+    "testing",
+    "ci-cd",
+    "open-source",
+    "sdk",
+    "local-first",
+    "ai-safety"
   ],
   "contributes": {
     "authentication": [
@@ -1031,11 +1058,11 @@
     ]
   },
   "dependencies": {
-    "@snapback/contracts": "workspace:*",
+    "@snapback/contracts": "^0.1.4",
     "@snapback/core": "workspace:*",
-    "@snapback/events": "workspace:*",
-    "@snapback/infrastructure": "workspace:*",
-    "@snapback/sdk": "workspace:*",
+    "@snapback/events": "^0.1.1",
+    "@snapback/infrastructure": "^0.1.2",
+    "@snapback/sdk": "^0.1.1",
     "ajv": "catalog:",
     "async-lock": "catalog:",
     "base64url": "catalog:",

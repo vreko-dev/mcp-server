@@ -5,11 +5,14 @@
     "@snapback/contracts": "workspace:*",
     "@snapback/infrastructure": "workspace:*",
     "@snapback/platform": "workspace:*",
-    "drizzle-orm": "catalog:"
+    "drizzle-orm": "catalog:",
+    "posthog-node": "catalog:",
+    "pino": "catalog:"
   },
   "devDependencies": {
     "@snapback/tsconfig": "workspace:*",
     "@types/node": "catalog:",
+    "posthog-js": "catalog:",
     "tsup": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
@@ -19,6 +22,11 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
+    },
+    "./infrastructure": {
+      "types": "./dist/infrastructure/index.d.ts",
+      "import": "./dist/infrastructure/index.mjs",
+      "require": "./dist/infrastructure/index.js"
     }
   },
   "files": [

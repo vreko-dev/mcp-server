@@ -10,20 +10,20 @@ The canonical source of truth for SnapBack capabilities across all tiers.
 
 ## Feature Comparison
 
-| Feature Category | Free | Solo | Team | Enterprise |
-|-----------------|------|------|------|------------|
+| Feature Category | Free | Pro | Team | Enterprise |
+|-----------------|------|-----|------|------------|
 | **Guardian Detection** |
 | Local MCP scan | ✓ | ✓ | ✓ | ✓ |
 | Cloud AI scoring | — | ✓ | ✓ | ✓ |
 | Custom detection rules | — | — | — | ✓ |
 | **Snapshots & Recovery** |
-| Local snapshots | Unlimited* | Unlimited | Unlimited | Unlimited |
-| Cloud backup | — | 5GB | 50GB | 100GB+ |
-| Cloud retention | — | 30 days | 90 days | Custom |
+| Local snapshots | Unlimited | Unlimited | Unlimited | Unlimited |
+| Cloud backup | — | 5GB | 25GB/user | 100GB+ |
+| Cloud retention | 7 days local | 30 days | 1 year | 5+ years |
 | Session time-travel | Basic | Full | Full | Full |
 | **Collaboration** |
-| Team members | 1 | 1 | 10 | Unlimited |
-| Shared snapshots | — | — | ✓ | ✓ |
+| Team members | 1 | 1 | Unlimited | Unlimited |
+| Shared snapshots | — | Personal repos | ✓ | ✓ |
 | Team policies (.snapbackrc) | — | — | ✓ | ✓ |
 | **Security & Compliance** |
 | SSO/SAML | — | — | — | ✓ |
@@ -32,20 +32,21 @@ The canonical source of truth for SnapBack capabilities across all tiers.
 | DPA available | — | — | — | ✓ |
 | **Support** |
 | Community forums | ✓ | ✓ | ✓ | ✓ |
-| Email support | — | Email (48h) | Priority (24h) | SLA/CSM |
+| Email support | — | Priority (48h) | Priority (24h) | SLA/CSM |
 
-*Free tier: You control pruning via extension settings. Cloud storage and backup are paid features.
+*Developer tier: You control pruning via extension settings. 7-day local retention recommended.
 
 ## Tier Details
 
 ### Free {#free}
 
-Perfect for individual developers trying SnapBack.
+Perfect for individual developers learning SnapBack.
 
 **Key Features:**
 - Unlimited local snapshots (you control retention)
 - Local MCP scan only — no cloud scoring
 - Watch, Warn, Block protection levels
+- 7-day local history (recommended)
 - Community support
 
 **Limitations:**
@@ -55,35 +56,41 @@ Perfect for individual developers trying SnapBack.
 
 [Get Started](/quick-start)
 
-### Solo {#solo}
+### Pro {#pro}
 
-For individual professionals who need cloud backup and AI-powered risk detection.
+For individual professionals who need cloud intelligence and backup.
 
 **Everything in Free, plus:**
 - 5GB cloud backup storage
 - 30-day cloud retention
-- Cloud-based Guardian AI risk scoring
+- GitHub integration (personal repos)
+- Cross-repo intelligence
+- Cloud-based Guardian AI risk scoring (94% accuracy)
 - Backend MCP server with API authentication
-- Email support (48h SLA)
+- Priority email support (48h SLA)
 
-**Price:** Starting at $29/month
+**Price:** $12/month (billed monthly or $120/year)
 
-[Start Free Trial](https://snapback.dev/pricing#solo)
+[Start Free Trial](https://snapback.dev/pricing#pro)
 
 ### Team {#team}
 
-For development teams that need collaboration and shared policies.
+For engineering teams that need governance and visibility.
 
-**Everything in Solo, plus:**
-- 50GB shared cloud storage
-- 90-day cloud retention
-- 10 team seats
+**Everything in Pro, plus:**
+- $29/user/month pricing
+- Team dashboard with PR risk scoring
+- Block merge policies
+- 25GB cloud storage per user
+- 1-year cloud retention
+- Unlimited team seats
 - Shared snapshots across team
 - Team-wide .snapbackrc policies
-- Team usage analytics
+- Centralized billing
+- Role-based access control
 - Priority email support (24h SLA)
 
-**Price:** Starting at $79/month
+**Price:** $29/user/month
 
 [Start Team Trial](https://snapback.dev/pricing#team)
 
@@ -92,9 +99,10 @@ For development teams that need collaboration and shared policies.
 For organizations requiring enterprise-grade security, compliance, and support.
 
 **Everything in Team, plus:**
+- Custom pricing (starts $49/user/month)
 - Unlimited team members
-- 100GB+ cloud storage (scalable)
-- Custom retention policies (365+ days)
+- 100GB+ cloud storage per user (scalable)
+- 5-year retention (custom available)
 - SSO/SAML integration
 - SCIM provisioning (optional)
 - Organization-wide custom detection rules
@@ -102,6 +110,7 @@ For organizations requiring enterprise-grade security, compliance, and support.
 - DPA available on request
 - 24/7 dedicated support with named account manager (SLA/CSM)
 - Custom data residency and retention
+- On-premise deployment available
 - 2-week structured POC program
 
 **Enterprise Add-ons (available via sales):**
@@ -144,9 +153,9 @@ Yes! The core extension and local snapshots work completely offline. Cloud featu
 
 Not sure which plan is right for you? Here's a quick guide:
 
-- **Free**: Trying SnapBack, solo development, no cloud needs
-- **Solo**: Individual professional, need cloud backup + AI detection
-- **Team**: 2-10 developers, need shared policies and team collaboration
-- **Enterprise**: Organization-wide deployment, compliance requirements, SSO/SAML
+- **Free**: Learning SnapBack, solo development, local-only needs
+- **Pro**: Individual professional, need cloud backup + AI detection ($12/mo)
+- **Team**: Engineering teams, need governance and visibility ($29/user/mo)
+- **Enterprise**: Organization-wide deployment, compliance requirements (custom pricing)
 
 [Contact us](https://snapback.dev/contact) for a personalized recommendation.

@@ -1,0 +1,55 @@
+{
+	"name": "@snapback/testing",
+	"version": "0.0.1",
+	"description": "Centralized testing utilities for SnapBack monorepo",
+	"private": true,
+	"type": "module",
+	"exports": {
+		".": "./dist/index.js",
+		"./msw": "./dist/msw/index.js",
+		"./msw/handlers": "./dist/msw/handlers/index.js",
+		"./msw/handlers/oauth": "./dist/msw/handlers/oauth.js",
+		"./msw/handlers/resend": "./dist/msw/handlers/resend.js",
+		"./msw/handlers/posthog": "./dist/msw/handlers/posthog.js",
+		"./msw/server": "./dist/msw/server.js",
+		"./mocks/auth": "./dist/mocks/auth.js",
+		"./utils/performance": "./dist/utils/performance.js",
+		"./utils/TestCleanupManager": "./dist/utils/TestCleanupManager.js",
+		"./utils/DeterministicTime": "./dist/utils/DeterministicTime.js",
+		"./fixtures": "./dist/fixtures/index.js",
+		"./fixtures/factories": "./dist/fixtures/factories.js"
+	},
+	"typesVersions": {
+		"*": {
+			"msw/server": ["./dist/msw/server.d.ts"],
+			"msw/handlers": ["./dist/msw/handlers/index.d.ts"],
+			"msw": ["./dist/msw/index.d.ts"],
+			"mocks/auth": ["./dist/mocks/auth.d.ts"],
+			"fixtures": ["./dist/fixtures/index.d.ts"]
+		}
+	},
+	"main": "./dist/index.js",
+	"scripts": {
+		"build": "tsup",
+		"test": "vitest run",
+		"test:coverage": "vitest run --coverage"
+	},
+	"dependencies": {
+		"@faker-js/faker": "catalog:",
+		"msw": "catalog:"
+	},
+	"devDependencies": {
+		"@snapback/tsconfig": "workspace:*",
+		"@types/node": "catalog:",
+		"graphql": "^16.12.0",
+		"tsup": "catalog:",
+		"typescript": "catalog:",
+		"vitest": "catalog:"
+	},
+	"keywords": [
+		"testing",
+		"mocks",
+		"msw",
+		"test-utils"
+	]
+}

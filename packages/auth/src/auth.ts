@@ -486,16 +486,7 @@ export const authTyped: any = auth;
 
 export * from "./lib/organization.js";
 
-// Temporary type definitions
-// biome-ignore lint/suspicious/noExplicitAny: Will be replaced with actual Better Auth types
-export type Session = any;
-
-// biome-ignore lint/suspicious/noExplicitAny: Will be replaced with actual Better Auth types
-export type ActiveOrganization = any;
-
-// biome-ignore lint/suspicious/noExplicitAny: Will be replaced with actual Better Auth types
-export type OrganizationMemberRole = any;
-
-export type OrganizationInvitationStatus = string; // Default to string since we can't infer the exact type
-
-export type OrganizationMetadata = Record<string, unknown> | undefined;
+// Type exports moved to appropriate locations:
+// - Session: Use 'better-auth/types' or '@snapback/contracts/auth/session'
+// - Organization types: Use Better Auth organization plugin types
+// Removed dangerous 'any' stub exports (audit finding #1)

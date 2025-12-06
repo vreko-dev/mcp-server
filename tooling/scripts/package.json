@@ -1,6 +1,6 @@
 {
 	"name": "@snapback/scripts",
-	"version": "0.0.0",
+	"version": "0.0.2",
 	"dependencies": {
 		"@snapback/auth": "workspace:*",
 		"@snapback/config": "workspace:*",
@@ -9,6 +9,7 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "catalog:",
+		"@simplewebauthn/server": "^13.2.2",
 		"@snapback/tsconfig": "workspace:*",
 		"@types/node": "catalog:",
 		"nanoid": "catalog:",

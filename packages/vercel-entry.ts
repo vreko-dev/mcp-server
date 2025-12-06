@@ -1,5 +1,5 @@
-// Import directly from the API package source
-import { app } from "./api/index.js";
+// Import directly from the API application source
+import { app } from "../apps/api/src/server";
 
 export default app;
 

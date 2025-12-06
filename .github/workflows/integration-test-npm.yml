@@ -1,0 +1,109 @@
+name: Integration Test Published Packages
+
+on:
+    schedule:
+        - cron: "0 2 * * *"
+    workflow_dispatch:
+    push:
+        branches: [main]
+        paths:
+            - "packages-oss/**"
+
+jobs:
+    test-sdk-npm-install:
+        name: Test SDK from npm
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                os: [ubuntu-latest, macos-latest, windows-latest]
+                node-version: ["18", "20", "22"]
+            fail-fast: false
+
+        steps:
+            - name: Setup Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ matrix.node-version }}
+
+            - name: Create test project
+              run: |
+                  mkdir test-sdk-integration
+                  cd test-sdk-integration
+                  npm init -y
+              shell: bash
+
+            - name: Install from npm registry
+              run: |
+                  cd test-sdk-integration
+                  npm install @snapback-oss/sdk@latest
+              shell: bash
+
+            - name: Smoke test
+              run: |
+                  cd test-sdk-integration
+                  node -e "const sdk = require('@snapback-oss/sdk'); console.log('SDK loaded');"
+              shell: bash
+
+    test-contracts-npm-install:
+        name: Test Contracts from npm
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                os: [ubuntu-latest, macos-latest]
+                node-version: ["18", "20", "22"]
+            fail-fast: false
+
+        steps:
+            - name: Setup Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ matrix.node-version }}
+
+            - name: Create test project
+              run: |
+                  mkdir test-contracts
+                  cd test-contracts
+                  npm init -y
+              shell: bash
+
+            - name: Install from npm
+              run: |
+                  cd test-contracts
+                  npm install @snapback-oss/contracts@latest
+              shell: bash
+
+            - name: Smoke test
+              run: |
+                  cd test-contracts
+                  node -e "const c = require('@snapback-oss/contracts'); console.log('Contracts loaded');"
+              shell: bash
+
+    test-infrastructure-npm-install:
+        name: Test Infrastructure from npm
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                node-version: ["18", "20"]
+            fail-fast: false
+
+        steps:
+            - name: Setup Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ matrix.node-version }}
+
+            - name: Create test project
+              run: |
+                  mkdir test-infra
+                  cd test-infra
+                  npm init -y
+
+            - name: Install from npm
+              run: |
+                  cd test-infra
+                  npm install @snapback-oss/infrastructure@latest
+
+            - name: Smoke test
+              run: |
+                  cd test-infra
+                  node -e "const i = require('@snapback-oss/infrastructure'); console.log('Infrastructure loaded');"

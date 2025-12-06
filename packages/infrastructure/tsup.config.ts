@@ -9,9 +9,17 @@ export default defineConfig({
 		"posthog/cohorts": "src/posthog/cohorts.ts",
 		"posthog/correlation": "src/posthog/correlation.ts",
 		"tracing/index": "src/tracing/index.ts",
+		"health/index": "src/health/index.ts",
 	},
 	format: ["esm"],
-	dts: false, // Temporarily disable DTS generation - use tsc for type declarations
+	dts: {
+		resolve: true,
+		compilerOptions: {
+			composite: false,
+			incremental: false,
+			rootDir: undefined,
+		},
+	},
 	clean: true,
 	sourcemap: true,
 	outDir: "dist",

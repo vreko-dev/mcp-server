@@ -18,15 +18,18 @@ import {
 	or,
 } from "drizzle-orm";
 
-export type {
-	ActiveOrganization,
-	OrganizationMemberRole,
-	OrganizationMetadata,
-	Session,
-} from "./auth.js";
-// Re-export types from auth.ts
 // Import and re-export auth from auth.ts
 export { auth } from "./auth.js";
+
+// Re-export business logic functions
+export {
+	checkOrgMembership,
+	getUserOrgIds,
+	getUserPermissions,
+	getUserPlan,
+	hasPermission,
+	type SubscriptionPlan,
+} from "./business/index.js";
 
 // ============================================================================
 // TYPES

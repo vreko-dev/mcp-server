@@ -1,7 +1,7 @@
 {
 	"name": "@snapback/api-service",
 	"description": "Standalone API service for SnapBack",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"dependencies": {
 		"@aws-sdk/client-s3": "catalog:",
 		"@aws-sdk/s3-request-presigner": "catalog:",
@@ -16,12 +16,11 @@
 		"@scalar/hono-api-reference": "catalog:",
 		"@sentry/node": "catalog:",
 		"@snapback/auth": "workspace:*",
-		"@snapback/config": "workspace:*",
-		"@snapback/contracts": "workspace:*",
+		"@snapback/config": "^0.1.1",
+		"@snapback/contracts": "^0.1.4",
 		"@snapback/core": "workspace:*",
-		"@snapback/events": "workspace:*",
-		"@snapback/health": "workspace:*",
-		"@snapback/infrastructure": "workspace:*",
+		"@snapback/events": "^0.1.1",
+		"@snapback/infrastructure": "^0.1.2",
 		"@snapback/integrations": "workspace:*",
 		"@snapback/platform": "workspace:*",
 		"@snapback/policy-engine": "workspace:*",
@@ -102,7 +101,10 @@
 		"test:all": "vitest run",
 		"type-check": "tsc --noEmit",
 		"lint": "biome check .",
-		"lint:fix": "biome check --write ."
+		"lint:fix": "biome check --write .",
+		"docker-build": "docker build -t snapback-api:${GIT_SHA:-latest} -f apps/api/Dockerfile.prod .",
+		"docker-build:dev": "docker build -t snapback-api:dev -f apps/api/Dockerfile.dev .",
+		"deploy": "fly deploy --config apps/api/fly.toml"
 	},
 	"type": "module"
 }

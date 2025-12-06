@@ -1,5 +1,7 @@
-// Protection levels
-export type ProtectionLevel = "unprotected" | "watch" | "warn" | "block";
+import type { ProtectionLevel as CanonicalProtectionLevel } from "@snapback/contracts";
+
+// Protection levels - canonical levels plus "unprotected" for demo purposes
+export type ProtectionLevel = CanonicalProtectionLevel | "unprotected";
 
 // Snapshot interface
 export interface Snapshot {

@@ -28,42 +28,16 @@ export function captureAnalyticsEvent(
 		eventProperties = event.properties;
 	}
 
-	// Try to use available analytics providers
+	// PostHog is the only supported analytics provider
 	const window_ = window as any;
-
-	// PostHog
 	if (window_.posthog) {
 		window_.posthog.capture(eventName, eventProperties);
-		return;
-	}
-
-	// Plausible
-	if (window_.plausible) {
-		window_.plausible(eventName, { props: eventProperties });
-		return;
-	}
-
-	// Google Analytics
-	if (window_.gtag) {
-		window_.gtag("event", eventName, eventProperties || {});
-		return;
-	}
-
-	// Pirsch
-	if (window_.pirsch) {
-		window_.pirsch(eventName, eventProperties);
-		return;
-	}
-
-	// Umami
-	if (window_.umami) {
-		window_.umami.track(eventName, eventProperties);
-		return;
-	}
-
-	// Fallback: console log in development
-	if (process.env.NODE_ENV === "development") {
-		console.debug("captureAnalyticsEvent:", eventName, eventProperties);
+	} else if (process.env.NODE_ENV === "development") {
+		console.debug(
+			"[Analytics] PostHog not loaded, would track:",
+			eventName,
+			eventProperties,
+		);
 	}
 }
 

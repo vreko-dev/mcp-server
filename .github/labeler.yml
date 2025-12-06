@@ -1,0 +1,35 @@
+# Area Labels
+area: vscode:
+  - apps/vscode/**/*
+
+area: web:
+  - apps/web/**/*
+
+area: api:
+  - apps/api/**/*
+
+area: auth:
+  - packages/auth/**/*
+
+area: documentation:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "**/*.md"
+          - "docs/**/*"
+
+# Type Labels
+test:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "**/*.test.ts"
+          - "**/*.spec.ts"
+          - "**/test/**/*"
+          - "**/__tests__/**/*"
+
+config:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "**/*.json"
+          - "**/*.yml"
+          - "**/*.yaml"
+          - "**/tsconfig.json"

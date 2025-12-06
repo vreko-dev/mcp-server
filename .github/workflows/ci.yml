@@ -1,20 +1,170 @@
-name: CI (Redirect to Turborepo CI)
+name: CI
 
 on:
-    push:
-        branches: [main, develop, feat/**]
     pull_request:
         branches: [main, develop]
-    workflow_dispatch:
+    push:
+        branches: [main, develop]
+
+concurrency:
+    group: ci-${{ github.ref }}
+    cancel-in-progress: true
 
 jobs:
-    redirect:
-        name: Redirect to Turborepo CI
+    lint:
+        name: Lint and Format Check
         runs-on: ubuntu-latest
+        timeout-minutes: 10
+
         steps:
-            - name: Notify about workflow consolidation
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Setup pnpm
+              uses: pnpm/action-setup@v4
+              with:
+                  version: 10
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "20"
+                  cache: "pnpm"
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Run Biome lint
+              run: pnpm biome check .
+
+            - name: Check formatting
+              run: pnpm biome format --check .
+
+    typecheck:
+        name: TypeScript Type Check
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Setup pnpm
+              uses: pnpm/action-setup@v4
+              with:
+                  version: 10
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "20"
+                  cache: "pnpm"
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Build for type references
+              run: pnpm build
+
+            - name: Type check
+              run: pnpm typecheck
+
+    test-unit:
+        name: Unit Tests
+        runs-on: ubuntu-latest
+        timeout-minutes: 20
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Setup pnpm
+              uses: pnpm/action-setup@v4
+              with:
+                  version: 10
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "20"
+                  cache: "pnpm"
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Run unit tests
+              run: pnpm test --run
+
+            - name: Upload coverage
+              uses: codecov/codecov-action@v4
+              if: always()
+              with:
+                  files: ./coverage/coverage-final.json
+                  flags: unit
+
+    oss-leak-detection:
+        name: OSS IP Leak Detection
+        runs-on: ubuntu-latest
+        if: contains(github.event.pull_request.changed_files, 'packages-oss/')
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Scan for proprietary imports
               run: |
-                  echo "⚠️ This workflow has been consolidated into turborepo-ci.yml"
-                  echo "⚠️ Please check the Turborepo CI workflow for test results"
-                  echo "✅ All packages are now tested in the unified workflow"
-                  exit 0
+                  echo "🔍 Scanning OSS packages for IP leaks..."
+
+                  VIOLATIONS=0
+
+                  if grep -r "@snapback/auth" packages-oss/ --include="*.ts" --include="*.tsx"; then
+                    echo "❌ Found @snapback/auth imports in OSS code!"
+                    VIOLATIONS=$((VIOLATIONS + 1))
+                  fi
+
+                  if grep -r "@snapback/platform" packages-oss/ --include="*.ts" --include="*.tsx"; then
+                    echo "❌ Found @snapback/platform imports in OSS code!"
+                    VIOLATIONS=$((VIOLATIONS + 1))
+                  fi
+
+                  if grep -ri "stripe\|posthog\|subscription\|tier.*logic\|enterprise" packages-oss/ --include="*.ts" --include="*.tsx"; then
+                    echo "❌ Found proprietary keywords in OSS code!"
+                    VIOLATIONS=$((VIOLATIONS + 1))
+                  fi
+
+                  if [ $VIOLATIONS -gt 0 ]; then
+                    echo "❌ $VIOLATIONS IP leak(s) detected!"
+                    exit 1
+                  fi
+
+                  echo "✅ No IP leaks detected"
+
+    build:
+        name: Build Verification
+        runs-on: ubuntu-latest
+        timeout-minutes: 30
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Setup pnpm
+              uses: pnpm/action-setup@v4
+              with:
+                  version: 10
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "20"
+                  cache: "pnpm"
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Build all packages
+              run: pnpm build
+
+            - name: Verify build artifacts
+              run: |
+                  echo "Verifying build outputs..."
+                  test -d packages-oss/sdk/dist || (echo "❌ SDK build failed" && exit 1)
+                  test -d apps/web/.next || (echo "❌ Web build failed" && exit 1)
+                  echo "✅ All builds successful"

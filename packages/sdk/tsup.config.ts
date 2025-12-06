@@ -3,7 +3,14 @@ import { defineConfig } from "tsup";
 export default defineConfig({
 	entry: ["src/index.ts"],
 	format: ["esm"],
-	dts: false, // Skip declarations - tsup has issues with internal imports
+	dts: {
+		resolve: true,
+		compilerOptions: {
+			composite: false,
+			incremental: false,
+			rootDir: undefined,
+		},
+	},
 	clean: true,
 	sourcemap: true,
 	outDir: "dist",

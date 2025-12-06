@@ -6,7 +6,7 @@ import { useTier } from "./tier-context";
 const options: { value: Tier; label: string }[] = [
 	{ value: "all", label: "All" },
 	{ value: "free", label: "Free" },
-	{ value: "solo", label: "Solo" },
+	{ value: "pro", label: "Pro" },
 	{ value: "team", label: "Team" },
 	{ value: "enterprise", label: "Enterprise" },
 ];

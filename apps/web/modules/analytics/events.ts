@@ -14,6 +14,7 @@ export const AnalyticsEvents = {
 	// Dashboard events (legacy)
 	DASHBOARD_VIEWED: "dashboard_viewed",
 	DASHBOARD_HELP_ACCESSED: "dashboard_help_accessed",
+	SAVE_STORY_SHARED: "save_story_shared",
 } as const;
 
 export type AnalyticsEventKey = keyof typeof AnalyticsEvents;

@@ -1,12 +1,12 @@
-# @snapback/sdk
+# @snapback-oss/sdk
 
-[![npm version](https://img.shields.io/npm/v/@snapback/sdk?style=flat&colorA=18181B&colorB=10B981)](https://www.npmjs.com/package/@snapback/sdk)
-[![npm downloads](https://img.shields.io/npm/dm/@snapback/sdk?style=flat&colorA=18181B&colorB=10B981)](https://www.npmjs.com/package/@snapback/sdk)
+[![npm version](https://img.shields.io/npm/v/@snapback-oss/sdk?style=flat&colorA=18181B&colorB=10B981)](https://www.npmjs.com/package/@snapback-oss/sdk)
+[![npm downloads](https://img.shields.io/npm/dm/@snapback-oss/sdk?style=flat&colorA=18181B&colorB=10B981)](https://www.npmjs.com/package/@snapback-oss/sdk)
 [![License](https://img.shields.io/badge/license-Apache%202.0-10B981?style=flat&colorA=18181B&colorB=10B981)](https://github.com/snapback-dev/sdk/blob/main/LICENSE)
 
 **Production-ready TypeScript SDK for building code safety systems**
 
-Part of [SnapBack](https://snapback.dev) - create snapshots before risky changes, protect critical files automatically, and analyze code for security risks with our powerful SDK.
+Part of [SnapBack](https://snapback.dev?utm_source=npm&utm_medium=readme&utm_campaign=sdk) - create snapshots before risky changes, protect critical files automatically, and analyze code for security risks with our powerful SDK.
 
 ---
 
@@ -16,7 +16,7 @@ SnapBack is a **code safety platform** that prevents breaking changes in your co
 
 This SDK gives you programmatic access to all SnapBack features.
 
-[Learn more about code safety →](https://docs.snapback.dev/concepts/code-safety)
+[Learn more about code safety →](https://docs.snapback.dev/concepts/code-safety?utm_source=npm&utm_medium=readme&utm_campaign=sdk)
 
 ---
 
@@ -36,7 +36,7 @@ The complete **SnapBack SDK** with everything you need to build code safety into
 - Creating automated code protection workflows
 - Implementing snapshot-based rollback
 
-[API Reference →](https://docs.snapback.dev/api/sdk)
+[API Reference →](https://docs.snapback.dev/api/sdk?utm_source=npm&utm_medium=readme&utm_campaign=sdk)
 
 ---
 
@@ -269,22 +269,22 @@ Build complete code safety solutions:
 
 | Package | Purpose | Documentation |
 |---------|---------|---------------|
-| **[@snapback/contracts](https://www.npmjs.com/package/@snapback/contracts)** | TypeScript types | [Docs](https://docs.snapback.dev/api/contracts) |
-| **[@snapback/sdk](https://www.npmjs.com/package/@snapback/sdk)** | Complete SDK (you are here) | [Docs](https://docs.snapback.dev/api/sdk) |
-| **[@snapback/infrastructure](https://www.npmjs.com/package/@snapback/infrastructure)** | Logging & observability | [Docs](https://docs.snapback.dev/api/infrastructure) |
-| **[@snapback/events](https://www.npmjs.com/package/@snapback/events)** | Event bus | [Docs](https://docs.snapback.dev/api/events) |
-| **[@snapback/config](https://www.npmjs.com/package/@snapback/config)** | Configuration | [Docs](https://docs.snapback.dev/api/config) |
+| **[@snapback-oss/contracts](https://www.npmjs.com/package/@snapback-oss/contracts)** | TypeScript types | [Docs](https://docs.snapback.dev/api/contracts) |
+| **[@snapback-oss/sdk](https://www.npmjs.com/package/@snapback-oss/sdk)** | Complete SDK (you are here) | [Docs](https://docs.snapback.dev/api/sdk) |
+| **[@snapback-oss/infrastructure](https://www.npmjs.com/package/@snapback-oss/infrastructure)** | Logging & observability | [Docs](https://docs.snapback.dev/api/infrastructure) |
+| **[@snapback-oss/events](https://www.npmjs.com/package/@snapback-oss/events)** | Event bus | [Docs](https://docs.snapback.dev/api/events) |
+| **[@snapback-oss/config](https://www.npmjs.com/package/@snapback-oss/config)** | Configuration | [Docs](https://docs.snapback.dev/api/config) |
 | **[@snapback/mcp-server](https://www.npmjs.com/package/@snapback/mcp-server)** | AI integration | [Docs](https://docs.snapback.dev/integrations/mcp) |
-| **[VS Code Extension](https://marketplace.visualstudio.com/items?itemName=snapback.snapback)** | Editor integration | [Docs](https://docs.snapback.dev/integrations/vscode) |
+| **[VS Code Extension](https://marketplace.visualstudio.com/items?itemName=MarcelleLabs.snapback-vscode&utm_source=npm&utm_medium=readme&utm_campaign=sdk)** | Editor integration | [Docs](https://docs.snapback.dev/integrations/vscode?utm_source=npm&utm_medium=readme&utm_campaign=sdk) |
 
-[Explore the platform →](https://snapback.dev)
+[Explore the platform →](https://snapback.dev?utm_source=npm&utm_medium=readme&utm_campaign=sdk)
 
 ---
 
 ## Resources
 
-- 🌐 **Website**: [snapback.dev](https://snapback.dev)
-- 📖 **Documentation**: [docs.snapback.dev](https://docs.snapback.dev)
+- 🌐 **Website**: [snapback.dev](https://snapback.dev?utm_source=npm&utm_medium=readme&utm_campaign=sdk)
+- 📖 **Documentation**: [docs.snapback.dev](https://docs.snapback.dev?utm_source=npm&utm_medium=readme&utm_campaign=sdk)
 - 🐛 **Report Issues**: [GitHub Issues](https://github.com/snapback-dev/sdk/issues)
 - 💬 **Get Help**: [hello@snapback.dev](mailto:hello@snapback.dev)
 
@@ -312,7 +312,7 @@ See [LICENSE](./LICENSE) for details.
 
 <div align="center">
 
-**[snapback.dev](https://snapback.dev)** • **[Documentation](https://docs.snapback.dev)** • **[@snapbackdev](https://twitter.com/snapbackdev)**
+**[snapback.dev](https://snapback.dev?utm_source=npm&utm_medium=readme&utm_campaign=sdk)** • **[Documentation](https://docs.snapback.dev?utm_source=npm&utm_medium=readme&utm_campaign=sdk)** • **[@snapbackdev](https://twitter.com/snapbackdev)**
 
 Made with ❤️ for developers who ship with confidence
 

@@ -110,7 +110,7 @@ export function UpgradeModal({
 					</div>
 					<DialogDescription className="text-neutral-300 pt-2">
 						You've reached your {currentPlan} plan limit for {resourceType}.
-						Upgrade to Solo or Team plan for unlimited access.
+						Upgrade to Pro or Team plan for unlimited access.
 					</DialogDescription>
 				</DialogHeader>
 

@@ -1,5 +1,5 @@
 // Minimal typed guard for docs analytics
-export type Tier = "all" | "free" | "solo" | "team" | "enterprise";
+export type Tier = "all" | "free" | "pro" | "team" | "enterprise";
 
 type PlanFilterChanged = {
 	name: "docs_plan_filter_changed";
@@ -33,7 +33,9 @@ function hasPosthog(): boolean {
 }
 
 export function captureDocsEvent(e: DocsEvent): void {
-	if (!hasPosthog()) { return; }
+	if (!hasPosthog()) {
+		return;
+	}
 
 	switch (e.name) {
 		case "docs_plan_filter_changed": {

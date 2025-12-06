@@ -1,13 +1,13 @@
 {
   "name": "@snapback/policy-engine",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "dependencies": {
     "@snapback/auth": "workspace:*",
-    "@snapback/config": "workspace:*",
-    "@snapback/contracts": "workspace:*",
+    "@snapback/config": "^0.1.1",
+    "@snapback/contracts": "^0.1.4",
     "@snapback/core": "workspace:*",
-    "@snapback/events": "workspace:*",
-    "@snapback/infrastructure": "workspace:*",
+    "@snapback/events": "^0.1.1",
+    "@snapback/infrastructure": "^0.1.2",
     "@snapback/integrations": "workspace:*",
     "@snapback/platform": "workspace:*",
     "zod": "catalog:"

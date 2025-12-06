@@ -8,7 +8,7 @@ interface WelcomeEmailProps {
 }
 
 export default function WelcomeEmail({
-	plan = "Solo",
+	plan = "Pro",
 	features = [],
 	dashboardUrl = "https://snapback.dev/dashboard",
 	supportEmail = "support@snapback.dev",

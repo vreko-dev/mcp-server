@@ -1,5 +1,5 @@
 import { auth } from "@snapback/auth";
-import { type NextRequest, NextResponse } from "next/server";
+// import { type NextRequest, NextResponse } from "next/server";
 import * as semver from "semver";
 import { getCacheKey, getOrCreateCache } from "../lib/cache.js";
 import { log } from "../lib/logger.js";
@@ -7,6 +7,41 @@ import { checkRateLimit } from "../lib/rate-limit.js";
 import { verifyRequestSignature } from "../lib/security.js";
 import { getSubscription } from "../lib/subscription.js";
 import { trackRateLimitViolation, trackUsage } from "../lib/usage.js";
+
+// Temporary types to avoid Next.js dependency in API service
+interface NextRequest {
+	url: string;
+	method: string;
+	headers: {
+		get(name: string): string | null;
+	};
+	nextUrl: {
+		pathname: string;
+	};
+	text(): Promise<string>;
+}
+
+class NextResponse {
+	status: number;
+	headers: Map<string, string>;
+	body: any;
+
+	constructor(
+		body: any,
+		init?: { status?: number; headers?: Record<string, string> },
+	) {
+		this.body = body;
+		this.status = init?.status || 200;
+		this.headers = new Map(Object.entries(init?.headers || {}));
+	}
+
+	static json(
+		data: any,
+		init?: { status?: number; headers?: Record<string, string> },
+	): NextResponse {
+		return new NextResponse(data, init);
+	}
+}
 
 // Define the request context type
 interface RequestContext {
@@ -202,16 +237,22 @@ export async function withUsageTracking(
 		}).catch(console.error);
 
 		// 10. Add response headers
+		const responseHeaders: Record<string, string> = {
+			"X-Request-Id": requestId,
+			"X-Cache": "MISS",
+			"X-RateLimit-Remaining": rateLimitResult.remaining.toString(),
+			"X-RateLimit-Limit": rateLimitResult.limit.toString(),
+			"X-Response-Time": `${responseTime}ms`,
+		};
+		
+		// Merge with response headers
+		response.headers.forEach((value, key) => {
+			responseHeaders[key] = value;
+		});
+		
 		return NextResponse.json(response.body, {
 			status: response.status,
-			headers: {
-				...response.headers,
-				"X-Request-Id": requestId,
-				"X-Cache": "MISS",
-				"X-RateLimit-Remaining": rateLimitResult.remaining.toString(),
-				"X-RateLimit-Limit": rateLimitResult.limit.toString(),
-				"X-Response-Time": `${responseTime}ms`,
-			},
+			headers: responseHeaders,
 		});
 	} catch (error) {
 		const _responseTime = Date.now() - startTime;

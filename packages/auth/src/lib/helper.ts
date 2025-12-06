@@ -1,21 +1,20 @@
-import type { ActiveOrganization, Session } from "../auth.js";
-
+// Use Better Auth organization plugin types instead of removed stub types
 export function isMemberOfOrganization(
-	user: Session["user"] | undefined,
-	organization: ActiveOrganization,
+	user: { id: string } | undefined,
+	organization: { members: Array<{ userId: string }> },
 ) {
-	return organization.members.some((member: any) => member.userId === user?.id);
+	return organization.members.some((member) => member.userId === user?.id);
 }
 
 export function isOrganizationAdmin(
-	organization?: ActiveOrganization | null,
+	organization?: { members: Array<{ userId: string; role?: string }> } | null,
 	user?: {
 		id: string;
 		role?: string | null;
 	} | null,
 ) {
 	const userOrganizationRole = organization?.members.find(
-		(member: any) => member.userId === user?.id,
+		(member) => member.userId === user?.id,
 	)?.role;
 
 	return (

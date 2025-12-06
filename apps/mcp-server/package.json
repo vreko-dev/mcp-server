@@ -1,6 +1,6 @@
 {
   "name": "@snapback/mcp-server",
-  "version": "1.0.1",
+  "version": "1.1.1",
   "description": "AI-powered code analysis server for Claude Desktop and MCP clients - risk detection, snapshots, and intelligent code safety",
   "dependencies": {
     "@modelcontextprotocol/sdk": "catalog:",
@@ -12,7 +12,6 @@
     "@snapback/events": "workspace:*",
     "@snapback/github-action": "workspace:*",
     "@snapback/guardian-lite": "workspace:*",
-    "@snapback/health": "workspace:*",
     "@snapback/integrations": "workspace:*",
     "@snapback/policy-engine": "workspace:*",
     "@snapback/sdk": "workspace:*",
@@ -71,7 +70,10 @@
     "selftest": "SNAPBACK_MCP_SELFTEST=1 node dist/index.js",
     "start": "node dist/index.js",
     "start:dev": "tsx src/index.ts",
-    "test": "vitest run"
+    "test": "vitest run",
+    "docker-build": "docker build -t snapback-mcp:${GIT_SHA:-latest} -f apps/mcp-server/Dockerfile.prod .",
+    "docker-build:dev": "docker build -t snapback-mcp:dev -f apps/mcp-server/Dockerfile.dev .",
+    "deploy": "npm publish --access public"
   },
   "type": "module"
 }

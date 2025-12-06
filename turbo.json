@@ -1,8 +1,8 @@
 {
 	"$schema": "https://turbo.build/schema.json",
 	"globalDependencies": ["**/.env.*local"],
-	"globalEnv": ["*"],
-	"globalPassThroughEnv": ["NODE_OPTIONS"],
+	"globalEnv": ["DATABASE_URL", "REDIS_URL", "BETTER_AUTH_URL"],
+	"globalPassThroughEnv": ["NODE_OPTIONS", "CI", "VERCEL", "DOCKER_BUILDKIT", "COMPOSE_DOCKER_CLI_BUILD"],
 	"tasks": {
 		"build:package": {
 			"outputs": ["apps/vscode/package.json"],
@@ -57,6 +57,46 @@
 			"dependsOn": ["^build"],
 			"inputs": ["$TURBO_DEFAULT$"],
 			"outputs": ["coverage/**"]
+		},
+		"docker-build": {
+			"dependsOn": ["build"],
+			"cache": false,
+			"passThroughEnv": ["DOCKER_BUILDKIT", "COMPOSE_DOCKER_CLI_BUILD"]
+		},
+		"deploy": {
+			"dependsOn": ["test", "docker-build"],
+			"cache": false,
+			"passThroughEnv": ["VERCEL_TOKEN", "FLY_API_TOKEN"]
+		},
+		"sync-open-source": {
+			"dependsOn": ["build"],
+			"cache": false
+		},
+		"release": {
+			"dependsOn": ["deploy"],
+			"cache": false
+		},
+		"seo:lint": {
+			"inputs": ["**/*.{md,mdx}"],
+			"outputs": []
+		},
+		"seo:archive": {
+			"cache": false,
+			"outputs": [".archive/**"]
+		},
+		"seo:optimize": {
+			"dependsOn": ["seo:lint"],
+			"inputs": ["**/*.{md,mdx}", "**/*.{jpg,jpeg,png}"],
+			"outputs": ["**/optimized/**"]
+		},
+		"seo:validate": {
+			"dependsOn": ["seo:optimize"],
+			"inputs": ["**/*.{md,mdx}"],
+			"outputs": []
+		},
+		"seo:full": {
+			"dependsOn": ["seo:validate"],
+			"cache": false
 		},
 		"start": {
 			"cache": false,

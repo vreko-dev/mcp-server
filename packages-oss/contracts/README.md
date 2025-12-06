@@ -1,12 +1,12 @@
-# @snapback/contracts
+# @snapback-oss/contracts
 
-[![npm version](https://img.shields.io/npm/v/@snapback/contracts?style=flat&colorA=18181B&colorB=10B981)](https://www.npmjs.com/package/@snapback/contracts)
-[![npm downloads](https://img.shields.io/npm/dm/@snapback/contracts?style=flat&colorA=18181B&colorB=10B981)](https://www.npmjs.com/package/@snapback/contracts)
+[![npm version](https://img.shields.io/npm/v/@snapback-oss/contracts?style=flat&colorA=18181B&colorB=10B981)](https://www.npmjs.com/package/@snapback-oss/contracts)
+[![npm downloads](https://img.shields.io/npm/dm/@snapback-oss/contracts?style=flat&colorA=18181B&colorB=10B981)](https://www.npmjs.com/package/@snapback-oss/contracts)
 [![License](https://img.shields.io/badge/license-Apache%202.0-10B981?style=flat&colorA=18181B&colorB=10B981)](https://github.com/snapback-dev/contracts/blob/main/LICENSE)
 
 **Production-grade TypeScript types for code safety infrastructure**
 
-Part of [SnapBack](https://snapback.dev) - the code safety platform that helps developers ship confidently through intelligent file protection, automatic snapshots, and AI-powered risk analysis for your codebase.
+Part of [SnapBack](https://snapback.dev?utm_source=npm&utm_medium=readme&utm_campaign=contracts) - the code safety platform that helps developers ship confidently through intelligent file protection, automatic snapshots, and AI-powered risk analysis for your codebase.
 
 ---
 
@@ -14,7 +14,7 @@ Part of [SnapBack](https://snapback.dev) - the code safety platform that helps d
 
 SnapBack is a **code safety platform** that protects your codebase from breaking changes. Think of it as version control on steroids - create instant snapshots before risky changes, automatically protect critical files, and get AI-powered risk analysis before accepting code suggestions.
 
-[Learn more about code safety →](https://docs.snapback.dev/concepts/code-safety)
+[Learn more about code safety →](https://docs.snapback.dev/concepts/code-safety?utm_source=npm&utm_medium=readme&utm_campaign=contracts)
 
 ---
 
@@ -30,7 +30,7 @@ Zero runtime overhead, maximum type safety.
 - Creating type-safe integrations
 - Implementing framework-agnostic safety features
 
-[API Reference →](https://docs.snapback.dev/api/contracts)
+[API Reference →](https://docs.snapback.dev/api/contracts?utm_source=npm&utm_medium=readme&utm_campaign=contracts)
 
 ---
 
@@ -71,7 +71,7 @@ const analysis: RiskAnalysis = {
 };
 ```
 
-[View complete examples →](https://docs.snapback.dev/guides/type-safety)
+[View complete examples →](https://docs.snapback.dev/guides/type-safety?utm_source=npm&utm_medium=readme&utm_campaign=contracts)
 
 ---
 
@@ -97,7 +97,7 @@ interface ProtectedFile {
 }
 ```
 
-[Learn about file protection →](https://docs.snapback.dev/concepts/file-protection)
+[Learn about file protection →](https://docs.snapback.dev/concepts/file-protection?utm_source=npm&utm_medium=readme&utm_campaign=contracts)
 
 ### Snapshot Types
 
@@ -115,7 +115,7 @@ interface Snapshot {
 }
 ```
 
-[Understanding snapshots →](https://docs.snapback.dev/concepts/snapshots)
+[Understanding snapshots →](https://docs.snapback.dev/concepts/snapshots?utm_source=npm&utm_medium=readme&utm_campaign=contracts)
 
 ### Risk Analysis Types
 
@@ -132,7 +132,7 @@ interface RiskAnalysis {
 }
 ```
 
-[How risk analysis works →](https://docs.snapback.dev/concepts/risk-analysis)
+[How risk analysis works →](https://docs.snapback.dev/concepts/risk-analysis?utm_source=npm&utm_medium=readme&utm_campaign=contracts)
 
 ---
 
@@ -150,7 +150,7 @@ For best type safety with SnapBack contracts:
 }
 ```
 
-[TypeScript setup guide →](https://docs.snapback.dev/setup/typescript)
+[TypeScript setup guide →](https://docs.snapback.dev/setup/typescript?utm_source=npm&utm_medium=readme&utm_campaign=contracts)
 
 ---
 
@@ -170,21 +170,21 @@ Build complete code safety solutions with the SnapBack platform:
 
 | Package | Purpose | Documentation |
 |---------|---------|---------------|
-| **[@snapback/contracts](https://www.npmjs.com/package/@snapback/contracts)** | TypeScript types | [Docs](https://docs.snapback.dev/api/contracts) |
-| **[@snapback/sdk](https://www.npmjs.com/package/@snapback/sdk)** | Complete SDK | [Docs](https://docs.snapback.dev/api/sdk) |
-| **[@snapback/infrastructure](https://www.npmjs.com/package/@snapback/infrastructure)** | Observability toolkit | [Docs](https://docs.snapback.dev/api/infrastructure) |
-| **[@snapback/events](https://www.npmjs.com/package/@snapback/events)** | Event bus | [Docs](https://docs.snapback.dev/api/events) |
-| **[@snapback/config](https://www.npmjs.com/package/@snapback/config)** | Configuration | [Docs](https://docs.snapback.dev/api/config) |
-| **[@snapback/mcp-server](https://www.npmjs.com/package/@snapback/mcp-server)** | AI integration | [Docs](https://docs.snapback.dev/integrations/mcp) |
-| **[VS Code Extension](https://marketplace.visualstudio.com/items?itemName=snapback.snapback)** | Editor integration | [Docs](https://docs.snapback.dev/integrations/vscode) |
+| **[@snapback-oss/contracts](https://www.npmjs.com/package/@snapback-oss/contracts)** | TypeScript types | [Docs](https://docs.snapback.dev/api/contracts?utm_source=npm&utm_medium=readme&utm_campaign=contracts) |
+| **[@snapback-oss/sdk](https://www.npmjs.com/package/@snapback-oss/sdk)** | Complete SDK | [Docs](https://docs.snapback.dev/api/sdk?utm_source=npm&utm_medium=readme&utm_campaign=contracts) |
+| **[@snapback-oss/infrastructure](https://www.npmjs.com/package/@snapback-oss/infrastructure)** | Observability toolkit | [Docs](https://docs.snapback.dev/api/infrastructure?utm_source=npm&utm_medium=readme&utm_campaign=contracts) |
+| **[@snapback-oss/events](https://www.npmjs.com/package/@snapback-oss/events)** | Event bus | [Docs](https://docs.snapback.dev/api/events?utm_source=npm&utm_medium=readme&utm_campaign=contracts) |
+| **[@snapback-oss/config](https://www.npmjs.com/package/@snapback-oss/config)** | Configuration | [Docs](https://docs.snapback.dev/api/config?utm_source=npm&utm_medium=readme&utm_campaign=contracts) |
+| **[@snapback/mcp-server](https://www.npmjs.com/package/@snapback/mcp-server)** | AI integration | [Docs](https://docs.snapback.dev/integrations/mcp?utm_source=npm&utm_medium=readme&utm_campaign=contracts) |
+| **[VS Code Extension](https://marketplace.visualstudio.com/items?itemName=MarcelleLabs.snapback-vscode&utm_source=npm&utm_medium=readme&utm_campaign=contracts)** | Editor integration | [Docs](https://docs.snapback.dev/integrations/vscode?utm_source=npm&utm_medium=readme&utm_campaign=contracts) |
 
-[Explore the full platform →](https://snapback.dev)
+[Explore the full platform →](https://snapback.dev?utm_source=npm&utm_medium=readme&utm_campaign=contracts)
 
 ---
 
 ## Resources
 
-- 🌐 **Website**: [snapback.dev](https://snapback.dev)
+- 🌐 **Website**: [snapback.dev](https://snapback.dev?utm_source=npm&utm_medium=readme&utm_campaign=contracts)
 - 📖 **Documentation**: [docs.snapback.dev](https://docs.snapback.dev)
 - 🐛 **Report Issues**: [GitHub Issues](https://github.com/snapback-dev/contracts/issues)
 - 💬 **Get Help**: [hello@snapback.dev](mailto:hello@snapback.dev)
@@ -196,9 +196,9 @@ Build complete code safety solutions with the SnapBack platform:
 We welcome contributions! See our [Contributing Guide](https://github.com/snapback-dev/contracts/blob/main/CONTRIBUTING.md) to get started.
 
 **Quick Links:**
-- [Development Setup](https://docs.snapback.dev/contributing/setup)
-- [Architecture Overview](https://docs.snapback.dev/contributing/architecture)
-- [Code Style Guide](https://docs.snapback.dev/contributing/style-guide)
+- [Development Setup](https://docs.snapback.dev/contributing/setup?utm_source=npm&utm_medium=readme&utm_campaign=contracts)
+- [Architecture Overview](https://docs.snapback.dev/contributing/architecture?utm_source=npm&utm_medium=readme&utm_campaign=contracts)
+- [Code Style Guide](https://docs.snapback.dev/contributing/style-guide?utm_source=npm&utm_medium=readme&utm_campaign=contracts)
 
 ---
 
@@ -213,7 +213,7 @@ See [LICENSE](./LICENSE) for details.
 
 <div align="center">
 
-**[snapback.dev](https://snapback.dev)** • **[Documentation](https://docs.snapback.dev)** • **[@snapbackdev](https://twitter.com/snapbackdev)**
+**[snapback.dev](https://snapback.dev?utm_source=npm&utm_medium=readme&utm_campaign=contracts)** • **[Documentation](https://docs.snapback.dev)** • **[@snapbackdev](https://twitter.com/snapbackdev)**
 
 Made with ❤️ for developers who ship with confidence
 

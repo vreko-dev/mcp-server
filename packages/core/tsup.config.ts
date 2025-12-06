@@ -10,7 +10,7 @@ export default defineConfig({
 		detection: "src/detection/index.ts",
 	},
 	format: ["esm"],
-	dts: false, // Temporarily disabled due to build error, will fix separately
+	dts: false, // Disabled - parsing error in utils/logger.ts
 	clean: true,
 	sourcemap: true,
 	outDir: "dist",

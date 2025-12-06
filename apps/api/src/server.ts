@@ -12,6 +12,7 @@ import { cors } from "hono/cors";
 import { logger as honoLogger } from "hono/logger";
 import { openApiHandler, rpcHandler } from "@/orpc/handler.js";
 import { router } from "@/orpc/router.js";
+import { handlePostHogWebhook } from "../modules/webhooks/posthog-handler.js";
 import { createRateLimitMiddleware } from "./middleware/rate-limit-distributed.js";
 import { requestLoggingMiddleware } from "./middleware/request-logging.js";
 import { honoSentryMiddleware, initSentryAPI } from "./middleware/sentry.js";
@@ -147,7 +148,7 @@ const apiApp: HonoApp = new Hono()
 	)
 	// OpenAPI schema endpoint
 	.get("/api/openapi", async (c) => {
-		const _authSchema = await auth.api.generateOpenAPISchema();
+		const authSchema = await auth.api.generateOpenAPISchema();
 
 		const appSchema = await new OpenAPIGenerator({
 			schemaConverters: [new ZodToJsonSchemaConverter()],
@@ -155,6 +156,8 @@ const apiApp: HonoApp = new Hono()
 			info: {
 				title: `${config.appName} API`,
 				version: "1.0.0",
+				description:
+					"Unified API for SnapBack including Authentication and Application endpoints.",
 			},
 			servers: [
 				{
@@ -164,8 +167,28 @@ const apiApp: HonoApp = new Hono()
 			],
 		});
 
-		// Return app schema (auth schema merging not needed without openapi-merge dependency)
-		return c.json(appSchema);
+		// Manual Merge of Auth and App Schemas
+		// We prioritize App schema but append Auth paths and components
+		const mergedSchema = {
+			...appSchema,
+			paths: {
+				...authSchema.paths,
+				...appSchema.paths,
+			},
+			components: {
+				...appSchema.components,
+				schemas: {
+					...authSchema.components?.schemas,
+					...appSchema.components?.schemas,
+				},
+				securitySchemes: {
+					...authSchema.components?.securitySchemes,
+					...appSchema.components?.securitySchemes,
+				},
+			},
+		};
+
+		return c.json(mergedSchema);
 	})
 	.get("/api/orpc-openapi", async (c) => {
 		const appSchema = await new OpenAPIGenerator({
@@ -189,6 +212,8 @@ const apiApp: HonoApp = new Hono()
 	)
 	// Payments webhook handler
 	.post("/api/webhooks/payments", (c) => paymentsWebhookHandler(c.req.raw))
+	// PostHog webhook handler for engagement triggers
+	.post("/api/webhooks/posthog", (c) => handlePostHogWebhook(c.req.raw))
 	// Health check (with database dependency monitoring)
 	.route("/api/health", healthRoute)
 	// Protected route examples (Auth + validation + RBAC)

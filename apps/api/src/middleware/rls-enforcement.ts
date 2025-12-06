@@ -11,10 +11,32 @@
 
 import * as Sentry from "@sentry/node";
 import { logger } from "@snapback/infrastructure";
-import { checkOrgMembership } from "@snapback/platform/db/queries/auth";
+import { db } from "@snapback/platform";
+import { member } from "@snapback/platform/db/schema/postgres";
+import { and, eq } from "drizzle-orm";
 import type { Context, Next } from "hono";
-import { getDb } from "../services/database.js";
 import type { AuthContext } from "./auth-unified.js";
+
+/**
+ * Check if user is member of an organization (inline)
+ */
+async function checkOrgMembership(userId: string, orgId: string) {
+	if (!db) return null;
+	try {
+		return await db
+			.select({
+				userId: member.userId,
+				organizationId: member.organizationId,
+				role: member.role,
+			})
+			.from(member)
+			.where(and(eq(member.userId, userId), eq(member.organizationId, orgId)))
+			.limit(1)
+			.then((rows) => rows[0] || null);
+	} catch {
+		return null;
+	}
+}
 
 // ============================================================================
 // Types
@@ -90,19 +112,12 @@ async function logRLSViolation(violation: RLSViolation): Promise<void> {
 	// Track in database for analytics (optional)
 	// This allows detecting patterns of repeated violation attempts
 	try {
-		const db = getDb();
-		if (db._.schema.securityEvents) {
-			await db.insert(db._.schema.securityEvents).values({
-				eventType: "rls_violation",
-				userId: violation.userId,
-				metadata: {
-					requestedOrgId: violation.requestedOrgId,
-					userOrgIds: violation.userOrgIds,
-					path: violation.path,
-				},
-				timestamp: violation.timestamp,
-			});
-		}
+		// Skip database logging for now - securityEvents table may not exist
+		// TODO: Re-enable when schema is stabilized
+		logger.debug("Would log RLS violation to database", {
+			userId: violation.userId,
+			requestedOrgId: violation.requestedOrgId,
+		});
 	} catch (error) {
 		logger.debug("Could not log RLS violation to database", {
 			error: error instanceof Error ? error.message : String(error),

@@ -6,19 +6,21 @@
  * 2. API keys (via X-API-Key header)
  * 3. Session cookies (via better-auth.session_token)
  *
- * Validates credentials against database and attaches auth context to request.
+ * Uses Better Auth's session API for user lookup.
  * Follows the principle of explicit over implicit - no auth = no context.
  */
 
-import { logger } from "@snapback/infrastructure";
 import {
-	getApiKeyByPrefix,
-	getUserById,
+	auth,
 	getUserOrgIds,
 	getUserPermissions,
 	getUserPlan,
-	updateApiKeyLastUsed,
-} from "@snapback/platform/db/queries/auth";
+	type UserRole,
+} from "@snapback/auth";
+import { logger } from "@snapback/infrastructure";
+import { db } from "@snapback/platform";
+import { apiKeys } from "@snapback/platform/db/schema/postgres";
+import { and, eq, isNull, lte, or } from "drizzle-orm";
 import type { Context, Next } from "hono";
 import { jwtVerify } from "jose";
 
@@ -57,7 +59,7 @@ const JWT_SECRET = (() => {
  * Verify JWT token from Better Auth
  * Returns decoded claims if valid, null otherwise
  */
-async function verifyJWT(token: string): Promise<{
+async function _verifyJWT(token: string): Promise<{
 	sub: string;
 	email?: string;
 } | null> {
@@ -79,16 +81,12 @@ async function verifyJWT(token: string): Promise<{
 /**
  * Verify API key from X-API-Key header
  * Extracts key prefix and validates against database
- *
- * Note: In production, you would:
- * 1. Extract full key from secure source
- * 2. Use bcrypt.compare(fullKey, storedHash) for constant-time comparison
- * 3. Implement rotation strategy
  */
 async function verifyApiKey(apiKeyHeader: string): Promise<{
 	userId: string;
 	keyId: string;
 } | null> {
+	if (!db) return null;
 	try {
 		// API key format: "sk_live_[32 chars]" or "sk_test_[32 chars]"
 		const keyParts = apiKeyHeader.split("_");
@@ -100,7 +98,19 @@ async function verifyApiKey(apiKeyHeader: string): Promise<{
 		// Use first two parts as preview (sk_live or sk_test)
 		const keyPreview = `${keyParts[0]}_${keyParts[1]}`;
 
-		const key = await getApiKeyByPrefix(keyPreview);
+		// Query API key from database
+		const key = await db
+			.select()
+			.from(apiKeys)
+			.where(
+				and(
+					eq(apiKeys.keyPreview, keyPreview),
+					isNull(apiKeys.revokedAt),
+					or(isNull(apiKeys.expiresAt), lte(apiKeys.expiresAt, new Date())),
+				),
+			)
+			.limit(1)
+			.then((rows) => rows[0] || null);
 
 		if (!key) {
 			logger.debug("API key not found", { keyPreview });
@@ -108,7 +118,11 @@ async function verifyApiKey(apiKeyHeader: string): Promise<{
 		}
 
 		// Update last used timestamp for audit trail
-		await updateApiKeyLastUsed(key.id);
+		await db
+			.update(apiKeys)
+			.set({ lastUsedAt: new Date() })
+			.where(eq(apiKeys.id, key.id))
+			.catch(() => {});
 
 		return {
 			userId: key.userId,
@@ -138,37 +152,41 @@ export async function extractAuthContext(
 	try {
 		let authContext: AuthContext | null = null;
 
-		// Try JWT token first (highest priority)
+		// Try JWT/session token first (highest priority) - use Better Auth session
 		const authHeader = c.req.header("Authorization");
 		if (authHeader?.startsWith("Bearer ")) {
-			const token = authHeader.slice(7);
-			const claims = await verifyJWT(token);
+			// Use Better Auth to validate session
+			const session = await auth.api.getSession({
+				headers: c.req.raw.headers,
+			});
 
-			if (claims?.sub) {
-				const userRecord = await getUserById(claims.sub);
-				if (userRecord) {
-					const plan = await getUserPlan(userRecord.id);
-					const permissions = await getUserPermissions(userRecord.id);
-					const orgIds = await getUserOrgIds(userRecord.id);
+			if (session?.user) {
+				const userRecord = session.user;
+				const plan = await getUserPlan(userRecord.id);
+				const permissions = await getUserPermissions(
+					userRecord.id,
+					(userRecord as any).role || null,
+					plan,
+				);
+				const orgIds = await getUserOrgIds(userRecord.id);
 
-					authContext = {
-						user: {
-							id: userRecord.id,
-							email: userRecord.email,
-							role: (userRecord.role as any) || null,
-							name: userRecord.name,
-						},
-						plan: (plan as any) || "free",
-						permissions,
-						authenticatedVia: "jwt",
-						orgIds,
-					};
+				authContext = {
+					user: {
+						id: userRecord.id,
+						email: userRecord.email,
+						role: ((userRecord as any).role as any) || null,
+						name: userRecord.name,
+					},
+					plan: (plan as any) || "free",
+					permissions,
+					authenticatedVia: "jwt",
+					orgIds,
+				};
 
-					logger.debug("User authenticated via JWT", {
-						userId: userRecord.id,
-						plan,
-					});
-				}
+				logger.debug("User authenticated via Better Auth session", {
+					userId: userRecord.id,
+					plan,
+				});
 			}
 		}
 
@@ -178,19 +196,33 @@ export async function extractAuthContext(
 			if (apiKeyHeader) {
 				const verified = await verifyApiKey(apiKeyHeader);
 
-				if (verified) {
-					const userRecord = await getUserById(verified.userId);
-					if (userRecord) {
-						const plan = await getUserPlan(userRecord.id);
-						const permissions = await getUserPermissions(userRecord.id);
-						const orgIds = await getUserOrgIds(userRecord.id);
+				if (verified && db) {
+					// Query user from database
+					const user = await import(
+						"@snapback/platform/db/schema/postgres"
+					).then(async (schema) => {
+						return await db
+							?.select()
+							.from(schema.user)
+							.where(eq(schema.user.id, verified.userId))
+							.limit(1)
+							.then((rows) => rows[0] || null);
+					});
+					if (user) {
+						const plan = await getUserPlan(user.id);
+						const permissions = await getUserPermissions(
+							user.id,
+							(user.role as UserRole) || null,
+							plan,
+						);
+						const orgIds = await getUserOrgIds(user.id);
 
 						authContext = {
 							user: {
-								id: userRecord.id,
-								email: userRecord.email,
-								role: (userRecord.role as any) || null,
-								name: userRecord.name,
+								id: user.id,
+								email: user.email,
+								role: (user.role as any) || null,
+								name: user.name,
 							},
 							plan: (plan as any) || "free",
 							permissions,
@@ -200,7 +232,7 @@ export async function extractAuthContext(
 						};
 
 						logger.debug("User authenticated via API key", {
-							userId: userRecord.id,
+							userId: user.id,
 							plan,
 							keyId: verified.keyId,
 						});

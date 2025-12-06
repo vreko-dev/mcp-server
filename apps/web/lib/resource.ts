@@ -1,6 +1,6 @@
 // Resource pattern implementation for SnapBack
 
-import type { AppError } from "./error-handler.js";
+import type { AppError } from "./error-handler";
 
 // Define the Resource type with all possible states
 // Default to AppError for consistency across the application

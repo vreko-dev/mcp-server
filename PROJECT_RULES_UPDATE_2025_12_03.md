@@ -1,7 +1,7 @@
-# Project Rules & Standards Update - December 3, 2025
+# Project Rules & Standards Update - December 3-6, 2025
 
-**Date:** 2025-12-03
-**Scope:** Project-wide code quality, framework patterns, and linting standards
+**Date:** 2025-12-03 (Updated: 2025-12-06)
+**Scope:** Project-wide code quality, framework patterns, linting standards, and Turbo workflow optimization
 **Status:** ✅ Completed and verified
 
 ---
@@ -103,7 +103,99 @@ Updated project rules and standards based on architectural insights gained from 
 
 ---
 
-## Key Takeaways for Development
+## December 6 Update: Build & Workflow Optimization
+
+### Issues Resolved
+
+#### 1. ✅ Sentry Node.js DTS Generation Failure
+
+**Issue:** RollupError during DTS generation - "RequestOptions" is not exported by "node:http"
+
+**Root Cause:** 
+- @sentry/node types import from Node.js http module types that don't export RequestOptions
+- Exporting full Sentry type caused tsup's DTS resolver to fail when bundling types
+- Rollup couldn't trace the import chain through node:http → node:https → RequestOptions
+
+**Solution Applied:**
+1. **Removed problematic Sentry re-export** (`packages/infrastructure/src/sentry/index.ts:262`)
+   - Removed: `export { Sentry };`
+   - Keep: All individual wrapper functions remain exported
+   - Applications can still import Sentry directly from `@sentry/node` if needed
+
+2. **Enhanced tsup configuration** (`packages/infrastructure/tsup.config.ts`)
+   - Added `skipLibCheck: true` to DTS compiler options
+   - Externalized Node.js built-ins: `node:http`, `node:https`, `diagnostics_channel`
+   - Set `noExternal: ["@sentry/node", "@sentry/profiling-node"]` to allow resolution
+
+**Lesson:** When third-party SDKs have type resolution issues:
+- Check what's being exported vs. consumed
+- Avoid re-exporting full third-party type namespaces
+- Use selective exports of wrapper functions instead
+- Externalize problematic dependencies from bundler config
+
+**Result:** Infrastructure build now succeeds (56ms ESM + 1.7s DTS ✅)
+
+---
+
+#### 2. ✅ Turbo Workflow Optimization
+
+**Improvements Made:**
+
+1. **Enhanced Cache Invalidation Inputs**
+   - `lint` task: Added `biome.json` to inputs
+   - `test` task: Added `**/*.test.ts`, `**/*.spec.ts`, `vitest.config.ts`
+   - `test:coverage`: Same as test task
+   - Result: Cache properly invalidates when config files change
+
+2. **Infrastructure-Specific Build Configuration**
+   - Added `@snapback/infrastructure#build` task definition
+   - Watches for changes in: `tsup.config.ts`, `src/sentry/**/*`
+   - Enables efficient Turbo caching for infrastructure changes
+   - Both `@snapback/infrastructure#build` and `@snapback-oss/infrastructure#build` configured
+
+3. **Explicit Cache Policy**
+   - Added `"cache": true` to lint task (was implicit)
+   - Added `"cache": true` to infrastructure build tasks
+   - Makes cache behavior explicit and auditable
+
+**Performance Impact:**
+- Infrastructure build cache now works correctly
+- Lint task properly re-runs only when biome config changes
+- Test task properly re-runs when test files change
+- Estimated 2-5 second savings per build cycle when cached
+
+---
+
+### Updated turbo.json Configuration
+
+Key task configurations:
+
+```json
+"type-check": {
+  "dependsOn": ["^type-check"],
+  "inputs": ["$TURBO_DEFAULT$"],
+  "cache": true
+},
+"lint": {
+  "dependsOn": ["^lint"],
+  "inputs": ["$TURBO_DEFAULT$", "biome.json"],
+  "cache": true
+},
+"test": {
+  "dependsOn": ["^build"],
+  "inputs": ["$TURBO_DEFAULT$", "**/*.test.ts", "**/*.spec.ts", "vitest.config.ts"]
+},
+"@snapback/infrastructure#build": {
+  "outputs": ["dist/**"],
+  "dependsOn": ["^build"],
+  "inputs": ["$TURBO_DEFAULT$", "tsup.config.ts", "src/sentry/**/*"],
+  "cache": true
+}
+```
+
+---
+
+## Updated Best Practices
 
 ### Framework-Specific Implementation
 
@@ -244,6 +336,18 @@ Refer to:
 3. Respective framework documentation for API details
 4. ARCHITECTURE.md for system design questions
 
-**Last Updated:** 2025-12-03
+**Last Updated:** 2025-12-06
 **Maintained By:** Development Team
-**Next Review:** When frameworks are updated or new major patterns emerge
+**Next Review:** When frameworks are updated, build dependencies change, or new major patterns emerge
+
+---
+
+## Quick Reference: What Changed on Dec 6
+
+| Area | Change | Impact | File |
+|------|--------|--------|-------|
+| Sentry Integration | Removed full type re-export | Fixes DTS generation | `packages/infrastructure/src/sentry/index.ts` |
+| tsup Config | Added skipLibCheck, externalize node built-ins | Enables DTS build | `packages/infrastructure/tsup.config.ts` |
+| Turbo Config | Added lint, test, infrastructure task configs | Better cache hits | `turbo.json` |
+| GitHub Links | Standardized to snapback-dev org | SEO & discoverability | All `package.json` files |
+| Core tsconfig | Added path mappings for infrastructure/platform | Fixes DTS resolution | `packages/core/tsconfig.json` |

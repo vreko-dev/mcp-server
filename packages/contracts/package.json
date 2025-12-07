@@ -58,6 +58,11 @@
       "types": "./dist/id-generator.d.ts",
       "import": "./dist/id-generator.js",
       "require": "./dist/id-generator.cjs"
+    },
+    "./observability": {
+      "types": "./dist/observability/index.d.ts",
+      "import": "./dist/observability/index.js",
+      "require": "./dist/observability/index.cjs"
     }
   },
   "publishConfig": {
@@ -96,6 +101,11 @@
         "types": "./dist/id-generator.d.ts",
         "import": "./dist/id-generator.js",
         "require": "./dist/id-generator.cjs"
+      },
+      "./observability": {
+        "types": "./dist/observability/index.d.ts",
+        "import": "./dist/observability/index.js",
+        "require": "./dist/observability/index.cjs"
       }
     }
   },

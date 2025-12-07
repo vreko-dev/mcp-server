@@ -59,6 +59,7 @@ export * from "./feature-manager";
 export * from "./features";
 export * from "./id-generator";
 export * from "./logger";
+export * from "./observability";
 export * from "./risk-conversion";
 export * from "./schemas";
 // Alpha contracts (Phase 0)

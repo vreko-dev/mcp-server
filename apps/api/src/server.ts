@@ -3,16 +3,21 @@ import { ZodToJsonSchemaConverter } from "@orpc/zod/zod4";
 import { Scalar } from "@scalar/hono-api-reference";
 import { auth } from "@snapback/auth";
 import { config, getBaseUrl } from "@snapback/config";
-import { logger } from "@snapback/infrastructure";
+import { logger, NoOpInstrumentationProvider, OTelInstrumentationProvider } from "@snapback/infrastructure";
+import type { InstrumentationProvider } from "@snapback/contracts/observability";
 import { webhookHandler as paymentsWebhookHandler } from "@snapback/integrations/stripe/provider/stripe";
 import type { Hono as HonoApp } from "hono";
 import { Hono } from "hono";
 import { bodyLimit } from "hono/body-limit";
 import { cors } from "hono/cors";
 import { logger as honoLogger } from "hono/logger";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
 import { openApiHandler, rpcHandler } from "@/orpc/handler.js";
 import { router } from "@/orpc/router.js";
 import { handlePostHogWebhook } from "../modules/webhooks/posthog-handler";
+import { instrumentationMiddleware } from "./middleware/instrumentation";
 import { createRateLimitMiddleware } from "./middleware/rate-limit-distributed";
 import { requestLoggingMiddleware } from "./middleware/request-logging";
 import { honoSentryMiddleware, initSentryAPI } from "./middleware/sentry";
@@ -21,6 +26,14 @@ import apiRoutes from "./routes/index";
 import protectedExamplesRoute from "./routes/protected-examples";
 import { testRoutes } from "./routes/test/index";
 
+// Get package.json for service version
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const packageJson = JSON.parse(
+	readFileSync(join(__dirname, "../../package.json"), "utf-8")
+) as { version: string };
+const SERVICE_VERSION = packageJson.version;
+
 // Initialize Sentry first, before any other code runs
 initSentryAPI({
 	dsn: process.env.SENTRY_DSN,
@@ -28,8 +41,45 @@ initSentryAPI({
 	enabled: process.env.DISABLE_SENTRY !== "true",
 });
 
+// Initialize OpenTelemetry instrumentation
+const instrumentationProvider: InstrumentationProvider = process.env.OTEL_EXPORTER_OTLP_ENDPOINT
+	? new OTelInstrumentationProvider({
+			serviceName: "snapback-api",
+			serviceVersion: SERVICE_VERSION,
+			environment: process.env.NODE_ENV || "development",
+			collectorUrl: process.env.OTEL_EXPORTER_OTLP_ENDPOINT,
+			enableConsole: process.env.NODE_ENV === "development",
+			sampleRate: process.env.OTEL_SAMPLE_RATE ? Number.parseFloat(process.env.OTEL_SAMPLE_RATE) : 1.0,
+	  })
+	: new NoOpInstrumentationProvider();
+
+logger.info("Instrumentation initialized", {
+	provider: process.env.OTEL_EXPORTER_OTLP_ENDPOINT ? "OTel" : "NoOp",
+	collectorUrl: process.env.OTEL_EXPORTER_OTLP_ENDPOINT || "disabled",
+	serviceVersion: SERVICE_VERSION,
+	sampleRate: process.env.OTEL_SAMPLE_RATE || "1.0",
+});
+
+// Graceful shutdown handler
+const shutdownHandler = async (signal: string) => {
+	logger.info(`Received ${signal}, shutting down gracefully...`);
+	try {
+		await instrumentationProvider.shutdown();
+		logger.info("Instrumentation provider shutdown complete");
+	} catch (error) {
+		logger.error("Error during instrumentation shutdown", { error });
+	}
+	process.exit(0);
+};
+
+process.on("SIGTERM", () => shutdownHandler("SIGTERM"));
+process.on("SIGINT", () => shutdownHandler("SIGINT"));
+
 // Auth handler app - Better Auth expects raw requests with path rewriting
-const authApp: HonoApp = new Hono().all("*", async (c) => {
+const authApp: HonoApp = new Hono()
+	// Add instrumentation to auth routes
+	.use("*", instrumentationMiddleware(instrumentationProvider))
+	.all("*", async (c) => {
 	// Rewrite request path for Better Auth
 	// /api/auth/** -> /auth/**
 	const originalUrl = new URL(c.req.raw.url);
@@ -55,6 +105,8 @@ const rateLimitMiddleware = await createRateLimitMiddleware();
 const apiApp: HonoApp = new Hono()
 	// Sentry error tracking and performance monitoring
 	.use("*", honoSentryMiddleware())
+	// OpenTelemetry distributed tracing (after Sentry, before business logic)
+	.use("*", instrumentationMiddleware(instrumentationProvider))
 	// ... existing code ...
 	.route("/api/auth", authApp)
 	// Rate limiting middleware - with optional Redis support

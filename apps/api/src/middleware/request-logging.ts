@@ -1,5 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { logger } from "@snapback/infrastructure";
+import type { Span } from "@snapback/contracts";
+import { SemanticConventions } from "@snapback/contracts/observability";
 import type { Context, Next } from "hono";
 
 /**
@@ -142,6 +144,13 @@ export async function requestLoggingMiddleware(
 	// Set request ID in response headers
 	c.header("X-Request-Id", requestId);
 
+	// Get span from instrumentation middleware (if available)
+	const span = c.get("span") as Span | undefined;
+	if (span) {
+		span.setAttribute("request.id", requestId);
+		span.setAttribute(SemanticConventions.Network.PEER_IP, ip);
+	}
+
 	try {
 		// Process request
 		await next();
@@ -161,16 +170,7 @@ export async function requestLoggingMiddleware(
 			userAgent: c.req.header("User-Agent"),
 		});
 
-		// Warn if request took too long
-		if (duration > 1000) {
-			logger.warn("Slow request detected", {
-				requestId,
-				method: c.req.method,
-				path: c.req.path,
-				duration,
-				threshold: 1000,
-			});
-		}
+		// Note: Slow request detection is handled by instrumentation middleware
 	} catch (error) {
 		const duration = Date.now() - startTime;
 

@@ -26,7 +26,11 @@ const withFumadocsMDX = createMDX({
 const nextConfig = {
 	/* config options here */
 	pageExtensions: ["js", "jsx", "ts", "tsx", "md", "mdx"],
-	transpilePackages: ["@snapback/contracts", "@snapback/sdk", "@snapback/events"],
+	transpilePackages: [
+		"@snapback/contracts",
+		"@snapback/sdk",
+		"@snapback/events",
+	],
 	serverExternalPackages: [],
 	experimental: {
 		optimizePackageImports: [
@@ -130,7 +134,7 @@ const nextConfig = {
 			new webpack.IgnorePlugin({
 				resourceRegExp: /^piscina$/,
 				contextRegExp: /./,
-			}),
+			})
 		);
 
 		return config;

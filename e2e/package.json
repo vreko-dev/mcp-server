@@ -1,0 +1,14 @@
+{
+  "name": "@snapback/e2e",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@snapback/playwright-config": "workspace:*",
+    "@playwright/test": "catalog:",
+    "typescript": "catalog:",
+    "dotenv": "catalog:"
+  }
+}

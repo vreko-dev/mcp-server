@@ -57,7 +57,13 @@ export function SocialSigninButton({
 					errorMessage = "Popup blocked. Please allow popups for this site.";
 				}
 				// Sanitize error messages to prevent info leak
-				else if (e.message && (e.message.includes("database") || e.message.includes("password") || e.message.includes("pg://") || e.message.includes("Internal server"))) {
+				else if (
+					e.message &&
+					(e.message.includes("database") ||
+						e.message.includes("password") ||
+						e.message.includes("pg://") ||
+						e.message.includes("Internal server"))
+				) {
 					// Don't expose database errors or sensitive info
 					errorMessage = "An error occurred. Please try again or contact support.";
 				}

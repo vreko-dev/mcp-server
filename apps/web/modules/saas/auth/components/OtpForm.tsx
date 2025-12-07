@@ -1,25 +1,13 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { authClient } from "@snapback/auth/client";
 import { useAuthErrorMessages } from "@saas/auth/hooks/errors-messages";
 import { useRouter } from "@shared/hooks/router";
+import { authClient } from "@snapback/auth/client";
 import { Alert, AlertTitle } from "@ui/components/alert";
 import { Button } from "@ui/components/button";
-import {
-	Form,
-	FormControl,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from "@ui/components/form";
-import {
-	InputOTP,
-	InputOTPGroup,
-	InputOTPSeparator,
-	InputOTPSlot,
-} from "@ui/components/input-otp";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@ui/components/form";
+import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "@ui/components/input-otp";
 import { AlertTriangleIcon, ArrowLeftIcon } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -68,9 +56,7 @@ export function OtpForm() {
 		} catch (e) {
 			// Sanitize error message to prevent info leak
 			let errorMessage = getAuthErrorMessage(
-				e && typeof e === "object" && "code" in e
-					? (e.code as string)
-					: undefined,
+				e && typeof e === "object" && "code" in e ? (e.code as string) : undefined,
 			);
 
 			// Additional sanitization for security-sensitive errors
@@ -96,9 +82,7 @@ export function OtpForm() {
 	return (
 		<>
 			<h1 className="font-bold text-xl md:text-2xl">Verify your code</h1>
-			<p className="mt-1 mb-4 text-foreground/60">
-				Enter the verification code from your authenticator app.
-			</p>
+			<p className="mt-1 mb-4 text-foreground/60">Enter the verification code from your authenticator app.</p>
 
 			<Form {...form}>
 				<form className="flex flex-col items-stretch gap-4" onSubmit={onSubmit}>

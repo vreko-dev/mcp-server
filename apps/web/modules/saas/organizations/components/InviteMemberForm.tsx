@@ -1,10 +1,10 @@
 "use client";
 
-import { authClient } from "@snapback/auth/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { OrganizationRoleSelect } from "@saas/organizations/components/OrganizationRoleSelect";
 import { fullOrganizationQueryKey } from "@saas/organizations/lib/api";
 import { SettingsItem } from "@saas/shared/components/SettingsItem";
+import { authClient } from "@snapback/auth/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@ui/components/button";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@ui/components/form";

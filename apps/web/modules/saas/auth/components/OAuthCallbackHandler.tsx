@@ -22,9 +22,7 @@ import { getOAuthErrorMessage } from "../lib/oauth-error-handler";
 export function OAuthCallbackHandler() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
-	const [validationState, setValidationState] = useState<
-		"idle" | "validating" | "success" | "error"
-	>("idle");
+	const [validationState, setValidationState] = useState<"idle" | "validating" | "success" | "error">("idle");
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
 	useEffect(() => {
@@ -88,9 +86,7 @@ export function OAuthCallbackHandler() {
 				} catch (e) {
 					console.error("Session validation error:", e);
 					setValidationState("error");
-					setErrorMessage(
-						"Failed to validate session. Please try signing in again.",
-					);
+					setErrorMessage("Failed to validate session. Please try signing in again.");
 
 					// Redirect to login after 3 seconds
 					setTimeout(() => {

@@ -1,7 +1,7 @@
 "use client";
 import { StickyScrollReveal } from "@marketing/components/ui/sticky-scroll-reveal";
 import { m } from "motion/react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 const ProductStory = () => {
 	const [isMounted, setIsMounted] = useState(false);

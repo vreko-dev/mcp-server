@@ -1,9 +1,9 @@
 "use client";
-import { authClient } from "@snapback/auth/client";
 import { useSession } from "@saas/auth/hooks/use-session";
 import { useOrganizationMemberRoles } from "@saas/organizations/hooks/member-roles";
 import { fullOrganizationQueryKey, useFullOrganizationQuery } from "@saas/organizations/lib/api";
 import { UserAvatar } from "@shared/components/UserAvatar";
+import { authClient } from "@snapback/auth/client";
 import { useQueryClient } from "@tanstack/react-query";
 import type { ColumnDef, ColumnFiltersState, SortingState } from "@tanstack/react-table";
 import {
@@ -49,8 +49,7 @@ export function OrganizationMembersList({ organizationId }: { organizationId: st
 				queryClient.invalidateQueries({
 					queryKey: fullOrganizationQueryKey(organizationId),
 				});
-			})()
-,
+			})(),
 			{
 				loading: "Updating member role...",
 				success: "Member role updated successfully",
@@ -74,8 +73,7 @@ export function OrganizationMembersList({ organizationId }: { organizationId: st
 				queryClient.invalidateQueries({
 					queryKey: fullOrganizationQueryKey(organizationId),
 				});
-			})()
-,
+			})(),
 			{
 				loading: "Removing member...",
 				success: "Member removed successfully",

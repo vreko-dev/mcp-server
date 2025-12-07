@@ -1,8 +1,8 @@
 "use client";
-import { authClient } from "@snapback/auth/client";
 import { useSession } from "@saas/auth/hooks/use-session";
 import { useUserAccountsQuery } from "@saas/auth/lib/api";
 import { SettingsItem } from "@saas/shared/components/SettingsItem";
+import { authClient } from "@snapback/auth/client";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "@ui/components/button";
 import { Card } from "@ui/components/card";

@@ -15,13 +15,13 @@
 
 import { authClient } from "@snapback/auth/client";
 import { useQueryClient } from "@tanstack/react-query";
-import { useCallback, type ReactNode } from "react";
+import { type ReactNode, useCallback } from "react";
 import { sessionQueryKey } from "../lib/api";
 import { SessionContext } from "../lib/session-context";
 
 export function SessionProvider({ children }: { children: ReactNode }) {
 	const queryClient = useQueryClient();
-	
+
 	// Use Better Auth's native useSession hook
 	const { data: sessionData, isPending, error, refetch } = authClient.useSession();
 
@@ -39,7 +39,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 		await queryClient.invalidateQueries({
 			queryKey: sessionQueryKey,
 		});
-		
+
 		// Refetch session from Better Auth
 		await refetch();
 	}, [queryClient, refetch]);
@@ -52,9 +52,5 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 		reloadSession,
 	};
 
-	return (
-		<SessionContext.Provider value={contextValue}>
-			{children}
-		</SessionContext.Provider>
-	);
+	return <SessionContext.Provider value={contextValue}>{children}</SessionContext.Provider>;
 }

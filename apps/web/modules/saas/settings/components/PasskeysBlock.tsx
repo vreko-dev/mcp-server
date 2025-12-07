@@ -1,7 +1,7 @@
 "use client";
-import { authClient } from "@snapback/auth/client";
 import { useUserPasskeysQuery } from "@saas/auth/lib/api";
 import { SettingsItem } from "@saas/shared/components/SettingsItem";
+import { authClient } from "@snapback/auth/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@ui/components/button";
 import { Skeleton } from "@ui/components/skeleton";
@@ -15,7 +15,9 @@ export function PasskeysBlock() {
 
 	const addPasskey = async () => {
 		try {
-			await authClient.passkey.addPasskey({ fetchOptions: { onSuccess: () => queryClient.invalidateQueries({ queryKey: ["passkeys"] }) } });
+			await authClient.passkey.addPasskey({
+				fetchOptions: { onSuccess: () => queryClient.invalidateQueries({ queryKey: ["passkeys"] }) },
+			});
 			toast.success("Passkey added successfully");
 		} catch (error) {
 			toast.error("Failed to add passkey");

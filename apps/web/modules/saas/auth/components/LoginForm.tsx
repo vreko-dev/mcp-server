@@ -2,21 +2,15 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Turnstile } from "@marsidev/react-turnstile";
-import { authClient } from "@snapback/auth/client";
 import { useAuthErrorMessages } from "@saas/auth/hooks/errors-messages";
 import { sessionQueryKey } from "@saas/auth/lib/api";
 import { OrganizationInvitationAlert } from "@saas/organizations/components/OrganizationInvitationAlert";
 import { useRouter } from "@shared/hooks/router";
+import { authClient } from "@snapback/auth/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { Alert, AlertDescription, AlertTitle } from "@ui/components/alert";
 import { Button } from "@ui/components/button";
-import {
-	Form,
-	FormControl,
-	FormField,
-	FormItem,
-	FormLabel,
-} from "@ui/components/form";
+import { Form, FormControl, FormField, FormItem, FormLabel } from "@ui/components/form";
 import { Input } from "@ui/components/input";
 import {
 	AlertTriangleIcon,
@@ -35,10 +29,7 @@ import { useForm } from "react-hook-form";
 import { withQuery } from "ufo";
 import { z } from "zod";
 import { authConfig } from "../config";
-import {
-	type OAuthProvider,
-	oAuthProviders,
-} from "../constants/oauth-providers";
+import { type OAuthProvider, oAuthProviders } from "../constants/oauth-providers";
 import { useSession } from "../hooks/use-session";
 import { LoginModeSwitch } from "./LoginModeSwitch";
 import { SocialSigninButton } from "./SocialSigninButton";
@@ -112,8 +103,7 @@ export function LoginForm() {
 				if (error && (error as any).code === "CHALLENGE_REQUIRED") {
 					setShowCaptcha(true);
 					form.setError("root", {
-						message:
-							"Security verification required. Please complete the challenge below.",
+						message: "Security verification required. Please complete the challenge below.",
 					});
 					return;
 				}
@@ -124,12 +114,7 @@ export function LoginForm() {
 
 				// Check for 2FA redirect
 				if (data && (data as any).twoFactorRedirect) {
-					router.replace(
-						withQuery(
-							"/auth/verify",
-							Object.fromEntries(searchParams.entries()),
-						),
-					);
+					router.replace(withQuery("/auth/verify", Object.fromEntries(searchParams.entries())));
 					return;
 				}
 
@@ -166,8 +151,7 @@ export function LoginForm() {
 				if (!response.ok && data.code === "CHALLENGE_REQUIRED") {
 					setShowCaptcha(true);
 					form.setError("root", {
-						message:
-							"Security verification required. Please complete the challenge below.",
+						message: "Security verification required. Please complete the challenge below.",
 					});
 					return;
 				}
@@ -179,9 +163,7 @@ export function LoginForm() {
 		} catch (e) {
 			form.setError("root", {
 				message: getAuthErrorMessage(
-					e && typeof e === "object" && "code" in e
-						? (e.code as string)
-						: undefined,
+					e && typeof e === "object" && "code" in e ? (e.code as string) : undefined,
 				),
 			});
 		}
@@ -199,17 +181,13 @@ export function LoginForm() {
 	return (
 		<div>
 			<h1 className="font-bold text-xl md:text-2xl">Sign in to your account</h1>
-			<p className="mt-1 mb-6 text-foreground/60">
-				Welcome back! Please enter your details.
-			</p>
+			<p className="mt-1 mb-6 text-foreground/60">Welcome back! Please enter your details.</p>
 
 			{form.formState.isSubmitSuccessful && signinMode === "magic-link" ? (
 				<Alert variant="success">
 					<MailboxIcon />
 					<AlertTitle>Check your email</AlertTitle>
-					<AlertDescription>
-						We've sent you a magic link to sign in.
-					</AlertDescription>
+					<AlertDescription>We've sent you a magic link to sign in.</AlertDescription>
 				</Alert>
 			) : (
 				<>
@@ -220,21 +198,16 @@ export function LoginForm() {
 							{authConfig.enableMagicLink && authConfig.enablePasswordLogin && (
 								<LoginModeSwitch
 									activeMode={signinMode}
-									onChange={(mode) =>
-										form.setValue("mode", mode as typeof signinMode)
-									}
+									onChange={(mode) => form.setValue("mode", mode as typeof signinMode)}
 								/>
 							)}
 
-							{form.formState.isSubmitted &&
-								form.formState.errors.root?.message && (
-									<Alert variant="error">
-										<AlertTriangleIcon />
-										<AlertTitle>
-											{form.formState.errors.root.message}
-										</AlertTitle>
-									</Alert>
-								)}
+							{form.formState.isSubmitted && form.formState.errors.root?.message && (
+								<Alert variant="error">
+									<AlertTriangleIcon />
+									<AlertTitle>{form.formState.errors.root.message}</AlertTitle>
+								</Alert>
+							)}
 
 							<FormField
 								control={form.control}
@@ -321,8 +294,7 @@ export function LoginForm() {
 										}}
 										onError={() => {
 											form.setError("root", {
-												message:
-													"Challenge verification failed. Please try again.",
+												message: "Challenge verification failed. Please try again.",
 											});
 											setTurnstileToken(undefined);
 											setIsChallengeLoading(false);
@@ -351,8 +323,7 @@ export function LoginForm() {
 						</form>
 					</Form>
 
-					{(authConfig.enablePasskeys ||
-						(authConfig.enableSignup && authConfig.enableSocialLogin)) && (
+					{(authConfig.enablePasskeys || (authConfig.enableSignup && authConfig.enableSocialLogin)) && (
 						<>
 							<div className="relative my-6 h-4">
 								<hr className="relative top-2" />
@@ -365,10 +336,7 @@ export function LoginForm() {
 								{authConfig.enableSignup &&
 									authConfig.enableSocialLogin &&
 									Object.keys(oAuthProviders).map((providerId) => (
-										<SocialSigninButton
-											key={providerId}
-											provider={providerId as OAuthProvider}
-										/>
+										<SocialSigninButton key={providerId} provider={providerId as OAuthProvider} />
 									))}
 
 								{authConfig.enablePasskeys && (
@@ -387,15 +355,8 @@ export function LoginForm() {
 
 					{authConfig.enableSignup && (
 						<div className="mt-6 text-center text-sm">
-							<span className="text-foreground/60">
-								Don't have an account?{" "}
-							</span>
-							<Link
-								href={withQuery(
-									"/auth/signup",
-									Object.fromEntries(searchParams.entries()),
-								)}
-							>
+							<span className="text-foreground/60">Don't have an account? </span>
+							<Link href={withQuery("/auth/signup", Object.fromEntries(searchParams.entries()))}>
 								Create an account
 								<ArrowRightIcon className="ml-1 inline size-4 align-middle" />
 							</Link>

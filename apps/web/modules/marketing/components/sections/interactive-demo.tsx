@@ -1,6 +1,6 @@
 "use client";
 import { m } from "motion/react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 export function InteractiveDemo() {
 	const [isSnapping, setIsSnapping] = useState(false);

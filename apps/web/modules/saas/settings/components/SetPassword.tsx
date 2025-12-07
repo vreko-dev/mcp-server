@@ -1,7 +1,7 @@
 "use client";
-import { authClient } from "@snapback/auth/client";
 import { useSession } from "@saas/auth/hooks/use-session";
 import { SettingsItem } from "@saas/shared/components/SettingsItem";
+import { authClient } from "@snapback/auth/client";
 import { Button } from "@ui/components/button";
 import { useState } from "react";
 import { toast } from "sonner";

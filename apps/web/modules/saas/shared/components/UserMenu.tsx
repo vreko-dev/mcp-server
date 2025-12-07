@@ -1,9 +1,9 @@
 "use client";
 
 import { DropdownMenuSub } from "@radix-ui/react-dropdown-menu";
-import { authClient } from "@snapback/auth/client";
 import { useSession } from "@saas/auth/hooks/use-session";
 import { UserAvatar } from "@shared/components/UserAvatar";
+import { authClient } from "@snapback/auth/client";
 import {
 	DropdownMenu,
 	DropdownMenuContent,

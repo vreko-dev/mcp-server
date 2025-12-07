@@ -23,7 +23,7 @@ export function SetPasswordForm() {
 				redirectTo: `${window.location.origin}/auth/reset-password`,
 			});
 			toast.success("Password reset email sent successfully");
-		} catch (error) {
+		} catch (_error) {
 			toast.error("Failed to send password reset email. Please try again.");
 		} finally {
 			setSubmitting(false);

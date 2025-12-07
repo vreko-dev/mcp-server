@@ -34,7 +34,7 @@ function createTestUser(userId = "user_test_123"): string {
 }
 
 async function setupApiKey(
-	userId: string,
+	_userId: string,
 ): Promise<Omit<TestContext, "userId">> {
 	const plainKey = generateApiKey();
 	const keyHash = await hashApiKey(plainKey);
@@ -444,10 +444,10 @@ describe("API Key Lifecycle - Edge Cases", () => {
 // ============================================================================
 
 describe("API Key Lifecycle - Error Handling", () => {
-	let userId: string;
+	let _userId: string;
 
 	beforeEach(() => {
-		userId = createTestUser();
+		_userId = createTestUser();
 	});
 
 	describe("Database Failures", () => {
@@ -487,7 +487,7 @@ describe("API Key Lifecycle - Error Handling", () => {
 			const plainKey = generateApiKey();
 			const hash = await hashApiKey(plainKey);
 
-			const invalidHash = hash.substring(0, hash.length - 1) + "X";
+			const invalidHash = `${hash.substring(0, hash.length - 1)}X`;
 
 			const validStart = performance.now();
 			await verifyApiKey(plainKey, hash);

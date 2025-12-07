@@ -25,7 +25,9 @@ export function SessionTimelineVideo({
 
 	useEffect(() => {
 		const videoElement = videoRef.current;
-		if (!videoElement) return;
+		if (!videoElement) {
+			return;
+		}
 
 		// Mobile optimization: Pause when out of viewport
 		const observer = new IntersectionObserver(

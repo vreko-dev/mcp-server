@@ -75,7 +75,7 @@ function validatePackage(pkgPath: string): boolean {
 		}
 
 		return isValid;
-	} catch (error) {
+	} catch (_error) {
 		// File not found or JSON parse error
 		return true;
 	}

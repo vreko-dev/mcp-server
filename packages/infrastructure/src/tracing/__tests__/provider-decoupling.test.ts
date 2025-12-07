@@ -1,9 +1,6 @@
-import { describe, expect, it, vi } from "vitest";
-import type {
-	InstrumentationProvider,
-	Span,
-} from "@snapback/contracts";
+import type { InstrumentationProvider, Span } from "@snapback/contracts";
 import { NoOpInstrumentationProvider, SpanStatusCode } from "@snapback/contracts";
+import { describe, expect, it, vi } from "vitest";
 
 /**
  * Test Suite: InstrumentationProvider Decoupling
@@ -57,21 +54,18 @@ describe("InstrumentationProvider - Decoupling Tests", () => {
 
 			// Simulate critical path operation
 			const createSnapshot = async (filePath: string): Promise<string> => {
-				return await provider.withSpan(
-					"snapshot.create",
-					async (span: Span) => {
-						span.setAttribute("file.path", filePath);
-						span.addEvent("validation.start");
+				return await provider.withSpan("snapshot.create", async (span: Span) => {
+					span.setAttribute("file.path", filePath);
+					span.addEvent("validation.start");
 
-						// Simulate snapshot creation
-						const snapshotId = "snap-123";
+					// Simulate snapshot creation
+					const snapshotId = "snap-123";
 
-						span.setAttribute("snapshot.id", snapshotId);
-						span.addEvent("snapshot.saved");
+					span.setAttribute("snapshot.id", snapshotId);
+					span.addEvent("snapshot.saved");
 
-						return snapshotId;
-					},
-				);
+					return snapshotId;
+				});
 			};
 
 			const snapshotId = await createSnapshot("/test/file.ts");
@@ -103,10 +97,7 @@ describe("InstrumentationProvider - Decoupling Tests", () => {
 			};
 
 			// Use mock in business logic
-			const processFile = async (
-				provider: InstrumentationProvider,
-				filePath: string,
-			): Promise<void> => {
+			const processFile = async (provider: InstrumentationProvider, filePath: string): Promise<void> => {
 				await provider.withSpan("file.process", async (span: Span) => {
 					span.setAttribute("file.path", filePath);
 					span.addEvent("processing.start");
@@ -121,14 +112,8 @@ describe("InstrumentationProvider - Decoupling Tests", () => {
 			await processFile(mockProvider, "/test.ts");
 
 			// Verify interactions
-			expect(mockProvider.withSpan).toHaveBeenCalledWith(
-				"file.process",
-				expect.any(Function),
-			);
-			expect(mockSpan.setAttribute).toHaveBeenCalledWith(
-				"file.path",
-				"/test.ts",
-			);
+			expect(mockProvider.withSpan).toHaveBeenCalledWith("file.process", expect.any(Function));
+			expect(mockSpan.setAttribute).toHaveBeenCalledWith("file.path", "/test.ts");
 			expect(mockSpan.addEvent).toHaveBeenCalledWith("processing.start");
 			expect(mockSpan.setStatus).toHaveBeenCalledWith({
 				code: SpanStatusCode.OK,
@@ -141,20 +126,15 @@ describe("InstrumentationProvider - Decoupling Tests", () => {
 				constructor(private instrumentation: InstrumentationProvider) {}
 
 				async create(filePath: string): Promise<string> {
-					return await this.instrumentation.withSpan(
-						"snapshot.create",
-						async (span: Span) => {
-							span.setAttribute("file.path", filePath);
-							return "snap-123";
-						},
-					);
+					return await this.instrumentation.withSpan("snapshot.create", async (span: Span) => {
+						span.setAttribute("file.path", filePath);
+						return "snap-123";
+					});
 				}
 			}
 
 			// Test with NoOp provider
-			const noOpService = new SnapshotService(
-				new NoOpInstrumentationProvider(),
-			);
+			const noOpService = new SnapshotService(new NoOpInstrumentationProvider());
 			expect(noOpService.create("/test.ts")).resolves.toBe("snap-123");
 
 			// Test with mock provider
@@ -181,27 +161,19 @@ describe("InstrumentationProvider - Decoupling Tests", () => {
 
 			const mockService = new SnapshotService(mockProvider);
 			expect(mockService.create("/test.ts")).resolves.toBe("snap-123");
-			expect(mockProvider.withSpan).toHaveBeenCalledWith(
-				"snapshot.create",
-				expect.any(Function),
-			);
+			expect(mockProvider.withSpan).toHaveBeenCalledWith("snapshot.create", expect.any(Function));
 		});
 	});
 
 	describe("Provider Swapping", () => {
 		it("should allow swapping providers without changing business logic", async () => {
 			// Simulated operation that works with any provider
-			const executeWithProvider = async (
-				provider: InstrumentationProvider,
-			): Promise<string> => {
-				return await provider.withSpan(
-					"test.operation",
-					async (span: Span) => {
-						span.setAttribute("test.key", "test.value");
-						span.addEvent("test.event");
-						return "result";
-					},
-				);
+			const executeWithProvider = async (provider: InstrumentationProvider): Promise<string> => {
+				return await provider.withSpan("test.operation", async (span: Span) => {
+					span.setAttribute("test.key", "test.value");
+					span.addEvent("test.event");
+					return "result";
+				});
 			};
 
 			// Test with NoOp provider

@@ -13,7 +13,9 @@ export function WaitlistPositionTile() {
 	const { data, isLoading, error } = useQuery({
 		queryKey: ["waitlist-position", userEmail],
 		queryFn: async () => {
-			if (!userEmail) return null;
+			if (!userEmail) {
+				return null;
+			}
 			return orpcClient.waitlist.getPosition({ email: userEmail });
 		},
 		enabled: !!userEmail,
@@ -23,7 +25,9 @@ export function WaitlistPositionTile() {
 	const { data: referralsData } = useQuery({
 		queryKey: ["waitlist-referrals", userEmail],
 		queryFn: async () => {
-			if (!userEmail) return null;
+			if (!userEmail) {
+				return null;
+			}
 			return orpcClient.waitlist.getReferrals({ email: userEmail });
 		},
 		enabled: !!userEmail,

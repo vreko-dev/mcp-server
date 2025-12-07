@@ -156,7 +156,7 @@ export async function analyzeRisk(input: RiskAnalysisInput): Promise<RiskAnalysi
 	const metadata = extractMetadata(diff);
 
 	// Check for high-risk patterns
-	for (const [name, config] of Object.entries(RISK_PATTERNS)) {
+	for (const [_name, config] of Object.entries(RISK_PATTERNS)) {
 		const matches = diff.match(config.pattern);
 		if (matches) {
 			threats.push(config.threat);

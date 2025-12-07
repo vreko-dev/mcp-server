@@ -37,7 +37,9 @@ export function AnalyticsScript() {
 			// Use decide endpoint or feature flags for sampling instead
 
 			loaded: (posthog) => {
-				if (process.env.NODE_ENV === "development") posthog.debug();
+				if (process.env.NODE_ENV === "development") {
+					posthog.debug();
+				}
 			},
 		});
 	}, []);

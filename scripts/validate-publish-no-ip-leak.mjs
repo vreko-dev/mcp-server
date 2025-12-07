@@ -13,9 +13,9 @@
  * - CI/CD publish workflows
  */
 
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -87,7 +87,7 @@ function validatePackagePublishConfig(packagePath, packageName) {
 	for (const exportPath of Object.keys(publishedExports)) {
 		// Check for forbidden exports
 		for (const forbidden of FORBIDDEN_EXPORTS) {
-			if (exportPath === forbidden || exportPath.startsWith(forbidden + "/")) {
+			if (exportPath === forbidden || exportPath.startsWith(`${forbidden}/`)) {
 				console.error(`❌ FORBIDDEN EXPORT in ${packageName}: "${exportPath}" (proprietary module)`);
 				hasViolations = true;
 			}
@@ -139,7 +139,7 @@ function validateAllPackages() {
 /**
  * Scan source files for hardcoded secrets or sensitive patterns
  */
-function scanForSensitiveContent(packagePath) {
+function _scanForSensitiveContent(packagePath) {
 	const patterns = [
 		/stripe_key|stripe_secret/i,
 		/posthog_api_key|posthog_host/i,

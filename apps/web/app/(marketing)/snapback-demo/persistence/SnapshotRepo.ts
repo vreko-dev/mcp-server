@@ -104,7 +104,9 @@ export class SnapshotRepo {
 
 		for (const fileId in snapshotsByFile) {
 			const fileSnapshots = snapshotsByFile[fileId];
-			if (!fileSnapshots) continue;
+			if (!fileSnapshots) {
+				continue;
+			}
 			const snapshots = fileSnapshots.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
 
 			// Remove snapshots older than TTL

@@ -5,15 +5,18 @@
  * Creates spans for HTTP requests and propagates context across service boundaries.
  */
 
-import type { Context, Next } from "hono";
-import type { InstrumentationProvider, Span } from "@snapback/contracts/observability";
+import type {
+	InstrumentationProvider,
+	Span,
+} from "@snapback/contracts/observability";
 import {
+	extractTraceHeaders,
 	SemanticConventions,
 	SpanKind,
-	extractTraceHeaders,
 	setHttpRequestAttributes,
 	setSpanStatusFromHttp,
 } from "@snapback/contracts/observability";
+import type { Context, Next } from "hono";
 
 // Slow request threshold in milliseconds
 const SLOW_REQUEST_THRESHOLD_MS = 1000;
@@ -57,15 +60,18 @@ export function instrumentationMiddleware(provider: InstrumentationProvider) {
 					url: c.req.url,
 					target: path,
 					route,
-					host: c.req.header('Host'),
-					userAgent: c.req.header('User-Agent'),
-					forwardedProto: c.req.header('X-Forwarded-Proto'),
+					host: c.req.header("Host"),
+					userAgent: c.req.header("User-Agent"),
+					forwardedProto: c.req.header("X-Forwarded-Proto"),
 				});
 
 				// Add content length if available
-				const contentLength = c.req.header('Content-Length');
+				const contentLength = c.req.header("Content-Length");
 				if (contentLength) {
-					span.setAttribute(SemanticConventions.Http.REQUEST_CONTENT_LENGTH, Number.parseInt(contentLength, 10));
+					span.setAttribute(
+						SemanticConventions.Http.REQUEST_CONTENT_LENGTH,
+						Number.parseInt(contentLength, 10),
+					);
 				}
 
 				// Add service metadata
@@ -93,12 +99,18 @@ export function instrumentationMiddleware(provider: InstrumentationProvider) {
 
 					// Set HTTP response attributes and span status using utility
 					setSpanStatusFromHttp(span, status, { addErrorEvent: status >= 400 });
-					span.setAttribute(SemanticConventions.Performance.DURATION_MS, duration);
+					span.setAttribute(
+						SemanticConventions.Performance.DURATION_MS,
+						duration,
+					);
 
 					// Add response content length if available
-					const responseContentLength = c.res.headers.get('Content-Length');
+					const responseContentLength = c.res.headers.get("Content-Length");
 					if (responseContentLength) {
-						span.setAttribute(SemanticConventions.Http.RESPONSE_CONTENT_LENGTH, Number.parseInt(responseContentLength, 10));
+						span.setAttribute(
+							SemanticConventions.Http.RESPONSE_CONTENT_LENGTH,
+							Number.parseInt(responseContentLength, 10),
+						);
 					}
 
 					// Add response event
@@ -117,11 +129,15 @@ export function instrumentationMiddleware(provider: InstrumentationProvider) {
 				} catch (error) {
 					// Record exception
 					const duration = Date.now() - startTime;
-					span.setAttribute(SemanticConventions.Performance.DURATION_MS, duration);
+					span.setAttribute(
+						SemanticConventions.Performance.DURATION_MS,
+						duration,
+					);
 
 					// Set HTTP status code and span status using utility
 					const status = c.res.status || 500;
-					const errorMessage = error instanceof Error ? error.message : "Unknown error";
+					const errorMessage =
+						error instanceof Error ? error.message : "Unknown error";
 					setSpanStatusFromHttp(span, status, {
 						addErrorEvent: true,
 						errorMessage,
@@ -179,6 +195,8 @@ export function getSpan(c: Context): Span | undefined {
  * });
  * ```
  */
-export function getInstrumentationProvider(c: Context): InstrumentationProvider | undefined {
+export function getInstrumentationProvider(
+	c: Context,
+): InstrumentationProvider | undefined {
 	return c.get("instrumentationProvider");
 }

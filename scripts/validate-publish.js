@@ -8,8 +8,8 @@
  * - Missing version fields
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const PUBLISHED_PACKAGES = [
 	"packages/contracts",
@@ -67,7 +67,7 @@ function validatePackage(pkgPath) {
 		}
 
 		return isValid;
-	} catch (error) {
+	} catch (_error) {
 		// File not found or JSON parse error
 		return true;
 	}

@@ -5,22 +5,30 @@
  * Supports distributed tracing, context propagation, and metrics.
  */
 
-import {
-	type Attributes,
-	type Context,
-	type ContextCarrier,
-	type InstrumentationProvider,
-	type Span,
-	type SpanOptions,
-	SpanStatusCode,
-} from "@snapback/contracts";
-import { context, propagation, ROOT_CONTEXT, SpanStatusCode as OTelSpanStatusCode, trace, type Context as OTelContext, type Span as OTelSpan } from "@opentelemetry/api";
 import type { Tracer } from "@opentelemetry/api";
+import {
+	context,
+	type Context as OTelContext,
+	type Span as OTelSpan,
+	SpanStatusCode as OTelSpanStatusCode,
+	propagation,
+	ROOT_CONTEXT,
+	trace,
+} from "@opentelemetry/api";
+import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
 import { Resource } from "@opentelemetry/resources";
-import { ATTR_SERVICE_NAME, ATTR_SERVICE_VERSION } from "@opentelemetry/semantic-conventions";
 import { BatchSpanProcessor, ConsoleSpanExporter, TraceIdRatioBasedSampler } from "@opentelemetry/sdk-trace-base";
 import { NodeTracerProvider } from "@opentelemetry/sdk-trace-node";
-import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
+import { ATTR_SERVICE_NAME, ATTR_SERVICE_VERSION } from "@opentelemetry/semantic-conventions";
+import type {
+	Attributes,
+	Context,
+	ContextCarrier,
+	InstrumentationProvider,
+	Span,
+	SpanOptions,
+	SpanStatusCode,
+} from "@snapback/contracts";
 
 export interface OTelConfig {
 	/** Service name (e.g., 'snapback-api', 'snapback-vscode') */
@@ -177,7 +185,7 @@ export class OTelInstrumentationProvider implements InstrumentationProvider {
 
 		// Check if context has trace information
 		const span = trace.getSpan(extractedContext);
-		if (span && span.spanContext().traceId) {
+		if (span?.spanContext().traceId) {
 			return extractedContext as unknown as Context;
 		}
 

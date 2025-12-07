@@ -7,7 +7,9 @@ import * as schema from "./db/schema";
 let _db: NodePgDatabase<typeof schema> | null = null;
 
 function getDb() {
-	if (_db) return _db;
+	if (_db) {
+		return _db;
+	}
 
 	const connectionString = process.env.DATABASE_URL;
 

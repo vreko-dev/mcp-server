@@ -46,7 +46,7 @@ export function HeroDemo() {
 	};
 
 	// User Interaction Handlers for Timeline
-	const handleNodeClick = (_id: DemoState) => {
+	const _handleNodeClick = (_id: DemoState) => {
 		// Reset flows if jumping
 		setShowRestorePrompt(false);
 		setShowCTA(false);
@@ -76,7 +76,7 @@ export function HeroDemo() {
 						showRestorePrompt={showRestorePrompt}
 						onRestore={handleRestore}
 					>
-						<CodeDisplay code={currentNode!.code} state={state} />
+						<CodeDisplay code={currentNode?.code} state={state} />
 					</EditorFrame>
 				</motion.div>
 
@@ -99,7 +99,9 @@ export function HeroDemo() {
 
 // Simple Code Display Helper
 function CodeDisplay({ code, state }: { code?: string; state: string }) {
-	if (!code) return null;
+	if (!code) {
+		return null;
+	}
 
 	return (
 		<pre className="font-mono text-sm leading-6 p-4">

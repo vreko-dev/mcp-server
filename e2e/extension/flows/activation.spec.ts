@@ -10,11 +10,13 @@ import { expect, test } from "vscode-test-playwright";
 test.describe("SnapBack Activation Funnel @smoke", () => {
 	test.describe.configure({ mode: "serial" });
 
-	// @ts-ignore
+	// @ts-expect-error
 	test("Step 1: Extension activates on startup", async ({ workbox, evaluateInVSCode }) => {
 		const isActive = await evaluateInVSCode(async (vscode: typeof import("vscode")) => {
 			const extension = vscode.extensions.getExtension("MarcelleLabs.snapback-vscode");
-			if (!extension) return false;
+			if (!extension) {
+				return false;
+			}
 			await extension.activate();
 			return extension.isActive;
 		});
@@ -23,8 +25,16 @@ test.describe("SnapBack Activation Funnel @smoke", () => {
 		await expect(workbox.getByLabel(/SnapBack/i).first()).toBeVisible({ timeout: 10000 });
 	});
 
-	// @ts-ignore
-	test("Step 2: Authentication flow", async ({ page, workbox, evaluateInVSCode }: { page: any; workbox: any; evaluateInVSCode: any }) => {
+	// @ts-expect-error
+	test("Step 2: Authentication flow", async ({
+		page,
+		workbox,
+		evaluateInVSCode,
+	}: {
+		page: any;
+		workbox: any;
+		evaluateInVSCode: any;
+	}) => {
 		// 1. FORCE TEST MODE via explicit command hook
 		// This bypasses all config listeners and provides synchronous control
 		console.log("🧪 Forcing test mode via snapback.__setTestMode command...");

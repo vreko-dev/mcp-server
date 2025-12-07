@@ -12,23 +12,23 @@
  */
 export const HttpAttributes = {
 	/** HTTP request method (GET, POST, etc.) */
-	METHOD: 'http.method',
+	METHOD: "http.method",
 	/** HTTP response status code */
-	STATUS_CODE: 'http.status_code',
+	STATUS_CODE: "http.status_code",
 	/** HTTP route pattern */
-	ROUTE: 'http.route',
+	ROUTE: "http.route",
 	/** HTTP target URL path */
-	TARGET: 'http.target',
+	TARGET: "http.target",
 	/** HTTP scheme (http, https) */
-	SCHEME: 'http.scheme',
+	SCHEME: "http.scheme",
 	/** HTTP host header */
-	HOST: 'http.host',
+	HOST: "http.host",
 	/** User agent string */
-	USER_AGENT: 'http.user_agent',
+	USER_AGENT: "http.user_agent",
 	/** Request content length */
-	REQUEST_CONTENT_LENGTH: 'http.request_content_length',
+	REQUEST_CONTENT_LENGTH: "http.request_content_length",
 	/** Response content length */
-	RESPONSE_CONTENT_LENGTH: 'http.response_content_length',
+	RESPONSE_CONTENT_LENGTH: "http.response_content_length",
 } as const;
 
 /**
@@ -36,15 +36,15 @@ export const HttpAttributes = {
  */
 export const DbAttributes = {
 	/** Database system (sqlite, postgresql, etc.) */
-	SYSTEM: 'db.system',
+	SYSTEM: "db.system",
 	/** Database operation name (SELECT, INSERT, etc.) */
-	OPERATION: 'db.operation',
+	OPERATION: "db.operation",
 	/** Database statement/query */
-	STATEMENT: 'db.statement',
+	STATEMENT: "db.statement",
 	/** Database name */
-	NAME: 'db.name',
+	NAME: "db.name",
 	/** Table name */
-	TABLE: 'db.sql.table',
+	TABLE: "db.sql.table",
 } as const;
 
 /**
@@ -52,19 +52,19 @@ export const DbAttributes = {
  */
 export const SnapshotAttributes = {
 	/** Snapshot unique identifier */
-	ID: 'snapback.snapshot.id',
+	ID: "snapback.snapshot.id",
 	/** Number of files in snapshot */
-	FILE_COUNT: 'snapback.snapshot.file_count',
+	FILE_COUNT: "snapback.snapshot.file_count",
 	/** Total size in bytes */
-	SIZE_BYTES: 'snapback.snapshot.size_bytes',
+	SIZE_BYTES: "snapback.snapshot.size_bytes",
 	/** Snapshot creation method (manual, auto, api) */
-	METHOD: 'snapback.snapshot.method',
+	METHOD: "snapback.snapshot.method",
 	/** Snapshot trigger (command, watch, schedule) */
-	TRIGGER: 'snapback.snapshot.trigger',
+	TRIGGER: "snapback.snapshot.trigger",
 	/** Snapshot protected status */
-	PROTECTED: 'snapback.snapshot.protected',
+	PROTECTED: "snapback.snapshot.protected",
 	/** Snapshot encryption enabled */
-	ENCRYPTED: 'snapback.snapshot.encrypted',
+	ENCRYPTED: "snapback.snapshot.encrypted",
 } as const;
 
 /**
@@ -72,17 +72,17 @@ export const SnapshotAttributes = {
  */
 export const ProtectionAttributes = {
 	/** Protection level (watch, warn, block) */
-	LEVEL: 'snapback.protection.level',
+	LEVEL: "snapback.protection.level",
 	/** File path (sanitized) */
-	FILE_PATH: 'snapback.file.path',
+	FILE_PATH: "snapback.file.path",
 	/** File extension */
-	FILE_EXTENSION: 'snapback.file.extension',
+	FILE_EXTENSION: "snapback.file.extension",
 	/** File size in bytes */
-	FILE_SIZE: 'snapback.file.size',
+	FILE_SIZE: "snapback.file.size",
 	/** Protection rule applied */
-	RULE_ID: 'snapback.protection.rule_id',
+	RULE_ID: "snapback.protection.rule_id",
 	/** Policy evaluation result */
-	POLICY_RESULT: 'snapback.protection.policy_result',
+	POLICY_RESULT: "snapback.protection.policy_result",
 } as const;
 
 /**
@@ -90,15 +90,15 @@ export const ProtectionAttributes = {
  */
 export const RiskAttributes = {
 	/** Risk level (low, medium, high, critical) */
-	LEVEL: 'snapback.risk.level',
+	LEVEL: "snapback.risk.level",
 	/** Risk factors detected */
-	FACTORS: 'snapback.risk.factors',
+	FACTORS: "snapback.risk.factors",
 	/** Confidence score (0.0 - 1.0) */
-	CONFIDENCE: 'snapback.risk.confidence',
+	CONFIDENCE: "snapback.risk.confidence",
 	/** Risk patterns matched */
-	PATTERNS: 'snapback.risk.patterns',
+	PATTERNS: "snapback.risk.patterns",
 	/** AI-assisted change detected */
-	AI_ASSISTED: 'snapback.risk.ai_assisted',
+	AI_ASSISTED: "snapback.risk.ai_assisted",
 } as const;
 
 /**
@@ -106,15 +106,15 @@ export const RiskAttributes = {
  */
 export const UserAttributes = {
 	/** User ID (sanitized) */
-	ID: 'snapback.user.id',
+	ID: "snapback.user.id",
 	/** User tier (free, pro, team) */
-	TIER: 'snapback.user.tier',
+	TIER: "snapback.user.tier",
 	/** Session ID */
-	SESSION_ID: 'snapback.session.id',
+	SESSION_ID: "snapback.session.id",
 	/** API key ID (not the key itself) */
-	API_KEY_ID: 'snapback.api_key.id',
+	API_KEY_ID: "snapback.api_key.id",
 	/** Organization ID */
-	ORGANIZATION_ID: 'snapback.organization.id',
+	ORGANIZATION_ID: "snapback.organization.id",
 } as const;
 
 /**
@@ -122,13 +122,13 @@ export const UserAttributes = {
  */
 export const NetworkAttributes = {
 	/** Client IP address */
-	PEER_IP: 'net.peer.ip',
+	PEER_IP: "net.peer.ip",
 	/** Client port */
-	PEER_PORT: 'net.peer.port',
+	PEER_PORT: "net.peer.port",
 	/** Host IP address */
-	HOST_IP: 'net.host.ip',
+	HOST_IP: "net.host.ip",
 	/** Host port */
-	HOST_PORT: 'net.host.port',
+	HOST_PORT: "net.host.port",
 } as const;
 
 /**
@@ -136,13 +136,13 @@ export const NetworkAttributes = {
  */
 export const ServiceAttributes = {
 	/** Service name (api, vscode, mcp, cli) */
-	NAME: 'service.name',
+	NAME: "service.name",
 	/** Service version */
-	VERSION: 'service.version',
+	VERSION: "service.version",
 	/** Service environment (dev, staging, production) */
-	ENVIRONMENT: 'service.environment',
+	ENVIRONMENT: "service.environment",
 	/** Service instance ID */
-	INSTANCE_ID: 'service.instance.id',
+	INSTANCE_ID: "service.instance.id",
 } as const;
 
 /**
@@ -150,13 +150,13 @@ export const ServiceAttributes = {
  */
 export const ErrorAttributes = {
 	/** Error type/name */
-	TYPE: 'error.type',
+	TYPE: "error.type",
 	/** Error message */
-	MESSAGE: 'error.message',
+	MESSAGE: "error.message",
 	/** Error stack trace (truncated) */
-	STACK: 'error.stack',
+	STACK: "error.stack",
 	/** Error code */
-	CODE: 'error.code',
+	CODE: "error.code",
 } as const;
 
 /**
@@ -164,13 +164,13 @@ export const ErrorAttributes = {
  */
 export const PerformanceAttributes = {
 	/** Operation duration in milliseconds */
-	DURATION_MS: 'snapback.performance.duration_ms',
+	DURATION_MS: "snapback.performance.duration_ms",
 	/** Cache hit/miss */
-	CACHE_HIT: 'snapback.performance.cache_hit',
+	CACHE_HIT: "snapback.performance.cache_hit",
 	/** Retry count */
-	RETRY_COUNT: 'snapback.performance.retry_count',
+	RETRY_COUNT: "snapback.performance.retry_count",
 	/** Queue depth */
-	QUEUE_DEPTH: 'snapback.performance.queue_depth',
+	QUEUE_DEPTH: "snapback.performance.queue_depth",
 } as const;
 
 /**

@@ -1,6 +1,6 @@
 import type { Span } from "./InstrumentationProvider";
-import { SpanStatusCode } from "./types";
 import { SemanticConventions } from "./SemanticConventions";
+import { SpanStatusCode } from "./types";
 
 const TRACE_PARENT_HEADER = "traceparent";
 const TRACE_STATE_HEADER = "tracestate";
@@ -12,9 +12,7 @@ const TRACE_STATE_HEADER = "tracestate";
  * @param headers - Request headers object
  * @returns Filtered headers containing only traceparent and tracestate
  */
-export function extractTraceHeaders(
-	headers: Headers | Record<string, string>,
-): Record<string, string> {
+export function extractTraceHeaders(headers: Headers | Record<string, string>): Record<string, string> {
 	const traceHeaders: Record<string, string> = {};
 
 	if (headers instanceof Headers) {
@@ -56,17 +54,7 @@ export function setHttpRequestAttributes(
 		forwardedProto?: string;
 	},
 ): void {
-	const {
-		method,
-		url,
-		target,
-		route,
-		host,
-		userAgent,
-		clientIp,
-		scheme,
-		forwardedProto,
-	} = request;
+	const { method, url, target, route, host, userAgent, clientIp, scheme, forwardedProto } = request;
 
 	// Core HTTP attributes
 	span.setAttribute(SemanticConventions.Http.METHOD, method);
@@ -93,8 +81,7 @@ export function setHttpRequestAttributes(
 	}
 
 	// Detect scheme from X-Forwarded-Proto or URL
-	const detectedScheme =
-		forwardedProto || scheme || (url.startsWith("https") ? "https" : "http");
+	const detectedScheme = forwardedProto || scheme || (url.startsWith("https") ? "https" : "http");
 	span.setAttribute(SemanticConventions.Http.SCHEME, detectedScheme);
 }
 

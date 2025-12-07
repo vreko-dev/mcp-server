@@ -5,11 +5,10 @@
  * and multi-service trace continuity.
  */
 
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { OTelInstrumentationProvider } from "../otel-provider";
-import { NoOpInstrumentationProvider } from "@snapback/contracts/observability";
-import { SpanKind } from "@snapback/contracts/observability";
 import type { Context } from "@snapback/contracts/observability";
+import { NoOpInstrumentationProvider, SpanKind } from "@snapback/contracts/observability";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { OTelInstrumentationProvider } from "../otel-provider";
 
 describe("Distributed Tracing", () => {
 	let provider: OTelInstrumentationProvider;
@@ -62,7 +61,7 @@ describe("Distributed Tracing", () => {
 					{
 						kind: SpanKind.CLIENT,
 						parent: parentContext as Context,
-					}
+					},
 				);
 			});
 
@@ -98,7 +97,7 @@ describe("Distributed Tracing", () => {
 				},
 				{
 					parent: extractedContext || undefined,
-				}
+				},
 			);
 
 			// Assert: No error thrown
@@ -176,7 +175,7 @@ describe("Distributed Tracing", () => {
 					// tracestate should be preserved
 					expect(outgoingHeaders.tracestate).toBeDefined();
 				},
-				{ parent: context as Context }
+				{ parent: context as Context },
 			);
 		});
 	});
@@ -213,7 +212,7 @@ describe("Distributed Tracing", () => {
 					const traceId = headers.traceparent.split("-")[1];
 					expect(traceId).toBe(originalTraceId);
 				},
-				{ parent: serviceBContext as Context }
+				{ parent: serviceBContext as Context },
 			);
 
 			// Service C: Receive request from B, create grandchild span
@@ -230,7 +229,7 @@ describe("Distributed Tracing", () => {
 					const traceId = headers.traceparent.split("-")[1];
 					expect(traceId).toBe(originalTraceId);
 				},
-				{ parent: serviceCContext as Context }
+				{ parent: serviceCContext as Context },
 			);
 		});
 
@@ -252,7 +251,7 @@ describe("Distributed Tracing", () => {
 						provider.injectContext(headers2);
 						spanIds.push(headers2.traceparent.split("-")[2]);
 					},
-					{ parent: context as Context }
+					{ parent: context as Context },
 				);
 			});
 
@@ -285,11 +284,7 @@ describe("Distributed Tracing", () => {
 
 	describe("Context Extraction Edge Cases", () => {
 		it("should handle missing headers gracefully", () => {
-			const testCases = [
-				{},
-				{ "content-type": "application/json" },
-				{ authorization: "Bearer token" },
-			];
+			const testCases = [{}, { "content-type": "application/json" }, { authorization: "Bearer token" }];
 
 			for (const headers of testCases) {
 				const context = provider.extractContext(headers);

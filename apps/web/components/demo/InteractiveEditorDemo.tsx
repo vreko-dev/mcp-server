@@ -149,7 +149,9 @@ const TimelineEntryComponent = ({
 			role="button"
 			tabIndex={entry.canRestore ? 0 : -1}
 			onKeyDown={(e: React.KeyboardEvent) => {
-				if (e.key === "Enter" && entry.canRestore) onRestore();
+				if (e.key === "Enter" && entry.canRestore) {
+					onRestore();
+				}
 			}}
 			aria-label={`${entry.description} at ${entry.time}${entry.canRestore ? ", click to restore" : " (not restorable)"}`}
 		>
@@ -322,8 +324,12 @@ export function InteractiveEditorDemo() {
 	// Cleanup on unmount
 	useEffect(() => {
 		return () => {
-			if (demoTimeoutRef.current) clearTimeout(demoTimeoutRef.current);
-			if (typingIntervalRef.current) clearInterval(typingIntervalRef.current);
+			if (demoTimeoutRef.current) {
+				clearTimeout(demoTimeoutRef.current);
+			}
+			if (typingIntervalRef.current) {
+				clearInterval(typingIntervalRef.current);
+			}
 		};
 	}, []);
 
@@ -361,8 +367,12 @@ export function InteractiveEditorDemo() {
 	// Handle restore action
 	const handleRestore = useCallback((entry: TimelineEntry) => {
 		// Stop any ongoing demo
-		if (demoTimeoutRef.current) clearTimeout(demoTimeoutRef.current);
-		if (typingIntervalRef.current) clearInterval(typingIntervalRef.current);
+		if (demoTimeoutRef.current) {
+			clearTimeout(demoTimeoutRef.current);
+		}
+		if (typingIntervalRef.current) {
+			clearInterval(typingIntervalRef.current);
+		}
 
 		setSelectedId(entry.id);
 		setDemoState("restored");
@@ -391,7 +401,9 @@ export function InteractiveEditorDemo() {
 
 	// Demo step
 	const runDemoStep = useCallback(async () => {
-		if (!isPlaying) return;
+		if (!isPlaying) {
+			return;
+		}
 
 		try {
 			// Step 1: AI starts editing
@@ -408,7 +420,9 @@ export function InteractiveEditorDemo() {
 				demoTimeoutRef.current = setTimeout(r, 500);
 			});
 
-			if (!isPlaying) return;
+			if (!isPlaying) {
+				return;
+			}
 
 			addTimelineEntry({
 				description: "Auto-snapshot",
@@ -420,14 +434,18 @@ export function InteractiveEditorDemo() {
 			// Type the modified code
 			await typeCode(CODE_BROKEN);
 
-			if (!isPlaying) return;
+			if (!isPlaying) {
+				return;
+			}
 
 			// Brief pause
 			await new Promise<void>((r) => {
 				demoTimeoutRef.current = setTimeout(r, 800);
 			});
 
-			if (!isPlaying) return;
+			if (!isPlaying) {
+				return;
+			}
 
 			// Step 2: Error state
 			setDemoState("error");
@@ -444,7 +462,9 @@ export function InteractiveEditorDemo() {
 				demoTimeoutRef.current = setTimeout(r, 4000);
 			});
 
-			if (!isPlaying) return;
+			if (!isPlaying) {
+				return;
+			}
 
 			// Step 3: Auto-restore
 			setSelectedId("initial-1");
@@ -458,7 +478,9 @@ export function InteractiveEditorDemo() {
 				demoTimeoutRef.current = setTimeout(r, 2500);
 			});
 
-			if (!isPlaying) return;
+			if (!isPlaying) {
+				return;
+			}
 
 			// Reset to idle
 			setShowRestoredBadge(false);
@@ -492,8 +514,12 @@ export function InteractiveEditorDemo() {
 	const handleTogglePlay = () => {
 		if (isPlaying) {
 			// Pause
-			if (demoTimeoutRef.current) clearTimeout(demoTimeoutRef.current);
-			if (typingIntervalRef.current) clearInterval(typingIntervalRef.current);
+			if (demoTimeoutRef.current) {
+				clearTimeout(demoTimeoutRef.current);
+			}
+			if (typingIntervalRef.current) {
+				clearInterval(typingIntervalRef.current);
+			}
 			setIsPlaying(false);
 		} else {
 			// Resume

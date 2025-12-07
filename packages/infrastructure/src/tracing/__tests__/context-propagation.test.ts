@@ -1,6 +1,6 @@
-import { describe, expect, it } from "vitest";
 import type { ContextCarrier } from "@snapback/contracts";
 import { NoOpInstrumentationProvider } from "@snapback/contracts";
+import { describe, expect, it } from "vitest";
 
 /**
  * Test Suite: Context Propagation
@@ -42,8 +42,7 @@ describe("Context Propagation - W3C Trace Context", () => {
 			// version-traceId-spanId-traceFlags
 			// 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
 
-			const validTraceparent =
-				"00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01";
+			const validTraceparent = "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01";
 
 			const parts = validTraceparent.split("-");
 			expect(parts).toHaveLength(4);

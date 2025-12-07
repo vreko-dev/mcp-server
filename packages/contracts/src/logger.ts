@@ -16,7 +16,7 @@ try {
 	// Only try to import infrastructure logger in Node.js environments (not in browsers)
 	if (typeof window === "undefined") {
 		try {
-			// @ts-ignore - dynamic require
+			// @ts-expect-error - dynamic require
 			infrastructureLogger = require("@snapback/infrastructure").logger;
 		} catch (_error) {
 			// If infrastructure logger is not available, use fallback

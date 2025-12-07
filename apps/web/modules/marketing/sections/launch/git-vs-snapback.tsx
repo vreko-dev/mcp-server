@@ -32,9 +32,15 @@ export function GitVsSnapback() {
 			{ rootMargin: "-100px 0px 0px 0px", threshold: 0.1 },
 		);
 
-		if (gitCardRef.current) observer.observe(gitCardRef.current);
-		if (snapbackCardRef.current) observer.observe(snapbackCardRef.current);
-		if (integrationMsgRef.current) observer.observe(integrationMsgRef.current);
+		if (gitCardRef.current) {
+			observer.observe(gitCardRef.current);
+		}
+		if (snapbackCardRef.current) {
+			observer.observe(snapbackCardRef.current);
+		}
+		if (integrationMsgRef.current) {
+			observer.observe(integrationMsgRef.current);
+		}
 
 		return () => observer.disconnect();
 	}, []);

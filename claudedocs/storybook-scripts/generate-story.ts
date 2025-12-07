@@ -10,8 +10,8 @@
  *   tsx generate-story.ts HeroSection apps/web/modules/marketing/components Marketing
  */
 
-import { existsSync, readFileSync, writeFileSync } from "fs";
-import { basename, join } from "path";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { basename, join } from "node:path";
 
 interface StoryConfig {
 	componentName: string;
@@ -92,34 +92,54 @@ export const DarkMode: Story = {
 }
 
 function inferCategory(path: string): "UI" | "Marketing" | "Layout" | "Forms" {
-	if (path.includes("/ui/")) return "UI";
-	if (path.includes("/marketing/")) return "Marketing";
-	if (path.includes("/layout/")) return "Layout";
-	if (path.includes("/forms/")) return "Forms";
+	if (path.includes("/ui/")) {
+		return "UI";
+	}
+	if (path.includes("/marketing/")) {
+		return "Marketing";
+	}
+	if (path.includes("/layout/")) {
+		return "Layout";
+	}
+	if (path.includes("/forms/")) {
+		return "Forms";
+	}
 	return "UI";
 }
 
 function inferSubCategory(path: string): string | undefined {
 	if (path.includes("/ui/components/")) {
 		// Check for common subcategories
-		if (path.includes("/primitives/")) return "Primitives";
-		if (path.includes("/composed/")) return "Composed";
-		if (path.includes("/magic/")) return "Magic";
+		if (path.includes("/primitives/")) {
+			return "Primitives";
+		}
+		if (path.includes("/composed/")) {
+			return "Composed";
+		}
+		if (path.includes("/magic/")) {
+			return "Magic";
+		}
 	}
 	if (path.includes("/marketing/components/")) {
-		if (path.includes("/sections/")) return "Sections";
-		if (path.includes("/ui/")) return "Components";
+		if (path.includes("/sections/")) {
+			return "Sections";
+		}
+		if (path.includes("/ui/")) {
+			return "Components";
+		}
 	}
 	return undefined;
 }
 
-function extractComponentName(filePath: string): string | null {
+function _extractComponentName(filePath: string): string | null {
 	try {
 		const content = readFileSync(filePath, "utf-8");
 
 		// Try to find export pattern
 		const exportMatch = content.match(/export\s+(?:const|function)\s+(\w+)/);
-		if (exportMatch) return exportMatch[1];
+		if (exportMatch) {
+			return exportMatch[1];
+		}
 
 		// Try to find component name from file
 		const fileName = basename(filePath, ".tsx");

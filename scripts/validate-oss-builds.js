@@ -4,8 +4,8 @@
  * Validates OSS builds to ensure no IP leaks
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const { glob } = require("glob");
 
 const FORBIDDEN_PATTERNS = [

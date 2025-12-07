@@ -16,12 +16,16 @@ function extractIssueKey(): string | null {
 	// Check branch name
 	const branchName = process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF_NAME || "";
 	const branchMatch = branchName.match(/([A-Z]+-\d+)/);
-	if (branchMatch) return branchMatch[1];
+	if (branchMatch) {
+		return branchMatch[1];
+	}
 
 	// Check PR title from context
 	const prTitle = process.env.PR_TITLE || "";
 	const titleMatch = prTitle.match(/([A-Z]+-\d+)/);
-	if (titleMatch) return titleMatch[1];
+	if (titleMatch) {
+		return titleMatch[1];
+	}
 
 	return null;
 }

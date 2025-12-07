@@ -32,7 +32,7 @@ export function SocialSigninButton({
 			// This triggers a redirect to the OAuth provider
 			await authClient.signIn.social({
 				provider,
-				callbackURL: window.location.origin + "/dashboard",
+				callbackURL: `${window.location.origin}/dashboard`,
 			});
 
 			// If we reach here without redirect, something went wrong

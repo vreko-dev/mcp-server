@@ -321,7 +321,9 @@ export function WaitlistSuccess({ queuePosition, email }: WaitlistSuccessProps) 
 											size="sm"
 											variant="outline"
 											onClick={() => {
-												if (task.action) task.action();
+												if (task.action) {
+													task.action();
+												}
 												handleTaskComplete(task.id);
 											}}
 											className="hover:border-snapback-green hover:bg-snapback-green/10"

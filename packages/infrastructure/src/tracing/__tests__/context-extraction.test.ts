@@ -5,7 +5,7 @@
  * invalid formats, and security concerns.
  */
 
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { OTelInstrumentationProvider } from "../otel-provider";
 
 describe("Context Extraction Edge Cases", () => {
@@ -58,7 +58,10 @@ describe("Context Extraction Edge Cases", () => {
 		it("should return null for traceparent with invalid trace-id length", () => {
 			const testCases = [
 				{ traceparent: "00-tooshort-00f067aa0ba902b7-01" },
-				{ traceparent: "00-4bf92f3577b34da6a3ce929d0e0e47364bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01" }, // too long
+				{
+					traceparent:
+						"00-4bf92f3577b34da6a3ce929d0e0e47364bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01",
+				}, // too long
 			];
 
 			for (const headers of testCases) {
@@ -121,7 +124,7 @@ describe("Context Extraction Edge Cases", () => {
 		it("should return null when only non-trace headers provided", () => {
 			const headers = {
 				"content-type": "application/json",
-				"authorization": "Bearer token",
+				authorization: "Bearer token",
 				"x-request-id": "req-123",
 			};
 
@@ -153,7 +156,7 @@ describe("Context Extraction Edge Cases", () => {
 		it("should extract context from mixed-case traceparent", () => {
 			// HTTP headers are case-insensitive
 			const headers = {
-				"TraceParent": "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01",
+				TraceParent: "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01",
 			} as Record<string, string>;
 
 			const context = provider.extractContext(headers);
@@ -237,8 +240,8 @@ describe("Context Extraction Edge Cases", () => {
 					async (span) => {
 						expect(span.isRecording()).toBe(true);
 					},
-					{ parent: context || undefined }
-				)
+					{ parent: context || undefined },
+				),
 			).resolves.not.toThrow();
 		});
 
@@ -249,8 +252,8 @@ describe("Context Extraction Edge Cases", () => {
 					async (span) => {
 						expect(span.isRecording()).toBe(true);
 					},
-					{ parent: undefined }
-				)
+					{ parent: undefined },
+				),
 			).resolves.not.toThrow();
 		});
 	});

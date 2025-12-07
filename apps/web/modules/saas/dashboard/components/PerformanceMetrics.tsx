@@ -32,14 +32,22 @@ export function PerformanceMetrics({
 
 	// Determine status colors
 	const getStatusColor = (percentage: number): string => {
-		if (percentage <= 80) return "bg-green-500";
-		if (percentage <= 100) return "bg-yellow-500";
+		if (percentage <= 80) {
+			return "bg-green-500";
+		}
+		if (percentage <= 100) {
+			return "bg-yellow-500";
+		}
 		return "bg-red-500";
 	};
 
 	const getStatusText = (percentage: number): string => {
-		if (percentage <= 80) return "Excellent";
-		if (percentage <= 100) return "Good";
+		if (percentage <= 80) {
+			return "Excellent";
+		}
+		if (percentage <= 100) {
+			return "Good";
+		}
 		return "Needs Improvement";
 	};
 

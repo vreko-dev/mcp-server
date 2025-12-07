@@ -19,7 +19,7 @@ export function PasskeysBlock() {
 				fetchOptions: { onSuccess: () => queryClient.invalidateQueries({ queryKey: ["passkeys"] }) },
 			});
 			toast.success("Passkey added successfully");
-		} catch (error) {
+		} catch (_error) {
 			toast.error("Failed to add passkey");
 		}
 	};

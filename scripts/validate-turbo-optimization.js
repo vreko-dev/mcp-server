@@ -6,8 +6,8 @@
  * Verifies all changes were applied correctly following TDD principles
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const rootDir = path.resolve(__dirname, "..");
 let allPassed = true;
@@ -19,7 +19,7 @@ console.log("✅ Test 1: Turborepo Version");
 const pnpmWorkspace = fs.readFileSync(path.join(rootDir, "pnpm-workspace.yaml"), "utf-8");
 const turboVersion = pnpmWorkspace.match(/turbo:\s*([^\s]+)/)?.[1];
 console.log(`   Turbo version: ${turboVersion}`);
-if (turboVersion && turboVersion.startsWith("2.3.")) {
+if (turboVersion?.startsWith("2.3.")) {
 	console.log("   ✓ Turborepo 2.3.x detected\n");
 } else {
 	console.log("   ✗ FAILED: Turborepo version should be 2.3.x\n");
@@ -30,7 +30,7 @@ if (turboVersion && turboVersion.startsWith("2.3.")) {
 console.log("✅ Test 2: Next.js Version");
 const nextVersion = pnpmWorkspace.match(/next:\s*([^\s]+)/)?.[1];
 console.log(`   Next.js version: ${nextVersion}`);
-if (nextVersion && nextVersion.startsWith("16.")) {
+if (nextVersion?.startsWith("16.")) {
 	console.log("   ✓ Next.js 16.x detected\n");
 } else {
 	console.log("   ✗ FAILED: Next.js version should be 16.x\n");
@@ -95,8 +95,8 @@ console.log("✅ Test 6: Turbopack Enablement");
 const webPkg = JSON.parse(fs.readFileSync(path.join(rootDir, "apps/web/package.json"), "utf-8"));
 const docsPkg = JSON.parse(fs.readFileSync(path.join(rootDir, "apps/docs/package.json"), "utf-8"));
 
-const webHasTurbopack = webPkg.scripts.dev && webPkg.scripts.dev.includes("--turbopack");
-const docsHasTurbopack = docsPkg.scripts.dev && docsPkg.scripts.dev.includes("--turbopack");
+const webHasTurbopack = webPkg.scripts.dev?.includes("--turbopack");
+const docsHasTurbopack = docsPkg.scripts.dev?.includes("--turbopack");
 
 if (webHasTurbopack && docsHasTurbopack) {
 	console.log("   ✓ Turbopack enabled in web and docs apps\n");
@@ -143,7 +143,7 @@ if (correctDependencyChain) {
 }
 
 // Final result
-console.log("\n" + "=".repeat(50));
+console.log(`\n${"=".repeat(50)}`);
 if (allPassed) {
 	console.log("🎉 All tests passed! Turborepo optimization complete.");
 	console.log("\n📊 Summary:");

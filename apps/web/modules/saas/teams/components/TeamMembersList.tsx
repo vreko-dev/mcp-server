@@ -108,7 +108,9 @@ export function TeamMembersList({ teamId, onAddMemberClick }: { teamId: string; 
 	};
 
 	const handleRoleChange = async (member: TeamMember, newRole: "owner" | "admin" | "member") => {
-		if (member.role === newRole) return;
+		if (member.role === newRole) {
+			return;
+		}
 
 		setUpdatingId(member.id);
 

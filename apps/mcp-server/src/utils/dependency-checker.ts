@@ -109,7 +109,7 @@ export async function checkDependencies(input: DependencyCheckInput): Promise<De
 
 	try {
 		packageAfter = JSON.parse(input.packageJsonAfter);
-	} catch (error) {
+	} catch (_error) {
 		result.warnings.push("Failed to parse package.json: Invalid JSON format");
 		return result;
 	}
@@ -117,7 +117,7 @@ export async function checkDependencies(input: DependencyCheckInput): Promise<De
 	if (input.packageJsonBefore) {
 		try {
 			packageBefore = JSON.parse(input.packageJsonBefore);
-		} catch (error) {
+		} catch (_error) {
 			result.warnings.push("Failed to parse previous package.json");
 		}
 	}
@@ -211,7 +211,9 @@ function checkVulnerabilities(dependencies: Record<string, string>): Vulnerabili
 
 	for (const [pkgName, version] of Object.entries(dependencies)) {
 		const vuln = KNOWN_VULNERABILITIES[pkgName];
-		if (!vuln) continue;
+		if (!vuln) {
+			continue;
+		}
 
 		// Simple version check (in production, use semver library)
 		if (isVulnerableVersion(version, vuln.affectedVersions)) {
@@ -256,8 +258,12 @@ function compareVersions(a: string, b: string): number {
 		const aNum = aParts[i] || 0;
 		const bNum = bParts[i] || 0;
 
-		if (aNum < bNum) return -1;
-		if (aNum > bNum) return 1;
+		if (aNum < bNum) {
+			return -1;
+		}
+		if (aNum > bNum) {
+			return 1;
+		}
 	}
 
 	return 0;
@@ -270,7 +276,9 @@ function detectMajorVersionChanges(updates: DependencyChange[]): string[] {
 	const warnings: string[] = [];
 
 	for (const dep of updates) {
-		if (!dep.versionBefore || !dep.versionAfter) continue;
+		if (!dep.versionBefore || !dep.versionAfter) {
+			continue;
+		}
 
 		const majorBefore = extractMajorVersion(dep.versionBefore);
 		const majorAfter = extractMajorVersion(dep.versionAfter);

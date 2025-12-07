@@ -8,14 +8,10 @@
  * - User-friendly success/error pages
  */
 
-import { Hono } from "hono";
-import {
-  verifyUnsubscribeToken,
-  unsubscribe,
-  syncUnsubscribeToHubSpot,
-} from "../services/unsubscribe";
 import { logger } from "@snapback/infrastructure";
 import { toError } from "@snapback-oss/sdk";
+import { Hono } from "hono";
+import { syncUnsubscribeToHubSpot, verifyUnsubscribeToken } from "../services/unsubscribe";
 
 const emailRoutes = new Hono();
 
@@ -24,64 +20,58 @@ const emailRoutes = new Hono();
  * Handle unsubscribe token and process user request
  */
 emailRoutes.get("/unsubscribe", async (c) => {
-  try {
-    const token = c.req.query("token");
+	try {
+		const token = c.req.query("token");
 
-    if (!token) {
-      logger.warn("⚠️  Unsubscribe request missing token");
-      return c.html(errorPage("Missing token"));
-    }
+		if (!token) {
+			logger.warn("⚠️  Unsubscribe request missing token");
+			return c.html(errorPage("Missing token"));
+		}
 
-    const payload = verifyUnsubscribeToken(token);
-    if (!payload) {
-      logger.warn("⚠️  Invalid or expired unsubscribe token");
-      return c.html(errorPage("Invalid or expired link"));
-    }
+		const payload = verifyUnsubscribeToken(token);
+		if (!payload) {
+			logger.warn("⚠️  Invalid or expired unsubscribe token");
+			return c.html(errorPage("Invalid or expired link"));
+		}
 
-    try {
-      // TODO: Integrate with actual database instance
-      // const db = getDatabase();
-      // await unsubscribe(db, payload.userId, payload.category);
+		try {
+			// TODO: Integrate with actual database instance
+			// const db = getDatabase();
+			// await unsubscribe(db, payload.userId, payload.category);
 
-      // For now, we'll just log the unsubscribe
-      logger.info("✅ User unsubscribed", {
-        userId: payload.userId,
-        email: payload.email,
-        category: payload.category,
-      });
+			// For now, we'll just log the unsubscribe
+			logger.info("✅ User unsubscribed", {
+				userId: payload.userId,
+				email: payload.email,
+				category: payload.category,
+			});
 
-      // Sync with HubSpot
-      await syncUnsubscribeToHubSpot(payload.email, true);
+			// Sync with HubSpot
+			await syncUnsubscribeToHubSpot(payload.email, true);
 
-      return c.html(
-        successPage(payload.email, payload.category)
-      );
-    } catch (error) {
-      logger.error("❌ Unsubscribe processing failed", {
-        userId: payload.userId,
-        error: toError(error).message,
-      });
-      return c.html(
-        errorPage("Failed to process unsubscribe request")
-      );
-    }
-  } catch (error) {
-    logger.error("❌ Unsubscribe endpoint error", {
-      error: toError(error).message,
-    });
-    return c.html(errorPage("Something went wrong"));
-  }
+			return c.html(successPage(payload.email, payload.category));
+		} catch (error) {
+			logger.error("❌ Unsubscribe processing failed", {
+				userId: payload.userId,
+				error: toError(error).message,
+			});
+			return c.html(errorPage("Failed to process unsubscribe request"));
+		}
+	} catch (error) {
+		logger.error("❌ Unsubscribe endpoint error", {
+			error: toError(error).message,
+		});
+		return c.html(errorPage("Something went wrong"));
+	}
 });
 
 /**
  * Success page HTML
  */
 function successPage(email: string, category?: string): string {
-  const categoryText = category
-    ? `${category} email`
-    : "all marketing email";
+	const categoryText = category ? `${category} email` : "all marketing email";
 
-  return `<!DOCTYPE html>
+	return `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -176,7 +166,7 @@ function successPage(email: string, category?: string): string {
  * Error page HTML
  */
 function errorPage(message: string): string {
-  return `<!DOCTYPE html>
+	return `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">

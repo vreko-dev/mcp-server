@@ -1,6 +1,6 @@
-import { describe, expect, it, vi } from "vitest";
 import type { InstrumentationProvider, Span } from "@snapback/contracts";
 import { NoOpInstrumentationProvider, SpanStatusCode } from "@snapback/contracts";
+import { describe, expect, it, vi } from "vitest";
 
 /**
  * Test Suite: Telemetry Safety
@@ -16,21 +16,18 @@ describe("Telemetry Safety - Business Logic Resilience", () => {
 
 			// Simulate critical business operation
 			const createSnapshot = async (filePath: string): Promise<string> => {
-				return await provider.withSpan(
-					"snapshot.create",
-					async (span: Span) => {
-						span.setAttribute("file.path", filePath);
-						span.addEvent("validation.start");
+				return await provider.withSpan("snapshot.create", async (span: Span) => {
+					span.setAttribute("file.path", filePath);
+					span.addEvent("validation.start");
 
-						// Business logic
-						const snapshotId = "snap-123";
+					// Business logic
+					const snapshotId = "snap-123";
 
-						span.setAttribute("snapshot.id", snapshotId);
-						span.setStatus({ code: SpanStatusCode.OK });
+					span.setAttribute("snapshot.id", snapshotId);
+					span.setStatus({ code: SpanStatusCode.OK });
 
-						return snapshotId;
-					},
-				);
+					return snapshotId;
+				});
 			};
 
 			// Should succeed without instrumentation
@@ -42,15 +39,12 @@ describe("Telemetry Safety - Business Logic Resilience", () => {
 			const provider = new NoOpInstrumentationProvider();
 
 			const faultyOperation = async (): Promise<string> => {
-				return await provider.withSpan(
-					"faulty.operation",
-					async (span: Span) => {
-						span.setAttribute("test.key", "test.value");
+				return await provider.withSpan("faulty.operation", async (span: Span) => {
+					span.setAttribute("test.key", "test.value");
 
-						// Business logic throws
-						throw new Error("Business logic error");
-					},
-				);
+					// Business logic throws
+					throw new Error("Business logic error");
+				});
 			};
 
 			// Exception should propagate without instrumentation wrapping it
@@ -85,19 +79,16 @@ describe("Telemetry Safety - Business Logic Resilience", () => {
 
 			// Business logic should handle telemetry failures
 			const safeOperation = async (): Promise<string> => {
-				return await provider.withSpan(
-					"safe.operation",
-					async (span: Span) => {
-						try {
-							span.setAttribute("key", "value"); // This throws
-						} catch (error) {
-							// Ignore telemetry errors
-						}
+				return await provider.withSpan("safe.operation", async (span: Span) => {
+					try {
+						span.setAttribute("key", "value"); // This throws
+					} catch (_error) {
+						// Ignore telemetry errors
+					}
 
-						// Business logic continues
-						return "success";
-					},
-				);
+					// Business logic continues
+					return "success";
+				});
 			};
 
 			const result = await safeOperation();
@@ -167,20 +158,17 @@ describe("Telemetry Safety - Business Logic Resilience", () => {
 			const provider = new NoOpInstrumentationProvider();
 
 			const operationWithNetworkFailure = async (): Promise<string> => {
-				return await provider.withSpan(
-					"network.operation",
-					async (span: Span) => {
-						span.setAttribute("test", "value");
+				return await provider.withSpan("network.operation", async (span: Span) => {
+					span.setAttribute("test", "value");
 
-						// Simulate network-dependent business logic
-						const result = "success";
+					// Simulate network-dependent business logic
+					const result = "success";
 
-						// Telemetry export would fail here (network timeout)
-						// but business logic already succeeded
+					// Telemetry export would fail here (network timeout)
+					// but business logic already succeeded
 
-						return result;
-					},
-				);
+					return result;
+				});
 			};
 
 			const result = await operationWithNetworkFailure();
@@ -194,13 +182,10 @@ describe("Telemetry Safety - Business Logic Resilience", () => {
 			const provider = new NoOpInstrumentationProvider();
 
 			const operations = Array.from({ length: 10 }, (_, i) =>
-				provider.withSpan(
-					`operation.${i}`,
-					async (span: Span) => {
-						span.setAttribute("index", i);
-						return `result-${i}`;
-					},
-				),
+				provider.withSpan(`operation.${i}`, async (span: Span) => {
+					span.setAttribute("index", i);
+					return `result-${i}`;
+				}),
 			);
 
 			// All operations should succeed even if collector is down
@@ -258,35 +243,32 @@ describe("Telemetry Safety - Business Logic Resilience", () => {
 				filePath: string,
 				content: string,
 			): Promise<{ id: string; timestamp: number }> => {
-				return await provider.withSpan(
-					"snapshot.create",
-					async (span: Span) => {
-						// Try to add telemetry
-						try {
-							span.setAttribute("file.path", filePath);
-							span.setAttribute("content.size", content.length);
-							span.addEvent("validation.start");
-						} catch (error) {
-							// Ignore telemetry errors
-						}
+				return await provider.withSpan("snapshot.create", async (span: Span) => {
+					// Try to add telemetry
+					try {
+						span.setAttribute("file.path", filePath);
+						span.setAttribute("content.size", content.length);
+						span.addEvent("validation.start");
+					} catch (_error) {
+						// Ignore telemetry errors
+					}
 
-						// Business logic
-						const snapshot = {
-							id: "snap-123",
-							timestamp: Date.now(),
-						};
+					// Business logic
+					const snapshot = {
+						id: "snap-123",
+						timestamp: Date.now(),
+					};
 
-						// Try to add success telemetry
-						try {
-							span.setAttribute("snapshot.id", snapshot.id);
-							span.setStatus({ code: SpanStatusCode.OK });
-						} catch (error) {
-							// Ignore telemetry errors
-						}
+					// Try to add success telemetry
+					try {
+						span.setAttribute("snapshot.id", snapshot.id);
+						span.setStatus({ code: SpanStatusCode.OK });
+					} catch (_error) {
+						// Ignore telemetry errors
+					}
 
-						return snapshot;
-					},
-				);
+					return snapshot;
+				});
 			};
 
 			const result = await createSnapshot("/test/file.ts", "content");
@@ -302,40 +284,37 @@ describe("Telemetry Safety - Business Logic Resilience", () => {
 				headers: Record<string, string>,
 			): Promise<{ status: number; data: string }> => {
 				// Try to extract context
-				let context = null;
+				let _context = null;
 				try {
-					context = provider.extractContext(headers);
-				} catch (error) {
+					_context = provider.extractContext(headers);
+				} catch (_error) {
 					// Continue without trace context
 				}
 
 				// Business logic
-				return await provider.withSpan(
-					"api.request.handle",
-					async (span: Span) => {
-						try {
-							span.setAttribute("http.method", "POST");
-							span.setAttribute("http.route", "/api/snapshots");
-						} catch (error) {
-							// Ignore telemetry errors
-						}
+				return await provider.withSpan("api.request.handle", async (span: Span) => {
+					try {
+						span.setAttribute("http.method", "POST");
+						span.setAttribute("http.route", "/api/snapshots");
+					} catch (_error) {
+						// Ignore telemetry errors
+					}
 
-						// Process request
-						const response = {
-							status: 200,
-							data: "success",
-						};
+					// Process request
+					const response = {
+						status: 200,
+						data: "success",
+					};
 
-						try {
-							span.setAttribute("http.status_code", response.status);
-							span.setStatus({ code: SpanStatusCode.OK });
-						} catch (error) {
-							// Ignore telemetry errors
-						}
+					try {
+						span.setAttribute("http.status_code", response.status);
+						span.setStatus({ code: SpanStatusCode.OK });
+					} catch (_error) {
+						// Ignore telemetry errors
+					}
 
-						return response;
-					},
-				);
+					return response;
+				});
 			};
 
 			const result = await handleRequest({

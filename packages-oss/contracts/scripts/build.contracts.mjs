@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { execSync } from "node:child_process";
 
-const skip = process.env.SNAPBACK_OPENAPI_SKIP === "1";
+const _skip = process.env.SNAPBACK_OPENAPI_SKIP === "1";
 const skipGenerate = process.env.SNAPBACK_GENERATE_SKIP === "1";
 
 try {

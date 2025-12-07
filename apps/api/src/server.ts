@@ -1,19 +1,23 @@
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { OpenAPIGenerator } from "@orpc/openapi";
 import { ZodToJsonSchemaConverter } from "@orpc/zod/zod4";
 import { Scalar } from "@scalar/hono-api-reference";
 import { auth } from "@snapback/auth";
 import { config, getBaseUrl } from "@snapback/config";
-import { logger, NoOpInstrumentationProvider, OTelInstrumentationProvider } from "@snapback/infrastructure";
 import type { InstrumentationProvider } from "@snapback/contracts/observability";
+import {
+	logger,
+	NoOpInstrumentationProvider,
+	OTelInstrumentationProvider,
+} from "@snapback/infrastructure";
 import { webhookHandler as paymentsWebhookHandler } from "@snapback/integrations/stripe/provider/stripe";
 import type { Hono as HonoApp } from "hono";
 import { Hono } from "hono";
 import { bodyLimit } from "hono/body-limit";
 import { cors } from "hono/cors";
 import { logger as honoLogger } from "hono/logger";
-import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
-import { dirname, join } from "node:path";
 import { openApiHandler, rpcHandler } from "@/orpc/handler.js";
 import { router } from "@/orpc/router.js";
 import { handlePostHogWebhook } from "../modules/webhooks/posthog-handler";
@@ -30,7 +34,7 @@ import { testRoutes } from "./routes/test/index";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const packageJson = JSON.parse(
-	readFileSync(join(__dirname, "../../package.json"), "utf-8")
+	readFileSync(join(__dirname, "../../package.json"), "utf-8"),
 ) as { version: string };
 const SERVICE_VERSION = packageJson.version;
 
@@ -42,15 +46,18 @@ initSentryAPI({
 });
 
 // Initialize OpenTelemetry instrumentation
-const instrumentationProvider: InstrumentationProvider = process.env.OTEL_EXPORTER_OTLP_ENDPOINT
+const instrumentationProvider: InstrumentationProvider = process.env
+	.OTEL_EXPORTER_OTLP_ENDPOINT
 	? new OTelInstrumentationProvider({
 			serviceName: "snapback-api",
 			serviceVersion: SERVICE_VERSION,
 			environment: process.env.NODE_ENV || "development",
 			collectorUrl: process.env.OTEL_EXPORTER_OTLP_ENDPOINT,
 			enableConsole: process.env.NODE_ENV === "development",
-			sampleRate: process.env.OTEL_SAMPLE_RATE ? Number.parseFloat(process.env.OTEL_SAMPLE_RATE) : 1.0,
-	  })
+			sampleRate: process.env.OTEL_SAMPLE_RATE
+				? Number.parseFloat(process.env.OTEL_SAMPLE_RATE)
+				: 1.0,
+		})
 	: new NoOpInstrumentationProvider();
 
 logger.info("Instrumentation initialized", {
@@ -80,23 +87,23 @@ const authApp: HonoApp = new Hono()
 	// Add instrumentation to auth routes
 	.use("*", instrumentationMiddleware(instrumentationProvider))
 	.all("*", async (c) => {
-	// Rewrite request path for Better Auth
-	// /api/auth/** -> /auth/**
-	const originalUrl = new URL(c.req.raw.url);
-	const newPath = originalUrl.pathname.replace(/^\/(?:api\/)?/, "/");
-	const rewrittenUrl = new URL(originalUrl);
-	rewrittenUrl.pathname = newPath;
+		// Rewrite request path for Better Auth
+		// /api/auth/** -> /auth/**
+		const originalUrl = new URL(c.req.raw.url);
+		const newPath = originalUrl.pathname.replace(/^\/(?:api\/)?/, "/");
+		const rewrittenUrl = new URL(originalUrl);
+		rewrittenUrl.pathname = newPath;
 
-	// Create a new request with the rewritten URL
-	const rewrittenRequest = new Request(rewrittenUrl, {
-		method: c.req.raw.method,
-		headers: c.req.raw.headers,
-		body: c.req.raw.body,
-		duplex: "half" as any,
+		// Create a new request with the rewritten URL
+		const rewrittenRequest = new Request(rewrittenUrl, {
+			method: c.req.raw.method,
+			headers: c.req.raw.headers,
+			body: c.req.raw.body,
+			duplex: "half" as any,
+		});
+
+		return auth.handler(rewrittenRequest);
 	});
-
-	return auth.handler(rewrittenRequest);
-});
 
 // Initialize rate limit middleware
 const rateLimitMiddleware = await createRateLimitMiddleware();

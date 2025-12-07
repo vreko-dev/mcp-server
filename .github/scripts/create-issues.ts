@@ -1,5 +1,5 @@
-import * as fs from "fs";
-import * as path from "path";
+import * as fs from "node:fs";
+import * as path from "node:path";
 
 interface BiomeIssue {
 	filePath: string;
@@ -24,7 +24,7 @@ async function createIssuesFromQualityReports() {
 		return;
 	}
 
-	const [owner, repo] = (process.env.GITHUB_REPOSITORY || "").split("/");
+	const [_owner, _repo] = (process.env.GITHUB_REPOSITORY || "").split("/");
 
 	// Aggregate all warnings
 	const allWarnings: BiomeIssue[] = [];
@@ -66,7 +66,9 @@ async function createIssuesFromQualityReports() {
 	const groupedWarnings = allWarnings.reduce(
 		(acc, warning) => {
 			const key = warning.message.split(":")[0];
-			if (!acc[key]) acc[key] = [];
+			if (!acc[key]) {
+				acc[key] = [];
+			}
 			acc[key].push(warning);
 			return acc;
 		},

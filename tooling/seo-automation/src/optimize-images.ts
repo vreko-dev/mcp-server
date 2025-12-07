@@ -158,7 +158,9 @@ async function main() {
 	let altTextValid = true;
 	for (const file of contentFiles) {
 		const valid = await validateAltText(file);
-		if (!valid) altTextValid = false;
+		if (!valid) {
+			altTextValid = false;
+		}
 	}
 
 	if (altTextValid) {

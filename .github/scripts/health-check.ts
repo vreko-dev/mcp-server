@@ -1,4 +1,4 @@
-import { execSync } from "child_process";
+import { execSync } from "node:child_process";
 
 interface HealthCheck {
 	name: string;
@@ -45,7 +45,7 @@ async function runHealthChecks() {
 
 			console.log(`✅ ${check.name}`);
 			results.passed++;
-		} catch (error) {
+		} catch (_error) {
 			console.log(`⚠️  ${check.name} (check details above)`);
 			results.failed++;
 
@@ -55,7 +55,7 @@ async function runHealthChecks() {
 		}
 	}
 
-	console.log("\n" + "═".repeat(50));
+	console.log(`\n${"═".repeat(50)}`);
 	console.log(`\n📊 Results: ${results.passed}/${checks.length} passed`);
 
 	if (results.critical > 0) {

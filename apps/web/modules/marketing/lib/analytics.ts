@@ -26,7 +26,9 @@ export const analytics = {
 
 	// Track events via PostHog
 	track: (event: string, properties?: Record<string, unknown>) => {
-		if (typeof window === "undefined") return;
+		if (typeof window === "undefined") {
+			return;
+		}
 
 		// Track via PostHog (single source of truth)
 		posthog.capture?.(event, properties);

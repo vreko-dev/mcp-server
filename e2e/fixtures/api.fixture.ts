@@ -1,7 +1,7 @@
 import type { APIRequestContext } from "@playwright/test";
 
 export class ApiFixture {
-	constructor(private request: APIRequestContext) {}
+	constructor(_request: APIRequestContext) {}
 
 	async seedSnapshots(count: number) {
 		// Mock implementation or real API call

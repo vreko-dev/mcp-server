@@ -1,6 +1,6 @@
+import path from "node:path";
 import { defineConfig, devices } from "@playwright/test";
 import { createPlaywrightConfig } from "@snapback/playwright-config";
-import path from "path";
 
 // Absolute path to the extension root (relative from e2e/playwright.config.ts)
 const extensionPath = path.resolve(__dirname, "../apps/vscode");

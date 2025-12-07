@@ -109,7 +109,9 @@ class SessionClient {
 	 * Refresh session from API
 	 */
 	private async refreshSession(): Promise<void> {
-		if (this.isRefreshing) return;
+		if (this.isRefreshing) {
+			return;
+		}
 
 		this.isRefreshing = true;
 		this.notifyListeners();
@@ -288,7 +290,9 @@ class SessionClient {
 	 * Save session to localStorage
 	 */
 	private saveToCache(): void {
-		if (typeof window === "undefined") return;
+		if (typeof window === "undefined") {
+			return;
+		}
 
 		if (this.sessionData) {
 			try {
@@ -303,7 +307,9 @@ class SessionClient {
 	 * Load session from localStorage
 	 */
 	private loadFromCache(): SessionWithUser | null {
-		if (typeof window === "undefined") return null;
+		if (typeof window === "undefined") {
+			return null;
+		}
 
 		try {
 			const cached = localStorage.getItem(SESSION_KEY);
@@ -321,7 +327,9 @@ class SessionClient {
 	 * Clear cache
 	 */
 	private clearCache(): void {
-		if (typeof window === "undefined") return;
+		if (typeof window === "undefined") {
+			return;
+		}
 
 		try {
 			localStorage.removeItem(SESSION_KEY);

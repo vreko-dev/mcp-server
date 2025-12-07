@@ -158,24 +158,46 @@ function calculatePasswordStrength(password: string): "weak" | "medium" | "stron
 	let score = 0;
 
 	// Length scoring
-	if (password.length >= 12) score += 1;
-	if (password.length >= 16) score += 1;
-	if (password.length >= 20) score += 1;
+	if (password.length >= 12) {
+		score += 1;
+	}
+	if (password.length >= 16) {
+		score += 1;
+	}
+	if (password.length >= 20) {
+		score += 1;
+	}
 
 	// Complexity scoring
-	if (/[A-Z]/.test(password)) score += 1;
-	if (/[a-z]/.test(password)) score += 1;
-	if (/\d/.test(password)) score += 1;
-	if (/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~]/.test(password)) score += 1;
+	if (/[A-Z]/.test(password)) {
+		score += 1;
+	}
+	if (/[a-z]/.test(password)) {
+		score += 1;
+	}
+	if (/\d/.test(password)) {
+		score += 1;
+	}
+	if (/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~]/.test(password)) {
+		score += 1;
+	}
 
 	// Character variety scoring
 	const uniqueChars = new Set(password).size;
-	if (uniqueChars >= 10) score += 1;
-	if (uniqueChars >= 15) score += 1;
+	if (uniqueChars >= 10) {
+		score += 1;
+	}
+	if (uniqueChars >= 15) {
+		score += 1;
+	}
 
 	// Pattern detection (sequential chars reduce score)
-	if (/(.)\1{2,}/.test(password)) score -= 1; // Repeated characters
-	if (/012|123|234|345|456|567|678|789|890/.test(password)) score -= 1; // Sequential numbers
+	if (/(.)\1{2,}/.test(password)) {
+		score -= 1; // Repeated characters
+	}
+	if (/012|123|234|345|456|567|678|789|890/.test(password)) {
+		score -= 1; // Sequential numbers
+	}
 	if (
 		/abc|bcd|cde|def|efg|fgh|ghi|hij|ijk|jkl|klm|lmn|mno|nop|opq|pqr|qrs|rst|stu|tuv|uvw|vwx|wxy|xyz/i.test(
 			password,
@@ -185,8 +207,12 @@ function calculatePasswordStrength(password: string): "weak" | "medium" | "stron
 	}
 
 	// Strength classification
-	if (score >= 7) return "strong";
-	if (score >= 4) return "medium";
+	if (score >= 7) {
+		return "strong";
+	}
+	if (score >= 4) {
+		return "medium";
+	}
 	return "weak";
 }
 

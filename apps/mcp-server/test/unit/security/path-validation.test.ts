@@ -186,11 +186,11 @@ describe("Path Validation - Security Critical", () => {
 	});
 
 	describe("Security Violation Telemetry Logging", () => {
-		let trackSpy: ReturnType<typeof vi.fn>;
+		let _trackSpy: ReturnType<typeof vi.fn>;
 
 		beforeEach(() => {
 			// Mock telemetry tracking
-			trackSpy = vi.fn();
+			_trackSpy = vi.fn();
 			// Access internal telemetry client through module scope
 			// In real implementation, this would be exposed via a test helper
 		});
@@ -203,7 +203,7 @@ describe("Path Validation - Security Critical", () => {
 			// WHEN: Validation fails
 			try {
 				validateFilePath(maliciousPath, WORKSPACE_ROOT);
-			} catch (e) {
+			} catch (_e) {
 				// Expected to throw
 			}
 

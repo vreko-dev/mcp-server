@@ -215,7 +215,7 @@ describe("Turborepo Configuration - TDD", () => {
 			// GIVEN: Task pipeline
 			// build -> test -> docker-build -> deploy -> release
 
-			const buildTask = turboConfig.tasks?.build;
+			const _buildTask = turboConfig.tasks?.build;
 			const testTask = turboConfig.tasks?.test;
 			const dockerBuildTask = turboConfig.tasks?.["docker-build"];
 			const deployTask = turboConfig.tasks?.deploy;

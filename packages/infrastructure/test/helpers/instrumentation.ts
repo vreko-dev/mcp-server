@@ -4,9 +4,9 @@
  * Provides reusable test utilities for verifying distributed tracing behavior.
  */
 
-import { describe, expect, it, vi } from "vitest";
 import type { InstrumentationProvider, Span } from "@snapback/contracts/observability";
 import { NoOpInstrumentationProvider } from "@snapback/contracts/observability";
+import { expect, vi } from "vitest";
 import { OTelInstrumentationProvider } from "../../src/tracing/otel-provider";
 
 /**
@@ -15,9 +15,7 @@ import { OTelInstrumentationProvider } from "../../src/tracing/otel-provider";
  * @param type - Provider type: "real" for OTel, "noop" for no-op
  * @returns InstrumentationProvider instance
  */
-export function createTestProvider(
-	type: "real" | "noop" = "real",
-): InstrumentationProvider {
+export function createTestProvider(type: "real" | "noop" = "real"): InstrumentationProvider {
 	if (type === "noop") {
 		return new NoOpInstrumentationProvider();
 	}
@@ -98,10 +96,7 @@ export function expectDifferentSpanId(parent: string, child: string): void {
  * @param span - Mock span object
  * @param expectedAttributes - Expected attributes
  */
-export function expectSpanAttributes(
-	span: Span,
-	expectedAttributes: Record<string, string | number | boolean>,
-): void {
+export function expectSpanAttributes(span: Span, expectedAttributes: Record<string, string | number | boolean>): void {
 	for (const [key, value] of Object.entries(expectedAttributes)) {
 		expect(span.setAttribute).toHaveBeenCalledWith(key, value);
 	}
@@ -114,18 +109,11 @@ export function expectSpanAttributes(
  * @param eventName - Expected event name
  * @param attributes - Optional expected attributes
  */
-export function expectSpanEvent(
-	span: Span,
-	eventName: string,
-	attributes?: Record<string, unknown>,
-): void {
+export function expectSpanEvent(span: Span, eventName: string, attributes?: Record<string, unknown>): void {
 	if (attributes) {
 		expect(span.addEvent).toHaveBeenCalledWith(eventName, attributes);
 	} else {
-		expect(span.addEvent).toHaveBeenCalledWith(
-			eventName,
-			expect.anything(),
-		);
+		expect(span.addEvent).toHaveBeenCalledWith(eventName, expect.anything());
 	}
 }
 
@@ -161,8 +149,6 @@ export async function waitForSpanExport(ms = 100): Promise<void> {
  *
  * @param providers - Array of providers to shutdown
  */
-export async function shutdownProviders(
-	...providers: InstrumentationProvider[]
-): Promise<void> {
+export async function shutdownProviders(...providers: InstrumentationProvider[]): Promise<void> {
 	await Promise.all(providers.map((p) => p.shutdown()));
 }

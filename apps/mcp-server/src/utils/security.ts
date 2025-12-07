@@ -165,7 +165,7 @@ export function validateFilePath(filePath: string, workspaceRoot: string): strin
 			const error = _error as Error;
 
 			// Handle circular symlinks (ELOOP error)
-			if (error.message && error.message.includes("ELOOP")) {
+			if (error.message?.includes("ELOOP")) {
 				const violationDetails = {
 					filePath: absolutePath.substring(0, 100),
 					reason: "circular_symlink",

@@ -32,7 +32,9 @@ export function NPSSurvey({ userId, onDismiss }: NPSSurveyProps) {
 	};
 
 	const handleSubmit = async () => {
-		if (score === null) return;
+		if (score === null) {
+			return;
+		}
 
 		setIsSubmitting(true);
 

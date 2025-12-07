@@ -19,9 +19,15 @@ export function TimelineTrack({
 		const currentIndex = states.indexOf(currentId);
 		const nodeIndex = states.indexOf(nodeId);
 
-		if (nodeId === "restored" && currentId === "restored") return "restored";
-		if (nodeId === currentId && currentId === "break") return "danger";
-		if (nodeIndex <= currentIndex) return "active";
+		if (nodeId === "restored" && currentId === "restored") {
+			return "restored";
+		}
+		if (nodeId === currentId && currentId === "break") {
+			return "danger";
+		}
+		if (nodeIndex <= currentIndex) {
+			return "active";
+		}
 		return "inactive";
 	};
 

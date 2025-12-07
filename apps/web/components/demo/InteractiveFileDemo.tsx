@@ -32,7 +32,9 @@ export function InteractiveFileDemo() {
 	}, []);
 
 	const playDemo = async () => {
-		if (isAnimating) return;
+		if (isAnimating) {
+			return;
+		}
 		setIsAnimating(true);
 
 		// Step 1: Show AI editing

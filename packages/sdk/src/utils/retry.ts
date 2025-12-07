@@ -22,7 +22,9 @@ export const RetryPresets = {
  */
 export function calculateBackoff(attempt: number, base = 100, max = 5000, jitter = true): number {
 	const delay = Math.min(base * 2 ** attempt, max);
-	if (!jitter) return delay;
+	if (!jitter) {
+		return delay;
+	}
 	// Add jitter (0-20%)
 	return delay * (1 + Math.random() * 0.2);
 }
@@ -39,7 +41,9 @@ export async function withRetry<T>(fn: () => Promise<T>, options: RetryOptions =
 			return await fn();
 		} catch (error) {
 			lastError = error;
-			if (attempt === maxRetries) break;
+			if (attempt === maxRetries) {
+				break;
+			}
 
 			if (onRetry) {
 				onRetry(attempt + 1, error);

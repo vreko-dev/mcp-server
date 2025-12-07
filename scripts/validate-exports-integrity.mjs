@@ -10,9 +10,9 @@
  * Runs as a Turbo task before build to catch cross-package import issues.
  */
 
-import fs from "fs";
+import fs from "node:fs";
+import path from "node:path";
 import { globSync } from "glob";
-import path from "path";
 
 const WORKSPACE_ROOT = process.cwd();
 const PACKAGES_DIR = path.join(WORKSPACE_ROOT, "packages");
@@ -34,7 +34,7 @@ console.log("🔍 Scanning publishConfig for filtered exports...\n");
 for (const pkgJsonPath of packageJsonFiles) {
 	const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, "utf-8"));
 	const pkgName = pkgJson.name;
-	const pkgDir = path.dirname(pkgJsonPath);
+	const _pkgDir = path.dirname(pkgJsonPath);
 
 	if (!pkgJson.publishConfig?.exports) {
 		continue;

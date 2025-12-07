@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
-import { logger } from "@snapback/infrastructure";
 import type { Span } from "@snapback/contracts";
 import { SemanticConventions } from "@snapback/contracts/observability";
+import { logger } from "@snapback/infrastructure";
 import type { Context, Next } from "hono";
 
 /**

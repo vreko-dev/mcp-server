@@ -204,7 +204,9 @@ export function getFooterRoutes(): RouteGroup[] {
 export function getRouteByPath(path: string): SiteRoute | undefined {
 	for (const group of siteMap) {
 		const route = group.routes.find((r) => r.path === path);
-		if (route) return route;
+		if (route) {
+			return route;
+		}
 	}
 	return undefined;
 }

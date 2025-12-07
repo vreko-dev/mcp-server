@@ -388,7 +388,9 @@ export function isOrganizationAdmin(
 	organization?: { members: Array<{ userId: string; role?: string }> } | null,
 	user?: { id: string; role?: string | null } | null,
 ): boolean {
-	if (!organization || !user) return false;
+	if (!organization || !user) {
+		return false;
+	}
 	const member = organization.members.find((m) => m.userId === user.id);
 	return ["owner", "admin"].includes(member?.role ?? "") || user.role === "admin";
 }

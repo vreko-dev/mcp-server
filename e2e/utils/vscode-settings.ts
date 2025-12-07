@@ -1,6 +1,6 @@
 // e2e/utils/vscode-settings.ts
-import * as fs from "fs";
-import * as path from "path";
+import * as fs from "node:fs";
+import * as path from "node:path";
 
 /**
  * Path to the test workspace settings.
@@ -62,7 +62,9 @@ export function ensureTestModeEnabled(): void {
  * Cleans up test mode setting after tests.
  */
 export function disableTestMode(): void {
-	if (!fs.existsSync(SETTINGS_PATH)) return;
+	if (!fs.existsSync(SETTINGS_PATH)) {
+		return;
+	}
 
 	const content = fs.readFileSync(SETTINGS_PATH, "utf-8");
 	const settings = JSON.parse(content);

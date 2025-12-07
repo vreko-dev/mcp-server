@@ -60,12 +60,7 @@ console.log("🔎 Scanning source code for unconditional imports...\n");
 const sourceFiles = [
 	...globSync(path.join(PACKAGES_DIR, "**/src/**/*.{ts,tsx}")),
 	...globSync(path.join(APPS_DIR, "/**/src/**/*.{ts,tsx}")),
-].filter(
-	(file) =>
-		!file.includes("node_modules") &&
-		!file.includes(".next") &&
-		!file.includes("dist")
-);
+].filter((file) => !file.includes("node_modules") && !file.includes(".next") && !file.includes("dist"));
 
 const violations = [];
 
@@ -80,24 +75,17 @@ for (const filePath of sourceFiles) {
 			const unconditionalPatterns = [
 				// import { x } from '@pkg/filtered'
 				new RegExp(
-					`import\\s+[^;]*from\\s+['"]${pkgName.replace(
-						/\//g,
-						"\\/"
-					)}${
-						filteredPath.replace(/\//g, "\\/")[0] === "/"
-							? filteredPath.replace(/\//g, "\\/")
-							: ""
+					`import\\s+[^;]*from\\s+['"]${pkgName.replace(/\//g, "\\/")}${
+						filteredPath.replace(/\//g, "\\/")[0] === "/" ? filteredPath.replace(/\//g, "\\/") : ""
 					}['"];`,
-					"g"
+					"g",
 				),
 				// require('@pkg/filtered')
 				new RegExp(
 					`require\\s*\\(\\s*['"]${pkgName.replace(/\//g, "\\/")}${
-						filteredPath.replace(/\//g, "\\/")[0] === "/"
-							? filteredPath.replace(/\//g, "\\/")
-							: ""
+						filteredPath.replace(/\//g, "\\/")[0] === "/" ? filteredPath.replace(/\//g, "\\/") : ""
 					}['"]\\s*\\)`,
-					"g"
+					"g",
 				),
 			];
 
@@ -106,14 +94,11 @@ for (const filePath of sourceFiles) {
 				if (matches) {
 					// Check if import is guarded
 					const lines = content.split("\n");
-					const lineIndex = lines.findIndex((line) =>
-						pattern.test(line)
-					);
+					const lineIndex = lines.findIndex((line) => pattern.test(line));
 
 					if (lineIndex > -1) {
 						const line = lines[lineIndex];
-						const prevLine =
-							lineIndex > 0 ? lines[lineIndex - 1] : "";
+						const prevLine = lineIndex > 0 ? lines[lineIndex - 1] : "";
 
 						// Check for guards: typeof window, if statement, try-catch
 						const isGuarded =
@@ -143,21 +128,15 @@ if (violations.length > 0) {
 	console.error(`\n❌ Found ${violations.length} violation(s):\n`);
 
 	for (const violation of violations) {
-		console.error(
-			`  📍 ${violation.file}:${violation.line}\n     ${violation.message}\n`
-		);
+		console.error(`  📍 ${violation.file}:${violation.line}\n     ${violation.message}\n`);
 	}
 
 	console.error("\n💡 Fix: Guard the import with environment checks:");
-	console.error(
-		'   if (typeof window === "undefined") { require("@pkg/filtered") }'
-	);
+	console.error('   if (typeof window === "undefined") { require("@pkg/filtered") }');
 	console.error("");
 
 	process.exit(1);
 } else {
-	console.log(
-		`✅ All ${publishedExports.size} filtered exports are properly guarded\n`
-	);
+	console.log(`✅ All ${publishedExports.size} filtered exports are properly guarded\n`);
 	process.exit(0);
 }

@@ -1,5 +1,6 @@
 "use client";
-import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import type React from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 export type Tier = "all" | "free" | "pro" | "team" | "enterprise";
 const rank: Record<Exclude<Tier, "all">, number> = { free: 0, pro: 1, team: 2, enterprise: 3 };

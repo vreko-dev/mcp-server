@@ -1,6 +1,5 @@
 import { withThemeByClassName } from "@storybook/addon-themes";
 import type { Preview } from "@storybook/react";
-import React from "react";
 
 // Import global styles - adjust path if needed
 import "../app/globals.css";

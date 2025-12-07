@@ -15,6 +15,11 @@
 			],
 			"outputs": ["reports/infrastructure-validation/**"]
 		},
+		"validate:exports": {
+			"cache": false,
+			"inputs": ["**/package.json", "**/src/**/*.ts", "**/src/**/*.tsx", "apps/**/!(node_modules)/**/*.ts", "apps/**/!(node_modules)/**/*.tsx"],
+			"outputs": []
+		},
 		"quality": {
 			"cache": false,
 			"outputs": ["reports/quality/**"],
@@ -30,7 +35,7 @@
 			"inputs": ["apps/vscode/package.base.json", "apps/vscode/package-contributes/**"]
 		},
 		"build": {
-			"dependsOn": ["validate:infrastructure", "build:package", "^generate", "^build"],
+			"dependsOn": ["validate:infrastructure", "validate:exports", "build:package", "^generate", "^build"],
 			"outputs": ["dist/**", "*.tsbuildinfo", ".next/**", "!.next/cache/**", "out/**"],
 			"inputs": [
 				"$TURBO_DEFAULT$",

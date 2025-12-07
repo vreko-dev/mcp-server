@@ -144,6 +144,7 @@
     "type-check:all": "turbo run type-check",
     "type-check:tsc": "tsc --build --force",
     "validate": "tsx scripts/validate-project.ts",
+    "validate:exports": "node scripts/validate-exports-integrity.mjs",
     "validate:infrastructure": "tsx scripts/validate-infrastructure.ts",
     "validate:oss": "node scripts/validate-oss-builds.js",
     "validate:publish": "node scripts/validate-publish-no-ip-leak.mjs",

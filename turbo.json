@@ -1,6 +1,13 @@
 {
 	"$schema": "https://turbo.build/schema.json",
-	"globalDependencies": ["**/.env.*local", "biome.json", "tsconfig.json", "tsup.config.ts"],
+	"globalDependencies": [
+		"**/.env.*local",
+		"biome.json",
+		"tsconfig.json",
+		"tsup.config.ts",
+		"apps/web/next.config.mjs",
+		"apps/docs/next.config.mjs"
+	],
 	"globalEnv": ["DATABASE_URL", "REDIS_URL", "BETTER_AUTH_URL"],
 	"globalPassThroughEnv": ["NODE_OPTIONS", "CI", "VERCEL", "DOCKER_BUILDKIT", "COMPOSE_DOCKER_CLI_BUILD"],
 	"tasks": {
@@ -52,9 +59,23 @@
 		},
 		"test": {
 			"dependsOn": ["^build"],
-			"inputs": ["$TURBO_DEFAULT$", "**/*.test.ts", "**/*.spec.ts", "vitest.config.ts"],
+			"inputs": [
+				"src/**/*.tsx",
+				"src/**/*.ts",
+				"test/**/*.ts",
+				"vitest.config.ts"
+			],
 			"outputs": ["coverage/**"],
 			"cache": true
+		},
+		"test:e2e": {
+			"dependsOn": ["^build"],
+			"inputs": [
+				"e2e/**/*",
+				"playwright.config.ts"
+			],
+			"outputs": ["playwright-report/**"],
+			"cache": false
 		},
 		"test:coverage": {
 			"dependsOn": ["^build"],

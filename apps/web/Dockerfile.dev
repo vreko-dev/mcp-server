@@ -75,8 +75,8 @@ RUN chown -R nextjs:nodejs /app
 # Switch to non-root user
 USER nextjs
 
-# Generate Prisma client (required before development)
-RUN pnpm --filter database run generate
+# Generate Prisma client and build workspace packages
+RUN pnpm --filter @snapback/platform run generate
 
 # Set development environment
 ENV NODE_ENV=development

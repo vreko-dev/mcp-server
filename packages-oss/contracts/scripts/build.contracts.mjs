@@ -7,16 +7,8 @@ const skipGenerate = process.env.SNAPBACK_GENERATE_SKIP === "1";
 try {
 	execSync("pnpm -s tsc -p tsconfig.json", { stdio: "inherit" });
 
-	if (skip) {
-		console.log("[contracts] OpenAPI skipped (SNAPBACK_OPENAPI_SKIP=1)");
-	} else {
-		try {
-			execSync("pnpm -s run openapi", { stdio: "inherit" });
-		} catch {
-			console.error("[contracts] OpenAPI generation failed; set SNAPBACK_OPENAPI_SKIP=1");
-			process.exit(2);
-		}
-	}
+	// OpenAPI generation skipped for OSS package
+	// if (skip) { ... }
 
 	// Run type generation AFTER build completes
 	if (skipGenerate) {

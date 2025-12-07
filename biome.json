@@ -70,7 +70,7 @@
 			"trailingCommas": "all",
 			"semicolons": "always"
 		},
-		"jsxRuntime": "reactClassic"
+		"jsxRuntime": "transparent"
 	},
 	"css": {
 		"formatter": {

@@ -1,4 +1,5 @@
 "use client";
+import { authClient } from "@snapback/auth/client";
 import { useSession } from "@saas/auth/hooks/use-session";
 import { useUserAccountsQuery } from "@saas/auth/lib/api";
 import { SettingsItem } from "@saas/shared/components/SettingsItem";
@@ -50,9 +51,7 @@ export function TwoFactorBlock() {
 	const enableTwoFactorMutation = useMutation({
 		mutationKey: ["enableTwoFactor"],
 		mutationFn: async () => {
-			// TODO: Replace with actual auth client when backend is ready
-			// const { data, error } = await authClient.twoFactor.enable({ password });
-			const { data, error } = { data: { totpURI: "" }, error: null };
+			const { data, error } = await authClient.twoFactor.enable({ password });
 
 			if (error) {
 				throw error;
@@ -70,9 +69,7 @@ export function TwoFactorBlock() {
 	const disableTwoFactorMutation = useMutation({
 		mutationKey: ["disableTwoFactor"],
 		mutationFn: async () => {
-			// TODO: Replace with actual auth client when backend is ready
-			// const { error } = await authClient.twoFactor.disable({ password });
-			const { error } = { error: null };
+			const { error } = await authClient.twoFactor.disable({ password });
 
 			if (error) {
 				throw error;
@@ -93,9 +90,7 @@ export function TwoFactorBlock() {
 	const verifyTwoFactorMutation = useMutation({
 		mutationKey: ["verifyTwoFactor"],
 		mutationFn: async () => {
-			// TODO: Replace with actual auth client when backend is ready
-			// const { error } = await authClient.twoFactor.verifyTotp({ code: totpCode });
-			const { error } = { error: null };
+			const { error } = await authClient.twoFactor.verifyTotp({ code: totpCode });
 
 			if (error) {
 				throw error;

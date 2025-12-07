@@ -12,13 +12,13 @@ import type { StorageAdapter } from "./StorageAdapter";
  * - Ensure all operations are queued through the broker's single-writer discipline
  */
 export declare class StorageBrokerAdapter implements StorageAdapter {
-	private broker;
-	constructor(dbPath: string);
-	initialize(): Promise<void>;
-	save(snapshot: Snapshot, contentHash?: string): Promise<void>;
-	get(id: string): Promise<Snapshot | null>;
-	list(filters?: SnapshotFilters): Promise<Snapshot[]>;
-	delete(id: string): Promise<void>;
-	close(): Promise<void>;
+    private broker;
+    constructor(dbPath: string);
+    initialize(): Promise<void>;
+    save(snapshot: Snapshot, contentHash?: string): Promise<void>;
+    get(id: string): Promise<Snapshot | null>;
+    list(filters?: SnapshotFilters): Promise<Snapshot[]>;
+    delete(id: string): Promise<void>;
+    close(): Promise<void>;
 }
 //# sourceMappingURL=StorageBrokerAdapter.d.ts.map

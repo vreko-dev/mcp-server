@@ -1,5 +1,6 @@
 "use client";
 
+import { authClient } from "@snapback/auth/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { OrganizationRoleSelect } from "@saas/organizations/components/OrganizationRoleSelect";
 import { fullOrganizationQueryKey } from "@saas/organizations/lib/api";
@@ -31,14 +32,17 @@ export function InviteMemberForm({ organizationId }: { organizationId: string })
 		},
 	});
 
-	const onSubmit: SubmitHandler<FormValues> = async (_values) => {
+	const onSubmit: SubmitHandler<FormValues> = async (values) => {
 		try {
-			// TODO: Replace with actual auth client when backend is ready
-			// const { error } = await authClient.organization.inviteMember({ ...values, organizationId });
-			const { error } = { error: null };
+			const { error } = await authClient.organization.inviteMember({
+				email: values.email,
+				role: values.role,
+				organizationId,
+			});
 
 			if (error) {
-				throw error;
+				toast.error(error.message || "Failed to invite member");
+				return;
 			}
 
 			form.reset();
@@ -48,8 +52,9 @@ export function InviteMemberForm({ organizationId }: { organizationId: string })
 			});
 
 			toast.success("Member invited successfully");
-		} catch {
-			toast.error("Failed to invite member");
+		} catch (error) {
+			const message = error instanceof Error ? error.message : "Failed to invite member";
+			toast.error(message);
 		}
 	};
 

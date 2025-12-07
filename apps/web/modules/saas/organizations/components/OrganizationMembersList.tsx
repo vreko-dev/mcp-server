@@ -1,4 +1,5 @@
 "use client";
+import { authClient } from "@snapback/auth/client";
 import { useSession } from "@saas/auth/hooks/use-session";
 import { useOrganizationMemberRoles } from "@saas/organizations/hooks/member-roles";
 import { fullOrganizationQueryKey, useFullOrganizationQuery } from "@saas/organizations/lib/api";
@@ -32,43 +33,52 @@ export function OrganizationMembersList({ organizationId }: { organizationId: st
 
 	const userIsOrganizationAdmin = isOrganizationAdmin(organization, user);
 
-	const updateMemberRole = async (_memberId: string, _role: string) => {
+	const updateMemberRole = async (memberId: string, role: string) => {
 		toast.promise(
-			async () => {
-				// TODO: Replace with actual auth client when backend is ready
-				// await authClient.organization.updateMemberRole({ memberId, role, organizationId });
-				await Promise.resolve();
-			},
+			(async () => {
+				const { error } = await authClient.organization.updateMemberRole({
+					memberId,
+					role: role as "owner" | "admin" | "member",
+					organizationId,
+				});
+
+				if (error) {
+					throw new Error(error.message || "Failed to update role");
+				}
+
+				queryClient.invalidateQueries({
+					queryKey: fullOrganizationQueryKey(organizationId),
+				});
+			})()
+,
 			{
 				loading: "Updating member role...",
-				success: () => {
-					queryClient.invalidateQueries({
-						queryKey: fullOrganizationQueryKey(organizationId),
-					});
-
-					return "Member role updated successfully";
-				},
+				success: "Member role updated successfully",
 				error: "Failed to update member role",
 			},
 		);
 	};
 
-	const removeMember = async (_memberId: string) => {
+	const removeMember = (memberId: string) => {
 		toast.promise(
-			async () => {
-				// TODO: Replace with actual auth client when backend is ready
-				// await authClient.organization.removeMember({ memberIdOrEmail: memberId, organizationId });
-				await Promise.resolve();
-			},
+			(async () => {
+				const { error } = await authClient.organization.removeMember({
+					memberIdOrEmail: memberId,
+					organizationId,
+				});
+
+				if (error) {
+					throw new Error(error.message || "Failed to remove member");
+				}
+
+				queryClient.invalidateQueries({
+					queryKey: fullOrganizationQueryKey(organizationId),
+				});
+			})()
+,
 			{
 				loading: "Removing member...",
-				success: () => {
-					queryClient.invalidateQueries({
-						queryKey: fullOrganizationQueryKey(organizationId),
-					});
-
-					return "Member removed successfully";
-				},
+				success: "Member removed successfully",
 				error: "Failed to remove member",
 			},
 		);

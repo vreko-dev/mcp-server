@@ -1,4 +1,5 @@
 "use client";
+import { authClient } from "@snapback/auth/client";
 import { useSession } from "@saas/auth/hooks/use-session";
 import { SettingsItem } from "@saas/shared/components/SettingsItem";
 import { Button } from "@ui/components/button";
@@ -16,10 +17,17 @@ export function SetPasswordForm() {
 
 		setSubmitting(true);
 
-		// TODO: Replace with actual auth client when backend is ready
-		// await authClient.forgetPassword({ email: user.email, redirectTo: `${window.location.origin}/auth/reset-password` }, { onSuccess: ..., onError: ..., onResponse: ... });
-		toast.success("Password reset email sent successfully");
-		setSubmitting(false);
+		try {
+			await authClient.forgetPassword({
+				email: user.email,
+				redirectTo: `${window.location.origin}/auth/reset-password`,
+			});
+			toast.success("Password reset email sent successfully");
+		} catch (error) {
+			toast.error("Failed to send password reset email. Please try again.");
+		} finally {
+			setSubmitting(false);
+		}
 	};
 
 	return (

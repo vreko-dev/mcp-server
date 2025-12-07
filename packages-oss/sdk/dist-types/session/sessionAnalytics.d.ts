@@ -16,18 +16,18 @@ import type { SessionChange } from "@snapback-oss/contracts/session";
  * Session analytics metadata for SESSION_STARTED
  */
 export interface SessionStartedMeta {
-	changeCount: 0;
-	durationMs?: number;
-	tier: "free" | "solo";
+    changeCount: 0;
+    durationMs?: number;
+    tier: "free" | "solo";
 }
 /**
  * Session analytics metadata for SESSION_FINALIZED
  */
 export interface SessionFinalizedMeta {
-	changeCount: number;
-	durationMs: number;
-	tier: "free" | "solo";
-	ext_counts?: Record<string, number>;
+    changeCount: number;
+    durationMs: number;
+    tier: "free" | "solo";
+    ext_counts?: Record<string, number>;
 }
 /**
  * Create privacy-safe SESSION_STARTED event
@@ -46,11 +46,5 @@ export declare function makeSafeSessionStartedEvent(tier: "free" | "solo"): Sess
  * @param changes - File changes (used only for extension histogram if consent granted)
  * @returns Safe analytics event metadata
  */
-export declare function makeSafeSessionFinalizedEvent(
-	changeCount: number,
-	durationMs: number,
-	tier: "free" | "solo",
-	consent: boolean,
-	changes?: SessionChange[],
-): SessionFinalizedMeta;
+export declare function makeSafeSessionFinalizedEvent(changeCount: number, durationMs: number, tier: "free" | "solo", consent: boolean, changes?: SessionChange[]): SessionFinalizedMeta;
 //# sourceMappingURL=sessionAnalytics.d.ts.map

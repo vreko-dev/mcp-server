@@ -2,13 +2,28 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Turnstile } from "@marsidev/react-turnstile";
+import { authClient } from "@snapback/auth/client";
 import { useAuthErrorMessages } from "@saas/auth/hooks/errors-messages";
 import { OrganizationInvitationAlert } from "@saas/organizations/components/OrganizationInvitationAlert";
 import { Alert, AlertDescription, AlertTitle } from "@ui/components/alert";
 import { Button } from "@ui/components/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@ui/components/form";
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from "@ui/components/form";
 import { Input } from "@ui/components/input";
-import { AlertTriangleIcon, ArrowRightIcon, EyeIcon, EyeOffIcon, MailboxIcon, ShieldAlertIcon } from "lucide-react";
+import {
+	AlertTriangleIcon,
+	ArrowRightIcon,
+	EyeIcon,
+	EyeOffIcon,
+	MailboxIcon,
+	ShieldAlertIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
@@ -16,21 +31,17 @@ import { useForm } from "react-hook-form";
 import { withQuery } from "ufo";
 import { z } from "zod";
 import { authConfig } from "../config";
-import { type OAuthProvider, oAuthProviders } from "../constants/oauth-providers";
-import { DeviceFingerprint } from "./DeviceFingerprint";
+import {
+	type OAuthProvider,
+	oAuthProviders,
+} from "../constants/oauth-providers";
 import { SocialSigninButton } from "./SocialSigninButton";
 
 const formSchema = z.object({
 	email: z.string().email(),
-	name: z.string().min(1),
-	password: z.string(),
+	name: z.string().min(1, "Name is required"),
+	password: z.string().min(1, "Password is required"),
 });
-
-interface AuthError {
-	code?: string;
-	message?: string;
-	error?: string;
-}
 
 export function SignupForm({ prefillEmail }: { prefillEmail?: string }) {
 	const router = useRouter();
@@ -60,60 +71,33 @@ export function SignupForm({ prefillEmail }: { prefillEmail?: string }) {
 		? `/organization-invitation/${invitationId}`
 		: (redirectTo ?? authConfig.redirectAfterSignIn);
 
-	const [fingerprint, setFingerprint] = useState<string | undefined>();
-
 	const onSubmit = form.handleSubmit(async ({ email, password, name }) => {
 		try {
-			// Send Turnstile token via header (not body) for security
-			const headers: HeadersInit = {
-				"Content-Type": "application/json",
-			};
-			if (turnstileToken) {
-				headers["X-Turnstile-Token"] = turnstileToken;
-			}
-
-			const endpoint = authConfig.enablePasswordLogin
-				? "/api/auth/sign-up/email"
-				: "/api/auth/sign-in/magic-link";
-
-			const body = authConfig.enablePasswordLogin
-				? {
-						email,
-						password,
-						name,
-						callbackURL: redirectPath,
-						deviceFingerprint: fingerprint,
-					}
-				: {
-						email,
-						name,
-						callbackURL: redirectPath,
-						deviceFingerprint: fingerprint,
-					};
-
-			const response = await fetch(endpoint, {
-				method: "POST",
-				headers,
-				credentials: "include",
-				body: JSON.stringify(body),
+			// Use Better Auth client for email/password sign-up
+			const { data, error } = await authClient.signUp.email({
+				email,
+				password,
+				name,
+				callbackURL: redirectPath,
+				// Note: Turnstile token handling via headers is handled by Better Auth middleware
 			});
 
-			const data = (await response.json()) as AuthError;
-
 			// Check if backend requires Turnstile challenge
-			if (!response.ok && data.code === "CHALLENGE_REQUIRED") {
+			if (error && (error as any).code === "CHALLENGE_REQUIRED") {
 				setShowCaptcha(true);
 				form.setError("root", {
-					message: "Security verification required. Please complete the challenge below.",
+					message:
+						"Security verification required. Please complete the challenge below.",
 				});
 				return;
 			}
 
-			if (!response.ok) {
-				throw new Error(data.message || data.error || "Sign up failed");
+			if (error) {
+				throw new Error((error as any).message || "Sign up failed");
 			}
 
-			if (invitationOnlyMode) {
+			// Handle organization invitation if present
+			if (invitationOnlyMode && data) {
 				try {
 					// TODO: Replace with actual auth client when backend is ready
 					// const { error } = await authClient.organization.acceptInvitation({ invitationId });
@@ -127,16 +111,19 @@ export function SignupForm({ prefillEmail }: { prefillEmail?: string }) {
 				} catch (e) {
 					form.setError("root", {
 						message: getAuthErrorMessage(
-							e && typeof e === "object" && "code" in e ? (e.code as string) : undefined,
+							e && typeof e === "object" && "code" in e
+								? (e.code as string)
+								: undefined,
 						),
 					});
 				}
-				router.push(authConfig.redirectAfterSignIn);
 			}
 		} catch (e) {
 			form.setError("root", {
 				message: getAuthErrorMessage(
-					e && typeof e === "object" && "code" in e ? (e.code as string) : undefined,
+					e && typeof e === "object" && "code" in e
+						? (e.code as string)
+						: undefined,
 				),
 			});
 		}
@@ -144,9 +131,10 @@ export function SignupForm({ prefillEmail }: { prefillEmail?: string }) {
 
 	return (
 		<div>
-			<DeviceFingerprint onFingerprint={setFingerprint} />
 			<h1 className="font-bold text-xl md:text-2xl">Create your account</h1>
-			<p className="mt-1 mb-6 text-foreground/60">Get started with your free account today.</p>
+			<p className="mt-1 mb-6 text-foreground/60">
+				Get started with your free account today.
+			</p>
 
 			{form.formState.isSubmitSuccessful && !invitationOnlyMode ? (
 				<Alert variant="success">
@@ -158,11 +146,16 @@ export function SignupForm({ prefillEmail }: { prefillEmail?: string }) {
 					{invitationId && <OrganizationInvitationAlert className="mb-6" />}
 
 					<Form {...form}>
-						<form className="flex flex-col items-stretch gap-4" onSubmit={onSubmit}>
+						<form
+							className="flex flex-col items-stretch gap-4"
+							onSubmit={onSubmit}
+						>
 							{form.formState.isSubmitted && form.formState.errors.root && (
 								<Alert variant="error">
 									<AlertTriangleIcon />
-									<AlertDescription>{form.formState.errors.root.message}</AlertDescription>
+									<AlertDescription>
+										{form.formState.errors.root.message}
+									</AlertDescription>
 								</Alert>
 							)}
 
@@ -187,7 +180,11 @@ export function SignupForm({ prefillEmail }: { prefillEmail?: string }) {
 									<FormItem>
 										<FormLabel>Email</FormLabel>
 										<FormControl>
-											<Input {...field} autoComplete="email" readOnly={!!prefillEmail} />
+											<Input
+												{...field}
+												autoComplete="email"
+												readOnly={!!prefillEmail}
+											/>
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -258,7 +255,8 @@ export function SignupForm({ prefillEmail }: { prefillEmail?: string }) {
 										}}
 										onError={() => {
 											form.setError("root", {
-												message: "Challenge verification failed. Please try again.",
+												message:
+													"Challenge verification failed. Please try again.",
 											});
 											setTurnstileToken(undefined);
 											setIsChallengeLoading(false);
@@ -275,7 +273,10 @@ export function SignupForm({ prefillEmail }: { prefillEmail?: string }) {
 								</div>
 							)}
 
-							<Button loading={form.formState.isSubmitting} disabled={showCaptcha && !turnstileToken}>
+							<Button
+								loading={form.formState.isSubmitting}
+								disabled={showCaptcha && !turnstileToken}
+							>
 								Create account
 							</Button>
 						</form>
@@ -292,7 +293,10 @@ export function SignupForm({ prefillEmail }: { prefillEmail?: string }) {
 
 							<div className="grid grid-cols-1 items-stretch gap-2 sm:grid-cols-2">
 								{Object.keys(oAuthProviders).map((providerId) => (
-									<SocialSigninButton key={providerId} provider={providerId as OAuthProvider} />
+									<SocialSigninButton
+										key={providerId}
+										provider={providerId as OAuthProvider}
+									/>
 								))}
 							</div>
 						</>
@@ -302,7 +306,12 @@ export function SignupForm({ prefillEmail }: { prefillEmail?: string }) {
 
 			<div className="mt-6 text-center text-sm">
 				<span className="text-foreground/60">Already have an account? </span>
-				<Link href={withQuery("/auth/login", Object.fromEntries(searchParams.entries()))}>
+				<Link
+					href={withQuery(
+						"/auth/login",
+						Object.fromEntries(searchParams.entries()),
+					)}
+				>
 					Sign in
 					<ArrowRightIcon className="ml-1 inline size-4 align-middle" />
 				</Link>

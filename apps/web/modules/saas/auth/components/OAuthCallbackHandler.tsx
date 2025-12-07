@@ -1,9 +1,11 @@
 "use client";
 
+import { authClient } from "@snapback/auth/client";
 import { Alert, AlertDescription, AlertTitle } from "@ui/components/alert";
 import { AlertTriangleIcon, CheckCircleIcon } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { getOAuthErrorMessage } from "../lib/oauth-error-handler";
 
 /**
  * OAuth Callback Handler
@@ -20,7 +22,9 @@ import { useEffect, useState } from "react";
 export function OAuthCallbackHandler() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
-	const [validationState, setValidationState] = useState<"idle" | "validating" | "success" | "error">("idle");
+	const [validationState, setValidationState] = useState<
+		"idle" | "validating" | "success" | "error"
+	>("idle");
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
 	useEffect(() => {
@@ -32,25 +36,9 @@ export function OAuthCallbackHandler() {
 			if (error) {
 				setValidationState("error");
 
-				// Map common OAuth errors to user-friendly messages
-				switch (error) {
-					case "access_denied":
-						setErrorMessage("You denied access to your account. Please try again and allow access.");
-						break;
-					case "account_linking_conflict":
-						setErrorMessage(
-							"This email is already associated with another account. Please sign in with your original method.",
-						);
-						break;
-					case "invalid_request":
-						setErrorMessage("Invalid OAuth request. Please try signing in again.");
-						break;
-					case "server_error":
-						setErrorMessage("OAuth provider error. Please try again later or contact support.");
-						break;
-					default:
-						setErrorMessage(errorDescription || `Authentication failed: ${error}. Please try again.`);
-				}
+				// Use sanitized error message to prevent info leak
+				const sanitizedMessage = getOAuthErrorMessage({ code: error, message: errorDescription || undefined });
+				setErrorMessage(sanitizedMessage);
 
 				// Clean up URL parameters after displaying error
 				const url = new URL(window.location.href);
@@ -68,10 +56,8 @@ export function OAuthCallbackHandler() {
 				setValidationState("validating");
 
 				try {
-					// Validate that session was created successfully
-					// TODO: Replace with actual auth client when backend is ready
-					// const session = await authClient.getSession();
-					const session = { data: null as any, error: null };
+					// Validate that session was created successfully by Better Auth
+					const session = await authClient.getSession();
 
 					if (session.data?.user) {
 						setValidationState("success");
@@ -102,7 +88,9 @@ export function OAuthCallbackHandler() {
 				} catch (e) {
 					console.error("Session validation error:", e);
 					setValidationState("error");
-					setErrorMessage("Failed to validate session. Please try signing in again.");
+					setErrorMessage(
+						"Failed to validate session. Please try signing in again.",
+					);
 
 					// Redirect to login after 3 seconds
 					setTimeout(() => {

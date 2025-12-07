@@ -1,4 +1,5 @@
 "use client";
+import { authClient } from "@snapback/auth/client";
 import { useUserPasskeysQuery } from "@saas/auth/lib/api";
 import { SettingsItem } from "@saas/shared/components/SettingsItem";
 import { useQueryClient } from "@tanstack/react-query";
@@ -13,19 +14,20 @@ export function PasskeysBlock() {
 	const { data: passkeys, isPending } = useUserPasskeysQuery();
 
 	const addPasskey = async () => {
-		// TODO: Replace with actual auth client when backend is ready
-		// await authClient.passkey.addPasskey({ fetchOptions: { onSuccess: ..., onError: ... } });
-		queryClient.invalidateQueries({ queryKey: ["passkeys"] });
-		toast.success("Passkey added successfully");
+		try {
+			await authClient.passkey.addPasskey({ fetchOptions: { onSuccess: () => queryClient.invalidateQueries({ queryKey: ["passkeys"] }) } });
+			toast.success("Passkey added successfully");
+		} catch (error) {
+			toast.error("Failed to add passkey");
+		}
 	};
 
-	const deletePasskey = (_id: string) => {
+	const deletePasskey = (id: string) => {
 		toast.promise(
-			async () => {
-				// TODO: Replace with actual auth client when backend is ready
-				// await authClient.passkey.deletePasskey({ id });
-				await Promise.resolve();
-			},
+			(async () => {
+				await authClient.passkey.deletePasskey({ id });
+				queryClient.invalidateQueries({ queryKey: ["passkeys"] });
+			})(),
 			{
 				loading: "Deleting passkey...",
 				success: "Passkey deleted successfully",

@@ -1,5 +1,6 @@
 "use client";
 
+import { authClient } from "@snapback/auth/client";
 import { Alert, AlertDescription } from "@ui/components/alert";
 import { Button } from "@ui/components/button";
 import { AlertTriangleIcon } from "lucide-react";
@@ -27,13 +28,12 @@ export function SocialSigninButton({
 			setIsLoading(true);
 			setError(null);
 
-			// const _callbackURL = new URL(redirectPath, window.location.origin);
-
-			// // authClient.signIn.social triggers a redirect, so we won't get a response
-			// Errors are typically caught before redirect (e.g., network issues, config errors)
-			// TODO: Replace with actual auth client when backend is ready
-			// await authClient.signIn.social({ provider, callbackURL });
-			console.log(`Social sign-in with ${provider} not yet implemented`);
+			// Use Better Auth client for OAuth sign-in
+			// This triggers a redirect to the OAuth provider
+			await authClient.signIn.social({
+				provider,
+				callbackURL: window.location.origin + "/dashboard",
+			});
 
 			// If we reach here without redirect, something went wrong
 			// (Normal flow redirects to OAuth provider immediately)
@@ -55,6 +55,11 @@ export function SocialSigninButton({
 				// Popup blocked
 				else if (e.message.includes("popup") || e.message.includes("blocked")) {
 					errorMessage = "Popup blocked. Please allow popups for this site.";
+				}
+				// Sanitize error messages to prevent info leak
+				else if (e.message && (e.message.includes("database") || e.message.includes("password") || e.message.includes("pg://") || e.message.includes("Internal server"))) {
+					// Don't expose database errors or sensitive info
+					errorMessage = "An error occurred. Please try again or contact support.";
 				}
 				// Generic error with message
 				else if (e.message) {

@@ -1,6 +1,7 @@
 "use client";
 
 import { DropdownMenuSub } from "@radix-ui/react-dropdown-menu";
+import { authClient } from "@snapback/auth/client";
 import { useSession } from "@saas/auth/hooks/use-session";
 import { UserAvatar } from "@shared/components/UserAvatar";
 import {
@@ -34,10 +35,21 @@ export function UserMenu({ showUserName }: { showUserName?: boolean }) {
 		},
 	];
 
-	const onLogout = () => {
-		// TODO: Replace with actual auth client when backend is ready
-		// authClient.signOut({ fetchOptions: { onSuccess: async () => { window.location.href = ... } } });
-		window.location.href = "/";
+	const onLogout = async () => {
+		try {
+			await authClient.signOut({
+				fetchOptions: {
+					onSuccess: async () => {
+						// Redirect to home page after successful sign out
+						window.location.href = "/";
+					},
+				},
+			});
+		} catch (error) {
+			console.error("Sign out failed:", error);
+			// Still redirect on error to ensure user is logged out client-side
+			window.location.href = "/";
+		}
 	};
 
 	if (!user) {

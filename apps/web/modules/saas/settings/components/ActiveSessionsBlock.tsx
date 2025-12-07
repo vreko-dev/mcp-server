@@ -1,4 +1,5 @@
 "use client";
+import { authClient } from "@snapback/auth/client";
 import { useSession } from "@saas/auth/hooks/use-session";
 import { SettingsItem } from "@saas/shared/components/SettingsItem";
 import { useRouter } from "@shared/hooks/router";
@@ -16,9 +17,7 @@ export function ActiveSessionsBlock() {
 	const { data: sessions, isPending } = useQuery({
 		queryKey: ["active-sessions"],
 		queryFn: async () => {
-			// TODO: Replace with actual auth client when backend is ready
-			// const { data, error } = await authClient.listSessions();
-			const { data, error } = { data: [], error: null };
+			const { data, error } = await authClient.listSessions();
 
 			if (error) {
 				throw error;
@@ -28,12 +27,24 @@ export function ActiveSessionsBlock() {
 		},
 	});
 
-	const revokeSession = (_token: string) => {
-		// TODO: Replace with actual auth client when backend is ready
-		// authClient.revokeSession({ token }, { onSuccess: () => { ... } });
-		toast.success("Session revoked successfully");
-		queryClient.invalidateQueries({ queryKey: ["active-sessions"] });
-		router.refresh();
+	const revokeSession = (token: string) => {
+		toast.promise(
+			(async () => {
+				const { error } = await authClient.revokeSession({ token });
+
+				if (error) {
+					throw error;
+				}
+
+				queryClient.invalidateQueries({ queryKey: ["active-sessions"] });
+				router.refresh();
+			})(),
+			{
+				loading: "Revoking session...",
+				success: "Session revoked successfully",
+				error: "Failed to revoke session",
+			},
+		);
 	};
 
 	return (

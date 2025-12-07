@@ -59,21 +59,13 @@
 		},
 		"test": {
 			"dependsOn": ["^build"],
-			"inputs": [
-				"src/**/*.tsx",
-				"src/**/*.ts",
-				"test/**/*.ts",
-				"vitest.config.ts"
-			],
+			"inputs": ["src/**/*.tsx", "src/**/*.ts", "test/**/*.ts", "vitest.config.ts"],
 			"outputs": ["coverage/**"],
 			"cache": true
 		},
 		"test:e2e": {
 			"dependsOn": ["^build"],
-			"inputs": [
-				"e2e/**/*",
-				"playwright.config.ts"
-			],
+			"inputs": ["e2e/**/*", "playwright.config.ts"],
 			"outputs": ["playwright-report/**"],
 			"cache": false
 		},

@@ -97,7 +97,10 @@ export const SessionFinalizedSchema = BaseEventSchema.extend({
 			.min(0)
 			.optional()
 			.openapi({ description: "Total characters in large insertions", example: 2000 }),
-		context: z.record(z.string(), z.any()).optional().openapi({ description: "Additional context for the session" }),
+		context: z
+			.record(z.string(), z.any())
+			.optional()
+			.openapi({ description: "Additional context for the session" }),
 	}),
 }).openapi("SessionFinalizedEvent");
 export type SessionFinalizedEvent = z.infer<typeof SessionFinalizedSchema>;
@@ -155,10 +158,17 @@ export const PolicyChangedSchema = BaseEventSchema.extend({
 	event: z.literal("policy_changed"),
 	properties: z.object({
 		pattern: z.string().openapi({ description: "File pattern that the policy applies to", example: "*.env" }),
-		from: z.enum(["watch", "warn", "block", "unprotected", "unauthenticated", "unaware"]).openapi({ description: "Previous protection level" }),
-		to: z.enum(["watch", "warn", "block", "unprotected", "authenticated", "aware"]).openapi({ description: "New protection level" }),
+		from: z
+			.enum(["watch", "warn", "block", "unprotected", "unauthenticated", "unaware"])
+			.openapi({ description: "Previous protection level" }),
+		to: z
+			.enum(["watch", "warn", "block", "unprotected", "authenticated", "aware"])
+			.openapi({ description: "New protection level" }),
 		source: z.string().openapi({ description: "Source of the policy change", example: "dashboard" }),
-		context: z.record(z.string(), z.any()).optional().openapi({ description: "Additional context for the policy change" }),
+		context: z
+			.record(z.string(), z.any())
+			.optional()
+			.openapi({ description: "Additional context for the policy change" }),
 	}),
 }).openapi("PolicyChangedEvent");
 export type PolicyChangedEvent = z.infer<typeof PolicyChangedSchema>;

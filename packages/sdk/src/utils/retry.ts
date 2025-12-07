@@ -1,4 +1,3 @@
-
 /**
  * Retry utilities for robust operations
  */
@@ -21,12 +20,7 @@ export const RetryPresets = {
 /**
  * Calculate backoff delay
  */
-export function calculateBackoff(
-	attempt: number,
-	base = 100,
-	max = 5000,
-	jitter = true,
-): number {
+export function calculateBackoff(attempt: number, base = 100, max = 5000, jitter = true): number {
 	const delay = Math.min(base * 2 ** attempt, max);
 	if (!jitter) return delay;
 	// Add jitter (0-20%)
@@ -36,10 +30,7 @@ export function calculateBackoff(
 /**
  * Retry a function with exponential backoff
  */
-export async function withRetry<T>(
-	fn: () => Promise<T>,
-	options: RetryOptions = RetryPresets.MEDIUM,
-): Promise<T> {
+export async function withRetry<T>(fn: () => Promise<T>, options: RetryOptions = RetryPresets.MEDIUM): Promise<T> {
 	const { maxRetries = 3, baseDelay = 100, maxDelay = 5000, onRetry } = options;
 	let lastError: unknown;
 

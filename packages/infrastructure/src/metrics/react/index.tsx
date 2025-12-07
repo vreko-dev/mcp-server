@@ -4,7 +4,8 @@
  * Provider and hooks for browser-side analytics in React applications.
  */
 
-import React, { createContext, useContext, useEffect, useMemo } from "react";
+import type React from "react";
+import { createContext, useContext, useEffect, useMemo } from "react";
 import { createBrowserAnalytics } from "../client";
 import type { AnalyticsClient, BrowserAnalyticsConfig } from "../core/types";
 

@@ -64,6 +64,7 @@ Thumbs.db
 # Playwright artifacts
 .playwright-mcp/
 playwright-report/
+.vscode-test/
 
 # VS Code extension packages
 *.vsix
@@ -86,7 +87,16 @@ packages/**/*.js.map
 !packages/**/__tests__/**/*.js
 
 # Additional dist directories
+# Additional dist directories
 packages/**/dist-*/
+packages-oss/**/dist/
+packages-oss/**/*.js
+packages-oss/**/*.d.ts
+packages-oss/**/*.js.map
+!packages-oss/**/src/**/*.js
+
+# Test results
+test-results/
 
 # Test and build scripts
 **/test-*.js

@@ -4,8 +4,8 @@
  */
 
 import { expect, test } from "@playwright/test";
-import { ApiClient } from "./helpers/api";
-import { createTestUser, getAuthToken, loginUser } from "./helpers/auth";
+import { ApiClient } from "../helpers/api";
+import { createTestUser, getAuthToken, loginUser } from "../helpers/auth";
 
 test.describe("Authentication Flow", () => {
 	test.describe("Sign Up Flow", () => {

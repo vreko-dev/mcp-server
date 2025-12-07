@@ -4,7 +4,7 @@
  */
 
 import { expect, test } from "@playwright/test";
-import { createTestUser, loginUser } from "./helpers/auth";
+import { createTestUser, loginUser } from "../helpers/auth";
 
 test.describe("Performance", () => {
 	test.describe("Page load times < 2s", () => {

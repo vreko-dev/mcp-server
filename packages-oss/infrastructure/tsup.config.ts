@@ -17,7 +17,7 @@ export default defineConfig({
 	clean: true,
 	sourcemap: true,
 	outDir: "dist",
-	bundle: false, // Don't bundle the files
+	bundle: true, // Bundle local files
 	splitting: false,
 	treeshake: true,
 	target: "es2022",

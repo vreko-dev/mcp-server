@@ -168,3 +168,4 @@ export {
 export type { SDKConfig } from "./types";
 export type { ExperienceMetrics } from "./types/experience";
 export { areEqual, getDepth, isWithin, normalize } from "./utils/PathNormalizer";
+export * from "./utils/retry";

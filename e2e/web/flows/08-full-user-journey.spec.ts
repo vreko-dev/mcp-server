@@ -4,8 +4,8 @@
  */
 
 import { expect, test } from "@playwright/test";
-import { ApiClient } from "./helpers/api";
-import { getAuthToken } from "./helpers/auth";
+import { ApiClient } from "../helpers/api";
+import { getAuthToken } from "../helpers/auth";
 
 test.describe("Full User Journey", () => {
 	test.describe("Complete flow: signup → verify → login → create API key → use MCP → view analytics → search docs", () => {

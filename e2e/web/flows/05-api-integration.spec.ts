@@ -4,8 +4,8 @@
  */
 
 import { expect, test } from "@playwright/test";
-import { createApiHelpers } from "./helpers/api";
-import { createTestUser, getAuthToken, loginUser } from "./helpers/auth";
+import { createApiHelpers } from "../helpers/api";
+import { createTestUser, getAuthToken, loginUser } from "../helpers/auth";
 
 test.describe("API Integration", () => {
 	test.describe("API Key Creation", () => {

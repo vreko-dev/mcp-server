@@ -1,5 +1,4 @@
 {
-
   "dependencies": {
     "@next/mdx": "^16.0.1",
     "@paralleldrive/cuid2": "catalog:",
@@ -19,6 +18,7 @@
     "@commitlint/config-conventional": "catalog:",
     "@evilmartians/lefthook": "catalog:",
     "@faker-js/faker": "catalog:",
+    "@playwright/test": "1.50.1",
     "@snapback/tsconfig": "workspace:*",
     "@testing-library/react": "catalog:",
     "@testing-library/user-event": "catalog:",
@@ -42,12 +42,14 @@
     "madge": "catalog:",
     "minimatch": "catalog:",
     "msw": "^2.12.4",
+    "playwright": "1.50.1",
     "syncpack": "catalog:",
     "tsup": "catalog:",
     "tsx": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:",
+    "vscode-test-playwright": "0.0.1-beta2",
     "webpack": "catalog:"
   },
   "engines": {
@@ -64,7 +66,8 @@
       "@types/mdx": "2.0.13",
       "@types/minimatch": "5.1.2",
       "hono": "^4.10.3",
-      "playwright": "^1.55.1",
+      "playwright": "1.50.1",
+      "@playwright/test": "1.50.1",
       "esbuild": "^0.25.0",
       "dompurify": "^3.2.4",
       "fumadocs-core": "15.7.11"
@@ -116,6 +119,7 @@
     "test:changed": "vitest --changed --watch=false",
     "test:coverage": "turbo test:coverage",
     "test:e2e": "playwright test",
+    "test:e2e:extension": "playwright test --config=e2e/extension/playwright.extension.config.ts",
     "test:e2e:ui": "playwright test --ui",
     "test:ui": "vitest --ui",
     "type-check": "turbo type-check",

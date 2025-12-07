@@ -60,6 +60,10 @@
         "types": "./dist/logging/logger.d.ts",
         "default": "./dist/logging/logger.js"
       },
+      "./health": {
+        "types": "./dist/health/index.d.ts",
+        "default": "./dist/health/index.js"
+      },
       "./tracing": {
         "types": "./dist/tracing/index.d.ts",
         "default": "./dist/tracing/index.js"

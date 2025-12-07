@@ -125,18 +125,6 @@ const nextConfig = {
 			".js": [".js", ".ts", ".tsx"],
 			".jsx": [".jsx", ".tsx"],
 		};
-		// Add webpack aliases for path resolution
-		config.resolve.alias = {
-			...config.resolve.alias,
-			"@": path.resolve(__dirname, "./"),
-			"@analytics": path.resolve(__dirname, "./modules/analytics"),
-			"@marketing": path.resolve(__dirname, "./modules/marketing"),
-			"@saas": path.resolve(__dirname, "./modules/saas"),
-			"@ui": path.resolve(__dirname, "./modules/ui"),
-			"@shared": path.resolve(__dirname, "./modules/shared"),
-			"@config": path.resolve(__dirname, "../..", "config"),
-			"@tooling": path.resolve(__dirname, "../..", "tooling"),
-		};
 		// Handle native modules on client and server side
 		config.plugins.push(
 			new webpack.IgnorePlugin({

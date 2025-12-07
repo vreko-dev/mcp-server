@@ -17,7 +17,12 @@
 		},
 		"validate:exports": {
 			"cache": false,
-			"inputs": ["**/package.json", "**/src/**/*.ts", "**/src/**/*.tsx", "apps/**/!(node_modules)/**/*.ts", "apps/**/!(node_modules)/**/*.tsx"],
+			"inputs": ["**/package.json", "**/src/**/*.ts", "**/src/**/*.tsx"],
+			"outputs": []
+		},
+		"//#validate:exports": {
+			"cache": false,
+			"inputs": ["**/package.json", "**/src/**/*.ts", "**/src/**/*.tsx"],
 			"outputs": []
 		},
 		"quality": {

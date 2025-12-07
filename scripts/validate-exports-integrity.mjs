@@ -58,11 +58,9 @@ for (const pkgJsonPath of packageJsonFiles) {
 console.log("🔎 Scanning source code for unconditional imports...\n");
 
 const sourceFiles = [
-  ...globSync(path.join(PACKAGES_DIR, "**/src/**/*.ts")),
-  ...globSync(path.join(PACKAGES_DIR, "**/src/**/*.tsx")),
-  ...globSync(path.join(APPS_DIR, "**/!(node_modules)/**/*.ts")),
-  ...globSync(path.join(APPS_DIR, "**/!(node_modules)/**/*.tsx")),
-];
+  ...globSync(path.join(PACKAGES_DIR, "**/src/**/*.{ts,tsx}")),
+  ...globSync(path.join(APPS_DIR, "/**/src/**/*.{ts,tsx}")),
+].filter(file => !file.includes('node_modules') && !file.includes('.next') && !file.includes('dist'));
 
 const violations = [];
 

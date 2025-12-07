@@ -59,9 +59,25 @@
         "types": "./dist/defaults.d.ts",
         "default": "./dist/defaults.js"
       },
+      "./env": {
+        "types": "./dist/env.d.ts",
+        "default": "./dist/env.js"
+      },
+      "./utils": {
+        "types": "./dist/utils/index.d.ts",
+        "default": "./dist/utils/index.js"
+      },
       "./utils/base-url": {
         "types": "./dist/utils/base-url.d.ts",
         "default": "./dist/utils/base-url.js"
+      },
+      "./utils/monorepo-flattener": {
+        "types": "./dist/utils/monorepo-flattener.d.ts",
+        "default": "./dist/utils/monorepo-flattener.js"
+      },
+      "./utils/path-transformer": {
+        "types": "./dist/utils/path-transformer.d.ts",
+        "default": "./dist/utils/path-transformer.js"
       }
     }
   },

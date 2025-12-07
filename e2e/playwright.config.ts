@@ -1,83 +1,97 @@
 import { defineConfig, devices } from "@playwright/test";
+import { createPlaywrightConfig } from "@snapback/playwright-config";
 import path from "path";
 
-// Absolute path to the extension root
+// Absolute path to the extension root (relative from e2e/playwright.config.ts)
 const extensionPath = path.resolve(__dirname, "../apps/vscode");
 
-export default defineConfig({
-	testDir: ".", // Root for all E2E tests
-	fullyParallel: true, // Default to true, but extension projects will override to false
-	forbidOnly: !!process.env.CI,
-	retries: process.env.CI ? 2 : 0,
-	workers: process.env.CI ? 4 : undefined,
-	reporter: [
-		["html", { outputFolder: "playwright-report" }],
-		["json", { outputFile: "test-results.json" }],
-		process.env.CI ? ["github"] : ["list"],
-	],
+// Create the base config using the shared package
+const baseConfig = createPlaywrightConfig({
+	testDir: ".",
+});
 
-	use: {
-		trace: "on-first-retry",
-		screenshot: "only-on-failure",
-		video: "on-first-retry",
-	},
+export default defineConfig({
+	...baseConfig,
 
 	projects: [
-		// ------------------------------------------------
-		// PR GATES (Fast, Chromium Only, Critical Flows)
-		// ------------------------------------------------
+		// -----------------------------------------------------------------------
+		// 1. VS Code Extension Tests (Electron Context)
+		// -----------------------------------------------------------------------
 		{
 			name: "ext-smoke",
-			testMatch: /.*extension\/flows\/.*spec.ts/,
+			testDir: "./extension",
+			testMatch: /.*flows\/.*spec.ts/,
 			grep: /@smoke/,
 			use: {
 				extensionDevelopmentPath: extensionPath,
-				launchArgs: [path.resolve(extensionPath, "test-workspace")],
-				vscodeVersion: "stable",
+				launchArgs: [
+					path.resolve(extensionPath, "test-workspace"),
+					"--extension-tests-env=VSCODE_SNAPSHOT_TEST_MODE=true",
+				],
+				contextOptions: {
+					recordVideo: { dir: "test-results/videos/" },
+				},
 				env: {
 					VSCODE_SNAPSHOT_TEST_MODE: "true",
 				},
 			} as any,
-			testDir: "./extension/flows",
+			// Extension tests don't need the web server
+			...({ webServer: undefined } as any),
 		},
-		{
-			name: "web-smoke",
-			testMatch: /.*web\/flows\/.*spec.ts/,
-			grep: /@smoke/,
-			use: { ...devices["Desktop Chrome"] },
-			testDir: "./web/flows",
-		},
-
-		// ------------------------------------------------
-		// NIGHTLY / MAIN (Full Matrix)
-		// ------------------------------------------------
 		{
 			name: "ext-full",
-			testMatch: /.*extension\/flows\/.*spec.ts/,
+			testDir: "./extension",
+			testMatch: /.*spec.ts/,
 			use: {
 				extensionDevelopmentPath: extensionPath,
-				launchArgs: [path.resolve(extensionPath, "test-workspace")],
-				vscodeVersion: "insiders",
+				launchArgs: [
+					path.resolve(extensionPath, "test-workspace"),
+					"--extension-tests-env=VSCODE_SNAPSHOT_TEST_MODE=true",
+				],
 				env: {
 					VSCODE_SNAPSHOT_TEST_MODE: "true",
 				},
 			} as any,
-			testDir: "./extension/flows",
+			// Extension tests don't need the web server
+			...({ webServer: undefined } as any),
 		},
+
+		// -----------------------------------------------------------------------
+		// 2. Web Dashboard Tests (Standard Browser)
+		// -----------------------------------------------------------------------
 		{
-			name: "web-chromium",
-			testDir: "./web/flows",
+			name: "web-smoke",
+			testDir: "./web",
+			testMatch: /.*flows\/.*spec.ts/,
+			grep: /@smoke/,
 			use: { ...devices["Desktop Chrome"] },
 		},
 		{
-			name: "web-firefox",
-			testDir: "./web/flows",
+			name: "web-full-chrome",
+			testDir: "./web",
+			use: { ...devices["Desktop Chrome"] },
+		},
+		{
+			name: "web-full-firefox",
+			testDir: "./web",
 			use: { ...devices["Desktop Firefox"] },
 		},
+
+		// -----------------------------------------------------------------------
+		// 3. Cross-Surface Integration (The "Loop")
+		// -----------------------------------------------------------------------
 		{
-			name: "docs-chromium",
-			testDir: "./docs/flows",
-			use: { ...devices["Desktop Chrome"] },
+			name: "integration-cross-surface",
+			testDir: "./integration",
+			use: {
+				extensionDevelopmentPath: extensionPath,
+				launchArgs: [
+					path.resolve(extensionPath, "test-workspace"),
+					"--extension-tests-env=VSCODE_SNAPSHOT_TEST_MODE=true",
+				],
+			} as any,
+			// Integration tests using extension context don't need web server
+			...({ webServer: undefined } as any),
 		},
 	],
 });

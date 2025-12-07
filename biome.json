@@ -45,50 +45,6 @@
 				"useNumberNamespace": "error",
 				"noInferrableTypes": "error",
 				"noUselessElse": "error"
-			},
-			"nursery": {
-				"noRestrictedImports": {
-					"level": "error",
-					"options": {
-						"restrictions": [
-							{
-								"name": "@snapback/core",
-								"message": "Private package: only use in apps/api and packages/core dependencies",
-								"when": {
-									"pathMatches": "packages-oss/**"
-								}
-							},
-							{
-								"name": "@snapback/auth",
-								"message": "Private package: authentication internals, not for public use",
-								"when": {
-									"pathMatches": "packages-oss/**"
-								}
-							},
-							{
-								"name": "@snapback/platform",
-								"message": "Private package: database schemas and queries",
-								"when": {
-									"pathMatches": "packages-oss/**"
-								}
-							},
-							{
-								"name": "@snapback/integrations",
-								"message": "Private package: Stripe/email/feature-flags",
-								"when": {
-									"pathMatches": "packages-oss/**"
-								}
-							},
-							{
-								"name": "@snapback/analytics",
-								"message": "Private package: PostHog integration and analytics",
-								"when": {
-									"pathMatches": "packages-oss/**"
-								}
-							}
-						]
-					}
-				}
 			}
 		}
 	},

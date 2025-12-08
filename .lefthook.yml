@@ -62,8 +62,9 @@ pre-commit:
 
           // Check browser packages have external declarations
           if (browserPackages.includes(packageName)) {
-            if (!content.includes('external:')) {
-              validationErrors.push(`❌ ${packageName}: browser package missing 'external: [...]' declaration`);
+            const hasExternalDeclaration = content.includes('external:') && !content.includes('external: undefined');
+            if (!hasExternalDeclaration) {
+              validationErrors.push(`❌ ${packageName}: browser package missing proper 'external: [...]' declaration`);
               hasErrors = true;
             }
             if (!content.includes('@snapback/infrastructure')) {

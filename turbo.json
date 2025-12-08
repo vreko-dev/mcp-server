@@ -84,6 +84,12 @@
 			"cache": false,
 			"outputs": ["reports/analyze/**"]
 		},
+		"analyze:bundle": {
+			"dependsOn": ["build"],
+			"cache": false,
+			"outputs": ["reports/bundle-analysis/**"],
+			"passThroughEnv": ["ANALYZE"]
+		},
 		"scan": {
 			"dependsOn": ["build"],
 			"cache": false,
@@ -113,17 +119,17 @@
 			"passThroughEnv": ["VERCEL_TOKEN"]
 		},
 		"deploy:staging": {
-			"dependsOn": ["test", "build"],
+			"dependsOn": ["test", "build", "analyze:bundle"],
 			"cache": false,
 			"passThroughEnv": ["VERCEL_TOKEN", "FLY_API_TOKEN"]
 		},
 		"deploy:production": {
-			"dependsOn": ["test", "pack", "docker-build"],
+			"dependsOn": ["test", "pack", "docker-build", "analyze:bundle"],
 			"cache": false,
 			"passThroughEnv": ["VERCEL_TOKEN", "FLY_API_TOKEN", "NPM_TOKEN", "VSCE_PAT"]
 		},
 		"deploy": {
-			"dependsOn": ["test", "pack", "docker-build"],
+			"dependsOn": ["test", "pack", "docker-build", "analyze:bundle"],
 			"cache": false,
 			"passThroughEnv": ["VERCEL_TOKEN", "FLY_API_TOKEN", "NPM_TOKEN", "VSCE_PAT"]
 		},

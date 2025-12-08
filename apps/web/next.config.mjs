@@ -10,7 +10,7 @@ const __dirname = path.dirname(__filename);
 let withBundleAnalyzer = (config) => config;
 try {
 	withBundleAnalyzer = require("@next/bundle-analyzer")({
-		enabled: process.env.ANALYZE === "true",
+		enabled: process.env.ANALYZE === "true" || process.env.ANALYZE === true,
 	});
 } catch (_e) {
 	// Bundle analyzer not available, continue without it

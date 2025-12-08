@@ -7,8 +7,8 @@ import { createCheckoutLink } from "@snapback/integrations/stripe/provider/strip
 import { member, organization, user } from "@snapback/platform";
 import { eq, sql } from "drizzle-orm";
 import { z } from "zod";
-import { protectedProcedure } from "../../../orpc/procedures";
-import { getDb } from "../../../src/services/database";
+import { protectedProcedure } from "@/orpc/procedures";
+import { getDb } from "@/src/services/database";
 
 interface CheckoutInput {
 	productId: string;

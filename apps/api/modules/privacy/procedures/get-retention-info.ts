@@ -1,7 +1,7 @@
 import { snapshots } from "@snapback/platform";
 import { desc, eq } from "drizzle-orm";
-import { protectedProcedure } from "../../../orpc/procedures";
-import { getDb } from "../../../src/services/database";
+import { protectedProcedure } from "@/orpc/procedures";
+import { getDb } from "@/src/services/database";
 
 export const getRetentionInfo = protectedProcedure.handler(
 	async ({ context }) => {

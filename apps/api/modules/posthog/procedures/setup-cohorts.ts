@@ -9,7 +9,7 @@ import {
 	RETENTION_COHORTS,
 } from "@snapback/infrastructure";
 import { z } from "zod";
-import { publicProcedure } from "../../../orpc/procedures";
+import { publicProcedure } from "@/orpc/procedures";
 
 const setupCohortsSchema = z.object({
 	dryRun: z.boolean().default(false),

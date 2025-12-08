@@ -2,8 +2,8 @@ import { ORPCError } from "@orpc/server";
 import { apiKeys, subscriptions } from "@snapback/platform";
 import { and, eq, gte, isNull, like } from "drizzle-orm";
 import { z } from "zod";
-import { publicProcedure } from "../../../orpc/procedures";
-import { getDb } from "../../../src/services/database";
+import { publicProcedure } from "@/orpc/procedures";
+import { getDb } from "@/src/services/database";
 
 export const verifyApiKeyProcedure = publicProcedure
 	.input(

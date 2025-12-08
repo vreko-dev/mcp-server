@@ -730,7 +730,7 @@ The cloud stores your snapshot metadata. Actual file restoration happens on your
 										<button
 											type="button"
 											onClick={() => setEditorLoaded(true)}
-											className="px-6 py-3 bg-[#00FF41] hover:bg-[#00cc33] text-black font-medium rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-[#00FF41] focus:ring-offset-2 focus:ring-offset-[#1e1e1e]"
+											className="px-6 py-3 bg-[#34D399] hover:bg-[#00cc33] text-black font-medium rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-[#34D399] focus:ring-offset-2 focus:ring-offset-[#1e1e1e]"
 										>
 											Load Editor
 										</button>

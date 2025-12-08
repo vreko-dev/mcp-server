@@ -2,8 +2,8 @@ import { ORPCError } from "@orpc/client";
 import { logger } from "@snapback/infrastructure";
 import { waitlist, waitlistAuditLogs } from "@snapback/platform";
 import { and, desc, eq, sql } from "drizzle-orm";
-import { protectedProcedure } from "../../../orpc/procedures";
-import { getDb } from "../../../src/services/database";
+import { protectedProcedure } from "@/orpc/procedures";
+import { getDb } from "@/src/services/database";
 import { hashEmail } from "./helpers";
 
 export const getRecentActivity = protectedProcedure

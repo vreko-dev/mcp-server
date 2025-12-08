@@ -3,8 +3,8 @@ import { logger } from "@snapback/infrastructure";
 import { extensionSessions } from "@snapback/platform";
 import { and, count, eq, or, sum } from "drizzle-orm";
 import { z } from "zod";
-import { protectedProcedure } from "../../../orpc/procedures";
-import { getDb } from "../../../src/services/database";
+import { protectedProcedure } from "@/orpc/procedures";
+import { getDb } from "@/src/services/database";
 
 const sessionMetricsSchema = z.object({
 	sessionCount: z.number(),

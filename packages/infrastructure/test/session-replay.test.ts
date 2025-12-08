@@ -5,7 +5,7 @@
  */
 
 import { beforeEach, describe, expect, it } from "vitest";
-import { calculateEffectiveSamplingRate } from "../../../packages/config/src/analytics/session-replay";
+import { calculateEffectiveSamplingRate } from "@snapback/config/analytics/session-replay";
 import { SessionReplayManager } from "../src/metrics/session-replay/manager";
 import {
 	AGGRESSIVE_SAMPLING,

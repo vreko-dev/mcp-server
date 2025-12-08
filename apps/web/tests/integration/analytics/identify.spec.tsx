@@ -2,8 +2,8 @@ import { renderHook } from "@testing-library/react";
 import posthog from "posthog-js";
 import { type ReactNode, useEffect, useState } from "react";
 import { describe, expect, it, vi } from "vitest";
-import { usePostHogAuth } from "../../../modules/saas/auth/hooks/use-posthog-auth";
-import type { SessionContext } from "../../../modules/saas/auth/lib/session-context";
+import { usePostHogAuth } from "@/modules/saas/auth/hooks/use-posthog-auth";
+import type { SessionContext } from "@/modules/saas/auth/lib/session-context";
 
 // Mock PostHog
 vi.mock("posthog-js", () => ({

@@ -1,7 +1,7 @@
 import { render } from "@testing-library/react";
 import posthog from "posthog-js";
 import { describe, expect, it, vi } from "vitest";
-import { AnalyticsScript } from "../../../modules/analytics/provider/posthog";
+import { AnalyticsScript } from "@/modules/analytics/provider/posthog";
 
 // Mock PostHog
 vi.mock("posthog-js", () => ({

@@ -1,6 +1,6 @@
 "use client";
 
-import { Heart, Shield, Target, Users, Zap } from "lucide-react";
+import { Heart, Shield, Users, Zap } from "lucide-react";
 import { m } from "motion/react";
 import Link from "next/link";
 
@@ -143,86 +143,8 @@ export default function AboutClient() {
 				</div>
 			</section>
 
-			{/* Roadmap Postcard */}
-			<section id="roadmap" className="container max-w-4xl mx-auto py-16 px-4">
-				<m.div
-					initial={{ opacity: 1, y: 0 }}
-					whileInView={{ opacity: 1, y: 0 }}
-					viewport={{ once: true, margin: "-100px" }}
-					transition={{ duration: 0.6 }}
-					className="bg-gradient-to-r from-emerald-400/20 to-emerald-500/20 border border-emerald-400/30 rounded-2xl p-12"
-				>
-					<div className="flex items-start gap-4 mb-6">
-						<Target className="w-8 h-8 text-emerald-400 flex-shrink-0 mt-1" />
-						<div>
-							<h2 className="text-3xl font-bold text-white mb-2">What's Next</h2>
-							<p className="text-gray-300">Our roadmap is driven by community feedback</p>
-						</div>
-					</div>
-
-					<div className="space-y-4">
-						<div className="flex items-start gap-3">
-							<span className="text-emerald-400 mt-1">✓</span>
-							<div>
-								<h4 className="text-white font-semibold">Q1 2025 - Cloud Sync & Team Features</h4>
-								<p className="text-gray-400 text-sm">
-									Shared snapshots, team policies, analytics dashboard
-								</p>
-							</div>
-						</div>
-						<div className="flex items-start gap-3">
-							<span className="text-emerald-400 mt-1">→</span>
-							<div>
-								<h4 className="text-white font-semibold">Q2 2025 - Advanced Guardian Detection</h4>
-								<p className="text-gray-400 text-sm">
-									ML-powered risk scoring, custom detection plugins, API contract monitoring
-								</p>
-							</div>
-						</div>
-						<div className="flex items-start gap-3">
-							<span className="text-gray-500 mt-1">○</span>
-							<div>
-								<h4 className="text-white font-semibold">Q3 2025 - JetBrains & Multi-IDE Support</h4>
-								<p className="text-gray-400 text-sm">
-									IntelliJ, PyCharm, WebStorm extensions with unified snapshot sync
-								</p>
-							</div>
-						</div>
-						<div className="flex items-start gap-3">
-							<span className="text-gray-500 mt-1">○</span>
-							<div>
-								<h4 className="text-white font-semibold">Q4 2025 - Enterprise Features</h4>
-								<p className="text-gray-400 text-sm">
-									SSO, SAML, air-gapped deployment, compliance certifications (SOC2, ISO 27001)
-								</p>
-							</div>
-						</div>
-					</div>
-
-					<div className="mt-8 pt-6 border-t border-white/10">
-						<p className="text-gray-300 text-sm">
-							Want to influence our roadmap?{" "}
-							<Link
-								href="/community"
-								className="text-emerald-400 hover:underline focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2 focus:ring-offset-slate-900 rounded"
-							>
-								Join our community
-							</Link>{" "}
-							or{" "}
-							<Link
-								href="/blog"
-								className="text-emerald-400 hover:underline focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2 focus:ring-offset-slate-900 rounded"
-							>
-								read our blog
-							</Link>{" "}
-							to share feedback.
-						</p>
-					</div>
-				</m.div>
-			</section>
-
-			{/* Team Section */}
-			<section id="team" className="container max-w-4xl mx-auto py-16 px-4">
+			{/* Founder Section */}
+			<section id="founder" className="container max-w-4xl mx-auto py-16 px-4">
 				<m.div
 					initial={{ opacity: 1, y: 0 }}
 					whileInView={{ opacity: 1, y: 0 }}
@@ -230,63 +152,37 @@ export default function AboutClient() {
 					transition={{ duration: 0.6 }}
 					className="text-center"
 				>
-					<h2 className="text-4xl font-bold text-white mb-6">
-						Built by Developers,
-						<br />
-						for Developers
-					</h2>
-					<p className="text-lg text-gray-300 mb-8 max-w-2xl mx-auto">
-						SnapBack is developed by{" "}
-						<a
-							href="https://marcellelabs.com"
-							className="text-emerald-400 hover:underline"
-							target="_blank"
-							rel="noopener noreferrer"
-						>
-							Marcelle Labs
-						</a>
-						, a team obsessed with developer experience and AI safety. We've all lost work to AI
-						mistakes—now we're making sure it never happens to you.
-					</p>
+					<h2 className="text-4xl font-bold text-white mb-12">Meet the Founder</h2>
 
-					<div className="flex flex-wrap justify-center gap-4">
-						<Link
-							href="/blog"
-							className="px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-white font-medium transition-all focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-slate-900"
-						>
-							Read Our Blog
-						</Link>
-						<Link
-							href="/community"
-							className="px-6 py-3 bg-emerald-400 hover:bg-emerald-400/90 text-black font-bold rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2 focus:ring-offset-slate-900"
-						>
-							Join Community
-						</Link>
+					<div className="bg-[#0E0E0E] border border-[#222] rounded-2xl p-8 max-w-2xl mx-auto flex flex-col items-center">
+						<div className="w-32 h-32 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 mb-6 flex items-center justify-center text-4xl font-bold text-black border-4 border-[#0E0E0E] shadow-xl">
+							M
+						</div>
+						<h3 className="text-2xl font-bold text-white mb-2">Marcelle</h3>
+						<p className="text-emerald-400 font-medium mb-6">Founder & Lead Developer</p>
+						<p className="text-gray-300 leading-relaxed text-lg italic">
+							"I built SnapBack because I was tired of living in fear of my own AI tools.
+							We need safety nets, not just speed."
+						</p>
 					</div>
-				</m.div>
-			</section>
 
-			{/* Stats Bar */}
-			<section className="container max-w-6xl mx-auto py-16 px-4">
-				<m.div
-					initial={{ opacity: 1, y: 0 }}
-					whileInView={{ opacity: 1, y: 0 }}
-					viewport={{ once: true, margin: "-100px" }}
-					transition={{ duration: 0.6 }}
-					className="bg-slate-800/50 backdrop-blur-sm border border-white/10 rounded-2xl p-8"
-				>
-					<div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-						<div>
-							<div className="text-4xl font-bold text-emerald-400 mb-2">55+</div>
-							<div className="text-gray-400">Early Alpha Users</div>
-						</div>
-						<div>
-							<div className="text-4xl font-bold text-emerald-400 mb-2">1,000+</div>
-							<div className="text-gray-400">Snapshots Created</div>
-						</div>
-						<div>
-							<div className="text-4xl font-bold text-emerald-400 mb-2">&lt;200ms</div>
-							<div className="text-gray-400">Snapshot Creation Speed</div>
+					<div className="mt-12">
+						<p className="text-gray-400 mb-6">
+							SnapBack is built by <a href="https://marcellelabs.com" className="text-emerald-400 hover:underline">Marcelle Labs</a>.
+						</p>
+						<div className="flex flex-wrap justify-center gap-4">
+							<Link
+								href="/blog"
+								className="px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-white font-medium transition-all focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-slate-900"
+							>
+								Read Our Blog
+							</Link>
+							<Link
+								href="/community"
+								className="px-6 py-3 bg-emerald-400 hover:bg-emerald-400/90 text-black font-bold rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2 focus:ring-offset-slate-900"
+							>
+								Join Community
+							</Link>
 						</div>
 					</div>
 				</m.div>
@@ -307,7 +203,7 @@ export default function AboutClient() {
 					{/*
 					<Link
 						href="/docs/getting-started"
-						className="inline-flex items-center px-8 py-4 bg-[#00FF41] hover:bg-[#00FF41]/90 text-black font-bold rounded-xl transition-all text-lg focus:outline-none focus:ring-2 focus:ring-[#00FF41] focus:ring-offset-2 focus:ring-offset-slate-900"
+						className="inline-flex items-center px-8 py-4 bg-[#34D399] hover:bg-[#34D399]/90 text-black font-bold rounded-xl transition-all text-lg focus:outline-none focus:ring-2 focus:ring-[#34D399] focus:ring-offset-2 focus:ring-offset-slate-900"
 					>
 						Install SnapBack Free →
 					</Link>

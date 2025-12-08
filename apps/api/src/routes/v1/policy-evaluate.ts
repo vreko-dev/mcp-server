@@ -5,7 +5,7 @@ import { apiKeys } from "@snapback/platform";
 import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
-import { log } from "../../../lib/logger";
+import { log } from "@/lib/logger";
 import { getDb } from "../../services/database";
 
 // In-memory cache for revocation status with TTL

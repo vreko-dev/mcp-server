@@ -6,8 +6,8 @@
  */
 
 import { describe, expect, it } from "vitest";
-import type { IExtensionProvider } from "../../../src/core/detection/AIPresenceDetector";
-import { AIPresenceDetector } from "../../../src/core/detection/AIPresenceDetector";
+import type { IExtensionProvider } from "@snapback-sdk/core/detection/AIPresenceDetector";
+import { AIPresenceDetector } from "@snapback-sdk/core/detection/AIPresenceDetector";
 
 describe("AIPresenceDetector", () => {
 	describe("Constructor and initialization", () => {

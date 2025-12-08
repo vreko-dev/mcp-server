@@ -7,7 +7,7 @@ import { Activity as ActivityIcon, Bot, Camera, RotateCcw } from "lucide-react";
 import posthog from "posthog-js";
 import { useEffect, useRef } from "react";
 import type { AppError } from "@/lib/error-handler";
-import { AnalyticsEvents } from "../../../analytics";
+import { AnalyticsEvents } from "@analytics";
 
 interface Activity {
 	type: "snapshot" | "ai_detection" | "recovery";

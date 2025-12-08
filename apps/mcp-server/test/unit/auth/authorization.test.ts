@@ -17,7 +17,7 @@
 
 import { getRateLimitForTier, hasPermissionForTier } from "@snapback/auth/lib/tier-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { type AuthResult, hasPermission, hasToolAccess } from "../../../src/auth";
+import { type AuthResult, hasPermission, hasToolAccess } from "@mcp/auth";
 
 // Mock @snapback/infrastructure to avoid database initialization
 vi.mock("@snapback/infrastructure", () => ({

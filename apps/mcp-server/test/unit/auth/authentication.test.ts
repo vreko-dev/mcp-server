@@ -17,7 +17,7 @@
 
 import { auth } from "@snapback/auth";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { authenticate, clearAuthCache } from "../../../src/auth";
+import { authenticate, clearAuthCache } from "@mcp/auth";
 
 // Mock @snapback/auth
 vi.mock("@snapback/auth", () => ({

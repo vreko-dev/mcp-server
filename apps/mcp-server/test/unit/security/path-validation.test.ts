@@ -21,7 +21,7 @@ import {
 	SecurityError,
 	setWorkspaceRoot,
 	validateFilePath,
-} from "../../../src/utils/security";
+} from "@mcp/utils/security";
 
 // Mock filesystem
 vi.mock("node:fs", async () => {

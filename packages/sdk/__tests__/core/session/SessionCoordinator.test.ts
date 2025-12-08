@@ -12,8 +12,8 @@ import type {
 	ILogger,
 	ISessionStorage,
 	ITimerService,
-} from "../../../src/core/session/interfaces";
-import type { SessionManifest } from "../../../src/core/session/types";
+} from "@snapback-sdk/core/session/interfaces";
+import type { SessionManifest } from "@snapback-sdk/core/session/types";
 
 // Mock implementations for testing
 class MockEventEmitter implements IEventEmitter<SessionManifest> {
@@ -139,7 +139,7 @@ class MockSessionStorage implements ISessionStorage {
 	}
 }
 
-import { SessionCoordinator } from "../../../src/core/session/SessionCoordinator";
+import { SessionCoordinator } from "@snapback-sdk/core/session/SessionCoordinator";
 
 describe("SessionCoordinator", () => {
 	let coordinator: SessionCoordinator;

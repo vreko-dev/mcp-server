@@ -1,6 +1,12 @@
+import { resolve } from "node:path";
 import { defineProject } from "vitest/config";
 
 export default defineProject({
+	resolve: {
+		alias: {
+			"@mcp": resolve(__dirname, "./src"),
+		},
+	},
 	test: {
 		name: "@snapback/mcp-server",
 		globals: true,

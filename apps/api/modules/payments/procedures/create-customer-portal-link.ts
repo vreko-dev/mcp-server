@@ -4,9 +4,9 @@ import { createCustomerPortalLink as createCustomerPortalLinkFn } from "@snapbac
 import { member, purchase } from "@snapback/platform";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
-import { localeMiddleware } from "../../../orpc/middleware/locale-middleware";
-import { protectedProcedure } from "../../../orpc/procedures";
-import { getDb } from "../../../src/services/database";
+import { localeMiddleware } from "@/orpc/middleware/locale-middleware";
+import { protectedProcedure } from "@/orpc/procedures";
+import { getDb } from "@/src/services/database";
 
 export const createCustomerPortalLink = protectedProcedure
 	.use(localeMiddleware)

@@ -183,7 +183,7 @@ const paragraph = {
 
 const queueBox = {
 	backgroundColor: "#111111",
-	border: "2px solid #00FF41",
+	border: "2px solid #34D399",
 	borderRadius: "12px",
 	padding: "32px",
 	margin: "32px 0",
@@ -201,7 +201,7 @@ const queueLabel = {
 const queueNumber = {
 	fontSize: "56px",
 	fontWeight: "bold",
-	color: "#00FF41",
+	color: "#34D399",
 	margin: "0",
 };
 
@@ -223,7 +223,7 @@ const timelineItem = {
 const timelineStep = {
 	fontSize: "14px",
 	fontWeight: "600",
-	color: "#00FF41",
+	color: "#34D399",
 	margin: "0 0 4px 0",
 };
 
@@ -291,7 +291,7 @@ const taskDescription = {
 const taskPoints = {
 	fontSize: "14px",
 	fontWeight: "600",
-	color: "#00FF41",
+	color: "#34D399",
 	marginLeft: "16px",
 };
 
@@ -301,7 +301,7 @@ const buttonContainer = {
 };
 
 const button = {
-	backgroundColor: "#00FF41",
+	backgroundColor: "#34D399",
 	borderRadius: "8px",
 	color: "#000000",
 	fontSize: "16px",
@@ -325,6 +325,6 @@ const footer = {
 };
 
 const link = {
-	color: "#00FF41",
+	color: "#34D399",
 	textDecoration: "underline",
 };

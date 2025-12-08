@@ -6,7 +6,7 @@
 
 import { act, renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { useSessionRecording } from "../../../../modules/analytics/hooks/use-session-recording";
+import { useSessionRecording } from "@/modules/analytics/hooks/use-session-recording";
 
 // Mock window.posthog
 const mockPostHog = {

@@ -160,7 +160,7 @@ export function SocialProof() {
 				>
 					<h2 className="text-4xl md:text-6xl font-bold text-white mb-6">
 						The Numbers Don't{" "}
-						<span className="bg-gradient-to-r from-[#00FF41] to-[#10B981] bg-clip-text text-transparent">
+						<span className="bg-gradient-to-r from-[#34D399] to-[#10B981] bg-clip-text text-transparent">
 							Lie
 						</span>
 					</h2>
@@ -315,7 +315,7 @@ export function SocialProof() {
 							</div>
 
 							<div className="flex items-center">
-								<div className="w-10 h-10 bg-gradient-to-r from-[#00FF41] to-[#10B981] rounded-full flex items-center justify-center text-black font-bold text-sm mr-3">
+								<div className="w-10 h-10 bg-gradient-to-r from-[#34D399] to-[#10B981] rounded-full flex items-center justify-center text-black font-bold text-sm mr-3">
 									{testimonial.author
 										.split(" ")
 										.map((n) => n[0])

@@ -1,6 +1,6 @@
 import { countAllUsers, getUsers } from "@snapback/platform";
 import { z } from "zod";
-import { adminProcedure } from "../../../orpc/procedures";
+import { adminProcedure } from "@/orpc/procedures";
 
 export const listUsers = adminProcedure
 	.route({

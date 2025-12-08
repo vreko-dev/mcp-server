@@ -1,7 +1,7 @@
 import { ORPCError } from "@orpc/client";
 import { generateOrganizationSlug as generateOrganizationSlugQuery } from "@snapback/platform";
 import { z } from "zod";
-import { publicProcedure } from "../../../orpc/procedures";
+import { publicProcedure } from "@/orpc/procedures";
 
 export const generateOrganizationSlug = publicProcedure
 	.route({

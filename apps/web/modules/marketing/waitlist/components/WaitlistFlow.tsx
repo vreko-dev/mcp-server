@@ -146,7 +146,7 @@ export function WaitlistFlow() {
 					>
 						<motion.form
 							onSubmit={handleSubmit}
-							className="space-y-8 rounded-lg border border-snapback-border bg-black/50 backdrop-blur-sm shadow-lg shadow-[#00FF41]/5 p-8"
+							className="space-y-8 rounded-lg border border-snapback-border bg-black/50 backdrop-blur-sm shadow-lg shadow-[#34D399]/5 p-8"
 						>
 							{/* Contact Information Section */}
 							<div className="space-y-4">
@@ -160,7 +160,7 @@ export function WaitlistFlow() {
 										value={formData.email}
 										onChange={(e) => handleChange("email", e.target.value)}
 										placeholder="your@email.com"
-										className="bg-snapback-bg-primary border-snapback-border focus:border-[#00FF41] transition-colors"
+										className="bg-snapback-bg-primary border-snapback-border focus:border-[#34D399] transition-colors"
 									/>
 								</div>
 
@@ -173,7 +173,7 @@ export function WaitlistFlow() {
 										value={formData.githubUsername}
 										onChange={(e) => handleChange("githubUsername", e.target.value)}
 										placeholder="octocat"
-										className="bg-snapback-bg-primary border-snapback-border focus:border-[#00FF41] transition-colors"
+										className="bg-snapback-bg-primary border-snapback-border focus:border-[#34D399] transition-colors"
 									/>
 								</div>
 							</div>
@@ -257,7 +257,7 @@ export function WaitlistFlow() {
 							{process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && (
 								<div className="space-y-2 pt-4 border-t border-snapback-border/50">
 									<div className="flex items-center gap-2 text-sm text-snapback-text-secondary mb-3">
-										<Shield className="w-4 h-4 text-[#00FF41]" />
+										<Shield className="w-4 h-4 text-[#34D399]" />
 										<span>Security Verification</span>
 									</div>
 									<div className="flex justify-center">
@@ -280,7 +280,7 @@ export function WaitlistFlow() {
 								<Button
 									type="submit"
 									disabled={loading || !turnstileToken}
-									className="w-full bg-[#00FF41] hover:bg-[#00FF41]/90 text-black font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+									className="w-full bg-[#34D399] hover:bg-[#34D399]/90 text-black font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
 								>
 									{loading ? (
 										"Submitting..."

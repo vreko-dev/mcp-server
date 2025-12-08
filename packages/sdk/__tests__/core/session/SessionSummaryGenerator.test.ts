@@ -7,9 +7,9 @@
 
 import type { Snapshot } from "@snapback/contracts";
 import { describe, expect, it, vi } from "vitest";
-import type { ILogger } from "../../../src/core/session/interfaces";
-import { SessionSummaryGenerator } from "../../../src/core/session/SessionSummaryGenerator";
-import type { SessionManifest } from "../../../src/core/session/types";
+import type { ILogger } from "@snapback-sdk/core/session/interfaces";
+import { SessionSummaryGenerator } from "@snapback-sdk/core/session/SessionSummaryGenerator";
+import type { SessionManifest } from "@snapback-sdk/core/session/types";
 
 describe("SessionSummaryGenerator", () => {
 	describe("Metadata-based summaries", () => {

@@ -45,9 +45,9 @@ export function QueueTasksPreview({ className }: QueueTasksPreviewProps) {
 					{tasks.map((task, index) => (
 						<div
 							key={index}
-							className="group flex items-center gap-3 p-3 rounded-lg bg-snapback-bg-primary border border-snapback-border/50 hover:border-[#00FF41] hover:bg-[#00FF41]/5 transition-all cursor-pointer"
+							className="group flex items-center gap-3 p-3 rounded-lg bg-snapback-bg-primary border border-snapback-border/50 hover:border-[#34D399] hover:bg-[#34D399]/5 transition-all cursor-pointer"
 						>
-							<div className="flex h-10 w-10 items-center justify-center rounded-full bg-snapback-bg-tertiary text-snapback-text-secondary group-hover:bg-[#00FF41]/10 group-hover:text-[#00FF41] transition-all">
+							<div className="flex h-10 w-10 items-center justify-center rounded-full bg-snapback-bg-tertiary text-snapback-text-secondary group-hover:bg-[#34D399]/10 group-hover:text-[#34D399] transition-all">
 								{task.icon}
 							</div>
 							<div className="flex-1">
@@ -56,7 +56,7 @@ export function QueueTasksPreview({ className }: QueueTasksPreviewProps) {
 								</p>
 								<p className="text-xs text-snapback-text-secondary">{task.description}</p>
 							</div>
-							<span className="text-sm font-semibold text-[#00FF41] group-hover:scale-110 transition-transform">
+							<span className="text-sm font-semibold text-[#34D399] group-hover:scale-110 transition-transform">
 								+{task.points}
 							</span>
 						</div>

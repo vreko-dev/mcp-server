@@ -2,9 +2,9 @@ import { ORPCError } from "@orpc/client";
 import { apiKeyMetadata, apiKeys, subscriptions } from "@snapback/platform";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
-import { generateSigningSecret } from "../../../lib/security";
-import { protectedProcedure } from "../../../orpc/procedures";
-import { getDb } from "../../../src/services/database";
+import { generateSigningSecret } from "@/lib/security";
+import { protectedProcedure } from "@/orpc/procedures";
+import { getDb } from "@/src/services/database";
 // Remove direct import of crypto functions
 
 export const createApiKey = protectedProcedure

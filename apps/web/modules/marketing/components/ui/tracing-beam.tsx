@@ -14,13 +14,13 @@ export function TracingBeam({ children, className }: TracingBeamProps) {
 		<div className={cn("relative", className)}>
 			{/* Vertical beam */}
 			<div className="absolute left-1/2 top-0 bottom-0 w-[2px] -translate-x-1/2">
-				<div className="w-full h-full bg-gradient-to-b from-transparent via-[#00FF41] to-transparent opacity-30" />
+				<div className="w-full h-full bg-gradient-to-b from-transparent via-[#34D399] to-transparent opacity-30" />
 
 				{/* Animated glow */}
 				<m.div
 					className="absolute top-0 left-1/2 w-1 h-20 -translate-x-1/2"
 					style={{
-						background: "linear-gradient(180deg, transparent, #00FF41, transparent)",
+						background: "linear-gradient(180deg, transparent, #34D399, transparent)",
 						filter: "blur(2px)",
 					}}
 					animate={{
@@ -34,8 +34,8 @@ export function TracingBeam({ children, className }: TracingBeamProps) {
 				/>
 
 				{/* Static nodes */}
-				<div className="absolute top-4 left-1/2 w-3 h-3 -translate-x-1/2 bg-[#00FF41] rounded-full shadow-lg shadow-[#00FF41]/50" />
-				<div className="absolute bottom-4 left-1/2 w-3 h-3 -translate-x-1/2 bg-[#00FF41] rounded-full shadow-lg shadow-[#00FF41]/50" />
+				<div className="absolute top-4 left-1/2 w-3 h-3 -translate-x-1/2 bg-[#34D399] rounded-full shadow-lg shadow-[#34D399]/50" />
+				<div className="absolute bottom-4 left-1/2 w-3 h-3 -translate-x-1/2 bg-[#34D399] rounded-full shadow-lg shadow-[#34D399]/50" />
 			</div>
 
 			{children}

@@ -16,7 +16,7 @@ function getFeatureIcon(iconName: string) {
 						repeat: Number.POSITIVE_INFINITY,
 						ease: "linear",
 					}}
-					className="text-[#00FF41] text-2xl"
+					className="text-[#34D399] text-2xl"
 				>
 					📡
 				</m.div>
@@ -73,7 +73,7 @@ export function FeatureCards() {
 				>
 					<h2 className="text-4xl md:text-6xl font-bold text-white mb-6">
 						Three Lines of{" "}
-						<span className="bg-gradient-to-r from-[#00FF41] to-[#10B981] bg-clip-text text-transparent">
+						<span className="bg-gradient-to-r from-[#34D399] to-[#10B981] bg-clip-text text-transparent">
 							Defense
 						</span>
 					</h2>
@@ -109,7 +109,7 @@ export function FeatureCards() {
 											style={{
 												background: `radial-gradient(circle at center, ${
 													feature.icon === "radar"
-														? "#00FF41"
+														? "#34D399"
 														: feature.icon === "shield"
 															? "#10B981"
 															: "#FF6B35"

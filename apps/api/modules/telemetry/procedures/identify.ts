@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { publicProcedure } from "../../../orpc/procedures";
+import { publicProcedure } from "@/orpc/procedures";
 import { linkUserIdentity } from "../lib/identity-service";
 
 const identifySchema = z.object({

@@ -1,14 +1,14 @@
 "use client";
 
-import { ComingSoonBadge } from "@marketing/components/ui/coming-soon-badge";
-import { AlertTriangle, Brain, Clock, Plug, Shield, Zap } from "lucide-react";
+
+import { AlertTriangle, Brain, Clock, Shield, Zap } from "lucide-react";
 import { m } from "motion/react";
 import Link from "next/link";
 
 const features = [
 	{
 		icon: Shield,
-		title: "Pattern Memory",
+		title: "Remembers What Breaks",
 		subtitle: "Learns What Breaks",
 		description:
 			"SnapBack learns what went wrong in YOUR codebase. Watch level auto-snapshots what you care about. Warn level asks before changes. Block level creates audit trails. Your protection rules sync across the team.",
@@ -69,23 +69,6 @@ const features = [
 		docsLink: "/docs/concepts/severity",
 		color: "text-orange-400",
 		bgGlow: "from-orange-500/20",
-	},
-	{
-		icon: Plug,
-		title: "AI Agent Ready",
-		subtitle: "MCP Protocol",
-		comingSoon: true,
-		description:
-			"Give Claude, Cursor, and other AI agents access to SnapBack's pattern memory. Before they change 10 files, they ask SnapBack: 'What patterns will break this?' and 'Did this cause problems before?'",
-		benefits: [
-			"Check for risky patterns before applying changes",
-			"Query if this refactor pattern caused problems",
-			"Checkpoint before dangerous operations",
-			"Agents learn alongside developers",
-		],
-		docsLink: "/docs/integrations/mcp-server",
-		color: "text-cyan-400",
-		bgGlow: "from-cyan-500/20",
 	},
 	{
 		icon: Zap,
@@ -171,7 +154,7 @@ export default function FeaturesClient() {
 								{/* Title & Subtitle */}
 								<div className="flex items-center gap-3 mb-2">
 									<h2 className="text-2xl font-bold text-white">{feature.title}</h2>
-									{(feature as any).comingSoon && <ComingSoonBadge variant="inline" />}
+
 								</div>
 								<p className={`text-sm font-mono ${feature.color} mb-4`}>{feature.subtitle}</p>
 

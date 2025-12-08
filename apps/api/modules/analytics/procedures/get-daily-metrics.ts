@@ -1,8 +1,8 @@
 import { ORPCError } from "@orpc/client";
 import { sql } from "drizzle-orm";
 import { z } from "zod";
-import { protectedProcedure } from "../../../orpc/procedures";
-import { getDb } from "../../../src/services/database";
+import { protectedProcedure } from "@/orpc/procedures";
+import { getDb } from "@/src/services/database";
 
 const GetDailyMetricsInputSchema = z.object({
 	limit: z

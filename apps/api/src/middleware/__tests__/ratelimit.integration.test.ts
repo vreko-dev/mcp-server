@@ -15,7 +15,7 @@ import {
 	closeRedisClient,
 	getRedisClient,
 	initializeRedisClient,
-} from "../../../lib/redis-client";
+} from "@/lib/redis-client";
 
 describe("Rate Limiting Integration", () => {
 	let app: Hono;

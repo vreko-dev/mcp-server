@@ -1,6 +1,6 @@
 import { PostHog } from "posthog-node";
 import { z } from "zod";
-import { publicProcedure } from "../../../orpc/procedures";
+import { publicProcedure } from "@/orpc/procedures";
 
 // Temporarily define the types here
 interface TelemetryEvent {

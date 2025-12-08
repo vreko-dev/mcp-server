@@ -12,16 +12,19 @@ export default defineConfig({
 		alias: {
 			// Support @/ prefix for app-relative imports
 			// These mirror the tsconfig.json paths configuration
-			"@/": resolve(__dirname, "./"),
-			"@/orpc/": resolve(__dirname, "./orpc/"),
-			"@/modules/": resolve(__dirname, "./modules/"),
-			"@/lib/": resolve(__dirname, "./lib/"),
+			"@/orpc": resolve(__dirname, "./orpc"),
+			"@/modules": resolve(__dirname, "./modules"),
+			"@/lib": resolve(__dirname, "./lib"),
+			"@/src": resolve(__dirname, "./src"),
+			"@/middleware": resolve(__dirname, "./middleware"),
+			"@": resolve(__dirname, "./"),
 		},
 	},
 	test: {
 		globals: true,
 		environment: "node",
 		passWithNoTests: true,
+		include: ["**/*.test.ts", "**/*.spec.ts", "__tests__/**/*.ts"],
 		// Module directories for monorepo dependency resolution
 		deps: {
 			moduleDirectories: [

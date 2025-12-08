@@ -1,6 +1,6 @@
 import type { SnapshotManager } from "@snapback/sdk";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { listSnapshots } from "../../../src/tools/list-snapshots";
+import { listSnapshots } from "@mcp/tools/list-snapshots";
 
 /**
  * listCheckpoints Tool Tests (Pro Tier)

@@ -31,8 +31,8 @@ export function FinalCTA() {
 							}
 						>
 							<ShimmerButton
-								className="bg-[#00FF41] text-black hover:bg-[#00FF41]/90 font-semibold text-lg px-10 py-5"
-								shimmerColor="#00FF41"
+								className="bg-[#34D399] text-black hover:bg-[#34D399]/90 font-semibold text-lg px-10 py-5"
+								shimmerColor="#34D399"
 							>
 								{final_cta.content.primary_cta.label} →
 							</ShimmerButton>

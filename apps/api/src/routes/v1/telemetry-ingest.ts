@@ -1,7 +1,7 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { z } from "zod";
-import { log } from "../../../lib/logger";
+import { log } from "@/lib/logger";
 import type { TelemetrySink } from "../../ports/TelemetrySink";
 
 // In-memory telemetry sink for development/testing

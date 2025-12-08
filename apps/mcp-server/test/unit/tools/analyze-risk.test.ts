@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import type { RiskAnalysisInput } from "../../../src/utils/risk-analyzer";
-import { analyzeRisk } from "../../../src/utils/risk-analyzer";
+import type { RiskAnalysisInput } from "@mcp/utils/risk-analyzer";
+import { analyzeRisk } from "@mcp/utils/risk-analyzer";
 
 /**
  * analyze-risk Tool Tests

@@ -11,7 +11,7 @@ export function PostListItem({ post }: { post: Post }) {
 	return (
 		<m.div whileHover={{ y: -5 }} className="group relative h-full">
 			{/* Gradient glow effect */}
-			<div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#00FF41]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
+			<div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#34D399]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
 
 			<div className="relative bg-slate-800/50 backdrop-blur-sm border border-white/10 rounded-2xl p-6 h-full hover:border-white/20 transition-all duration-300">
 				{image && (
@@ -37,7 +37,7 @@ export function PostListItem({ post }: { post: Post }) {
 						{tags.map((tag) => (
 							<span
 								key={tag}
-								className="px-2 py-1 bg-slate-700/50 rounded-full text-xs font-medium text-[#00FF41]"
+								className="px-2 py-1 bg-slate-700/50 rounded-full text-xs font-medium text-[#34D399]"
 							>
 								{tag}
 							</span>
@@ -47,7 +47,7 @@ export function PostListItem({ post }: { post: Post }) {
 
 				<Link
 					href={`/blog/${path}`}
-					className="font-semibold text-xl text-white hover:text-[#00FF41] transition-colors block mb-2"
+					className="font-semibold text-xl text-white hover:text-[#34D399] transition-colors block mb-2"
 				>
 					{title}
 				</Link>

@@ -4,7 +4,7 @@ import {
 	logger,
 } from "@snapback/infrastructure";
 import { z } from "zod";
-import { publicProcedure } from "../../../orpc/procedures";
+import { publicProcedure } from "@/orpc/procedures";
 
 const setupAlertsSchema = z.object({
 	dryRun: z.boolean().default(false),

@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createMockContext } from "../../../__tests__/utils/mock-context";
-import { mockDb } from "../../../__tests__/utils/mock-db";
+import { createMockContext } from "@/__tests__/utils/mock-context";
+import { mockDb } from "@/__tests__/utils/mock-db";
 import { storageRouter } from "../router";
 
 // Mock the platform package

@@ -1,9 +1,9 @@
 import { apiKeys } from "@snapback/platform";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
-import { trackUsage } from "../../../lib/usage";
-import { protectedProcedure } from "../../../orpc/procedures";
-import { getDb } from "../../../src/services/database";
+import { trackUsage } from "@/lib/usage";
+import { protectedProcedure } from "@/orpc/procedures";
+import { getDb } from "@/src/services/database";
 
 // Risk factor types
 type RiskFactor = {

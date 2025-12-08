@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { protectedProcedure } from "../../../orpc/procedures";
+import { protectedProcedure } from "@/orpc/procedures";
 
 const getCooldownStatusSchema = z.object({
 	filePath: z.string(),

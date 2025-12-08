@@ -1,9 +1,9 @@
 import { apiKeys } from "@snapback/platform";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
-import { isDatabaseAvailable } from "../../../lib/database";
-import { protectedProcedure } from "../../../orpc/procedures";
-import { getDb } from "../../../src/services/database";
+import { isDatabaseAvailable } from "@/lib/database";
+import { protectedProcedure } from "@/orpc/procedures";
+import { getDb } from "@/src/services/database";
 
 export const revokeApiKey = protectedProcedure
 	.input(

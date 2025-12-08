@@ -3,8 +3,8 @@ import { logger } from "@snapback/infrastructure";
 import { featureUsage, snapshots } from "@snapback/platform";
 import { and, count, eq, sql, sum } from "drizzle-orm";
 import { z } from "zod";
-import { protectedProcedure } from "../../../orpc/procedures";
-import { getDb } from "../../../src/services/database";
+import { protectedProcedure } from "@/orpc/procedures";
+import { getDb } from "@/src/services/database";
 
 const getUserMetricsOutputSchema = z.object({
 	snapshotCount: z.number(),

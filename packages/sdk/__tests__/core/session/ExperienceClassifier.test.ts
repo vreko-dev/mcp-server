@@ -6,8 +6,8 @@
  */
 
 import { beforeEach, describe, expect, it } from "vitest";
-import { ExperienceClassifier, type IKeyValueStorage } from "../../../src/core/session/ExperienceClassifier";
-import type { ILogger } from "../../../src/core/session/interfaces";
+import { ExperienceClassifier, type IKeyValueStorage } from "@snapback-sdk/core/session/ExperienceClassifier";
+import type { ILogger } from "@snapback-sdk/core/session/interfaces";
 
 // Mock key-value storage
 class MockKeyValueStorage implements IKeyValueStorage {

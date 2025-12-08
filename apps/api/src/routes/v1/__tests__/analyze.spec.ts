@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { GuardianService } from "../../../services/guardian";
+import { GuardianService } from "@/src/services/guardian";
 import analyzeRoute from "../analyze";
 
 // Mock the auth module

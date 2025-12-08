@@ -1,8 +1,8 @@
 import { purchase } from "@snapback/platform";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
-import { protectedProcedure } from "../../../orpc/procedures";
-import { getDb } from "../../../src/services/database";
+import { protectedProcedure } from "@/orpc/procedures";
+import { getDb } from "@/src/services/database";
 
 export const listPurchases = protectedProcedure
 	.route({

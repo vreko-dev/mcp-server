@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { protectedProcedure } from "../../../orpc/procedures";
+import { protectedProcedure } from "@/orpc/procedures";
 
 const listCooldownsSchema = z.object({
 	limit: z.number().int().min(1).max(100).default(50),

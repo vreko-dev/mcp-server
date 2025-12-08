@@ -2,7 +2,7 @@
 export const snapbackColors = {
 	// Primary
 	green: {
-		DEFAULT: "#00FF41", // Neon/Matrix Green
+		DEFAULT: "#34D399", // Neon/Matrix Green
 		light: "#4DFF70",
 		dark: "#00B82F",
 		glow: "rgba(0, 255, 65, 0.3)",
@@ -11,7 +11,7 @@ export const snapbackColors = {
 	// Status
 	warning: "#FF6B35",
 	danger: "#EF4444",
-	success: "#00FF41",
+	success: "#34D399",
 
 	// Backgrounds (Dark theme only)
 	bg: {

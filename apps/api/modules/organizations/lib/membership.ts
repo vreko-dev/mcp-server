@@ -1,6 +1,6 @@
 import { member, organization } from "@snapback/platform";
 import { and, eq } from "drizzle-orm";
-import { getDb } from "../../../src/services/database";
+import { getDb } from "@/src/services/database";
 
 export async function getOrganizationMembership(
 	userId: string,

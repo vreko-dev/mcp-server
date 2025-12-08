@@ -70,8 +70,8 @@ const SelectItem = ({ className, children, ...props }: React.ComponentProps<type
 	<SelectPrimitive.Item
 		className={cn(
 			"relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 pr-8 pl-3 text-sm outline-none",
-			"focus:bg-[#00FF41]/10 focus:text-[#00FF41]",
-			"hover:bg-[#00FF41]/5",
+			"focus:bg-[#34D399]/10 focus:text-[#34D399]",
+			"hover:bg-[#34D399]/5",
 			"data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
 			"transition-colors",
 			className,
@@ -80,7 +80,7 @@ const SelectItem = ({ className, children, ...props }: React.ComponentProps<type
 	>
 		<span className="absolute right-2 flex h-4 w-4 items-center justify-center">
 			<SelectPrimitive.ItemIndicator>
-				<CheckIcon className="h-4 w-4 text-[#00FF41]" />
+				<CheckIcon className="h-4 w-4 text-[#34D399]" />
 			</SelectPrimitive.ItemIndicator>
 		</span>
 		<SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>

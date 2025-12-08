@@ -2,8 +2,8 @@ import { apiKeys, deviceTrials } from "@snapback/platform";
 import { eq } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { z } from "zod";
-import { publicProcedure } from "../../../orpc/procedures";
-import { getDb } from "../../../src/services/database";
+import { publicProcedure } from "@/orpc/procedures";
+import { getDb } from "@/src/services/database";
 
 const createDeviceTrialSchema = z.object({
 	deviceFingerprint: z.string().min(10),

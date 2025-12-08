@@ -74,7 +74,7 @@ export function Hero() {
 						<motion.span
 							animate={{ scale: [1, 1.2, 1] }}
 							transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
-							className="h-2 w-2 rounded-full bg-green shadow-[0_0_10px_#00FF41]"
+							className="h-2 w-2 rounded-full bg-green shadow-[0_0_10px_#34D399]"
 						/>
 						<span>{heroContent.primary_cta.subtext}</span>
 					</div>

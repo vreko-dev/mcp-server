@@ -3,9 +3,9 @@ import { apiKeys, subscriptions } from "@snapback/platform";
 import { eq } from "drizzle-orm";
 import { PostHog } from "posthog-node";
 import { z } from "zod";
-import { trackUsage } from "../../../lib/usage";
-import { protectedProcedure } from "../../../orpc/procedures";
-import { getDb } from "../../../src/services/database";
+import { trackUsage } from "@/lib/usage";
+import { protectedProcedure } from "@/orpc/procedures";
+import { getDb } from "@/src/services/database";
 
 // Initialize PostHog client
 let posthogClient: PostHog | null = null;

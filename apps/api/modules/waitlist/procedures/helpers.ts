@@ -4,7 +4,7 @@ import {
 	type NewWaitlistAuditLog,
 	waitlistAuditLogs,
 } from "@snapback/platform";
-import { getDb } from "../../../src/services/database";
+import { getDb } from "@/src/services/database";
 
 // Sanitize string input to prevent XSS
 export function sanitizeString(

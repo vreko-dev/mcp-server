@@ -190,7 +190,7 @@ export function WaitlistSuccess({ queuePosition, email }: WaitlistSuccessProps) 
 					className="text-center py-8 bg-snapback-bg-primary rounded-lg border-2 border-snapback-green/30"
 				>
 					<p className="text-sm text-snapback-text-secondary mb-2 uppercase tracking-wide">Queue Position</p>
-					<p className="text-6xl font-bold bg-gradient-to-r from-[#00FF41] via-[#34D399] to-[#00FF41] bg-clip-text text-transparent">
+					<p className="text-6xl font-bold bg-gradient-to-r from-[#34D399] via-[#34D399] to-[#34D399] bg-clip-text text-transparent">
 						#{queuePosition}
 					</p>
 					<p className="text-sm text-snapback-text-secondary mt-2">Check your email for next steps</p>

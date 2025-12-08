@@ -1,6 +1,14 @@
-import { defineProject } from "vitest/config";
+import { resolve } from "node:path";
+import { defineConfig } from "vitest/config";
 
-export default defineProject({
+export default defineConfig({
+	resolve: {
+		alias: {
+			"@snapback-sdk": resolve(__dirname, "./src"),
+			"@snapback-sdk/core": resolve(__dirname, "./src/core"),
+			"@snapback-sdk/storage": resolve(__dirname, "./src/storage"),
+		},
+	},
 	test: {
 		name: "@snapback/sdk",
 		globals: true,

@@ -7,7 +7,7 @@ import Link from "next/link";
 import posthog from "posthog-js";
 import { useEffect, useRef } from "react";
 import type { AppError } from "@/lib/error-handler";
-import { AnalyticsEvents } from "../../../analytics";
+import { AnalyticsEvents } from "@analytics";
 
 interface AIDetectionStat {
 	tool: string;

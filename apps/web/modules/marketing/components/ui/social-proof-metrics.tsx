@@ -14,8 +14,8 @@ export function SocialProofMetrics({ className, variant = "default" }: SocialPro
 		{
 			icon: (
 				<span className="relative flex h-2 w-2">
-					<span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00FF41] opacity-75" />
-					<span className="relative inline-flex rounded-full h-2 w-2 bg-[#00FF41]" />
+					<span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#34D399] opacity-75" />
+					<span className="relative inline-flex rounded-full h-2 w-2 bg-[#34D399]" />
 				</span>
 			),
 			value: 55,
@@ -24,7 +24,7 @@ export function SocialProofMetrics({ className, variant = "default" }: SocialPro
 			showNumber: true,
 		},
 		{
-			icon: <CheckCircle className="h-4 w-4 text-[#00FF41]" />,
+			icon: <CheckCircle className="h-4 w-4 text-[#34D399]" />,
 			value: 12,
 			prefix: "$",
 			suffix: "k",

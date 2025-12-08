@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createMockExternalServices } from "../../../__tests__/utils/enhanced-test-helpers";
+import { createMockExternalServices } from "@/__tests__/utils/enhanced-test-helpers";
 import {
 	callMockProcedure,
 	createMockORPCContext,
 	expectORPCError,
 	expectORPCSuccess,
-} from "../../../__tests__/utils/orpc-test-helpers";
+} from "@/__tests__/utils/orpc-test-helpers";
 
 // Mock the database
 const mockDrizzle = {

@@ -3,8 +3,8 @@ import { logger } from "@snapback/infrastructure";
 import { orgDailyMetrics } from "@snapback/platform";
 import { and, eq, gte, lte, sql, sum } from "drizzle-orm";
 import { z } from "zod";
-import { protectedProcedure } from "../../../orpc/procedures";
-import { getDb } from "../../../src/services/database";
+import { protectedProcedure } from "@/orpc/procedures";
+import { getDb } from "@/src/services/database";
 
 const getOrgMetricsInputSchema = z.object({
 	organizationId: z.string(),

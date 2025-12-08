@@ -8,7 +8,7 @@ import Link from "next/link";
 import posthog from "posthog-js";
 import { memo, useEffect, useRef } from "react";
 import type { AppError } from "@/lib/error-handler";
-import { AnalyticsEvents } from "../../../analytics";
+import { AnalyticsEvents } from "@analytics";
 
 interface MetricsGridProps {
 	snapshotCount: number;

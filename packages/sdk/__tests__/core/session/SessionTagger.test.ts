@@ -16,9 +16,9 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { BurstDetectionResult } from "../../../src/core/detection/BurstHeuristicsDetector";
-import { type AIPresenceInfo, SessionTagger } from "../../../src/core/session/SessionTagger";
-import type { SessionManifest } from "../../../src/core/session/types";
+import type { BurstDetectionResult } from "@snapback-sdk/core/detection/BurstHeuristicsDetector";
+import { type AIPresenceInfo, SessionTagger } from "@snapback-sdk/core/session/SessionTagger";
+import type { SessionManifest } from "@snapback-sdk/core/session/types";
 import { expectNormalizedScore } from "../../helpers/assertions";
 
 describe("SessionTagger", () => {

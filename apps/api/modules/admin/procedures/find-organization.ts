@@ -1,7 +1,7 @@
 import { ORPCError } from "@orpc/client";
 import { getOrganizationById } from "@snapback/platform";
 import { z } from "zod";
-import { adminProcedure } from "../../../orpc/procedures";
+import { adminProcedure } from "@/orpc/procedures";
 
 export const findOrganization = adminProcedure
 	.route({

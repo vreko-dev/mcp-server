@@ -16,8 +16,8 @@ import {
 } from "@snapback/contracts";
 import { logger } from "@snapback/infrastructure";
 import { z } from "zod";
-import { protectedProcedure } from "../../../orpc/procedures";
-import { getDb } from "../../../src/services/database";
+import { protectedProcedure } from "@/orpc/procedures";
+import { getDb } from "@/src/services/database";
 
 /**
  * Get dashboard metrics for authenticated user

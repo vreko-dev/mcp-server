@@ -46,7 +46,7 @@ export const Highlight = ({ children, className }: { children: React.ReactNode; 
 				backgroundRepeat: "no-repeat",
 				backgroundPosition: "left center",
 				display: "inline",
-				backgroundImage: "linear-gradient(90deg, #00FF41 0%, #10B981 50%, transparent 100%)",
+				backgroundImage: "linear-gradient(90deg, #34D399 0%, #10B981 50%, transparent 100%)",
 				zIndex: -1,
 			}}
 			className={cn("relative", className)}

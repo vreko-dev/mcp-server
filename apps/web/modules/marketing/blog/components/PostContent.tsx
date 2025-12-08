@@ -17,14 +17,14 @@ const components: MDXComponents = {
 	h5: (props) => <h5 className="text-lg font-bold mt-6 mb-3 text-white" {...props} />,
 	h6: (props) => <h6 className="text-base font-bold mt-4 mb-2 text-white" {...props} />,
 	p: (props) => <p className="mb-6 leading-relaxed text-gray-300" {...props} />,
-	strong: (props) => <strong className="font-semibold text-[#00FF41]" {...props} />,
-	a: (props) => <a className="text-[#00FF41] hover:text-[#10B981] underline transition-colors" {...props} />,
+	strong: (props) => <strong className="font-semibold text-[#34D399]" {...props} />,
+	a: (props) => <a className="text-[#34D399] hover:text-[#10B981] underline transition-colors" {...props} />,
 	ul: (props) => <ul className="list-disc pl-6 mb-6 space-y-2" {...props} />,
 	ol: (props) => <ol className="list-decimal pl-6 mb-6 space-y-2" {...props} />,
 	li: (props) => <li className="text-gray-300" {...props} />,
 	blockquote: (props) => (
 		<blockquote
-			className="border-l-4 border-[#00FF41] pl-6 italic my-6 text-gray-300 bg-slate-800/50 py-4 rounded-r-lg"
+			className="border-l-4 border-[#34D399] pl-6 italic my-6 text-gray-300 bg-slate-800/50 py-4 rounded-r-lg"
 			{...props}
 		/>
 	),
@@ -32,7 +32,7 @@ const components: MDXComponents = {
 	code: (props) => {
 		// Check if it's an inline code block
 		if (!props.className) {
-			return <code className="px-1.5 py-0.5 bg-slate-800 rounded text-sm font-mono text-[#00FF41]" {...props} />;
+			return <code className="px-1.5 py-0.5 bg-slate-800 rounded text-sm font-mono text-[#34D399]" {...props} />;
 		}
 		// It's a code block with a language
 		return <code className="text-sm" {...props} />;

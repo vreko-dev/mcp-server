@@ -2,7 +2,7 @@ import { auth } from "@snapback/auth";
 import { apiKeys } from "@snapback/platform";
 import { eq } from "drizzle-orm";
 import { Hono } from "hono";
-import { log } from "../../../lib/logger";
+import { log } from "@/lib/logger";
 import { getDb } from "../../services/database";
 
 const app = new Hono();

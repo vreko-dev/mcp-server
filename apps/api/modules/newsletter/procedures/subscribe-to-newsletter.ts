@@ -4,8 +4,8 @@ import { sendEmail } from "@snapback/integrations";
 import { newsletterSubscribers } from "@snapback/platform";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
-import { protectedProcedure } from "../../../orpc/procedures";
-import { getDb } from "../../../src/services/database";
+import { protectedProcedure } from "@/orpc/procedures";
+import { getDb } from "@/src/services/database";
 import { createOrUpdateHubSpotContact } from "../services/hubspot-service";
 
 const subscribeToNewsletterSchema = z.object({

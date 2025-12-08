@@ -210,23 +210,23 @@
 							"type": "two_column_list",
 							"content": {
 								"headline": "Smart snapshots, not noisy backups.",
-								"body": "SnapBack isn’t a glorified “auto-save”. It groups changes around events that actually matter to you.",
+								"body": "SnapBack is mostly invisible. It only snaps when you reach a meaningful milestone.",
 								"triggers": [
 									{
 										"title": "File saves",
-										"description": "Lightweight snapshots keyed to the files you touch most."
+										"description": "Background snapshots on every save so you never lose flow."
 									},
 									{
-										"title": "Test runs",
-										"description": "Before and after your test commands, so you can jump back to “all green”."
+										"title": "Integration Tests",
+										"description": "Snap before running full suites. Restore instantly if they fail."
 									},
 									{
-										"title": "Branch switches & pulls",
-										"description": "Guardrails when you’re juggling multiple workstreams."
+										"title": "Context Switches",
+										"description": "Changing branches or pulling main triggers a safety snapshot."
 									},
 									{
-										"title": "AI-driven edits",
-										"description": "Capture the state before a large Copilot / Claude / Gemini edit so you can compare outcomes."
+										"title": "AI Agent Actions",
+										"description": "Automatically snapshots before Claude/Cursor applies large diffs."
 									}
 								]
 							}

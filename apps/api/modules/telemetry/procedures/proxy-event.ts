@@ -1,6 +1,6 @@
 import { logger } from "@snapback/infrastructure";
 import { z } from "zod";
-import { publicProcedure } from "../../../orpc/procedures";
+import { publicProcedure } from "@/orpc/procedures";
 import { getPostHog } from "../lib/posthog";
 import { addContext, filterProperties } from "../lib/privacy-gate";
 

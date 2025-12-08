@@ -18,7 +18,8 @@
 			"@/orpc/*": ["./orpc/*"],
 			"@/modules/*": ["./modules/*"],
 			"@/lib/*": ["./lib/*"],
-
+			"@/src/*": ["./src/*"],
+			"@/middleware/*": ["./middleware/*"],
 			"@snapback/policy-engine": ["../policy-engine/src"]
 		}
 	},

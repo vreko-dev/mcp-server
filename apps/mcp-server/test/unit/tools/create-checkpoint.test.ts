@@ -1,6 +1,6 @@
 import type { SnapshotManager } from "@snapback/sdk";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createSnapshot } from "../../../src/tools/create-snapshot";
+import { createSnapshot } from "@mcp/tools/create-snapshot";
 
 /**
  * createCheckpoint Tool Tests (Pro Tier)

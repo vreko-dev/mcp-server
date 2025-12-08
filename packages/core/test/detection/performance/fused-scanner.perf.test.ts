@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { FusedScanner } from "../../../src/detection/scanner/FusedScanner";
+import { FusedScanner } from "@snapback-core/detection/scanner/FusedScanner";
 
 // Generate a test fixture with realistic code patterns
 function generateFixture(lines: number): string {

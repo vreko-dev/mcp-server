@@ -5,9 +5,9 @@ import { eq } from "drizzle-orm";
 import {
 	getCachedWaitlistPosition,
 	setCachedWaitlistPosition,
-} from "../../../lib/upstash-client";
-import { protectedProcedure } from "../../../orpc/procedures";
-import { getDb } from "../../../src/services/database";
+} from "@/lib/upstash-client";
+import { protectedProcedure } from "@/orpc/procedures";
+import { getDb } from "@/src/services/database";
 import { hashEmail } from "./helpers";
 
 export const getPosition = protectedProcedure

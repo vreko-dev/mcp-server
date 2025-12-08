@@ -26,7 +26,7 @@ vi.mock("@snapback/platform", () => ({
 
 
 import { getMetricsHandler } from "../get-metrics";
-import { getDb } from "../../../../src/services/database";
+import { getDb } from "@/src/services/database";
 
 // Mock the database service
 vi.mock("../../../../src/services/database", () => ({

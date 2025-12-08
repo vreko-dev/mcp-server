@@ -1,16 +1,11 @@
 import { Hero } from "@marketing/home/components/Hero";
+import { StorySection } from "@/components/landing/story-section";
 import {
-	Community,
-	CorePrinciples,
 	FinalCTA,
-	GitVsSnapback,
 	HowItWorks,
 	InteractiveDemo,
 	Metrics,
-	OriginStory,
 	ProblemSection,
-	Roadmap,
-	TeamsSection,
 } from "@marketing/sections/launch";
 import type { Metadata } from "next";
 
@@ -67,35 +62,20 @@ export default function Home() {
 			{/* Hero Section */}
 			<Hero />
 
-			{/* Origin Story Section */}
-			<OriginStory />
-
-			{/* Interactive Demo Section */}
+			{/* Interactive Demo Section - Keeping as part of Hero flow per feedback ?? Or Section 1 was Hero (Interactive Demo) */}
 			<InteractiveDemo />
 
-			{/* Problem Section */}
+			{/* Proof Section (Claude Story) */}
+			<StorySection />
+
+			{/* Intelligence Story (ProblemSection reused/moved up) */}
 			<ProblemSection />
-
-			{/* Git vs SnapBack Comparison */}
-			<GitVsSnapback />
-
-			{/* Core Principles Section */}
-			<CorePrinciples />
-
-			{/* Metrics Section */}
-			<Metrics />
 
 			{/* How It Works Section */}
 			<HowItWorks />
 
-			{/* Roadmap Section */}
-			<Roadmap />
-
-			{/* Community Section */}
-			<Community />
-
-			{/* Teams Section */}
-			<TeamsSection />
+			{/* Metrics Section */}
+			<Metrics />
 
 			{/* Final CTA */}
 			<FinalCTA />

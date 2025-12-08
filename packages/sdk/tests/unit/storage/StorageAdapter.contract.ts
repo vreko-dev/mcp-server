@@ -1,6 +1,6 @@
 import type { Snapshot } from "@snapback/contracts";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import type { StorageAdapter } from "../../../src/storage/StorageAdapter";
+import type { StorageAdapter } from "@snapback-sdk/storage/StorageAdapter";
 
 /**
  * Contract tests for StorageAdapter interface

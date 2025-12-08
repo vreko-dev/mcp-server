@@ -1,4 +1,4 @@
-import { protectedProcedure } from "../../../orpc/procedures";
+import { protectedProcedure } from "@/orpc/procedures";
 
 export const clearExpiredCooldowns = protectedProcedure.handler(
 	async ({ context }) => {

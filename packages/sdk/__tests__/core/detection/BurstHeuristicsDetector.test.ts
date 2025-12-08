@@ -14,7 +14,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { BurstHeuristicsDetector } from "../../../src/core/detection/BurstHeuristicsDetector";
+import { BurstHeuristicsDetector } from "@snapback-sdk/core/detection/BurstHeuristicsDetector";
 import { expectNormalizedScore } from "../../helpers/assertions";
 
 describe("BurstHeuristicsDetector", () => {

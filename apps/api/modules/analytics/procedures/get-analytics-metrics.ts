@@ -7,8 +7,8 @@ import {
 	postAcceptOutcomes,
 } from "@snapback/platform";
 import { and, eq, gte, lte, type SQL } from "drizzle-orm";
-import { protectedProcedure } from "../../../orpc/procedures";
-import { getDb } from "../../../src/services/database";
+import { protectedProcedure } from "@/orpc/procedures";
+import { getDb } from "@/src/services/database";
 import { AnalyticsMetricsInputSchema } from "../types";
 
 export const getAnalyticsMetrics = protectedProcedure

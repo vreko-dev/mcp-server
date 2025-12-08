@@ -2,9 +2,9 @@ import { logger } from "@snapback/infrastructure";
 import { snapshotFiles, snapshots } from "@snapback/platform";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
-import { trackUsage } from "../../../lib/usage";
-import { protectedProcedure } from "../../../orpc/procedures";
-import { getDb } from "../../../src/services/database";
+import { trackUsage } from "@/lib/usage";
+import { protectedProcedure } from "@/orpc/procedures";
+import { getDb } from "@/src/services/database";
 
 const restoreSnapshotSchema = z.object({
 	id: z.string(),

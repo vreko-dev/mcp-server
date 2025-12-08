@@ -3,9 +3,9 @@ import { apiKeys, snapbackSchema, subscriptions } from "@snapback/platform";
 import { and, eq, gt } from "drizzle-orm";
 import { PostHog } from "posthog-node";
 import { z } from "zod";
-import { trackUsage } from "../../../lib/usage";
-import { protectedProcedure } from "../../../orpc/procedures";
-import { getDb } from "../../../src/services/database";
+import { trackUsage } from "@/lib/usage";
+import { protectedProcedure } from "@/orpc/procedures";
+import { getDb } from "@/src/services/database";
 
 // Initialize PostHog client for marketing analytics
 let posthogClient: PostHog | null = null;

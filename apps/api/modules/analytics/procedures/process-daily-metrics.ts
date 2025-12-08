@@ -2,8 +2,8 @@ import { logger } from "@snapback/infrastructure";
 import { apiUsage, orgDailyMetrics, snapshots } from "@snapback/platform";
 import { and, count, eq, gt, gte, inArray, lt, sql, sum } from "drizzle-orm";
 import { z } from "zod";
-import { adminProcedure } from "../../../orpc/procedures";
-import { getDb } from "../../../src/services/database";
+import { adminProcedure } from "@/orpc/procedures";
+import { getDb } from "@/src/services/database";
 
 /**
  * Process daily metrics for all organizations

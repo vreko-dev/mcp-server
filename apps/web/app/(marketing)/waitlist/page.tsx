@@ -72,7 +72,7 @@ export default function WaitlistPage() {
 							Join SnapBack Private Alpha
 						</h1>
 
-						<h2 className="text-3xl md:text-5xl font-bold bg-gradient-to-r from-[#00FF41] via-[#34D399] to-[#00FF41] bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(0,255,65,0.3)]">
+						<h2 className="text-3xl md:text-5xl font-bold bg-gradient-to-r from-[#34D399] via-[#34D399] to-[#34D399] bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(0,255,65,0.3)]">
 							✨ Get 6 Months Pro Free
 						</h2>
 					</div>

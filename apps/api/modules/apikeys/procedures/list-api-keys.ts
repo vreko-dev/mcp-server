@@ -1,7 +1,7 @@
 import { apiKeys } from "@snapback/platform";
 import { eq } from "drizzle-orm";
-import { protectedProcedure } from "../../../orpc/procedures";
-import { getDb } from "../../../src/services/database";
+import { protectedProcedure } from "@/orpc/procedures";
+import { getDb } from "@/src/services/database";
 
 export const listApiKeys = protectedProcedure.handler(async ({ context }) => {
 	const user = context.user;

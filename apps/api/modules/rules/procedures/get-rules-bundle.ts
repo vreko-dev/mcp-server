@@ -7,8 +7,8 @@ import { eq } from "drizzle-orm";
 // Using jose for JWS signing since it's available in the project
 import { SignJWT } from "jose";
 import { z } from "zod";
-import { protectedProcedure } from "../../../orpc/procedures";
-import { getDb } from "../../../src/services/database";
+import { protectedProcedure } from "@/orpc/procedures";
+import { getDb } from "@/src/services/database";
 
 // Temporarily define the types here
 const FEATURE_FLAGS = {

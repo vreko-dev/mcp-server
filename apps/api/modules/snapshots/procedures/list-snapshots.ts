@@ -1,8 +1,8 @@
 import { snapshots } from "@snapback/platform";
 import { and, desc, eq } from "drizzle-orm";
 import { z } from "zod";
-import { protectedProcedure } from "../../../orpc/procedures";
-import { getDb } from "../../../src/services/database";
+import { protectedProcedure } from "@/orpc/procedures";
+import { getDb } from "@/src/services/database";
 
 const listSnapshotsSchema = z.object({
 	// Pagination

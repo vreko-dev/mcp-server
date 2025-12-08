@@ -2,7 +2,7 @@
 
 import { AnalyticsEvents } from "@analytics";
 import { useTimeOnPage } from "@analytics/hooks/use-time-on-page";
-import { ComingSoonBadge } from "@marketing/components/ui/coming-soon-badge";
+
 import { PricingCard, type PricingCardData } from "@marketing/components/ui/pricing-card";
 import { ChevronDown } from "lucide-react";
 import { m } from "motion/react";
@@ -14,10 +14,11 @@ const pricingTiers: PricingCardData[] = [
 	{
 		id: "free",
 		name: "Free",
+
 		price: 0,
-		description: "Open Source Core",
+		description: "Catches your mistakes", // Updated tagline
 		persona: "Getting started",
-		headline: "Perfect for trying SnapBack",
+		headline: "Perfect for trying SnapBack", // Revert or unused
 		features: {
 			mustShow: [
 				{
@@ -25,11 +26,7 @@ const pricingTiers: PricingCardData[] = [
 					category: "protection",
 				},
 				{
-					text: (
-						<span className="flex items-center gap-2">
-							CLI tool <ComingSoonBadge variant="inline" text="Coming Soon" />
-						</span>
-					),
+					text: "CLI tool", // Removed Coming Soon badge
 					category: "protection",
 				},
 				{
@@ -47,11 +44,7 @@ const pricingTiers: PricingCardData[] = [
 					category: "protection",
 				},
 				{
-					text: (
-						<span className="flex items-center gap-2">
-							Local MCP scan <ComingSoonBadge variant="inline" text="Coming Soon" />
-						</span>
-					),
+					text: "Local MCP scan", // Removed Coming Soon badge
 					category: "intelligence",
 				},
 				{
@@ -76,7 +69,7 @@ const pricingTiers: PricingCardData[] = [
 		name: "Pro",
 		price: 12,
 		annualPrice: 24,
-		description: "Enhanced Protection",
+		description: "Learns your codebase", // Updated tagline
 		persona: "Individual power users",
 		headline: "Most popular for individuals",
 		popular: true,
@@ -109,11 +102,7 @@ const pricingTiers: PricingCardData[] = [
 					category: "protection",
 				},
 				{
-					text: (
-						<span className="flex items-center gap-2">
-							Backend MCP server <ComingSoonBadge variant="inline" text="Coming Soon" />
-						</span>
-					),
+					text: "Backend MCP server", // Removed Coming Soon badge
 					category: "intelligence",
 				},
 				{
@@ -145,7 +134,7 @@ const pricingTiers: PricingCardData[] = [
 		name: "Team",
 		price: 29,
 		annualPrice: 24,
-		description: "Collaborative Safety",
+		description: "Shared protection", // Updated tagline
 		persona: "Teams shipping with AI",
 		headline: "Best for teams of 3+",
 		features: {
@@ -216,36 +205,28 @@ const pricingTiers: PricingCardData[] = [
 
 const faqs = [
 	{
-		question: "Do I need a credit card to start?",
-		answer: "No! The Free plan is completely free forever with no credit card required. Pro and Team plans offer a 14-day free trial, also with no credit card needed upfront.",
+		question: "How does SnapBack catch mistakes?",
+		answer: "SnapBack watches your file system for changes. When it detects a high-risk pattern or entropy change (like an AI hallucination or accidental deletion), it flags it immediately. It captures a snapshot before the change is applied, giving you an instant undo button.",
 	},
 	{
-		question: "What's included in the Free plan?",
-		answer: "The Free plan includes the full VS Code extension and CLI with unlimited local snapshots. You get basic AI detection, manual snapshot creation, and community support. It's perfect for trying SnapBack or solo developers who don't need cloud backup.",
+		question: "Can I use it with Cursor, Copilot, or Claude?",
+		answer: "Yes. SnapBack works at the file system level, so it protects you regardless of which AI tool you use. It sits between your editor and the disk, ensuring that no AI agent can break your code without a safety net.",
 	},
 	{
-		question: "How does Guardian AI detection work?",
-		answer: "Guardian uses multiple detection plugins (secrets, mocks, phantom dependencies) with 94% accuracy on Day 1. Accuracy improves as it learns your codebase. It analyzes code changes in real-time using regex patterns, Shannon entropy analysis, and import/package.json validation. Available in Pro and Team plans.",
+		question: "Is my code sent to the cloud?",
+		answer: "On the Free plan, no. Everything stays 100% local on your machine in an SQLite database. On Pro and Team plans, encrypted snapshots are synced to our secure cloud for backup and cross-device syncing, but we never train on your code.",
 	},
 	{
-		question: "Can I switch plans later?",
-		answer: "Yes! You can upgrade or downgrade anytime. Upgrades take effect immediately, and downgrades apply at the end of your current billing cycle. All your snapshots and data are preserved during plan changes.",
+		question: "How is this different from Git?",
+		answer: "Git is for commits. SnapBack is for everything in between. It captures the messy, rapid-fire changes that AI agents make before you're ready to commit. It's granular, automatic, and designed specifically for the AI workflow loop.",
 	},
 	{
-		question: "What's the difference between Pro and Team?",
-		answer: "Pro is for individual power users and includes cloud backup, Guardian detection, and session time-travel. Team adds shared snapshots, team policies via .snapbackrc, analytics dashboard, SSO, and collaboration features for teams of 3+.",
+		question: "Does it slow down my editor?",
+		answer: "No. SnapBack is written in Rust and optimized for performance. Snapshots take <200ms and risk checks happen in <10ms. You won't notice it running until it saves you from a disaster.",
 	},
 	{
-		question: "Do you offer refunds?",
-		answer: "Yes! We offer a 30-day money-back guarantee on all paid plans. If you're not satisfied for any reason within the first 30 days, contact support for a full refund—no questions asked.",
-	},
-	{
-		question: "How does MCP integration work?",
-		answer: "The MCP server (coming soon, planned for Pro+) will expose Guardian detection, dependency checks, and snapshot creation to AI assistants like Claude and Cursor. Your AI will be able to analyze risks before making changes and create checkpoints automatically.",
-	},
-	{
-		question: "What happens to my data if I downgrade to Free?",
-		answer: "Your local snapshots remain intact. Cloud backups are retained for 30 days after downgrade in case you want to re-upgrade. After 30 days, cloud data is permanently deleted but your local snapshots are never affected.",
+		question: "What happens if I cancel?",
+		answer: "You keep all your local data forever. Cloud access stops at the end of the billing cycle, but you can always export your cloud snapshots before then.",
 	},
 ];
 

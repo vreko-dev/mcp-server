@@ -9,7 +9,7 @@ import {
 	performCorrelationAnalysis,
 } from "@snapback/infrastructure";
 import { z } from "zod";
-import { publicProcedure } from "../../../orpc/procedures";
+import { publicProcedure } from "@/orpc/procedures";
 
 const runCorrelationAnalysisSchema = z.object({
 	analysisName: z.string().optional(),

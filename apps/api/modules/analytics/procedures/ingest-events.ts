@@ -8,8 +8,8 @@
 import type { AnalyticsIngestResponse } from "@snapback/contracts";
 import { telemetryEvents } from "@snapback/platform";
 import { z } from "zod";
-import { protectedProcedure } from "../../../orpc/procedures";
-import { getDb } from "../../../src/services/database";
+import { protectedProcedure } from "@/orpc/procedures";
+import { getDb } from "@/src/services/database";
 
 // PostHog client (lazy initialized)
 // biome-ignore lint/suspicious/noExplicitAny: Lazy loaded optional dependency

@@ -8,7 +8,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { RiskAnalyzer as SDKRiskAnalyzer } from "../../../../packages/sdk/src/analysis/RiskAnalyzer";
+import { RiskAnalyzer as SDKRiskAnalyzer } from "@snapback/sdk/analysis/RiskAnalyzer";
 
 describe("MCP Comprehensive Performance Benchmarks", () => {
 	describe("Risk Analysis Performance", () => {

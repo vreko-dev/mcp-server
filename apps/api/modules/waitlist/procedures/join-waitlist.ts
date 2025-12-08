@@ -4,10 +4,10 @@ import { waitlist, waitlistReferrals } from "@snapback/platform";
 import { eq, sql } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { z } from "zod";
-import { captureWaitlistEvent } from "../../../lib/posthog-server";
-import { setCachedWaitlistPosition } from "../../../lib/upstash-client";
-import { publicProcedure } from "../../../orpc/procedures";
-import { getDb } from "../../../src/services/database";
+import { captureWaitlistEvent } from "@/lib/posthog-server";
+import { setCachedWaitlistPosition } from "@/lib/upstash-client";
+import { publicProcedure } from "@/orpc/procedures";
+import { getDb } from "@/src/services/database";
 import {
 	createAuditLog,
 	hashEmail,

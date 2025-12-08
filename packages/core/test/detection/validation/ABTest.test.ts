@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ABTest } from "../../../src/detection/validation/ABTest";
+import { ABTest } from "@snapback-core/detection/validation/ABTest";
 
 describe("ABTest", () => {
 	it("should run A/B test with perfect match", () => {

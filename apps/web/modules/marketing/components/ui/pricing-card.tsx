@@ -92,9 +92,9 @@ export const PricingCard = ({ tier, billingCycle, index }: PricingCardProps) => 
 					"relative h-full bg-[#0E0E0E] backdrop-blur-sm border rounded-2xl p-6 flex flex-col",
 					"transition-all duration-300",
 					tier.popular
-						? "border-[#00FF41] shadow-lg shadow-[#00FF41]/20"
+						? "border-[#34D399] shadow-lg shadow-[#34D399]/20"
 						: "border-[#222] hover:border-[#333]",
-					expanded && "ring-2 ring-[#00FF41]/50",
+					expanded && "ring-2 ring-[#34D399]/50",
 				)}
 			>
 				{/* Header */}
@@ -144,7 +144,7 @@ export const PricingCard = ({ tier, billingCycle, index }: PricingCardProps) => 
 							"flex items-center justify-center text-sm mb-4 py-2 px-3 rounded-lg",
 							"text-gray-400 hover:text-white hover:bg-[#111]",
 							"transition-all duration-200",
-							"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00FF41]",
+							"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#34D399]",
 						)}
 					>
 						{expanded ? (

@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { POST } from "../../../../app/api/v1/checkpoints/metadata/route";
+import { POST } from "@/app/api/v1/checkpoints/metadata/route";
 
 // Mock dependencies
 vi.mock("@snapback/infrastructure", () => ({

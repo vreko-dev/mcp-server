@@ -1,6 +1,6 @@
 import type { SnapshotManager } from "@snapback/sdk";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { restoreSnapshot } from "../../../src/tools/restore-snapshot";
+import { restoreSnapshot } from "@mcp/tools/restore-snapshot";
 
 /**
  * restoreCheckpoint Tool Tests (Pro Tier)

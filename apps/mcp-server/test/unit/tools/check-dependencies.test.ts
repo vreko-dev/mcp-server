@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import type { DependencyCheckInput } from "../../../src/utils/dependency-checker";
-import { checkDependencies } from "../../../src/utils/dependency-checker";
+import type { DependencyCheckInput } from "@mcp/utils/dependency-checker";
+import { checkDependencies } from "@mcp/utils/dependency-checker";
 
 /**
  * check-dependencies Tool Tests

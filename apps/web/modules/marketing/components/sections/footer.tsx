@@ -60,7 +60,7 @@ const Footer = () => {
 							<Logo withLabel={true} />
 						</div>
 						<p className="text-muted-foreground mb-6 max-w-sm text-sm leading-relaxed">
-							Ship fast. Break things. <span className="text-[#00FF41] font-semibold">SnapBack</span>{" "}
+							Ship fast. Break things. <span className="text-[#34D399] font-semibold">SnapBack</span>{" "}
 							instantly. Your AI-proof safety net for fearless development.
 						</p>
 
@@ -152,7 +152,7 @@ const Footer = () => {
 
 						<div className="text-sm flex items-center gap-2">
 							<div className="text-muted-foreground">Code Breaks.</div>
-							<div className="text-[#00FF41] font-semibold">SnapBack</div>
+							<div className="text-[#34D399] font-semibold">SnapBack</div>
 							<span className="text-[#3B82F6] font-bold">🧢</span>
 						</div>
 					</div>

@@ -23,7 +23,7 @@ export function TrustBar() {
 					<div className="w-px h-6 bg-[#222222]" />
 
 					<div className="flex items-center gap-2">
-						<span className="text-[#00FF41]">✓</span>
+						<span className="text-[#34D399]">✓</span>
 						<span className="text-white font-semibold">Works with Cursor</span>
 						<span className="text-[#A0A0A0]">& VS Code</span>
 					</div>
@@ -35,7 +35,7 @@ export function TrustBar() {
 						<span className="text-[#A0A0A0]">
 							&quot;Cursor rewrote my config. SnapBack recovered it in 3 seconds.&quot;
 						</span>
-						<span className="text-[#00FF41]">@brent_redd</span>
+						<span className="text-[#34D399]">@brent_redd</span>
 					</div>
 				</div>
 			</div>

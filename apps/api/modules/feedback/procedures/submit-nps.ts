@@ -4,8 +4,8 @@
 
 import { feedback } from "@snapback/platform";
 import { z } from "zod";
-import { protectedProcedure } from "../../../orpc/procedures";
-import { getDb } from "../../../src/services/database";
+import { protectedProcedure } from "@/orpc/procedures";
+import { getDb } from "@/src/services/database";
 
 const submitNPSInputSchema = z.object({
 	userId: z.string(),

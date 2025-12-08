@@ -32,7 +32,7 @@ const config: Config = {
 		extend: {
 			colors: {
 				// SnapBack brand colors (as direct values)
-				"snapback-green": "#00FF41",
+				"snapback-green": "#34D399",
 				"snapback-orange": "#FF9500",
 				"snapback-dark": "#111111", // Card background
 				"snapback-surface": "#1A1A1A", // Surface background
@@ -74,13 +74,13 @@ const config: Config = {
 
 				// Extended SnapBack color palette with semantic variants
 				green: {
-					DEFAULT: "#00FF41",
+					DEFAULT: "#34D399",
 					50: "#E6FFF1",
 					100: "#B3FFD4",
 					200: "#80FFB8",
 					300: "#4DFF9C",
 					400: "#1AFF80",
-					500: "#00FF41", // Brand green
+					500: "#34D399", // Brand green
 					600: "#00CC34",
 					700: "#009927",
 					800: "#00661A",

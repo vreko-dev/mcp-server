@@ -1,8 +1,8 @@
 import { ORPCError } from "@orpc/client";
 import { postAcceptOutcomes } from "@snapback/platform";
 import { and, desc, eq, gte, lte, type SQL } from "drizzle-orm";
-import { protectedProcedure } from "../../../orpc/procedures";
-import { getDb } from "../../../src/services/database";
+import { protectedProcedure } from "@/orpc/procedures";
+import { getDb } from "@/src/services/database";
 import { TelemetryQueryOptionsSchema } from "../types";
 
 export const getPostAcceptOutcomes = protectedProcedure

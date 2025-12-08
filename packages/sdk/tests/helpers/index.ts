@@ -170,5 +170,9 @@ export function createMockCache() {
 		has: vi.fn((key: string) => cache.has(key)),
 		delete: vi.fn((key: string) => cache.delete(key)),
 		clear: vi.fn(() => cache.clear()),
+		// Add keys() method to match Map interface
+		keys: vi.fn(() => cache.keys()),
+		values: vi.fn(() => cache.values()),
+		entries: vi.fn(() => cache.entries()),
 	};
 }

@@ -13,11 +13,16 @@
 		"./msw/handlers/posthog": "./dist/msw/handlers/posthog.js",
 		"./msw/server": "./dist/msw/server.js",
 		"./mocks/auth": "./dist/mocks/auth.js",
+		"./mocks/vscode": "./dist/mocks/vscode.js",
+		"./setup/hooks": "./dist/setup/hooks.js",
 		"./utils/performance": "./dist/utils/performance.js",
+		"./utils/console": "./dist/utils/console.js",
 		"./utils/TestCleanupManager": "./dist/utils/TestCleanupManager.js",
 		"./utils/DeterministicTime": "./dist/utils/DeterministicTime.js",
+		"./matchers": "./dist/matchers/index.js",
 		"./fixtures": "./dist/fixtures/index.js",
-		"./fixtures/factories": "./dist/fixtures/factories.js"
+		"./fixtures/factories": "./dist/fixtures/factories.js",
+		"./vitest-config": "./dist/vitest-config.js"
 	},
 	"typesVersions": {
 		"*": {
@@ -25,6 +30,12 @@
 			"msw/handlers": ["./dist/msw/handlers/index.d.ts"],
 			"msw": ["./dist/msw/index.d.ts"],
 			"mocks/auth": ["./dist/mocks/auth.d.ts"],
+			"mocks/vscode": ["./dist/mocks/vscode.d.ts"],
+			"setup/hooks": ["./dist/setup/hooks.d.ts"],
+			"utils/console": ["./dist/utils/console.d.ts"],
+			"utils/performance": ["./dist/utils/performance.d.ts"],
+			"matchers": ["./dist/matchers/index.d.ts"],
+			"vitest-config": ["./dist/vitest-config.d.ts"],
 			"fixtures": ["./dist/fixtures/index.d.ts"]
 		}
 	},

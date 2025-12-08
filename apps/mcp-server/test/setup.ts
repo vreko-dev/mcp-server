@@ -2,19 +2,21 @@
  * MCP Server Test Setup
  *
  * Centralized Vitest setup file for MCP Server tests.
- * Configures MSW for network mocking and global test utilities.
+ * Uses @snapback/testing for MSW mocking and shared utilities.
  *
  * Based on MSW v2 best practices from mswjs.io
  */
 
+// Import centralized testing utilities
+import { handlers as baseHandlers } from "@snapback/testing/msw";
 import { HttpResponse, http } from "msw";
 import { setupServer } from "msw/node";
 import { afterAll, afterEach, beforeAll } from "vitest";
 
 /**
- * Default MSW handlers for common API endpoints
+ * MCP-specific MSW handlers for API endpoints
  */
-const handlers = [
+const mcpHandlers = [
 	// Mock SnapBack API endpoints
 	http.post("https://api.snapback.dev/analyze/fast", () => {
 		return HttpResponse.json({
@@ -55,6 +57,9 @@ const handlers = [
 		return new HttpResponse(null, { status: 200 });
 	}),
 ];
+
+// Combine base handlers with MCP-specific handlers
+const handlers = [...baseHandlers, ...mcpHandlers];
 
 /**
  * MSW server instance for Node.js test environment

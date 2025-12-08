@@ -15,7 +15,7 @@ export default defineConfig({
 	},
 	format: ["esm"],
 	dts: {
-		resolve: true, // Resolves workspace:* dependencies
+		resolve: false, // Don't resolve external package types
 		compilerOptions: {
 			composite: false, // Disable composite for DTS bundling
 			incremental: false, // Disable incremental for DTS generation

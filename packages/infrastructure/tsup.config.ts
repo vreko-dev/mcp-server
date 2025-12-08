@@ -3,6 +3,7 @@ import { defineConfig } from "tsup";
 export default defineConfig({
 	entry: {
 		index: "src/index.ts",
+		"analytics/AnalyticsWrapper": "src/analytics/AnalyticsWrapper.ts",
 		"logging/logger": "src/logging/logger.ts",
 		"metrics/index": "src/metrics/index.ts",
 		"posthog/alerts": "src/posthog/alerts.ts",

@@ -50,9 +50,7 @@ describe.skipIf(!isDatabaseAvailable)("API Key Validation Performance", () => {
 		it("should use key prefix for efficient lookup", async () => {
 			// This test verifies that the function uses key prefix for lookup
 			// rather than fetching all keys from the database
-			const _result = await validateApiKey(
-				"sk_live_12345678901234567890123456789012",
-			);
+			const _result = await validateApiKey("sk_live_12345678901234567890123456789012");
 
 			// We're just testing that the function can be called
 			// The actual performance improvement is verified by the implementation
@@ -62,9 +60,7 @@ describe.skipIf(!isDatabaseAvailable)("API Key Validation Performance", () => {
 		it("should limit candidate keys to prevent abuse", async () => {
 			// This test verifies that the function limits candidate keys
 			// to prevent abuse of the system
-			const _result = await validateApiKey(
-				"sk_test_12345678901234567890123456789012",
-			);
+			const _result = await validateApiKey("sk_test_12345678901234567890123456789012");
 
 			// We're just testing that the function can be called
 			// The actual limit is verified by the implementation

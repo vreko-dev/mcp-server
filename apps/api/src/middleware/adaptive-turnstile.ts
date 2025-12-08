@@ -8,8 +8,7 @@ import { logger } from "@snapback/infrastructure";
 import type { Context, Next } from "hono";
 
 // Feature flag
-const TURNSTILE_ADAPTIVE_ENABLED =
-	process.env.FEATURE_TURNSTILE_ADAPTIVE === "true" || true;
+const TURNSTILE_ADAPTIVE_ENABLED = process.env.FEATURE_TURNSTILE_ADAPTIVE === "true" || true;
 
 // Turnstile configuration
 const TURNSTILE_SECRET_KEY = process.env.CAPTCHA_SECRET_KEY || "";
@@ -49,11 +48,7 @@ function getChallengeKey(ip: string, identifier: string, path: string): string {
 /**
  * Record a failure
  */
-export function recordFailure(
-	ip: string,
-	identifier: string,
-	path: string,
-): boolean {
+export function recordFailure(ip: string, identifier: string, path: string): boolean {
 	if (!TURNSTILE_ADAPTIVE_ENABLED) {
 		return false;
 	}
@@ -93,11 +88,7 @@ export function recordFailure(
 /**
  * Clear failures for a key
  */
-export function clearFailures(
-	ip: string,
-	identifier: string,
-	path: string,
-): void {
+export function clearFailures(ip: string, identifier: string, path: string): void {
 	const key = getChallengeKey(ip, identifier, path);
 	failureStore.delete(key);
 }
@@ -105,11 +96,7 @@ export function clearFailures(
 /**
  * Check if challenge is required
  */
-export function isChallengeRequired(
-	ip: string,
-	identifier: string,
-	path: string,
-): boolean {
+export function isChallengeRequired(ip: string, identifier: string, path: string): boolean {
 	if (!TURNSTILE_ADAPTIVE_ENABLED) {
 		return false;
 	}
@@ -135,10 +122,7 @@ export function isChallengeRequired(
 /**
  * Verify Turnstile token server-side
  */
-async function verifyTurnstileToken(
-	token: string,
-	remoteIp: string,
-): Promise<boolean> {
+async function verifyTurnstileToken(token: string, remoteIp: string): Promise<boolean> {
 	if (!TURNSTILE_SECRET_KEY) {
 		logger.error("Turnstile secret key not configured");
 		return false;
@@ -163,20 +147,17 @@ async function verifyTurnstileToken(
 	}
 
 	try {
-		const response = await fetch(
-			"https://challenges.cloudflare.com/turnstile/v0/siteverify",
-			{
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					secret: TURNSTILE_SECRET_KEY,
-					response: token,
-					remoteip: remoteIp,
-				}),
+		const response = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
 			},
-		);
+			body: JSON.stringify({
+				secret: TURNSTILE_SECRET_KEY,
+				response: token,
+				remoteip: remoteIp,
+			}),
+		});
 
 		const data = (await response.json()) as {
 			success: boolean;
@@ -252,8 +233,7 @@ export async function adaptiveTurnstile(c: Context, next: Next) {
 
 	if (challengeRequired) {
 		// Check for Turnstile token (prefer header over body for security)
-		const turnstileToken =
-			c.req.header("x-turnstile-token") || body.turnstileToken;
+		const turnstileToken = c.req.header("x-turnstile-token") || body.turnstileToken;
 
 		if (!turnstileToken) {
 			return c.json(

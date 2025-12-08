@@ -60,7 +60,7 @@ export function WaitlistFlow() {
 					setFormData(parsed);
 					// Optional: Clear it after restoring? Or keep until success?
 					// Keeping it until success is safer in case of errors.
-				} catch (e) {
+				} catch (_e) {
 					// Ignore invalid JSON
 					localStorage.removeItem("waitlist_form_data");
 				}

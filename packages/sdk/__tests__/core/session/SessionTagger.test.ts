@@ -15,10 +15,10 @@
  * Total: 22 comprehensive tests
  */
 
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { BurstDetectionResult } from "@snapback-sdk/core/detection/BurstHeuristicsDetector";
 import { type AIPresenceInfo, SessionTagger } from "@snapback-sdk/core/session/SessionTagger";
 import type { SessionManifest } from "@snapback-sdk/core/session/types";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { expectNormalizedScore } from "../../helpers/assertions";
 
 describe("SessionTagger", () => {

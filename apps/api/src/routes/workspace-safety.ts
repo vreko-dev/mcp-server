@@ -15,11 +15,7 @@ workspaceSafety.use("*", extractAuthContext);
 interface BlockingIssue {
 	id: string;
 	severity: "high" | "medium" | "low";
-	type:
-		| "unprotected_critical_file"
-		| "stale_snapshot"
-		| "automation_failure"
-		| "missing_pre_commit_hook";
+	type: "unprotected_critical_file" | "stale_snapshot" | "automation_failure" | "missing_pre_commit_hook";
 	message: string;
 	filePath?: string;
 	lastModified?: string;
@@ -58,7 +54,6 @@ interface WatchItem {
  */
 workspaceSafety.get("/", async (c) => {
 	try {
-		// biome-ignore lint/suspicious/noExplicitAny: Hono context typing
 		const auth = (c as any).get("auth") as any;
 
 		// Verify authentication
@@ -76,12 +71,7 @@ workspaceSafety.get("/", async (c) => {
 		// Production implementation: analyze workspace for safety issues
 		if (includeHeuristics) {
 			// Heuristic 1: Check for unprotected critical files
-			const criticalFiles = [
-				"src/config.ts",
-				"src/secrets.ts",
-				".env",
-				".env.local",
-			];
+			const criticalFiles = ["src/config.ts", "src/secrets.ts", ".env", ".env.local"];
 			for (const filePath of criticalFiles) {
 				// In production, query database for last snapshot of this file
 				if (workspaceId === "demo-workspace-critical-file") {
@@ -112,8 +102,7 @@ workspaceSafety.get("/", async (c) => {
 					path: "src/main.ts",
 					locChanged: 145,
 					timeSinceSnapshot: 3600000,
-					recommendation:
-						"Consider creating a snapshot to preserve current state",
+					recommendation: "Consider creating a snapshot to preserve current state",
 				});
 			}
 		}

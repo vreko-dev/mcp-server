@@ -69,10 +69,7 @@ export class EmailOrchestrator {
 				.where(eq(subscriptions.userId, user.id))
 				.limit(1);
 
-			const subscription =
-				subscriptionResult && subscriptionResult.length > 0
-					? subscriptionResult[0]
-					: null;
+			const subscription = subscriptionResult && subscriptionResult.length > 0 ? subscriptionResult[0] : null;
 
 			// Get user properties for email personalization
 			const userProperties = {
@@ -97,11 +94,7 @@ export class EmailOrchestrator {
 			// Process each step in the campaign sequence
 			for (const step of campaign.sequence) {
 				// Check step conditions
-				if (
-					step.condition &&
-					typeof step.condition === "function" &&
-					!step.condition(userProperties)
-				) {
+				if (step.condition && typeof step.condition === "function" && !step.condition(userProperties)) {
 					continue;
 				}
 
@@ -109,9 +102,7 @@ export class EmailOrchestrator {
 				const sendAt = this.calculateSendTime(step.delay);
 
 				// Check if already sent
-				const existing = emailLog.find(
-					(log) => log.userId === user.id && log.campaignId === campaignId,
-				);
+				const existing = emailLog.find((log) => log.userId === user.id && log.campaignId === campaignId);
 
 				if (existing) {
 					continue;
@@ -154,9 +145,7 @@ export class EmailOrchestrator {
 		const now = new Date();
 
 		// Get pending emails that should be sent
-		const pendingEmails = emailQueue.filter(
-			(email) => email.status === "pending" && email.sendAt <= now,
-		);
+		const pendingEmails = emailQueue.filter((email) => email.status === "pending" && email.sendAt <= now);
 
 		for (const email of pendingEmails) {
 			try {

@@ -37,5 +37,4 @@ const link = new RPCLink({
 	},
 });
 
-// biome-ignore lint/suspicious/noExplicitAny: ApiRouterClient type not yet exported from API package
 export const apiClient = createORPCClient(link) as any;

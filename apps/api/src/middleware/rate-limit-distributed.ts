@@ -64,8 +64,7 @@ async function initializeRedis() {
 			url: process.env.REDIS_URL || "redis://localhost:6379",
 			socket: {
 				connectTimeout: 5000,
-				reconnectStrategy: (retries: number) =>
-					retries > 3 ? new Error("Redis max retries") : 100 * retries,
+				reconnectStrategy: (retries: number) => (retries > 3 ? new Error("Redis max retries") : 100 * retries),
 			},
 		});
 
@@ -83,12 +82,9 @@ async function initializeRedis() {
 		redisAvailable = true;
 		logger.info("Rate limiting initialized with Redis");
 	} catch (error) {
-		logger.warn(
-			"Redis initialization failed, falling back to in-memory rate limiting",
-			{
-				error: error instanceof Error ? error.message : String(error),
-			},
-		);
+		logger.warn("Redis initialization failed, falling back to in-memory rate limiting", {
+			error: error instanceof Error ? error.message : String(error),
+		});
 		redisAvailable = false;
 	}
 }
@@ -235,9 +231,7 @@ async function checkRateLimitRedis(
  * Rate limiting middleware
  * Apply globally to all routes
  */
-export async function createRateLimitMiddleware(): Promise<
-	(c: Context, next: Next) => Promise<Response | undefined>
-> {
+export async function createRateLimitMiddleware(): Promise<(c: Context, next: Next) => Promise<Response | undefined>> {
 	return async (c: Context, next: Next): Promise<Response | undefined> => {
 		try {
 			const auth = c.get("auth") as AuthContext | undefined;
@@ -251,10 +245,7 @@ export async function createRateLimitMiddleware(): Promise<
 				limit = RATE_LIMITS[auth.plan] || RATE_LIMITS.free;
 			} else {
 				// Unauthenticated: use IP-based limit
-				const clientIp =
-					c.req.header("x-forwarded-for") ||
-					c.req.header("x-real-ip") ||
-					"unknown";
+				const clientIp = c.req.header("x-forwarded-for") || c.req.header("x-real-ip") || "unknown";
 				identifier = `ratelimit:ip:${clientIp}`;
 				limit = PUBLIC_LIMIT;
 			}

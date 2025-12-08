@@ -741,11 +741,11 @@ describe("EmailService - Compliance & Headers", () => {
 
 			// First send
 			const result1 = await service.send(payload);
-			const messageId1 = result1.messageId;
+			const _messageId1 = result1.messageId;
 
 			// Second identical send should return same message ID (idempotent)
 			const result2 = await service.send(payload);
-			const messageId2 = result2.messageId;
+			const _messageId2 = result2.messageId;
 
 			expect(result1.success).toBe(true);
 			expect(result2.success).toBe(true);

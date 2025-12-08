@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
 import { FusedScanner } from "@snapback-core/detection/scanner/FusedScanner";
+import { describe, expect, it } from "vitest";
 
 describe("FusedScanner", () => {
 	let scanner: FusedScanner;

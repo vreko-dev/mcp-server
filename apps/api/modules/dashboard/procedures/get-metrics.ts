@@ -32,19 +32,14 @@ import { getDb } from "@/src/services/database";
  *
  * Returns: DashboardMetricsResponse (success | error discriminated union)
  */
-export const getMetricsHandler = async ({
-	context,
-}: {
-	context: unknown;
-}): Promise<DashboardMetricsResponse> => {
+export const getMetricsHandler = async ({ context }: { context: unknown }): Promise<DashboardMetricsResponse> => {
 	const userId = (context as { user?: { id: string } }).user?.id;
 
 	// Validate authenticated context
 	if (!userId) {
 		logger.warn("getMetrics called without authenticated user", {
 			event: "auth_guard_denied",
-			path:
-				(context as { request?: { url?: string } }).request?.url || "unknown",
+			path: (context as { request?: { url?: string } }).request?.url || "unknown",
 		});
 
 		return {
@@ -72,49 +67,42 @@ export const getMetricsHandler = async ({
 		}
 
 		// ===== Import tables (Drizzle ORM) =====
-		const { snapshots, snapshotFiles, telemetryEvents } = await import(
-			"@snapback/platform"
-		);
+		const { snapshots, snapshotFiles, telemetryEvents } = await import("@snapback/platform");
 		const { count, eq, sql } = await import("drizzle-orm");
 
 		// Execute queries in parallel for performance
-		const [
-			checkpointsResult,
-			recoveriesResult,
-			filesProtectedResult,
-			aiDetectedResult,
-			_recentActivityResult,
-		] = await Promise.all([
-			// 1. Total Checkpoints (count of snapshots)
-			db
-				.select({ count: count() })
-				.from(snapshots),
+		const [checkpointsResult, recoveriesResult, filesProtectedResult, aiDetectedResult, _recentActivityResult] =
+			await Promise.all([
+				// 1. Total Checkpoints (count of snapshots)
+				db
+					.select({ count: count() })
+					.from(snapshots),
 
-			// 2. Total Recoveries (telemetry events)
-			// MVP: Counting all 'value:disaster_averted' events
-			db
-				.select({ count: count() })
-				.from(telemetryEvents)
-				.where(eq(telemetryEvents.eventType, "value:disaster_averted")),
+				// 2. Total Recoveries (telemetry events)
+				// MVP: Counting all 'value:disaster_averted' events
+				db
+					.select({ count: count() })
+					.from(telemetryEvents)
+					.where(eq(telemetryEvents.eventType, "value:disaster_averted")),
 
-			// 3. Files Protected (distinct file paths in snapshots)
-			// Note: using count(distinct) on snapshotFiles.filePath
-			db
-				.select({
-					count: sql<number>`count(distinct ${snapshotFiles.filePath})`,
-				})
-				.from(snapshotFiles),
+				// 3. Files Protected (distinct file paths in snapshots)
+				// Note: using count(distinct) on snapshotFiles.filePath
+				db
+					.select({
+						count: sql<number>`count(distinct ${snapshotFiles.filePath})`,
+					})
+					.from(snapshotFiles),
 
-			// 4. AI Detections (snapshots triggered by risk detection)
-			db
-				.select({ count: count() })
-				.from(snapshots)
-				.where(eq(snapshots.trigger, "risk_detection")),
+				// 4. AI Detections (snapshots triggered by risk detection)
+				db
+					.select({ count: count() })
+					.from(snapshots)
+					.where(eq(snapshots.trigger, "risk_detection")),
 
-			// 5. Recent Activity (placeholder for now as schema support varies)
-			// We'll leave recent activity empty or mock it for this step until activity feed schema is solid
-			Promise.resolve([]),
-		]);
+				// 5. Recent Activity (placeholder for now as schema support varies)
+				// We'll leave recent activity empty or mock it for this step until activity feed schema is solid
+				Promise.resolve([]),
+			]);
 
 		const totalCheckpoints = checkpointsResult[0]?.count ?? 0;
 		const totalRecoveries = recoveriesResult[0]?.count ?? 0;
@@ -122,10 +110,7 @@ export const getMetricsHandler = async ({
 		const aiDetectedCount = aiDetectedResult[0]?.count ?? 0;
 
 		// Calculate rates (safely handle division by zero)
-		const aiDetectionRate =
-			totalCheckpoints > 0
-				? Math.round((aiDetectedCount / totalCheckpoints) * 100)
-				: 0;
+		const aiDetectionRate = totalCheckpoints > 0 ? Math.round((aiDetectedCount / totalCheckpoints) * 100) : 0;
 
 		const metrics = {
 			protection_status: "active" as const,

@@ -40,12 +40,7 @@ const CONFIG = {
 };
 
 // Endpoints that bypass rate limiting
-const RATE_LIMIT_EXEMPT_PATHS = [
-	"/api/health",
-	"/api/docs",
-	"/api/openapi",
-	"/api/orpc-openapi",
-];
+const RATE_LIMIT_EXEMPT_PATHS = ["/api/health", "/api/docs", "/api/openapi", "/api/orpc-openapi"];
 
 /**
  * Extract client IP address from request
@@ -104,10 +99,7 @@ function refillTokens(bucket: RateLimitBucket, now: number): void {
  * Check if request exceeds rate limit
  * Returns [isAllowed, remainingTokens, resetTime]
  */
-function checkRateLimit(
-	bucket: RateLimitBucket,
-	now: number,
-): [boolean, number, number] {
+function checkRateLimit(bucket: RateLimitBucket, now: number): [boolean, number, number] {
 	// Refill tokens based on time passed
 	refillTokens(bucket, now);
 
@@ -151,7 +143,9 @@ function cleanupExpiredBuckets(): void {
 let cleanupTimer: NodeJS.Timeout | null = null;
 
 function startCleanupTimer(): void {
-	if (cleanupTimer) return;
+	if (cleanupTimer) {
+		return;
+	}
 
 	cleanupTimer = setInterval(() => {
 		cleanupExpiredBuckets();
@@ -231,10 +225,7 @@ async function checkRateLimitWithRedis(
  * Create rate limit middleware with optional Redis client
  */
 export function createRateLimitMiddleware(redisClient?: any) {
-	return async function rateLimitMiddleware(
-		c: Context,
-		next: Next,
-	): Promise<void> {
+	return async function rateLimitMiddleware(c: Context, next: Next): Promise<void> {
 		const path = c.req.path;
 
 		// Skip rate limiting for exempt paths
@@ -246,8 +237,7 @@ export function createRateLimitMiddleware(redisClient?: any) {
 		const clientIp = getClientIp(c);
 		const now = Date.now();
 
-		const [isAllowed, remainingTokens, resetTime] =
-			await checkRateLimitWithRedis(clientIp, now, redisClient);
+		const [isAllowed, remainingTokens, resetTime] = await checkRateLimitWithRedis(clientIp, now, redisClient);
 
 		// Set rate limit headers
 		const remainingMs = Math.max(0, resetTime - now);

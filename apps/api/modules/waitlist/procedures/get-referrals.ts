@@ -12,8 +12,7 @@ export const getReferrals = protectedProcedure
 		path: "/waitlist/referrals",
 		tags: ["Waitlist"],
 		summary: "Get referral count",
-		description:
-			"Retrieve the number of referrals and points for the authenticated user",
+		description: "Retrieve the number of referrals and points for the authenticated user",
 	})
 	.handler(async ({ context }) => {
 		const db = getDb();

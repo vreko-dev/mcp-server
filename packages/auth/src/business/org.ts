@@ -37,7 +37,9 @@ export async function getUserOrgIds(userId: string): Promise<string[]> {
  * Check if user is member of a specific organization
  */
 export async function checkOrgMembership(userId: string, orgId: string) {
-	if (!db) return null;
+	if (!db) {
+		return null;
+	}
 	try {
 		return await db
 			.select({

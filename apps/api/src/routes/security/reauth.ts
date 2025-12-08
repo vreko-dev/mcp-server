@@ -14,10 +14,7 @@ import type { BetterAuthSession, BetterAuthUser } from "../../types/context";
 const app = new Hono();
 
 // In-memory challenge store (in production, use Redis or database)
-const challengeStore = new Map<
-	string,
-	{ challenge: string; createdAt: number }
->();
+const challengeStore = new Map<string, { challenge: string; createdAt: number }>();
 
 // Clean up old challenges every 5 minutes
 setInterval(
@@ -101,12 +98,7 @@ app.post("/reauth", async (c) => {
 
 		const userId = user.id;
 		const body = await c.req.json();
-		const {
-			method,
-			credential,
-			passkeyResponse,
-			challenge: providedChallenge,
-		} = body;
+		const { method, credential, passkeyResponse, challenge: providedChallenge } = body;
 
 		let verified = false;
 		let totpFallbackUsed = false;
@@ -189,8 +181,7 @@ app.post("/reauth", async (c) => {
 
 					// Fix: Check the correct property for success
 					// The verifyTwoFactorOTP returns a token and user object when successful
-					verified =
-						verifyResult.token !== undefined && verifyResult.user !== undefined;
+					verified = verifyResult.token !== undefined && verifyResult.user !== undefined;
 
 					// Check if user has passkey - if not, allow TOTP once
 					const userPasskeys = await auth.api.listPasskeys({
@@ -295,9 +286,7 @@ app.get("/stepup/status", async (c) => {
 		);
 	}
 
-	const { hasValidStepUp, getStepUpRemainingTime } = await import(
-		"../../middleware/stepup.js"
-	);
+	const { hasValidStepUp, getStepUpRemainingTime } = await import("../../middleware/stepup.js");
 
 	const stepUp = hasValidStepUp(user.id);
 	const remaining = getStepUpRemainingTime(user.id);

@@ -40,9 +40,7 @@ export async function getRedisClient(): Promise<RedisClientType> {
 
 export async function initializeRedisClient(): Promise<void> {
 	if (!process.env.REDIS_URL) {
-		logger.warn(
-			"REDIS_URL not configured - rate limiting will use in-memory fallback",
-		);
+		logger.warn("REDIS_URL not configured - rate limiting will use in-memory fallback");
 		return;
 	}
 

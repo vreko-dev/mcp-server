@@ -4,8 +4,7 @@ let posthogClient: PostHog | null = null;
 
 export function getPostHog(): PostHog {
 	if (!posthogClient) {
-		const posthogKey =
-			process.env.POSTHOG_API_KEY || process.env.NEXT_PUBLIC_POSTHOG_KEY;
+		const posthogKey = process.env.POSTHOG_API_KEY || process.env.NEXT_PUBLIC_POSTHOG_KEY;
 		if (!posthogKey) {
 			throw new Error("PostHog API key not configured");
 		}

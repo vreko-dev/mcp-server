@@ -175,9 +175,7 @@ describe("EDGE: HIBP API Failure Handling", () => {
 	});
 
 	it("should fail open when HIBP API returns 500 error", async () => {
-		vi.spyOn(global, "fetch").mockResolvedValue(
-			new Response(null, { status: 500 }),
-		);
+		vi.spyOn(global, "fetch").mockResolvedValue(new Response(null, { status: 500 }));
 
 		const { auth } = await import("../src/auth.js");
 
@@ -284,8 +282,7 @@ describe("SECURITY: Timing Attack Resistance", () => {
 			measurements.push(Date.now() - start);
 		}
 
-		const breachedAvg =
-			measurements.reduce((a, b) => a + b, 0) / measurements.length;
+		const breachedAvg = measurements.reduce((a, b) => a + b, 0) / measurements.length;
 
 		measurements.length = 0;
 
@@ -302,8 +299,7 @@ describe("SECURITY: Timing Attack Resistance", () => {
 			measurements.push(Date.now() - start);
 		}
 
-		const secureAvg =
-			measurements.reduce((a, b) => a + b, 0) / measurements.length;
+		const secureAvg = measurements.reduce((a, b) => a + b, 0) / measurements.length;
 
 		// Timing difference should be < 50ms (not enough for timing attack)
 		const difference = Math.abs(breachedAvg - secureAvg);

@@ -25,12 +25,7 @@ interface RequestLogContext {
 const SENSITIVE_FIELDS = ["password", "token", "apiKey", "api_key", "secret"];
 
 // Sensitive header names
-const SENSITIVE_HEADERS = [
-	"authorization",
-	"x-api-key",
-	"x-auth-token",
-	"cookie",
-];
+const SENSITIVE_HEADERS = ["authorization", "x-api-key", "x-auth-token", "cookie"];
 
 /**
  * Extract client IP from request context
@@ -65,19 +60,13 @@ function isSensitiveHeader(headerName: string): boolean {
 /**
  * Redact sensitive fields in an object
  */
-function _redactSensitiveData(
-	obj: Record<string, unknown>,
-): Record<string, unknown> {
+function _redactSensitiveData(obj: Record<string, unknown>): Record<string, unknown> {
 	const redacted: Record<string, unknown> = {};
 
 	for (const [key, value] of Object.entries(obj)) {
 		if (isSensitiveField(key)) {
 			redacted[key] = "***";
-		} else if (
-			typeof value === "object" &&
-			value !== null &&
-			!Array.isArray(value)
-		) {
+		} else if (typeof value === "object" && value !== null && !Array.isArray(value)) {
 			redacted[key] = _redactSensitiveData(value as Record<string, unknown>);
 		} else {
 			redacted[key] = value;
@@ -90,9 +79,7 @@ function _redactSensitiveData(
 /**
  * Redact sensitive headers
  */
-function _redactHeaders(
-	headers: Record<string, string>,
-): Record<string, string> {
+function _redactHeaders(headers: Record<string, string>): Record<string, string> {
 	const redacted: Record<string, string> = {};
 
 	for (const [key, value] of Object.entries(headers)) {
@@ -125,10 +112,7 @@ function getOrCreateRequestId(c: Context): string {
  * app.use("*", requestLoggingMiddleware);
  * ```
  */
-export async function requestLoggingMiddleware(
-	c: Context,
-	next: Next,
-): Promise<void> {
+export async function requestLoggingMiddleware(c: Context, next: Next): Promise<void> {
 	const requestId = getOrCreateRequestId(c);
 	const ip = getClientIp(c);
 	const startTime = Date.now();
@@ -196,9 +180,7 @@ export async function requestLoggingMiddleware(
  * Useful in handlers for including in logs
  */
 export function getRequestId(c: Context): string {
-	const context = (c.env as any).requestLogContext as
-		| RequestLogContext
-		| undefined;
+	const context = (c.env as any).requestLogContext as RequestLogContext | undefined;
 	return context?.requestId || randomUUID();
 }
 

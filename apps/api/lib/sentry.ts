@@ -11,8 +11,12 @@ let Sentry: typeof import("@sentry/node") | null = null;
 let sentryInitialized = false;
 
 async function loadSentry() {
-	if (Sentry) return Sentry;
-	if (process.env.DISABLE_SENTRY === "true") return null;
+	if (Sentry) {
+		return Sentry;
+	}
+	if (process.env.DISABLE_SENTRY === "true") {
+		return null;
+	}
 
 	try {
 		Sentry = await import("@sentry/node");
@@ -40,13 +44,14 @@ export async function initSentry(): Promise<void> {
 	}
 
 	const SentryModule = await loadSentry();
-	if (!SentryModule) return;
+	if (!SentryModule) {
+		return;
+	}
 
 	SentryModule.init({
 		dsn,
 		environment: process.env.NODE_ENV || "development",
-		release:
-			process.env.VERCEL_GIT_COMMIT_SHA || process.env.npm_package_version,
+		release: process.env.VERCEL_GIT_COMMIT_SHA || process.env.npm_package_version,
 
 		// Sample rate for performance monitoring
 		tracesSampleRate: process.env.NODE_ENV === "production" ? 0.1 : 1.0,
@@ -187,11 +192,7 @@ export async function captureMessage(
 /**
  * Add breadcrumb (user action trail)
  */
-export async function addBreadcrumb(
-	message: string,
-	category: string,
-	data?: Record<string, any>,
-): Promise<void> {
+export async function addBreadcrumb(message: string, category: string, data?: Record<string, any>): Promise<void> {
 	const SentryModule = await loadSentry();
 	if (!SentryModule || !sentryInitialized) {
 		return;

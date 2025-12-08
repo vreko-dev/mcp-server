@@ -32,12 +32,7 @@ export const getAIDetectionStats = protectedProcedure
 					count: count(),
 				})
 				.from(featureUsage)
-				.where(
-					and(
-						eq(featureUsage.userId, userId),
-						eq(featureUsage.featureCategory, "ai_assistance"),
-					),
-				)
+				.where(and(eq(featureUsage.userId, userId), eq(featureUsage.featureCategory, "ai_assistance")))
 				.groupBy(featureUsage.featureName)
 				.orderBy(desc(count()));
 

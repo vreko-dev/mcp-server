@@ -162,8 +162,7 @@ describe("Session Plugin Suite - Better Auth Integration", () => {
 				},
 			};
 
-			const sessionTTLMs =
-				expiringSession.session.expiresAt.getTime() - Date.now();
+			const sessionTTLMs = expiringSession.session.expiresAt.getTime() - Date.now();
 			const hoursRemaining = sessionTTLMs / (60 * 60 * 1000);
 
 			// Should be eligible for refresh (< 1 hour remaining)
@@ -353,8 +352,7 @@ describe("Session Plugin Suite - Better Auth Integration", () => {
 				stepUpVerificationMethod: "passkey", // or "totp", "password"
 			};
 
-			const stepUpExpiresIn30Min =
-				sessionWithStepUp.stepUpVerifiedAt + 30 * 60 * 1000;
+			const stepUpExpiresIn30Min = sessionWithStepUp.stepUpVerifiedAt + 30 * 60 * 1000;
 			const isStepUpValid = Date.now() < stepUpExpiresIn30Min;
 
 			expect(isStepUpValid).toBe(true);

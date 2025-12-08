@@ -117,11 +117,7 @@ describe("REDIS2: Rate Limiting Distribution", () => {
 		// Edge case: Slow Redis should not block requests
 
 		const _slowRedisClient = {
-			get: vi
-				.fn()
-				.mockImplementation(
-					() => new Promise((resolve) => setTimeout(resolve, 10000)),
-				),
+			get: vi.fn().mockImplementation(() => new Promise((resolve) => setTimeout(resolve, 10000))),
 			set: vi.fn(),
 			del: vi.fn(),
 		};
@@ -133,13 +129,11 @@ describe("REDIS2: Rate Limiting Distribution", () => {
 	it("CRITICAL: should clean up expired rate limit keys in Redis", async () => {
 		// Critical path: Prevent Redis memory bloat
 
-		(mockRedisClient.set as any).mockImplementation(
-			async (_key: string, _value: string, options: any) => {
-				// Should set TTL to prevent memory leak
-				expect(options?.EX).toBeDefined();
-				expect(options.EX).toBeGreaterThan(0);
-			},
-		);
+		(mockRedisClient.set as any).mockImplementation(async (_key: string, _value: string, options: any) => {
+			// Should set TTL to prevent memory leak
+			expect(options?.EX).toBeDefined();
+			expect(options.EX).toBeGreaterThan(0);
+		});
 
 		// Rate limit keys should have expiry
 		expect(mockRedisClient.set).toBeDefined();

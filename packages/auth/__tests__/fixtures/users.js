@@ -242,10 +242,7 @@ export const getUserByType = (type) => {
 		Object.assign(
 			Object.assign(
 				Object.assign(
-					Object.assign(
-						Object.assign(Object.assign({}, validUsers), securityTestUsers),
-						invalidUsers,
-					),
+					Object.assign(Object.assign(Object.assign({}, validUsers), securityTestUsers), invalidUsers),
 					organizationUsers,
 				),
 				sessionTestUsers,

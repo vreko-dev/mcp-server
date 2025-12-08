@@ -6,18 +6,16 @@ const listCooldownsSchema = z.object({
 	offset: z.number().int().min(0).default(0),
 });
 
-export const listCooldowns = protectedProcedure
-	.input(listCooldownsSchema)
-	.handler(async ({ context }) => {
-		const user = context.user;
-		if (!user) {
-			throw new Error("Unauthorized");
-		}
+export const listCooldowns = protectedProcedure.input(listCooldownsSchema).handler(async ({ context }) => {
+	const user = context.user;
+	if (!user) {
+		throw new Error("Unauthorized");
+	}
 
-		// In a real implementation, we would list cooldowns from the database
-		// For now, we'll return a mock response
-		return {
-			cooldowns: [],
-			totalCount: 0,
-		};
-	});
+	// In a real implementation, we would list cooldowns from the database
+	// For now, we'll return a mock response
+	return {
+		cooldowns: [],
+		totalCount: 0,
+	};
+});

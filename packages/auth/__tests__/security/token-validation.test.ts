@@ -1,11 +1,7 @@
 import * as crypto from "node:crypto";
 import { describe, expect, it } from "vitest";
 import { invalidSessions, validSessions } from "../fixtures/sessions";
-import {
-	createMalformedJwt,
-	generateInsecureToken,
-	generateSecureToken,
-} from "../utils/test-helpers";
+import { createMalformedJwt, generateInsecureToken, generateSecureToken } from "../utils/test-helpers";
 
 describe("Token Validation Security", () => {
 	describe("Session Token Generation", () => {
@@ -127,30 +123,23 @@ describe("Token Validation Security", () => {
 
 			malformedJwts.forEach((jwt) => {
 				const parts = jwt.split(".");
-				const isValidStructure =
-					parts.length === 3 && parts.every((p) => p.length > 0);
+				const isValidStructure = parts.length === 3 && parts.every((p) => p.length > 0);
 
 				expect(isValidStructure).toBe(false);
 			});
 		});
 
 		it('should reject JWT with "none" algorithm', () => {
-			const noneAlgJwt =
-				"eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiIxMjM0NTY3ODkwIn0.";
+			const noneAlgJwt = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiIxMjM0NTY3ODkwIn0.";
 
-			const header = JSON.parse(
-				Buffer.from(noneAlgJwt.split(".")[0], "base64").toString(),
-			);
+			const header = JSON.parse(Buffer.from(noneAlgJwt.split(".")[0], "base64").toString());
 
 			expect(header.alg).toBe("none");
 			// Should be rejected in real implementation
 		});
 
 		it("should validate JWT signature", () => {
-			const validSignature = crypto
-				.createHmac("sha256", "secret")
-				.update("header.payload")
-				.digest("base64url");
+			const validSignature = crypto.createHmac("sha256", "secret").update("header.payload").digest("base64url");
 
 			const invalidSignature = "invalid-signature";
 
@@ -184,10 +173,7 @@ describe("Token Validation Security", () => {
 
 		it("should hash tokens in database", () => {
 			const token = generateSecureToken();
-			const hashedToken = crypto
-				.createHash("sha256")
-				.update(token)
-				.digest("hex");
+			const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
 			expect(hashedToken).toBeDefined();
 			expect(hashedToken).not.toBe(token);
@@ -230,11 +216,7 @@ describe("Token Validation Security", () => {
 			const userTokens = new Map<string, string[]>();
 			const userId = crypto.randomUUID();
 
-			userTokens.set(userId, [
-				generateSecureToken(),
-				generateSecureToken(),
-				generateSecureToken(),
-			]);
+			userTokens.set(userId, [generateSecureToken(), generateSecureToken(), generateSecureToken()]);
 
 			// Revoke all tokens
 			userTokens.set(userId, []);
@@ -243,11 +225,7 @@ describe("Token Validation Security", () => {
 		});
 
 		it("should support selective token revocation", () => {
-			const tokens = [
-				generateSecureToken(),
-				generateSecureToken(),
-				generateSecureToken(),
-			];
+			const tokens = [generateSecureToken(), generateSecureToken(), generateSecureToken()];
 
 			const activeTokens = new Set(tokens);
 			activeTokens.delete(tokens[0]); // Revoke first token

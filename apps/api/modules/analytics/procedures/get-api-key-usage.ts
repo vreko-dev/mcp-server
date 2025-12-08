@@ -11,8 +11,7 @@ export const getApiKeyUsage = protectedProcedure
 		path: "/analytics/api-key-usage",
 		tags: ["Analytics"],
 		summary: "Get API key usage with filtering",
-		description:
-			"Retrieve API key usage telemetry data with optional filtering by API key and date range",
+		description: "Retrieve API key usage telemetry data with optional filtering by API key and date range",
 	})
 	.input(TelemetryQueryOptionsSchema)
 	.handler(async ({ input, context: _context }) => {

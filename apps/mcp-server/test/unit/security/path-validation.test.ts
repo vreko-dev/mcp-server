@@ -15,13 +15,8 @@
  */
 
 import * as fs from "node:fs";
+import { initializeSecurityTelemetry, SecurityError, setWorkspaceRoot, validateFilePath } from "@mcp/utils/security";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import {
-	initializeSecurityTelemetry,
-	SecurityError,
-	setWorkspaceRoot,
-	validateFilePath,
-} from "@mcp/utils/security";
 
 // Mock filesystem
 vi.mock("node:fs", async () => {

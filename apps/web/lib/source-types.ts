@@ -85,6 +85,5 @@ export interface MDXComponents {
 	a?: (props: AnchorProps) => React.ReactElement;
 	img?: (props: ImageProps) => React.ReactElement | null;
 	// Allow any other MDX component overrides
-	// biome-ignore lint/suspicious/noExplicitAny: MDX components can be any React component
 	[key: string]: any;
 }

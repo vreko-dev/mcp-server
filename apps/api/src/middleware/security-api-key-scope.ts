@@ -34,9 +34,7 @@ export interface APIKeyContext {
  * @param requiredScopes Array of required scopes for this endpoint
  * @returns Hono middleware handler
  */
-export function apiKeyScopeMiddleware(
-	requiredScopes: string[] = [],
-): MiddlewareHandler<{
+export function apiKeyScopeMiddleware(requiredScopes: string[] = []): MiddlewareHandler<{
 	Variables: {
 		apiKeyContext?: APIKeyContext;
 	};
@@ -124,17 +122,26 @@ export function apiKeyScopeMiddleware(
 
 			// Extract permissions from JSON field
 			// Schema: { maxSnapshots?: number; cloudBackup?: boolean; advancedDetection?: boolean; customRules?: boolean; teamSharing?: boolean }
-			const keyPermissions = ((keyRecord.permissions as string[]) ||
-				[]) as unknown as Record<string, boolean | number>;
+			const keyPermissions = ((keyRecord.permissions as string[]) || []) as unknown as Record<
+				string,
+				boolean | number
+			>;
 
 			// Convert feature permissions to scope strings for backward compatibility
 			// TODO: Eventually migrate to feature-based authorization entirely
 			const keyScopes: string[] = [];
-			if (keyPermissions.cloudBackup) keyScopes.push("snapshots:backup");
-			if (keyPermissions.advancedDetection)
+			if (keyPermissions.cloudBackup) {
+				keyScopes.push("snapshots:backup");
+			}
+			if (keyPermissions.advancedDetection) {
 				keyScopes.push("detection:advanced");
-			if (keyPermissions.customRules) keyScopes.push("rules:custom");
-			if (keyPermissions.teamSharing) keyScopes.push("team:share");
+			}
+			if (keyPermissions.customRules) {
+				keyScopes.push("rules:custom");
+			}
+			if (keyPermissions.teamSharing) {
+				keyScopes.push("team:share");
+			}
 			// All keys have basic snapshot operations
 			keyScopes.push("snapshots:read", "snapshots:write");
 

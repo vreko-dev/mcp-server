@@ -15,9 +15,9 @@
  * CRITICAL: Prevents unauthorized access to Pro/Admin features
  */
 
+import { authenticate, clearAuthCache } from "@mcp/auth";
 import { auth } from "@snapback/auth";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { authenticate, clearAuthCache } from "@mcp/auth";
 
 // Mock @snapback/auth
 vi.mock("@snapback/auth", () => ({

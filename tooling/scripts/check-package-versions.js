@@ -189,15 +189,11 @@ function main() {
 		);
 		console.log("\n💡 To fix:");
 		console.log("  1. Check pnpm-workspace.yaml for available catalog entries");
-		console.log(
-			'  2. Replace direct versions with "catalog:" for catalog dependencies',
-		);
+		console.log('  2. Replace direct versions with "catalog:" for catalog dependencies');
 		console.log('  3. Use "workspace:*" for local package dependencies');
 		process.exit(1);
 	} else {
-		console.log(
-			"✅ All package.json files are using catalog references correctly!",
-		);
+		console.log("✅ All package.json files are using catalog references correctly!");
 		process.exit(0);
 	}
 }

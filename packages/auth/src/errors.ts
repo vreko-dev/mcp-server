@@ -22,11 +22,7 @@ export class AuthError extends Error {
 
 export class InsufficientRoleError extends AuthError {
 	constructor(required: string[], actual: string) {
-		super(
-			`Insufficient role. Required: ${required.join(" or ")}, got: ${actual}`,
-			403,
-			"INSUFFICIENT_ROLE",
-		);
+		super(`Insufficient role. Required: ${required.join(" or ")}, got: ${actual}`, 403, "INSUFFICIENT_ROLE");
 	}
 }
 

@@ -434,11 +434,7 @@ describe("Team Detection", () => {
 		it("should not detect team for consumer emails", async () => {
 			// Mock db parameter
 			const mockDb = {};
-			const result = await detectPotentialTeam(
-				mockDb,
-				"user_123",
-				"alice@gmail.com",
-			);
+			const result = await detectPotentialTeam(mockDb, "user_123", "alice@gmail.com");
 
 			expect(result.isTeam).toBe(false);
 		});
@@ -520,13 +516,7 @@ describe("Subscription Validation", () => {
 		});
 
 		it("should allow all features for enterprise", () => {
-			const features = [
-				"api_access",
-				"team_collaboration",
-				"sso",
-				"audit_logs",
-				"custom_retention",
-			];
+			const features = ["api_access", "team_collaboration", "sso", "audit_logs", "custom_retention"];
 
 			features.forEach((feature) => {
 				const result = checkFeatureAccess("enterprise", feature);

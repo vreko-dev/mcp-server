@@ -94,10 +94,7 @@ export interface SessionMetadata {
  * @param config Session security configuration
  * @returns Set-Cookie header value
  */
-export function buildSessionCookie(
-	token: string,
-	config: Partial<SessionSecurityConfig> = {},
-): string {
+export function buildSessionCookie(token: string, config: Partial<SessionSecurityConfig> = {}): string {
 	const finalConfig = { ...defaultSessionSecurityConfig, ...config };
 
 	const expiresAt = new Date(Date.now() + finalConfig.expiresInSeconds * 1000);
@@ -136,9 +133,7 @@ export function buildSessionCookie(
  * @param config Session security configuration
  * @returns Set-Cookie header value for clearing
  */
-export function clearSessionCookie(
-	config: Partial<SessionSecurityConfig> = {},
-): string {
+export function clearSessionCookie(config: Partial<SessionSecurityConfig> = {}): string {
 	const finalConfig = { ...defaultSessionSecurityConfig, ...config };
 
 	let cookieValue = `${finalConfig.cookieName}=`;
@@ -278,9 +273,7 @@ export function validateSessionJWT(
 
 		// Add padding if necessary
 		const padding = "==".substring(0, (4 - (payloadBase64.length % 4)) % 4);
-		const payloadJson = Buffer.from(payloadBase64 + padding, "base64").toString(
-			"utf8",
-		);
+		const payloadJson = Buffer.from(payloadBase64 + padding, "base64").toString("utf8");
 
 		const claims = JSON.parse(payloadJson) as Record<string, unknown>;
 
@@ -401,8 +394,7 @@ export function logSessionEvent(
 		userAgent?: string;
 	},
 ): void {
-	const logLevel =
-		event === "created" || event === "refreshed" ? "info" : "warn";
+	const logLevel = event === "created" || event === "refreshed" ? "info" : "warn";
 
 	const logData = {
 		event: `SESSION_${event.toUpperCase()}`,

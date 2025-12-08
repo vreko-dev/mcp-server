@@ -70,11 +70,7 @@ function isSensitiveRoute(path: string): boolean {
 }
 
 function getClientIp(c: Context): string {
-	return (
-		c.req.header("x-forwarded-for")?.split(",")[0].trim() ||
-		c.req.header("x-real-ip") ||
-		"unknown"
-	);
+	return c.req.header("x-forwarded-for")?.split(",")[0].trim() || c.req.header("x-real-ip") || "unknown";
 }
 
 function parseAction(method: string, path: string): string {
@@ -182,8 +178,7 @@ export async function auditLogging(c: Context, next: Next): Promise<void> {
 
 		// Determine response status
 		const responseStatus = c.res.status;
-		const status =
-			responseStatus >= 200 && responseStatus < 300 ? "success" : "failure";
+		const status = responseStatus >= 200 && responseStatus < 300 ? "success" : "failure";
 
 		const entry: AuditLogEntry = {
 			userId: auth?.user.id,

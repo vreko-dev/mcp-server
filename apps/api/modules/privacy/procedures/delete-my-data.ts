@@ -24,16 +24,11 @@ export const deleteMyDataProcedure = protectedProcedure
 		}
 
 		// 1. Fetch data to be deleted (for confirmation/logging)
-		const [snapshotsToDeleteResult, apiKeysToDeleteResult, subscriptionResult] =
-			await Promise.all([
-				db.select().from(snapshots).where(eq(snapshots.userId, user.id)),
-				db.select().from(apiKeys).where(eq(apiKeys.userId, user.id)),
-				db
-					.select()
-					.from(subscriptions)
-					.where(eq(subscriptions.userId, user.id))
-					.limit(1),
-			]);
+		const [snapshotsToDeleteResult, apiKeysToDeleteResult, subscriptionResult] = await Promise.all([
+			db.select().from(snapshots).where(eq(snapshots.userId, user.id)),
+			db.select().from(apiKeys).where(eq(apiKeys.userId, user.id)),
+			db.select().from(subscriptions).where(eq(subscriptions.userId, user.id)).limit(1),
+		]);
 
 		const snapshotsToDelete = snapshotsToDeleteResult || [];
 		const apiKeysToDelete = apiKeysToDeleteResult || [];
@@ -68,7 +63,6 @@ export const deleteMyDataProcedure = protectedProcedure
 			},
 			subscriptionCanceled,
 			recoveryPeriod: null, // Immediate permanent deletion
-			message:
-				"All your data has been permanently deleted. This action cannot be undone.",
+			message: "All your data has been permanently deleted. This action cannot be undone.",
 		};
 	});

@@ -1,9 +1,7 @@
 import pino from "pino";
 
 // Check if Axiom credentials are available
-const hasAxiomCredentials =
-	(process.env.AXIOM_DATASET?.length ?? 0) > 0 &&
-	(process.env.AXIOM_TOKEN?.length ?? 0) > 0;
+const hasAxiomCredentials = (process.env.AXIOM_DATASET?.length ?? 0) > 0 && (process.env.AXIOM_TOKEN?.length ?? 0) > 0;
 
 let logger: pino.Logger;
 
@@ -52,12 +50,7 @@ export const log = {
 		logger.info({ type: "api_request", ...data });
 	},
 
-	featureUsage: (data: {
-		userId: string;
-		feature: string;
-		success: boolean;
-		duration?: number;
-	}) => {
+	featureUsage: (data: { userId: string; feature: string; success: boolean; duration?: number }) => {
 		logger.info({ type: "feature_usage", ...data });
 	},
 
@@ -65,11 +58,7 @@ export const log = {
 		logger.info({ type: "cache_hit", cacheKey, userId });
 	},
 
-	rateLimitHit: (data: {
-		userId: string;
-		limitType: string;
-		retryAfter: number;
-	}) => {
+	rateLimitHit: (data: { userId: string; limitType: string; retryAfter: number }) => {
 		logger.warn({ type: "rate_limit_hit", ...data });
 	},
 

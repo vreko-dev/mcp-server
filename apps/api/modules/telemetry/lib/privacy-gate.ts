@@ -183,9 +183,7 @@ function containsSensitiveData(value: unknown): boolean {
 /**
  * Filter properties through the privacy gate
  */
-export function filterProperties(
-	properties: Record<string, unknown> = {},
-): Record<string, unknown> {
+export function filterProperties(properties: Record<string, unknown> = {}): Record<string, unknown> {
 	const filtered: Record<string, unknown> = {};
 
 	for (const [key, value] of Object.entries(properties)) {

@@ -564,8 +564,7 @@ describe("Rate Limiting - Error Handling", () => {
 	describe("ratelimit-016: User experience", () => {
 		it("should provide clear error message when rate limited", () => {
 			// REQUIREMENT: User knows why request failed
-			const message =
-				"Too many login attempts. Please try again in 10 seconds.";
+			const message = "Too many login attempts. Please try again in 10 seconds.";
 
 			expect(message).toContain("Too many");
 		});

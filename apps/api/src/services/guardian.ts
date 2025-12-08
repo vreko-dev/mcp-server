@@ -1,10 +1,5 @@
 import { createId as cuid } from "@paralleldrive/cuid2";
-import {
-	analysisEvents,
-	apiKeys,
-	ruleViolations,
-	userSafetyProfiles,
-} from "@snapback/platform";
+import { analysisEvents, apiKeys, ruleViolations, userSafetyProfiles } from "@snapback/platform";
 import { eq } from "drizzle-orm";
 import { getDb } from "./database";
 
@@ -70,11 +65,7 @@ export class GuardianService {
 
 		try {
 			// Get user's API key to check permissions
-			const apiKeyResult = await db
-				.select()
-				.from(apiKeys)
-				.where(eq(apiKeys.id, request.apiKeyId))
-				.limit(1);
+			const apiKeyResult = await db.select().from(apiKeys).where(eq(apiKeys.id, request.apiKeyId)).limit(1);
 
 			if (!apiKeyResult || apiKeyResult.length === 0) {
 				throw new Error("Invalid API key");
@@ -109,8 +100,7 @@ export class GuardianService {
 						},
 					});
 
-					riskScore +=
-						severity === "high" ? 30 : severity === "medium" ? 20 : 10;
+					riskScore += severity === "high" ? 30 : severity === "medium" ? 20 : 10;
 				}
 
 				// Detect potential secret exposure (basic patterns)
@@ -173,10 +163,7 @@ export class GuardianService {
 				}
 
 				// Detect dependency changes
-				if (
-					file.path.includes("package.json") &&
-					file.changeType === "modified"
-				) {
+				if (file.path.includes("package.json") && file.changeType === "modified") {
 					riskFactors.push({
 						type: "dependency_change",
 						severity: "medium",
@@ -226,8 +213,7 @@ export class GuardianService {
 							if (!f.totalLines) {
 								return sum;
 							}
-							const churn =
-								((f.linesAdded || 0) + (f.linesDeleted || 0)) / f.totalLines;
+							const churn = ((f.linesAdded || 0) + (f.linesDeleted || 0)) / f.totalLines;
 							return sum + churn;
 						}, 0) / request.files.length;
 
@@ -263,9 +249,7 @@ export class GuardianService {
 				// Apply custom rules
 				for (const rule of request.customRules) {
 					const pattern = new RegExp(rule.pattern);
-					const filePattern = rule.filePattern
-						? new RegExp(rule.filePattern)
-						: null;
+					const filePattern = rule.filePattern ? new RegExp(rule.filePattern) : null;
 
 					for (const file of request.files) {
 						// Check file pattern match
@@ -310,12 +294,7 @@ export class GuardianService {
 								message: `${rule.name} violation`,
 							});
 
-							riskScore +=
-								rule.severity === "high"
-									? 25
-									: rule.severity === "medium"
-										? 15
-										: 10;
+							riskScore += rule.severity === "high" ? 25 : rule.severity === "medium" ? 15 : 10;
 						}
 					}
 				}
@@ -418,10 +397,7 @@ export class GuardianService {
 	/**
 	 * Update user safety profile based on analysis results
 	 */
-	private async updateUserSafetyProfile(
-		userId: string,
-		riskScore: number,
-	): Promise<void> {
+	private async updateUserSafetyProfile(userId: string, riskScore: number): Promise<void> {
 		const db = getDb();
 		// Get existing profile or create new one
 		const existingProfile = await db
@@ -434,11 +410,9 @@ export class GuardianService {
 			// Update existing profile
 			const profile = existingProfile[0];
 			const totalAnalyses = profile.totalAnalyses + 1;
-			const totalRiskScore =
-				(profile.averageRiskScore || 0) * profile.totalAnalyses + riskScore;
+			const totalRiskScore = (profile.averageRiskScore || 0) * profile.totalAnalyses + riskScore;
 			const newAverageRiskScore = totalRiskScore / totalAnalyses;
-			const highRiskAnalyses =
-				riskScore >= 70 ? profile.totalBlocked + 1 : profile.totalBlocked;
+			const highRiskAnalyses = riskScore >= 70 ? profile.totalBlocked + 1 : profile.totalBlocked;
 
 			await db
 				.update(userSafetyProfiles)
@@ -466,10 +440,7 @@ export class GuardianService {
 	/**
 	 * Get recent analysis history for a user
 	 */
-	async getAnalysisHistory(
-		userId: string,
-		limit = 10,
-	): Promise<(typeof analysisEvents.$inferSelect)[]> {
+	async getAnalysisHistory(userId: string, limit = 10): Promise<(typeof analysisEvents.$inferSelect)[]> {
 		const db = getDb();
 		return await db
 			.select()
@@ -482,28 +453,17 @@ export class GuardianService {
 	/**
 	 * Get violations for a specific analysis
 	 */
-	async getViolations(
-		analysisId: string,
-	): Promise<(typeof ruleViolations.$inferSelect)[]> {
+	async getViolations(analysisId: string): Promise<(typeof ruleViolations.$inferSelect)[]> {
 		const db = getDb();
-		return await db
-			.select()
-			.from(ruleViolations)
-			.where(eq(ruleViolations.id, analysisId));
+		return await db.select().from(ruleViolations).where(eq(ruleViolations.id, analysisId));
 	}
 
 	/**
 	 * Get user safety profile
 	 */
-	async getUserSafetyProfile(
-		userId: string,
-	): Promise<typeof userSafetyProfiles.$inferSelect | null> {
+	async getUserSafetyProfile(userId: string): Promise<typeof userSafetyProfiles.$inferSelect | null> {
 		const db = getDb();
-		const result = await db
-			.select()
-			.from(userSafetyProfiles)
-			.where(eq(userSafetyProfiles.userId, userId))
-			.limit(1);
+		const result = await db.select().from(userSafetyProfiles).where(eq(userSafetyProfiles.userId, userId)).limit(1);
 
 		return result.length > 0 ? result[0] : null;
 	}

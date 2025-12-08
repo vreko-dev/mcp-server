@@ -1,6 +1,6 @@
+import { siteSpec } from "@marketing/config/site-config";
 import { Logo } from "@shared/components/Logo";
 import Link from "next/link";
-import { siteSpec } from "@marketing/config/site-config";
 
 export function Footer() {
 	return (

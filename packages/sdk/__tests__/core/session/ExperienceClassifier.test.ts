@@ -5,9 +5,9 @@
  * Testing platform-agnostic experience classification logic.
  */
 
-import { beforeEach, describe, expect, it } from "vitest";
 import { ExperienceClassifier, type IKeyValueStorage } from "@snapback-sdk/core/session/ExperienceClassifier";
 import type { ILogger } from "@snapback-sdk/core/session/interfaces";
+import { beforeEach, describe, expect, it } from "vitest";
 
 // Mock key-value storage
 class MockKeyValueStorage implements IKeyValueStorage {

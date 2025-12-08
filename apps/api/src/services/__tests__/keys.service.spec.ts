@@ -82,12 +82,7 @@ describe("AUTH1: Key service (in-memory) + usage audit (buffered)", () => {
 
 		// Log some API usage
 		await logApiUsage(apiKey.id, "/api/v1/analyze", "test-agent", "127.0.0.1");
-		await logApiUsage(
-			apiKey.id,
-			"/api/v1/policy/evaluate",
-			"test-agent",
-			"127.0.0.1",
-		);
+		await logApiUsage(apiKey.id, "/api/v1/policy/evaluate", "test-agent", "127.0.0.1");
 
 		// Retrieve usage logs
 		const logs = await getUsageLogs(apiKey.id);

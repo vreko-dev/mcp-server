@@ -715,8 +715,7 @@ describe("API Key Security - Better Auth Integration", () => {
  * Generate a cryptographically secure API key (stub)
  */
 function generateSecureApiKey(length: number): string {
-	const chars =
-		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+	const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
 	let key = "";
 	for (let i = 0; i < length; i++) {
 		key += chars.charAt(Math.floor(Math.random() * chars.length));

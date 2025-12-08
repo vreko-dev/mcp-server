@@ -10,9 +10,7 @@ export const passwordSchema = z
 	.regex(/[^A-Za-z0-9]/, "Password must contain special character");
 
 // Async function to check against pwned passwords API
-export async function isPasswordCompromised(
-	password: string,
-): Promise<boolean> {
+export async function isPasswordCompromised(password: string): Promise<boolean> {
 	try {
 		// Simple hash function for demonstration (in production, use proper crypto)
 		const encoder = new TextEncoder();
@@ -41,9 +39,7 @@ export async function isPasswordCompromised(
 }
 
 // Combined password validation function
-export async function validatePassword(
-	password: string,
-): Promise<{ valid: boolean; errors: string[] }> {
+export async function validatePassword(password: string): Promise<{ valid: boolean; errors: string[] }> {
 	const result = passwordSchema.safeParse(password);
 
 	if (!result.success) {

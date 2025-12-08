@@ -7,10 +7,7 @@
  * OWASP Standard: A01:2021 – Broken Access Control
  */
 
-import {
-	type CSRFConfig,
-	validateCSRFToken,
-} from "@snapback/auth/security/csrf-protection";
+import { type CSRFConfig, validateCSRFToken } from "@snapback/auth/security/csrf-protection";
 import { logger } from "@snapback/infrastructure";
 import type { MiddlewareHandler } from "hono";
 import { HTTPException } from "hono/http-exception";
@@ -24,9 +21,7 @@ import { HTTPException } from "hono/http-exception";
  * @param config Optional CSRF configuration overrides
  * @returns Hono middleware handler
  */
-export function csrfProtectionMiddleware(
-	config?: Partial<CSRFConfig>,
-): MiddlewareHandler {
+export function csrfProtectionMiddleware(config?: Partial<CSRFConfig>): MiddlewareHandler {
 	return async (c, next) => {
 		const method = c.req.method;
 
@@ -67,12 +62,7 @@ export function csrfProtectionMiddleware(
 			const referer = c.req.header("Referer");
 
 			// Validate CSRF token
-			const validation = validateCSRFToken(
-				providedToken,
-				storedToken,
-				origin || referer,
-				config,
-			);
+			const validation = validateCSRFToken(providedToken, storedToken, origin || referer, config);
 
 			if (!validation.valid) {
 				logger.warn("CSRF token validation failed", {

@@ -1,10 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { BetterAuthAdapter } from "../src/better-auth-adapter";
-import {
-	AuthError,
-	InsufficientRoleError,
-	InsufficientScopesError,
-} from "../src/errors";
+import { AuthError, InsufficientRoleError, InsufficientScopesError } from "../src/errors";
 import { SnapbackAuthImpl } from "../src/shared-auth-impl";
 
 function createMockAdapter(): {
@@ -188,9 +184,7 @@ describe("SnapbackAuth Implementation", () => {
 		const request = new Request("http://localhost");
 
 		await expect(auth.requireAuth(request)).rejects.toThrow(AuthError);
-		await expect(auth.requireAuth(request)).rejects.toThrow(
-			"Authentication required",
-		);
+		await expect(auth.requireAuth(request)).rejects.toThrow("Authentication required");
 	});
 
 	it("should require auth with role check", async () => {
@@ -208,14 +202,10 @@ describe("SnapbackAuth Implementation", () => {
 		vi.spyOn(auth, "getContextFromRequest").mockResolvedValue(mockContext);
 
 		// Should pass when role matches
-		await expect(
-			auth.requireAuth(request, { roles: ["user"] }),
-		).resolves.toEqual(mockContext);
+		await expect(auth.requireAuth(request, { roles: ["user"] })).resolves.toEqual(mockContext);
 
 		// Should throw when role doesn't match
-		await expect(
-			auth.requireAuth(request, { roles: ["admin"] }),
-		).rejects.toThrow(InsufficientRoleError);
+		await expect(auth.requireAuth(request, { roles: ["admin"] })).rejects.toThrow(InsufficientRoleError);
 	});
 
 	it("should require auth with scope check", async () => {
@@ -234,12 +224,8 @@ describe("SnapbackAuth Implementation", () => {
 		vi.spyOn(auth, "getContextFromRequest").mockResolvedValue(mockContext);
 
 		// Should pass when all scopes are present
-		await expect(
-			auth.requireAuth(request, { scopes: ["read"] }),
-		).resolves.toEqual(mockContext);
-		await expect(
-			auth.requireAuth(request, { scopes: ["read", "write"] }),
-		).resolves.toEqual(mockContext);
+		await expect(auth.requireAuth(request, { scopes: ["read"] })).resolves.toEqual(mockContext);
+		await expect(auth.requireAuth(request, { scopes: ["read", "write"] })).resolves.toEqual(mockContext);
 
 		// Should throw when missing scopes
 		await expect(
@@ -525,9 +511,7 @@ describe("SnapbackAuth Implementation", () => {
 		mocks.getOrgMembership.mockResolvedValue(null);
 
 		await expect(auth.requireAuth(request)).rejects.toThrow(AuthError);
-		await expect(auth.requireAuth(request)).rejects.toThrow(
-			"Authentication required",
-		);
+		await expect(auth.requireAuth(request)).rejects.toThrow("Authentication required");
 
 		try {
 			await auth.requireAuth(request);

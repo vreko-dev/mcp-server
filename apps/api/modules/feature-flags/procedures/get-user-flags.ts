@@ -9,10 +9,7 @@ const getUserFlagsInputSchema = z.object({
 });
 
 // Output schema
-const getUserFlagsOutputSchema = z.record(
-	z.string(),
-	z.union([z.string(), z.number(), z.boolean(), z.null()]),
-);
+const getUserFlagsOutputSchema = z.record(z.string(), z.union([z.string(), z.number(), z.boolean(), z.null()]));
 
 /**
  * Simple hash function for deterministic A/B testing
@@ -90,9 +87,7 @@ export const getUserFlags = publicProcedure
 		for (const flagName of flagNames) {
 			try {
 				// Check if the feature is enabled
-				const isEnabled = featureManager.isEnabled(
-					flagName as keyof typeof FEATURE_FLAGS,
-				);
+				const isEnabled = featureManager.isEnabled(flagName as keyof typeof FEATURE_FLAGS);
 				flags[flagName] = isEnabled;
 			} catch (_error) {
 				// If there's an error, default to false/null

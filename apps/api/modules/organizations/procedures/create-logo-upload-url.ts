@@ -11,8 +11,7 @@ export const createLogoUploadUrl = protectedProcedure
 		path: "/organizations/logo-upload-url",
 		tags: ["Organizations"],
 		summary: "Create logo upload URL",
-		description:
-			"Create a signed upload URL to upload an logo image to the storage bucket",
+		description: "Create a signed upload URL to upload an logo image to the storage bucket",
 	})
 	.input(
 		z.object({
@@ -33,10 +32,7 @@ export const createLogoUploadUrl = protectedProcedure
 				throw new ORPCError("BAD_REQUEST");
 			}
 
-			const membership = await verifyOrganizationMembership(
-				organizationId,
-				sessionUser.id,
-			);
+			const membership = await verifyOrganizationMembership(organizationId, sessionUser.id);
 
 			if (!membership) {
 				throw new ORPCError("FORBIDDEN");

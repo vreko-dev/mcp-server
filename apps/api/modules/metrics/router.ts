@@ -12,7 +12,6 @@ import { MetricsAggregator } from "../../src/services/metrics-aggregator";
  * - GET /metrics/my-timeline: Get daily metrics timeline
  * - GET /metrics/my-limits: Get usage limits
  */
-// biome-ignore lint/suspicious/noExplicitAny: Drizzle generic type requires any
 export function createMetricsRouter(db: PgDatabase<any>) {
 	const aggregator = new MetricsAggregator(db);
 
@@ -61,10 +60,7 @@ export function createMetricsRouter(db: PgDatabase<any>) {
 					return {
 						success: false,
 						data: null,
-						error:
-							error instanceof Error
-								? error.message
-								: "Failed to fetch metrics",
+						error: error instanceof Error ? error.message : "Failed to fetch metrics",
 					};
 				}
 			}),
@@ -111,10 +107,7 @@ export function createMetricsRouter(db: PgDatabase<any>) {
 					return {
 						success: false,
 						data: null,
-						error:
-							error instanceof Error
-								? error.message
-								: "Failed to fetch timeline",
+						error: error instanceof Error ? error.message : "Failed to fetch timeline",
 					};
 				}
 			}),
@@ -154,9 +147,7 @@ export function createMetricsRouter(db: PgDatabase<any>) {
 					const monthlyRestoreLimit = 50;
 					const aiSessionsLimit = 20;
 
-					const percentageUsed = Math.round(
-						((result.value.snapshots30d ?? 0) / monthlySnapshotLimit) * 100,
-					);
+					const percentageUsed = Math.round(((result.value.snapshots30d ?? 0) / monthlySnapshotLimit) * 100);
 
 					return {
 						success: true,
@@ -181,8 +172,7 @@ export function createMetricsRouter(db: PgDatabase<any>) {
 					return {
 						success: false,
 						data: null,
-						error:
-							error instanceof Error ? error.message : "Failed to fetch limits",
+						error: error instanceof Error ? error.message : "Failed to fetch limits",
 					};
 				}
 			}),

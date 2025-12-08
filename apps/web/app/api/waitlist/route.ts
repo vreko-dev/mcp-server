@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { createId } from "@paralleldrive/cuid2";
-// @ts-ignore
+// @ts-expect-error
 import { db, waitlist, waitlistReferrals } from "@snapback/platform";
 import { desc, eq } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";

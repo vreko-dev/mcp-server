@@ -4,11 +4,7 @@ import { apiKeyMetadata, securityEvents } from "@snapback/platform";
 import { eq } from "drizzle-orm";
 import { getDb } from "../src/services/database";
 
-export async function verifyRequestSignature(
-	apiKeyId: string,
-	signature: string,
-	payload: string,
-): Promise<boolean> {
+export async function verifyRequestSignature(apiKeyId: string, signature: string, payload: string): Promise<boolean> {
 	try {
 		const db = getDb();
 		if (!db) {
@@ -16,10 +12,7 @@ export async function verifyRequestSignature(
 		}
 
 		// Get API key metadata
-		const result = await getDb()
-			.select()
-			.from(apiKeyMetadata)
-			.where(eq(apiKeyMetadata.apiKeyId, apiKeyId));
+		const result = await getDb().select().from(apiKeyMetadata).where(eq(apiKeyMetadata.apiKeyId, apiKeyId));
 
 		if (!result || result.length === 0 || !result[0]) {
 			return false;
@@ -35,16 +28,10 @@ export async function verifyRequestSignature(
 		const signingSecret = metadata.signingSecret;
 
 		// Calculate expected signature
-		const expectedSignature = crypto
-			.createHmac("sha256", signingSecret)
-			.update(payload)
-			.digest("hex");
+		const expectedSignature = crypto.createHmac("sha256", signingSecret).update(payload).digest("hex");
 
 		// Constant-time comparison
-		return crypto.timingSafeEqual(
-			Buffer.from(signature, "hex"),
-			Buffer.from(expectedSignature, "hex"),
-		);
+		return crypto.timingSafeEqual(Buffer.from(signature, "hex"), Buffer.from(expectedSignature, "hex"));
 	} catch (error) {
 		logger.error("Error verifying request signature", { error });
 		return false;
@@ -75,12 +62,7 @@ export async function trackSecurityEvent(event: {
 				userId: event.userId || undefined,
 				apiKeyId: event.apiKeyId || undefined,
 				eventType: event.eventType,
-				severity: event.severity as
-					| "debug"
-					| "info"
-					| "warning"
-					| "error"
-					| "critical",
+				severity: event.severity as "debug" | "info" | "warning" | "error" | "critical",
 				ipAddress: event.metadata?.ipAddress || undefined,
 				userAgent: event.metadata?.userAgent || undefined,
 				endpoint: event.metadata?.endpoint || undefined,

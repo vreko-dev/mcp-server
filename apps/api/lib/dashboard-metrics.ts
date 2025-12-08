@@ -59,9 +59,7 @@ interface DatabaseSubscription {
 }
 
 // Get user dashboard metrics from database
-export async function getUserMetrics(
-	userId: string,
-): Promise<DashboardMetrics> {
+export async function getUserMetrics(userId: string): Promise<DashboardMetrics> {
 	if (!db) {
 		return {
 			snapshotCount: 0,
@@ -98,19 +96,11 @@ export async function getUserMetrics(
 	const aiUsage = await db
 		.select({ total: count() })
 		.from(featureUsage)
-		.where(
-			and(
-				eq(featureUsage.userId, userId),
-				eq(featureUsage.featureCategory, "ai_assistance"),
-			),
-		);
+		.where(and(eq(featureUsage.userId, userId), eq(featureUsage.featureCategory, "ai_assistance")));
 
 	const aiDetectionCount = aiUsage[0]?.total || 0;
 	const totalSnapshots = stats.count || 0;
-	const aiDetectionRate =
-		totalSnapshots > 0
-			? Math.round((aiDetectionCount / totalSnapshots) * 100)
-			: 0;
+	const aiDetectionRate = totalSnapshots > 0 ? Math.round((aiDetectionCount / totalSnapshots) * 100) : 0;
 
 	return {
 		snapshotCount: totalSnapshots,
@@ -121,9 +111,7 @@ export async function getUserMetrics(
 }
 
 // Get AI detection statistics from feature usage
-export async function getAIDetectionStats(
-	userId: string,
-): Promise<AIDetectionStat[]> {
+export async function getAIDetectionStats(userId: string): Promise<AIDetectionStat[]> {
 	if (!db) {
 		return [];
 	}
@@ -135,12 +123,7 @@ export async function getAIDetectionStats(
 			count: count(),
 		})
 		.from(featureUsage)
-		.where(
-			and(
-				eq(featureUsage.userId, userId),
-				eq(featureUsage.featureCategory, "ai_assistance"),
-			),
-		)
+		.where(and(eq(featureUsage.userId, userId), eq(featureUsage.featureCategory, "ai_assistance")))
 		.groupBy(featureUsage.featureName)
 		.orderBy(desc(count()));
 
@@ -181,55 +164,34 @@ export async function getRecentActivity(userId: string): Promise<Activity[]> {
 			metadata: featureUsage.metadata,
 		})
 		.from(featureUsage)
-		.where(
-			and(
-				eq(featureUsage.userId, userId),
-				eq(featureUsage.featureCategory, "ai_assistance"),
-			),
-		)
+		.where(and(eq(featureUsage.userId, userId), eq(featureUsage.featureCategory, "ai_assistance")))
 		.orderBy(desc(featureUsage.createdAt))
 		.limit(10);
 
 	// Combine and format activities
 	const activities: Activity[] = [
 		...recentSnapshots.map((snapshot) => ({
-			type: (snapshot.riskScore && snapshot.riskScore > 0
-				? "recovery"
-				: "snapshot") as "snapshot" | "recovery",
-			message:
-				snapshot.riskScore && snapshot.riskScore > 0
-					? "Code recovered from risk"
-					: "Snapshot created",
-			timestamp: snapshot.createdAt
-				? formatRelativeTime(snapshot.createdAt)
-				: "unknown",
+			type: (snapshot.riskScore && snapshot.riskScore > 0 ? "recovery" : "snapshot") as "snapshot" | "recovery",
+			message: snapshot.riskScore && snapshot.riskScore > 0 ? "Code recovered from risk" : "Snapshot created",
+			timestamp: snapshot.createdAt ? formatRelativeTime(snapshot.createdAt) : "unknown",
 			metadata: { files: snapshot.fileCount, trigger: snapshot.trigger },
 		})),
 		...recentAI.map((ai) => ({
 			type: "ai_detection" as const,
 			message: `${formatToolName(ai.featureName)} detected`,
 			timestamp: ai.createdAt ? formatRelativeTime(ai.createdAt) : "unknown",
-			metadata:
-				(ai.metadata as Record<string, unknown>) ||
-				({} as Record<string, unknown>),
+			metadata: (ai.metadata as Record<string, unknown>) || ({} as Record<string, unknown>),
 		})),
 	];
 
 	// Sort by timestamp and return top 5
 	return activities
-		.sort(
-			(a, b) =>
-				parseRelativeTime(b.timestamp).getTime() -
-				parseRelativeTime(a.timestamp).getTime(),
-		)
+		.sort((a, b) => parseRelativeTime(b.timestamp).getTime() - parseRelativeTime(a.timestamp).getTime())
 		.slice(0, 5);
 }
 
 // Get usage limits based on subscription
-export async function getUsageLimits(
-	userId: string,
-	plan: string,
-): Promise<UsageLimits> {
+export async function getUsageLimits(userId: string, plan: string): Promise<UsageLimits> {
 	if (!db) {
 		return {
 			snapshotsUsed: 0,
@@ -238,11 +200,7 @@ export async function getUsageLimits(
 	}
 
 	// Get subscription for current period
-	const [subscription] = await db
-		.select()
-		.from(subscriptions)
-		.where(eq(subscriptions.userId, userId))
-		.limit(1);
+	const [subscription] = await db.select().from(subscriptions).where(eq(subscriptions.userId, userId)).limit(1);
 
 	if (!subscription) {
 		return {
@@ -252,18 +210,12 @@ export async function getUsageLimits(
 	}
 
 	// Count snapshots in current billing period
-	const currentPeriodStart =
-		subscription.currentPeriodStart || new Date(Date.now() - 30 * 86400000); // 30 days ago
+	const currentPeriodStart = subscription.currentPeriodStart || new Date(Date.now() - 30 * 86400000); // 30 days ago
 
 	const periodSnapshots = await db
 		.select({ count: count() })
 		.from(snapshots)
-		.where(
-			and(
-				eq(snapshots.userId, userId),
-				gte(snapshots.createdAt, currentPeriodStart),
-			),
-		);
+		.where(and(eq(snapshots.userId, userId), gte(snapshots.createdAt, currentPeriodStart)));
 
 	const snapshotsUsed = periodSnapshots[0]?.count || 0;
 
@@ -273,9 +225,7 @@ export async function getUsageLimits(
 		const cloudSnapshots = await db
 			.select({ totalSizeBytes: sum(snapshots.totalSizeBytes) })
 			.from(snapshots)
-			.where(
-				and(eq(snapshots.userId, userId), isNotNull(snapshots.totalSizeBytes)),
-			);
+			.where(and(eq(snapshots.userId, userId), isNotNull(snapshots.totalSizeBytes)));
 
 		const totalSizeBytes = Number(cloudSnapshots[0]?.totalSizeBytes || 0);
 		cloudStorageUsedMb = Math.round(totalSizeBytes / (1024 * 1024)); // Convert bytes to MB
@@ -299,9 +249,7 @@ export async function getUsageLimits(
 }
 
 // Get subscription information
-export async function getSubscription(
-	userId: string,
-): Promise<SubscriptionInfo> {
+export async function getSubscription(userId: string): Promise<SubscriptionInfo> {
 	if (!db) {
 		return {
 			plan: "free",
@@ -309,11 +257,7 @@ export async function getSubscription(
 		};
 	}
 
-	const [subscription] = await db
-		.select()
-		.from(subscriptions)
-		.where(eq(subscriptions.userId, userId))
-		.limit(1);
+	const [subscription] = await db.select().from(subscriptions).where(eq(subscriptions.userId, userId)).limit(1);
 
 	if (!subscription) {
 		return {
@@ -324,12 +268,7 @@ export async function getSubscription(
 
 	return {
 		plan: subscription.plan as "free" | "pro" | "team" | "enterprise",
-		status: subscription.status as
-			| "active"
-			| "canceled"
-			| "past_due"
-			| "trialing"
-			| "paused",
+		status: subscription.status as "active" | "canceled" | "past_due" | "trialing" | "paused",
 		currentPeriodEnd: subscription.currentPeriodEnd || undefined,
 		trialEnd: subscription.trialEnd || undefined,
 	};
@@ -347,9 +286,7 @@ export function mapSubscriptionData(subscription: DatabaseSubscription) {
 }
 
 // Helper function to map subscription data for dashboard
-export function mapSubscriptionForDashboard(
-	subscription: DatabaseSubscription,
-) {
+export function mapSubscriptionForDashboard(subscription: DatabaseSubscription) {
 	return {
 		id: subscription.id,
 		plan: subscription.plan,
@@ -405,12 +342,7 @@ function parseRelativeTime(relative: string): Date {
 	const value = Number.parseInt(match[1] || "0", 10);
 	const unit = match[2] || "minute";
 
-	const ms =
-		unit === "minute"
-			? value * 60000
-			: unit === "hour"
-				? value * 3600000
-				: value * 86400000;
+	const ms = unit === "minute" ? value * 60000 : unit === "hour" ? value * 3600000 : value * 86400000;
 
 	return new Date(now.getTime() - ms);
 }

@@ -23,8 +23,7 @@ export const createCheckoutLinkProcedure = protectedProcedure
 		path: "/payments/create-snapshot-link",
 		tags: ["Payments"],
 		summary: "Create checkout link",
-		description:
-			"Creates a checkout link for a one-time or subscription product",
+		description: "Creates a checkout link for a one-time or subscription product",
 	})
 	.input(
 		z.object({
@@ -48,11 +47,7 @@ export const createCheckoutLinkProcedure = protectedProcedure
 				throw new Error("Database not available");
 			}
 
-			const users = await db
-				.select()
-				.from(user)
-				.where(eq(user.id, sessionUser.id))
-				.limit(1);
+			const users = await db.select().from(user).where(eq(user.id, sessionUser.id)).limit(1);
 
 			if (!users || users.length === 0) {
 				throw new ORPCError("UNAUTHORIZED");
@@ -75,11 +70,8 @@ export const createCheckoutLinkProcedure = protectedProcedure
 			const plan = Object.entries(plans).find(([_planId, plan]) =>
 				plan.prices?.find((price) => price.productId === productId),
 			);
-			const price = plan?.[1].prices?.find(
-				(price) => price.productId === productId,
-			);
-			const trialPeriodDays =
-				price && "trialPeriodDays" in price ? price.trialPeriodDays : undefined;
+			const price = plan?.[1].prices?.find((price) => price.productId === productId);
+			const trialPeriodDays = price && "trialPeriodDays" in price ? price.trialPeriodDays : undefined;
 
 			// The query below correctly uses organizationTable which is the correct table name
 			let organizationData: typeof organization.$inferSelect | null = null;
@@ -98,8 +90,7 @@ export const createCheckoutLinkProcedure = protectedProcedure
 					.where(eq(organization.id, organizationId))
 					.limit(1);
 
-				organizationData =
-					organizations && organizations.length > 0 ? organizations[0] : null;
+				organizationData = organizations && organizations.length > 0 ? organizations[0] : null;
 
 				// Count members for this organization
 				const memberResult = await db
@@ -109,10 +100,7 @@ export const createCheckoutLinkProcedure = protectedProcedure
 					.from(member)
 					.where(eq(member.organizationId, organizationId));
 
-				memberCount =
-					memberResult && memberResult.length > 0
-						? memberResult[0]?.count || 0
-						: 0;
+				memberCount = memberResult && memberResult.length > 0 ? memberResult[0]?.count || 0 : 0;
 			}
 
 			if (organizationData === null && organizationId) {
@@ -120,9 +108,7 @@ export const createCheckoutLinkProcedure = protectedProcedure
 			}
 
 			const seats =
-				organizationData && price && "seatBased" in price && price.seatBased
-					? memberCount
-					: undefined;
+				organizationData && price && "seatBased" in price && price.seatBased ? memberCount : undefined;
 
 			try {
 				const checkoutLink = await createCheckoutLink({

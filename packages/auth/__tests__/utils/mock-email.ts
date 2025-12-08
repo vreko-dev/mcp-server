@@ -33,9 +33,7 @@ export class MockEmailService {
 	}
 
 	getEmailsByTemplate(templateId: string, to?: string): EmailMessage[] {
-		let filtered = this.sentEmails.filter(
-			(email) => email.templateId === templateId,
-		);
+		let filtered = this.sentEmails.filter((email) => email.templateId === templateId);
 		if (to) {
 			filtered = filtered.filter((email) => email.to === to);
 		}
@@ -51,17 +49,13 @@ export class MockEmailService {
 	}
 
 	getResetPasswordUrl(email: string): string | null {
-		const resetEmail = this.sentEmails
-			.filter((e) => e.to === email && e.templateId === "forgotPassword")
-			.pop();
+		const resetEmail = this.sentEmails.filter((e) => e.to === email && e.templateId === "forgotPassword").pop();
 
 		return resetEmail?.context.url || null;
 	}
 
 	getMagicLinkUrl(email: string): string | null {
-		const magicEmail = this.sentEmails
-			.filter((e) => e.to === email && e.templateId === "magicLink")
-			.pop();
+		const magicEmail = this.sentEmails.filter((e) => e.to === email && e.templateId === "magicLink").pop();
 
 		return magicEmail?.context.url || null;
 	}
@@ -76,17 +70,12 @@ export class MockEmailService {
 	}
 
 	hasEmailBeenSent(to: string, templateId?: string): boolean {
-		return this.sentEmails.some(
-			(email) =>
-				email.to === to && (!templateId || email.templateId === templateId),
-		);
+		return this.sentEmails.some((email) => email.to === to && (!templateId || email.templateId === templateId));
 	}
 
 	getEmailCount(to?: string, templateId?: string): number {
 		return this.sentEmails.filter(
-			(email) =>
-				(!to || email.to === to) &&
-				(!templateId || email.templateId === templateId),
+			(email) => (!to || email.to === to) && (!templateId || email.templateId === templateId),
 		).length;
 	}
 }

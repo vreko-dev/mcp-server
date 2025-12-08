@@ -35,15 +35,9 @@ export interface RateLimitResult {
 /**
  * Check IP-based rate limit
  */
-export async function checkIPRateLimit(
-	ipAddress: string,
-): Promise<RateLimitResult> {
+export async function checkIPRateLimit(ipAddress: string): Promise<RateLimitResult> {
 	const key = `ratelimit:ip:${ipAddress}`;
-	const result = await rateLimitCheck(
-		key,
-		RATE_LIMITS.ip.limit,
-		RATE_LIMITS.ip.window,
-	);
+	const result = await rateLimitCheck(key, RATE_LIMITS.ip.limit, RATE_LIMITS.ip.window);
 
 	if (!result.allowed) {
 		logger.warn("IP rate limit exceeded", { ipAddress, ...result });
@@ -58,15 +52,9 @@ export async function checkIPRateLimit(
 /**
  * Check user-based rate limit
  */
-export async function checkUserRateLimit(
-	userId: string,
-): Promise<RateLimitResult> {
+export async function checkUserRateLimit(userId: string): Promise<RateLimitResult> {
 	const key = `ratelimit:user:${userId}`;
-	const result = await rateLimitCheck(
-		key,
-		RATE_LIMITS.user.limit,
-		RATE_LIMITS.user.window,
-	);
+	const result = await rateLimitCheck(key, RATE_LIMITS.user.limit, RATE_LIMITS.user.window);
 
 	if (!result.allowed) {
 		logger.warn("User rate limit exceeded", { userId, ...result });
@@ -103,10 +91,7 @@ export async function checkAPIKeyRateLimit(
  * Combined rate limit check (both IP and user)
  * Returns the most restrictive result
  */
-export async function checkCombinedRateLimit(
-	ipAddress: string,
-	userId?: string,
-): Promise<RateLimitResult> {
+export async function checkCombinedRateLimit(ipAddress: string, userId?: string): Promise<RateLimitResult> {
 	const ipResult = await checkIPRateLimit(ipAddress);
 
 	if (!ipResult.allowed) {

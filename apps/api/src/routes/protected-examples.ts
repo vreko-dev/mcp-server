@@ -1,13 +1,7 @@
 import { logger } from "@snapback/infrastructure";
 import { Hono } from "hono";
 import { z } from "zod";
-import {
-	getAuthContext,
-	requireAuth,
-	requireOrgMembership,
-	requirePlan,
-	requireRole,
-} from "../middleware/auth";
+import { getAuthContext, requireAuth, requireOrgMembership, requirePlan, requireRole } from "../middleware/auth";
 import { validateBody } from "../middleware/validation";
 
 /**
@@ -209,33 +203,29 @@ const orgSettingsSchema = z.object({
 	publicProfile: z.boolean().optional(),
 });
 
-router.post(
-	"/org/:orgId/settings",
-	requireOrgMembership("orgId"),
-	async (c) => {
-		const validationResult = await validateBody(c, orgSettingsSchema);
+router.post("/org/:orgId/settings", requireOrgMembership("orgId"), async (c) => {
+	const validationResult = await validateBody(c, orgSettingsSchema);
 
-		if (!validationResult.success) {
-			return c.json(validationResult.error, 400);
-		}
+	if (!validationResult.success) {
+		return c.json(validationResult.error, 400);
+	}
 
-		const orgId = c.req.param("orgId");
-		const auth = getAuthContext(c);
-		const settings = validationResult.value;
+	const orgId = c.req.param("orgId");
+	const auth = getAuthContext(c);
+	const settings = validationResult.value;
 
-		logger.info("Organization settings updated", {
-			orgId,
-			updatedBy: auth?.user.id,
-			changes: settings,
-		});
+	logger.info("Organization settings updated", {
+		orgId,
+		updatedBy: auth?.user.id,
+		changes: settings,
+	});
 
-		return c.json({
-			success: true,
-			organization: orgId,
-			settings,
-		});
-	},
-);
+	return c.json({
+		success: true,
+		organization: orgId,
+		settings,
+	});
+});
 
 // ============================================================================
 // 5. PLAN-BASED FEATURE ROUTES - Requires subscription plan
@@ -252,47 +242,43 @@ const analyticsQuerySchema = z.object({
 	breakdown: z.enum(["hourly", "daily", "weekly"]).optional(),
 });
 
-router.post(
-	"/advanced-analytics",
-	requirePlan("pro", "enterprise"),
-	async (c) => {
-		const validationResult = await validateBody(c, analyticsQuerySchema);
+router.post("/advanced-analytics", requirePlan("pro", "enterprise"), async (c) => {
+	const validationResult = await validateBody(c, analyticsQuerySchema);
 
-		if (!validationResult.success) {
-			return c.json(validationResult.error, 400);
-		}
+	if (!validationResult.success) {
+		return c.json(validationResult.error, 400);
+	}
 
-		const auth = getAuthContext(c);
-		const query = validationResult.value;
+	const auth = getAuthContext(c);
+	const query = validationResult.value;
 
-		logger.info("Advanced analytics accessed", {
-			userId: auth?.user.id,
-			plan: auth?.user.plan,
-			query,
-		});
+	logger.info("Advanced analytics accessed", {
+		userId: auth?.user.id,
+		plan: auth?.user.plan,
+		query,
+	});
 
-		// Simulated analytics response
-		const analytics = {
-			metric: query.metricType,
-			timeRange: query.timeRange,
-			data: [
-				{ period: "2025-11-30", value: 450 },
-				{ period: "2025-11-29", value: 520 },
-				{ period: "2025-11-28", value: 380 },
-			],
-			summary: {
-				average: 450,
-				peak: 520,
-				trend: "up",
-			},
-		};
+	// Simulated analytics response
+	const analytics = {
+		metric: query.metricType,
+		timeRange: query.timeRange,
+		data: [
+			{ period: "2025-11-30", value: 450 },
+			{ period: "2025-11-29", value: 520 },
+			{ period: "2025-11-28", value: 380 },
+		],
+		summary: {
+			average: 450,
+			peak: 520,
+			trend: "up",
+		},
+	};
 
-		return c.json({
-			success: true,
-			data: analytics,
-		});
-	},
-);
+	return c.json({
+		success: true,
+		data: analytics,
+	});
+});
 
 /**
  * POST /api/export-data

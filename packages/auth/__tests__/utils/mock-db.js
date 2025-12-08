@@ -24,9 +24,7 @@ var __awaiter =
 				}
 			}
 			function step(result) {
-				result.done
-					? resolve(result.value)
-					: adopt(result.value).then(fulfilled, rejected);
+				result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
 			}
 			step((generator = generator.apply(thisArg, _arguments || [])).next());
 		});
@@ -50,9 +48,7 @@ export const createMockDatabase = () => {
 		getUserByEmail: vi.fn((email) =>
 			__awaiter(void 0, void 0, void 0, function* () {
 				var _a;
-				return (_a = mockUsers.get(email)) !== null && _a !== void 0
-					? _a
-					: null;
+				return (_a = mockUsers.get(email)) !== null && _a !== void 0 ? _a : null;
 			}),
 		),
 		getUserById: vi.fn((id) =>
@@ -71,8 +67,7 @@ export const createMockDatabase = () => {
 				const user = Object.assign(Object.assign({}, data), {
 					id: crypto.randomUUID(),
 					createdAt: new Date(),
-					emailVerified:
-						(_a = data.emailVerified) !== null && _a !== void 0 ? _a : false,
+					emailVerified: (_a = data.emailVerified) !== null && _a !== void 0 ? _a : false,
 				});
 				mockUsers.set(data.email, user);
 				return user;

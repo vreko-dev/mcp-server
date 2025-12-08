@@ -64,9 +64,7 @@ describe("API Key Plugin Integration (RED PHASE)", () => {
 			expect(mockVerified.isValid).toBe(true);
 			expect(mockVerified.userId).toBeDefined();
 			expect(mockVerified.permissions).toBeDefined();
-			expect(Object.keys(mockVerified.permissions)).toContain(
-				"snapback:analyze",
-			);
+			expect(Object.keys(mockVerified.permissions)).toContain("snapback:analyze");
 		});
 	});
 
@@ -81,8 +79,7 @@ describe("API Key Plugin Integration (RED PHASE)", () => {
 			};
 
 			const hasAnalyzeRead = permissions["snapback:analyze"]?.includes("read");
-			const hasSnapshotWrite =
-				permissions["snapback:snapshot"]?.includes("write");
+			const hasSnapshotWrite = permissions["snapback:snapshot"]?.includes("write");
 
 			expect(hasAnalyzeRead).toBe(true);
 			expect(hasSnapshotWrite).toBe(true);
@@ -126,12 +123,8 @@ describe("API Key Plugin Integration (RED PHASE)", () => {
 				rateLimit: { requests: 10000, window: 60 }, // 10000/min
 			};
 
-			expect(freeKey.rateLimit.requests).toBeLessThan(
-				proKey.rateLimit.requests,
-			);
-			expect(proKey.rateLimit.requests).toBeLessThan(
-				adminKey.rateLimit.requests,
-			);
+			expect(freeKey.rateLimit.requests).toBeLessThan(proKey.rateLimit.requests);
+			expect(proKey.rateLimit.requests).toBeLessThan(adminKey.rateLimit.requests);
 		});
 	});
 
@@ -272,12 +265,8 @@ describe("API Key Middleware Integration", () => {
 			};
 
 			const tierDetection = {
-				isFree:
-					!verified.permissions?.["snapback:pro"] &&
-					!verified.permissions?.["snapback:admin"],
-				isPro:
-					!!verified.permissions?.["snapback:pro"] &&
-					!verified.permissions?.["snapback:admin"],
+				isFree: !verified.permissions?.["snapback:pro"] && !verified.permissions?.["snapback:admin"],
+				isPro: !!verified.permissions?.["snapback:pro"] && !verified.permissions?.["snapback:admin"],
 				isAdmin: !!verified.permissions?.["snapback:admin"],
 			};
 

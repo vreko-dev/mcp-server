@@ -16,11 +16,7 @@
  */
 
 import { logger } from "@snapback/infrastructure";
-import {
-	checkAccountLockout,
-	incrementFailedAttempts,
-	resetFailedAttempts,
-} from "../lib/account-lockout";
+import { checkAccountLockout, incrementFailedAttempts, resetFailedAttempts } from "../lib/account-lockout";
 
 /**
  * Extract email from request body
@@ -56,9 +52,7 @@ function isLoginRequest(request: Request): boolean {
 	const url = new URL(request.url);
 	return (
 		request.method === "POST" &&
-		(url.pathname.includes("/sign-in") ||
-			url.pathname.includes("/signin") ||
-			url.pathname.includes("/login"))
+		(url.pathname.includes("/sign-in") || url.pathname.includes("/signin") || url.pathname.includes("/login"))
 	);
 }
 
@@ -103,12 +97,9 @@ export async function withLockoutProtection(
 
 		return new Response(
 			JSON.stringify({
-				error:
-					"Account temporarily locked due to too many failed login attempts",
+				error: "Account temporarily locked due to too many failed login attempts",
 				retryAfter: lockout.remainingTime,
-				lockedUntil: new Date(
-					Date.now() + (lockout.remainingTime || 0) * 1000,
-				).toISOString(),
+				lockedUntil: new Date(Date.now() + (lockout.remainingTime || 0) * 1000).toISOString(),
 			}),
 			{
 				status: 429, // Too Many Requests

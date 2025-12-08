@@ -9,12 +9,7 @@
  * @see https://github.com/aws/aws-sdk-js-v3 (Context7: /aws/aws-sdk-js-v3)
  */
 
-import {
-	GetObjectCommand,
-	HeadBucketCommand,
-	PutObjectCommand,
-	S3Client,
-} from "@aws-sdk/client-s3";
+import { GetObjectCommand, HeadBucketCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { logger } from "@snapback/infrastructure";
 
@@ -27,9 +22,7 @@ let s3Client: S3Client | null = null;
 export function getS3Client(): S3Client {
 	if (!s3Client) {
 		if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
-			throw new Error(
-				"AWS credentials not configured (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY required)",
-			);
+			throw new Error("AWS credentials not configured (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY required)");
 		}
 
 		s3Client = new S3Client({
@@ -53,11 +46,7 @@ export function getS3Client(): S3Client {
  * Check if S3 is configured
  */
 export function isS3Configured(): boolean {
-	return !!(
-		process.env.AWS_ACCESS_KEY_ID &&
-		process.env.AWS_SECRET_ACCESS_KEY &&
-		process.env.S3_BUCKET_NAME
-	);
+	return !!(process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY && process.env.S3_BUCKET_NAME);
 }
 
 /**

@@ -162,11 +162,7 @@ export const createMockOrganization = (overrides?: Partial<any>) => ({
 	...overrides,
 });
 
-export const createMockMember = (
-	userId: string,
-	organizationId: string,
-	role = "member",
-) => ({
+export const createMockMember = (userId: string, organizationId: string, role = "member") => ({
 	id: crypto.randomUUID(),
 	userId,
 	organizationId,
@@ -257,11 +253,7 @@ export const createExpiredApiKey = () => ({
 
 // Security assertion helpers
 export const assertSecureHeaders = (headers: Headers) => {
-	const requiredHeaders = [
-		"x-content-type-options",
-		"x-frame-options",
-		"x-xss-protection",
-	];
+	const requiredHeaders = ["x-content-type-options", "x-frame-options", "x-xss-protection"];
 
 	const missing = requiredHeaders.filter((header) => !headers.has(header));
 
@@ -274,9 +266,7 @@ export const assertNoSensitiveDataInResponse = (response: any) => {
 	const sensitiveFields = ["password", "secret", "apiKey", "token"];
 	const responseStr = JSON.stringify(response);
 
-	const leaked = sensitiveFields.filter((field) =>
-		responseStr.toLowerCase().includes(field.toLowerCase()),
-	);
+	const leaked = sensitiveFields.filter((field) => responseStr.toLowerCase().includes(field.toLowerCase()));
 
 	if (leaked.length > 0) {
 		throw new Error(`Response contains sensitive fields: ${leaked.join(", ")}`);

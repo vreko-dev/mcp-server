@@ -48,7 +48,11 @@ export function getPlanPermissions(plan: PlanId): PlanPermissions {
  * Reads Better Auth user shape.
  */
 export function mapUserToPlan(user: any): PlanId {
-	if (user?.subscription?.plan) return user.subscription.plan as PlanId;
-	if (user?.metadata?.plan) return user.metadata.plan as PlanId;
+	if (user?.subscription?.plan) {
+		return user.subscription.plan as PlanId;
+	}
+	if (user?.metadata?.plan) {
+		return user.metadata.plan as PlanId;
+	}
 	return "free";
 }

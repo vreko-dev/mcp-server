@@ -85,10 +85,7 @@ describe("Brute Force Protection", () => {
 		});
 
 		it("should temporarily lock account after threshold", () => {
-			const isAccountLocked = (
-				attempts: number,
-				lockThreshold = 5,
-			): boolean => {
+			const isAccountLocked = (attempts: number, lockThreshold = 5): boolean => {
 				return attempts >= lockThreshold;
 			};
 
@@ -280,9 +277,7 @@ describe("Brute Force Protection", () => {
 
 				const elapsed = Date.now() - start;
 				if (elapsed < minTime) {
-					await new Promise((resolve) =>
-						setTimeout(resolve, minTime - elapsed),
-					);
+					await new Promise((resolve) => setTimeout(resolve, minTime - elapsed));
 				}
 			};
 
@@ -314,20 +309,14 @@ describe("Brute Force Protection", () => {
 				lockoutNotifications.push({ email, reason });
 			};
 
-			notifyLockout(
-				validUsers.standard.email,
-				"Multiple failed login attempts",
-			);
+			notifyLockout(validUsers.standard.email, "Multiple failed login attempts");
 
 			expect(lockoutNotifications).toHaveLength(1);
 			expect(lockoutNotifications[0].reason).toContain("failed login");
 		});
 
 		it("should require admin intervention for permanent locks", () => {
-			const lockedAccounts = new Map<
-				string,
-				{ locked: boolean; adminUnlockRequired: boolean }
-			>();
+			const lockedAccounts = new Map<string, { locked: boolean; adminUnlockRequired: boolean }>();
 
 			lockedAccounts.set(validUsers.standard.email, {
 				locked: true,
@@ -355,12 +344,9 @@ describe("Brute Force Protection", () => {
 			];
 
 			// Detect impossible travel (different countries in 5 minutes)
-			const timeDiff =
-				loginHistory[1].timestamp.getTime() -
-				loginHistory[0].timestamp.getTime();
+			const timeDiff = loginHistory[1].timestamp.getTime() - loginHistory[0].timestamp.getTime();
 			const minutesDiff = timeDiff / (1000 * 60);
-			const differentCountries =
-				loginHistory[0].country !== loginHistory[1].country;
+			const differentCountries = loginHistory[0].country !== loginHistory[1].country;
 
 			const isAnomalous = differentCountries && minutesDiff < 60;
 			expect(isAnomalous).toBe(true);

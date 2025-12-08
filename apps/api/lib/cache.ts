@@ -29,10 +29,7 @@ export function getCacheKey(req: NextRequest, userId: string): string {
 	};
 
 	// Create deterministic hash
-	return crypto
-		.createHash("sha256")
-		.update(JSON.stringify(normalized))
-		.digest("hex");
+	return crypto.createHash("sha256").update(JSON.stringify(normalized)).digest("hex");
 }
 
 export async function getOrCreateCache(

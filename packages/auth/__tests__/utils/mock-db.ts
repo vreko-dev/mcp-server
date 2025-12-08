@@ -16,9 +16,7 @@ export const createMockDatabase = () => {
 
 	return {
 		// User operations
-		getUserByEmail: vi.fn(
-			async (email: string) => mockUsers.get(email) ?? null,
-		),
+		getUserByEmail: vi.fn(async (email: string) => mockUsers.get(email) ?? null),
 		getUserById: vi.fn(async (id: string) => {
 			for (const user of mockUsers.values()) {
 				if (user.id === id) {
@@ -144,25 +142,21 @@ export const createMockDatabase = () => {
 			mockMembers.set(key, member);
 			return member;
 		}),
-		updateMemberRole: vi.fn(
-			async (userId: string, orgId: string, role: string) => {
-				const key = `${userId}-${orgId}`;
-				const member = mockMembers.get(key);
-				if (member) {
-					member.role = role;
-					return member;
-				}
-				return null;
-			},
-		),
+		updateMemberRole: vi.fn(async (userId: string, orgId: string, role: string) => {
+			const key = `${userId}-${orgId}`;
+			const member = mockMembers.get(key);
+			if (member) {
+				member.role = role;
+				return member;
+			}
+			return null;
+		}),
 
 		// Account operations (OAuth)
-		getAccountByProviderId: vi.fn(
-			async (providerId: string, accountId: string) => {
-				const key = `${providerId}-${accountId}`;
-				return mockAccounts.get(key);
-			},
-		),
+		getAccountByProviderId: vi.fn(async (providerId: string, accountId: string) => {
+			const key = `${providerId}-${accountId}`;
+			return mockAccounts.get(key);
+		}),
 		createAccount: vi.fn(async (data: any) => {
 			const key = `${data.providerId}-${data.accountId}`;
 			const account = {

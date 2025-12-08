@@ -3,7 +3,7 @@ pre-commit:
     commands:
         quality:
             glob: "**/*.{ts,tsx,js,jsx,json}"
-            run: pnpm biome check --write --no-errors-on-unmatched
+            run: pnpm biome check --write --no-errors-on-unmatched {staged_files}
             stage_fixed: true
             skip:
                 - merge
@@ -11,227 +11,28 @@ pre-commit:
 
         tsup-config-validator:
             glob: "**/tsup.config.ts"
-            run: |
-                echo '🔍 Validating tsup configurations...'
-                node << 'VALIDATOR'
-                const fs = require('fs');
-                const path = require('path');
-                const files = process.argv.slice(1);
-                let hasErrors = false;
-                let validationErrors = [];
-                let warnings = [];
-
-                // Packages that MUST have dts.resolve: true
-                const requiresDtsResolve = [
-                  '@snapback/testing',
-                  '@snapback/events',
-                  '@snapback/config',
-                  '@snapback/sdk',
-                  '@snapback/infrastructure',
-                  '@snapback-oss/contracts',
-                  '@snapback-oss/infrastructure',
-                  '@snapback-oss/config',
-                  '@snapback-oss/events',
-                  '@snapback-oss/sdk'
-                ];
-
-                // Browser packages that MUST mark server dependencies as external
-                const browserPackages = [
-                  '@snapback/contracts',
-                  '@snapback/config',
-                  '@snapback/auth'
-                ];
-
-                files.forEach(file => {
-                  const content = fs.readFileSync(file, 'utf8');
-                  const dir = path.dirname(file);
-                  const packageJsonPath = path.join(dir, 'package.json');
-
-                  if (!fs.existsSync(packageJsonPath)) return;
-
-                  const pkg = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-                  const packageName = pkg.name;
-
-                  // Check DTS resolution requirement
-                  if (requiresDtsResolve.includes(packageName)) {
-                    if (!content.includes('dts:') || !content.includes('resolve:') || !content.includes('true')) {
-                      validationErrors.push(`❌ ${packageName}: missing 'dts: { resolve: true }'`);
-                      hasErrors = true;
-                    }
-                  }
-
-                  // Check browser packages have external declarations
-                  if (browserPackages.includes(packageName)) {
-                    const hasExternalDeclaration = content.includes('external:') && !content.includes('external: undefined');
-                    if (!hasExternalDeclaration) {
-                      validationErrors.push(`❌ ${packageName}: browser package missing proper 'external: [...]' declaration`);
-                      hasErrors = true;
-                    }
-                    if (!content.includes('@snapback/infrastructure')) {
-                      warnings.push(`⚠️  ${packageName}: consider adding '@snapback/infrastructure' to external array`);
-                    }
-                  }
-
-                  // Warn on unsafe configurations
-                  if (content.includes('dts: false') && !content.includes('DTS generation disabled') && !content.includes('DTS disabled')) {
-                    warnings.push(`⚠️  ${packageName}: dts: false without explanation - document why in comment`);
-                  }
-
-                  // Check for missing skipNodeModulesBundle
-                  if (!content.includes('skipNodeModulesBundle: true') && content.includes('format:')) {
-                    warnings.push(`⚠️  ${packageName}: consider adding 'skipNodeModulesBundle: true'`);
-                  }
-                });
-
-                if (warnings.length > 0) {
-                  warnings.forEach(w => console.log(w));
-                }
-
-                if (validationErrors.length > 0) {
-                  validationErrors.forEach(err => console.error(err));
-                  console.error(`\n❌ tsup validation failed with ${validationErrors.length} error(s).`);
-                  process.exit(1);
-                }
-
-                console.log('✅ tsup configurations validated');
-                process.exit(0);
-                VALIDATOR
+            run: node tooling/scripts/validate-tsup-config.mjs {staged_files}
             skip:
                 - merge
                 - rebase
 
         tsconfig-path-validator:
             glob: "**/tsconfig.json"
-            run: |
-                echo '📋 Validating tsconfig path consistency...'
-                node - << 'EOF'
-                const fs = require('fs');
-                const path = require('path');
-                const files = process.argv.slice(1);
-                let hasErrors = false;
-
-                files.forEach(file => {
-                  try {
-                    const content = JSON.parse(fs.readFileSync(file, 'utf8'));
-                    const dir = path.dirname(file);
-                    const packageJsonPath = path.join(dir, 'package.json');
-
-                    if (!fs.existsSync(packageJsonPath)) return;
-                    const pkg = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-
-                    // Validate paths config
-                    if (content.compilerOptions?.paths) {
-                      const paths = content.compilerOptions.paths;
-                      Object.entries(paths).forEach(([key, values]) => {
-                        if (!Array.isArray(values)) {
-                          console.error(`❌ ${file}: Path "${key}" value must be array, got ${typeof values}`);
-                          hasErrors = true;
-                        }
-                        values.forEach(val => {
-                          if (typeof val !== 'string') {
-                            console.error(`❌ ${file}: Path value must be string, got ${typeof val}`);
-                            hasErrors = true;
-                          }
-                        });
-                      });
-                    }
-
-                    // Warn about extends chain
-                    if (content.extends && !content.extends.includes('tsconfig.base.json')) {
-                      if (pkg.name?.startsWith('@snapback')) {
-                        console.warn(`⚠️  ${pkg.name} extends non-standard tsconfig: ${content.extends}`);
-                      }
-                    }
-                  } catch (e) {
-                    console.error(`❌ Failed to parse ${file}: ${e.message}`);
-                    hasErrors = true;
-                  }
-                });
-
-                if (hasErrors) {
-                  console.error('\n❌ tsconfig validation failed.');
-                  process.exit(1);
-                }
-                console.log('✅ tsconfig paths validated');
-                process.exit(0);
-                EOF
+            run: node tooling/scripts/validate-tsconfig-paths.mjs {staged_files}
             skip:
                 - merge
                 - rebase
 
         relative-import-detector:
             glob: "**/src/**/*.{ts,tsx}"
-            run: |
-                echo '🔗 Checking for cross-package relative imports...'
-                node - << 'EOF'
-                const fs = require('fs');
-                const path = require('path');
-                const files = process.argv.slice(1);
-                const relativeImportRegex = /^import\s+.*?from\s+['"](?:\.\./){2,}/m;
-                let hasErrors = false;
-
-                files.forEach(file => {
-                  const content = fs.readFileSync(file, 'utf8');
-                  const packageRoot = file.split('/src/')[0];
-
-                  const lines = content.split('\n');
-                  lines.forEach((line, idx) => {
-                    if (relativeImportRegex.test(line)) {
-                      const match = line.match(/from\s+['"]([^'"]+)['"]/);
-                      if (match) {
-                        const importPath = match[1];
-                        // Check if import goes outside package boundary
-                        const resolvedPath = path.resolve(path.dirname(file), importPath);
-                        if (!resolvedPath.startsWith(packageRoot)) {
-                          console.error(`❌ ${file}:${idx + 1} - Cross-package relative import detected:`);
-                          console.error(`   ${line.trim()}`);
-                          console.error(`   Use '@snapback/*' package import instead of relative path`);
-                          hasErrors = true;
-                        }
-                      }
-                    }
-                  });
-                });
-
-                if (hasErrors) {
-                  console.error('\n❌ Cross-package relative imports are not allowed. Use package imports.\n');
-                  process.exit(1);
-                }
-                console.log('✅ No cross-package relative imports detected');
-                process.exit(0);
-                EOF
+            run: node tooling/scripts/validate-relative-imports.mjs {staged_files}
             skip:
                 - merge
                 - rebase
 
         workspace-deps-validation:
             glob: "**/package.json"
-            run: |
-                echo '🔗 Validating workspace dependencies...'
-                node - << 'EOF'
-                const fs = require('fs');
-                const files = process.argv.slice(1);
-                let hasErrors = false;
-
-                files.forEach(file => {
-                  try {
-                    const content = JSON.parse(fs.readFileSync(file, 'utf8'));
-                    const deps = { ...content.dependencies, ...content.devDependencies };
-
-                    Object.entries(deps).forEach(([pkg, version]) => {
-                      if (pkg.startsWith('@snapback/') && !version.includes('workspace')) {
-                        console.error(`❌ ${file}: "${pkg}" should be "workspace:*" not "${version}"`);
-                        hasErrors = true;
-                      }
-                    });
-                  } catch (e) {
-                    console.error(`❌ Failed to parse ${file}: ${e.message}`);
-                    hasErrors = true;
-                  }
-                });
-
-                process.exit(hasErrors ? 1 : 0);
-                EOF
+            run: node tooling/scripts/validate-workspace-deps.mjs {staged_files}
             skip:
                 - merge
                 - rebase

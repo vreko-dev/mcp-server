@@ -9,8 +9,12 @@ import { logger } from "@snapback/infrastructure";
 let Sentry: typeof import("@sentry/node") | null = null;
 
 async function loadSentry() {
-	if (Sentry) return Sentry;
-	if (process.env.DISABLE_SENTRY === "true") return null;
+	if (Sentry) {
+		return Sentry;
+	}
+	if (process.env.DISABLE_SENTRY === "true") {
+		return null;
+	}
 
 	try {
 		Sentry = await import("@sentry/node");
@@ -46,17 +50,16 @@ export async function initSentryAPI(options?: {
 	}
 
 	const SentryModule = await loadSentry();
-	if (!SentryModule) return;
+	if (!SentryModule) {
+		return;
+	}
 
 	try {
 		SentryModule.init({
 			dsn,
-			environment:
-				options?.environment || process.env.NODE_ENV || "development",
+			environment: options?.environment || process.env.NODE_ENV || "development",
 			release: process.env.GIT_SHA || process.env.RELEASE,
-			tracesSampleRate:
-				options?.tracesSampleRate ??
-				(process.env.NODE_ENV === "production" ? 0.1 : 1.0),
+			tracesSampleRate: options?.tracesSampleRate ?? (process.env.NODE_ENV === "production" ? 0.1 : 1.0),
 			integrations: [SentryModule.httpIntegration()],
 			beforeSend: (event, _hint) => {
 				// Don't capture 404 errors (too noisy)
@@ -103,7 +106,9 @@ export function honoSentryMiddleware() {
 				name: `${c.req.method} ${c.req.path}`,
 			},
 			async () => {
-				if (!SentryModule) return await next();
+				if (!SentryModule) {
+					return await next();
+				}
 
 				// Add user context if available
 				const userId = c.get("userId");
@@ -152,7 +157,9 @@ export function honoSentryMiddleware() {
  */
 export async function flushSentry(timeout = 2000): Promise<boolean> {
 	const SentryModule = await loadSentry();
-	if (!SentryModule) return true;
+	if (!SentryModule) {
+		return true;
+	}
 
 	try {
 		return await SentryModule.close(timeout);

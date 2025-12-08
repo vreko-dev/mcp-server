@@ -1,11 +1,7 @@
 import * as readline from "node:readline";
 import { auth } from "@snapback/auth";
 import { logger } from "@snapback/infrastructure";
-import {
-	createUser,
-	createUserAccount,
-	getUserByEmail,
-} from "@snapback/platform/db/queries";
+import { createUser, createUserAccount, getUserByEmail } from "@snapback/platform/db/queries";
 import { nanoid } from "nanoid";
 
 // Create readline interface for user input

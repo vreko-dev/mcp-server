@@ -11,8 +11,7 @@ export const getSnapshots = protectedProcedure
 		path: "/analytics/snapshots",
 		tags: ["Analytics"],
 		summary: "Get snapshots with filtering",
-		description:
-			"Retrieve snapshot data with optional filtering by user, API key, and date range",
+		description: "Retrieve snapshot data with optional filtering by user, API key, and date range",
 	})
 	.input(TelemetryQueryOptionsSchema)
 	.handler(async ({ input, context: _context }) => {

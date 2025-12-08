@@ -39,11 +39,7 @@ export const processDailyMetrics = adminProcedure
 			const organizationsQuery = getDb()
 				?.selectDistinct({ id: orgDailyMetrics.organizationId })
 				.from(orgDailyMetrics)
-				.where(
-					input.organizationId
-						? eq(orgDailyMetrics.organizationId, input.organizationId)
-						: undefined,
-				);
+				.where(input.organizationId ? eq(orgDailyMetrics.organizationId, input.organizationId) : undefined);
 
 			const organizations = await organizationsQuery;
 
@@ -64,28 +60,17 @@ export const processDailyMetrics = adminProcedure
 					const existingMetrics = await getDb()
 						?.select()
 						.from(orgDailyMetrics)
-						.where(
-							and(
-								eq(orgDailyMetrics.organizationId, org.id),
-								eq(orgDailyMetrics.date, targetDate),
-							),
-						)
+						.where(and(eq(orgDailyMetrics.organizationId, org.id), eq(orgDailyMetrics.date, targetDate)))
 						.limit(1);
 
 					if (existingMetrics && existingMetrics.length > 0) {
 						// Skip if already processed
-						logger.info(
-							`Metrics already exist for org ${org.id} on ${input.date}`,
-						);
+						logger.info(`Metrics already exist for org ${org.id} on ${input.date}`);
 						continue;
 					}
 
 					// Calculate metrics for this organization
-					const metrics = await calculateOrgMetrics(
-						org.id,
-						targetDate,
-						nextDate,
-					);
+					const metrics = await calculateOrgMetrics(org.id, targetDate, nextDate);
 
 					// Insert the metrics
 					await getDb()
@@ -115,13 +100,10 @@ export const processDailyMetrics = adminProcedure
 				message: `Processed metrics for ${processedCount} organizations`,
 			};
 		} catch (error) {
-			logger.error(
-				`Failed to process daily metrics: ${error instanceof Error ? error.message : String(error)}`,
-				{
-					error,
-					input,
-				},
-			);
+			logger.error(`Failed to process daily metrics: ${error instanceof Error ? error.message : String(error)}`, {
+				error,
+				input,
+			});
 			return {
 				success: false,
 				processedOrgs: 0,
@@ -133,11 +115,7 @@ export const processDailyMetrics = adminProcedure
 /**
  * Calculate metrics for a specific organization on a specific date
  */
-async function calculateOrgMetrics(
-	organizationId: string,
-	startDate: Date,
-	endDate: Date,
-) {
+async function calculateOrgMetrics(organizationId: string, startDate: Date, endDate: Date) {
 	// Get organization members to filter data
 	// Note: This is a simplified implementation. In a real system, you would join with the members table
 	const orgMembers = await getDb()
@@ -214,12 +192,8 @@ async function calculateOrgMetrics(
 	const riskMetrics = await getDb()
 		?.select({
 			high: count(and(gte(snapshots.riskScore, 70))).as("high"),
-			medium: count(
-				and(gte(snapshots.riskScore, 40), lt(snapshots.riskScore, 70)),
-			).as("medium"),
-			low: count(
-				and(gt(snapshots.riskScore, 0), lt(snapshots.riskScore, 40)),
-			).as("low"),
+			medium: count(and(gte(snapshots.riskScore, 40), lt(snapshots.riskScore, 70))).as("medium"),
+			low: count(and(gt(snapshots.riskScore, 0), lt(snapshots.riskScore, 40))).as("low"),
 		})
 		.from(snapshots)
 		.where(
@@ -248,9 +222,7 @@ async function calculateOrgMetrics(
 	// This is a simplified implementation - in a real system, you would track restore events
 	const timeToRestoreMetrics = await getDb()
 		?.select({
-			avgTime: sql<number>`AVG(${snapshots.totalSizeBytes} / 1000)`.as(
-				"avgTime",
-			), // Simplified calculation
+			avgTime: sql<number>`AVG(${snapshots.totalSizeBytes} / 1000)`.as("avgTime"), // Simplified calculation
 		})
 		.from(snapshots)
 		.where(
@@ -265,17 +237,11 @@ async function calculateOrgMetrics(
 	// Return the calculated metrics
 	return {
 		incidentsDetected: incidentMetrics?.[0]?.withRisks || 0,
-		incidentsPrevented: Math.floor(
-			(incidentMetrics?.[0]?.withRisks || 0) * 0.8,
-		), // Estimated
-		timeToRestoreMs: timeToRestoreMetrics?.[0]?.avgTime
-			? Number(timeToRestoreMetrics[0].avgTime)
-			: null,
+		incidentsPrevented: Math.floor((incidentMetrics?.[0]?.withRisks || 0) * 0.8), // Estimated
+		timeToRestoreMs: timeToRestoreMetrics?.[0]?.avgTime ? Number(timeToRestoreMetrics[0].avgTime) : null,
 		snapshotsCreated: snapshotMetrics?.[0]?.created || 0,
 		snapshotsRestored: Math.floor((snapshotMetrics?.[0]?.created || 0) * 0.3), // Estimated
-		bytesSaved: snapshotMetrics?.[0]?.bytesSaved
-			? Number(snapshotMetrics[0].bytesSaved)
-			: 0,
+		bytesSaved: snapshotMetrics?.[0]?.bytesSaved ? Number(snapshotMetrics[0].bytesSaved) : 0,
 		highSeverityRisks: riskMetrics?.[0]?.high || 0,
 		mediumSeverityRisks: riskMetrics?.[0]?.medium || 0,
 		lowSeverityRisks: riskMetrics?.[0]?.low || 0,

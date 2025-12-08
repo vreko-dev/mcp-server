@@ -28,22 +28,15 @@ class InMemoryTelemetrySink implements TelemetrySink {
 		}
 
 		if (filter?.sessionId) {
-			events = events.filter(
-				(event) => event.context?.sessionId === filter.sessionId,
-			);
+			events = events.filter((event) => event.context?.sessionId === filter.sessionId);
 		}
 
 		if (filter?.startTime !== undefined) {
-			events = events.filter(
-				(event) => event.timestamp >= (filter.startTime || 0),
-			);
+			events = events.filter((event) => event.timestamp >= (filter.startTime || 0));
 		}
 
 		if (filter?.endTime !== undefined) {
-			events = events.filter(
-				(event) =>
-					event.timestamp <= (filter.endTime || Number.MAX_SAFE_INTEGER),
-			);
+			events = events.filter((event) => event.timestamp <= (filter.endTime || Number.MAX_SAFE_INTEGER));
 		}
 
 		return events;
@@ -92,66 +85,55 @@ const telemetryIngestSchema = z.object({
 });
 
 // POST /api/v1/telemetry/ingest
-app.post(
-	"/telemetry/ingest",
-	zValidator("json", telemetryIngestSchema),
-	async (c) => {
-		try {
-			const requestData = c.req.valid("json");
+app.post("/telemetry/ingest", zValidator("json", telemetryIngestSchema), async (c) => {
+	try {
+		const requestData = c.req.valid("json");
 
-			// Check for idempotency
-			const requestId =
-				requestData.context?.requestId ||
-				requestData.events[0]?.context?.requestId ||
-				`req-${Date.now()}`;
+		// Check for idempotency
+		const requestId =
+			requestData.context?.requestId || requestData.events[0]?.context?.requestId || `req-${Date.now()}`;
 
-			if (await telemetrySink.hasRequestId(requestId)) {
-				return c.json(
-					{
-						received: true,
-						requestId,
-						message: "Request already processed (idempotent)",
-					},
-					202,
-				);
-			}
-
-			// Add IDs to events if not provided
-			const eventsWithIds = requestData.events.map((event) => ({
-				...event,
-				id:
-					event.id ||
-					`evt-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
-				timestamp: event.timestamp || Date.now(),
-			}));
-
-			// Store events
-			await telemetrySink.storeEvents(eventsWithIds);
-
-			// Record request ID for idempotency
-			await telemetrySink.recordRequestId(requestId);
-
+		if (await telemetrySink.hasRequestId(requestId)) {
 			return c.json(
 				{
 					received: true,
 					requestId,
-					count: eventsWithIds.length,
+					message: "Request already processed (idempotent)",
 				},
 				202,
 			);
-		} catch (error) {
-			log.error(error as Error, { context: "Telemetry ingest" });
-			return c.json(
-				{
-					error:
-						error instanceof Error
-							? error.message
-							: "Failed to ingest telemetry",
-				},
-				500,
-			);
 		}
-	},
-);
+
+		// Add IDs to events if not provided
+		const eventsWithIds = requestData.events.map((event) => ({
+			...event,
+			id: event.id || `evt-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
+			timestamp: event.timestamp || Date.now(),
+		}));
+
+		// Store events
+		await telemetrySink.storeEvents(eventsWithIds);
+
+		// Record request ID for idempotency
+		await telemetrySink.recordRequestId(requestId);
+
+		return c.json(
+			{
+				received: true,
+				requestId,
+				count: eventsWithIds.length,
+			},
+			202,
+		);
+	} catch (error) {
+		log.error(error as Error, { context: "Telemetry ingest" });
+		return c.json(
+			{
+				error: error instanceof Error ? error.message : "Failed to ingest telemetry",
+			},
+			500,
+		);
+	}
+});
 
 export default app;

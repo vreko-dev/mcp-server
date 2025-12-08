@@ -33,11 +33,7 @@ app.get("/policy/current", async (c) => {
 			return c.json({ error: "Database not available" }, 500);
 		}
 
-		const apiKeyResult = await db
-			.select()
-			.from(apiKeys)
-			.where(eq(apiKeys.key, apiKeyHeader))
-			.limit(1);
+		const apiKeyResult = await db.select().from(apiKeys).where(eq(apiKeys.key, apiKeyHeader)).limit(1);
 
 		if (!apiKeyResult || apiKeyResult.length === 0) {
 			return c.json({ error: "Invalid API key" }, 401);
@@ -74,20 +70,14 @@ app.get("/policy/current", async (c) => {
 		c.header("ETag", `"${policyInfo.checksum}"`);
 
 		// Update API key last used timestamp
-		await db
-			.update(apiKeys)
-			.set({ lastUsedAt: new Date() })
-			.where(eq(apiKeys.id, apiKey.id));
+		await db.update(apiKeys).set({ lastUsedAt: new Date() }).where(eq(apiKeys.id, apiKey.id));
 
 		return c.json(policyInfo);
 	} catch (error) {
 		log.error(error as Error, { context: "Policy current" });
 		return c.json(
 			{
-				error:
-					error instanceof Error
-						? error.message
-						: "Failed to get policy version",
+				error: error instanceof Error ? error.message : "Failed to get policy version",
 			},
 			500,
 		);

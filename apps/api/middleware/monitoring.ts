@@ -16,10 +16,7 @@ interface MonitoringContext {
 // In-memory metrics storage (in production, this would use Redis or a dedicated metrics service)
 export const metricsStore: Record<string, any> = {};
 
-export async function monitoringMiddleware(
-	context: MonitoringContext,
-	next: () => Promise<any>,
-) {
+export async function monitoringMiddleware(context: MonitoringContext, next: () => Promise<any>) {
 	const startTime = Date.now();
 	const metricKey = `api_metrics_${new Date().toISOString().split("T")[0]}`; // Daily metrics
 
@@ -57,8 +54,7 @@ export async function monitoringMiddleware(
 
 		// Update metrics
 		metricsStore[metricKey].totalResponseTime += responseTime;
-		metricsStore[metricKey].endpoints[context.endpoint].totalResponseTime +=
-			responseTime;
+		metricsStore[metricKey].endpoints[context.endpoint].totalResponseTime += responseTime;
 
 		// Log performance metrics
 		log.apiRequest({
@@ -81,8 +77,7 @@ export async function monitoringMiddleware(
 
 		// Update metrics
 		metricsStore[metricKey].totalResponseTime += responseTime;
-		metricsStore[metricKey].endpoints[context.endpoint].totalResponseTime +=
-			responseTime;
+		metricsStore[metricKey].endpoints[context.endpoint].totalResponseTime += responseTime;
 
 		// Log error metrics
 		log.error(error as Error, {

@@ -332,10 +332,7 @@ export function buildRetryAfterHeader(delaySeconds: number): string {
  * @param socketRemoteAddress Socket remote address (fallback)
  * @returns Client IP address
  */
-export function extractClientIP(
-	headers: Headers | Record<string, string>,
-	socketRemoteAddress?: string,
-): string {
+export function extractClientIP(headers: Headers | Record<string, string>, socketRemoteAddress?: string): string {
 	const getHeader = (name: string): string | null => {
 		if (headers instanceof Headers) {
 			return headers.get(name);

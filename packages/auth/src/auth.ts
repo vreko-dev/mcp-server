@@ -20,12 +20,7 @@ import {
 import { passkey } from "better-auth/plugins/passkey";
 import { parse as parseCookies } from "cookie";
 import { trackEvent } from "./lib/audit";
-import {
-	ac,
-	admin as adminRole,
-	member as memberRole,
-	owner as ownerRole,
-} from "./lib/organization-permissions";
+import { ac, admin as adminRole, member as memberRole, owner as ownerRole } from "./lib/organization-permissions";
 import { invitationOnlyPlugin } from "./plugins/invitation-only/index";
 
 const _getLocaleFromRequest = (request?: Request) => {
@@ -38,12 +33,7 @@ const appUrl = env.APP_URL || getBaseUrl();
 // In development, trust all localhost ports to handle Next.js dynamic port assignment
 const isDevelopment = env.NODE_ENV !== "production";
 const trustedOrigins = isDevelopment
-	? [
-			appUrl,
-			"http://localhost:3000",
-			"http://localhost:3001",
-			"http://localhost:3002",
-		]
+	? [appUrl, "http://localhost:3000", "http://localhost:3001", "http://localhost:3002"]
 	: [appUrl];
 
 // ============================================================================
@@ -59,9 +49,7 @@ export let redisAvailable = false;
 
 async function initializeRedis() {
 	if (!env.REDIS_URL) {
-		logger.warn(
-			"REDIS_URL not configured - rate limiting will use database fallback",
-		);
+		logger.warn("REDIS_URL not configured - rate limiting will use database fallback");
 		return;
 	}
 

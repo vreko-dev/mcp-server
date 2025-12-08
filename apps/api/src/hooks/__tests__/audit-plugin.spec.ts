@@ -141,9 +141,7 @@ describe("Audit Logging via Better-Auth Hooks (RED PHASE)", () => {
 			};
 
 			expect(permissionChangeEvent.type).toBe("user.role_changed");
-			expect(permissionChangeEvent.oldRole).not.toBe(
-				permissionChangeEvent.newRole,
-			);
+			expect(permissionChangeEvent.oldRole).not.toBe(permissionChangeEvent.newRole);
 		});
 	});
 

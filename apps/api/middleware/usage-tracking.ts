@@ -73,9 +73,7 @@ export async function usageTrackingMiddleware(request: NextRequest) {
 	}
 }
 
-async function checkSnapshotLimit(
-	authContext: AuthContext,
-): Promise<UsageLimitResult> {
+async function checkSnapshotLimit(authContext: AuthContext): Promise<UsageLimitResult> {
 	try {
 		if (!db) {
 			return { allowed: true }; // Allow if database not available
@@ -86,21 +84,13 @@ async function checkSnapshotLimit(
 			const deviceTrialsResult = await db
 				.select()
 				.from(snapbackSchema.deviceTrials)
-				.where(
-					eq(
-						snapbackSchema.deviceTrials.deviceFingerprint,
-						authContext.deviceId,
-					),
-				);
+				.where(eq(snapbackSchema.deviceTrials.deviceFingerprint, authContext.deviceId));
 
 			if (deviceTrialsResult.length > 0) {
 				const deviceTrial = deviceTrialsResult[0];
 
 				// Check if snapshot limit reached
-				if (
-					deviceTrial &&
-					deviceTrial.snapshotsUsed >= deviceTrial.snapshotLimit
-				) {
+				if (deviceTrial && deviceTrial.snapshotsUsed >= deviceTrial.snapshotLimit) {
 					return {
 						allowed: false,
 						limitType: "snapshot",
@@ -142,12 +132,7 @@ async function incrementSnapshotCounter(authContext: AuthContext) {
 				.set({
 					snapshotsUsed: sql`${snapbackSchema.deviceTrials.snapshotsUsed} + 1`,
 				})
-				.where(
-					eq(
-						snapbackSchema.deviceTrials.deviceFingerprint,
-						authContext.deviceId,
-					),
-				);
+				.where(eq(snapbackSchema.deviceTrials.deviceFingerprint, authContext.deviceId));
 		} else if (authContext.type === "user") {
 			// For authenticated users, we would update their usage stats
 			// This is a simplified implementation
@@ -170,12 +155,7 @@ async function trackApiCall(authContext: AuthContext) {
 				.set({
 					apiCallsUsed: sql`${snapbackSchema.deviceTrials.apiCallsUsed} + 1`,
 				})
-				.where(
-					eq(
-						snapbackSchema.deviceTrials.deviceFingerprint,
-						authContext.deviceId,
-					),
-				);
+				.where(eq(snapbackSchema.deviceTrials.deviceFingerprint, authContext.deviceId));
 		} else if (authContext.type === "user") {
 			// For authenticated users, we would update their usage stats
 			// This is a simplified implementation

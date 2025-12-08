@@ -108,22 +108,11 @@ function generatePermissions(user: AuthUser): string[] {
 
 	// Role-based permissions
 	if (user.role === "admin") {
-		permissions.push(
-			"admin:read",
-			"admin:write",
-			"admin:delete",
-			"org:manage",
-			"user:manage",
-		);
+		permissions.push("admin:read", "admin:write", "admin:delete", "org:manage", "user:manage");
 	}
 
 	if (user.role === "user" || user.role === "admin") {
-		permissions.push(
-			"snapshot:create",
-			"snapshot:read",
-			"snapshot:update",
-			"snapshot:delete",
-		);
+		permissions.push("snapshot:create", "snapshot:read", "snapshot:update", "snapshot:delete");
 	}
 
 	if (user.role === "viewer" || user.role === "user" || user.role === "admin") {
@@ -132,20 +121,11 @@ function generatePermissions(user: AuthUser): string[] {
 
 	// Plan-based permissions
 	if (user.plan === "pro" || user.plan === "enterprise") {
-		permissions.push(
-			"api:webhook",
-			"api:advanced-analytics",
-			"team:collaboration",
-		);
+		permissions.push("api:webhook", "api:advanced-analytics", "team:collaboration");
 	}
 
 	if (user.plan === "enterprise") {
-		permissions.push(
-			"sso:enabled",
-			"audit:enabled",
-			"compliance:enabled",
-			"support:priority",
-		);
+		permissions.push("sso:enabled", "audit:enabled", "compliance:enabled", "support:priority");
 	}
 
 	return permissions;
@@ -269,7 +249,7 @@ export function requireRole(...roles: AuthUser["role"][]) {
 /**
  * Require membership in specific organization
  */
-export function requireOrgMembership(paramName: string = "orgId") {
+export function requireOrgMembership(paramName = "orgId") {
 	return async (c: Context, next: Next): Promise<void> => {
 		const authHeader = c.req.header("Authorization");
 		const token = extractBearerToken(authHeader);

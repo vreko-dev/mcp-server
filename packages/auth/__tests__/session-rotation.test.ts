@@ -19,9 +19,7 @@ import { describe, expect, it, vi } from "vitest";
  */
 describe("CRITICAL: Session Invalidation on Role Change", () => {
 	it("should invalidate all sessions when user promoted to admin", async () => {
-		const { rotateSessionsOnRoleChange } = await import(
-			"../src/lib/session-rotation.js"
-		);
+		const { rotateSessionsOnRoleChange } = await import("../src/lib/session-rotation.js");
 
 		const userId = "test-user-123";
 		const oldRole = "member";
@@ -41,9 +39,7 @@ describe("CRITICAL: Session Invalidation on Role Change", () => {
 	});
 
 	it("should invalidate sessions when user demoted from admin", async () => {
-		const { rotateSessionsOnRoleChange } = await import(
-			"../src/lib/session-rotation.js"
-		);
+		const { rotateSessionsOnRoleChange } = await import("../src/lib/session-rotation.js");
 
 		const userId = "test-admin-456";
 		const oldRole = "admin";
@@ -58,9 +54,7 @@ describe("CRITICAL: Session Invalidation on Role Change", () => {
 	});
 
 	it("should NOT rotate sessions for same-level role changes", async () => {
-		const { rotateSessionsOnRoleChange } = await import(
-			"../src/lib/session-rotation.js"
-		);
+		const { rotateSessionsOnRoleChange } = await import("../src/lib/session-rotation.js");
 
 		const userId = "test-user-789";
 		const oldRole = "member";
@@ -83,9 +77,7 @@ describe("CRITICAL: Session Invalidation on Role Change", () => {
  */
 describe("CRITICAL: Multi-Device Logout Enforcement", () => {
 	it("should invalidate sessions across multiple devices", async () => {
-		const { rotateSessionsOnRoleChange } = await import(
-			"../src/lib/session-rotation.js"
-		);
+		const { rotateSessionsOnRoleChange } = await import("../src/lib/session-rotation.js");
 
 		const userId = "multi-device-user";
 
@@ -120,9 +112,7 @@ describe("CRITICAL: Multi-Device Logout Enforcement", () => {
 	});
 
 	it("should work with distributed Redis instances", async () => {
-		const { rotateSessionsOnRoleChange } = await import(
-			"../src/lib/session-rotation.js"
-		);
+		const { rotateSessionsOnRoleChange } = await import("../src/lib/session-rotation.js");
 
 		const userId = "distributed-user";
 
@@ -144,9 +134,7 @@ describe("CRITICAL: Multi-Device Logout Enforcement", () => {
  */
 describe("EDGE: Organization-Scoped Rotation", () => {
 	it("should only invalidate sessions for specific organization", async () => {
-		const { rotateSessionsOnOrgRoleChange } = await import(
-			"../src/lib/session-rotation.js"
-		);
+		const { rotateSessionsOnOrgRoleChange } = await import("../src/lib/session-rotation.js");
 
 		const userId = "multi-org-user";
 		const orgAId = "org-a-123";
@@ -177,16 +165,12 @@ describe("EDGE: Graceful Degradation on Redis Failure", () => {
 		// Mock Redis failure
 		vi.spyOn(console, "warn").mockImplementation(() => {});
 
-		const { rotateSessionsOnRoleChange } = await import(
-			"../src/lib/session-rotation.js"
-		);
+		const { rotateSessionsOnRoleChange } = await import("../src/lib/session-rotation.js");
 
 		const userId = "fallback-user";
 
 		// Should still work (using database)
-		await expect(
-			rotateSessionsOnRoleChange(userId, "member", "admin"),
-		).resolves.not.toThrow();
+		await expect(rotateSessionsOnRoleChange(userId, "member", "admin")).resolves.not.toThrow();
 	});
 });
 
@@ -198,9 +182,7 @@ describe("SECURITY: Audit Logging", () => {
 		const { trackEvent } = await import("../src/lib/audit.js");
 		const trackSpy = vi.spyOn({ trackEvent }, "trackEvent");
 
-		const { rotateSessionsOnRoleChange } = await import(
-			"../src/lib/session-rotation.js"
-		);
+		const { rotateSessionsOnRoleChange } = await import("../src/lib/session-rotation.js");
 
 		const userId = "audit-user";
 
@@ -221,9 +203,7 @@ describe("SECURITY: Audit Logging", () => {
 		const { trackEvent } = await import("../src/lib/audit.js");
 		const trackSpy = vi.spyOn({ trackEvent }, "trackEvent");
 
-		const { rotateSessionsOnRoleChange } = await import(
-			"../src/lib/session-rotation.js"
-		);
+		const { rotateSessionsOnRoleChange } = await import("../src/lib/session-rotation.js");
 
 		const userId = "count-user";
 
@@ -285,9 +265,7 @@ describe("INTEGRATION: Organization Plugin Hooks", () => {
  */
 describe("PERFORMANCE: Efficient Bulk Operations", () => {
 	it("should handle 100+ sessions efficiently", async () => {
-		const { rotateSessionsOnRoleChange } = await import(
-			"../src/lib/session-rotation.js"
-		);
+		const { rotateSessionsOnRoleChange } = await import("../src/lib/session-rotation.js");
 
 		const userId = "bulk-user";
 
@@ -324,21 +302,12 @@ async function checkActiveSessions(_userId: string): Promise<{
 	return { count: 0, invalidated: true, reason: "privilege_change" };
 }
 
-async function createSession(
-	_userId: string,
-	_sessionId: string,
-	_device: string,
-): Promise<void> {
+async function createSession(_userId: string, _sessionId: string, _device: string): Promise<void> {
 	// Mock session creation
 	return Promise.resolve();
 }
 
-async function createOrgSession(
-	_userId: string,
-	_orgId: string,
-	_sessionId: string,
-	_role: string,
-): Promise<void> {
+async function createOrgSession(_userId: string, _orgId: string, _sessionId: string, _role: string): Promise<void> {
 	// Mock org-scoped session creation
 	return Promise.resolve();
 }
@@ -353,11 +322,7 @@ async function createTestUser(_userId: string): Promise<void> {
 	return Promise.resolve();
 }
 
-async function createTestOrg(
-	_orgId: string,
-	_userId: string,
-	_role: string,
-): Promise<void> {
+async function createTestOrg(_orgId: string, _userId: string, _role: string): Promise<void> {
 	// Mock organization creation
 	return Promise.resolve();
 }

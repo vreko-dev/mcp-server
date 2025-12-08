@@ -1,17 +1,9 @@
 import { describe, expect, it } from "vitest";
-import {
-	AuthError,
-	InsufficientRoleError,
-	InsufficientScopesError,
-} from "../src/errors";
+import { AuthError, InsufficientRoleError, InsufficientScopesError } from "../src/errors";
 
 describe("Auth Errors", () => {
 	it("should create AuthError with message, statusCode, and code", () => {
-		const error = new AuthError(
-			"Authentication failed",
-			401,
-			"UNAUTHENTICATED",
-		);
+		const error = new AuthError("Authentication failed", 401, "UNAUTHENTICATED");
 
 		expect(error.message).toBe("Authentication failed");
 		expect(error.statusCode).toBe(401);
@@ -25,11 +17,7 @@ describe("Auth Errors", () => {
 	});
 
 	it("should convert to JSON correctly", () => {
-		const error = new AuthError(
-			"Authentication failed",
-			401,
-			"UNAUTHENTICATED",
-		);
+		const error = new AuthError("Authentication failed", 401, "UNAUTHENTICATED");
 		const json = error.toJSON();
 
 		expect(json).toEqual({
@@ -50,9 +38,7 @@ describe("Auth Errors", () => {
 	it("should create InsufficientScopesError with correct status and code", () => {
 		const error = new InsufficientScopesError(["read", "write"], ["read"]);
 
-		expect(error.message).toBe(
-			"Missing scopes. Required: read, write, got: read",
-		);
+		expect(error.message).toBe("Missing scopes. Required: read, write, got: read");
 		expect(error.statusCode).toBe(403);
 		expect(error.code).toBe("INSUFFICIENT_SCOPES");
 	});

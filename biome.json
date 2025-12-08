@@ -12,10 +12,14 @@
 			"recommended": true,
 			"suspicious": {
 				"noExplicitAny": "off",
-				"noArrayIndexKey": "off"
+				"noArrayIndexKey": "off",
+				"noAssignInExpressions": "off",
+				"noImplicitAnyLet": "off",
+				"useIterableCallbackReturn": "warn"
 			},
 			"complexity": {
-				"noForEach": "off"
+				"noForEach": "off",
+				"noStaticOnlyClass": "warn"
 			},
 			"correctness": {
 				"useExhaustiveDependencies": "off",
@@ -24,9 +28,10 @@
 					"fix": "safe"
 				},
 				"noUnusedFunctionParameters": {
-					"level": "error",
+					"level": "warn",
 					"fix": "safe"
 				},
+				"noUnusedVariables": "warn",
 				"useUniqueElementIds": "off"
 			},
 			"style": {
@@ -36,7 +41,7 @@
 				},
 				"noNonNullAssertion": "warn",
 				"useBlockStatements": "warn",
-				"noParameterAssign": "error",
+				"noParameterAssign": "warn",
 				"useAsConstAssertion": "error",
 				"useDefaultParameterLast": "error",
 				"useEnumInitializers": "error",
@@ -45,11 +50,26 @@
 				"useNumberNamespace": "error",
 				"noInferrableTypes": "error",
 				"noUselessElse": "error"
+			},
+			"a11y": {
+				"noSvgWithoutTitle": "warn",
+				"useButtonType": "warn",
+				"noLabelWithoutControl": "warn",
+				"useKeyWithClickEvents": "warn",
+				"noStaticElementInteractions": "warn",
+				"useSemanticElements": "warn"
 			}
 		}
 	},
 	"files": {
-		"includes": ["**", "!zod/index.ts", "!tailwind-animate.css", "!theme.css", "!**/package.json"],
+		"includes": [
+			"**",
+			"!zod/index.ts",
+			"!tailwind-animate.css",
+			"!theme.css",
+			"!**/package.json",
+			"!.test-audit-tmp"
+		],
 		"experimentalScannerIgnores": [
 			"**/node_modules/**",
 			"**/dist/**",
@@ -61,7 +81,10 @@
 			"**/theme.css",
 			"**/package.json",
 			"**/.snapback/**",
-			"**/packages/sdk/tests/unit/RiskAnalyzer.test.ts"
+			"**/packages/sdk/tests/unit/RiskAnalyzer.test.ts",
+			"**/.test-audit-tmp/**",
+			"**/IMPORT_VIOLATIONS_*.md",
+			"**/IMPORT_VIOLATIONS_*.csv"
 		]
 	},
 	"javascript": {

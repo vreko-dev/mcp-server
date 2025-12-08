@@ -4,18 +4,8 @@ import { z } from "zod";
  * Shared telemetry query options schema
  */
 export const TelemetryQueryOptionsSchema = z.object({
-	limit: z
-		.number()
-		.int()
-		.positive()
-		.optional()
-		.describe("Maximum number of records to return"),
-	offset: z
-		.number()
-		.int()
-		.nonnegative()
-		.optional()
-		.describe("Number of records to skip"),
+	limit: z.number().int().positive().optional().describe("Maximum number of records to return"),
+	offset: z.number().int().nonnegative().optional().describe("Number of records to skip"),
 	startDate: z.coerce.date().optional().describe("Filter by start date"),
 	endDate: z.coerce.date().optional().describe("Filter by end date"),
 	userId: z.string().optional().describe("Filter by user ID"),

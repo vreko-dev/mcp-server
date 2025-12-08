@@ -12,8 +12,7 @@ export const getRecentActivity = protectedProcedure
 		path: "/waitlist/activity",
 		tags: ["Waitlist"],
 		summary: "Get recent activity",
-		description:
-			"Retrieve recent audit log events for the authenticated user's waitlist entry",
+		description: "Retrieve recent audit log events for the authenticated user's waitlist entry",
 	})
 	.handler(async ({ context }) => {
 		const db = getDb();
@@ -65,8 +64,7 @@ export const getRecentActivity = protectedProcedure
 					// Don't leak sensitive metadata
 					metadata: log.metadata
 						? {
-								pointsEarned: (log.metadata as { pointsEarned?: number })
-									.pointsEarned,
+								pointsEarned: (log.metadata as { pointsEarned?: number }).pointsEarned,
 							}
 						: undefined,
 				})),

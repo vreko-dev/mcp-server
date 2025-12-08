@@ -1,11 +1,5 @@
 import { ORPCError } from "@orpc/client";
-import {
-	agentSuggestions,
-	feedback,
-	loops,
-	policyEvaluations,
-	postAcceptOutcomes,
-} from "@snapback/platform";
+import { agentSuggestions, feedback, loops, policyEvaluations, postAcceptOutcomes } from "@snapback/platform";
 import { and, eq, gte, lte, type SQL } from "drizzle-orm";
 import { protectedProcedure } from "@/orpc/procedures";
 import { getDb } from "@/src/services/database";
@@ -17,8 +11,7 @@ export const getAnalyticsMetrics = protectedProcedure
 		path: "/analytics/metrics",
 		tags: ["Analytics"],
 		summary: "Get aggregated analytics metrics",
-		description:
-			"Calculate and return aggregated analytics metrics for a given time period",
+		description: "Calculate and return aggregated analytics metrics for a given time period",
 	})
 	.input(AnalyticsMetricsInputSchema)
 	.handler(async ({ input, context: _context }) => {
@@ -75,10 +68,7 @@ export const getAnalyticsMetrics = protectedProcedure
 				.execute();
 
 			// Build loops query
-			const loopsConditions: SQL[] = [
-				gte(loops.timestamp, startDate),
-				lte(loops.timestamp, endDate),
-			];
+			const loopsConditions: SQL[] = [gte(loops.timestamp, startDate), lte(loops.timestamp, endDate)];
 			if (userId) {
 				loopsConditions.push(eq(loops.userId, userId));
 			}
@@ -89,10 +79,7 @@ export const getAnalyticsMetrics = protectedProcedure
 				.execute();
 
 			// Build feedback query
-			const feedbackConditions: SQL[] = [
-				gte(feedback.timestamp, startDate),
-				lte(feedback.timestamp, endDate),
-			];
+			const feedbackConditions: SQL[] = [gte(feedback.timestamp, startDate), lte(feedback.timestamp, endDate)];
 			if (userId) {
 				feedbackConditions.push(eq(feedback.userId, userId));
 			}
@@ -104,15 +91,9 @@ export const getAnalyticsMetrics = protectedProcedure
 
 			// Calculate metrics
 			const totalSuggestions = suggestions.length;
-			const acceptedSuggestions = suggestions.filter(
-				(s) => s.accepted === true,
-			).length;
-			const dismissedSuggestions = suggestions.filter(
-				(s) => s.dismissed === true,
-			).length;
-			const policyViolations = policies.filter(
-				(p) => p.evaluationResult === "fail",
-			).length;
+			const acceptedSuggestions = suggestions.filter((s) => s.accepted === true).length;
+			const dismissedSuggestions = suggestions.filter((s) => s.dismissed === true).length;
+			const policyViolations = policies.filter((p) => p.evaluationResult === "fail").length;
 			const totalLoops = loopData.length;
 			const successfulLoops = loopData.filter((l) => l.success === true).length;
 			const feedbackCount = feedbackData.length;
@@ -123,13 +104,11 @@ export const getAnalyticsMetrics = protectedProcedure
 
 			if (outcomes.length > 0) {
 				const totalEditTime = outcomes.reduce(
-					(sum: number, outcome: { timeToEditMs: number | null }) =>
-						sum + (outcome.timeToEditMs || 0),
+					(sum: number, outcome: { timeToEditMs: number | null }) => sum + (outcome.timeToEditMs || 0),
 					0,
 				);
 				const totalSubmitTime = outcomes.reduce(
-					(sum: number, outcome: { timeToSubmitMs: number | null }) =>
-						sum + (outcome.timeToSubmitMs || 0),
+					(sum: number, outcome: { timeToSubmitMs: number | null }) => sum + (outcome.timeToSubmitMs || 0),
 					0,
 				);
 				avgTimeToEditMs = totalEditTime / outcomes.length;

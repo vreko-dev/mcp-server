@@ -1,6 +1,5 @@
 "use client";
 
-
 import { AlertTriangle, Brain, Clock, Shield, Zap } from "lucide-react";
 import { m } from "motion/react";
 import Link from "next/link";
@@ -154,7 +153,6 @@ export default function FeaturesClient() {
 								{/* Title & Subtitle */}
 								<div className="flex items-center gap-3 mb-2">
 									<h2 className="text-2xl font-bold text-white">{feature.title}</h2>
-
 								</div>
 								<p className={`text-sm font-mono ${feature.color} mb-4`}>{feature.subtitle}</p>
 

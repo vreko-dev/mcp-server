@@ -1,11 +1,7 @@
 import { logger } from "@snapback/infrastructure";
 import { getPostHog } from "./posthog";
 
-export async function linkUserIdentity(
-	distinctId: string,
-	anonymousId?: string,
-	properties?: Record<string, unknown>,
-) {
+export async function linkUserIdentity(distinctId: string, anonymousId?: string, properties?: Record<string, unknown>) {
 	try {
 		const posthog = getPostHog();
 

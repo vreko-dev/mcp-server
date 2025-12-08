@@ -1,5 +1,6 @@
 "use client";
 
+import { AnalyticsEvents } from "@analytics";
 import { useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@ui/components/card";
 import { Bot, HelpCircle, TrendingUp } from "lucide-react";
@@ -7,7 +8,6 @@ import Link from "next/link";
 import posthog from "posthog-js";
 import { useEffect, useRef } from "react";
 import type { AppError } from "@/lib/error-handler";
-import { AnalyticsEvents } from "@analytics";
 
 interface AIDetectionStat {
 	tool: string;

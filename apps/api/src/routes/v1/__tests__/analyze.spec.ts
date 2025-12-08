@@ -55,9 +55,7 @@ describe("POST /api/v1/analyze", () => {
 	});
 
 	it(`${testId}: should return 401 when no API key is provided`, async () => {
-		const mockAuthGetSession = vi.mocked(
-			(await import("@snapback/auth")).auth.api.getSession,
-		);
+		const mockAuthGetSession = vi.mocked((await import("@snapback/auth")).auth.api.getSession);
 		mockAuthGetSession.mockResolvedValue({
 			user: { id: "test-user-id" },
 		} as any);
@@ -80,9 +78,7 @@ describe("POST /api/v1/analyze", () => {
 
 	it(`${testId2}: should return analysis results when valid request is made`, async () => {
 		// Mock auth session
-		const mockAuthGetSession = vi.mocked(
-			(await import("@snapback/auth")).auth.api.getSession,
-		);
+		const mockAuthGetSession = vi.mocked((await import("@snapback/auth")).auth.api.getSession);
 		mockAuthGetSession.mockResolvedValue({
 			user: { id: "test-user-id" },
 		} as any);
@@ -103,18 +99,16 @@ describe("POST /api/v1/analyze", () => {
 		]);
 
 		// Mock Guardian service
-		const mockAnalyze = vi
-			.spyOn(GuardianService.prototype, "analyze")
-			.mockResolvedValue({
-				analysisId: "test-analysis-id",
-				riskScore: 25,
-				riskLevel: "low",
-				riskFactors: [],
-				summary: "Low risk: 0 factors detected",
-				recommendations: [],
-				violations: [],
-				timestamp: new Date().toISOString(),
-			});
+		const mockAnalyze = vi.spyOn(GuardianService.prototype, "analyze").mockResolvedValue({
+			analysisId: "test-analysis-id",
+			riskScore: 25,
+			riskLevel: "low",
+			riskFactors: [],
+			summary: "Low risk: 0 factors detected",
+			recommendations: [],
+			violations: [],
+			timestamp: new Date().toISOString(),
+		});
 
 		const req = new Request("http://localhost:3000/api/v1/analyze", {
 			method: "POST",
@@ -147,9 +141,7 @@ describe("POST /api/v1/analyze", () => {
 
 	it(`${testId3}: should return 401 when invalid API key is provided`, async () => {
 		// Mock auth session
-		const mockAuthGetSession = vi.mocked(
-			(await import("@snapback/auth")).auth.api.getSession,
-		);
+		const mockAuthGetSession = vi.mocked((await import("@snapback/auth")).auth.api.getSession);
 		mockAuthGetSession.mockResolvedValue({
 			user: { id: "test-user-id" },
 		} as any);

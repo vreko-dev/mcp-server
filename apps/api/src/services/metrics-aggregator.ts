@@ -1,8 +1,5 @@
 import { logger } from "@snapback/infrastructure";
-import {
-	userDailyMetrics,
-	userProductMetrics,
-} from "@snapback/platform/db/schema/snapback";
+import { userDailyMetrics, userProductMetrics } from "@snapback/platform/db/schema/snapback";
 import { and, eq, gte, lte } from "drizzle-orm";
 import type { PgDatabase } from "drizzle-orm/pg-core";
 
@@ -54,23 +51,18 @@ export class MetricsError extends Error {
 }
 
 // Result type for metrics operations
-export type MetricsResult<T> =
-	| { success: true; value: T }
-	| { success: false; error: MetricsError };
+export type MetricsResult<T> = { success: true; value: T } | { success: false; error: MetricsError };
 
 /**
  * Metrics Aggregator Service
  */
 export class MetricsAggregator {
-	// biome-ignore lint/suspicious/noExplicitAny: Drizzle generic type requires any
 	constructor(private readonly db: PgDatabase<any>) {}
 
 	/**
 	 * Get user's lifetime metrics including rolling windows
 	 */
-	async getUserLifetimeMetrics(
-		userId: string,
-	): Promise<MetricsResult<UserLifetimeMetrics | null>> {
+	async getUserLifetimeMetrics(userId: string): Promise<MetricsResult<UserLifetimeMetrics | null>> {
 		try {
 			if (!userId || userId.trim() === "") {
 				return {
@@ -145,11 +137,10 @@ export class MetricsAggregator {
 			if (startDate > endDate) {
 				return {
 					success: false,
-					error: new MetricsError(
-						"Start date must be before end date",
-						"INVALID_DATE_RANGE",
-						{ startDate, endDate },
-					),
+					error: new MetricsError("Start date must be before end date", "INVALID_DATE_RANGE", {
+						startDate,
+						endDate,
+					}),
 				};
 			}
 
@@ -194,17 +185,12 @@ export class MetricsAggregator {
 
 			return {
 				success: false,
-				error: new MetricsError(
-					"Failed to fetch daily metrics",
-					"FETCH_FAILED",
-					{
-						userId,
-						startDate,
-						endDate,
-						originalError:
-							error instanceof Error ? error.message : String(error),
-					},
-				),
+				error: new MetricsError("Failed to fetch daily metrics", "FETCH_FAILED", {
+					userId,
+					startDate,
+					endDate,
+					originalError: error instanceof Error ? error.message : String(error),
+				}),
 			};
 		}
 	}
@@ -212,19 +198,12 @@ export class MetricsAggregator {
 	/**
 	 * Get metrics for the last N days
 	 */
-	async getRecentDailyMetrics(
-		userId: string,
-		days: number = 30,
-	): Promise<MetricsResult<DailyMetric[]>> {
+	async getRecentDailyMetrics(userId: string, days = 30): Promise<MetricsResult<DailyMetric[]>> {
 		try {
 			if (days < 1 || days > 365) {
 				return {
 					success: false,
-					error: new MetricsError(
-						"Days must be between 1 and 365",
-						"INVALID_DAYS",
-						{ days },
-					),
+					error: new MetricsError("Days must be between 1 and 365", "INVALID_DAYS", { days }),
 				};
 			}
 
@@ -242,16 +221,11 @@ export class MetricsAggregator {
 
 			return {
 				success: false,
-				error: new MetricsError(
-					"Failed to fetch recent metrics",
-					"FETCH_FAILED",
-					{
-						userId,
-						days,
-						originalError:
-							error instanceof Error ? error.message : String(error),
-					},
-				),
+				error: new MetricsError("Failed to fetch recent metrics", "FETCH_FAILED", {
+					userId,
+					days,
+					originalError: error instanceof Error ? error.message : String(error),
+				}),
 			};
 		}
 	}
@@ -260,9 +234,7 @@ export class MetricsAggregator {
 	 * Initialize metrics entry for a new user
 	 * Returns existing metrics if user already has entry
 	 */
-	async initializeUserMetrics(
-		userId: string,
-	): Promise<MetricsResult<UserLifetimeMetrics>> {
+	async initializeUserMetrics(userId: string): Promise<MetricsResult<UserLifetimeMetrics>> {
 		try {
 			if (!userId || userId.trim() === "") {
 				return {

@@ -12,10 +12,10 @@
  * @param metadata - API key metadata from better-auth
  * @returns User tier (free | pro | admin)
  */
-export function getTierFromMetadata(
-	metadata: Record<string, unknown> | undefined,
-): "free" | "pro" | "admin" {
-	if (!metadata) return "free";
+export function getTierFromMetadata(metadata: Record<string, unknown> | undefined): "free" | "pro" | "admin" {
+	if (!metadata) {
+		return "free";
+	}
 
 	const tier = metadata.tier as string | undefined;
 	if (tier === "pro" || tier === "admin") {
@@ -32,19 +32,12 @@ export function getTierFromMetadata(
  * @param requiredPermission - The permission to check (e.g., "snapback:analyze")
  * @returns True if user has the permission
  */
-export function hasPermissionForTier(
-	tier: "free" | "pro" | "admin",
-	requiredPermission: string,
-): boolean {
+export function hasPermissionForTier(tier: "free" | "pro" | "admin", requiredPermission: string): boolean {
 	// Define tier-based permissions
 	const tierPermissions: Record<string, Set<string>> = {
 		free: new Set(["snapback:analyze"]),
 		pro: new Set(["snapback:analyze", "snapback:snapshot", "snapback:context"]),
-		admin: new Set([
-			"snapback:analyze",
-			"snapback:snapshot",
-			"snapback:context",
-		]),
+		admin: new Set(["snapback:analyze", "snapback:snapshot", "snapback:context"]),
 	};
 
 	const permissions = tierPermissions[tier] || tierPermissions.free;
@@ -78,9 +71,7 @@ export function getRateLimitForTier(tier: "free" | "pro" | "admin"): {
  * @param tier - User tier
  * @returns Feature flags for the tier
  */
-export function getFeaturesForTier(
-	tier: "free" | "pro" | "admin",
-): Record<string, boolean> {
+export function getFeaturesForTier(tier: "free" | "pro" | "admin"): Record<string, boolean> {
 	const features: Record<string, Record<string, boolean>> = {
 		free: {
 			basicAnalysis: true,

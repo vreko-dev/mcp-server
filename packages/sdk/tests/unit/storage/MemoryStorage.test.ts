@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, it } from "vitest";
 import { MemoryStorage } from "@snapback-sdk/storage/MemoryStorage";
+import { beforeEach, describe, expect, it } from "vitest";
 import { testStorageAdapter } from "./StorageAdapter.contract";
 
 // Run contract tests

@@ -14,10 +14,7 @@ import { logger as honoLogger } from "hono/logger";
 import { secureHeaders } from "hono/secure-headers";
 import { openApiHandler, rpcHandler } from "@/orpc/handler.js";
 import { router } from "@/orpc/router.js";
-import {
-	adaptiveTurnstile,
-	verifyChallenge,
-} from "./middleware/adaptive-turnstile";
+import { adaptiveTurnstile, verifyChallenge } from "./middleware/adaptive-turnstile";
 import { enforceRLS } from "./middleware/rls-tenant";
 import { csrfProtectionMiddleware } from "./middleware/security-csrf";
 import { rateLimitingMiddleware } from "./middleware/security-rate-limit";
@@ -75,11 +72,7 @@ const app: HonoApp = new Hono()
 			origin: getBaseUrl(),
 			allowHeaders: ["Content-Type", "Authorization", "X-API-Key"],
 			allowMethods: ["POST", "GET", "OPTIONS"],
-			exposeHeaders: [
-				"Content-Length",
-				"X-RateLimit-Remaining",
-				"X-RateLimit-Reset",
-			],
+			exposeHeaders: ["Content-Length", "X-RateLimit-Remaining", "X-RateLimit-Reset"],
 			maxAge: 600,
 			credentials: true,
 		}),

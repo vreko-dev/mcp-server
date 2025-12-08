@@ -1,25 +1,12 @@
-import {
-	type BetterAuthAdapter,
-	betterAuthAdapter,
-} from "./better-auth-adapter";
-import {
-	AuthError,
-	InsufficientRoleError,
-	InsufficientScopesError,
-} from "./errors";
+import { type BetterAuthAdapter, betterAuthAdapter } from "./better-auth-adapter";
+import { AuthError, InsufficientRoleError, InsufficientScopesError } from "./errors";
 import { mapUserToPlan } from "./plan";
-import type {
-	SnapbackAuth,
-	SnapbackAuthContext,
-	UserRole,
-} from "./shared-auth";
+import type { SnapbackAuth, SnapbackAuthContext, UserRole } from "./shared-auth";
 
 export class SnapbackAuthImpl implements SnapbackAuth {
 	constructor(private adapter: BetterAuthAdapter = betterAuthAdapter) {}
 
-	async getContextFromRequest(
-		req: Request,
-	): Promise<SnapbackAuthContext | null> {
+	async getContextFromRequest(req: Request): Promise<SnapbackAuthContext | null> {
 		// 1) x-auth-context header (pre-injected, e.g. from middleware)
 		const injected = req.headers.get("x-auth-context");
 		if (injected) {
@@ -31,9 +18,7 @@ export class SnapbackAuthImpl implements SnapbackAuth {
 		}
 
 		// 2) Session via cookies
-		const richSession = await this.adapter.getRichSessionFromHeaders(
-			req.headers,
-		);
+		const richSession = await this.adapter.getRichSessionFromHeaders(req.headers);
 		if (richSession?.session && richSession?.user) {
 			return this.fromSession(richSession, "session");
 		}
@@ -70,10 +55,7 @@ export class SnapbackAuthImpl implements SnapbackAuth {
 		return null;
 	}
 
-	async requireAuth(
-		req: Request,
-		options?: { roles?: UserRole[]; scopes?: string[] },
-	): Promise<SnapbackAuthContext> {
+	async requireAuth(req: Request, options?: { roles?: UserRole[]; scopes?: string[] }): Promise<SnapbackAuthContext> {
 		const ctx = await this.getContextFromRequest(req);
 
 		if (!ctx) {
@@ -96,11 +78,15 @@ export class SnapbackAuthImpl implements SnapbackAuth {
 	}
 
 	async getOrganizationContext(ctx: SnapbackAuthContext) {
-		if (!ctx.orgId) return null;
+		if (!ctx.orgId) {
+			return null;
+		}
 
 		const org = await this.adapter.getOrganization(ctx.orgId);
 
-		if (!org) return null;
+		if (!org) {
+			return null;
+		}
 
 		return {
 			id: org.id,
@@ -112,11 +98,10 @@ export class SnapbackAuthImpl implements SnapbackAuth {
 
 	// ---------- mapping helpers ----------
 
-	private async enrichOrgRole(
-		userId: string,
-		orgId?: string,
-	): Promise<"owner" | "admin" | "member" | undefined> {
-		if (!orgId) return undefined;
+	private async enrichOrgRole(userId: string, orgId?: string): Promise<"owner" | "admin" | "member" | undefined> {
+		if (!orgId) {
+			return undefined;
+		}
 
 		const membership = await this.adapter.getOrgMembership(userId, orgId);
 
@@ -133,15 +118,9 @@ export class SnapbackAuthImpl implements SnapbackAuth {
 		const orgRole = await this.enrichOrgRole(user.id, orgId);
 
 		// Get enriched auth state with error handling
-		const emailVerified = await this.adapter
-			.isEmailVerified(user.id)
-			.catch(() => false);
-		const twoFactorEnabled = await this.adapter
-			.isTwoFactorEnabled(user.id)
-			.catch(() => false);
-		const passkeyRegistered = await this.adapter
-			.hasPasskey(user.id)
-			.catch(() => false);
+		const emailVerified = await this.adapter.isEmailVerified(user.id).catch(() => false);
+		const twoFactorEnabled = await this.adapter.isTwoFactorEnabled(user.id).catch(() => false);
+		const passkeyRegistered = await this.adapter.hasPasskey(user.id).catch(() => false);
 
 		return {
 			userId: user.id,
@@ -165,9 +144,7 @@ export class SnapbackAuthImpl implements SnapbackAuth {
 		const orgRole = await this.enrichOrgRole(result.user.id, orgId);
 
 		// For API keys, we can check email verification but 2FA and passkey status are not essential
-		const emailVerified = await this.adapter
-			.isEmailVerified(result.user.id)
-			.catch(() => undefined);
+		const emailVerified = await this.adapter.isEmailVerified(result.user.id).catch(() => undefined);
 
 		return {
 			userId: result.user.id,

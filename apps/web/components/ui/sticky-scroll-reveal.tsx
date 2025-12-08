@@ -1,8 +1,8 @@
 "use client";
+import { cn } from "@ui/lib";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "motion/react";
 import type React from "react";
 import { useRef, useState } from "react";
-import { cn } from "@ui/lib";
 
 export const StickyScrollReveal = ({
 	content,
@@ -29,7 +29,9 @@ export const StickyScrollReveal = ({
 		const cardsBreakpoints = content.map((_, index) => index / cardLength);
 		const closestBreakpointIndex = cardsBreakpoints.reduce((acc, breakpoint, index) => {
 			const currentBreakpoint = cardsBreakpoints[acc];
-			if (currentBreakpoint === undefined) return acc;
+			if (currentBreakpoint === undefined) {
+				return acc;
+			}
 			const distance = Math.abs(latest - breakpoint);
 			if (distance < Math.abs(latest - currentBreakpoint)) {
 				return index;

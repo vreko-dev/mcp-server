@@ -1,13 +1,7 @@
 import { Hero } from "@marketing/home/components/Hero";
-import { StorySection } from "@/components/landing/story-section";
-import {
-	FinalCTA,
-	HowItWorks,
-	InteractiveDemo,
-	Metrics,
-	ProblemSection,
-} from "@marketing/sections/launch";
+import { FinalCTA, HowItWorks, InteractiveDemo, Metrics, ProblemSection } from "@marketing/sections/launch";
 import type { Metadata } from "next";
+import { StorySection } from "@/components/landing/story-section";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://snapback.dev";
 

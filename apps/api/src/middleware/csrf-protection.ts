@@ -6,10 +6,7 @@
  * Integrates with security/csrf-protection.ts for cryptographic validation
  */
 
-import {
-	validateCSRFToken,
-	validateOrigin,
-} from "@snapback/auth/security/csrf-protection";
+import { validateCSRFToken, validateOrigin } from "@snapback/auth/security/csrf-protection";
 import { logger } from "@snapback/infrastructure";
 import type { Context, Next } from "hono";
 
@@ -99,8 +96,7 @@ export async function csrfProtectionMiddleware(c: Context, next: Next) {
 		return c.json(
 			{
 				code: "csrf_token_required",
-				message:
-					"CSRF token required in X-CSRF-Token header or csrf_token query parameter",
+				message: "CSRF token required in X-CSRF-Token header or csrf_token query parameter",
 			},
 			403,
 		);
@@ -130,11 +126,7 @@ export async function csrfProtectionMiddleware(c: Context, next: Next) {
 	}
 
 	// Validate origin header
-	const originValidation = validateOrigin(
-		c.req.header("Origin"),
-		c.req.header("Referer"),
-		method,
-	);
+	const originValidation = validateOrigin(c.req.header("Origin"), c.req.header("Referer"), method);
 
 	if (!originValidation.valid) {
 		logger.warn("CSRF protection: Origin validation failed", {
@@ -187,10 +179,7 @@ export async function optionalCSRFProtection(c: Context, next: Next) {
 				reason: validation.reason,
 			});
 
-			return c.json(
-				{ code: "csrf_invalid_token", message: "Invalid CSRF token" },
-				403,
-			);
+			return c.json({ code: "csrf_invalid_token", message: "Invalid CSRF token" }, 403);
 		}
 	}
 

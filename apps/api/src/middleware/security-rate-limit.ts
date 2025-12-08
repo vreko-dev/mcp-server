@@ -26,9 +26,7 @@ import { HTTPException } from "hono/http-exception";
  * @param configOverride Optional rate limit config overrides
  * @returns Hono middleware handler
  */
-export function rateLimitingMiddleware(
-	configOverride?: Partial<RateLimitConfig>,
-): MiddlewareHandler {
+export function rateLimitingMiddleware(configOverride?: Partial<RateLimitConfig>): MiddlewareHandler {
 	return async (c, next) => {
 		try {
 			// Get client IP address
@@ -42,8 +40,7 @@ export function rateLimitingMiddleware(
 			const endpoint = c.req.path;
 
 			// Determine rate limit config for this endpoint
-			let config: RateLimitConfig =
-				authEndpointLimits[endpoint] || globalRateLimitConfig;
+			let config: RateLimitConfig = authEndpointLimits[endpoint] || globalRateLimitConfig;
 
 			// Apply overrides if provided
 			if (configOverride) {
@@ -55,10 +52,7 @@ export function rateLimitingMiddleware(
 
 			// Set rate limit headers on response
 			c.res.headers.set("X-RateLimit-Limit", String(config.maxRequests));
-			c.res.headers.set(
-				"X-RateLimit-Remaining",
-				String(Math.max(0, result.remaining)),
-			);
+			c.res.headers.set("X-RateLimit-Remaining", String(Math.max(0, result.remaining)));
 
 			if (result.resetAt) {
 				c.res.headers.set("X-RateLimit-Reset", String(result.resetAt));

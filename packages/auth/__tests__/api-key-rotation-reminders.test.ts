@@ -17,9 +17,7 @@ import { describe, expect, it, vi } from "vitest";
  */
 describe("CRITICAL: Stale API Key Detection", () => {
 	it("should detect API keys older than 90 days", async () => {
-		const { findStaleApiKeys } = await import(
-			"../src/jobs/api-key-rotation-job.js"
-		);
+		const { findStaleApiKeys } = await import("../src/jobs/api-key-rotation-job.js");
 
 		// Mock API keys with various ages
 		const staleKeys = await findStaleApiKeys({
@@ -31,17 +29,13 @@ describe("CRITICAL: Stale API Key Detection", () => {
 
 		// Should find keys created > 90 days ago
 		for (const key of staleKeys) {
-			const ageInDays =
-				(Date.now() - new Date(key.createdAt).getTime()) /
-				(1000 * 60 * 60 * 24);
+			const ageInDays = (Date.now() - new Date(key.createdAt).getTime()) / (1000 * 60 * 60 * 24);
 			expect(ageInDays).toBeGreaterThan(90);
 		}
 	});
 
 	it("should exclude keys with explicit expiration dates", async () => {
-		const { findStaleApiKeys } = await import(
-			"../src/jobs/api-key-rotation-job.js"
-		);
+		const { findStaleApiKeys } = await import("../src/jobs/api-key-rotation-job.js");
 
 		const staleKeys = await findStaleApiKeys({ olderThanDays: 90 });
 
@@ -52,9 +46,7 @@ describe("CRITICAL: Stale API Key Detection", () => {
 	});
 
 	it("should exclude revoked keys", async () => {
-		const { findStaleApiKeys } = await import(
-			"../src/jobs/api-key-rotation-job.js"
-		);
+		const { findStaleApiKeys } = await import("../src/jobs/api-key-rotation-job.js");
 
 		const staleKeys = await findStaleApiKeys({ olderThanDays: 90 });
 
@@ -72,9 +64,7 @@ describe("CRITICAL: Stale API Key Detection", () => {
  */
 describe("CRITICAL: Rotation Reminder Emails", () => {
 	it("should send email notification for stale keys", async () => {
-		const { sendRotationReminder } = await import(
-			"../src/jobs/api-key-rotation-job.js"
-		);
+		const { sendRotationReminder } = await import("../src/jobs/api-key-rotation-job.js");
 		const { sendEmail } = await import("@snapback/integrations/email");
 
 		const emailSpy = vi.spyOn({ sendEmail }, "sendEmail");
@@ -100,9 +90,7 @@ describe("CRITICAL: Rotation Reminder Emails", () => {
 	});
 
 	it("should include key details in email", async () => {
-		const { sendRotationReminder } = await import(
-			"../src/jobs/api-key-rotation-job.js"
-		);
+		const { sendRotationReminder } = await import("../src/jobs/api-key-rotation-job.js");
 		const { sendEmail } = await import("@snapback/integrations/email");
 
 		const emailSpy = vi.spyOn({ sendEmail }, "sendEmail");
@@ -137,9 +125,7 @@ describe("CRITICAL: Rotation Reminder Emails", () => {
  */
 describe("EDGE: Reminder Cooldown", () => {
 	it("should not send duplicate reminders within 30 days", async () => {
-		const { shouldSendReminder } = await import(
-			"../src/jobs/api-key-rotation-job.js"
-		);
+		const { shouldSendReminder } = await import("../src/jobs/api-key-rotation-job.js");
 
 		const keyId = "key_cooldown_test";
 
@@ -156,9 +142,7 @@ describe("EDGE: Reminder Cooldown", () => {
 	});
 
 	it("should allow reminder after cooldown period expires", async () => {
-		const { shouldSendReminder } = await import(
-			"../src/jobs/api-key-rotation-job.js"
-		);
+		const { shouldSendReminder } = await import("../src/jobs/api-key-rotation-job.js");
 
 		const keyId = "key_expired_cooldown";
 
@@ -177,9 +161,7 @@ describe("EDGE: Reminder Cooldown", () => {
  */
 describe("EDGE: Batch Email Processing", () => {
 	it("should process 100 stale keys without timeout", async () => {
-		const { processStaleKeys } = await import(
-			"../src/jobs/api-key-rotation-job.js"
-		);
+		const { processStaleKeys } = await import("../src/jobs/api-key-rotation-job.js");
 
 		// Create 100 mock stale keys
 		const staleKeys = Array.from({ length: 100 }, (_, i) => ({
@@ -206,9 +188,7 @@ describe("EDGE: Batch Email Processing", () => {
  */
 describe("INTEGRATION: Automated Execution", () => {
 	it("should run daily at configured time", async () => {
-		const { scheduleRotationReminders } = await import(
-			"../src/jobs/api-key-rotation-job.js"
-		);
+		const { scheduleRotationReminders } = await import("../src/jobs/api-key-rotation-job.js");
 
 		// Verify job is schedulable
 		const schedule = scheduleRotationReminders();
@@ -226,9 +206,7 @@ describe("SECURITY: Audit Trail", () => {
 		const { trackEvent } = await import("../src/lib/audit.js");
 		const trackSpy = vi.spyOn({ trackEvent }, "trackEvent");
 
-		const { sendRotationReminder } = await import(
-			"../src/jobs/api-key-rotation-job.js"
-		);
+		const { sendRotationReminder } = await import("../src/jobs/api-key-rotation-job.js");
 
 		const staleKey = {
 			id: "key_audit",
@@ -256,10 +234,7 @@ describe("SECURITY: Audit Trail", () => {
 // Test Helper Functions
 // =============================================================================
 
-async function recordReminderSent(
-	_keyId: string,
-	_timestamp: number = Date.now(),
-): Promise<void> {
+async function recordReminderSent(_keyId: string, _timestamp: number = Date.now()): Promise<void> {
 	// Mock implementation - stores reminder timestamp
 	return Promise.resolve();
 }

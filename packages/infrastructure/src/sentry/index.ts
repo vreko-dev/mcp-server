@@ -11,8 +11,12 @@ let Sentry: typeof import("@sentry/node") | null = null;
 let ProfilingIntegration: typeof import("@sentry/profiling-node") | null = null;
 
 async function loadSentry() {
-	if (Sentry) return { Sentry, ProfilingIntegration };
-	if (process.env.DISABLE_SENTRY === "true") return null;
+	if (Sentry) {
+		return { Sentry, ProfilingIntegration };
+	}
+	if (process.env.DISABLE_SENTRY === "true") {
+		return null;
+	}
 
 	try {
 		Sentry = await import("@sentry/node");
@@ -52,7 +56,9 @@ export async function initSentry(options?: {
 	}
 
 	const modules = await loadSentry();
-	if (!modules) return;
+	if (!modules) {
+		return;
+	}
 
 	const { Sentry: SentryModule, ProfilingIntegration } = modules;
 

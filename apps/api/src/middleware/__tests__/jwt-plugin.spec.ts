@@ -85,11 +85,7 @@ describe("JWT Plugin Integration (RED PHASE)", () => {
 			// - CLI: snapback-cli/...
 			// - MCP: claude-mcp/... or snapback-mcp/...
 
-			const toolUserAgents = [
-				"VSCode/1.93.0 SnapBack-VSCode/0.1.0",
-				"snapback-cli/1.0.0",
-				"snapback-mcp/0.1.0",
-			];
+			const toolUserAgents = ["VSCode/1.93.0 SnapBack-VSCode/0.1.0", "snapback-cli/1.0.0", "snapback-mcp/0.1.0"];
 
 			for (const userAgent of toolUserAgents) {
 				expect(userAgent).toBeDefined();

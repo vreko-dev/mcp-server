@@ -123,11 +123,7 @@ describe("EDGE: Case Sensitivity Handling", () => {
 		});
 
 		// Try to sign in with different casing
-		const variations = [
-			"TEST@EXAMPLE.COM",
-			"Test@Example.Com",
-			"tEsT@eXaMpLe.CoM",
-		];
+		const variations = ["TEST@EXAMPLE.COM", "Test@Example.Com", "tEsT@eXaMpLe.CoM"];
 
 		for (const email of variations) {
 			const result = await auth.api.signInEmail({

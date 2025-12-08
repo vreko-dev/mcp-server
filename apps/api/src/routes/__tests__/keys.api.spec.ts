@@ -67,11 +67,7 @@ describe("AUTH2: API endpoints for rotate/revoke", () => {
 		});
 
 		// Verify the service was called with correct parameters
-		expect(keysService.createApiKey).toHaveBeenCalledWith(
-			"user-123",
-			{ policyEvaluation: true },
-			undefined,
-		);
+		expect(keysService.createApiKey).toHaveBeenCalledWith("user-123", { policyEvaluation: true }, undefined);
 	});
 
 	it("keysapi-002: should revoke an API key and return success message", async () => {

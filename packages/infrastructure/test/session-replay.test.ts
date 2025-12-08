@@ -4,8 +4,8 @@
  * Tests for session replay sampling, configuration, and management.
  */
 
-import { beforeEach, describe, expect, it } from "vitest";
 import { calculateEffectiveSamplingRate } from "@snapback/config/analytics/session-replay";
+import { beforeEach, describe, expect, it } from "vitest";
 import { SessionReplayManager } from "../src/metrics/session-replay/manager";
 import {
 	AGGRESSIVE_SAMPLING,

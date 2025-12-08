@@ -1,5 +1,6 @@
 "use client";
 
+import { AnalyticsEvents } from "@analytics";
 import { useQueryClient } from "@tanstack/react-query";
 import { BentoGrid, BentoGridItem } from "@ui/components/aceternity/bento-grid";
 import NumberTicker from "@ui/components/magic/number-ticker";
@@ -8,7 +9,6 @@ import Link from "next/link";
 import posthog from "posthog-js";
 import { memo, useEffect, useRef } from "react";
 import type { AppError } from "@/lib/error-handler";
-import { AnalyticsEvents } from "@analytics";
 
 interface MetricsGridProps {
 	snapshotCount: number;

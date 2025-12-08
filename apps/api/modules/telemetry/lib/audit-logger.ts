@@ -108,12 +108,7 @@ export class AuditLogger {
 	/**
 	 * Log event rejection
 	 */
-	logEventRejected(
-		eventId: string,
-		eventType: string,
-		reason: string,
-		userId?: string,
-	): void {
+	logEventRejected(eventId: string, eventType: string, reason: string, userId?: string): void {
 		this.logAction({
 			action: "event_rejected",
 			status: "success",
@@ -135,12 +130,7 @@ export class AuditLogger {
 	/**
 	 * Log event filtering (PII removal)
 	 */
-	logEventFiltered(
-		eventId: string,
-		eventType: string,
-		filteredFields: string[],
-		userId?: string,
-	): void {
+	logEventFiltered(eventId: string, eventType: string, filteredFields: string[], userId?: string): void {
 		this.logAction({
 			action: "event_filtered",
 			status: "success",
@@ -162,11 +152,7 @@ export class AuditLogger {
 	/**
 	 * Log consent verification
 	 */
-	logConsentVerified(
-		userId: string,
-		consentGiven: boolean,
-		version: string,
-	): void {
+	logConsentVerified(userId: string, consentGiven: boolean, version: string): void {
 		this.logAction({
 			action: "consent_verified",
 			status: "success",
@@ -204,12 +190,7 @@ export class AuditLogger {
 	/**
 	 * Log data deletion request
 	 */
-	logDataDeletion(
-		userId: string,
-		eventCount: number,
-		orgId?: string,
-		reason: string = "User requested deletion",
-	): void {
+	logDataDeletion(userId: string, eventCount: number, orgId?: string, reason = "User requested deletion"): void {
 		this.logAction({
 			action: "data_deleted",
 			status: "success",
@@ -230,12 +211,7 @@ export class AuditLogger {
 	/**
 	 * Log policy update
 	 */
-	logPolicyUpdate(
-		policyName: string,
-		policyVersion: string,
-		changes: string[],
-		orgId?: string,
-	): void {
+	logPolicyUpdate(policyName: string, policyVersion: string, changes: string[], orgId?: string): void {
 		this.logAction({
 			action: "policy_updated",
 			status: "success",
@@ -254,11 +230,7 @@ export class AuditLogger {
 	/**
 	 * Log error
 	 */
-	logError(
-		errorCode: string,
-		error: Error,
-		context?: Record<string, unknown>,
-	): void {
+	logError(errorCode: string, error: Error, context?: Record<string, unknown>): void {
 		this.logAction({
 			action: "error_occurred",
 			status: "failure",
@@ -292,9 +264,7 @@ export class AuditLogger {
 	 * Get audit logs within time range
 	 */
 	getAuditLogsByDateRange(startTime: number, endTime: number): AuditLogEntry[] {
-		return this.logs.filter(
-			(log) => log.timestamp >= startTime && log.timestamp <= endTime,
-		);
+		return this.logs.filter((log) => log.timestamp >= startTime && log.timestamp <= endTime);
 	}
 
 	/**
@@ -352,7 +322,7 @@ export class AuditLogger {
 	/**
 	 * Clear old audit logs (respecting retention periods)
 	 */
-	clearOldLogs(retentionDays: number = 90): void {
+	clearOldLogs(retentionDays = 90): void {
 		const cutoffTime = Date.now() - retentionDays * 24 * 60 * 60 * 1000;
 
 		const initialLength = this.logs.length;

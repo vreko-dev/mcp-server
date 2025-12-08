@@ -5,10 +5,7 @@
  * Creates spans for HTTP requests and propagates context across service boundaries.
  */
 
-import type {
-	InstrumentationProvider,
-	Span,
-} from "@snapback/contracts/observability";
+import type { InstrumentationProvider, Span } from "@snapback/contracts/observability";
 import {
 	extractTraceHeaders,
 	SemanticConventions,
@@ -99,10 +96,7 @@ export function instrumentationMiddleware(provider: InstrumentationProvider) {
 
 					// Set HTTP response attributes and span status using utility
 					setSpanStatusFromHttp(span, status, { addErrorEvent: status >= 400 });
-					span.setAttribute(
-						SemanticConventions.Performance.DURATION_MS,
-						duration,
-					);
+					span.setAttribute(SemanticConventions.Performance.DURATION_MS, duration);
 
 					// Add response content length if available
 					const responseContentLength = c.res.headers.get("Content-Length");
@@ -129,15 +123,11 @@ export function instrumentationMiddleware(provider: InstrumentationProvider) {
 				} catch (error) {
 					// Record exception
 					const duration = Date.now() - startTime;
-					span.setAttribute(
-						SemanticConventions.Performance.DURATION_MS,
-						duration,
-					);
+					span.setAttribute(SemanticConventions.Performance.DURATION_MS, duration);
 
 					// Set HTTP status code and span status using utility
 					const status = c.res.status || 500;
-					const errorMessage =
-						error instanceof Error ? error.message : "Unknown error";
+					const errorMessage = error instanceof Error ? error.message : "Unknown error";
 					setSpanStatusFromHttp(span, status, {
 						addErrorEvent: true,
 						errorMessage,
@@ -195,8 +185,6 @@ export function getSpan(c: Context): Span | undefined {
  * });
  * ```
  */
-export function getInstrumentationProvider(
-	c: Context,
-): InstrumentationProvider | undefined {
+export function getInstrumentationProvider(c: Context): InstrumentationProvider | undefined {
 	return c.get("instrumentationProvider");
 }

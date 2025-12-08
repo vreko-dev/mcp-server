@@ -102,21 +102,14 @@ export interface APIKeyMetadata {
  * @param config API key configuration
  * @returns Base64url-encoded API key with prefix
  */
-export function generateAPIKey(
-	isLive: boolean,
-	config: Partial<APIKeySecurityConfig> = {},
-): string {
+export function generateAPIKey(isLive: boolean, config: Partial<APIKeySecurityConfig> = {}): string {
 	const finalConfig = { ...defaultAPIKeySecurityConfig, ...config };
 
 	// Generate cryptographically secure random bytes
 	const randomBuffer = randomBytes(finalConfig.keyLength);
 
 	// Convert to base64url (URL-safe: - and _ instead of + and /)
-	const base64url = randomBuffer
-		.toString("base64")
-		.replace(/\+/g, "-")
-		.replace(/\//g, "_")
-		.replace(/=/g, "");
+	const base64url = randomBuffer.toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
 
 	// Add environment prefix
 	const prefix = isLive ? finalConfig.livePrefix : finalConfig.testPrefix;
@@ -149,10 +142,7 @@ export function generateAPIKey(
  * @param config Argon2id configuration
  * @returns Promise<hashed key>
  */
-export async function hashAPIKey(
-	plainKey: string,
-	config: Partial<Argon2idConfig> = {},
-): Promise<string> {
+export async function hashAPIKey(plainKey: string, config: Partial<Argon2idConfig> = {}): Promise<string> {
 	const finalConfig = { ...defaultArgon2idConfig, ...config };
 
 	// This is a stub for RED phase
@@ -194,10 +184,7 @@ export async function hashAPIKey(
  * @param hash Stored hash to compare against
  * @returns Promise<true if matches, false otherwise>
  */
-export async function verifyAPIKeyHash(
-	plainKey: string,
-	hash: string,
-): Promise<boolean> {
+export async function verifyAPIKeyHash(plainKey: string, hash: string): Promise<boolean> {
 	try {
 		// In production, use argon2.verify():
 		// const match = await argon2.verify(hash, plainKey);
@@ -360,10 +347,7 @@ export function getConstantTimeDelay(baseDelayMs = 100, variance = 20): number {
  * @param requiredScope Scope needed for this action
  * @returns true if key has required scope, false otherwise
  */
-export function validateAPIKeyScope(
-	keyScopes: string[],
-	requiredScope: string,
-): boolean {
+export function validateAPIKeyScope(keyScopes: string[], requiredScope: string): boolean {
 	// Admin scope grants all access
 	if (keyScopes.includes("admin:all")) {
 		return true;
@@ -397,13 +381,7 @@ export function validateAPIKeyScope(
  * @param details Event details
  */
 export function logAPIKeyEvent(
-	event:
-		| "created"
-		| "used"
-		| "rotated"
-		| "revoked"
-		| "access_denied"
-		| "enumeration_detected",
+	event: "created" | "used" | "rotated" | "revoked" | "access_denied" | "enumeration_detected",
 	details: {
 		keyId?: string;
 		userId?: string;

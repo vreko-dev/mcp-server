@@ -161,14 +161,18 @@ export default function AboutClient() {
 						<h3 className="text-2xl font-bold text-white mb-2">Marcelle</h3>
 						<p className="text-emerald-400 font-medium mb-6">Founder & Lead Developer</p>
 						<p className="text-gray-300 leading-relaxed text-lg italic">
-							"I built SnapBack because I was tired of living in fear of my own AI tools.
-							We need safety nets, not just speed."
+							"I built SnapBack because I was tired of living in fear of my own AI tools. We need safety
+							nets, not just speed."
 						</p>
 					</div>
 
 					<div className="mt-12">
 						<p className="text-gray-400 mb-6">
-							SnapBack is built by <a href="https://marcellelabs.com" className="text-emerald-400 hover:underline">Marcelle Labs</a>.
+							SnapBack is built by{" "}
+							<a href="https://marcellelabs.com" className="text-emerald-400 hover:underline">
+								Marcelle Labs
+							</a>
+							.
 						</p>
 						<div className="flex flex-wrap justify-center gap-4">
 							<Link

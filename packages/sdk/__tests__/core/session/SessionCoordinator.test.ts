@@ -5,7 +5,6 @@
  * Testing platform-agnostic session coordination logic.
  */
 
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type {
 	IDisposable,
 	IEventEmitter,
@@ -14,6 +13,7 @@ import type {
 	ITimerService,
 } from "@snapback-sdk/core/session/interfaces";
 import type { SessionManifest } from "@snapback-sdk/core/session/types";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock implementations for testing
 class MockEventEmitter implements IEventEmitter<SessionManifest> {

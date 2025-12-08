@@ -73,9 +73,7 @@ describe("CSRF Protection - Token Generation & Structure", () => {
 			// Should be in httpOnly cookies or session storage
 			const tokenStorage = "sessionStorage"; // or "cookie"
 
-			expect(
-				["sessionStorage", "cookie", "session"].includes(tokenStorage),
-			).toBe(true);
+			expect(["sessionStorage", "cookie", "session"].includes(tokenStorage)).toBe(true);
 		});
 
 		it("should transmit token via POST body or custom header (never URL parameter)", () => {
@@ -83,11 +81,7 @@ describe("CSRF Protection - Token Generation & Structure", () => {
 			// POST body: _csrf=token
 			// Header: X-CSRF-Token: token
 			// NOT: ?_csrf=token (logged in server logs, browser history)
-			const validTransmissionMethods = [
-				"POST_BODY",
-				"CUSTOM_HEADER",
-				"HTTP_HEADER",
-			];
+			const validTransmissionMethods = ["POST_BODY", "CUSTOM_HEADER", "HTTP_HEADER"];
 
 			const method = "CUSTOM_HEADER";
 			expect(validTransmissionMethods).toContain(method);
@@ -200,10 +194,7 @@ describe("CSRF Protection - Origin Validation", () => {
 	describe("csrf-006: Origin header verification", () => {
 		it("should verify Origin header matches expected domain", () => {
 			// REQUIREMENT: Origin: https://console.snapback.dev must match trust list
-			const trustedOrigins = [
-				"https://console.snapback.dev",
-				"http://localhost:3000",
-			];
+			const trustedOrigins = ["https://console.snapback.dev", "http://localhost:3000"];
 			const requestOrigin = "https://console.snapback.dev";
 
 			const isOriginValid = trustedOrigins.includes(requestOrigin);
@@ -212,10 +203,7 @@ describe("CSRF Protection - Origin Validation", () => {
 
 		it("should reject requests from untrusted origins", () => {
 			// REQUIREMENT: Cross-origin requests should be rejected
-			const trustedOrigins = [
-				"https://console.snapback.dev",
-				"http://localhost:3000",
-			];
+			const trustedOrigins = ["https://console.snapback.dev", "http://localhost:3000"];
 			const maliciousOrigin = "https://attacker.com";
 
 			const isOriginValid = trustedOrigins.includes(maliciousOrigin);
@@ -228,9 +216,7 @@ describe("CSRF Protection - Origin Validation", () => {
 			const origin = null;
 			const method = "POST";
 
-			const shouldRequireOrigin = ["POST", "PUT", "DELETE", "PATCH"].includes(
-				method,
-			);
+			const shouldRequireOrigin = ["POST", "PUT", "DELETE", "PATCH"].includes(method);
 			expect(shouldRequireOrigin && !origin).toBe(true);
 		});
 
@@ -326,9 +312,7 @@ describe("CSRF Protection - Request Method Verification", () => {
 			const unsafeMethods = ["POST", "PUT", "DELETE", "PATCH"];
 
 			unsafeMethods.forEach((method) => {
-				const requiresToken = ["POST", "PUT", "DELETE", "PATCH"].includes(
-					method,
-				);
+				const requiresToken = ["POST", "PUT", "DELETE", "PATCH"].includes(method);
 				expect(requiresToken).toBe(true);
 			});
 		});
@@ -373,10 +357,7 @@ describe("CSRF Protection - Request Method Verification", () => {
 			const overrideHeader = "X-HTTP-Method-Override";
 			const _actualMethod = "DELETE";
 
-			const shouldUseOverride = [
-				"X-HTTP-Method-Override",
-				"X-Method-Override",
-			].includes(overrideHeader);
+			const shouldUseOverride = ["X-HTTP-Method-Override", "X-Method-Override"].includes(overrideHeader);
 
 			expect(shouldUseOverride).toBe(true);
 		});
@@ -516,8 +497,7 @@ describe("CSRF Protection - Error Handling", () => {
  * RED PHASE ONLY - actual implementation in GREEN phase
  */
 function generateSecureToken(length: number): string {
-	const chars =
-		"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+	const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 	let token = "";
 	for (let i = 0; i < length; i++) {
 		token += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -530,7 +510,9 @@ function generateSecureToken(length: number): string {
  * RED PHASE ONLY - actual implementation in GREEN phase
  */
 function constantTimeEqual(a: string, b: string): boolean {
-	if (a.length !== b.length) return false;
+	if (a.length !== b.length) {
+		return false;
+	}
 
 	let result = 0;
 	for (let i = 0; i < a.length; i++) {

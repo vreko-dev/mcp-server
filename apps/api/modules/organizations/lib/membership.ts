@@ -2,10 +2,7 @@ import { member, organization } from "@snapback/platform";
 import { and, eq } from "drizzle-orm";
 import { getDb } from "@/src/services/database";
 
-export async function getOrganizationMembership(
-	userId: string,
-	organizationId: string,
-) {
+export async function getOrganizationMembership(userId: string, organizationId: string) {
 	// Check if database is available and capture reference
 	const db = getDb();
 	if (!db) {
@@ -19,9 +16,7 @@ export async function getOrganizationMembership(
 		})
 		.from(member)
 		.innerJoin(organization, eq(member.organizationId, organization.id))
-		.where(
-			and(eq(member.organizationId, organizationId), eq(member.userId, userId)),
-		)
+		.where(and(eq(member.organizationId, organizationId), eq(member.userId, userId)))
 		.limit(1);
 
 	if (!memberships || memberships.length === 0) {
@@ -36,10 +31,7 @@ export async function getOrganizationMembership(
 	};
 }
 
-export async function verifyOrganizationMembership(
-	organizationId: string,
-	userId: string,
-) {
+export async function verifyOrganizationMembership(organizationId: string, userId: string) {
 	const membership = await getOrganizationMembership(organizationId, userId);
 	return membership !== null;
 }

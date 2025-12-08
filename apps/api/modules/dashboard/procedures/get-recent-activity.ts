@@ -48,49 +48,29 @@ export const getRecentActivity = protectedProcedure
 					metadata: featureUsage.metadata,
 				})
 				.from(featureUsage)
-				.where(
-					and(
-						eq(featureUsage.userId, userId),
-						eq(featureUsage.featureCategory, "ai_assistance"),
-					),
-				)
+				.where(and(eq(featureUsage.userId, userId), eq(featureUsage.featureCategory, "ai_assistance")))
 				.orderBy(desc(featureUsage.createdAt))
 				.limit(5); // Reduced from 10 to 5 for better performance
 
 			// Combine and format activities
 			const activities: z.infer<typeof activitySchema>[] = [
 				...recentSnapshots.map((cp) => ({
-					type: (cp.riskScore && cp.riskScore > 0 ? "recovery" : "snapshot") as
-						| "snapshot"
-						| "recovery",
-					message:
-						cp.riskScore && cp.riskScore > 0
-							? "Code recovered from risk"
-							: "Snapshot created",
-					timestamp: cp.createdAt
-						? formatRelativeTime(cp.createdAt)
-						: "unknown",
+					type: (cp.riskScore && cp.riskScore > 0 ? "recovery" : "snapshot") as "snapshot" | "recovery",
+					message: cp.riskScore && cp.riskScore > 0 ? "Code recovered from risk" : "Snapshot created",
+					timestamp: cp.createdAt ? formatRelativeTime(cp.createdAt) : "unknown",
 					metadata: { files: cp.fileCount, trigger: cp.trigger },
 				})),
 				...recentAI.map((ai) => ({
 					type: "ai_detection" as const,
 					message: `${formatToolName(ai.featureName)} detected`,
-					timestamp: ai.createdAt
-						? formatRelativeTime(ai.createdAt)
-						: "unknown",
-					metadata: ai.metadata
-						? (ai.metadata as Record<string, unknown>)
-						: undefined,
+					timestamp: ai.createdAt ? formatRelativeTime(ai.createdAt) : "unknown",
+					metadata: ai.metadata ? (ai.metadata as Record<string, unknown>) : undefined,
 				})),
 			];
 
 			// Sort by timestamp and return top 5
 			return activities
-				.sort(
-					(a, b) =>
-						parseRelativeTime(b.timestamp).getTime() -
-						parseRelativeTime(a.timestamp).getTime(),
-				)
+				.sort((a, b) => parseRelativeTime(b.timestamp).getTime() - parseRelativeTime(a.timestamp).getTime())
 				.slice(0, 5);
 		} catch (error) {
 			logger.error("Failed to get recent activity", { userId, error });
@@ -135,12 +115,7 @@ function parseRelativeTime(relative: string): Date {
 	const value = Number.parseInt(match[1], 10);
 	const unit = match[2];
 
-	const ms =
-		unit === "minute"
-			? value * 60000
-			: unit === "hour"
-				? value * 3600000
-				: value * 86400000;
+	const ms = unit === "minute" ? value * 60000 : unit === "hour" ? value * 3600000 : value * 86400000;
 
 	return new Date(now.getTime() - ms);
 }

@@ -13,8 +13,8 @@
  * Total: 21 comprehensive tests
  */
 
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { BurstHeuristicsDetector } from "@snapback-sdk/core/detection/BurstHeuristicsDetector";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { expectNormalizedScore } from "../../helpers/assertions";
 
 describe("BurstHeuristicsDetector", () => {

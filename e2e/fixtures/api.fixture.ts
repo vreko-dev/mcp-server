@@ -1,8 +1,6 @@
 import type { APIRequestContext } from "@playwright/test";
 
 export class ApiFixture {
-	constructor(_request: APIRequestContext) {}
-
 	async seedSnapshots(count: number) {
 		// Mock implementation or real API call
 		console.log(`Seeding ${count} snapshots`);

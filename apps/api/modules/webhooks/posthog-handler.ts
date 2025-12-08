@@ -20,10 +20,7 @@ async function getDefaultDependencies(): Promise<PostHogHandlerDependencies> {
 	};
 }
 
-export async function handlePostHogWebhook(
-	req: Request,
-	deps?: PostHogHandlerDependencies,
-): Promise<Response> {
+export async function handlePostHogWebhook(req: Request, deps?: PostHogHandlerDependencies): Promise<Response> {
 	const dependencies = deps || (await getDefaultDependencies());
 	const { logger, emailOrchestrator, webhookSecret } = dependencies;
 
@@ -39,10 +36,7 @@ export async function handlePostHogWebhook(
 				return new Response("Missing signature", { status: 401 });
 			}
 
-			const expectedSignature = crypto
-				.createHmac("sha256", webhookSecret)
-				.update(body)
-				.digest("hex");
+			const expectedSignature = crypto.createHmac("sha256", webhookSecret).update(body).digest("hex");
 
 			if (signature !== `sha256=${expectedSignature}`) {
 				logger.warn("PostHog webhook invalid signature");
@@ -88,15 +82,9 @@ export async function handlePostHogWebhook(
 				if (properties?.cohort_name) {
 					// Map cohort names to campaigns
 					if (properties.cohort_name === "Trial At Risk") {
-						await emailOrchestrator.enqueueCampaignEmails(
-							"trial_at_risk",
-							userRef,
-						);
+						await emailOrchestrator.enqueueCampaignEmails("trial_at_risk", userRef);
 					} else if (properties.cohort_name === "Churn Risk") {
-						await emailOrchestrator.enqueueCampaignEmails(
-							"churn_risk",
-							userRef,
-						);
+						await emailOrchestrator.enqueueCampaignEmails("churn_risk", userRef);
 					}
 				}
 				break;
@@ -104,10 +92,7 @@ export async function handlePostHogWebhook(
 			// Custom engagement events
 			case "snapshot_created":
 				if (properties?.is_first) {
-					await emailOrchestrator.enqueueCampaignEmails(
-						"first_snapshot",
-						userRef,
-					);
+					await emailOrchestrator.enqueueCampaignEmails("first_snapshot", userRef);
 				}
 				break;
 
@@ -116,17 +101,11 @@ export async function handlePostHogWebhook(
 				break;
 
 			case "signup_completed":
-				await emailOrchestrator.enqueueCampaignEmails(
-					"welcome_series",
-					userRef,
-				);
+				await emailOrchestrator.enqueueCampaignEmails("welcome_series", userRef);
 				break;
 
 			case "feature_limit_hit":
-				await emailOrchestrator.enqueueCampaignEmails(
-					"feature_limit_hit",
-					userRef,
-				);
+				await emailOrchestrator.enqueueCampaignEmails("feature_limit_hit", userRef);
 				break;
 		}
 

@@ -101,10 +101,7 @@ export const betterAuthAdapter: BetterAuthAdapter = {
 				user: session?.user || null,
 			};
 		} catch (error) {
-			console.error(
-				"[BetterAuthAdapter] getRichSessionFromHeaders error:",
-				error,
-			);
+			console.error("[BetterAuthAdapter] getRichSessionFromHeaders error:", error);
 			return {
 				session: null,
 				user: null,

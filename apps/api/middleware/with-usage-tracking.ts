@@ -26,19 +26,13 @@ class NextResponse {
 	headers: Map<string, string>;
 	body: unknown;
 
-	constructor(
-		body: unknown,
-		init?: { status?: number; headers?: Record<string, string> },
-	) {
+	constructor(body: unknown, init?: { status?: number; headers?: Record<string, string> }) {
 		this.body = body;
 		this.status = init?.status || 200;
 		this.headers = new Map(Object.entries(init?.headers || {}));
 	}
 
-	static json(
-		data: unknown,
-		init?: { status?: number; headers?: Record<string, string> },
-	): NextResponse {
+	static json(data: unknown, init?: { status?: number; headers?: Record<string, string> }): NextResponse {
 		return new NextResponse(data, init);
 	}
 }
@@ -81,17 +75,10 @@ export async function withUsageTracking(
 		// 3. Verify request signature (if present)
 		const signature = req.headers.get("x-snapback-signature");
 		if (signature) {
-			const isValid = await verifyRequestSignature(
-				apiKey,
-				signature,
-				await req.text(),
-			);
+			const isValid = await verifyRequestSignature(apiKey, signature, await req.text());
 
 			if (!isValid) {
-				return NextResponse.json(
-					{ error: "Invalid signature" },
-					{ status: 401 },
-				);
+				return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
 			}
 		}
 
@@ -99,9 +86,7 @@ export async function withUsageTracking(
 		const clientVersion = req.headers.get("x-snapback-version");
 		if (clientVersion && process.env.MIN_SUPPORTED_CLIENT_VERSION) {
 			try {
-				if (
-					semver.lt(clientVersion, process.env.MIN_SUPPORTED_CLIENT_VERSION)
-				) {
+				if (semver.lt(clientVersion, process.env.MIN_SUPPORTED_CLIENT_VERSION)) {
 					return NextResponse.json(
 						{
 							error: "Extension update required",
@@ -125,20 +110,12 @@ export async function withUsageTracking(
 		const subscription = await getSubscription(session.user.id);
 
 		// 6. Check rate limits (token bucket)
-		const rateLimitResult = await checkRateLimit(
-			session.user.id,
-			subscription.plan,
-		);
+		const rateLimitResult = await checkRateLimit(session.user.id, subscription.plan);
 
 		if (!rateLimitResult.allowed) {
 			const retryAfter =
-				"retryAfter" in rateLimitResult && rateLimitResult.retryAfter
-					? rateLimitResult.retryAfter
-					: 60;
-			const consumed =
-				"consumed" in rateLimitResult && rateLimitResult.consumed
-					? rateLimitResult.consumed
-					: 0;
+				"retryAfter" in rateLimitResult && rateLimitResult.retryAfter ? rateLimitResult.retryAfter : 60;
+			const consumed = "consumed" in rateLimitResult && rateLimitResult.consumed ? rateLimitResult.consumed : 0;
 
 			await trackRateLimitViolation({
 				userId: session.user.id,
@@ -214,10 +191,7 @@ export async function withUsageTracking(
 		const responseTime = Date.now() - startTime;
 
 		// 9. Track usage (async, don't block)
-		const tokensUsed = Number.parseInt(
-			response.headers.get("x-tokens-used") || "0",
-			10,
-		);
+		const tokensUsed = Number.parseInt(response.headers.get("x-tokens-used") || "0", 10);
 
 		trackUsage({
 			requestId,

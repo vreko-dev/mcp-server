@@ -19,10 +19,7 @@ export const validateApiKey = publicProcedure
 			throw new Error("Database not available");
 		}
 
-		const allKeysResult = await db
-			.select()
-			.from(apiKeys)
-			.where(sql`${apiKeys.revokedAt} IS NULL`);
+		const allKeysResult = await db.select().from(apiKeys).where(sql`${apiKeys.revokedAt} IS NULL`);
 
 		const allKeys = allKeysResult || [];
 
@@ -46,10 +43,7 @@ export const validateApiKey = publicProcedure
 		}
 
 		// Update last used timestamp
-		await db
-			.update(apiKeys)
-			.set({ lastUsedAt: new Date() })
-			.where(eq(apiKeys.id, matchedKey.id));
+		await db.update(apiKeys).set({ lastUsedAt: new Date() }).where(eq(apiKeys.id, matchedKey.id));
 
 		return {
 			valid: true,

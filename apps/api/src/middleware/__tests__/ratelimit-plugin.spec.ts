@@ -79,9 +79,9 @@ describe("Rate Limiting Suite - Better Auth Integration", () => {
 			};
 
 			expect(response.headers["RateLimit-Limit"]).toBe("100");
-			expect(
-				Number.parseInt(response.headers["RateLimit-Remaining"], 10),
-			).toBeLessThan(Number.parseInt(response.headers["RateLimit-Limit"], 10));
+			expect(Number.parseInt(response.headers["RateLimit-Remaining"], 10)).toBeLessThan(
+				Number.parseInt(response.headers["RateLimit-Limit"], 10),
+			);
 		});
 	});
 
@@ -203,9 +203,7 @@ describe("Rate Limiting Suite - Better Auth Integration", () => {
 				"/api/v1/public": { limit: 60, max: 500 }, // Higher
 			};
 
-			expect(endpoints["/sign-in/email"].max).toBeLessThan(
-				endpoints["/api/v1/snapshots"].max,
-			);
+			expect(endpoints["/sign-in/email"].max).toBeLessThan(endpoints["/api/v1/snapshots"].max);
 			expect(endpoints["/health"].limit).toBeNull();
 		});
 	});

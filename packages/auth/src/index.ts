@@ -4,19 +4,7 @@
 import { randomBytes } from "node:crypto";
 import { hash as argon2Hash, verify as argon2Verify } from "@node-rs/argon2";
 import { apiKeys, apiUsage, db, subscriptions, user } from "@snapback/platform";
-import {
-	and,
-	avg,
-	count,
-	desc,
-	eq,
-	gte,
-	isNull,
-	like,
-	lt,
-	lte,
-	or,
-} from "drizzle-orm";
+import { and, avg, count, desc, eq, gte, isNull, like, lt, lte, or } from "drizzle-orm";
 
 // Import and re-export auth from auth.ts
 export { auth } from "./auth";
@@ -128,10 +116,7 @@ export async function hashApiKey(apiKey: string): Promise<string> {
 /**
  * Verify an API key against its argon2id hash
  */
-export async function verifyApiKey(
-	apiKey: string,
-	hash: string,
-): Promise<boolean> {
+export async function verifyApiKey(apiKey: string, hash: string): Promise<boolean> {
 	try {
 		return await argon2Verify(hash, apiKey);
 	} catch (_error) {
@@ -142,16 +127,8 @@ export async function verifyApiKey(
 /**
  * Create a new API key for a user
  */
-export async function createApiKey(
-	params: CreateApiKeyParams,
-): Promise<ApiKey & { fullKey: string }> {
-	const {
-		userId,
-		name,
-		scopes = ["snapshots:read"],
-		rateLimit = 100,
-		expiresAt,
-	} = params;
+export async function createApiKey(params: CreateApiKeyParams): Promise<ApiKey & { fullKey: string }> {
+	const { userId, name, scopes = ["snapshots:read"], rateLimit = 100, expiresAt } = params;
 
 	// Generate plain text key
 	const key = generateApiKey();
@@ -212,8 +189,7 @@ function getValidationRateLimiter(): InMemoryRateLimiter {
 
 // Use a pre-computed argon2id hash string constant for timing attack prevention
 // This avoids async module initialization and ensures immediate availability
-const _DUMMY_HASH =
-	"$argon2id$v=19$m=65536,t=3,p=4$AAAAAAAAAAAAAAAAAAAAAA$AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"; // argon2id hash of "sk_live_00000000000000000000000000000000"
+const _DUMMY_HASH = "$argon2id$v=19$m=65536,t=3,p=4$AAAAAAAAAAAAAAAAAAAAAA$AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"; // argon2id hash of "sk_live_00000000000000000000000000000000"
 
 /**
  * Validate an API key and return associated user
@@ -225,11 +201,7 @@ export async function validateApiKey(
 	// Rate limit validation attempts to prevent brute force attacks
 	const rateLimiter = getValidationRateLimiter();
 	const rateLimitKey = requestIP || "global_validation";
-	const rateLimitResult = await rateLimiter.checkLimit(
-		rateLimitKey,
-		100,
-		60000,
-	); // 100 requests per minute
+	const rateLimitResult = await rateLimiter.checkLimit(rateLimitKey, 100, 60000); // 100 requests per minute
 
 	if (!rateLimitResult.allowed) {
 		return {
@@ -281,9 +253,7 @@ export async function validateApiKey(
 		.limit(10);
 
 	// Ensure we have an array to iterate over
-	const candidateKeys = Array.isArray(candidateKeysResult)
-		? candidateKeysResult
-		: [];
+	const candidateKeys = Array.isArray(candidateKeysResult) ? candidateKeysResult : [];
 
 	// Find matching key by verifying hash among candidates only
 	let validKeyFound = false;
@@ -311,10 +281,7 @@ export async function validateApiKey(
 				.where(eq(apiKeys.id, storedKey.id));
 
 			// Get user
-			const [userRecord] = await db
-				.select()
-				.from(user)
-				.where(eq(user.id, storedKey.userId));
+			const [userRecord] = await db.select().from(user).where(eq(user.id, storedKey.userId));
 
 			if (!userRecord) {
 				// Security: Always return generic error to prevent enumeration
@@ -332,17 +299,11 @@ export async function validateApiKey(
 				.limit(1);
 
 			if (subscription) {
-				subscriptionTier = subscription.plan as
-					| "free"
-					| "solo"
-					| "team"
-					| "enterprise";
+				subscriptionTier = subscription.plan as "free" | "solo" | "team" | "enterprise";
 			}
 
 			// Extract scopes from permissions
-			const scopes = storedKey.permissions
-				? Object.keys(storedKey.permissions)
-				: [];
+			const scopes = storedKey.permissions ? Object.keys(storedKey.permissions) : [];
 
 			validKeyFound = true;
 			validUser = {
@@ -377,10 +338,7 @@ export async function validateApiKey(
 /**
  * Revoke an API key
  */
-export async function revokeApiKey(
-	keyId: string,
-	userId: string,
-): Promise<{ success: boolean; error?: string }> {
+export async function revokeApiKey(keyId: string, userId: string): Promise<{ success: boolean; error?: string }> {
 	if (!db) {
 		return { success: false, error: "Database not initialized" };
 	}
@@ -405,18 +363,12 @@ export async function revokeApiKey(
 /**
  * List all API keys for a user (without revealing the keys)
  */
-export async function listApiKeys(
-	userId: string,
-): Promise<Omit<ApiKey, "keyHash">[]> {
+export async function listApiKeys(userId: string): Promise<Omit<ApiKey, "keyHash">[]> {
 	if (!db) {
 		throw new Error("Database not initialized");
 	}
 
-	const keys = await db
-		.select()
-		.from(apiKeys)
-		.where(eq(apiKeys.userId, userId))
-		.orderBy(desc(apiKeys.createdAt));
+	const keys = await db.select().from(apiKeys).where(eq(apiKeys.userId, userId)).orderBy(desc(apiKeys.createdAt));
 
 	// Remove keyHash from response and map to expected interface
 	return keys.map((keyData: typeof apiKeys.$inferSelect) => ({
@@ -444,11 +396,7 @@ export async function listApiKeys(
 export class InMemoryRateLimiter {
 	private store = new Map<string, { count: number; resetAt: number }>();
 
-	async checkLimit(
-		key: string,
-		limit: number,
-		windowMs: number,
-	): Promise<RateLimitResult> {
+	async checkLimit(key: string, limit: number, windowMs: number): Promise<RateLimitResult> {
 		const now = Date.now();
 		const record = this.store.get(key);
 
@@ -511,11 +459,7 @@ export class RedisRateLimiter {
 	// biome-ignore lint/suspicious/noExplicitAny: Redis client type varies by implementation
 	constructor(private redis: any) {}
 
-	async checkLimit(
-		key: string,
-		limit: number,
-		windowMs: number,
-	): Promise<RateLimitResult> {
+	async checkLimit(key: string, limit: number, windowMs: number): Promise<RateLimitResult> {
 		const redisKey = `ratelimit:${key}`;
 		const windowSeconds = Math.ceil(windowMs / 1000);
 
@@ -633,11 +577,7 @@ export async function trackUsage(usage: UsageRecord): Promise<void> {
 /**
  * Get usage statistics for a time period
  */
-export async function getUsageStats(
-	userId: string,
-	startDate: Date,
-	endDate: Date,
-) {
+export async function getUsageStats(userId: string, startDate: Date, endDate: Date) {
 	if (!db) {
 		throw new Error("Database not initialized");
 	}
@@ -647,13 +587,7 @@ export async function getUsageStats(
 		.select({ count: count() })
 		.from(apiUsage)
 		.innerJoin(apiKeys, eq(apiKeys.id, apiUsage.apiKeyId))
-		.where(
-			and(
-				eq(apiKeys.userId, userId),
-				gte(apiUsage.timestamp, startDate),
-				lte(apiUsage.timestamp, endDate),
-			),
-		);
+		.where(and(eq(apiKeys.userId, userId), gte(apiUsage.timestamp, startDate), lte(apiUsage.timestamp, endDate)));
 
 	const totalRequests = totalRequestsResult[0]?.count || 0;
 
@@ -679,13 +613,7 @@ export async function getUsageStats(
 		.select({ avg: avg(apiUsage.id) }) // Simplified for now
 		.from(apiUsage)
 		.innerJoin(apiKeys, eq(apiKeys.id, apiUsage.apiKeyId))
-		.where(
-			and(
-				eq(apiKeys.userId, userId),
-				gte(apiUsage.timestamp, startDate),
-				lte(apiUsage.timestamp, endDate),
-			),
-		);
+		.where(and(eq(apiKeys.userId, userId), gte(apiUsage.timestamp, startDate), lte(apiUsage.timestamp, endDate)));
 
 	const avgResponseTime = avgResponseResult[0]?.avg || 0;
 
@@ -725,9 +653,7 @@ export async function checkUsageLimits(userId: string, tier: string) {
 		.select({ count: count() })
 		.from(apiUsage)
 		.innerJoin(apiKeys, eq(apiKeys.id, apiUsage.apiKeyId))
-		.where(
-			and(eq(apiKeys.userId, userId), gte(apiUsage.timestamp, startOfMonth)),
-		);
+		.where(and(eq(apiKeys.userId, userId), gte(apiUsage.timestamp, startOfMonth)));
 
 	const usage = usageResult[0]?.count || 0;
 	const remaining = Math.max(0, limits.snapshotsPerMonth - usage);
@@ -746,14 +672,7 @@ export async function checkUsageLimits(userId: string, tier: string) {
 // TEAM DETECTION
 // ============================================================================
 
-const CONSUMER_EMAIL_DOMAINS = [
-	"gmail.com",
-	"yahoo.com",
-	"hotmail.com",
-	"outlook.com",
-	"icloud.com",
-	"protonmail.com",
-];
+const CONSUMER_EMAIL_DOMAINS = ["gmail.com", "yahoo.com", "hotmail.com", "outlook.com", "icloud.com", "protonmail.com"];
 
 /**
  * Detect if user is part of a potential team
@@ -881,9 +800,7 @@ export async function validateSubscription(
 
 	// Subscription is valid until period end, even if canceled
 	if (periodEnd && periodEnd > now) {
-		const daysRemaining = Math.ceil(
-			(periodEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
-		);
+		const daysRemaining = Math.ceil((periodEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
 
 		return {
 			valid: true,
@@ -981,8 +898,7 @@ export function requireApiKey(rateLimiter: RedisRateLimiter) {
 		} else if (xRealIp) {
 			clientIP = xRealIp;
 		} else {
-			clientIP =
-				req.connection?.remoteAddress || req.socket?.remoteAddress || "unknown";
+			clientIP = req.connection?.remoteAddress || req.socket?.remoteAddress || "unknown";
 		}
 
 		if (!apiKey) {

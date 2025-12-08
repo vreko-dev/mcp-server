@@ -153,9 +153,7 @@ describe("CRITICAL: Account Lockout Enforcement", () => {
  */
 describe("CRITICAL: Redis Lockout Storage", () => {
 	it("should store lockout state in Redis", async () => {
-		const { incrementFailedAttempts, checkAccountLockout } = await import(
-			"../src/lib/account-lockout.js"
-		);
+		const { incrementFailedAttempts, checkAccountLockout } = await import("../src/lib/account-lockout.js");
 		const testEmail = "redis-test@example.com";
 
 		// Increment attempts
@@ -172,9 +170,7 @@ describe("CRITICAL: Redis Lockout Storage", () => {
 	});
 
 	it("should work with distributed Redis instances", async () => {
-		const { incrementFailedAttempts, checkAccountLockout } = await import(
-			"../src/lib/account-lockout.js"
-		);
+		const { incrementFailedAttempts, checkAccountLockout } = await import("../src/lib/account-lockout.js");
 		const testEmail = "distributed-test@example.com";
 
 		// Simulate requests from different servers/instances
@@ -204,17 +200,13 @@ describe("EDGE: Redis Failure Handling", () => {
 		// Mock Redis failure
 		vi.spyOn(console, "warn").mockImplementation(() => {});
 
-		const { incrementFailedAttempts, checkAccountLockout } = await import(
-			"../src/lib/account-lockout.js"
-		);
+		const { incrementFailedAttempts, checkAccountLockout } = await import("../src/lib/account-lockout.js");
 
 		// Simulate Redis connection failure
 		const redisModule = await import("redis");
-		const createClientSpy = vi
-			.spyOn(redisModule, "createClient")
-			.mockImplementation(() => {
-				throw new Error("Redis connection failed");
-			});
+		const createClientSpy = vi.spyOn(redisModule, "createClient").mockImplementation(() => {
+			throw new Error("Redis connection failed");
+		});
 
 		const testEmail = "fallback-test@example.com";
 
@@ -230,9 +222,7 @@ describe("EDGE: Redis Failure Handling", () => {
 	});
 
 	it("should not crash on Redis read errors", async () => {
-		const { checkAccountLockout } = await import(
-			"../src/lib/account-lockout.js"
-		);
+		const { checkAccountLockout } = await import("../src/lib/account-lockout.js");
 
 		// Should return unlocked state on error (fail open)
 		const lockout = await checkAccountLockout("error-test@example.com");
@@ -246,9 +236,7 @@ describe("EDGE: Redis Failure Handling", () => {
  */
 describe("EDGE: Email Normalization", () => {
 	it("should treat email addresses case-insensitively for lockout", async () => {
-		const { incrementFailedAttempts, checkAccountLockout } = await import(
-			"../src/lib/account-lockout.js"
-		);
+		const { incrementFailedAttempts, checkAccountLockout } = await import("../src/lib/account-lockout.js");
 
 		// Increment with different casings
 		await incrementFailedAttempts("Test@Example.com");
@@ -266,9 +254,7 @@ describe("EDGE: Email Normalization", () => {
 	});
 
 	it("should trim whitespace from email addresses", async () => {
-		const { incrementFailedAttempts, checkAccountLockout } = await import(
-			"../src/lib/account-lockout.js"
-		);
+		const { incrementFailedAttempts, checkAccountLockout } = await import("../src/lib/account-lockout.js");
 
 		await incrementFailedAttempts("  test@example.com  ");
 		await incrementFailedAttempts("test@example.com");
@@ -326,8 +312,7 @@ describe("SECURITY: Timing Attack Resistance", () => {
 			measurements.push(Date.now() - start);
 		}
 
-		const lockedAvg =
-			measurements.reduce((a, b) => a + b, 0) / measurements.length;
+		const lockedAvg = measurements.reduce((a, b) => a + b, 0) / measurements.length;
 		measurements.length = 0;
 
 		// Measure unlocked account response time
@@ -342,8 +327,7 @@ describe("SECURITY: Timing Attack Resistance", () => {
 			measurements.push(Date.now() - start);
 		}
 
-		const unlockedAvg =
-			measurements.reduce((a, b) => a + b, 0) / measurements.length;
+		const unlockedAvg = measurements.reduce((a, b) => a + b, 0) / measurements.length;
 
 		// Timing difference should be < 50ms
 		const difference = Math.abs(lockedAvg - unlockedAvg);
@@ -356,9 +340,7 @@ describe("SECURITY: Timing Attack Resistance", () => {
  */
 describe("SECURITY: Lockout Bypass Prevention", () => {
 	it("should not allow bypass via email+tag variations", async () => {
-		const { incrementFailedAttempts, checkAccountLockout } = await import(
-			"../src/lib/account-lockout.js"
-		);
+		const { incrementFailedAttempts, checkAccountLockout } = await import("../src/lib/account-lockout.js");
 
 		// Gmail/Outlook ignore dots and plus-tags
 		const variations = [
@@ -393,9 +375,7 @@ describe("INTEGRATION: Audit Trail", () => {
 		const { trackEvent } = await import("../src/lib/audit.js");
 		const trackSpy = vi.spyOn({ trackEvent }, "trackEvent");
 
-		const { incrementFailedAttempts } = await import(
-			"../src/lib/account-lockout.js"
-		);
+		const { incrementFailedAttempts } = await import("../src/lib/account-lockout.js");
 
 		const testEmail = "audit-test@example.com";
 
@@ -419,14 +399,10 @@ describe("INTEGRATION: Audit Trail", () => {
  */
 describe("PERFORMANCE: Distributed Brute Force", () => {
 	it("should handle 100 concurrent lockout checks efficiently", async () => {
-		const { checkAccountLockout } = await import(
-			"../src/lib/account-lockout.js"
-		);
+		const { checkAccountLockout } = await import("../src/lib/account-lockout.js");
 
 		const start = Date.now();
-		const promises = Array.from({ length: 100 }, (_, i) =>
-			checkAccountLockout(`perf-test-${i}@example.com`),
-		);
+		const promises = Array.from({ length: 100 }, (_, i) => checkAccountLockout(`perf-test-${i}@example.com`));
 
 		const results = await Promise.all(promises);
 		const duration = Date.now() - start;

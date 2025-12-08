@@ -9,14 +9,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import {
-	createApiKey,
-	generateApiKey,
-	hashApiKey,
-	revokeApiKey,
-	validateApiKey,
-	verifyApiKey,
-} from "../src/index";
+import { createApiKey, generateApiKey, hashApiKey, revokeApiKey, validateApiKey, verifyApiKey } from "../src/index";
 
 // ============================================================================
 // TEST HELPERS & SETUP
@@ -33,9 +26,7 @@ function createTestUser(userId = "user_test_123"): string {
 	return userId;
 }
 
-async function setupApiKey(
-	_userId: string,
-): Promise<Omit<TestContext, "userId">> {
+async function setupApiKey(_userId: string): Promise<Omit<TestContext, "userId">> {
 	const plainKey = generateApiKey();
 	const keyHash = await hashApiKey(plainKey);
 
@@ -91,9 +82,7 @@ describe("API Key Lifecycle - Happy Path", () => {
 			// ✅ Metadata saved correctly
 			expect(result).toHaveProperty("id");
 			expect(result.name).toBe("VS Code - Main");
-			expect(result.scopes).toEqual(
-				expect.arrayContaining(["snapshots:read", "snapshots:write"]),
-			);
+			expect(result.scopes).toEqual(expect.arrayContaining(["snapshots:read", "snapshots:write"]));
 			expect(result.rateLimit).toBe(1000);
 			expect(result.createdAt).toBeInstanceOf(Date);
 
@@ -356,9 +345,7 @@ describe("API Key Lifecycle - Edge Cases", () => {
 			expect(uniqueKeys.size).toBe(keyCount);
 
 			// ✅ All keys validate independently
-			const results = await Promise.all(
-				keys.map((k) => validateApiKey(k.fullKey)),
-			);
+			const results = await Promise.all(keys.map((k) => validateApiKey(k.fullKey)));
 			results.forEach((r) => expect(r.valid).toBe(true));
 		});
 	});
@@ -368,9 +355,7 @@ describe("API Key Lifecycle - Edge Cases", () => {
 			const plainKey = generateApiKey();
 			const hash = await hashApiKey(plainKey);
 
-			const validations = await Promise.all(
-				Array.from({ length: 100 }, () => verifyApiKey(plainKey, hash)),
-			);
+			const validations = await Promise.all(Array.from({ length: 100 }, () => verifyApiKey(plainKey, hash)));
 
 			// ✅ All concurrent validations succeed
 			validations.forEach((result) => expect(result).toBe(true));
@@ -411,11 +396,7 @@ describe("API Key Lifecycle - Edge Cases", () => {
 			});
 
 			// ✅ Concurrent revocation attempts
-			const results = await Promise.all([
-				revokeApiKey(key.id),
-				revokeApiKey(key.id),
-				revokeApiKey(key.id),
-			]);
+			const results = await Promise.all([revokeApiKey(key.id), revokeApiKey(key.id), revokeApiKey(key.id)]);
 
 			// ✅ Only one succeeds, others get false
 			const successCount = results.filter((r) => r === true).length;

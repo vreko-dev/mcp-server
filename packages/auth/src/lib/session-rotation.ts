@@ -27,11 +27,7 @@ import { trackEvent } from "./audit";
  * @param oldRole Previous role
  * @param newRole New role
  */
-export async function rotateSessionsOnRoleChange(
-	userId: string,
-	oldRole: string,
-	newRole: string,
-): Promise<void> {
+export async function rotateSessionsOnRoleChange(userId: string, oldRole: string, newRole: string): Promise<void> {
 	// Skip if role hasn't actually changed
 	if (oldRole === newRole) {
 		logger.debug("Role unchanged, skipping session rotation", {
@@ -137,10 +133,7 @@ export async function rotateSessionsOnOrgRoleChange(
 			});
 		} else {
 			// Database fallback
-			const dbCount = await invalidateOrgSessionsDatabase(
-				userId,
-				organizationId,
-			);
+			const dbCount = await invalidateOrgSessionsDatabase(userId, organizationId);
 
 			await trackEvent("session.rotated" as any, {
 				userId,
@@ -209,10 +202,7 @@ async function invalidateSessionsRedis(userId: string): Promise<number | null> {
 /**
  * Invalidate organization-scoped sessions using Redis
  */
-async function invalidateOrgSessionsRedis(
-	userId: string,
-	organizationId: string,
-): Promise<number | null> {
+async function invalidateOrgSessionsRedis(userId: string, organizationId: string): Promise<number | null> {
 	try {
 		const { redisClient, redisAvailable } = await import("../auth.js");
 
@@ -279,10 +269,7 @@ async function invalidateSessionsDatabase(userId: string): Promise<number> {
 /**
  * Invalidate organization-scoped sessions using database
  */
-async function invalidateOrgSessionsDatabase(
-	userId: string,
-	organizationId: string,
-): Promise<number> {
+async function invalidateOrgSessionsDatabase(userId: string, organizationId: string): Promise<number> {
 	try {
 		const { db } = await import("@snapback/platform");
 		const { sql } = await import("drizzle-orm");

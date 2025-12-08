@@ -1,6 +1,6 @@
 import type { AnalysisPlugin } from "@snapback/core";
-import { describe, expect, it } from "vitest";
 import { Guardian } from "@snapback/core/guardian";
+import { describe, expect, it } from "vitest";
 
 // Mock plugin results for testing
 const createMockPlugin = (

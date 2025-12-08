@@ -10,13 +10,7 @@
  * Follows the principle of explicit over implicit - no auth = no context.
  */
 
-import {
-	auth,
-	getUserOrgIds,
-	getUserPermissions,
-	getUserPlan,
-	type UserRole,
-} from "@snapback/auth";
+import { auth, getUserOrgIds, getUserPermissions, getUserPlan, type UserRole } from "@snapback/auth";
 import { logger } from "@snapback/infrastructure";
 import { db } from "@snapback/platform";
 import { apiKeys } from "@snapback/platform/db/schema/postgres";
@@ -86,7 +80,9 @@ async function verifyApiKey(apiKeyHeader: string): Promise<{
 	userId: string;
 	keyId: string;
 } | null> {
-	if (!db) return null;
+	if (!db) {
+		return null;
+	}
 	try {
 		// API key format: "sk_live_[32 chars]" or "sk_test_[32 chars]"
 		const keyParts = apiKeyHeader.split("_");
@@ -145,10 +141,7 @@ async function verifyApiKey(apiKeyHeader: string): Promise<{
  * Optional - attaches context only if credentials provided and valid
  * Public endpoints can proceed without auth context
  */
-export async function extractAuthContext(
-	c: Context,
-	next: Next,
-): Promise<void> {
+export async function extractAuthContext(c: Context, next: Next): Promise<void> {
 	try {
 		let authContext: AuthContext | null = null;
 
@@ -163,11 +156,7 @@ export async function extractAuthContext(
 			if (session?.user) {
 				const userRecord = session.user;
 				const plan = await getUserPlan(userRecord.id);
-				const permissions = await getUserPermissions(
-					userRecord.id,
-					(userRecord as any).role || null,
-					plan,
-				);
+				const permissions = await getUserPermissions(userRecord.id, (userRecord as any).role || null, plan);
 				const orgIds = await getUserOrgIds(userRecord.id);
 
 				authContext = {
@@ -198,9 +187,7 @@ export async function extractAuthContext(
 
 				if (verified && db) {
 					// Query user from database
-					const user = await import(
-						"@snapback/platform/db/schema/postgres"
-					).then(async (schema) => {
+					const user = await import("@snapback/platform/db/schema/postgres").then(async (schema) => {
 						return await db
 							?.select()
 							.from(schema.user)
@@ -210,11 +197,7 @@ export async function extractAuthContext(
 					});
 					if (user) {
 						const plan = await getUserPlan(user.id);
-						const permissions = await getUserPermissions(
-							user.id,
-							(user.role as UserRole) || null,
-							plan,
-						);
+						const permissions = await getUserPermissions(user.id, (user.role as UserRole) || null, plan);
 						const orgIds = await getUserOrgIds(user.id);
 
 						authContext = {
@@ -293,17 +276,12 @@ export async function requireAuth(c: Context, next: Next) {
  * Require specific role(s)
  * Returns 403 if user role doesn't match
  */
-export function requireRole(
-	...roles: (string | null)[]
-): (c: Context, next: Next) => Promise<Response | undefined> {
+export function requireRole(...roles: (string | null)[]): (c: Context, next: Next) => Promise<Response | undefined> {
 	return async (c: Context, next: Next) => {
 		const auth = c.get("auth") as AuthContext | undefined;
 
 		if (!auth) {
-			return c.json(
-				{ code: "unauthenticated", message: "Authentication required" },
-				401,
-			);
+			return c.json({ code: "unauthenticated", message: "Authentication required" }, 401);
 		}
 
 		if (!roles.includes(auth.user.role)) {
@@ -335,17 +313,12 @@ export function requireRole(
  * Require minimum subscription plan
  * Plan hierarchy: free < pro < team < enterprise
  */
-export function requirePlan(
-	...plans: string[]
-): (c: Context, next: Next) => Promise<Response | undefined> {
+export function requirePlan(...plans: string[]): (c: Context, next: Next) => Promise<Response | undefined> {
 	return async (c: Context, next: Next) => {
 		const auth = c.get("auth") as AuthContext | undefined;
 
 		if (!auth) {
-			return c.json(
-				{ code: "unauthenticated", message: "Authentication required" },
-				401,
-			);
+			return c.json({ code: "unauthenticated", message: "Authentication required" }, 401);
 		}
 
 		if (!plans.includes(auth.plan)) {
@@ -377,17 +350,12 @@ export function requirePlan(
  * Require specific permission(s)
  * Supports wildcard patterns (e.g., "snapshot:*")
  */
-export function requirePermission(
-	...perms: string[]
-): (c: Context, next: Next) => Promise<Response | undefined> {
+export function requirePermission(...perms: string[]): (c: Context, next: Next) => Promise<Response | undefined> {
 	return async (c: Context, next: Next) => {
 		const auth = c.get("auth") as AuthContext | undefined;
 
 		if (!auth) {
-			return c.json(
-				{ code: "unauthenticated", message: "Authentication required" },
-				401,
-			);
+			return c.json({ code: "unauthenticated", message: "Authentication required" }, 401);
 		}
 
 		const hasPermission = perms.some((perm) => {
@@ -441,17 +409,12 @@ export function requirePermission(
  * Extracts orgId from path parameter and validates membership
  * Format: /api/orgs/:orgId/...
  */
-export function requireOrgMembership(
-	paramName = "orgId",
-): (c: Context, next: Next) => Promise<Response | undefined> {
+export function requireOrgMembership(paramName = "orgId"): (c: Context, next: Next) => Promise<Response | undefined> {
 	return async (c: Context, next: Next) => {
 		const auth = c.get("auth") as AuthContext | undefined;
 
 		if (!auth) {
-			return c.json(
-				{ code: "unauthenticated", message: "Authentication required" },
-				401,
-			);
+			return c.json({ code: "unauthenticated", message: "Authentication required" }, 401);
 		}
 
 		// Extract orgId from path parameter
@@ -462,10 +425,7 @@ export function requireOrgMembership(
 				paramName,
 				path: c.req.path,
 			});
-			return c.json(
-				{ code: "bad_request", message: "Organization ID required" },
-				400,
-			);
+			return c.json({ code: "bad_request", message: "Organization ID required" }, 400);
 		}
 
 		// Admins can access any org

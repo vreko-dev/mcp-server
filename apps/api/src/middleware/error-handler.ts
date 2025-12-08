@@ -68,11 +68,7 @@ function categorizeError(error: unknown): {
 	// Map error messages to codes
 	const lowerMessage = error.message.toLowerCase();
 
-	if (
-		lowerMessage.includes("validation") ||
-		lowerMessage.includes("invalid") ||
-		lowerMessage.includes("zod")
-	) {
+	if (lowerMessage.includes("validation") || lowerMessage.includes("invalid") || lowerMessage.includes("zod")) {
 		return {
 			code: "validation_error",
 			statusCode: 400,
@@ -80,10 +76,7 @@ function categorizeError(error: unknown): {
 		};
 	}
 
-	if (
-		lowerMessage.includes("not found") ||
-		lowerMessage.includes("not exist")
-	) {
+	if (lowerMessage.includes("not found") || lowerMessage.includes("not exist")) {
 		return {
 			code: "not_found_error",
 			statusCode: 404,
@@ -91,10 +84,7 @@ function categorizeError(error: unknown): {
 		};
 	}
 
-	if (
-		lowerMessage.includes("unauthorized") ||
-		lowerMessage.includes("authentication")
-	) {
+	if (lowerMessage.includes("unauthorized") || lowerMessage.includes("authentication")) {
 		return {
 			code: "unauthorized_error",
 			statusCode: 401,
@@ -102,10 +92,7 @@ function categorizeError(error: unknown): {
 		};
 	}
 
-	if (
-		lowerMessage.includes("forbidden") ||
-		lowerMessage.includes("permission")
-	) {
+	if (lowerMessage.includes("forbidden") || lowerMessage.includes("permission")) {
 		return {
 			code: "forbidden_error",
 			statusCode: 403,
@@ -125,10 +112,7 @@ function categorizeError(error: unknown): {
 	return {
 		code: "server_error",
 		statusCode: 500,
-		message:
-			process.env.NODE_ENV === "production"
-				? "Internal server error"
-				: sanitizeErrorMessage(error.message),
+		message: process.env.NODE_ENV === "production" ? "Internal server error" : sanitizeErrorMessage(error.message),
 	};
 }
 
@@ -166,10 +150,7 @@ function sanitizeErrorMessage(message: string): string {
 	sanitized = sanitized.replace(/pk_[a-z0-9]+/gi, "[API_KEY]");
 
 	// Remove file paths (reduce info leakage)
-	sanitized = sanitized.replace(
-		/\/[a-zA-Z0-9/._-]+\/[a-zA-Z0-9._-]+/g,
-		"[FILE_PATH]",
-	);
+	sanitized = sanitized.replace(/\/[a-zA-Z0-9/._-]+\/[a-zA-Z0-9._-]+/g, "[FILE_PATH]");
 
 	return sanitized;
 }
@@ -203,18 +184,9 @@ export function createErrorHandler() {
 			userAgent: c.req.header("User-Agent"),
 			// Only log full error message in development
 			fullMessage:
-				process.env.NODE_ENV === "development"
-					? err instanceof Error
-						? err.message
-						: String(err)
-					: undefined,
+				process.env.NODE_ENV === "development" ? (err instanceof Error ? err.message : String(err)) : undefined,
 			// Log stack trace in development
-			stack:
-				process.env.NODE_ENV === "development"
-					? err instanceof Error
-						? err.stack
-						: undefined
-					: undefined,
+			stack: process.env.NODE_ENV === "development" ? (err instanceof Error ? err.stack : undefined) : undefined,
 		});
 
 		// Build error response

@@ -226,10 +226,7 @@ export const createSessionWithAge = (ageInHours: number) => ({
 });
 
 // Helper to create session for specific user
-export const createSessionForUser = (
-	userId: string,
-	overrides?: Partial<any>,
-) => ({
+export const createSessionForUser = (userId: string, overrides?: Partial<any>) => ({
 	id: crypto.randomUUID(),
 	userId,
 	token: crypto.randomBytes(32).toString("base64url"),

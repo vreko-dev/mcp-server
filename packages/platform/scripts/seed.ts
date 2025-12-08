@@ -9,8 +9,8 @@ async function main() {
 
 	// 1. Upsert Test User
 	console.log(`Upserting user: ${TEST_USER_EMAIL}`);
-	const [testUser] = await db!
-		.insert(user)
+	const [testUser] = await db
+		?.insert(user)
 		.values({
 			name: "Test User",
 			email: TEST_USER_EMAIL,
@@ -30,11 +30,11 @@ async function main() {
 
 	// 2. Insert or update Subscription (Team Plan)
 	console.log("Checking for existing subscription...");
-	const existingSub = await db!.select().from(subscriptions).where(eq(subscriptions.userId, testUser.id)).limit(1);
+	const existingSub = await db?.select().from(subscriptions).where(eq(subscriptions.userId, testUser.id)).limit(1);
 
 	if (existingSub.length === 0) {
 		console.log("Creating Team subscription...");
-		await db!.insert(subscriptions).values({
+		await db?.insert(subscriptions).values({
 			userId: testUser.id,
 			plan: "team",
 			status: "active",
@@ -43,8 +43,8 @@ async function main() {
 		});
 	} else {
 		console.log("Updating existing subscription...");
-		await db!
-			.update(subscriptions)
+		await db
+			?.update(subscriptions)
 			.set({
 				plan: "team",
 				status: "active",

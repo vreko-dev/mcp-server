@@ -9,9 +9,7 @@ import { Resend } from "resend";
  */
 
 // Initialize Resend client
-const resend = process.env.RESEND_API_KEY
-	? new Resend(process.env.RESEND_API_KEY)
-	: null;
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 // Types
 export interface EmailRecipient {
@@ -57,9 +55,7 @@ export class EmailError extends Error {
 }
 
 // Result type for email operations
-export type EmailResult<T = void> =
-	| { success: true; value: T }
-	| { success: false; error: EmailError };
+export type EmailResult<T = void> = { success: true; value: T } | { success: false; error: EmailError };
 
 /**
  * Check if Resend is configured
@@ -71,9 +67,7 @@ function isConfigured(): boolean {
 /**
  * Get plan features for email content
  */
-function getPlanFeatures(
-	plan: "free" | "pro" | "team" | "enterprise",
-): string[] {
+function getPlanFeatures(plan: "free" | "pro" | "team" | "enterprise"): string[] {
 	const features: Record<string, string[]> = {
 		enterprise: [
 			"Unlimited snapshots",
@@ -93,12 +87,7 @@ function getPlanFeatures(
 			"Team collaboration",
 			"Priority support",
 		],
-		solo: [
-			"Unlimited snapshots",
-			"Cloud backup",
-			"Advanced AI detection",
-			"Custom security rules",
-		],
+		solo: ["Unlimited snapshots", "Cloud backup", "Advanced AI detection", "Custom security rules"],
 		free: ["50 snapshots per month", "Local storage only"],
 	};
 
@@ -134,11 +123,7 @@ export async function sendWelcomeEmail(
 
 			return {
 				success: false,
-				error: new EmailError(
-					"Email service not configured",
-					"NOT_CONFIGURED",
-					{ customerId },
-				),
+				error: new EmailError("Email service not configured", "NOT_CONFIGURED", { customerId }),
 			};
 		}
 
@@ -213,11 +198,7 @@ export async function sendPaymentReceiptEmail(
 
 			return {
 				success: false,
-				error: new EmailError(
-					"Email service not configured",
-					"NOT_CONFIGURED",
-					{ customerId },
-				),
+				error: new EmailError("Email service not configured", "NOT_CONFIGURED", { customerId }),
 			};
 		}
 
@@ -288,20 +269,13 @@ export async function sendPaymentFailedEmail(
 		}
 
 		if (!isConfigured()) {
-			logger.warn(
-				"RESEND_API_KEY not configured - skipping payment failed email",
-				{
-					customerId,
-				},
-			);
+			logger.warn("RESEND_API_KEY not configured - skipping payment failed email", {
+				customerId,
+			});
 
 			return {
 				success: false,
-				error: new EmailError(
-					"Email service not configured",
-					"NOT_CONFIGURED",
-					{ customerId },
-				),
+				error: new EmailError("Email service not configured", "NOT_CONFIGURED", { customerId }),
 			};
 		}
 
@@ -339,15 +313,11 @@ export async function sendPaymentFailedEmail(
 
 		return {
 			success: false,
-			error: new EmailError(
-				"Failed to send payment failed email",
-				"SEND_FAILED",
-				{
-					customerId,
-					attemptCount,
-					originalError: error instanceof Error ? error.message : String(error),
-				},
-			),
+			error: new EmailError("Failed to send payment failed email", "SEND_FAILED", {
+				customerId,
+				attemptCount,
+				originalError: error instanceof Error ? error.message : String(error),
+			}),
 		};
 	}
 }

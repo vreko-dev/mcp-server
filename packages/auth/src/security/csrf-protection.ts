@@ -79,11 +79,7 @@ export function generateCSRFToken(config: Partial<CSRFConfig> = {}): string {
 	const randomBuffer = randomBytes(finalConfig.tokenLength);
 
 	// Convert to base64url (URL-safe: - and _ instead of + and /)
-	const base64url = randomBuffer
-		.toString("base64")
-		.replace(/\+/g, "-")
-		.replace(/\//g, "_")
-		.replace(/=/g, "");
+	const base64url = randomBuffer.toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
 
 	// Store metadata for later verification
 	const now = Date.now();
@@ -220,9 +216,7 @@ export function validateCSRFToken(
 
 	// Verify origin if provided
 	if (origin) {
-		const isOriginTrusted = finalConfig.trustedOrigins.some((trustedOrigin) =>
-			origin.startsWith(trustedOrigin),
-		);
+		const isOriginTrusted = finalConfig.trustedOrigins.some((trustedOrigin) => origin.startsWith(trustedOrigin));
 
 		if (!isOriginTrusted) {
 			logger.warn("CSRF origin validation failed", {
@@ -276,8 +270,7 @@ export function validateOrigin(
 	// Check Origin header (preferred, sent by modern browsers)
 	if (origin) {
 		const isOriginValid = finalConfig.trustedOrigins.some(
-			(trustedOrigin) =>
-				origin === trustedOrigin || origin.startsWith(trustedOrigin),
+			(trustedOrigin) => origin === trustedOrigin || origin.startsWith(trustedOrigin),
 		);
 
 		if (!isOriginValid) {
@@ -298,9 +291,7 @@ export function validateOrigin(
 			const refererOrigin = refererUrl.origin;
 
 			const isRefererValid = finalConfig.trustedOrigins.some(
-				(trustedOrigin) =>
-					refererOrigin === trustedOrigin ||
-					refererOrigin.startsWith(trustedOrigin),
+				(trustedOrigin) => refererOrigin === trustedOrigin || refererOrigin.startsWith(trustedOrigin),
 			);
 
 			if (!isRefererValid) {

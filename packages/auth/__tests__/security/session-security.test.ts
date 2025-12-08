@@ -469,11 +469,7 @@ describe("Session Security - Better Auth Integration", () => {
 	describe("sess-012: Cross-domain session handling", () => {
 		it("should support cross-subdomain sessions", () => {
 			// REQUIREMENT: User logged into console.snapback.dev can access api.snapback.dev
-			const subdomains = [
-				"console.snapback.dev",
-				"api.snapback.dev",
-				"docs.snapback.dev",
-			];
+			const subdomains = ["console.snapback.dev", "api.snapback.dev", "docs.snapback.dev"];
 
 			expect(subdomains.length).toBeGreaterThan(1);
 		});
@@ -519,8 +515,7 @@ describe("Session Security - Error Handling", () => {
 		it("should NOT reveal session details in error messages", () => {
 			// REQUIREMENT: Generic message prevents session enumeration
 			const message = "Authentication required";
-			const revealsSensitive =
-				message.includes("token") || message.includes("expired");
+			const revealsSensitive = message.includes("token") || message.includes("expired");
 
 			expect(revealsSensitive).toBe(false);
 		});

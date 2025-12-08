@@ -73,9 +73,7 @@ describe("POST /api/v1/policy/evaluate", () => {
 	});
 
 	it(`${testId}: should return 401 when no API key is provided`, async () => {
-		const mockAuthGetSession = vi.mocked(
-			(await import("@snapback/auth")).auth.api.getSession,
-		);
+		const mockAuthGetSession = vi.mocked((await import("@snapback/auth")).auth.api.getSession);
 		mockAuthGetSession.mockResolvedValue({
 			user: { id: "test-user-id" },
 		} as any);
@@ -98,9 +96,7 @@ describe("POST /api/v1/policy/evaluate", () => {
 
 	it(`${testId2}: should return policy evaluation results when valid request is made`, async () => {
 		// Mock auth session
-		const mockAuthGetSession = vi.mocked(
-			(await import("@snapback/auth")).auth.api.getSession,
-		);
+		const mockAuthGetSession = vi.mocked((await import("@snapback/auth")).auth.api.getSession);
 		mockAuthGetSession.mockResolvedValue({
 			user: { id: "test-user-id" },
 		} as any);
@@ -181,9 +177,7 @@ describe("POST /api/v1/policy/evaluate", () => {
 
 	it(`${testId3}: should return 401 when invalid API key is provided`, async () => {
 		// Mock auth session
-		const mockAuthGetSession = vi.mocked(
-			(await import("@snapback/auth")).auth.api.getSession,
-		);
+		const mockAuthGetSession = vi.mocked((await import("@snapback/auth")).auth.api.getSession);
 		mockAuthGetSession.mockResolvedValue({
 			user: { id: "test-user-id" },
 		} as any);

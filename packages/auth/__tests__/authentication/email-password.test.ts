@@ -94,9 +94,7 @@ describe("Email/Password Authentication", () => {
 				context: { url: "https://example.com/verify", name: user.name },
 			});
 
-			expect(mockEmail.hasEmailBeenSent(user.email, "emailVerification")).toBe(
-				true,
-			);
+			expect(mockEmail.hasEmailBeenSent(user.email, "emailVerification")).toBe(true);
 			const verificationUrl = mockEmail.getVerificationUrl(user.email);
 			expect(verificationUrl).toBeDefined();
 		});
@@ -238,9 +236,7 @@ describe("Email/Password Authentication", () => {
 				},
 			});
 
-			expect(
-				mockEmail.hasEmailBeenSent(validUsers.standard.email, "forgotPassword"),
-			).toBe(true);
+			expect(mockEmail.hasEmailBeenSent(validUsers.standard.email, "forgotPassword")).toBe(true);
 			const resetUrl = mockEmail.getResetPasswordUrl(validUsers.standard.email);
 			expect(resetUrl).toBeDefined();
 		});
@@ -322,9 +318,7 @@ describe("Email/Password Authentication", () => {
 				}
 			}
 
-			expect(
-				mockEmail.getEmailCount(validUsers.standard.email, "forgotPassword"),
-			).toBe(maxResets);
+			expect(mockEmail.getEmailCount(validUsers.standard.email, "forgotPassword")).toBe(maxResets);
 		});
 	});
 

@@ -89,18 +89,8 @@ describe("Keys Service", () => {
 		const createdKey = await createApiKey(userId, permissions);
 
 		// Log some usage
-		await logApiUsage(
-			createdKey.id,
-			"/api/v1/analyze",
-			"test-agent",
-			"127.0.0.1",
-		);
-		await logApiUsage(
-			createdKey.id,
-			"/api/v1/snapshots",
-			"test-agent",
-			"127.0.0.1",
-		);
+		await logApiUsage(createdKey.id, "/api/v1/analyze", "test-agent", "127.0.0.1");
+		await logApiUsage(createdKey.id, "/api/v1/snapshots", "test-agent", "127.0.0.1");
 
 		// Retrieve usage logs
 		const logs = await getUsageLogs(createdKey.id);

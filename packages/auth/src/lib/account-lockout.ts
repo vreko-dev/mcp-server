@@ -74,9 +74,7 @@ async function getRedisClient(): Promise<any | null> {
  * @param email User email address
  * @returns Lockout status with remaining time if locked
  */
-export async function checkAccountLockout(
-	email: string,
-): Promise<LockoutStatus> {
+export async function checkAccountLockout(email: string): Promise<LockoutStatus> {
 	const normalizedEmail = normalizeEmail(email);
 	const redis = await getRedisClient();
 
@@ -241,10 +239,7 @@ async function checkLockoutDatabase(email: string): Promise<LockoutStatus> {
 		}
 
 		const row = result.rows[0] as { attempts: number; locked_until: Date };
-		const remainingTime = Math.max(
-			0,
-			Math.floor((new Date(row.locked_until).getTime() - Date.now()) / 1000),
-		);
+		const remainingTime = Math.max(0, Math.floor((new Date(row.locked_until).getTime() - Date.now()) / 1000));
 
 		return {
 			locked: row.attempts >= LOCKOUT_POLICY.MAX_ATTEMPTS,
@@ -270,9 +265,7 @@ async function incrementAttemptsDatabase(email: string): Promise<void> {
 			return;
 		}
 
-		const lockedUntil = new Date(
-			Date.now() + LOCKOUT_POLICY.LOCKOUT_DURATION_SECONDS * 1000,
-		);
+		const lockedUntil = new Date(Date.now() + LOCKOUT_POLICY.LOCKOUT_DURATION_SECONDS * 1000);
 
 		await db.execute(sql`
 			INSERT INTO auth_lockout (email, attempts, locked_until)

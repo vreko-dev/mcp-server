@@ -264,10 +264,7 @@ export const createProductionApiKey = (overrides?: Partial<any>) => ({
 });
 
 // Helper to create API key for specific user
-export const createApiKeyForUser = (
-	userId: string,
-	permissions: string[] = ["read"],
-) => ({
+export const createApiKeyForUser = (userId: string, permissions: string[] = ["read"]) => ({
 	id: crypto.randomUUID(),
 	userId,
 	key: `sk_test_${crypto.randomBytes(32).toString("hex")}`,

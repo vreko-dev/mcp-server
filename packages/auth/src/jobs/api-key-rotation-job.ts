@@ -51,11 +51,8 @@ export interface StaleApiKey {
  *
  * @param options.olderThanDays Age threshold in days (default: 90)
  */
-export async function findStaleApiKeys(
-	options: { olderThanDays?: number } = {},
-): Promise<StaleApiKey[]> {
-	const thresholdDays =
-		options.olderThanDays || ROTATION_POLICY.STALE_THRESHOLD_DAYS;
+export async function findStaleApiKeys(options: { olderThanDays?: number } = {}): Promise<StaleApiKey[]> {
+	const thresholdDays = options.olderThanDays || ROTATION_POLICY.STALE_THRESHOLD_DAYS;
 	const cutoffDate = new Date(Date.now() - thresholdDays * 24 * 60 * 60 * 1000);
 
 	try {
@@ -140,12 +137,8 @@ export async function shouldSendReminder(keyId: string): Promise<boolean> {
 			return true;
 		}
 
-		const lastSent = new Date(
-			(result.rows[0] as { last_reminder_sent_at: string })
-				.last_reminder_sent_at,
-		);
-		const cooldownMs =
-			ROTATION_POLICY.REMINDER_COOLDOWN_DAYS * 24 * 60 * 60 * 1000;
+		const lastSent = new Date((result.rows[0] as { last_reminder_sent_at: string }).last_reminder_sent_at);
+		const cooldownMs = ROTATION_POLICY.REMINDER_COOLDOWN_DAYS * 24 * 60 * 60 * 1000;
 		const timeSinceLastReminder = Date.now() - lastSent.getTime();
 
 		// Allow reminder if cooldown period has passed
@@ -165,10 +158,7 @@ export async function shouldSendReminder(keyId: string): Promise<boolean> {
  * @param keyId API key ID
  * @param timestamp When reminder was sent (default: now)
  */
-async function recordReminderSent(
-	keyId: string,
-	timestamp: number = Date.now(),
-): Promise<void> {
+async function recordReminderSent(keyId: string, timestamp: number = Date.now()): Promise<void> {
 	try {
 		const { db } = await import("@snapback/platform");
 		const { sql } = await import("drizzle-orm");
@@ -201,9 +191,7 @@ export async function sendRotationReminder(key: StaleApiKey): Promise<void> {
 	try {
 		const { sendEmail } = await import("@snapback/integrations/email");
 
-		const ageInDays = Math.floor(
-			(Date.now() - key.createdAt.getTime()) / (1000 * 60 * 60 * 24),
-		);
+		const ageInDays = Math.floor((Date.now() - key.createdAt.getTime()) / (1000 * 60 * 60 * 24));
 
 		const subject = "🔑 API Key Rotation Reminder - SnapBack";
 		const html = `

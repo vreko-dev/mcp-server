@@ -10,9 +10,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 describe("RBAC1: Organization Permissions Configuration", () => {
 	it("should have access control statement defined", async () => {
-		const { statement } = await import(
-			"../src/lib/organization-permissions.js"
-		);
+		const { statement } = await import("../src/lib/organization-permissions.js");
 
 		expect(statement).toBeDefined();
 		expect(statement.snapshot).toContain("create");
@@ -21,9 +19,7 @@ describe("RBAC1: Organization Permissions Configuration", () => {
 	});
 
 	it("should have owner, admin, and member roles defined", async () => {
-		const { owner, admin, member } = await import(
-			"../src/lib/organization-permissions.js"
-		);
+		const { owner, admin, member } = await import("../src/lib/organization-permissions.js");
 
 		expect(owner).toBeDefined();
 		expect(admin).toBeDefined();
@@ -33,9 +29,7 @@ describe("RBAC1: Organization Permissions Configuration", () => {
 	it("should have organization plugin configured with roles", async () => {
 		const { auth } = await import("../src/auth.js");
 
-		const orgPlugin = (auth as any).options?.plugins?.find(
-			(p: any) => p.id === "organization",
-		);
+		const orgPlugin = (auth as any).options?.plugins?.find((p: any) => p.id === "organization");
 
 		expect(orgPlugin).toBeDefined();
 		expect(orgPlugin?.roles).toBeDefined();
@@ -44,9 +38,7 @@ describe("RBAC1: Organization Permissions Configuration", () => {
 	it("should have organizationLimit configured to prevent abuse", async () => {
 		const { auth } = await import("../src/auth.js");
 
-		const orgPlugin = (auth as any).options?.plugins?.find(
-			(p: any) => p.id === "organization",
-		);
+		const orgPlugin = (auth as any).options?.plugins?.find((p: any) => p.id === "organization");
 
 		expect(orgPlugin?.organizationLimit).toBeGreaterThan(0);
 		expect(orgPlugin?.organizationLimit).toBeLessThanOrEqual(10);
@@ -55,9 +47,7 @@ describe("RBAC1: Organization Permissions Configuration", () => {
 
 describe("RBAC2: Role Permissions", () => {
 	it("CRITICAL: owner should have all permissions", async () => {
-		const { owner, statement } = await import(
-			"../src/lib/organization-permissions.js"
-		);
+		const { owner, statement } = await import("../src/lib/organization-permissions.js");
 
 		// Owner should have full access to all resources
 		const ownerPermissions = (owner as any).permissions || {};
@@ -69,9 +59,7 @@ describe("RBAC2: Role Permissions", () => {
 	});
 
 	it("CRITICAL: admin should have limited permissions", async () => {
-		const { admin, owner } = await import(
-			"../src/lib/organization-permissions.js"
-		);
+		const { admin, owner } = await import("../src/lib/organization-permissions.js");
 
 		// Admin should have less permissions than owner
 		const adminPermissions = (admin as any).permissions || {};
@@ -123,9 +111,7 @@ describe("RBAC3: Permission Enforcement", () => {
 	it("CRITICAL: should allow snapshot creation for all roles", async () => {
 		// Critical path: All roles can create snapshots
 
-		const { member, admin, owner } = await import(
-			"../src/lib/organization-permissions.js"
-		);
+		const { member, admin, owner } = await import("../src/lib/organization-permissions.js");
 
 		expect((member as any).permissions?.snapshot).toContain("create");
 		expect((admin as any).permissions?.snapshot).toContain("create");
@@ -142,9 +128,7 @@ describe("RBAC3: Permission Enforcement", () => {
 	it("EDGE: should handle role inheritance correctly", async () => {
 		// Edge case: Ensure no unintended permission inheritance
 
-		const { owner, admin, member } = await import(
-			"../src/lib/organization-permissions.js"
-		);
+		const { owner, admin, member } = await import("../src/lib/organization-permissions.js");
 
 		// Each role should have distinct permissions
 		expect(owner).not.toEqual(admin);
@@ -166,9 +150,7 @@ describe("RBAC4: Multi-Tenancy Isolation", () => {
 
 		const { auth } = await import("../src/auth.js");
 
-		const orgPlugin = (auth as any).options?.plugins?.find(
-			(p: any) => p.id === "organization",
-		);
+		const orgPlugin = (auth as any).options?.plugins?.find((p: any) => p.id === "organization");
 
 		expect(orgPlugin?.organizationLimit).toBeDefined();
 	});
@@ -196,9 +178,7 @@ describe("RBAC5: Dynamic Permission Checking", () => {
 		// This is enforced by Better Auth's organization plugin
 		// Verify plugin is configured correctly
 		const { auth } = await import("../src/auth.js");
-		const orgPlugin = (auth as any).options?.plugins?.find(
-			(p: any) => p.id === "organization",
-		);
+		const orgPlugin = (auth as any).options?.plugins?.find((p: any) => p.id === "organization");
 
 		expect(orgPlugin?.ac).toBeDefined(); // Access control instance
 	});
@@ -222,9 +202,7 @@ describe("SECURITY: RBAC Security", () => {
 	it("CRITICAL: should prevent unauthorized role assignment", async () => {
 		// Security: Only owner/admin can assign roles
 
-		const { admin, owner } = await import(
-			"../src/lib/organization-permissions.js"
-		);
+		const { admin, owner } = await import("../src/lib/organization-permissions.js");
 
 		// Member should not have permission to update other members
 		const adminPerms = (admin as any).permissions || {};

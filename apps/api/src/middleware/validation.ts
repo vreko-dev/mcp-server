@@ -63,10 +63,7 @@ function parseZodErrors(error: z.ZodError<unknown>): ValidationError[] {
 export async function validateBody<T extends ZodSchema>(
 	c: Context,
 	schema: T,
-): Promise<
-	| { success: true; value: z.infer<T> }
-	| { success: false; error: ValidationErrorResponse }
-> {
+): Promise<{ success: true; value: z.infer<T> } | { success: false; error: ValidationErrorResponse }> {
 	try {
 		// Check Content-Type
 		const contentType = c.req.header("Content-Type");
@@ -99,8 +96,7 @@ export async function validateBody<T extends ZodSchema>(
 					errors: [
 						{
 							field: "body",
-							message:
-								err instanceof Error ? err.message : "Failed to parse JSON",
+							message: err instanceof Error ? err.message : "Failed to parse JSON",
 						},
 					],
 				},
@@ -159,10 +155,7 @@ export async function validateBody<T extends ZodSchema>(
 export async function validateQuery<T extends ZodSchema>(
 	c: Context,
 	schema: T,
-): Promise<
-	| { success: true; value: z.infer<T> }
-	| { success: false; error: ValidationErrorResponse }
-> {
+): Promise<{ success: true; value: z.infer<T> } | { success: false; error: ValidationErrorResponse }> {
 	try {
 		const query = c.req.query();
 
@@ -223,10 +216,7 @@ export async function validateQuery<T extends ZodSchema>(
 export async function validateParams<T extends ZodSchema>(
 	c: Context,
 	schema: T,
-): Promise<
-	| { success: true; value: z.infer<T> }
-	| { success: false; error: ValidationErrorResponse }
-> {
+): Promise<{ success: true; value: z.infer<T> } | { success: false; error: ValidationErrorResponse }> {
 	try {
 		const params = c.req.param();
 

@@ -17,6 +17,4 @@ export const SubscriptionPlanModel = z.object({
 });
 
 export type SubscriptionPlan = z.infer<typeof SubscriptionPlanModel>;
-export type SubscriptionPlanVariant = z.infer<
-	typeof SubscriptionPlanVariantModel
->;
+export type SubscriptionPlanVariant = z.infer<typeof SubscriptionPlanVariantModel>;

@@ -1,6 +1,6 @@
+import { Context7Service } from "@mcp/context7/Context7Service";
 import type { StorageBrokerAdapter } from "@snapback/sdk/storage/StorageBrokerAdapter";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { Context7Service } from "@mcp/context7/Context7Service";
 
 // Mock StorageBrokerAdapter
 const mockStorage = {

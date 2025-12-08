@@ -138,11 +138,7 @@ export async function verifyExtensionAccessToken(
 		});
 
 		// Type guard: Ensure required claims exist
-		if (
-			typeof payload.sub !== "string" ||
-			typeof payload.c !== "string" ||
-			typeof payload.esid !== "string"
-		) {
+		if (typeof payload.sub !== "string" || typeof payload.c !== "string" || typeof payload.esid !== "string") {
 			throw new Error("Missing required JWT claims");
 		}
 
@@ -190,9 +186,7 @@ export async function verifyExtensionAccessToken(
  * console.log("Expires at:", new Date(payload.exp! * 1000));
  * ```
  */
-export function decodeExtensionAccessToken(
-	token: string,
-): ExtensionAccessTokenPayload {
+export function decodeExtensionAccessToken(token: string): ExtensionAccessTokenPayload {
 	const [, payloadBase64] = token.split(".");
 	if (!payloadBase64) {
 		throw new Error("Invalid JWT format");

@@ -19,8 +19,12 @@ import type { AuthContext } from "./auth-unified";
 // Lazy-load Sentry
 let Sentry: typeof import("@sentry/node") | null = null;
 async function loadSentry() {
-	if (Sentry) return Sentry;
-	if (process.env.DISABLE_SENTRY === "true") return null;
+	if (Sentry) {
+		return Sentry;
+	}
+	if (process.env.DISABLE_SENTRY === "true") {
+		return null;
+	}
 	try {
 		Sentry = await import("@sentry/node");
 		return Sentry;
@@ -33,7 +37,9 @@ async function loadSentry() {
  * Check if user is member of an organization (inline)
  */
 async function checkOrgMembership(userId: string, orgId: string) {
-	if (!db) return null;
+	if (!db) {
+		return null;
+	}
 	try {
 		return await db
 			.select({
@@ -115,10 +121,7 @@ async function logRLSViolation(violation: RLSViolation): Promise<void> {
 		}
 	} catch (sentryError) {
 		logger.debug("Could not send RLS violation to Sentry", {
-			error:
-				sentryError instanceof Error
-					? sentryError.message
-					: String(sentryError),
+			error: sentryError instanceof Error ? sentryError.message : String(sentryError),
 		});
 	}
 
@@ -248,19 +251,13 @@ export async function enforceResourceRLS(c: Context, next: Next) {
 	const auth = c.get("auth") as AuthContext | undefined;
 
 	if (!auth) {
-		return c.json(
-			{ code: "unauthenticated", message: "Authentication required" },
-			401,
-		);
+		return c.json({ code: "unauthenticated", message: "Authentication required" }, 401);
 	}
 
 	const requestedOrgId = extractOrgIdFromPath(c.req.path);
 
 	if (!requestedOrgId) {
-		return c.json(
-			{ code: "bad_request", message: "Invalid organization path" },
-			400,
-		);
+		return c.json({ code: "bad_request", message: "Invalid organization path" }, 400);
 	}
 
 	// Check membership using database lookup

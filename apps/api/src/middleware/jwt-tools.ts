@@ -14,10 +14,10 @@ import type { Context, Next } from "hono";
  */
 function extractToken(c: Context): string | null {
 	const authHeader = c.req.header("authorization");
-	if (!authHeader) return null;
-	return authHeader.startsWith("Bearer ")
-		? authHeader.substring(7)
-		: authHeader;
+	if (!authHeader) {
+		return null;
+	}
+	return authHeader.startsWith("Bearer ") ? authHeader.substring(7) : authHeader;
 }
 
 /**
@@ -57,9 +57,6 @@ export async function requireToolJWT(c: Context, next: Next) {
 		logger.error("JWT verification error", {
 			error: error instanceof Error ? error.message : String(error),
 		});
-		return c.json(
-			{ error: "Internal server error", code: "INTERNAL_ERROR" },
-			500,
-		);
+		return c.json({ error: "Internal server error", code: "INTERNAL_ERROR" }, 500);
 	}
 }

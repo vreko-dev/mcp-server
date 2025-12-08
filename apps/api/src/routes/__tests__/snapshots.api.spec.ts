@@ -46,12 +46,9 @@ describe("Snapshots API", () => {
 			const app = new Hono();
 			app.route("/", snapshotRoute);
 
-			const response = await app.request(
-				"/snapshots/list?filePath=/test/file.js",
-				{
-					method: "GET",
-				},
-			);
+			const response = await app.request("/snapshots/list?filePath=/test/file.js", {
+				method: "GET",
+			});
 
 			expect(response.status).toBe(200);
 			const result = await response.json();
@@ -118,10 +115,7 @@ describe("Snapshots API", () => {
 			for (const endpoint of endpoints) {
 				const response = await app.request(endpoint.path, {
 					method: endpoint.method,
-					headers:
-						endpoint.method === "POST"
-							? { "Content-Type": "application/json" }
-							: {},
+					headers: endpoint.method === "POST" ? { "Content-Type": "application/json" } : {},
 					body: endpoint.method === "POST" ? JSON.stringify({}) : undefined,
 				});
 

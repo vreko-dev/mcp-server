@@ -4,11 +4,7 @@ import { Scalar } from "@scalar/hono-api-reference";
 import { auth } from "@snapback/auth";
 import { config, getBaseUrl } from "@snapback/config";
 import type { InstrumentationProvider } from "@snapback/contracts/observability";
-import {
-	logger,
-	NoOpInstrumentationProvider,
-	OTelInstrumentationProvider,
-} from "@snapback/infrastructure";
+import { logger, NoOpInstrumentationProvider, OTelInstrumentationProvider } from "@snapback/infrastructure";
 import { webhookHandler as paymentsWebhookHandler } from "@snapback/integrations/stripe/provider/stripe";
 import type { Hono as HonoApp } from "hono";
 import { Hono } from "hono";
@@ -40,17 +36,14 @@ if (process.env.DISABLE_SENTRY !== "true") {
 }
 
 // Initialize OpenTelemetry instrumentation
-const instrumentationProvider: InstrumentationProvider = process.env
-	.OTEL_EXPORTER_OTLP_ENDPOINT
+const instrumentationProvider: InstrumentationProvider = process.env.OTEL_EXPORTER_OTLP_ENDPOINT
 	? new OTelInstrumentationProvider({
 			serviceName: "snapback-api",
 			serviceVersion: SERVICE_VERSION,
 			environment: process.env.NODE_ENV || "development",
 			collectorUrl: process.env.OTEL_EXPORTER_OTLP_ENDPOINT,
 			enableConsole: process.env.NODE_ENV === "development",
-			sampleRate: process.env.OTEL_SAMPLE_RATE
-				? Number.parseFloat(process.env.OTEL_SAMPLE_RATE)
-				: 1.0,
+			sampleRate: process.env.OTEL_SAMPLE_RATE ? Number.parseFloat(process.env.OTEL_SAMPLE_RATE) : 1.0,
 		})
 	: new NoOpInstrumentationProvider();
 
@@ -171,18 +164,12 @@ const apiApp: HonoApp = new Hono()
 				}
 
 				// For development, allow localhost with any port
-				if (
-					process.env.NODE_ENV === "development" &&
-					origin.startsWith("http://localhost:")
-				) {
+				if (process.env.NODE_ENV === "development" && origin.startsWith("http://localhost:")) {
 					return origin;
 				}
 
 				// For development, allow all *.snapback.dev subdomains
-				if (
-					process.env.NODE_ENV === "development" &&
-					origin.endsWith(".snapback.dev")
-				) {
+				if (process.env.NODE_ENV === "development" && origin.endsWith(".snapback.dev")) {
 					return origin;
 				}
 
@@ -190,11 +177,7 @@ const apiApp: HonoApp = new Hono()
 			},
 			allowHeaders: ["Content-Type", "Authorization", "X-API-Key"],
 			allowMethods: ["POST", "GET", "OPTIONS", "PUT", "DELETE", "PATCH"],
-			exposeHeaders: [
-				"Content-Length",
-				"X-RateLimit-Remaining",
-				"X-RateLimit-Reset",
-			],
+			exposeHeaders: ["Content-Length", "X-RateLimit-Remaining", "X-RateLimit-Reset"],
 			maxAge: 600,
 			credentials: true,
 		}),
@@ -209,8 +192,7 @@ const apiApp: HonoApp = new Hono()
 			info: {
 				title: `${config.appName} API`,
 				version: "1.0.0",
-				description:
-					"Unified API for SnapBack including Authentication and Application endpoints.",
+				description: "Unified API for SnapBack including Authentication and Application endpoints.",
 			},
 			servers: [
 				{

@@ -75,10 +75,7 @@ export interface AuditEventMetadata {
 /**
  * Emit event to PostHog (non-blocking)
  */
-async function emitPostHogEvent(
-	eventType: AuditEventType,
-	metadata: AuditEventMetadata,
-): Promise<void> {
+async function emitPostHogEvent(eventType: AuditEventType, metadata: AuditEventMetadata): Promise<void> {
 	if (!POSTHOG_ENABLED) {
 		return;
 	}
@@ -126,10 +123,7 @@ async function emitPostHogEvent(
  * Stores audit events in telemetry_events table with event_category='audit'
  * Uses @snapback/platform DB connection via lazy import to avoid circular deps
  */
-async function writeAuditLog(
-	eventType: AuditEventType,
-	metadata: AuditEventMetadata,
-): Promise<void> {
+async function writeAuditLog(eventType: AuditEventType, metadata: AuditEventMetadata): Promise<void> {
 	try {
 		// Lazy import to avoid circular dependencies
 		const { db, snapbackSchema } = await import("@snapback/platform");
@@ -176,10 +170,7 @@ async function writeAuditLog(
  * Track authentication event
  * Emits to PostHog and writes to audit log (both non-blocking)
  */
-export async function trackEvent(
-	eventType: AuditEventType,
-	metadata: AuditEventMetadata,
-): Promise<void> {
+export async function trackEvent(eventType: AuditEventType, metadata: AuditEventMetadata): Promise<void> {
 	// Log locally (always succeeds)
 	logger.info("Audit event", {
 		eventType,

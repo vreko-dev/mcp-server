@@ -11,9 +11,7 @@ const hubspotClient = new Client({
  * @param properties Contact properties to create/update
  * @returns HubSpot contact ID or null if failed
  */
-export async function createOrUpdateHubSpotContact(
-	properties: HubSpotContactProperties,
-): Promise<string | null> {
+export async function createOrUpdateHubSpotContact(properties: HubSpotContactProperties): Promise<string | null> {
 	if (!process.env.HUBSPOT_ACCESS_TOKEN) {
 		logger.warn("HubSpot access token not configured, skipping sync");
 		return null;
@@ -90,12 +88,9 @@ export async function createOrUpdateHubSpotContact(
 			);
 
 			// Update existing contact
-			const response = await hubspotClient.crm.contacts.basicApi.update(
-				existingContact.id,
-				{
-					properties: hubspotProperties,
-				},
-			);
+			const response = await hubspotClient.crm.contacts.basicApi.update(existingContact.id, {
+				properties: hubspotProperties,
+			});
 
 			logger.info(`HubSpot contact updated: ${response.id}`);
 			return response.id;
@@ -134,9 +129,7 @@ export async function triggerHubSpotWorkflow(
 	_properties: Record<string, any> = {},
 ): Promise<boolean> {
 	if (!process.env.HUBSPOT_ACCESS_TOKEN) {
-		logger.warn(
-			"HubSpot access token not configured, skipping workflow trigger",
-		);
+		logger.warn("HubSpot access token not configured, skipping workflow trigger");
 		return false;
 	}
 
@@ -181,10 +174,7 @@ export async function triggerHubSpotWorkflow(
  * @param email Contact email
  * @param listId HubSpot list ID
  */
-export async function addContactToList(
-	email: string,
-	listId: string,
-): Promise<boolean> {
+export async function addContactToList(email: string, listId: string): Promise<boolean> {
 	if (!process.env.HUBSPOT_ACCESS_TOKEN) {
 		logger.warn("HubSpot access token not configured, skipping list add");
 		return false;
@@ -227,10 +217,7 @@ export async function addContactToList(
  * @param email Contact email
  * @param lifecycleStage HubSpot lifecycle stage
  */
-export async function updateContactLifecycleStage(
-	email: string,
-	lifecycleStage: string,
-): Promise<boolean> {
+export async function updateContactLifecycleStage(email: string, lifecycleStage: string): Promise<boolean> {
 	try {
 		const response = await createOrUpdateHubSpotContact({
 			email,

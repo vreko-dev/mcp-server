@@ -241,7 +241,6 @@ export function EnhancedSEO({ metadata, slug }: Omit<EnhancedSEOProps, "content"
 // Type declarations for global window properties
 declare global {
 	interface Window {
-		// biome-ignore lint/suspicious/noExplicitAny: posthog is a third-party library with complex types
 		posthog?: any;
 		pageStartTime?: number;
 		readingMilestones?: Record<number, boolean>;

@@ -181,9 +181,7 @@ describe("PERF3: Database Load Reduction", () => {
 		});
 
 		// Make 10 requests
-		const requests = Array.from({ length: 10 }, () =>
-			auth.api.getSession({ headers }),
-		);
+		const requests = Array.from({ length: 10 }, () => auth.api.getSession({ headers }));
 
 		await Promise.all(requests);
 

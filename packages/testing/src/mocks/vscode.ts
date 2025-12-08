@@ -447,7 +447,28 @@ export const mockVscode = {
 	},
 	extensions: {
 		all: [],
-		getExtension: vi.fn(),
+		getExtension: vi.fn((extensionId: string) => {
+			// Return mock extension for snapback
+			if (extensionId === "snapback.snapback" || extensionId.includes("snapback")) {
+				return {
+					id: extensionId,
+					extensionUri: { fsPath: "/test/extension", scheme: "file" },
+					extensionPath: "/test/extension",
+					isActive: true,
+					packageJSON: {
+						name: "snapback",
+						displayName: "SnapBack",
+						version: "1.0.0",
+						publisher: "snapback",
+						description: "Test extension",
+					},
+					exports: undefined,
+					activate: vi.fn().mockResolvedValue(undefined),
+				};
+			}
+			return undefined;
+		}),
+		onDidChange: vi.fn(() => ({ dispose: vi.fn() })),
 	},
 	EventEmitter: MockEventEmitter,
 	Position: MockPosition,

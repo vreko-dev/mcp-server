@@ -1,5 +1,22 @@
 @import "tailwindcss";
 
+@theme {
+  --color-border: hsl(var(--border));
+  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+
+  @keyframes accordion-down {
+    from { height: 0; }
+    to { height: var(--radix-accordion-content-height); }
+  }
+  @keyframes accordion-up {
+    from { height: var(--radix-accordion-content-height); }
+    to { height: 0; }
+  }
+}
+
 @layer base {
   :root {
     --background: 222.2 84% 4.9%;
@@ -8,7 +25,7 @@
   }
 
   * {
-    border-color: hsl(var(--border));
+    border-color: var(--color-border);
   }
 
   body {

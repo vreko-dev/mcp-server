@@ -45,11 +45,18 @@ export function HeroDemo() {
 		cycleState(3); // Jump to restored (index 3)
 	};
 
+	const handleReplay = () => {
+		captureEvent("hero_demo_replay", { from_state: state });
+		setShowCTA(false);
+		setShowRestorePrompt(false);
+		cycleState(0); // Reset to safe (index 0)
+	};
+
 	return (
-		<div className="relative w-full max-w-6xl mx-auto flex flex-col items-center">
-			{/* V4 Layout: Side-by-Side on Desktop */}
-			<div className="flex flex-col md:flex-row gap-6 w-full items-start">
-				{/* Main Editor Component */}
+		<div className="relative w-full max-w-5xl mx-auto flex flex-col items-center">
+			{/* V4 Layout: Side-by-Side on Desktop, Compact Terminal */}
+			<div className="flex flex-col md:flex-row gap-4 md:gap-6 w-full items-start">
+				{/* Main Editor Component - Golden Ratio Height (~550px on desktop) */}
 				<motion.div
 					className="relative z-10 flex-1 w-full"
 					animate={state === "restored" ? { scale: [1, 1.01, 1] } : {}}
@@ -61,6 +68,7 @@ export function HeroDemo() {
 						showCTA={showCTA}
 						showRestorePrompt={showRestorePrompt}
 						onRestore={handleRestore}
+						onReplay={handleReplay}
 					>
 						<CodeDisplay code={currentNode?.code} state={state} />
 					</EditorFrame>

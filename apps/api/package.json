@@ -31,7 +31,7 @@
 		"posthog-node": "catalog:",
 		"react": "catalog:",
 		"redis": "catalog:",
-		"resend": "^4.0.0",
+		"resend": "catalog:",
 		"semver": "catalog:",
 		"uuid": "catalog:",
 		"zod": "catalog:"
@@ -42,7 +42,7 @@
 	"devDependencies": {
 		"@types/node": "catalog:",
 		"@types/react": "catalog:",
-		"@types/uuid": "^10.0.0",
+		"@types/uuid": "catalog:",
 		"better-sqlite3": "catalog:",
 		"dotenv-cli": "catalog:",
 		"drizzle-orm": "catalog:",

@@ -131,6 +131,7 @@
     "type-check:all": "turbo run type-check",
     "type-check:tsc": "tsc --build --force",
     "validate": "tsx scripts/validate-project.ts",
+    "validate:catalog": "node tooling/scripts/validate-catalog-deps.mjs",
     "validate:exports": "node scripts/validate-exports-integrity.mjs",
     "validate:infrastructure": "tsx scripts/validate-infrastructure.ts",
     "validate:oss": "node scripts/validate-oss-builds.js",

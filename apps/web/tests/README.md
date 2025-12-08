@@ -1,151 +1,269 @@
-# Web Application Test Harness
+# E2E Tests - SnapBack Web
 
-This directory contains a comprehensive test harness for the SnapBack web application, built with Playwright and following best practices for modern web testing.
+Industry-standard Playwright test suite for the SnapBack web application.
 
-## Directory Structure
+---
+
+## 🚀 Quick Start
+
+### **Simplest Way (Recommended)**
+
+```bash
+# From project root
+./apps/web/run-tests.sh
+
+# Or from apps/web
+./run-tests.sh
+```
+
+**Available modes**:
+```bash
+./run-tests.sh headless    # Default (CI mode)
+./run-tests.sh ui          # Interactive UI mode
+./run-tests.sh headed      # Watch browser
+./run-tests.sh debug       # Step-through debugging
+./run-tests.sh auth        # Auth tests only
+```
+
+---
+
+### **Manual Way**
+
+```bash
+# Terminal 1: Start dev server
+pnpm dev
+
+# Terminal 2: Run tests
+pnpm test:e2e              # All tests
+pnpm test:e2e:ui           # UI mode
+pnpm test:e2e:headed       # Headed mode
+pnpm test:e2e:debug        # Debug mode
+pnpm test:e2e:auth         # Auth only
+
+# View report
+pnpm test:e2e:report
+```
+
+---
+
+## 📁 Directory Structure
 
 ```
 tests/
-├── e2e/                 # End-to-end tests
-├── integration/         # Integration tests
-├── load/                # Load/performance tests
-├── unit/                # Unit tests
-├── utils/               # Test utilities and helpers
-│   ├── fixtures/        # Playwright fixtures
-│   ├── pages/           # Page Object Models
-│   ├── data/            # Test data factories
-│   └── helpers/         # Helper functions
-├── auth.setup.ts        # Authentication setup
-└── setup.ts             # Global test setup
+├── e2e/
+│   ├── auth/
+│   │   ├── login-ui-complete.spec.ts        # 45 login UI tests
+│   │   ├── auth-integration-complete.spec.ts # 5 integration tests
+│   │   └── README.md                         # Auth test documentation
+│   └── ... (other test suites)
+│
+├── fixtures/
+│   └── index.ts                              # Test fixtures (authenticatedPage, mockApi)
+│
+├── utils/
+│   ├── pages/
+│   │   └── login.ts                          # LoginPage helper (POM)
+│   └── test-data.ts                          # Data generators & utilities
+│
+├── auth.setup.ts                             # Auth setup (runs before tests)
+└── TEST_INFRASTRUCTURE_SETUP.md              # Complete documentation
 ```
 
-## Key Components
+---
 
-### 1. Authentication Fixtures (`utils/fixtures/auth.ts`)
+## 📊 Test Coverage
 
-Provides reusable authentication contexts for different user roles:
+| Suite | Tests | What It Tests |
+|-------|-------|---------------|
+| **Login UI** | 45 | Copy, animations, accessibility, forms |
+| **Auth Integration** | 5 | Complete user journeys, cross-system |
+| **TOTAL** | **50** | Full auth flow coverage |
 
--   `authenticatedPage` - Generic authenticated page
--   `adminPage` - Pre-authenticated admin page
--   `userPage` - Pre-authenticated regular user page
--   `newUserPage` - Pre-authenticated new user page
+---
 
-### 2. Page Object Models
+## 🏗️ Architecture
 
-Encapsulate page interactions for better maintainability:
+### **Page Object Model (POM)**
 
--   `LoginPage` - Login page interactions
--   `DashboardPage` - Dashboard page interactions
-
-### 3. Test Data Factories (`utils/data/factories.ts`)
-
-Generate consistent test data:
-
--   `createUser()` - Create test users
--   `createApiKey()` - Create test API keys
--   `createOrganization()` - Create test organizations
--   `createCheckpoint()` - Create test checkpoints
--   `createDevice()` - Create test devices
-
-### 4. Helper Functions
-
-Utility functions for common testing scenarios:
-
-#### Accessibility Testing (`utils/helpers/accessibility.ts`)
-
--   `checkAccessibility()` - Basic accessibility checks
--   `checkHeadingStructure()` - Validate heading hierarchy
-
-#### API Mocking (`utils/helpers/api-mocking.ts`)
-
--   `mockApiResponses()` - Mock API responses for testing
--   `mockNetworkError()` - Simulate network errors
--   `mockSlowResponse()` - Simulate slow API responses
-
-#### Performance Testing (`utils/helpers/performance.ts`)
-
--   `measurePageLoadPerformance()` - Measure page load times
--   `assertPageLoadTime()` - Assert page load time limits
--   `simulateNetworkConditions()` - Simulate different network conditions
-
-#### Visual Regression Testing (`utils/helpers/visual-regression.ts`)
-
--   `compareScreenshot()` - Compare full page screenshots
--   `compareElementScreenshot()` - Compare specific element screenshots
--   `compareResponsiveScreenshots()` - Test responsive designs
-
-## Usage Examples
-
-### Writing Authenticated Tests
+Encapsulates page interactions:
 
 ```typescript
-import { test } from "../utils/fixtures/auth";
-import { DashboardPage } from "../utils/pages/dashboard";
+import { LoginPage } from './utils/pages/login';
 
-test("can view dashboard metrics", async ({ authenticatedPage }) => {
-	const dashboardPage = new DashboardPage(authenticatedPage);
-
-	await dashboardPage.goto();
-	await dashboardPage.expectMetricCardVisible("api-calls");
+test('login flow', async ({ page }) => {
+  const loginPage = new LoginPage(page);
+  await loginPage.goto();
+  await loginPage.login('user@test.com', 'password123');
 });
 ```
 
-### Using Test Data Factories
+### **Fixtures**
+
+Reusable test context:
 
 ```typescript
-import { createUser, createApiKey } from "../utils/data/factories";
+import { test } from './fixtures';
 
-test("can create user and API key", async () => {
-	const user = createUser({ name: "Test User" });
-	const apiKey = createApiKey({ name: "Test Key" });
-
-	// Use the test data in your tests
+test('authenticated flow', async ({ authenticatedPage }) => {
+  // Page is already logged in
+  await authenticatedPage.goto('/app/dashboard');
 });
 ```
 
-### Mocking API Responses
+### **MSW for API Mocking**
+
+Use existing MSW handlers from `@snapback/testing/msw`:
 
 ```typescript
-import { mockApiResponses } from "../utils/helpers/api-mocking";
+import { authErrorHandlers } from '@snapback/testing/msw/handlers/auth';
 
-test("handles API errors gracefully", async ({ page }) => {
-	await mockApiResponses(page);
-	// Test behavior with mocked responses
+// E2E tests hit real dev server APIs
+// For mocked integration tests, see:
+// apps/web/test/integration/api-key-flow-msw.test.ts
+```
+
+### **Test Data Generators**
+
+Unique, collision-free test data:
+
+```typescript
+import { generateTestUser } from './utils/test-data';
+
+test('signup', async ({ page }) => {
+  const user = generateTestUser(); // Unique every time
+  // user.email, user.password, user.name
 });
 ```
 
-## Authentication Setup
+---
 
-The test harness includes a setup project (`auth.setup.ts`) that creates authenticated sessions for different user roles. These sessions are saved and reused by tests that depend on the setup project.
+## 🧪 Writing Tests
 
-To run tests with authentication:
+### **Basic Test**
+
+```typescript
+import { test, expect } from '@playwright/test';
+
+test('page loads', async ({ page }) => {
+  await page.goto('/auth/login');
+  await expect(page.getByRole('heading')).toContainText('Welcome back');
+});
+```
+
+### **Using Fixtures**
+
+```typescript
+import { test, expect } from '../fixtures';
+
+test('protected page', async ({ authenticatedPage }) => {
+  await authenticatedPage.goto('/app/dashboard');
+  await expect(authenticatedPage).toHaveURL(/\/app\//);
+});
+```
+
+### **Using Page Objects**
+
+```typescript
+import { test } from '@playwright/test';
+import { LoginPage } from '../utils/pages/login';
+
+test('login', async ({ page }) => {
+  const loginPage = new LoginPage(page);
+  await loginPage.goto();
+  await loginPage.login('test@example.com', 'password');
+});
+```
+
+---
+
+## 🐛 Debugging
+
+### **UI Mode** (Recommended)
 
 ```bash
-pnpm exec playwright test
+pnpm test:e2e:ui
 ```
 
-## Best Practices
+- Time-travel debugging
+- Watch mode
+- DOM snapshots
+- Network inspector
 
-1. **Use Page Object Models** for encapsulating page interactions
-2. **Leverage fixtures** for reusable test setup
-3. **Generate test data** with factories for consistency
-4. **Mock external dependencies** for reliable tests
-5. **Check accessibility** as part of your test suite
-6. **Measure performance** to catch regressions
-7. **Use visual regression** for UI consistency
-
-## Running Tests
+### **Debug Mode**
 
 ```bash
-# Run all tests
-pnpm exec playwright test
-
-# Run tests in UI mode
-pnpm exec playwright test --ui
-
-# Run specific test file
-pnpm exec playwright test tests/e2e/authenticated-user.spec.ts
-
-# Run tests with trace recording
-pnpm exec playwright test --trace on
+pnpm test:e2e:debug
 ```
+
+- Playwright Inspector
+- Step-through execution
+- Element picker
+
+### **Headed Mode**
+
+```bash
+pnpm test:e2e:headed
+```
+
+- Watch browser execute tests
+- See what's happening
+
+---
+
+## 📝 Best Practices
+
+1. **Use Page Objects** - Encapsulate page logic
+2. **Use Fixtures** - Share setup logic
+3. **Generate Test Data** - Avoid hardcoded values
+4. **Test User Flows** - Not just page loads
+5. **Mock External APIs** - Use `mockApi` fixture
+6. **Check Accessibility** - Use `getByRole`, ARIA labels
+7. **Verify Performance** - `performance.assertFasterThan()`
+
+---
+
+## 🚨 Troubleshooting
+
+### Port 3000 in use
+
+```bash
+lsof -ti:3000 | xargs kill -9
+```
+
+### Turbopack cache corrupted
+
+```bash
+rm -rf .next
+pnpm dev
+```
+
+### Tests timing out
+
+Increase timeout in [`playwright.config.ts`](file:///Users/user1/WebstormProjects/SnapBack-Site/apps/web/playwright.config.ts):
+
+```typescript
+use: {
+  actionTimeout: 15 * 1000,
+  navigationTimeout: 45 * 1000,
+}
+```
+
+### Auth setup failing
+
+Skip setup tests (use mocked auth):
+
+```bash
+pnpm exec playwright test --project=chromium tests/e2e/auth/login-ui-complete.spec.ts
+```
+
+---
+
+## 📚 Resources
+
+- **Playwright Docs**: https://playwright.dev/docs/intro
+- **Testing Blueprint**: [`/demo_prep/testing_blueprint.md`](file:///Users/user1/WebstormProjects/SnapBack-Site/demo_prep/testing_blueprint.md)
+- **Infrastructure Setup**: [`TEST_INFRASTRUCTURE_SETUP.md`](file:///Users/user1/WebstormProjects/SnapBack-Site/apps/web/tests/TEST_INFRASTRUCTURE_SETUP.md)
+
+---
+
+**Need Help?** Check [`TEST_INFRASTRUCTURE_SETUP.md`](file:///Users/user1/WebstormProjects/SnapBack-Site/apps/web/tests/TEST_INFRASTRUCTURE_SETUP.md) for complete documentation.

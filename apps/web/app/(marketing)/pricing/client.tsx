@@ -385,23 +385,16 @@ export default function PricingClient() {
 									</m.div>
 								</button>
 
-								<m.div
-									initial={false}
-									animate={{
-										height: isOpen ? "auto" : 0,
-										opacity: isOpen ? 1 : 0,
-									}}
-									transition={{
-										duration: 0.3,
-										ease: "easeInOut",
-									}}
-									className="overflow-hidden"
+								<div
+									className={`grid transition-all duration-300 ease-in-out ${isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
 									id={`faq-answer-${index}`}
 									role="region"
 									aria-labelledby={`faq-question-${index}`}
 								>
-									<div className="px-6 pb-5 text-gray-300 leading-relaxed">{faq.answer}</div>
-								</m.div>
+									<div className="overflow-hidden">
+										<div className="px-6 pb-5 text-gray-300 leading-relaxed">{faq.answer}</div>
+									</div>
+								</div>
 							</m.div>
 						);
 					})}

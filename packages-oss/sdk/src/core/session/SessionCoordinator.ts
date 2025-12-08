@@ -163,8 +163,8 @@ export class SessionCoordinator {
 			const now = Date.now();
 			const sessionDuration = now - this.sessionStart;
 
-			// Don't create sessions that are too short
-			if (sessionDuration < this.config.minSessionDuration && this.candidates.size === 0) {
+			// Don't create sessions that are too short OR have no candidates
+			if (sessionDuration < this.config.minSessionDuration || this.candidates.size === 0) {
 				this.logger.debug("Skipping session finalization - session too short or no candidates", {
 					duration: sessionDuration,
 					candidateCount: this.candidates.size,

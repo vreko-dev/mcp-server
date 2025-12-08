@@ -14,7 +14,7 @@ import type { AnchorProps, ImageProps, MDXComponents } from "@/lib/source-types"
  */
 
 const components: MDXComponents = {
-	// Fumadocs UI Components (excluding headings to avoid nested anchor tags in TOC)
+	// Fumadocs UI Components
 	...defaultMdxComponents,
 
 	// Override heading components to render without anchor links
@@ -29,10 +29,7 @@ const components: MDXComponents = {
 	h5: (props: any) => <h5 {...props} />,
 	h6: (props: any) => <h6 {...props} />,
 
-	// Custom MDX components (includes CopyButton, ExpandableSection, StatusBadge, pre, card, callout, alert variants)
-	...CustomMDXComponents,
-
-	// Custom component overrides
+	// Custom component overrides for links and images
 	a: (props: AnchorProps) => {
 		const { href, children, className, ...rest } = props;
 
@@ -84,6 +81,10 @@ const components: MDXComponents = {
 				loading="lazy"
 			/>
 		) : null,
+
+	// Custom MDX components - spread LAST to ensure they override everything else
+	// Includes: CopyButton, ExpandableSection, StatusBadge, pre, card, callout, alert variants
+	...CustomMDXComponents,
 };
 
 export function useMDXComponents(): MDXComponents {

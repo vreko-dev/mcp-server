@@ -378,8 +378,8 @@ export default function ProtectionSnapshotLogin() {
 			<motion.div
 				initial={{ opacity: 0, y: 20 }}
 				animate={{ opacity: 1, y: 0 }}
-				transition={{ duration: prefersReducedMotion ? 0 : 0.5 }}
-				className="w-full max-w-md max-h-[calc(100vh-2rem)] flex flex-col"
+				transition={{ duration: prefersReducedMotion ? 0 : 0.25 }}
+				className="w-full max-w-lg max-h-[calc(100vh-2rem)] flex flex-col"
 			>
 				{/* Protection Snapshot Header */}
 				<div className="mb-4 text-center flex-shrink-0">
@@ -387,24 +387,29 @@ export default function ProtectionSnapshotLogin() {
 						initial={{ scale: 0 }}
 						animate={{ scale: 1 }}
 						transition={{
-							delay: prefersReducedMotion ? 0 : 0.2,
+							delay: prefersReducedMotion ? 0 : 0.1,
 							type: "spring",
-							stiffness: 200,
+							stiffness: 250,
+							duration: 0.2,
 						}}
 						className="inline-block mb-3"
 					>
-						<Shield className="w-12 h-12 text-green-500" />
+						<Shield className="w-12 h-12 text-green-500" aria-hidden="true" />
 					</motion.div>
-					<h1 className="text-2xl font-bold text-white mb-1">Protection Snapshot</h1>
+					<h1 className="text-2xl font-bold text-white mb-1">
+						{state.mode === "signin" && "Welcome back"}
+						{state.mode === "signup" && "Create your account"}
+						{state.mode === "reset" && "Reset password"}
+					</h1>
 					<p className="text-sm text-gray-400">
-						{state.mode === "signin" && "Verify your identity to continue"}
-						{state.mode === "signup" && "Create your protected account"}
-						{state.mode === "reset" && "Reset your account password"}
+						{state.mode === "signin" && "Sign in to access your protected code"}
+						{state.mode === "signup" && "Join SnapBack to protect your work"}
+						{state.mode === "reset" && "We'll send you a reset link"}
 					</p>
 				</div>
 
 				{/* Main Card */}
-				<div className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-lg p-4 shadow-2xl overflow-y-auto flex-1 min-h-0">
+				<div className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-2xl p-6 shadow-2xl overflow-y-auto flex-1 min-h-0">
 					<AnimatePresence mode="wait">
 						{/* Idle Stage - Provider Selection */}
 						{state.stage === "idle" && (
@@ -692,23 +697,22 @@ export default function ProtectionSnapshotLogin() {
 						{state.stage === "success" && (
 							<motion.div
 								key="success"
-								initial={{ opacity: 0, scale: 0.9 }}
+								initial={{ opacity: 0, scale: 0.95 }}
 								animate={{ opacity: 1, scale: 1 }}
 								exit={{ opacity: 0 }}
+								transition={{ duration: 0.2 }}
 								className="text-center py-6"
 							>
 								<motion.div
 									initial={{ scale: 0 }}
 									animate={{ scale: 1 }}
-									transition={{ type: "spring", stiffness: 200 }}
+									transition={{ type: "spring", stiffness: 250, duration: 0.2 }}
 									className="inline-block mb-3"
 								>
-									<CheckCircle2 className="w-12 h-12 text-green-500" />
+									<CheckCircle2 className="w-12 h-12 text-green-500" aria-hidden="true" />
 								</motion.div>
-								<h2 className="text-xl font-bold text-white mb-2">Authentication Successful</h2>
-								<p className="text-sm text-gray-400">
-									Protection activated. Redirecting to dashboard...
-								</p>
+								<h2 className="text-xl font-bold text-white mb-2">Welcome!</h2>
+								<p className="text-sm text-gray-400">Taking you to your dashboard...</p>
 							</motion.div>
 						)}
 
@@ -716,18 +720,19 @@ export default function ProtectionSnapshotLogin() {
 						{state.stage === "magic-link-sent" && (
 							<motion.div
 								key="magic-link"
-								initial={{ opacity: 0, scale: 0.9 }}
+								initial={{ opacity: 0, scale: 0.95 }}
 								animate={{ opacity: 1, scale: 1 }}
 								exit={{ opacity: 0 }}
+								transition={{ duration: 0.2 }}
 								className="text-center py-6"
 							>
 								<motion.div
 									initial={{ scale: 0 }}
 									animate={{ scale: 1 }}
-									transition={{ type: "spring", stiffness: 200 }}
+									transition={{ type: "spring", stiffness: 250, duration: 0.2 }}
 									className="inline-block mb-3"
 								>
-									<Mail className="w-12 h-12 text-blue-500" />
+									<Mail className="w-12 h-12 text-blue-500" aria-hidden="true" />
 								</motion.div>
 								<h2 className="text-xl font-bold text-white mb-2">Check Your Email</h2>
 								<p className="text-sm text-gray-400 mb-4">
@@ -746,13 +751,14 @@ export default function ProtectionSnapshotLogin() {
 								initial={{ opacity: 0 }}
 								animate={{ opacity: 1 }}
 								exit={{ opacity: 0 }}
+								transition={{ duration: 0.2 }}
 								className="space-y-4"
 							>
 								<div className="flex items-center justify-center py-3">
-									<XCircle className="w-12 h-12 text-red-500" />
+									<XCircle className="w-12 h-12 text-red-500" aria-hidden="true" />
 								</div>
 								<div className="text-center">
-									<h2 className="text-lg font-bold text-white mb-2">Authentication Failed</h2>
+									<h2 className="text-lg font-bold text-white mb-2">Sign in failed</h2>
 									{state.error && <p className="text-sm text-red-400 mb-4">{state.error}</p>}
 								</div>
 								<Button type="button" onClick={handleReset} className="w-full">
@@ -765,7 +771,7 @@ export default function ProtectionSnapshotLogin() {
 
 				{/* Footer */}
 				<div className="mt-3 text-center text-xs text-gray-500 flex-shrink-0">
-					<p>Protected by SnapBack Security</p>
+					<p>Your code stays local. Always.</p>
 				</div>
 			</motion.div>
 		</div>

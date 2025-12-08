@@ -30,20 +30,23 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
 
 	useEffect(() => {
 		const apiKey = process.env.NEXT_PUBLIC_POSTHOG_KEY;
-		const host = process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com";
+		// Use local proxy endpoint to hide analytics from browser DevTools
+		const host = "/ingest";
 
 		if (!apiKey) {
 			console.warn("PostHog not configured");
 			return;
 		}
 
-		// Initialize PostHog
+		// Initialize PostHog with proxy
 		if (!posthog.__loaded) {
 			posthog.init(apiKey, {
 				api_host: host,
 				person_profiles: "identified_only",
 				capture_pageview: false, // We'll capture manually
 				capture_pageleave: true,
+				// Disable decide endpoint (feature flags) to prevent fetch errors
+				advanced_disable_decide: true,
 				autocapture: {
 					dom_event_allowlist: ["click", "submit"],
 					element_allowlist: ["button", "a", "form"],

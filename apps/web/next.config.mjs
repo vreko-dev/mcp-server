@@ -26,9 +26,23 @@ const withFumadocsMDX = createMDX({
 const nextConfig = {
 	/* config options here */
 	pageExtensions: ["js", "jsx", "ts", "tsx", "md", "mdx"],
-	transpilePackages: ["@snapback/contracts", "@snapback/sdk", "@snapback/events"],
-	serverExternalPackages: [],
+	images: {
+		remotePatterns: [
+			{
+				protocol: "https",
+				hostname: "assets.aceternity.com",
+			},
+		],
+	},
+	transpilePackages: [
+		"@snapback/contracts",
+		"@snapback/sdk",
+		"@snapback/events",
+	],
+	serverExternalPackages: ["@snapback/infrastructure"],
 	experimental: {
+		// Next.js 16: Enable Turbopack filesystem caching for faster dev rebuilds
+		turbopackFileSystemCacheForDev: true,
 		optimizePackageImports: [
 			"zod",
 			"@tanstack/react-query",
@@ -108,6 +122,19 @@ const nextConfig = {
 			},
 		];
 	},
+	// Reverse proxy for PostHog analytics (hides API key from client)
+	async rewrites() {
+		return [
+			{
+				source: "/ingest/static/:path*",
+				destination: "https://us-assets.i.posthog.com/static/:path*",
+			},
+			{
+				source: "/ingest/:path*",
+				destination: "https://us.i.posthog.com/:path*",
+			},
+		];
+	},
 	// Redirect docs routes to standalone docs app
 	async redirects() {
 		return [
@@ -130,7 +157,7 @@ const nextConfig = {
 			new webpack.IgnorePlugin({
 				resourceRegExp: /^piscina$/,
 				contextRegExp: /./,
-			}),
+			})
 		);
 
 		return config;

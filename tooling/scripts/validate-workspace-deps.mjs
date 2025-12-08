@@ -4,7 +4,9 @@
  */
 import fs from "node:fs";
 
-const files = process.argv.slice(2).filter((f) => f !== "-" && f.endsWith("package.json"));
+const files = process.argv
+	.slice(2)
+	.filter((f) => f !== "-" && f.endsWith("package.json"));
 let hasErrors = false;
 
 if (files.length === 0) {
@@ -22,8 +24,13 @@ for (const file of files) {
 		const deps = { ...content.dependencies, ...content.devDependencies };
 
 		for (const [pkg, version] of Object.entries(deps)) {
-			if (pkg.startsWith("@snapback/") && !version.includes("workspace")) {
-				console.error(`❌ ${file}: "${pkg}" should be "workspace:*" not "${version}"`);
+			if (
+				pkg.startsWith("@snapback/") &&
+				!version.includes("workspace")
+			) {
+				console.error(
+					`❌ ${file}: "${pkg}" should be "workspace:*" not "${version}"`
+				);
 				hasErrors = true;
 			}
 		}

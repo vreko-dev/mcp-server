@@ -1,4 +1,3 @@
-import { randomUUID } from "node:crypto";
 import { existsSync } from "node:fs";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
@@ -10,6 +9,7 @@ import type {
 	SnapshotRestoreResult,
 } from "@snapback/contracts";
 import type { StorageAdapter } from "../storage/StorageAdapter";
+import { generateSnapshotId } from "../utils/id-generation";
 import { validatePath } from "../utils/security";
 import { SnapshotDeduplication } from "./SnapshotDeduplication";
 import { SnapshotNaming } from "./SnapshotNaming";
@@ -69,9 +69,9 @@ export class SnapshotManager {
 		// Generate name
 		const name = options?.description || this.naming.generateName(files, this.options.namingStrategy);
 
-		// Create snapshot
+		// Create snapshot with unified ID format
 		const snapshot: Snapshot = {
-			id: randomUUID(),
+			id: generateSnapshotId(),
 			timestamp: Date.now(),
 			meta: {
 				name,

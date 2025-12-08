@@ -11,6 +11,10 @@ export const docs: DocsCollection = defineDocs({
 	dir: path.resolve(process.cwd(), "content/docs"),
 });
 
+export const blog: DocsCollection = defineDocs({
+	dir: path.resolve(process.cwd(), "content/blog"),
+});
+
 export default defineConfig({
 	mdxOptions: {
 		remarkPlugins: [

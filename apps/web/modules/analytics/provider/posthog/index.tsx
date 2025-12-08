@@ -12,30 +12,19 @@ export function AnalyticsScript() {
 		}
 
 		posthog.init(posthogKey, {
-			api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com",
+			api_host: "/ingest",
 			person_profiles: "identified_only",
 			autocapture: true,
-
-			// Enable pageview tracking for SPA (Next.js App Router)
-			// Use 'history_change' to avoid double-counting with Vercel Analytics
 			capture_pageview: true,
 			capture_pageleave: true,
-
-			// Session recording with smart sampling
 			session_recording: {
 				maskAllInputs: true,
-				maskTextSelector: '[data-private="true"]', // Mask elements with data-private attribute
-				// recordCanvas removed - not available in current PostHog version
+				maskTextSelector: '[data-private="true"]',
 				inlineStylesheet: true,
 			},
-
-			// Advanced session replay configuration
-			advanced_disable_decide: false,
-			advanced_disable_toolbar_metrics: true, // Disable toolbar metrics for privacy
-
-			// Sampling configuration removed - not available in current PostHog version
-			// Use decide endpoint or feature flags for sampling instead
-
+			// Disable decide endpoint (feature flags) to prevent fetch errors
+			advanced_disable_decide: true,
+			advanced_disable_toolbar_metrics: true,
 			loaded: (posthog) => {
 				if (process.env.NODE_ENV === "development") {
 					posthog.debug();
@@ -52,7 +41,6 @@ export function useAnalytics() {
 		if (!posthogKey) {
 			return;
 		}
-
 		posthog.capture(event, data);
 	};
 
@@ -60,7 +48,6 @@ export function useAnalytics() {
 		if (!posthogKey) {
 			return;
 		}
-
 		posthog.identify(userId, traits);
 	};
 
@@ -68,7 +55,6 @@ export function useAnalytics() {
 		if (!posthogKey) {
 			return;
 		}
-
 		posthog.reset();
 	};
 
@@ -79,5 +65,4 @@ export function useAnalytics() {
 	};
 }
 
-// Export posthog instance for advanced usage
 export { posthog };

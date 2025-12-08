@@ -37,6 +37,24 @@ pre-commit:
                 - merge
                 - rebase
 
+        tailwind-v4-config-check:
+            glob: "**/tailwind.config.{ts,js,mjs,cjs}"
+            run: |
+                echo '⚠️  Tailwind v4 uses CSS-first configuration via @theme in globals.css'
+                echo '❌ tailwind.config.ts files should not exist in Tailwind v4 projects'
+                echo 'Remove the config file and migrate to @theme block in CSS'
+                exit 1
+            skip:
+                - merge
+                - rebase
+
+        catalog-deps-validator:
+            glob: "**/package.json"
+            run: node tooling/scripts/validate-catalog-deps.mjs {staged_files}
+            skip:
+                - merge
+                - rebase
+
 pre-push:
     parallel: true
     commands:

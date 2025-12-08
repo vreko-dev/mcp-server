@@ -22,8 +22,8 @@
  * @module SessionCoordinator
  */
 
-import { randomUUID } from "node:crypto";
 import { THRESHOLDS } from "../../config/Thresholds";
+import { generateSessionId as generateId } from "../../utils/id-generation";
 import type { IEventEmitter, ILogger, ISessionStorage, ITimerService } from "./interfaces";
 import { NodeTimerService, NoOpLogger } from "./interfaces";
 import type { SessionCandidate, SessionFinalizeReason, SessionId, SessionManifest } from "./types";
@@ -173,8 +173,8 @@ export class SessionCoordinator {
 				return null;
 			}
 
-			// Create session manifest
-			const sessionId: SessionId = `session-${randomUUID()}`;
+			// Create session manifest with unified ID format
+			const sessionId: SessionId = generateId() as SessionId;
 
 			const manifest: SessionManifest = {
 				id: sessionId,

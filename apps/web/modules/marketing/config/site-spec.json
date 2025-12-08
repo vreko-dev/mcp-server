@@ -21,13 +21,13 @@
 							"id": "hero",
 							"type": "video_hero",
 							"content": {
-								"eyebrow": "Pattern Memory",
+								"eyebrow": "Intelligent Snapshots",
 								"headline": "SnapBack Learns.\nYou Experiment.",
 								"subheadline": "Every time you undo a mistake, SnapBack learns what patterns caused it. Day 1: 94% accurate. Day 30: knows YOUR codebase. Month 3: catches what you didn't know to look for.",
 								"founder_story": "Local-first snapshots, cloud-optional learning. Metadata only—your code stays on your machine. Works offline, no account required.",
 								"primary_cta": {
 									"label": "Install for VS Code",
-									"subtext": "Pattern Memory learns instantly",
+									"subtext": "Intelligent Snapshots learns instantly",
 									"href": "vscode:extension/MarcelleLabs.snapback-vscode",
 									"analytics_event": "INSTALL_BUTTON_CLICKED"
 								},
@@ -37,7 +37,7 @@
 									"analytics_event": "HERO_CTA_CLICKED_SECONDARY"
 								},
 								"trust_line": "Local-first · Learns over time · Privacy first",
-								"video_caption": "[TODO: 60-second hero video] Real SnapBack session showing Pattern Memory learning: snapshot after AI edit → Restore triggered → SnapBack learns what broke"
+								"video_caption": "[TODO: 60-second hero video] Real SnapBack session showing Intelligent Snapshots learning: snapshot after AI edit → Restore triggered → SnapBack learns what broke"
 							}
 						},
 						"problem": {
@@ -45,8 +45,8 @@
 							"type": "two_column_story",
 							"content": {
 								"label": "The learning loop",
-								"headline": "Pattern Memory Gets Smarter",
-								"body": "Copilot, Claude, Cursor—they move fast. Great ideas. But some refactors break your specific patterns. SnapBack watches what goes wrong and learns what to flag next time. Your codebase is unique. SnapBack's pattern memory becomes unique too.",
+								"headline": "Intelligent Snapshots Gets Smarter",
+								"body": "Copilot, Claude, Cursor—they move fast. Great ideas. But some refactors break your specific patterns. SnapBack watches what goes wrong and learns what to flag next time. Your codebase is unique. SnapBack's intelligent snapshots becomes unique too.",
 								"timeline_items": [
 									{
 										"title": "Day 1: 94% accurate out of the box",
@@ -59,17 +59,17 @@
 									},
 									{
 										"title": "Month 3: Catches patterns before you do",
-										"description": "After 90 days, pattern memory knows what breaks in YOUR codebase. Flags issues before you'd even think to look. Accuracy reaches 99%+."
+										"description": "After 90 days, intelligent snapshots knows what breaks in YOUR codebase. Flags issues before you'd even think to look. Accuracy reaches 99%+."
 									}
 								],
-								"closing": "That's pattern memory. It's not magic—it's outcome learning. Every undo teaches it something."
+								"closing": "That's intelligent snapshots. It's not magic—it's outcome learning. Every undo teaches it something."
 							}
 						},
 						"how_it_works": {
 							"id": "how_it_works",
 							"type": "bento_steps",
 							"content": {
-								"label": "How pattern memory works",
+								"label": "How intelligent snapshots works",
 								"headline": "Snapshots. Learning. Protection.",
 								"steps": [
 									{
@@ -82,13 +82,13 @@
 									{
 										"step_number": 2,
 										"title": "Detects what breaks",
-										"body": "Pattern memory flags hardcoded secrets, phantom dependencies, test code in production, and risky patterns. Learns which issues matter most for YOUR code.",
+										"body": "Intelligent snapshots flags hardcoded secrets, phantom dependencies, test code in production, and risky patterns. Learns which issues matter most for YOUR code.",
 										"screenshot": "[TODO: Detection toast notification showing 'Breaking change detected · file-service.ts']"
 									},
 									{
 										"step_number": 3,
 										"title": "Learn from outcomes",
-										"body": "Every restore teaches SnapBack. What patterns caused this mistake? What changes broke this module? Pattern memory uses outcome data to get smarter.",
+										"body": "Every restore teaches SnapBack. What patterns caused this mistake? What changes broke this module? Intelligent snapshots uses outcome data to get smarter.",
 										"screenshot": "[TODO: Command Palette showing SnapBack: Restore menu with 3 recent snapshots]"
 									}
 								],
@@ -119,13 +119,13 @@
 							"id": "for_teams",
 							"type": "metrics",
 							"content": {
-								"label": "Pattern memory gets smarter",
+								"label": "Intelligent snapshots gets smarter",
 								"headline": "Fast. Private. Learning.",
-								"body": "SnapBack works locally, learns progressively, and keeps your code private. Snapshots happen in the background. Restores are instant. Pattern memory improves with every outcome.",
+								"body": "SnapBack works locally, learns progressively, and keeps your code private. Snapshots happen in the background. Restores are instant. Intelligent snapshots improves with every outcome.",
 								"metric_cards": [
 									{
 										"title": "<200ms snapshots",
-										"description": "No editor lag. Pattern memory captures your workspace state while you keep coding."
+										"description": "No editor lag. Intelligent snapshots captures your workspace state while you keep coding."
 									},
 									{
 										"title": "Instant restores",
@@ -143,19 +143,19 @@
 							"type": "trust_panel",
 							"content": {
 								"label": "Your code, your control",
-								"headline": "Pattern Memory stays local. Learning is optional.",
+								"headline": "Intelligent Snapshots stays local. Learning is optional.",
 								"items": [
 									{
 										"title": "Snapshots never leave your machine by default.",
 										"description": "Every snapshot stores locally in ~/.snapback. Zero cloud uploads. Works offline. No third-party storage or tracking. Verify it yourself: ls -la ~/.snapback."
 									},
 									{
-										"title": "Pattern memory learns from outcomes, not source code.",
+										"title": "Intelligent snapshots learns from outcomes, not source code.",
 										"description": "Cloud features send metadata only: 'file changed,' 'test failed,' 'restored here.' Never your actual code. You opt-in to learning features."
 									},
 									{
 										"title": "No account required to get protection.",
-										"description": "Install SnapBack and start creating snapshots immediately. Completely offline. Pattern memory works in local-only mode—decide later if you want cloud learning."
+										"description": "Install SnapBack and start creating snapshots immediately. Completely offline. Intelligent snapshots works in local-only mode—decide later if you want cloud learning."
 									}
 								],
 								"footer": "Your code is your asset. SnapBack is transparent about what gets stored and learned."
@@ -182,7 +182,7 @@
 							"type": "cta_band",
 							"content": {
 								"headline": "SnapBack learns. Let it protect you.",
-								"body": "Start with local snapshots today. Pattern memory learns instantly. No account needed. Works offline. Metadata-only cloud features. Your code stays on your machine—decide later if you want cloud learning and pattern intelligence across your team.",
+								"body": "Start with local snapshots today. Intelligent snapshots learns instantly. No account needed. Works offline. Metadata-only cloud features. Your code stays on your machine—decide later if you want cloud learning and pattern intelligence across your team.",
 								"primary_cta": {
 									"label": "Install for VS Code",
 									"href": "vscode:extension/MarcelleLabs.snapback-vscode",

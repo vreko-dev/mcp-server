@@ -1,6 +1,6 @@
 import { loader } from "fumadocs-core/source";
 import { createMDXSource } from "fumadocs-mdx/runtime/next";
-import { docs } from "../.source";
+import { blog, docs } from "../.source";
 
 // Official fumadocs-mdx pattern from https://fumadocs.dev/docs/mdx/next
 // Use createMDXSource() instead of toFumadocsSource() to avoid type issues
@@ -15,8 +15,15 @@ import { docs } from "../.source";
 // The generated .source/index.ts has @ts-nocheck, and the runtime value is correct
 // even though TypeScript infers the type as 'never'
 const docsData = docs as any;
+const blogData = blog as any;
 
 export const source = loader({
 	baseUrl: "/",
 	source: createMDXSource(docsData.docs, docsData.meta),
+});
+
+// Blog source - treat as a flat collection without page tree navigation
+export const blogSource = loader({
+	baseUrl: "/blog",
+	source: createMDXSource(blogData.blog || [], []),
 });

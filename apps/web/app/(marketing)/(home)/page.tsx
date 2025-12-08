@@ -1,5 +1,5 @@
 import { Hero } from "@marketing/home/components/Hero";
-import { FinalCTA, HowItWorks, InteractiveDemo, Metrics, ProblemSection } from "@marketing/sections/launch";
+import { FinalCTA, HowItWorks, Metrics, ProblemSection } from "@marketing/sections/launch";
 import type { Metadata } from "next";
 import { StorySection } from "@/components/landing/story-section";
 
@@ -53,11 +53,8 @@ export const metadata: Metadata = {
 export default function Home() {
 	return (
 		<main className="min-h-screen bg-[#0A0A0A]">
-			{/* Hero Section */}
+			{/* Hero Section - Includes Interactive Demo */}
 			<Hero />
-
-			{/* Interactive Demo Section - Keeping as part of Hero flow per feedback ?? Or Section 1 was Hero (Interactive Demo) */}
-			<InteractiveDemo />
 
 			{/* Proof Section (Claude Story) */}
 			<StorySection />

@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
+import '@testing-library/jest-dom/vitest';
 import FeaturesClient from '../app/(marketing)/features/client';
 
 // Mock Lucide icons to avoid rendering issues
@@ -20,17 +21,37 @@ vi.mock('motion/react', () => ({
 }));
 
 describe('Features Page Client', () => {
-  it('renders updated feature titles and removes legacy ones', () => {
-    render(<FeaturesClient />);
+  describe('Content Rendering', () => {
+    it('should render updated feature title "Remembers What Breaks"', () => {
+      render(<FeaturesClient />);
+      expect(screen.getByText('Remembers What Breaks')).toBeInTheDocument();
+    });
 
-    // Expect "Remembers What Breaks" instead of "Pattern Memory"
-    expect(screen.getByText('Remembers What Breaks')).toBeInTheDocument();
+    it('should NOT render legacy "AI Agent Ready" card', () => {
+      render(<FeaturesClient />);
+      expect(screen.queryByText('AI Agent Ready')).not.toBeInTheDocument();
+    });
 
-    // Expect "AI Agent Ready" to be GONE
-    expect(screen.queryByText('AI Agent Ready')).not.toBeInTheDocument();
+    it('should render other feature cards', () => {
+      render(<FeaturesClient />);
+      expect(screen.getByText('Severity Matters')).toBeInTheDocument();
+      expect(screen.getByText('Detects What Breaks')).toBeInTheDocument();
+    });
 
-    // Expect other cards to remain
-    expect(screen.getByText('Severity Matters')).toBeInTheDocument();
-    expect(screen.getByText('Detects What Breaks')).toBeInTheDocument();
+    it('should render all expected feature icons', () => {
+      render(<FeaturesClient />);
+      const icons = screen.getAllByTestId(/^icon-/);
+      expect(icons.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('Feature Cards Structure', () => {
+    it('should render feature cards with titles and descriptions', () => {
+      render(<FeaturesClient />);
+
+      // Each feature should have descriptive content
+      expect(screen.getByText(/Remembers What Breaks/i)).toBeInTheDocument();
+      expect(screen.getByText(/Severity Matters/i)).toBeInTheDocument();
+    });
   });
 });

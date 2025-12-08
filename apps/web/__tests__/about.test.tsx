@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
+import '@testing-library/jest-dom/vitest';
 import AboutClient from '../app/(marketing)/about/client';
 
 // Mock UI components
@@ -10,27 +11,36 @@ vi.mock('motion/react', () => ({
 }));
 
 describe('About Page Client', () => {
-  it('renders the Origin Story', () => {
-    render(<AboutClient />);
-    expect(screen.getByText(/\$12K Disaster/i)).toBeInTheDocument();
+  describe('Content Rendering', () => {
+    it('should render the Origin Story section', () => {
+      render(<AboutClient />);
+      expect(screen.getByText(/\$12K Disaster/i)).toBeInTheDocument();
+    });
+
+    it('should render Founder section with Marcelle info', () => {
+      render(<AboutClient />);
+      const elements = screen.getAllByText(/Marcelle/i);
+      expect(elements.length).toBeGreaterThan(0);
+    });
   });
 
-  it('renders Founder info (Marcelle)', () => {
-    render(<AboutClient />);
-    // Will fail until implemented
-    const elements = screen.getAllByText(/Marcelle/i);
-    expect(elements.length).toBeGreaterThan(0);
+  describe('Removed Sections', () => {
+    it('should NOT render Roadmap section', () => {
+      render(<AboutClient />);
+      expect(screen.queryByText("What's Next")).not.toBeInTheDocument();
+    });
+
+    it('should NOT render Stats section', () => {
+      render(<AboutClient />);
+      expect(screen.queryByText("Snapshot Creation Speed")).not.toBeInTheDocument();
+    });
   });
 
-  it('does NOT render Roadmap section', () => {
-    render(<AboutClient />);
-    // "What's Next" title from roadmap section
-    expect(screen.queryByText("What's Next")).not.toBeInTheDocument();
-  });
-
-  it('does NOT render Stats section', () => {
-    render(<AboutClient />);
-    // "Snapshot Creation Speed" header from stats
-    expect(screen.queryByText("Snapshot Creation Speed")).not.toBeInTheDocument();
+  describe('Page Structure', () => {
+    it('should render mission/values sections', () => {
+      render(<AboutClient />);
+      // Should have mission content
+      expect(screen.getByText(/Mission & Values/i)).toBeInTheDocument();
+    });
   });
 });

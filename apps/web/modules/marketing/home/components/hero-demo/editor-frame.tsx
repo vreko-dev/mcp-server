@@ -2,9 +2,11 @@
 
 import { IconCursor, IconVSCode } from "@marketing/components/icons";
 import { Button } from "@ui/components/button";
-import { AlertTriangle, Circle, Download, ShieldCheck, X } from "lucide-react";
+import { Confetti } from "@ui/components/motion/magic/confetti";
+import { AlertTriangle, Circle, Download, RotateCcw, ShieldCheck, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { captureEvent } from "@/lib/posthog-client";
 import { TerminalPane } from "./terminal-pane";
 
@@ -15,17 +17,56 @@ interface EditorFrameProps {
 	showCTA: boolean;
 	showRestorePrompt?: boolean;
 	onRestore?: () => void;
+	onReplay?: () => void;
 }
 
-export function EditorFrame({ node, currentState, children, showCTA, showRestorePrompt, onRestore }: EditorFrameProps) {
+export function EditorFrame({
+	node,
+	currentState,
+	children,
+	showCTA,
+	showRestorePrompt,
+	onRestore,
+	onReplay,
+}: EditorFrameProps) {
+	const [showConfetti, setShowConfetti] = useState(false);
+	const [restoreTime, setRestoreTime] = useState(0);
 	const isUnsaved = currentState === "ai_edit" || currentState === "break";
 	// We treat "break" as just another state now, reliance on Terminal logs for drama
 	const isDanger = currentState === "break";
 	const isRestored = currentState === "restored";
 
+	// Count up animation for restore time
+	useEffect(() => {
+		if (isRestored) {
+			setShowConfetti(true);
+			const start = 0;
+			const end = 47;
+			const duration = 500; // 0.5s animation
+			const startTime = Date.now();
+
+			const animate = () => {
+				const elapsed = Date.now() - startTime;
+				const progress = Math.min(elapsed / duration, 1);
+				const current = Math.floor(progress * end);
+				setRestoreTime(current);
+
+				if (progress < 1) {
+					requestAnimationFrame(animate);
+				}
+			};
+
+			requestAnimationFrame(animate);
+
+			// Hide confetti after duration
+			const timer = setTimeout(() => setShowConfetti(false), 2000);
+			return () => clearTimeout(timer);
+		}
+	}, [isRestored]);
+
 	return (
 		<motion.div
-			className="relative w-full h-[450px] rounded-lg overflow-hidden flex flex-col bg-[#1E1E1E] border border-[#2D2D2D] shadow-2xl"
+			className="relative w-full h-[520px] md:h-[550px] rounded-lg overflow-hidden flex flex-col bg-[#1E1E1E] border border-[#2D2D2D] shadow-2xl"
 			animate={
 				isDanger
 					? {
@@ -68,17 +109,17 @@ export function EditorFrame({ node, currentState, children, showCTA, showRestore
 								<span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
 								<span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
 							</span>
-							76% RELIABLE
+							94
 						</span>
 					) : isDanger ? (
 						<span className="text-red-500 flex items-center gap-1.5 font-bold">
 							<AlertTriangle className="w-3 h-3" />
-							73% DANGEROUS
+							73
 						</span>
 					) : (
 						<span className="text-green-400 flex items-center gap-1.5">
 							<ShieldCheck className="w-3 h-3" />
-							PROTECTED
+							94
 						</span>
 					)}
 				</div>
@@ -116,24 +157,59 @@ export function EditorFrame({ node, currentState, children, showCTA, showRestore
 									<motion.div
 										initial={{ scale: 0.9 }}
 										animate={{ scale: 1 }}
-										className="max-w-md w-full"
+										className="max-w-md w-full space-y-6"
 									>
-										<div className="flex justify-center mb-4">
+										{/* Staggered Success Elements */}
+										<motion.div
+											className="flex justify-center mb-4"
+											initial={{ opacity: 0, scale: 0.5 }}
+											animate={{ opacity: 1, scale: 1 }}
+											transition={{ delay: 0 }}
+										>
 											<div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center">
 												<ShieldCheck className="w-8 h-8 text-green-500" />
 											</div>
-										</div>
-										<h3 className="text-xl font-bold text-white mb-2">Restored & Protected</h3>
-										<p className="text-gray-400 mb-8 text-sm">
-											SnapBack caught the error and restored your state in 47ms.
-										</p>
+										</motion.div>
 
-										<div className="flex flex-col gap-3 w-full">
+										<motion.h3
+											className="text-xl font-bold text-white mb-2"
+											initial={{ opacity: 0, y: 10 }}
+											animate={{ opacity: 1, y: 0 }}
+											transition={{ delay: 0.1 }}
+										>
+											Restored & Protected
+										</motion.h3>
+
+										<motion.p
+											className="text-gray-400 text-sm"
+											initial={{ opacity: 0, y: 10 }}
+											animate={{ opacity: 1, y: 0 }}
+											transition={{ delay: 0.2 }}
+										>
+											SnapBack caught the error and restored your state in{" "}
+											<motion.span
+												className="font-mono font-bold text-green-400"
+												initial={{ opacity: 0 }}
+												animate={{ opacity: 1 }}
+												transition={{ delay: 0.3 }}
+											>
+												{restoreTime}ms
+											</motion.span>
+											.
+										</motion.p>
+
+										<motion.div
+											className="flex flex-col gap-3 w-full"
+											initial={{ opacity: 0, y: 10 }}
+											animate={{ opacity: 1, y: 0 }}
+											transition={{ delay: 0.3 }}
+										>
 											{/* Desktop Options (Hidden on Mobile) */}
 											<div className="hidden md:grid grid-cols-2 gap-4">
 												<Button
 													asChild
-													className="w-full bg-[#007ACC] hover:bg-[#007ACC]/90 text-white border-0 gap-2 h-10 shadow-lg shadow-blue-900/20"
+													size="lg"
+													className="w-full bg-[#007ACC] hover:bg-[#007ACC]/90 text-white border-0 gap-2 shadow-lg shadow-blue-900/30 h-12 text-base"
 													onClick={() =>
 														captureEvent("hero_cta_click", {
 															type: "vscode",
@@ -142,14 +218,14 @@ export function EditorFrame({ node, currentState, children, showCTA, showRestore
 													}
 												>
 													<Link href="/connect/vscode">
-														<IconVSCode className="w-4 h-4" />
-														VS Code
+														<IconVSCode className="w-5 h-5" />
+														Install for VS Code
 													</Link>
 												</Button>
 												<Button
 													asChild
-													variant="outline"
-													className="w-full gap-2 border-white/40 text-white hover:bg-white hover:text-black hover:border-white transition-all h-10 shadow-lg"
+													variant="ghost"
+													className="w-full gap-2 text-gray-400 hover:text-white hover:bg-white/5 transition-all h-10 text-sm"
 													onClick={() =>
 														captureEvent("hero_cta_click", {
 															type: "cursor",
@@ -159,32 +235,35 @@ export function EditorFrame({ node, currentState, children, showCTA, showRestore
 												>
 													<Link href="https://cursor.sh" target="_blank">
 														<IconCursor className="w-4 h-4" />
-														Cursor
+														Also works with Cursor
 													</Link>
 												</Button>
 											</div>
 
-											{/* Mobile Beta CTA (Visible only on Mobile) */}
-											<div className="md:hidden">
-												<Button
-													asChild
-													className="w-full bg-white text-black hover:bg-gray-200 font-bold h-10 shadow-[0_0_20px_rgba(255,255,255,0.3)] animate-pulse"
-													onClick={() =>
-														captureEvent("hero_mobile_beta_click", {
-															source: "mobile_matrix",
-														})
-													}
+											{/* Replay Button */}
+											{onReplay && (
+												<motion.button
+													onClick={onReplay}
+													className="text-xs text-gray-500 hover:text-gray-300 transition-colors flex items-center gap-1.5 mx-auto mt-4"
+													initial={{ opacity: 0 }}
+													animate={{ opacity: 1 }}
+													transition={{ delay: 0.5 }}
 												>
-													<Link href="/auth/signup?ref=mobile_hero">
-														Get in Line for Beta
-													</Link>
-												</Button>
-												<p className="text-[10px] text-gray-500 mt-2">
-													Mobile extensions are not yet supported.
-												</p>
-											</div>
-										</div>
+													<RotateCcw className="w-3 h-3" />
+													Replay Demo
+												</motion.button>
+											)}
+										</motion.div>
 									</motion.div>
+
+									{/* Subtle Confetti Celebration */}
+									{showConfetti && (
+										<Confetti
+											particleCount={30}
+											duration={2000}
+											colors={["#10B981", "#34D399", "#6EE7B7"]}
+										/>
+									)}
 								</motion.div>
 							)}
 						</AnimatePresence>
@@ -200,22 +279,31 @@ export function EditorFrame({ node, currentState, children, showCTA, showRestore
 					)}
 				</div>
 
-				{/* Bottom: Terminal Pane (Reduced Height: ~100px) */}
+				{/* Bottom: Terminal Pane (Reduced Height: ~105px) */}
 				<div
 					className="h-[105px] shrink-0 z-20 relative border-t border-[#2D2D2D] bg-[#18181B]"
 					style={{ fontFamily: "Menlo, Monaco, 'Courier New', monospace" }}
 				>
 					<TerminalPane lines={node.terminal || []} showCTA={showCTA} />
 
-					{/* Restore Button (Overlaid in Terminal Bottom Right) */}
+					{/* Restore Button with Hint Text (Overlaid in Terminal Bottom Right) */}
 					<AnimatePresence>
 						{showRestorePrompt && onRestore && (
 							<motion.div
-								initial={{ opacity: 0, x: 20 }}
-								animate={{ opacity: 1, x: 0 }}
-								exit={{ opacity: 0, x: 10 }}
-								className="absolute bottom-3 right-3 z-50 scale-90 origin-bottom-right"
+								initial={{ opacity: 0, y: 10 }}
+								animate={{ opacity: 1, y: 0 }}
+								exit={{ opacity: 0, y: 5 }}
+								className="absolute bottom-3 right-3 z-50 flex flex-col items-end gap-1.5"
 							>
+								{/* Hint Text */}
+								<motion.p
+									initial={{ opacity: 0 }}
+									animate={{ opacity: 1 }}
+									transition={{ delay: 0.3 }}
+									className="text-[10px] text-emerald-400/90 font-mono bg-black/60 px-2 py-1 rounded border border-emerald-500/20"
+								>
+									Click to restore →
+								</motion.p>
 								<Button
 									size="sm"
 									onClick={onRestore}

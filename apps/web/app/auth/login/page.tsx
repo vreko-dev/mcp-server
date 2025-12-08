@@ -7,8 +7,8 @@ export const revalidate = 0;
 
 export async function generateMetadata() {
 	return {
-		title: "Sign In - Protection Snapshot",
-		description: "Secure authentication with SnapBack Protection",
+		title: "Sign In - SnapBack",
+		description: "Sign in to access your protected code",
 	};
 }
 

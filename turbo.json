@@ -11,6 +11,15 @@
 	"globalEnv": ["DATABASE_URL", "REDIS_URL", "BETTER_AUTH_URL"],
 	"globalPassThroughEnv": ["NODE_OPTIONS", "CI", "VERCEL", "DOCKER_BUILDKIT", "COMPOSE_DOCKER_CLI_BUILD"],
 	"tasks": {
+		"validate:catalog": {
+			"cache": false,
+			"inputs": ["pnpm-workspace.yaml", "**/package.json"],
+			"outputs": []
+		},
+		"validate:deps": {
+			"cache": false,
+			"inputs": ["pnpm-lock.yaml", "**/package.json", ".syncpackrc.json", "pnpm-workspace.yaml"]
+		},
 		"validate:infrastructure": {
 			"cache": false,
 			"inputs": [
@@ -47,7 +56,7 @@
 			"inputs": ["apps/vscode/package.base.json", "apps/vscode/package-contributes/**"]
 		},
 		"build": {
-			"dependsOn": ["validate:infrastructure", "validate:exports", "build:package", "^generate", "^build"],
+			"dependsOn": ["validate:catalog", "validate:infrastructure", "validate:exports", "build:package", "^generate", "^build"],
 			"outputs": ["dist/**", "*.tsbuildinfo", ".next/**", "!.next/cache/**", "out/**"],
 			"inputs": [
 				"$TURBO_DEFAULT$",
@@ -98,10 +107,6 @@
 		"health": {
 			"cache": false,
 			"outputs": ["reports/health/**"]
-		},
-		"validate:deps": {
-			"cache": false,
-			"inputs": ["pnpm-lock.yaml", "**/package.json", ".syncpackrc.json"]
 		},
 		"pack": {
 			"dependsOn": ["build"],

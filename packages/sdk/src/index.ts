@@ -146,6 +146,15 @@ export { analyze, evaluatePolicy, ingestTelemetry } from "./helpers";
 export * from "./privacy/hasher";
 export * from "./privacy/sanitizer";
 export * from "./privacy/validator";
+export {
+	type AIDetectionContext,
+	type ChangeMetrics,
+	DefaultRiskAnalyzer,
+	type EvaluationContext,
+	type IRiskAnalyzer,
+	type ProtectionDecision,
+	ProtectionDecisionEngine,
+} from "./protection/ProtectionDecisionEngine";
 export { ProtectionManager } from "./protection/ProtectionManager";
 // Core SDK exports
 export { Snapback } from "./Snapback";
@@ -167,5 +176,18 @@ export {
 } from "./storage/StorageErrors";
 export type { SDKConfig } from "./types";
 export type { ExperienceMetrics } from "./types/experience";
+// ID Generation - Single Source of Truth for all ID formats
+export {
+	generateAuditId,
+	generateCheckpointId,
+	generateSessionId,
+	generateSnapshotId,
+	ID_PREFIX,
+	type IdPrefix,
+	isValidId,
+	parseIdPrefix,
+	parseIdTimestamp,
+	randomId,
+} from "./utils/id-generation";
 export { areEqual, getDepth, isWithin, normalize } from "./utils/PathNormalizer";
 export * from "./utils/retry";

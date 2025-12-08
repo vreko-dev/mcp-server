@@ -12,6 +12,8 @@ export function createQueryClient() {
 				refetchOnReconnect: false, // Don't refetch on reconnect (prevents storms)
 				// Only refetch on mount if data is stale
 				refetchOnMount: true,
+				// TanStack Query v5: Enable structural sharing for better re-render performance
+				structuralSharing: true,
 			},
 			dehydrate: {
 				shouldDehydrateQuery: (query) => defaultShouldDehydrateQuery(query) || query.state.status === "pending",

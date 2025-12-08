@@ -42,7 +42,7 @@ export default async function SaaSLayout({ children }: PropsWithChildren) {
 		});
 	}
 
-	// TODO: Re-enable when payments API is available in ORPC
+	
 	// if (config.users.enableBilling) {
 	// 	await queryClient.prefetchQuery(
 	// 		orpc.payments.listPurchases.queryOptions({

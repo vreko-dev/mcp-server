@@ -32,7 +32,7 @@ export function PricingTable({
 
 	const { planData } = usePlanData();
 
-	// TODO: Re-enable when payments API is available
+	
 	const createCheckoutLinkMutation = useMutation({
 		mutationFn: async (_variables: any) => ({ checkoutLink: "" }),
 	});

@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { createPurchasesHelper } from "@/lib/auth/helpers";
 
 export const usePurchases = (organizationId?: string) => {
-	// TODO: Re-enable when payments API is available
+	
 	const { data } = useQuery({
 		queryKey: ["purchases", organizationId],
 		queryFn: async () => ({ purchases: [] }),

@@ -6,7 +6,7 @@ import { CreditCardIcon } from "lucide-react";
 import { toast } from "sonner";
 
 export function CustomerPortalButton({ purchaseId }: { purchaseId: string }) {
-	// TODO: Re-enable when payments API is available
+	
 	const createPortalLinkMutation = useMutation({
 		mutationFn: async (_variables: any) => ({ customerPortalLink: "" }),
 	});

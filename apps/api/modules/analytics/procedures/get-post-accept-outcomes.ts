@@ -34,8 +34,10 @@ export const getPostAcceptOutcomes = protectedProcedure
 				conditions.push(eq(postAcceptOutcomes.apiKeyId, input.apiKeyId));
 			}
 
+			// Note: sessionId filter removed - column doesn't exist in schema
+			// Filter by suggestionId if provided instead
 			if (input.sessionId) {
-				conditions.push(eq(postAcceptOutcomes.sessionId, input.sessionId));
+				conditions.push(eq(postAcceptOutcomes.suggestionId, input.sessionId));
 			}
 
 			if (input.startDate && input.endDate) {

@@ -105,18 +105,16 @@ export const getAnalyticsMetrics = protectedProcedure
 			// Calculate metrics
 			const totalSuggestions = suggestions.length;
 			const acceptedSuggestions = suggestions.filter(
-				(s: { accepted: boolean }) => s.accepted,
+				(s) => s.accepted === true,
 			).length;
 			const dismissedSuggestions = suggestions.filter(
-				(s: { dismissed: boolean }) => s.dismissed,
+				(s) => s.dismissed === true,
 			).length;
 			const policyViolations = policies.filter(
-				(p: { evaluationResult: string }) => p.evaluationResult === "fail",
+				(p) => p.evaluationResult === "fail",
 			).length;
 			const totalLoops = loopData.length;
-			const successfulLoops = loopData.filter(
-				(l: { success: boolean }) => l.success,
-			).length;
+			const successfulLoops = loopData.filter((l) => l.success === true).length;
 			const feedbackCount = feedbackData.length;
 
 			// Calculate average times if we have outcomes data

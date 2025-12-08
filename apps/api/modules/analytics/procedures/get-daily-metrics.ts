@@ -1,4 +1,5 @@
 import { ORPCError } from "@orpc/client";
+import { sql } from "drizzle-orm";
 import { z } from "zod";
 import { protectedProcedure } from "../../../orpc/procedures";
 import { getDb } from "../../../src/services/database";
@@ -37,23 +38,14 @@ export const getDailyMetrics = protectedProcedure
 				});
 			}
 
-			let query = "SELECT * FROM daily_metrics";
-			const params: (string | number)[] = [];
-
-			query += " ORDER BY date DESC";
-
-			if (input.limit) {
-				query += " LIMIT ?";
-				params.push(input.limit);
-			}
-
-			if (input.offset) {
-				query += " OFFSET ?";
-				params.push(input.offset);
-			}
+			// Build query with sql template
+			const limit = input.limit ?? 100;
+			const offset = input.offset ?? 0;
 
 			// Execute the query
-			const results = await getDb().execute(query, params);
+			const results = await db.execute(
+				sql`SELECT * FROM daily_metrics ORDER BY date DESC LIMIT ${limit} OFFSET ${offset}`,
+			);
 			return results;
 		} catch (error) {
 			if (error instanceof ORPCError) {

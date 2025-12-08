@@ -9,13 +9,25 @@
  * Applies to all routes with org context: /api/orgs/:orgId/*
  */
 
-import * as Sentry from "@sentry/node";
 import { logger } from "@snapback/infrastructure";
 import { db } from "@snapback/platform";
 import { member } from "@snapback/platform/db/schema/postgres";
 import { and, eq } from "drizzle-orm";
 import type { Context, Next } from "hono";
 import type { AuthContext } from "./auth-unified";
+
+// Lazy-load Sentry
+let Sentry: typeof import("@sentry/node") | null = null;
+async function loadSentry() {
+	if (Sentry) return Sentry;
+	if (process.env.DISABLE_SENTRY === "true") return null;
+	try {
+		Sentry = await import("@sentry/node");
+		return Sentry;
+	} catch {
+		return null;
+	}
+}
 
 /**
  * Check if user is member of an organization (inline)
@@ -80,9 +92,10 @@ async function logRLSViolation(violation: RLSViolation): Promise<void> {
 
 	// Send to security monitoring systems
 	try {
-		if (Sentry?.captureMessage) {
+		const SentryModule = await loadSentry();
+		if (SentryModule?.captureMessage) {
 			// Send to Sentry for alerting
-			Sentry.captureMessage("RLS Policy Violation Attempted", {
+			SentryModule.captureMessage("RLS Policy Violation Attempted", {
 				level: "warning",
 				contexts: {
 					rls_violation: {

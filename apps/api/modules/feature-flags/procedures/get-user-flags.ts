@@ -1,4 +1,4 @@
-import { FeatureManager } from "@snapback/contracts";
+import { type FEATURE_FLAGS, FeatureManager } from "@snapback/contracts";
 import { z } from "zod";
 import { publicProcedure } from "../../../orpc/procedures";
 

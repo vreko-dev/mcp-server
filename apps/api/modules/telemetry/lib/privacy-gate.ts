@@ -201,13 +201,13 @@ export function filterProperties(
 
 		// For nested objects, recursively filter
 		if (typeof value === "object" && value !== null && !Array.isArray(value)) {
-			filtered[key] = filterProperties(value);
+			filtered[key] = filterProperties(value as Record<string, unknown>);
 		} else {
 			// For arrays, filter each element if it's an object
 			if (Array.isArray(value)) {
 				filtered[key] = value.map((item) =>
 					typeof item === "object" && item !== null
-						? filterProperties(item)
+						? filterProperties(item as Record<string, unknown>)
 						: item,
 				);
 			} else {

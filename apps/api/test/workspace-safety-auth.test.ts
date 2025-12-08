@@ -1,9 +1,9 @@
 /**
  * Workspace Safety Route - Authentication Tests (RED Phase)
- * 
+ *
  * Tests for workspace safety API authentication and authorization.
  * Following @testing_blueprint.md sections 8.1 Universal Rules and 6.2 API/Backend Rules
- * 
+ *
  * Coverage: Happy (7) + Sad (5) + Edge (7) + Error (6) = 25 test cases
  */
 
@@ -91,7 +91,7 @@ describe("Workspace Safety API - Authentication (Happy Path)", () => {
 	it("should accept and use workspaceId query parameter", () => {
 		const auth = mockAuthContext();
 		const workspaceId = "workspace-1";
-		
+
 		expect(workspaceId).toBeDefined();
 		expect(typeof workspaceId).toBe("string");
 	});

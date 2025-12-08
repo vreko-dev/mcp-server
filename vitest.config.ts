@@ -95,7 +95,7 @@ export default defineConfig({
 		watch: false, // Disabled in production
 
 		// Use projects for monorepo
-		projects: ["packages/*", "apps/*"],
+		projects: ["packages/*", "packages-oss/*", "apps/*"],
 
 		// Force fresh module resolution and isolation
 		deps: {

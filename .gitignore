@@ -166,3 +166,4 @@ INVESTIGATION_*.md
 
 # OSS version overrides
 .version-overrides.json
+apps/web/.next

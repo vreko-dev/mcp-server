@@ -25,16 +25,27 @@
 			".source/*": ["./.source/*"]
 		}
 	},
-	"include": ["**/*.ts", "**/*.tsx", ".source/**/*.ts", "next-env.d.ts", ".next/types/**/*.ts", "types/**/*.ts"],
+	"include": [
+		"**/*.ts",
+		"**/*.tsx",
+		".source/**/*.ts",
+		"next-env.d.ts",
+		".next/types/**/*.ts",
+		"types/**/*.ts"
+	],
 	"exclude": [
 		"node_modules",
 		"dist",
 		"build",
-
+		"__tests__/**/*",
+		"tests/**/*",
+		"**/*.test.ts",
+		"**/*.test.tsx",
+		"**/*.spec.ts",
+		"**/*.spec.tsx",
 		"../../apps/api/**/*",
 		"final_launch_polish/**",
 		".next",
-		"services/**/*",
-		"app/(saas)/**/*"
+		"services/**/*"
 	]
 }

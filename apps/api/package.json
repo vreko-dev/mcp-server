@@ -14,7 +14,6 @@
 		"@orpc/server": "catalog:",
 		"@orpc/zod": "catalog:",
 		"@scalar/hono-api-reference": "catalog:",
-		"@sentry/node": "catalog:",
 		"@snapback/auth": "workspace:*",
 		"@snapback/config": "workspace:*",
 		"@snapback/contracts": "workspace:*",
@@ -36,6 +35,9 @@
 		"semver": "catalog:",
 		"uuid": "catalog:",
 		"zod": "catalog:"
+	},
+	"optionalDependencies": {
+		"@sentry/node": "catalog:"
 	},
 	"devDependencies": {
 		"@types/node": "catalog:",

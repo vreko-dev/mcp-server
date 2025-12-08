@@ -15,11 +15,14 @@
     "@opentelemetry/sdk-trace-base": "catalog:",
     "@opentelemetry/sdk-trace-node": "catalog:",
     "@opentelemetry/semantic-conventions": "catalog:",
-    "@sentry/profiling-node": "catalog:",
     "@snapback/contracts": "workspace:*",
     "nanoid": "catalog:",
     "pino": "catalog:",
     "posthog-node": "catalog:"
+  },
+  "optionalDependencies": {
+    "@sentry/node": "catalog:",
+    "@sentry/profiling-node": "catalog:"
   },
   "devDependencies": {
     "@snapback/tsconfig": "workspace:*",

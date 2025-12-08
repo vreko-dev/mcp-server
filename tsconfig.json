@@ -10,7 +10,6 @@
 		{ "path": "./packages/analytics" },
 		{ "path": "./apps/api" },
 		{ "path": "./packages/auth" },
-		{ "path": "./packages/auth-mock" },
 		{ "path": "./packages/config" },
 		{ "path": "./packages/contracts" },
 		{ "path": "./packages/core" },

@@ -4,15 +4,31 @@
  * Error tracking and monitoring with PII scrubbing
  */
 
-import * as Sentry from "@sentry/node";
 import { logger } from "@snapback/infrastructure";
 
+// Lazy-load Sentry to avoid native module errors
+let Sentry: typeof import("@sentry/node") | null = null;
 let sentryInitialized = false;
+
+async function loadSentry() {
+	if (Sentry) return Sentry;
+	if (process.env.DISABLE_SENTRY === "true") return null;
+
+	try {
+		Sentry = await import("@sentry/node");
+		return Sentry;
+	} catch (error) {
+		logger.warn("Failed to load Sentry", {
+			error: error instanceof Error ? error.message : String(error),
+		});
+		return null;
+	}
+}
 
 /**
  * Initialize Sentry (call once on app startup)
  */
-export function initSentry(): void {
+export async function initSentry(): Promise<void> {
 	if (sentryInitialized) {
 		return;
 	}
@@ -23,7 +39,10 @@ export function initSentry(): void {
 		return;
 	}
 
-	Sentry.init({
+	const SentryModule = await loadSentry();
+	if (!SentryModule) return;
+
+	SentryModule.init({
 		dsn,
 		environment: process.env.NODE_ENV || "development",
 		release:
@@ -58,7 +77,7 @@ export function initSentry(): void {
 /**
  * Scrub PII from Sentry events
  */
-function scrubbedEvent(event: Sentry.ErrorEvent): Sentry.ErrorEvent | null {
+function scrubbedEvent(event: any): any | null {
 	// Redact sensitive data
 	if (event.request?.headers) {
 		delete event.request.headers.authorization;
@@ -100,7 +119,7 @@ function redactFilePath(path: string): string {
 /**
  * Capture exception with context
  */
-export function captureException(
+export async function captureException(
 	error: Error,
 	context?: {
 		userId?: string;
@@ -108,15 +127,16 @@ export function captureException(
 		endpoint?: string;
 		extra?: Record<string, any>;
 	},
-): void {
-	if (!sentryInitialized) {
+): Promise<void> {
+	const SentryModule = await loadSentry();
+	if (!SentryModule || !sentryInitialized) {
 		logger.error("Exception occurred (Sentry not initialized)", {
 			error: error.message,
 		});
 		return;
 	}
 
-	Sentry.withScope((scope) => {
+	SentryModule.withScope((scope) => {
 		// Add context
 		if (context?.userId) {
 			scope.setUser({ id: context.userId });
@@ -132,7 +152,7 @@ export function captureException(
 		}
 
 		// Capture exception
-		Sentry.captureException(error);
+		SentryModule.captureException(error);
 	});
 
 	// Also log locally
@@ -146,36 +166,38 @@ export function captureException(
 /**
  * Capture message (for non-error events)
  */
-export function captureMessage(
+export async function captureMessage(
 	message: string,
 	level: "info" | "warning" | "error" = "info",
 	context?: Record<string, any>,
-): void {
-	if (!sentryInitialized) {
+): Promise<void> {
+	const SentryModule = await loadSentry();
+	if (!SentryModule || !sentryInitialized) {
 		return;
 	}
 
-	Sentry.withScope((scope) => {
+	SentryModule.withScope((scope) => {
 		if (context) {
 			scope.setContext("message_context", context);
 		}
-		Sentry.captureMessage(message, level);
+		SentryModule.captureMessage(message, level);
 	});
 }
 
 /**
  * Add breadcrumb (user action trail)
  */
-export function addBreadcrumb(
+export async function addBreadcrumb(
 	message: string,
 	category: string,
 	data?: Record<string, any>,
-): void {
-	if (!sentryInitialized) {
+): Promise<void> {
+	const SentryModule = await loadSentry();
+	if (!SentryModule || !sentryInitialized) {
 		return;
 	}
 
-	Sentry.addBreadcrumb({
+	SentryModule.addBreadcrumb({
 		message,
 		category,
 		data,
@@ -188,9 +210,10 @@ export function addBreadcrumb(
  * Flush pending events (call before process exit)
  */
 export async function flushSentry(timeout = 2000): Promise<void> {
-	if (!sentryInitialized) {
+	const SentryModule = await loadSentry();
+	if (!SentryModule || !sentryInitialized) {
 		return;
 	}
 
-	await Sentry.close(timeout);
+	await SentryModule.close(timeout);
 }

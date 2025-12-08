@@ -6,15 +6,30 @@
  *   import { initSentry, captureError, captureMessage } from "@snapback/infrastructure/sentry";
  */
 
-import * as Sentry from "@sentry/node";
-import { nodeProfilingIntegration } from "@sentry/profiling-node";
+// Lazy-load Sentry to avoid native module errors when disabled
+let Sentry: typeof import("@sentry/node") | null = null;
+let ProfilingIntegration: typeof import("@sentry/profiling-node") | null = null;
+
+async function loadSentry() {
+	if (Sentry) return { Sentry, ProfilingIntegration };
+	if (process.env.DISABLE_SENTRY === "true") return null;
+
+	try {
+		Sentry = await import("@sentry/node");
+		ProfilingIntegration = await import("@sentry/profiling-node");
+		return { Sentry, ProfilingIntegration };
+	} catch (error) {
+		console.warn("⚠️  Failed to load Sentry:", error instanceof Error ? error.message : String(error));
+		return null;
+	}
+}
 
 /**
  * Initialize Sentry for error tracking
  *
  * @param options - Sentry configuration options
  */
-export function initSentry(options?: {
+export async function initSentry(options?: {
 	dsn?: string;
 	environment?: string;
 	release?: string;
@@ -36,7 +51,12 @@ export function initSentry(options?: {
 		return;
 	}
 
-	Sentry.init({
+	const modules = await loadSentry();
+	if (!modules) return;
+
+	const { Sentry: SentryModule, ProfilingIntegration } = modules;
+
+	SentryModule.init({
 		dsn,
 		environment: options?.environment || process.env.NODE_ENV || "development",
 		release: options?.release || process.env.GIT_SHA || process.env.RELEASE || undefined,
@@ -44,11 +64,11 @@ export function initSentry(options?: {
 		profilesSampleRate: options?.profilesSampleRate ?? 0.1,
 		debug: options?.debug || process.env.DEBUG_SENTRY === "true",
 		integrations: [
-			new (Sentry as any).HttpIntegration({
+			new (SentryModule as any).HttpIntegration({
 				tracing: true,
 				request: true,
 			}),
-			nodeProfilingIntegration(),
+			...(ProfilingIntegration ? [ProfilingIntegration.nodeProfilingIntegration()] : []),
 		],
 		// Filter out sensitive data
 		beforeSend: (event: any) => {
@@ -77,6 +97,12 @@ export function initSentry(options?: {
  * Create Express/Hono middleware for Sentry error handling
  */
 export function createSentryMiddleware() {
+	if (!Sentry) {
+		return {
+			requestHandler: (_c: any, next: any) => next(),
+			errorHandler: (_c: any, next: any) => next(),
+		};
+	}
 	return {
 		requestHandler: (Sentry as any).Handlers?.requestHandler?.() || ((_c: any, next: any) => next()),
 		errorHandler: (Sentry as any).Handlers?.errorHandler?.() || ((_c: any, next: any) => next()),
@@ -98,7 +124,7 @@ export function captureError(
 		extra?: Record<string, unknown>;
 	},
 ) {
-	if (process.env.DISABLE_SENTRY === "true") {
+	if (process.env.DISABLE_SENTRY === "true" || !Sentry) {
 		return;
 	}
 
@@ -123,7 +149,9 @@ export function captureError(
 			}
 		}
 
-		Sentry.captureException(typeof error === "string" ? new Error(error) : error);
+		if (Sentry) {
+			Sentry.captureException(typeof error === "string" ? new Error(error) : error);
+		}
 	});
 }
 
@@ -143,7 +171,7 @@ export function captureMessage(
 		extra?: Record<string, unknown>;
 	},
 ) {
-	if (process.env.DISABLE_SENTRY === "true") {
+	if (process.env.DISABLE_SENTRY === "true" || !Sentry) {
 		return;
 	}
 
@@ -180,7 +208,7 @@ export function setSentryUser(
 		organizationId?: string;
 	},
 ) {
-	if (process.env.DISABLE_SENTRY === "true") {
+	if (process.env.DISABLE_SENTRY === "true" || !Sentry) {
 		return;
 	}
 
@@ -196,7 +224,7 @@ export function setSentryUser(
  * Clear the current user
  */
 export function clearSentryUser() {
-	if (process.env.DISABLE_SENTRY === "true") {
+	if (process.env.DISABLE_SENTRY === "true" || !Sentry) {
 		return;
 	}
 
@@ -215,7 +243,7 @@ export function addSentryBreadcrumb(
 	data?: Record<string, unknown>,
 	level: "debug" | "info" | "warning" | "error" = "info",
 ) {
-	if (process.env.DISABLE_SENTRY === "true") {
+	if (process.env.DISABLE_SENTRY === "true" || !Sentry) {
 		return;
 	}
 
@@ -251,7 +279,7 @@ export function startSentryTransaction(name: string, op?: string) {
  * Call this before process exit in production
  */
 export async function flushSentry(timeout = 2000): Promise<boolean> {
-	if (process.env.DISABLE_SENTRY === "true") {
+	if (process.env.DISABLE_SENTRY === "true" || !Sentry) {
 		return true;
 	}
 

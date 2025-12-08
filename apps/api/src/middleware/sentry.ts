@@ -3,13 +3,30 @@
  * Integrates Sentry error tracking into the API service
  */
 
-import * as Sentry from "@sentry/node";
 import { logger } from "@snapback/infrastructure";
+
+// Lazy-load Sentry to avoid native module errors when disabled
+let Sentry: typeof import("@sentry/node") | null = null;
+
+async function loadSentry() {
+	if (Sentry) return Sentry;
+	if (process.env.DISABLE_SENTRY === "true") return null;
+
+	try {
+		Sentry = await import("@sentry/node");
+		return Sentry;
+	} catch (error) {
+		logger.warn("Failed to load Sentry", {
+			error: error instanceof Error ? error.message : String(error),
+		});
+		return null;
+	}
+}
 
 /**
  * Initialize Sentry in the API service
  */
-export function initSentryAPI(options?: {
+export async function initSentryAPI(options?: {
 	enabled?: boolean;
 	dsn?: string;
 	environment?: string;
@@ -28,8 +45,11 @@ export function initSentryAPI(options?: {
 		return;
 	}
 
+	const SentryModule = await loadSentry();
+	if (!SentryModule) return;
+
 	try {
-		Sentry.init({
+		SentryModule.init({
 			dsn,
 			environment:
 				options?.environment || process.env.NODE_ENV || "development",
@@ -37,7 +57,7 @@ export function initSentryAPI(options?: {
 			tracesSampleRate:
 				options?.tracesSampleRate ??
 				(process.env.NODE_ENV === "production" ? 0.1 : 1.0),
-			integrations: [Sentry.httpIntegration()],
+			integrations: [SentryModule.httpIntegration()],
 			beforeSend: (event, _hint) => {
 				// Don't capture 404 errors (too noisy)
 				if (
@@ -71,29 +91,36 @@ export function initSentryAPI(options?: {
  */
 export function honoSentryMiddleware() {
 	return async (c: any, next: any) => {
+		const SentryModule = await loadSentry();
+		if (!SentryModule) {
+			return await next();
+		}
+
 		// Create a span for this request
-		return await Sentry.startSpan(
+		return await SentryModule.startSpan(
 			{
 				op: "http.server",
 				name: `${c.req.method} ${c.req.path}`,
 			},
 			async () => {
+				if (!SentryModule) return await next();
+
 				// Add user context if available
 				const userId = c.get("userId");
 				const organizationId = c.get("organizationId");
 
 				if (userId) {
-					Sentry.setUser({ id: userId });
+					SentryModule.setUser({ id: userId });
 				}
 
 				if (organizationId) {
-					Sentry.setTag("organization_id", organizationId);
+					SentryModule.setTag("organization_id", organizationId);
 				}
 
 				// Set request context
-				Sentry.setTag("http.method", c.req.method);
-				Sentry.setTag("http.path", c.req.path);
-				Sentry.addBreadcrumb({
+				SentryModule.setTag("http.method", c.req.method);
+				SentryModule.setTag("http.path", c.req.path);
+				SentryModule.addBreadcrumb({
 					category: "http",
 					message: `${c.req.method} ${c.req.path}`,
 					level: "info",
@@ -103,10 +130,10 @@ export function honoSentryMiddleware() {
 					await next();
 
 					// Set response status
-					Sentry.setTag("http.status_code", c.res.status);
+					SentryModule.setTag("http.status_code", c.res.status);
 				} catch (error) {
 					// Capture error to Sentry
-					Sentry.captureException(error, {
+					SentryModule.captureException(error, {
 						tags: {
 							http_method: c.req.method,
 							http_path: c.req.path,
@@ -124,8 +151,11 @@ export function honoSentryMiddleware() {
  * Flush Sentry before process exit
  */
 export async function flushSentry(timeout = 2000): Promise<boolean> {
+	const SentryModule = await loadSentry();
+	if (!SentryModule) return true;
+
 	try {
-		return await Sentry.close(timeout);
+		return await SentryModule.close(timeout);
 	} catch (error) {
 		logger.error("Error flushing Sentry", {
 			error: error instanceof Error ? error.message : String(error),
@@ -134,4 +164,4 @@ export async function flushSentry(timeout = 2000): Promise<boolean> {
 	}
 }
 
-export { Sentry };
+export { loadSentry };

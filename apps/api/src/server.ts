@@ -38,12 +38,14 @@ const packageJson = JSON.parse(
 ) as { version: string };
 const SERVICE_VERSION = packageJson.version;
 
-// Initialize Sentry first, before any other code runs
-initSentryAPI({
-	dsn: process.env.SENTRY_DSN,
-	environment: process.env.NODE_ENV || "development",
-	enabled: process.env.DISABLE_SENTRY !== "true",
-});
+// Initialize Sentry first, before any other code runs (skip if disabled)
+if (process.env.DISABLE_SENTRY !== "true") {
+	await initSentryAPI({
+		dsn: process.env.SENTRY_DSN,
+		environment: process.env.NODE_ENV || "development",
+		enabled: true,
+	});
+}
 
 // Initialize OpenTelemetry instrumentation
 const instrumentationProvider: InstrumentationProvider = process.env

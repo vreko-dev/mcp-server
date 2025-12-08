@@ -1,17 +1,6 @@
-import { defineConfig } from "tsup";
+import { browserLibraryPreset } from "../../tooling/tsup-config";
 
-export default defineConfig({
+// Browser library with custom entries
+export default browserLibraryPreset({
 	entry: ["src/index.ts", "src/subscription-config.ts", "src/utils/*.ts"],
-	format: ["esm"],
-	dts: {
-		resolve: true, // Resolves workspace:* dependencies
-		compilerOptions: {
-			composite: false,
-			incremental: false,
-		},
-	},
-	splitting: true,
-	sourcemap: true,
-	clean: true,
-	outDir: "dist",
 });

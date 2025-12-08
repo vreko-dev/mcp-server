@@ -9,17 +9,17 @@ pre-commit:
         - merge
         - rebase
 
-    dts-resolution-validator:
+    tsup-config-validator:
       glob: "**/tsup.config.ts"
       run: |
-        echo '🔍 Validating DTS resolution configuration...'
-        node - << 'EOF'
+        echo '🔍 Validating tsup configurations...'
+        node << 'VALIDATOR'
         const fs = require('fs');
         const path = require('path');
         const files = process.argv.slice(1);
-        const failureThreshold = 3;
         let hasErrors = false;
         let validationErrors = [];
+        let warnings = [];
 
         // Packages that MUST have dts.resolve: true
         const requiresDtsResolve = [
@@ -35,6 +35,13 @@ pre-commit:
           '@snapback-oss/sdk'
         ];
 
+        // Browser packages that MUST mark server dependencies as external
+        const browserPackages = [
+          '@snapback/contracts',
+          '@snapback/config',
+          '@snapback/auth'
+        ];
+
         files.forEach(file => {
           const content = fs.readFileSync(file, 'utf8');
           const dir = path.dirname(file);
@@ -45,31 +52,49 @@ pre-commit:
           const pkg = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
           const packageName = pkg.name;
 
+          // Check DTS resolution requirement
           if (requiresDtsResolve.includes(packageName)) {
             if (!content.includes('dts:') || !content.includes('resolve:') || !content.includes('true')) {
-              validationErrors.push(`❌ ${packageName}: tsup.config.ts missing 'dts: { resolve: true }'`);
+              validationErrors.push(`❌ ${packageName}: missing 'dts: { resolve: true }'`);
               hasErrors = true;
             }
           }
 
-          // Check for unsafe configurations
-          if (content.includes('dts: false')) {
-            validationErrors.push(`⚠️  ${packageName}: DTS generation disabled (dts: false) - reconsider`);
+          // Check browser packages have external declarations
+          if (browserPackages.includes(packageName)) {
+            if (!content.includes('external:')) {
+              validationErrors.push(`❌ ${packageName}: browser package missing 'external: [...]' declaration`);
+              hasErrors = true;
+            }
+            if (!content.includes('@snapback/infrastructure')) {
+              warnings.push(`⚠️  ${packageName}: consider adding '@snapback/infrastructure' to external array`);
+            }
+          }
+
+          // Warn on unsafe configurations
+          if (content.includes('dts: false') && !content.includes('DTS generation disabled') && !content.includes('DTS disabled')) {
+            warnings.push(`⚠️  ${packageName}: dts: false without explanation - document why in comment`);
+          }
+
+          // Check for missing skipNodeModulesBundle
+          if (!content.includes('skipNodeModulesBundle: true') && content.includes('format:')) {
+            warnings.push(`⚠️  ${packageName}: consider adding 'skipNodeModulesBundle: true'`);
           }
         });
 
-        if (validationErrors.length > 0) {
-          validationErrors.forEach(err => console.error(err));
+        if (warnings.length > 0) {
+          warnings.forEach(w => console.log(w));
         }
 
-        if (hasErrors && validationErrors.length >= failureThreshold) {
-          console.error(`\n❌ DTS resolution validation failed. Fix ${validationErrors.length} issues.`);
+        if (validationErrors.length > 0) {
+          validationErrors.forEach(err => console.error(err));
+          console.error(`\n❌ tsup validation failed with ${validationErrors.length} error(s).`);
           process.exit(1);
         }
         
-        console.log('✅ DTS resolution configuration validated');
+        console.log('✅ tsup configurations validated');
         process.exit(0);
-        EOF
+        VALIDATOR
       skip:
         - merge
         - rebase

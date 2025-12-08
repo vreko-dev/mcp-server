@@ -1,6 +1,3 @@
-import { readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
 import { OpenAPIGenerator } from "@orpc/openapi";
 import { ZodToJsonSchemaConverter } from "@orpc/zod/zod4";
 import { Scalar } from "@scalar/hono-api-reference";
@@ -30,13 +27,8 @@ import apiRoutes from "./routes/index";
 import protectedExamplesRoute from "./routes/protected-examples";
 import { testRoutes } from "./routes/test/index";
 
-// Get package.json for service version
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const packageJson = JSON.parse(
-	readFileSync(join(__dirname, "../../package.json"), "utf-8"),
-) as { version: string };
-const SERVICE_VERSION = packageJson.version;
+// Get service version from package.json or environment
+const SERVICE_VERSION = process.env.npm_package_version || "0.0.0-dev";
 
 // Initialize Sentry first, before any other code runs (skip if disabled)
 if (process.env.DISABLE_SENTRY !== "true") {

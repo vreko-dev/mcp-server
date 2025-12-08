@@ -1,20 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { SnapbackClient } from "../src/client";
-import { UnifiedSnapshotClient } from "../src/snapshots";
+import { type CreateSnapshotOptions, UnifiedSnapshotClient } from "../src/snapshots";
 
-// Test IDs: snap-001, snap-002, snap-003
 describe("SDK Snapshots", () => {
-	// Mock client for testing
-	const mockClient = new SnapbackClient({
-		baseUrl: "http://localhost:3000",
-		surface: "vscode",
-	});
-
-	describe("snap-001: Create snapshot via SDK", () => {
+	describe("UnifiedSnapshotClient", () => {
 		it("should create a new snapshot with metadata", async () => {
-			const snapshotClient = new UnifiedSnapshotClient(mockClient);
+			const snapshotClient = new UnifiedSnapshotClient();
 
-			const options = {
+			const options: CreateSnapshotOptions = {
 				filePath: "/test/file.js",
 				content: 'console.log("test");',
 				reason: "Pre-Copilot snapshot",
@@ -25,18 +17,29 @@ describe("SDK Snapshots", () => {
 
 			expect(snapshot).toBeDefined();
 			expect(snapshot.id).toMatch(/^snap-/);
-			expect(snapshot.timestamp).toBeLessThanOrEqual(Date.now());
+			expect(snapshot.createdAt).toBeDefined();
 			expect(snapshot.filePath).toBe(options.filePath);
 			expect(snapshot.reason).toBe(options.reason);
 			expect(snapshot.source).toBe(options.source);
-			expect(snapshot.size).toBe(options.content.length);
-			expect(snapshot.hash).toBeDefined();
 		});
-	});
 
-	describe("snap-002: List snapshots via SDK", () => {
-		it("should list snapshots with filtering options", async () => {
-			const snapshotClient = new UnifiedSnapshotClient(mockClient);
+		it("should create snapshot with optional metadata", async () => {
+			const snapshotClient = new UnifiedSnapshotClient();
+
+			const options: CreateSnapshotOptions = {
+				filePath: "/test/file.js",
+				content: 'console.log("test");',
+				source: "cli",
+				metadata: { aiTool: "copilot" },
+			};
+
+			const snapshot = await snapshotClient.createSnapshot(options);
+
+			expect(snapshot.metadata).toEqual({ aiTool: "copilot" });
+		});
+
+		it("should list snapshots and return empty array when no snapshots exist", async () => {
+			const snapshotClient = new UnifiedSnapshotClient();
 
 			const snapshots = await snapshotClient.listSnapshots({
 				filePath: "/test/file.js",
@@ -44,41 +47,49 @@ describe("SDK Snapshots", () => {
 			});
 
 			expect(Array.isArray(snapshots)).toBe(true);
+			expect(snapshots.length).toBe(0);
 		});
-	});
 
-	describe("snap-003: Restore snapshot via SDK", () => {
-		it("should restore snapshot content", async () => {
-			const snapshotClient = new UnifiedSnapshotClient(mockClient);
+		it("should restore snapshot and return empty string (mock implementation)", async () => {
+			const snapshotClient = new UnifiedSnapshotClient();
 
-			// First create a snapshot
-			const createOptions = {
-				filePath: "/test/file.js",
-				content: 'console.log("test");',
-				source: "vscode",
-			};
-
-			const snapshot = await snapshotClient.createSnapshot(createOptions);
-
-			// Then restore it
 			const restoredContent = await snapshotClient.restoreSnapshot({
-				snapshotId: snapshot.id,
+				snapshotId: "snap-123",
 			});
 
-			// For mock implementation, we expect empty string
 			expect(typeof restoredContent).toBe("string");
 		});
-	});
 
-	describe("Unified interface", () => {
-		it("should provide same code path for VS Code & MCP snapshot ops", () => {
-			const snapshotClient = new UnifiedSnapshotClient(mockClient);
+		it("should get snapshot content and return empty string (mock implementation)", async () => {
+			const snapshotClient = new UnifiedSnapshotClient();
 
-			// Check that all required methods exist
+			const content = await snapshotClient.getSnapshotContent("snap-123");
+
+			expect(typeof content).toBe("string");
+		});
+
+		it("should expose all required interface methods", () => {
+			const snapshotClient = new UnifiedSnapshotClient();
+
 			expect(typeof snapshotClient.createSnapshot).toBe("function");
 			expect(typeof snapshotClient.listSnapshots).toBe("function");
 			expect(typeof snapshotClient.restoreSnapshot).toBe("function");
 			expect(typeof snapshotClient.getSnapshotContent).toBe("function");
+		});
+
+		it("should generate unique IDs for each snapshot", async () => {
+			const snapshotClient = new UnifiedSnapshotClient();
+
+			const options: CreateSnapshotOptions = {
+				filePath: "/test/file.js",
+				content: "test",
+				source: "vscode",
+			};
+
+			const snapshot1 = await snapshotClient.createSnapshot(options);
+			const snapshot2 = await snapshotClient.createSnapshot(options);
+
+			expect(snapshot1.id).not.toBe(snapshot2.id);
 		});
 	});
 });

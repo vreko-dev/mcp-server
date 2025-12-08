@@ -694,6 +694,20 @@
    - Test user interactions, not implementation
    - Test loading, error, empty states
 
+### Test Structure & Naming
+- **File Naming**: `*.test.ts` or `*.spec.ts` (consistent with package usage)
+- **Test Descriptions**:
+  - Top-level `describe`: Component or Class name.
+  - Nested `describe`: Method name or Feature area.
+  - `it`/`test`: Should read like a sentence. Start with a verb (e.g., "should render...", "handles...", "returns...").
+  - **SDK Consistency**: Adopt the robust naming patterns found in `packages-oss/sdk`.
+    - Example: `describe('SnapBackClient', () => { describe('restore', () => { it('should successfully restore a snapshot', ...); }); });`
+
+### TDD Process (Red-Green-Refactor)
+1. **Red**: Write a failing test that defines the expected behavior (e.g., "should verify content update on pricing page").
+2. **Green**: Write the minimal code to make the test pass.
+3. **Refactor**: Improve code quality while keeping tests green.
+
 2. **Hook Tests**
    - Mock oRPC client
    - Test cache behavior (stale time, refetch)

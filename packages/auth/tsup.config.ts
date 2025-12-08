@@ -1,6 +1,8 @@
-import { defineConfig } from "tsup";
+import { browserLibraryPreset } from "../../tooling/tsup-config";
 
-export default defineConfig({
+// Browser library with multiple entry points
+// DTS disabled due to complex Session export issues
+export default browserLibraryPreset({
 	entry: [
 		"src/index.ts",
 		"src/client.ts",
@@ -9,13 +11,5 @@ export default defineConfig({
 		"src/lib/helper.ts",
 		"src/lib/organization.ts",
 	],
-	format: ["esm"],
-	dts: false, // Disabled - complex internal structure with Session export issues
-	clean: true,
-	sourcemap: true,
-	outDir: "dist",
-	splitting: false,
-	treeshake: true,
-	target: "es2022",
-	skipNodeModulesBundle: true,
+	dts: false, // DTS disabled - complex internal structure with Session export issues
 });

@@ -1,12 +1,5 @@
-import { defineConfig } from "tsup";
+import { browserLibraryPreset } from "../../tooling/tsup-config";
 
-export default defineConfig({
-	entry: ["src/**/*.ts"],
-	format: ["esm"],
-	dts: true,
-	sourcemap: true,
-	clean: true,
-	outDir: "dist",
-	tsconfig: "tsconfig.json",
-	target: "es2022",
-});
+// Browser library with external server packages marked
+// Prevents bundling of @snapback/infrastructure in client bundles
+export default browserLibraryPreset();

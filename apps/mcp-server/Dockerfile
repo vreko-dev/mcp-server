@@ -12,8 +12,11 @@ WORKDIR /app
 
 # Copy package files
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY turbo.json ./
 COPY packages/contracts/package.json ./packages/contracts/
+COPY packages-oss/contracts/package.json ./packages-oss/contracts/
 COPY apps/mcp-server/package.json ./apps/mcp-server/
+COPY tooling/typescript/package.json ./tooling/typescript/
 
 # Install dependencies with pnpm
 RUN pnpm install --no-frozen-lockfile --ignore-scripts
@@ -32,8 +35,11 @@ WORKDIR /app
 
 # Copy package files
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY turbo.json ./
 COPY packages/contracts/package.json ./packages/contracts/
+COPY packages-oss/contracts/package.json ./packages-oss/contracts/
 COPY apps/mcp-server/package.json ./apps/mcp-server/
+COPY tooling/typescript/package.json ./tooling/typescript/
 
 # Install production dependencies only
 RUN pnpm install --no-frozen-lockfile --prod --ignore-scripts

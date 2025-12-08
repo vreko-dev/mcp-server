@@ -93,6 +93,8 @@
     "dev:all": "turbo run dev --parallel",
     "dev:docker": "docker-compose -f docker-compose.dev-local.yml run --rm dev",
     "dev:selective": "turbo run dev --parallel --filter=@snapback/web --filter=@snapback/mcp-server",
+    "dev:rebuild": "pnpm clean && pnpm install && pnpm build && docker-compose -f docker-compose.dev.yml up --build",
+    "dev:rebuild:full": "pnpm clean && docker system prune -f && pnpm install && pnpm build && docker-compose -f docker-compose.dev.yml up --build",
     "docker:clean": "make clean",
     "docker:rebuild": "make rebuild",
     "down": "docker-compose -f docker-compose.dev.yml down && make down",

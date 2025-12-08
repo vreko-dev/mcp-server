@@ -31,7 +31,9 @@ FROM base AS deps
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY turbo.json ./
 COPY apps/web/package.json ./apps/web/
+COPY apps/api/package.json ./apps/api/
 COPY packages ./packages
+COPY packages-oss ./packages-oss
 COPY config/package.json ./config/
 COPY tooling ./tooling
 

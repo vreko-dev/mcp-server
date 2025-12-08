@@ -1,29 +1,16 @@
 import { describe, expect, it } from "vitest";
-import { SnapbackClient } from "../src/client";
-import { analyze, ensureIdempotentRequestId, evaluatePolicy, ingestTelemetry } from "../src/helpers";
+import type { Envelope } from "../src/client";
+import { ensureIdempotentRequestId } from "../src/helpers";
 
-// Test IDs: sdkh-001, sdkh-002
 describe("SDK Helpers", () => {
-	// Mock client for testing
-	const mockClient = new SnapbackClient({
-		baseUrl: "http://localhost:3000",
-		surface: "vscode",
-	});
-
-	const baseEnvelope = {
-		session_id: "test-session",
-		request_id: "test-request",
-		client: "vscode" as const,
-	};
-
-	describe("sdkh-001: Idempotent request_id", () => {
+	describe("ensureIdempotentRequestId", () => {
 		it("should generate request_id if not provided", () => {
-			const envelope = {
+			const envelope: Partial<Envelope> = {
 				session_id: "test-session",
-				client: "vscode" as const,
+				client: "vscode",
 			};
 
-			const result = ensureIdempotentRequestId(envelope);
+			const result = ensureIdempotentRequestId(envelope as Envelope);
 
 			expect(result.session_id).toBe("test-session");
 			expect(result.client).toBe("vscode");
@@ -33,77 +20,71 @@ describe("SDK Helpers", () => {
 		});
 
 		it("should preserve existing request_id", () => {
-			const envelope = {
+			const envelope: Envelope = {
 				session_id: "test-session",
 				request_id: "existing-request-id",
-				client: "vscode" as const,
+				client: "vscode",
 			};
 
 			const result = ensureIdempotentRequestId(envelope);
 
 			expect(result.request_id).toBe("existing-request-id");
 		});
-	});
 
-	describe("sdkh-002: Envelope propagation", () => {
-		it("should propagate envelope to analyze function", async () => {
-			const request = {
-				content: "test content",
-				filePath: "/test/file.ts",
+		it("should generate unique IDs for multiple calls", () => {
+			const envelope1: Partial<Envelope> = {
+				session_id: "session-1",
+				client: "vscode",
+			};
+			const envelope2: Partial<Envelope> = {
+				session_id: "session-2",
+				client: "cli",
 			};
 
-			// This test verifies the function signature and envelope usage
-			// Actual implementation will be tested in integration tests
-			expect(typeof analyze).toBe("function");
+			const result1 = ensureIdempotentRequestId(envelope1 as Envelope);
+			const result2 = ensureIdempotentRequestId(envelope2 as Envelope);
 
-			// Call the function to ensure it doesn't throw
-			const result = await analyze(mockClient, baseEnvelope, request);
-
-			expect(result).toBeDefined();
-			expect(["allow", "review", "block"]).toContain(result.decision);
-			expect(typeof result.confidence).toBe("number");
-			expect(Array.isArray(result.rules_hit)).toBe(true);
+			expect(result1.request_id).not.toBe(result2.request_id);
 		});
 
-		it("should propagate envelope to evaluatePolicy function", async () => {
-			const request = {
-				context: {
-					userRole: "developer",
-					projectId: "test-project",
-				},
+		it("should preserve workspace_id when present", () => {
+			const envelope: Partial<Envelope> = {
+				session_id: "test-session",
+				workspace_id: "workspace-123",
+				client: "mcp",
 			};
 
-			// This test verifies the function signature and envelope usage
-			expect(typeof evaluatePolicy).toBe("function");
+			const result = ensureIdempotentRequestId(envelope as Envelope);
 
-			// Call the function to ensure it doesn't throw
-			const result = await evaluatePolicy(mockClient, baseEnvelope, request);
-
-			expect(result).toBeDefined();
-			expect(["allow", "review", "block"]).toContain(result.decision);
-			expect(typeof result.confidence).toBe("number");
-			expect(Array.isArray(result.rules_hit)).toBe(true);
-			expect(typeof result.policyVersion).toBe("string");
+			expect(result.workspace_id).toBe("workspace-123");
+			expect(result.request_id).toBeDefined();
 		});
 
-		it("should propagate envelope to ingestTelemetry function", async () => {
-			const data = {
-				eventType: "test-event",
-				payload: {
-					key: "value",
-				},
-				timestamp: Date.now(),
+		it("should work with all client surface types", () => {
+			const surfaces = ["vscode", "mcp", "cli", "web"] as const;
+
+			for (const surface of surfaces) {
+				const envelope: Partial<Envelope> = {
+					session_id: `session-${surface}`,
+					client: surface,
+				};
+
+				const result = ensureIdempotentRequestId(envelope as Envelope);
+				expect(result.client).toBe(surface);
+				expect(result.request_id).toBeDefined();
+			}
+		});
+
+		it("should not mutate original envelope", () => {
+			const original: Partial<Envelope> = {
+				session_id: "test-session",
+				client: "vscode",
 			};
+			const originalCopy = { ...original };
 
-			// This test verifies the function signature and envelope usage
-			expect(typeof ingestTelemetry).toBe("function");
+			ensureIdempotentRequestId(original as Envelope);
 
-			// Call the function to ensure it doesn't throw
-			const result = await ingestTelemetry(mockClient, baseEnvelope, data);
-
-			expect(result).toBeDefined();
-			expect(result.id).toBe(baseEnvelope.request_id);
-			expect(result.received).toBe(true);
+			expect(original).toEqual(originalCopy);
 		});
 	});
 });

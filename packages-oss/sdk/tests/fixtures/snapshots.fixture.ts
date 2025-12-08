@@ -12,6 +12,7 @@ export interface SnapshotFixture {
 	timestamp: number;
 	hash: string;
 	version: string;
+	isValid?: boolean;
 	metadata?: Record<string, unknown>;
 }
 
@@ -33,7 +34,65 @@ export function createSnapshot(overrides?: Partial<SnapshotFixture>): SnapshotFi
 		timestamp,
 		hash,
 		version,
+		isValid: overrides?.isValid ?? true,
 		metadata: overrides?.metadata,
+	};
+}
+
+/**
+ * Create a corrupted snapshot
+ */
+export function createCorruptedSnapshot(overrides?: Partial<SnapshotFixture>): SnapshotFixture {
+	return createSnapshot({
+		isValid: false,
+		content: "", // Empty content indicates corruption
+		...overrides,
+	});
+}
+
+/**
+ * Create snapshots for a specific file
+ */
+export function createSnapshotsForFile(filePath: string, count = 3): SnapshotFixture[] {
+	return Array.from({ length: count }, (_, i) =>
+		createSnapshot({
+			id: `snap-${filePath.replace(/[^a-z0-9]/gi, "")}-${i}`,
+			filePath,
+			content: `// Snapshot ${i}\nconst version = ${i};`,
+			timestamp: Date.now() - (count - i) * 1000,
+		}),
+	);
+}
+
+/**
+ * Create snapshot timeline (multiple snapshots with realistic timestamps)
+ */
+export function createSnapshotTimeline(filePath: string, count = 5, intervalMs = 60000): SnapshotFixture[] {
+	return Array.from({ length: count }, (_, i) =>
+		createSnapshot({
+			id: `snap-${i}`,
+			filePath,
+			content: `// Revision ${i}\nlet revision = ${i};`,
+			timestamp: Date.now() - (count - i - 1) * intervalMs,
+		}),
+	);
+}
+
+/**
+ * Create multiple snapshot variants for edge case testing
+ */
+export function createSnapshotVariants(): Record<string, SnapshotFixture> {
+	return {
+		valid: createSnapshot(),
+		corrupted: createCorruptedSnapshot(),
+		empty: createSnapshot({ content: "" }),
+		large: createLargeSnapshot(),
+		oldTimestamp: createSnapshot({
+			timestamp: Date.now() - 365 * 24 * 60 * 60 * 1000, // 1 year old
+		}),
+		recentTimestamp: createSnapshot({
+			timestamp: Date.now() - 1000, // 1 second old
+		}),
 	};
 }
 

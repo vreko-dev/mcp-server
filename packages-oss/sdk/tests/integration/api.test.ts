@@ -61,9 +61,10 @@ describe("API Integration", () => {
 
 	describe("End-to-End Workflows", () => {
 		const mockFileMetadata = {
-			fileName: "test.ts",
-			fileSize: 1024,
-			lastModified: Date.now(),
+			path: "test.ts",
+			size: 1024,
+			createdAt: Date.now(),
+			updatedAt: Date.now(),
 			risk: {
 				score: 0.5,
 				factors: ["test factor"],
@@ -89,8 +90,8 @@ describe("API Integration", () => {
 					workspaceId: "workspace-123",
 					files: [
 						expect.objectContaining({
-							fileName: "test.ts",
-							fileSize: 1024,
+							path: "test.ts",
+							size: 1024,
 						}),
 					],
 				},
@@ -105,8 +106,8 @@ describe("API Integration", () => {
 				totalFiles: 100,
 				totalCheckpoints: 10,
 				riskScore: 0.3,
-				checkpointRecommendations: {
-					shouldCreateCheckpoint: true,
+				snapshotRecommendations: {
+					shouldCreateSnapshot: true,
 					reason: "High activity detected",
 					urgency: "medium",
 					suggestedTiming: "1h",
@@ -133,8 +134,8 @@ describe("API Integration", () => {
 		it("should retrieve recommendations", async () => {
 			// Mock recommendations response
 			const mockRecommendationsResponse = {
-				checkpointRecommendations: {
-					shouldCreateCheckpoint: true,
+				snapshotRecommendations: {
+					shouldCreateSnapshot: true,
 					reason: "High activity detected",
 					urgency: "medium",
 					suggestedTiming: "1h",
@@ -150,7 +151,7 @@ describe("API Integration", () => {
 			const result = await client.getRecommendations("workspace-123");
 
 			// Verify response structure matches checkpointRecommendations
-			expect(result).toEqual(mockRecommendationsResponse.checkpointRecommendations);
+			expect(result).toEqual(mockRecommendationsResponse.snapshotRecommendations);
 
 			// Verify the API endpoint was called correctly (account for timeout and searchParams)
 			expect(mockKyInstance.get).toHaveBeenCalledWith("v1/intelligence/recommendations", {
@@ -189,9 +190,10 @@ describe("API Integration", () => {
 
 	describe("Error Handling", () => {
 		const mockFileMetadata = {
-			fileName: "test.ts",
-			fileSize: 1024,
-			lastModified: Date.now(),
+			path: "test.ts",
+			size: 1024,
+			createdAt: Date.now(),
+			updatedAt: Date.now(),
 		};
 
 		it("should handle rate limiting responses", async () => {
@@ -215,8 +217,8 @@ describe("API Integration", () => {
 		it("should handle invalid request payloads that fail privacy validation", async () => {
 			// Create intentionally malformed FileMetadata that fails privacy validation
 			const invalidMetadata: any = {
-				fileName: "test.ts",
-				fileSize: 1024,
+				path: "test.ts",
+				size: 1024,
 				content: "sensitive content that should fail privacy validation",
 			};
 

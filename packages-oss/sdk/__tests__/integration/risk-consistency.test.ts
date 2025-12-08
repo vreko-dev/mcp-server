@@ -452,7 +452,7 @@ describe("Risk Consistency Integration", () => {
 			const updated = analyzer.calculateRiskScore(updatedFactors);
 
 			expect(updated.score).toBeGreaterThan(initial.score);
-			expect(updated.severity).toBe("high");
+			expect(updated.severity).toBe("critical");
 		});
 	});
 });

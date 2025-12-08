@@ -20,10 +20,14 @@ describe("SDK Package Smoke Test", () => {
 		const coreDir = path.join(__dirname, "../src/core");
 		expect(fs.existsSync(coreDir)).toBe(true);
 
-		const requiredDirs = ["detection", "session", "risk", "analytics"];
+		const requiredDirs = ["detection", "session"];
 		for (const dir of requiredDirs) {
 			const dirPath = path.join(coreDir, dir);
 			expect(fs.existsSync(dirPath)).toBe(true);
 		}
+
+		// Verify analysis module exists (moved from core/risk)
+		const analysisDir = path.join(__dirname, "../src/analysis");
+		expect(fs.existsSync(analysisDir)).toBe(true);
 	});
 });

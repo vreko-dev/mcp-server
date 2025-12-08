@@ -1,6 +1,6 @@
 import ky from "ky";
 import pRetry from "p-retry";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { SnapbackAnalyticsClient } from "../../src/client";
 import { defaultConfig } from "../../src/config";
 
@@ -8,7 +8,7 @@ import { defaultConfig } from "../../src/config";
 vi.mock("ky");
 vi.mock("p-retry");
 
-describe("Checkpoint API", () => {
+describe("Snapshot API", () => {
 	let client: SnapbackAnalyticsClient;
 	const mockKyInstance: any = {
 		post: vi.fn(),
@@ -37,39 +37,40 @@ describe("Checkpoint API", () => {
 	});
 
 	describe("Creation", () => {
-		it("should create checkpoints with metadata", async () => {
-			// Create test FileMetadata for checkpoint
+		it("should create snapshots with metadata", async () => {
+			// Create test FileMetadata for snapshot
 			const mockFileMetadata = {
-				id: "checkpoint-file-1",
-				path: "checkpoint-file.ts",
+				id: "snapshot-file-1",
+				path: "snapshot-file.ts",
 				size: 2048,
-				lastModified: Date.now(),
+				createdAt: Date.now(),
+				updatedAt: Date.now(),
 				risk: {
 					score: 0.3,
 					factors: [{ type: "Low complexity", score: 0.3, weight: 1.0 }],
 				},
 			};
 
-			// Mock successful checkpoint creation response
+			// Mock successful snapshot creation response
 			const mockResponse = {
 				json: vi.fn().mockResolvedValue({
 					accepted: 1,
 					rejected: 0,
-					checkpointCreated: true,
-					checkpointId: "chk-12345",
+					snapshotCreated: true,
+					snapshotId: "snp-12345",
 				}),
 			};
 			mockKyInstance.post.mockReturnValue(mockResponse);
 
-			// Call sendMetadata which should trigger checkpoint creation for high-risk files
+			// Call sendMetadata which should trigger snapshot creation for high-risk files
 			const result = await client.sendMetadata("workspace-123", [mockFileMetadata]);
 
-			// Verify that checkpoint is created successfully
+			// Verify that snapshot is created successfully
 			expect(result).toEqual({
 				accepted: 1,
 				rejected: 0,
-				checkpointCreated: true,
-				checkpointId: "chk-12345",
+				snapshotCreated: true,
+				snapshotId: "snp-12345",
 			});
 
 			// Verify that only metadata (not content) is stored
@@ -87,27 +88,28 @@ describe("Checkpoint API", () => {
 			);
 		});
 
-		it("should handle checkpoint naming conventions", async () => {
-			// Test various checkpoint naming scenarios
+		it("should handle snapshot naming conventions", async () => {
+			// Test various snapshot naming scenarios
 			const mockFileMetadata2 = {
 				id: "important-file-1",
 				path: "important-file.ts",
 				size: 4096,
-				lastModified: Date.now(),
+				createdAt: Date.now(),
+				updatedAt: Date.now(),
 				risk: {
 					score: 0.8,
 					factors: [{ type: "High risk detected", score: 0.8, weight: 1.0 }],
 				},
 			};
 
-			// Mock successful response with checkpoint naming
+			// Mock successful response with snapshot naming
 			const mockResponse = {
 				json: vi.fn().mockResolvedValue({
 					accepted: 1,
 					rejected: 0,
-					checkpoint: {
-						id: "chk-67890",
-						name: "High Risk Checkpoint - important-file.ts",
+					snapshot: {
+						id: "snp-67890",
+						name: "High Risk Snapshot - important-file.ts",
 						timestamp: Date.now(),
 					},
 				}),
@@ -120,21 +122,22 @@ describe("Checkpoint API", () => {
 			expect(result).toEqual({
 				accepted: 1,
 				rejected: 0,
-				checkpoint: expect.objectContaining({
-					id: "chk-67890",
-					name: expect.stringContaining("High Risk Checkpoint"),
+				snapshot: expect.objectContaining({
+					id: "snp-67890",
+					name: expect.stringContaining("High Risk Snapshot"),
 					timestamp: expect.any(Number),
 				}),
 			});
 		});
 
-		it("should handle checkpoint description processing", async () => {
-			// Create checkpoints with various descriptions
+		it("should handle snapshot description processing", async () => {
+			// Create snapshots with various descriptions
 			const mockFileMetadata3 = {
 				id: "documented-file-1",
 				path: "documented-file.ts",
 				size: 1024,
-				lastModified: Date.now(),
+				createdAt: Date.now(),
+				updatedAt: Date.now(),
 				risk: {
 					score: 0.6,
 					factors: [
@@ -187,7 +190,8 @@ describe("Checkpoint API", () => {
 				id: "usage-test-file-1",
 				path: "usage-test-file.ts",
 				size: 1024,
-				lastModified: Date.now(),
+				createdAt: Date.now(),
+				updatedAt: Date.now(),
 			};
 
 			// Mock 429 response for usage limit exceeded
@@ -210,7 +214,8 @@ describe("Checkpoint API", () => {
 				id: "backup-file-1",
 				path: "backup-file.ts",
 				size: 2048,
-				lastModified: Date.now(),
+				createdAt: Date.now(),
+				updatedAt: Date.now(),
 				risk: {
 					score: 0.4,
 					factors: [{ type: "Backup recommended", score: 0.4, weight: 1.0 }],
@@ -253,7 +258,8 @@ describe("Checkpoint API", () => {
 				id: "valid-file-1",
 				path: "valid-file.ts",
 				size: 1024,
-				lastModified: Date.now(),
+				createdAt: Date.now(),
+				updatedAt: Date.now(),
 				risk: {
 					score: 0.5,
 					factors: [{ type: "Normal file", score: 0.5, weight: 1.0 }],
@@ -264,7 +270,8 @@ describe("Checkpoint API", () => {
 				id: "invalid-file-1",
 				path: "invalid-file.ts",
 				size: 2048,
-				lastModified: Date.now(),
+				createdAt: Date.now(),
+				updatedAt: Date.now(),
 			};
 
 			// Mock successful response for valid metadata
@@ -288,7 +295,8 @@ describe("Checkpoint API", () => {
 				id: "invalid-file-2",
 				path: "invalid-file.ts",
 				size: 1024,
-				lastModified: Date.now(),
+				createdAt: Date.now(),
+				updatedAt: Date.now(),
 				content: "This should not be here", // Invalid field
 			};
 
@@ -298,12 +306,12 @@ describe("Checkpoint API", () => {
 			);
 		});
 
-		it.skip("should handle checkpoint retrieval and listing", async () => {
-			// TODO: Implement real test for checkpoint listing API
-			// This test requires implementing listCheckpoints() method in SnapbackAnalyticsClient
+		it.skip("should handle snapshot retrieval and listing", async () => {
+			// TODO: Implement real test for snapshot listing API
+			// This test requires implementing listSnapshots() method in SnapbackAnalyticsClient
 			// Once method is available, test:
-			// 1. Create multiple test checkpoints
-			// 2. Call client.listCheckpoints()
+			// 1. Create multiple test snapshots
+			// 2. Call client.listSnapshots()
 			// 3. Verify response structure and data integrity
 		});
 	});

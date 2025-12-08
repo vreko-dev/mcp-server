@@ -223,19 +223,19 @@ export function createMockSnapshotRepository() {
 }
 
 /**
- * Mock Checkpoint Manager Factory
+ * Mock Snapshot Manager Factory
  *
- * Creates a consistent mock checkpoint manager for checkpoint lifecycle tests
- * Manages checkpoint creation, restoration, and cleanup
+ * Creates a consistent mock snapshot manager for snapshot lifecycle tests
+ * Manages snapshot creation, restoration, and cleanup
  */
-export function createMockCheckpointManager() {
+export function createMockSnapshotManager() {
 	return {
-		createCheckpoint: vi.fn(async () => ({ id: `cp-${Math.random().toString(36).slice(2)}` })),
-		restoreCheckpoint: vi.fn(async () => ""),
-		deleteCheckpoint: vi.fn(async () => {}),
-		listCheckpoints: vi.fn(async () => []),
-		getCheckpointMetadata: vi.fn(async () => null),
-		validateCheckpoint: vi.fn(async () => true),
+		createSnapshot: vi.fn(async () => ({ id: `snp-${Math.random().toString(36).slice(2)}` })),
+		restoreSnapshot: vi.fn(async () => ""),
+		deleteSnapshot: vi.fn(async () => {}),
+		listSnapshots: vi.fn(async () => []),
+		getSnapshotMetadata: vi.fn(async () => null),
+		validateSnapshot: vi.fn(async () => true),
 	};
 }
 
@@ -254,5 +254,5 @@ export const testFactories = {
 	createMockSessionManager,
 	createMockRiskAnalyzer,
 	createMockSnapshotRepository,
-	createMockCheckpointManager,
+	createMockSnapshotManager,
 };

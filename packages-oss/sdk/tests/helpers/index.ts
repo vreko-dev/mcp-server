@@ -170,5 +170,7 @@ export function createMockCache() {
 		has: vi.fn((key: string) => cache.has(key)),
 		delete: vi.fn((key: string) => cache.delete(key)),
 		clear: vi.fn(() => cache.clear()),
+		keys: vi.fn(() => cache.keys()),
+		[Symbol.iterator]: vi.fn(() => cache[Symbol.iterator]()),
 	};
 }

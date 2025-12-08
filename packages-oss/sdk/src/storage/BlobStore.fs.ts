@@ -235,7 +235,8 @@ export class FilesystemBlobStore implements BlobStore {
 
 			// Check if blob exists
 			if (!existsSync(filePath)) {
-				return err("BLOB_NOT_FOUND" as BlobStoreErrorCode, `Blob not found: ${hash}`, { hash });
+				// Idempotent: if it doesn't exist, we consider it deleted
+				return ok(undefined);
 			}
 
 			// TODO: Check reference count before deletion

@@ -53,8 +53,8 @@ describe("Client SDK E2E", () => {
 				totalFiles: 100,
 				totalCheckpoints: 10,
 				riskScore: 0.3,
-				checkpointRecommendations: {
-					shouldCreateCheckpoint: true,
+				snapshotRecommendations: {
+					shouldCreateSnapshot: true,
 					reason: "High activity detected",
 					urgency: "medium",
 					suggestedTiming: "1h",
@@ -62,8 +62,8 @@ describe("Client SDK E2E", () => {
 			};
 
 			const mockRecommendationsResponse = {
-				checkpointRecommendations: {
-					shouldCreateCheckpoint: true,
+				snapshotRecommendations: {
+					shouldCreateSnapshot: true,
 					reason: "High activity detected",
 					urgency: "medium",
 					suggestedTiming: "1h",
@@ -97,7 +97,7 @@ describe("Client SDK E2E", () => {
 
 			// 3. Get recommendations
 			const recommendationsResult = await client.getRecommendations("workspace-123");
-			expect(recommendationsResult).toEqual(mockRecommendationsResponse.checkpointRecommendations);
+			expect(recommendationsResult).toEqual(mockRecommendationsResponse.snapshotRecommendations);
 
 			// Verify all API calls were made
 			expect(mockKyInstance.post).toHaveBeenCalledWith("v1/metadata/files/batch", expect.any(Object));
@@ -186,8 +186,8 @@ describe("Client SDK E2E", () => {
 				totalFiles: 100,
 				totalCheckpoints: 10,
 				riskScore: 0.3,
-				checkpointRecommendations: {
-					shouldCreateCheckpoint: true,
+				snapshotRecommendations: {
+					shouldCreateSnapshot: true,
 					reason: "High activity detected",
 					urgency: "medium",
 					suggestedTiming: "1h",
@@ -247,8 +247,8 @@ describe("Client SDK E2E", () => {
 				totalFiles: 100,
 				totalCheckpoints: 10,
 				riskScore: 0.3,
-				checkpointRecommendations: {
-					shouldCreateCheckpoint: true,
+				snapshotRecommendations: {
+					shouldCreateSnapshot: true,
 					reason: "High activity detected",
 					urgency: "medium",
 					suggestedTiming: "1h",
@@ -348,8 +348,8 @@ describe("Client SDK E2E", () => {
 
 			// Test recommendations fallback
 			const recommendationsResult = await client.getRecommendations("workspace-123");
-			expect(recommendationsResult.shouldCreateCheckpoint).toBe(false);
-			expect(recommendationsResult.reason).toContain("local fallback");
+			expect(recommendationsResult?.shouldCreateSnapshot).toBe(false);
+			expect(recommendationsResult?.reason).toContain("local fallback");
 		});
 	});
 
@@ -373,8 +373,8 @@ describe("Client SDK E2E", () => {
 				totalFiles: 100,
 				totalCheckpoints: 10,
 				riskScore: 0.3,
-				checkpointRecommendations: {
-					shouldCreateCheckpoint: true,
+				snapshotRecommendations: {
+					shouldCreateSnapshot: true,
 					reason: "High activity detected",
 					urgency: "medium",
 					suggestedTiming: "1h",
@@ -425,8 +425,8 @@ describe("Client SDK E2E", () => {
 				totalFiles: 100,
 				totalCheckpoints: 10,
 				riskScore: 0.3,
-				checkpointRecommendations: {
-					shouldCreateCheckpoint: true,
+				snapshotRecommendations: {
+					shouldCreateSnapshot: true,
 					reason: "High activity detected",
 					urgency: "medium",
 					suggestedTiming: "1h",

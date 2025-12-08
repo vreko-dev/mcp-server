@@ -26,11 +26,6 @@ Thumbs.db
 # Testing
 coverage/
 .nyc_output/
-test/
-tests/
-__tests__/
-*.spec.*
-*.test.*
 
 # Environment
 .env

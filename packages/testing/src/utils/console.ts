@@ -309,7 +309,7 @@ export async function expectNoConsoleErrors<T>(fn: () => T | Promise<T>, message
 
 	if (capture.hasErrors()) {
 		const errorMsg = message ?? "Expected no console.error calls";
-		throw new Error(errorMsg + "\n\nConsole errors:\n" + capture.errors.join("\n"));
+		throw new Error(`${errorMsg}\n\nConsole errors:\n${capture.errors.join("\n")}`);
 	}
 
 	return result;
@@ -336,7 +336,7 @@ export async function expectNoConsoleWarnings<T>(fn: () => T | Promise<T>, messa
 
 	if (capture.hasWarnings()) {
 		const warnMsg = message ?? "Expected no console.warn calls";
-		throw new Error(warnMsg + "\n\nConsole warnings:\n" + capture.warnings.join("\n"));
+		throw new Error(`${warnMsg}\n\nConsole warnings:\n${capture.warnings.join("\n")}`);
 	}
 
 	return result;

@@ -1,4 +1,3 @@
-// @ts-expect-error - Config types should be available after build
 import { type Config, config } from "@snapback/config";
 import type { PurchaseSchema } from "@snapback/platform/db/zod";
 import type { z } from "zod";

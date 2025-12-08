@@ -43,7 +43,7 @@ export interface StorageAdapter {
  */
 export declare class StorageError extends Error {
     code: string;
-    details?: unknown;
-    constructor(message: string, code: string, details?: unknown);
+    details?: unknown | undefined;
+    constructor(message: string, code: string, details?: unknown | undefined);
 }
 //# sourceMappingURL=StorageAdapter.d.ts.map

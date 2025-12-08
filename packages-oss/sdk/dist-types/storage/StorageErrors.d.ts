@@ -1,7 +1,7 @@
 export declare class StorageError extends Error {
     code?: string | undefined;
-    details?: unknown;
-    constructor(message: string, code?: string | undefined, details?: unknown);
+    details?: unknown | undefined;
+    constructor(message: string, code?: string | undefined, details?: unknown | undefined);
 }
 export declare class StorageConnectionError extends StorageError {
     constructor(message: string, details?: unknown);

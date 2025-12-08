@@ -31,24 +31,20 @@ COPY apps/web/package.json ./apps/web/
 COPY apps/mcp-server/package.json ./apps/mcp-server/
 # ALL workspace packages (packages/)
 COPY packages/analytics/package.json ./packages/analytics/
-COPY packages/analytics-infra/package.json ./packages/analytics-infra/
 COPY packages/auth/package.json ./packages/auth/
-COPY packages/auth-mock/package.json ./packages/auth-mock/
 COPY packages/config/package.json ./packages/config/
 COPY packages/contracts/package.json ./packages/contracts/
 COPY packages/core/package.json ./packages/core/
 COPY packages/events/package.json ./packages/events/
 COPY packages/github-action/package.json ./packages/github-action/
 COPY packages/guardian-lite/package.json ./packages/guardian-lite/
-COPY packages/health/package.json ./packages/health/
 COPY packages/infrastructure/package.json ./packages/infrastructure/
 COPY packages/integrations/package.json ./packages/integrations/
-COPY packages/motion/package.json ./packages/motion/
-COPY packages/perf/package.json ./packages/perf/
+COPY packages/mail/package.json ./packages/mail/
 COPY packages/platform/package.json ./packages/platform/
 COPY packages/policy-engine/package.json ./packages/policy-engine/
-COPY packages/scripts/package.json ./packages/scripts/
 COPY packages/sdk/package.json ./packages/sdk/
+COPY packages/testing/package.json ./packages/testing/
 # ALL OSS packages (packages-oss/)
 COPY packages-oss/config/package.json ./packages-oss/config/
 COPY packages-oss/contracts/package.json ./packages-oss/contracts/

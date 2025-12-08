@@ -34,7 +34,7 @@ export default defineConfig({
 			"@snapback/api-service": path.resolve(__dirname, "../api"),
 			"@snapback/auth": path.resolve(__dirname, "../../packages/auth/src"),
 			"@snapback/config": path.resolve(__dirname, "../../packages/config/src"),
-			"@snapback/platform": path.resolve(__dirname, "../platform"),
+			"@snapback/platform": path.resolve(__dirname, "../../packages/platform/src"),
 			"@snapback/infrastructure": path.resolve(__dirname, "../../packages/logs"),
 			"@snapback/integrations": path.resolve(__dirname, "../../packages/integrations"),
 			"@snapback/storage": path.resolve(__dirname, "../../packages/storage"),

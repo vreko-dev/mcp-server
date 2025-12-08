@@ -12,7 +12,11 @@ import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { fadeInUp } from "@/lib/animations";
 import { useAnalytics } from "@/modules/analytics/provider/posthog";
+import { useSession } from "@saas/auth/hooks/use-session";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { WaitlistSuccess } from "./WaitlistSuccess";
+import { ReferralFlow } from "./ReferralFlow";
 
 type FormData = {
 	email: string;
@@ -38,11 +42,40 @@ const TEAM_SIZE_OPTIONS = ["Solo", "2-5", "6-20", "21-50", "51+"];
 
 export function WaitlistFlow() {
 	const { trackEvent } = useAnalytics();
+	const { user } = useSession();
+	const router = useRouter();
 	const [formData, setFormData] = useState<FormData>(INITIAL_FORM_DATA);
 	const [submitted, setSubmitted] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [queuePosition, setQueuePosition] = useState<number | null>(null);
 	const [turnstileToken, setTurnstileToken] = useState<string>("");
+
+	const [referralCode, setReferralCode] = useState<string>("");
+
+	// Restore form data from localStorage if available (e.g. after login redirect)
+	useEffect(() => {
+		if (typeof window !== "undefined") {
+			const saved = localStorage.getItem("waitlist_form_data");
+			if (saved) {
+				try {
+					const parsed = JSON.parse(saved);
+					setFormData(parsed);
+					// Optional: Clear it after restoring? Or keep until success?
+					// Keeping it until success is safer in case of errors.
+				} catch (e) {
+					// Ignore invalid JSON
+					localStorage.removeItem("waitlist_form_data");
+				}
+			}
+		}
+	}, []);
+
+	// Clear storage on successful submission
+	useEffect(() => {
+		if (submitted && typeof window !== "undefined") {
+			localStorage.removeItem("waitlist_form_data");
+		}
+	}, [submitted]);
 
 	const handleChange = (field: keyof FormData, value: string) => {
 		setFormData((prev) => ({ ...prev, [field]: value }));
@@ -50,6 +83,15 @@ export function WaitlistFlow() {
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
+
+		// Auth Gating: Redirect if not logged in
+		if (!user) {
+			if (typeof window !== "undefined") {
+				localStorage.setItem("waitlist_form_data", JSON.stringify(formData));
+			}
+			router.push("/auth/login?redirect=/waitlist");
+			return;
+		}
 
 		if (!turnstileToken) {
 			alert("Please complete the security verification");
@@ -75,6 +117,7 @@ export function WaitlistFlow() {
 
 			const data = await response.json();
 			setQueuePosition(data.queuePosition);
+			setReferralCode(data.referralCode);
 			setSubmitted(true);
 
 			// Track with PostHog (client-side UI interaction only)
@@ -260,7 +303,7 @@ export function WaitlistFlow() {
 						<QueueTasksPreview />
 					</motion.div>
 				) : (
-					<WaitlistSuccess queuePosition={queuePosition!} email={formData.email} />
+					<ReferralFlow referralCode={referralCode} />
 				)}
 			</AnimatePresence>
 		</div>

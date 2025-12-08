@@ -71,7 +71,6 @@
     "sdk",
     "snapback"
   ],
-  "license": "Apache-2.0",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsup && tsc --emitDeclarationOnly --outDir dist-types -p tsconfig.build.json",

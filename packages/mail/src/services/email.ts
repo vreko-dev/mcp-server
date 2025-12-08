@@ -9,7 +9,7 @@
 
 import { render } from "@react-email/render";
 import { logger } from "@snapback/infrastructure";
-import { toError } from "@snapback-oss/sdk";
+import { toError } from "@snapback/sdk";
 import type { Transporter } from "nodemailer";
 import nodemailer from "nodemailer";
 import type { ReactElement } from "react";
@@ -24,12 +24,14 @@ export interface EmailPayload {
 	from?: string;
 	replyTo?: string;
 	tags?: Array<{ name: string; value: string }>;
+	idempotencyKey?: string;
 }
 
 export interface SendResult {
 	success: boolean;
 	messageId?: string;
 	error?: string;
+	attempts?: number;
 }
 
 export interface EmailServiceConfig {
@@ -84,85 +86,136 @@ export class EmailService {
 
 	async send(payload: EmailPayload): Promise<SendResult> {
 		const from = payload.from ?? this.config.defaultFrom;
+		let attempts = 0;
+		const maxRetries = 3;
 
-		try {
-			logger.debug("📧 Sending email", {
-				to: payload.to,
-				subject: payload.subject,
-				environment: this.config.environment,
-			});
+		// Exponential backoff with max of 5 seconds
+		const getBackoffDelay = (attempt: number): number => {
+			return Math.min(1000 * 2 ** attempt, 5000);
+		};
 
-			if (this.config.environment === "production" && this.resend) {
-				const result = await this.resend.emails.send({
-					from,
+		while (attempts < maxRetries) {
+			attempts++;
+			try {
+				logger.debug("📧 Sending email", {
 					to: payload.to,
 					subject: payload.subject,
-					react: payload.react,
-					replyTo: payload.replyTo,
-					tags: payload.tags,
+					environment: this.config.environment,
+					attempt: attempts,
 				});
 
-				if (result.error) {
-					logger.error("❌ Resend email send failed", {
+				if (this.config.environment === "production" && this.resend) {
+					const res = await this.resend.emails.send({
+						from,
 						to: payload.to,
-						error: result.error.message,
+						subject: payload.subject,
+						react: payload.react,
+						replyTo: payload.replyTo,
+						tags: payload.tags,
+						headers: {
+							"List-Unsubscribe": `<https://snapback.dev/unsubscribe?email=${payload.to}>`,
+							"List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+						},
 					});
+
+					if (res.error) {
+						logger.error("❌ Resend email send failed", {
+							to: payload.to,
+							error: res.error.message,
+							attempts,
+						});
+						throw new Error(res.error.message);
+					}
+
+					logger.info("✅ Email sent successfully via Resend", {
+						to: payload.to,
+						messageId: res.data?.id,
+						attempts,
+					});
+
 					return {
-						success: false,
-						error: result.error.message,
+						success: true,
+						messageId: res.data?.id,
+						attempts,
 					};
 				}
 
-				logger.info("✅ Email sent successfully via Resend", {
-					to: payload.to,
-					messageId: result.data?.id,
-				});
+				if (this.nodemailer) {
+					const html = await render(payload.react);
+					const text = await render(payload.react, { plainText: true });
 
+					const res = await this.nodemailer.sendMail({
+						from,
+						to: payload.to,
+						subject: payload.subject,
+						html,
+						text,
+						headers: {
+							"List-Unsubscribe": `<https://snapback.dev/unsubscribe?email=${payload.to}>`,
+							"List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+						},
+					});
+
+					logger.info("✅ Email sent successfully via Nodemailer", {
+						to: payload.to,
+						messageId: res.messageId,
+						attempts,
+					});
+
+					return {
+						success: true,
+						messageId: res.messageId,
+						attempts,
+					};
+				}
+
+				logger.error("❌ No email transport configured");
+				throw new Error("No transport configured");
+			} catch (error) {
+				const err = toError(error);
+
+				// Check if we should retry based on error type
+				const message = err.message.toLowerCase();
+				const isTransient =
+					message.includes("econnrefused") ||
+					message.includes("econnreset") ||
+					message.includes("timeout") ||
+					message.includes("429") ||
+					message.includes("too many requests");
+
+				if (isTransient && attempts < maxRetries) {
+					const delay = getBackoffDelay(attempts - 1);
+					logger.debug("⏳ Retrying after backoff", {
+						to: payload.to,
+						attempt: attempts,
+						delayMs: delay,
+						error: err.message,
+					});
+					await new Promise((resolve) => setTimeout(resolve, delay));
+					continue;
+				}
+
+				// Not retryable or max retries reached
+				logger.error("❌ Email send failed", {
+					to: payload.to,
+					error: err.message,
+					stack: err.stack,
+					attempts,
+				});
 				return {
-					success: true,
-					messageId: result.data?.id,
+					success: false,
+					error: err.message,
+					attempts,
 				};
 			}
-			if (this.nodemailer) {
-				const html = await render(payload.react);
-				const text = await render(payload.react, { plainText: true });
-
-				const result = await this.nodemailer.sendMail({
-					from,
-					to: payload.to,
-					subject: payload.subject,
-					html,
-					text,
-				});
-
-				logger.info("✅ Email sent successfully via Nodemailer", {
-					to: payload.to,
-					messageId: result.messageId,
-				});
-
-				return {
-					success: true,
-					messageId: result.messageId,
-				};
-			}
-
-			logger.error("❌ No email transport configured");
-			return {
-				success: false,
-				error: "No transport configured",
-			};
-		} catch (error) {
-			const err = toError(error);
-			logger.error("❌ Email send failed", {
-				to: payload.to,
-				error: err.message,
-				stack: err.stack,
-			});
-			return {
-				success: false,
-				error: err.message,
-			};
 		}
+
+		// Max retries exceeded
+		return {
+			success: false,
+			error: "Max retries exceeded",
+			attempts,
+		};
 	}
 
 	async verify(): Promise<boolean> {

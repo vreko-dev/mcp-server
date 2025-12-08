@@ -1,6 +1,12 @@
+import path from "node:path";
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
+	resolve: {
+		alias: {
+			"@snapback-oss/sdk": path.resolve(__dirname, "../../packages-oss/sdk/src"),
+		},
+	},
 	test: {
 		environment: "node",
 		globals: true,

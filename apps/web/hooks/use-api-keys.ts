@@ -6,6 +6,7 @@
 "use client";
 
 import { useQueryClient } from "@tanstack/react-query";
+import { createApiKeyAction, revokeApiKeyAction } from "@/app/(saas)/app/api-keys/actions";
 import { useResourceMutation, useResourceQuery } from "@/lib/use-resource-query";
 
 // Define types for API keys
@@ -74,20 +75,8 @@ export function useCreateApiKey(): ReturnType<
 
 	return useResourceMutation<ApiKey & { fullKey: string }, CreateApiKeyInput, OptimisticContext>(
 		async (input) => {
-			const res = await fetch("/api/v1/api-keys/create", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify(input),
-			});
-
-			if (!res.ok) {
-				const error = await res.json();
-				throw new Error(error.error?.message || "Failed to create API key");
-			}
-
-			return res.json();
+			const result = await createApiKeyAction(input.name, input.rateLimitPerMinute || 60);
+			return result;
 		},
 		{
 			onMutate: async (input) => {
@@ -144,14 +133,7 @@ export function useRevokeApiKey(): ReturnType<typeof useResourceMutation<void, R
 
 	return useResourceMutation<void, RevokeApiKeyInput, OptimisticContext>(
 		async (input) => {
-			const res = await fetch(`/api/v1/api-keys/${input.keyId}/revoke`, {
-				method: "POST",
-			});
-
-			if (!res.ok) {
-				const error = await res.json();
-				throw new Error(error.error?.message || "Failed to revoke API key");
-			}
+			await revokeApiKeyAction(input.keyId);
 		},
 		{
 			onMutate: async (input) => {

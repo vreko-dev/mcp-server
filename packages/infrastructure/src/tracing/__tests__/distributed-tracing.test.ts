@@ -287,7 +287,7 @@ describe("Distributed Tracing", () => {
 			const testCases = [{}, { "content-type": "application/json" }, { authorization: "Bearer token" }];
 
 			for (const headers of testCases) {
-				const context = provider.extractContext(headers);
+				const context = provider.extractContext(headers as any);
 				expect(context).toBeNull();
 			}
 		});

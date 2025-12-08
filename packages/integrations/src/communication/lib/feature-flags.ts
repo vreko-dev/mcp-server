@@ -1,4 +1,3 @@
-// @ts-expect-error - Config types should be available after build
 import { isFeatureEnabled as isFeatureEnabledCore } from "@snapback/config";
 import { logger } from "@snapback/infrastructure";
 

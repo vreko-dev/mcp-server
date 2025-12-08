@@ -83,7 +83,7 @@ export function NavBar() {
 		},
 		getStarted: {
 			label: "Get Started",
-			href: user ? "/app" : "/auth/signup",
+			href: user ? "/app" : "/waitlist",
 		},
 	};
 

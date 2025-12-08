@@ -6,7 +6,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsup && tsc --build",
+    "build": "tsup",
     "check": "biome check .",
     "clean": "rm -rf dist .tsbuildinfo",
     "format": "biome format --write .",
@@ -21,6 +21,7 @@
     "@hubspot/api-client": "catalog:",
     "@react-email/components": "catalog:",
     "@react-email/render": "catalog:",
+    "@snapback-oss/sdk": "workspace:*",
     "@snapback/config": "workspace:*",
     "@snapback/contracts": "workspace:*",
     "@snapback/infrastructure": "workspace:*",

@@ -27,5 +27,5 @@ export default defineConfig({
 	treeshake: true,
 	tsconfig: "tsconfig.json",
 	target: "es2022",
-	external: ["next", "next/*", "next/headers", "next/server", "next/navigation"],
+	external: ["next", "next/*", "next/headers", "next/server", "next/navigation", "pg"],
 });

@@ -1,4 +1,3 @@
-// @ts-expect-error - Config types should be available after build
 import type { PlanTier } from "@snapback/config";
 import { logger } from "@snapback/infrastructure";
 import { send as sendResendEmail } from "../../email/provider/resend";

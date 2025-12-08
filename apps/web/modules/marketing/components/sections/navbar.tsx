@@ -256,18 +256,16 @@ const Navbar = () => {
 									</MagneticHover>
 								))}
 
-								{/* Login Button - Added to the right side */}
+								{/* Dashboard/Install CTA - Shows dashboard for authenticated users */}
 								<MagneticHover strength={0.3} radius={20}>
-									<a
-										href="https://marketplace.visualstudio.com/items?itemName=MarcelleLabs.snapback-vscode"
-										target="_blank"
-										rel="noopener noreferrer"
+									<Link
+										href="/app/dashboard"
 										className="px-4 py-2 text-sm font-medium bg-white text-black rounded-lg hover:bg-white/90 transition-all duration-200 relative group"
-										title="Open VS Code Marketplace (works on all systems)"
+										title="View your SnapBack dashboard"
 									>
-										Install for VS Code
+										View Dashboard
 										<span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-primary to-secondary scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
-									</a>
+									</Link>
 								</MagneticHover>
 							</div>
 
@@ -349,17 +347,15 @@ const Navbar = () => {
 								))}
 							</div>
 
-							{/* Mobile CTA - Sign In button only */}
+							{/* Mobile CTA - Dashboard button */}
 							<div className="pt-4 border-t border-white/10">
-								<a
-									href="https://marketplace.visualstudio.com/items?itemName=MarcelleLabs.snapback-vscode"
-									target="_blank"
-									rel="noopener noreferrer"
+								<Link
+									href="/app/dashboard"
 									className="w-full px-4 py-3 text-sm font-medium bg-white text-black rounded-lg hover:bg-white/90 transition-all duration-200 block text-center"
 									onClick={closeMenu}
 								>
-									Install Extension
-								</a>
+									View Dashboard
+								</Link>
 							</div>
 						</div>
 					</div>

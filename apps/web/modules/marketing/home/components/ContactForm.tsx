@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-// TODO: Re-enable when API package exports contact types
+ types
 // import {
 // 	type ContactFormValues,
 // 	contactFormSchema,
@@ -27,7 +27,7 @@ import { MailCheckIcon, MailIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 
 export function ContactForm() {
-	// TODO: Re-enable when contact API is available in ORPC
+	 is available in ORPC
 	const contactFormMutation = useMutation({
 		mutationFn: async (data: ContactFormValues) => {
 			// Stub implementation

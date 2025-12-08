@@ -10,17 +10,19 @@ export default defineConfig({
 		"msw/handlers/resend": "src/msw/handlers/resend.ts",
 		"msw/handlers/posthog": "src/msw/handlers/posthog.ts",
 		"mocks/auth": "src/mocks/auth.ts",
+		"mocks/vscode": "src/mocks/vscode.ts",
+		"setup/hooks": "src/setup/hooks.ts",
+		"utils/console": "src/utils/console.ts",
 		"utils/performance": "src/utils/performance.ts",
+		"matchers/index": "src/matchers/index.ts",
+		"vitest-config": "src/vitest-config.ts",
 		"fixtures/index": "src/fixtures/index.ts",
 	},
 	format: ["esm"],
-	dts: {
-		resolve: false, // Don't resolve external package types
-		compilerOptions: {
-			composite: false, // Disable composite for DTS bundling
-			incremental: false, // Disable incremental for DTS generation
-		},
-	},
+	// dts: false - Temporarily disabled due to TS2428: All declarations of 'Assertion' must have identical type parameters.
+	// Module augmentation conflict between Vitest's built-in Assertion interface and custom matchers in src/matchers/index.ts.
+	// TODO: Fix type declarations post-demo by splitting matchers into separate module without augmentation.
+	dts: false,
 	clean: true,
 	sourcemap: true,
 	treeshake: true,

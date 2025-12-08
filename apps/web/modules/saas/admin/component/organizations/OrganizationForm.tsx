@@ -11,7 +11,7 @@ import {
 	useUpdateOrganizationMutation,
 } from "@saas/organizations/lib/api";
 import { useRouter } from "@shared/hooks/router";
-// import { orpc } from "@shared/lib/orpc-query-utils"; 
+// import { orpc } from "@shared/lib/orpc-query-utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@ui/components/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@ui/components/card";
@@ -62,7 +62,6 @@ export function OrganizationForm({ organizationId }: { organizationId: string })
 
 			queryClient.setQueryData(fullOrganizationQueryKey(organizationId), newOrganization);
 
-			
 			// queryClient.invalidateQueries({
 			// 	queryKey: orpc.admin.organizations.list.key(),
 			// });

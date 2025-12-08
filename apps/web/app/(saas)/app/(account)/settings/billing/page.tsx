@@ -6,6 +6,20 @@ import { orpcClient } from "@shared/lib/orpc-client";
 import { attemptAsync } from "es-toolkit";
 import { createPurchasesHelper } from "@/lib/auth/helpers";
 
+// TODO: Import from @snapback/platform/db/zod when properly exported
+interface Purchase {
+	id: string;
+	userId: string;
+	productId: string;
+	type: string;
+	status: string;
+	purchasedAt: Date;
+	expiresAt?: Date | null;
+	cancelledAt?: Date | null;
+	amount?: number | null;
+	currency?: string | null;
+}
+
 export async function generateMetadata() {
 	return {
 		title: "Billing",

@@ -32,7 +32,6 @@ export function PricingTable({
 
 	const { planData } = usePlanData();
 
-	
 	const createCheckoutLinkMutation = useMutation({
 		mutationFn: async (_variables: any) => ({ checkoutLink: "" }),
 	});

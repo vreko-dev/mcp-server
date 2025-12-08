@@ -6,8 +6,8 @@
 "use client";
 
 import { useQueryClient } from "@tanstack/react-query";
-import { createApiKeyAction, revokeApiKeyAction } from "@/app/(saas)/app/api-keys/actions";
 import { useResourceMutation, useResourceQuery } from "@/lib/use-resource-query";
+import { createApiKeyAction, revokeApiKeyAction } from "../app/(saas)/app/api-keys/actions";
 
 // Define types for API keys
 export interface ApiKey {
@@ -75,8 +75,28 @@ export function useCreateApiKey(): ReturnType<
 
 	return useResourceMutation<ApiKey & { fullKey: string }, CreateApiKeyInput, OptimisticContext>(
 		async (input) => {
-			const result = await createApiKeyAction(input.name, input.rateLimitPerMinute || 60);
-			return result;
+			const result = await createApiKeyAction(input.name);
+			// Transform backend response to match hook interface
+			return {
+				id: result.id,
+				name: result.name,
+				keyPreview: result.keyPreview,
+				createdAt: result.createdAt instanceof Date ? result.createdAt.toISOString() : String(result.createdAt),
+				expiresAt: result.expiresAt
+					? result.expiresAt instanceof Date
+						? result.expiresAt.toISOString()
+						: String(result.expiresAt)
+					: null,
+				revokedAt: result.revokedAt
+					? result.revokedAt instanceof Date
+						? result.revokedAt.toISOString()
+						: String(result.revokedAt)
+					: null,
+				scopes: result.scopes,
+				dailyRequestLimit: input.dailyRequestLimit || 1000,
+				rateLimitPerMinute: (result as any).rateLimit || input.rateLimitPerMinute || 60,
+				fullKey: result.fullKey,
+			};
 		},
 		{
 			onMutate: async (input) => {

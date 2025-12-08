@@ -41,7 +41,8 @@ export const ReferralFlow = ({
 	};
 
 	// Calculate Progress Logic
-	const nextMilestone = REFERRAL_MILESTONES.find((m) => m.count > currentReferrals) || REFERRAL_MILESTONES[2];
+	const lastMilestone = REFERRAL_MILESTONES[REFERRAL_MILESTONES.length - 1]!;
+	const nextMilestone = REFERRAL_MILESTONES.find((m) => m.count > currentReferrals) ?? lastMilestone;
 	const progressPercent = Math.min((currentReferrals / 5) * 100, 100);
 
 	return (

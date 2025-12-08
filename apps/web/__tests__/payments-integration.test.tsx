@@ -1,6 +1,6 @@
 /**
  * Payments Integration Tests (RED Phase)
- * 
+ *
  * Tests for payments API re-enablement:
  * - listPurchases ORPC integration
  * - Prefetching query with React Query

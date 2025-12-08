@@ -56,7 +56,7 @@ export const db = {
 		trustDelta: null,
 		terminal: [
 			// We simulate a "rewind" effect. These will be typed out.
-			{ text: "Detected anomaly: Credential leak in config.ts", type: "system" },
+			{ text: "Detected anomaly: Credential leak in config.ts", type: "error" },
 			{ text: "Restoring safe state from checkpoint...", type: "info" },
 			{ text: "Done (47ms). Threat neutralized.", type: "success" },
 		],

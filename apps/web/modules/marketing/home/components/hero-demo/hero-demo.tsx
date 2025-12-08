@@ -45,20 +45,6 @@ export function HeroDemo() {
 		cycleState(3); // Jump to restored (index 3)
 	};
 
-	// User Interaction Handlers for Timeline
-	const _handleNodeClick = (_id: DemoState) => {
-		// Reset flows if jumping
-		setShowRestorePrompt(false);
-		setShowCTA(false);
-		// Find index to jump to proper cycle state (messy with useCycle, but we can set state if we used useState,
-		// but useCycle cycles through. We might need a better state manager or just accept the limitation.
-		// For now, let's just let it be automated or simple click-to-start.
-		// Implementing full jump support with useCycle is tricky without exposed setter for specific index in older versions.
-		// Actually cycleState(i) works in some versions, but let's stick to simple flow for reliability or re-init.)
-
-		// Actually, let's just use the restore button as the main interactor for now to avoid complexity in this step.
-	};
-
 	return (
 		<div className="relative w-full max-w-6xl mx-auto flex flex-col items-center">
 			{/* V4 Layout: Side-by-Side on Desktop */}
@@ -98,7 +84,7 @@ export function HeroDemo() {
 }
 
 // Simple Code Display Helper
-function CodeDisplay({ code, state }: { code?: string; state: string }) {
+function CodeDisplay({ code }: { code?: string; state: string }) {
 	if (!code) {
 		return null;
 	}

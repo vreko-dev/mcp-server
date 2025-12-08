@@ -56,6 +56,10 @@ export async function POST(req: NextRequest) {
 		}
 
 		// 3. Database Interaction
+		if (!db) {
+			console.error("Database connection not available");
+			return NextResponse.json({ error: "Service temporarily unavailable" }, { status: 503 });
+		}
 		const existing = await db.query.waitlist.findFirst({
 			where: eq(waitlist.email, email),
 		});
@@ -95,6 +99,11 @@ export async function POST(req: NextRequest) {
 			})
 			.returning();
 
+		const createdEntry = created[0];
+		if (!createdEntry) {
+			return NextResponse.json({ error: "Failed to create waitlist entry" }, { status: 500 });
+		}
+
 		// Handle Referral (if code provided)
 		if (referralCode) {
 			// Find referrer
@@ -106,15 +115,15 @@ export async function POST(req: NextRequest) {
 				await db.insert(waitlistReferrals).values({
 					referrerId: referrer.id,
 					referredEmail: email,
-					referredId: created[0].id,
+					referredId: createdEntry.id,
 				});
 			}
 		}
 
 		return NextResponse.json(
 			{
-				queuePosition: created[0].queuePosition,
-				referralCode: created[0].referralCode,
+				queuePosition: createdEntry.queuePosition,
+				referralCode: createdEntry.referralCode,
 			},
 			{ status: 201 },
 		);

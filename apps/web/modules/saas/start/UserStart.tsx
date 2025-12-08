@@ -3,6 +3,8 @@
 import { OrganizationsGrid } from "@saas/organizations/components/OrganizationsGrid";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useBulkProtectionStatus } from "@/hooks/use-bulk-protection-status";
+import { useAIDetectionStats } from "@/hooks/use-snapshots";
+import { matchResource } from "@/lib/resource";
 import { ActivityFeed } from "@/modules/saas/dashboard/components/ActivityFeed";
 import { AIDetectionStats } from "@/modules/saas/dashboard/components/AIDetectionStats";
 import { MetricsGrid } from "@/modules/saas/dashboard/components/MetricsGrid";
@@ -74,6 +76,9 @@ export default function UserStart() {
 	// Real-time protection status tracking for bulk files (<500ms latency)
 	const { statuses: protectionStatuses, isLoading } = useBulkProtectionStatus(demoFileIds, onProtectionStatusChange);
 
+	// Fetch real AI detection stats from API (not hardcoded!)
+	const aiStatsResource = useAIDetectionStats();
+
 	// Compute metrics from real-time protection statuses
 	// Performance: Memoization prevents recalculation on parent re-renders
 	// Time complexity: O(n) where n = number of tracked files
@@ -123,11 +128,7 @@ export default function UserStart() {
 	const dashboardData = useMemo(
 		() => ({
 			metrics: computedMetrics,
-			aiStats: [
-				{ tool: "GitHub Copilot", count: 12, avgConfidence: 0.92 },
-				{ tool: "ChatGPT", count: 8, avgConfidence: 0.88 },
-				{ tool: "Claude", count: 5, avgConfidence: 0.95 },
-			],
+			// AI stats now come from real API via hook, not hardcoded
 			activity: activityEvents,
 		}),
 		[computedMetrics, activityEvents],
@@ -154,8 +155,13 @@ export default function UserStart() {
 				)}
 
 				<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-					{/* AI Detection Stats */}
-					<AIDetectionStats stats={dashboardData.aiStats} />
+					{/* AI Detection Stats - Now uses real data from API */}
+					{matchResource(aiStatsResource, {
+						loading: () => <AIDetectionStats.Skeleton />,
+						empty: () => <AIDetectionStats.Empty />,
+						error: (error) => <AIDetectionStats.Error error={error} />,
+						ready: (stats) => <AIDetectionStats stats={stats} />,
+					})}
 
 					{/* Recent Activity - Real-time sync from protection status changes */}
 					<ActivityFeed activities={dashboardData.activity} />

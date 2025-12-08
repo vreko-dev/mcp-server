@@ -42,7 +42,7 @@ export async function listApiKeysAction(): Promise<Omit<ApiKey, "keyHash">[]> {
  */
 export async function createApiKeyAction(name: string): Promise<ApiKey & { fullKey: string; message?: string }> {
 	const session = await getSession();
-	const user = session?.user;
+	const user = (session as any)?.user;
 
 	if (!user) {
 		throw new Error("Unauthorized");
@@ -59,7 +59,6 @@ export async function createApiKeyAction(name: string): Promise<ApiKey & { fullK
 
 	try {
 		// 2. Call ORPC
-		// @ts-expect-error - orpcClient type inference might be loose, ignoring for dynamic import patterns or build quirks
 		const result = await orpcClient.apiKeys.create({
 			name: cleanName,
 		});

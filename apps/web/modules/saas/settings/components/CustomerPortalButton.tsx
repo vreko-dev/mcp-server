@@ -6,7 +6,6 @@ import { CreditCardIcon } from "lucide-react";
 import { toast } from "sonner";
 
 export function CustomerPortalButton({ purchaseId }: { purchaseId: string }) {
-	
 	const createPortalLinkMutation = useMutation({
 		mutationFn: async (_variables: any) => ({ customerPortalLink: "" }),
 	});

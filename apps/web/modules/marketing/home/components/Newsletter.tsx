@@ -18,7 +18,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export function Newsletter() {
-	 in ORPC
+	// Newsletter mutation - TODO: integrate with ORPC when available
 	const newsletterSignupMutation = useMutation({
 		mutationFn: async (data: { email: string }) => {
 			// Stub implementation

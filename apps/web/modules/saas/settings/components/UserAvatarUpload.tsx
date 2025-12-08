@@ -15,7 +15,6 @@ export function UserAvatarUpload({ onSuccess, onError }: { onSuccess: () => void
 	const [cropDialogOpen, setCropDialogOpen] = useState(false);
 	const [image, setImage] = useState<File | null>(null);
 
-	
 	const getSignedUploadUrlMutation = useMutation({
 		mutationFn: async (_variables: any) => {
 			// Stub implementation

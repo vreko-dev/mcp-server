@@ -45,7 +45,7 @@ export function WaitlistFlow() {
 	const [formData, setFormData] = useState<FormData>(INITIAL_FORM_DATA);
 	const [submitted, setSubmitted] = useState(false);
 	const [loading, setLoading] = useState(false);
-	const [queuePosition, setQueuePosition] = useState<number | null>(null);
+	const [_queuePosition, setQueuePosition] = useState<number | null>(null);
 	const [turnstileToken, setTurnstileToken] = useState<string>("");
 
 	const [referralCode, setReferralCode] = useState<string>("");

@@ -42,7 +42,6 @@ export default async function SaaSLayout({ children }: PropsWithChildren) {
 		});
 	}
 
-	
 	// if (config.users.enableBilling) {
 	// 	await queryClient.prefetchQuery(
 	// 		orpc.payments.listPurchases.queryOptions({

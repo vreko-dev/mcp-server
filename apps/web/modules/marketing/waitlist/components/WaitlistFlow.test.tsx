@@ -97,7 +97,8 @@ describe("WaitlistFlow Integration", () => {
         await waitFor(() => expect(submitBtn).not.toBeDisabled());
         fireEvent.click(submitBtn);
 
-        await waitFor(() => {
-            expect(global.fetch).toHaveBeenCalledWith("/api/waitlist", expect.anything());
-        });
-    });
+		await waitFor(() => {
+			expect(global.fetch).toHaveBeenCalledWith("/api/waitlist", expect.anything());
+		});
+	});
+});

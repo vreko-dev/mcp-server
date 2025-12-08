@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { createPurchasesHelper } from "@/lib/auth/helpers";
 
 export const usePurchases = (organizationId?: string) => {
-	
 	const { data } = useQuery({
 		queryKey: ["purchases", organizationId],
 		queryFn: async () => ({ purchases: [] }),

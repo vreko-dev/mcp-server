@@ -12,8 +12,7 @@ import { toError } from "@snapback-oss/sdk";
 import { eq } from "drizzle-orm";
 
 // Schema will be imported from @snapback/platform when defined
-// @ts-expect-error - emailPreferences schema not yet implemented in platform
-// import { emailPreferences } from '@snapback/platform/src/db/schema/snapback';
+// TODO: import { emailPreferences } from '@snapback/platform/src/db/schema/snapback';
 
 // Temporary type until platform exports Database properly
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

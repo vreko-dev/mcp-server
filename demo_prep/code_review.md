@@ -283,6 +283,6 @@ Return { apiKey: { key: rawKey }, message }
 
 ---
 
-**Signed off by**: Qoder  
-**Review Confidence**: High (95%)  
+**Signed off by**: Qoder
+**Review Confidence**: High (95%)
 **Recommendation**: Ship it 🚀

@@ -3,19 +3,17 @@
 import { QueueTasksPreview } from "@marketing/components/ui/queue-tasks-preview";
 import { TrustSignals } from "@marketing/components/ui/trust-signals";
 import { Turnstile } from "@marsidev/react-turnstile";
+import { useSession } from "@saas/auth/hooks/use-session";
 import { Button } from "@ui/components/button";
 import { Input } from "@ui/components/input";
 import { Label } from "@ui/components/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@ui/components/select";
 import { ArrowRight, Shield } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { fadeInUp } from "@/lib/animations";
 import { useAnalytics } from "@/modules/analytics/provider/posthog";
-import { useSession } from "@saas/auth/hooks/use-session";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { WaitlistSuccess } from "./WaitlistSuccess";
 import { ReferralFlow } from "./ReferralFlow";
 
 type FormData = {

@@ -6,14 +6,6 @@ import { orpcClient } from "@shared/lib/orpc-client";
 import { attemptAsync } from "es-toolkit";
 import { createPurchasesHelper } from "@/lib/auth/helpers";
 
-// TODO: Replace with actual Purchase type from @snapback/contracts
-interface Purchase {
-	id: string;
-	type: string;
-	status: string;
-	productId?: string;
-}
-
 export async function generateMetadata() {
 	return {
 		title: "Billing",
@@ -31,15 +23,6 @@ export default async function BillingSettingsPage() {
 	}
 
 	const purchases = data?.purchases ?? [];
-
-	// TODO: Re-enable when payments API is available in ORPC
-	// await queryClient.prefetchQuery({
-	// 	queryKey: orpc.payments.listPurchases.queryKey({
-	// 		input: {},
-	// 	}),
-	// 	queryFn: () => purchases,
-	// });
-
 	const { activePlan } = createPurchasesHelper(purchases);
 
 	return (

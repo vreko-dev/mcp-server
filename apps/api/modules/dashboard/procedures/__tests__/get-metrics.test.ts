@@ -366,12 +366,12 @@ describe("getMetrics", () => {
                 then: vi.fn((resolve) => resolve(result)),
             });
 
+            // Note: Only 5 db.select calls total (recent_activity is Promise.resolve([]))
             mockDb.select
                 .mockReturnValueOnce(createQb([{ count: 10 }]))  // checkpoints - success
                 .mockReturnValueOnce(createQb([{ count: 2 }]))   // recoveries - success
                 .mockReturnValueOnce(createQb([{ count: 5 }]))   // files - success
                 .mockReturnValueOnce(createQb([{ count: 8 }]))   // ai detected - success
-                .mockReturnValueOnce(createQb([]))               // recent activity - success
                 .mockRejectedValueOnce(new Error("ETIMEDOUT: Query timeout")); // featureUsage - FAIL
 
             // ACT
@@ -402,13 +402,13 @@ describe("getMetrics", () => {
                 { featureName: "copilot", count: 7 },   // valid row
             ];
 
+            // Note: Only 5 db.select calls (recent_activity is Promise.resolve([]))
             mockDb.select
-                .mockReturnValueOnce(createQb([{ count: 10 }]))
-                .mockReturnValueOnce(createQb([{ count: 2 }]))
-                .mockReturnValueOnce(createQb([{ count: 5 }]))
-                .mockReturnValueOnce(createQb([{ count: 8 }]))
-                .mockReturnValueOnce(createQb([]))
-                .mockReturnValueOnce(createQb(malformedAiBreakdown));
+                .mockReturnValueOnce(createQb([{ count: 10 }]))  // checkpoints
+                .mockReturnValueOnce(createQb([{ count: 2 }]))   // recoveries
+                .mockReturnValueOnce(createQb([{ count: 5 }]))   // files
+                .mockReturnValueOnce(createQb([{ count: 8 }]))   // ai detected
+                .mockReturnValueOnce(createQb(malformedAiBreakdown)); // ai breakdown
 
             // ACT - Should not crash on null/undefined featureName
             const result = await getMetricsHandler({ context: mockContext });

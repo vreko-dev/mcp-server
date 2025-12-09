@@ -183,8 +183,14 @@ export const getMetricsHandler = async ({ context }: { context: unknown }): Prom
 /**
  * Normalize tool name to lowercase canonical form
  * Handles case variations: "GitHub Copilot", "CURSOR", "copilot" → "copilot"
+ * Safely handles null/undefined values by returning empty string
  */
-function normalizeToolName(featureName: string): string {
+function normalizeToolName(featureName: string | null | undefined): string {
+	// Guard against null/undefined (Task 4.1.A - Error Path handling)
+	if (!featureName || typeof featureName !== "string") {
+		return "";
+	}
+
 	const normalized = featureName.toLowerCase();
 
 	// Map common variations to canonical names

@@ -1182,13 +1182,1148 @@ Between each task:
 
 ---
 
+## Phase 4: Critical Integration Gaps (Week 4-5)
+
+**Context**: After deep codebase analysis, 5 major systems have complete infrastructure but incomplete integration wiring. This phase closes those gaps and enables end-to-end feature functionality.
+
+### Task 4.1: Wire MetricsAggregator into Dashboard Metrics
+
+**Problem**: Dashboard metrics API returns hardcoded empty data
+
+**Files**:
+- Primary: `/apps/api/modules/dashboard/procedures/get-metrics.ts` (lines 88-128)
+- Backend: `/apps/api/src/services/metrics-aggregator.ts` (lines 1-54)
+- Schema: `/packages/platform/src/db/schema/snapback/user-daily-metrics.ts`
+
+#### Current State (BROKEN)
+
+**File**: `apps/api/modules/dashboard/procedures/get-metrics.ts`
+
+```typescript
+// Lines 115-128: Hardcoded empty/mock data
+const metrics = {
+    protection_status: "active" as const,
+    total_checkpoints: totalCheckpoints,
+    total_recoveries: totalRecoveries,
+    files_protected: filesProtected,
+    ai_detection_rate: aiDetectionRate,
+    recent_activity: [],  // ❌ HARDCODED EMPTY
+    ai_breakdown: {       // ❌ HARDCODED MOCKED
+        copilot: 0,
+        cursor: 0,
+        claude: 0,
+        windsurf: 0,
+    },
+};
+```
+
+#### Root Cause
+
+- `MetricsAggregator` service exists but is **never instantiated** in dashboard endpoint
+- Daily metrics calculation exists but runs **only on manual admin request** (not scheduled)
+- AI tool detection has no aggregation by tool type
+- Recent activity calculation incomplete
+
+#### Implementation Steps
+
+**Step 1**: Create scheduled daily metrics job
+
+**File**: `apps/api/src/jobs/daily-metrics-aggregation.ts` (NEW)
+
+```typescript
+import { CronJob } from 'cron';
+import { MetricsAggregator } from '../services/metrics-aggregator';
+import { logger } from '@snapback/infrastructure';
+import { db } from '@snapback/platform/db';
+
+export function startDailyMetricsAggregation(): void {
+    const job = new CronJob('0 0 * * *', async () => {  // Daily at midnight
+        try {
+            logger.info('Starting daily metrics aggregation');
+            
+            const aggregator = new MetricsAggregator(db);
+            const allUsers = await db.query(
+                'SELECT DISTINCT user_id FROM snapshots'
+            );
+            
+            for (const { user_id } of allUsers) {
+                const metrics = await aggregator.aggregateDailyMetrics(user_id);
+                await db.insert('user_daily_metrics').values(metrics);
+            }
+            
+            logger.info('Daily metrics aggregation completed');
+        } catch (error) {
+            logger.error('Daily metrics aggregation failed', { error });
+        }
+    });
+    
+    job.start();
+}
+
+// Call from app startup: startDailyMetricsAggregation()
+```
+
+**Step 2**: Update dashboard procedure to use aggregated data
+
+**File**: `apps/api/modules/dashboard/procedures/get-metrics.ts`
+
+```typescript
+// ... existing code ...
+import { MetricsAggregator } from '../../../src/services/metrics-aggregator';
+
+export async function getMetrics(input: GetMetricsInput) {
+    // ... existing code for checksums ...
+    
+    const aggregator = new MetricsAggregator(db);
+    
+    // Replace hardcoded values with aggregated data
+    const aiToolBreakdown = await aggregator.getAIToolDetectionCounts(userId);
+    const recentActivity = await aggregator.getRecentActivity(userId, 7); // Last 7 days
+    
+    const metrics = {
+        protection_status: "active" as const,
+        total_checkpoints: totalCheckpoints,
+        total_recoveries: totalRecoveries,
+        files_protected: filesProtected,
+        ai_detection_rate: aiDetectionRate,
+        recent_activity: recentActivity,  // ✅ FROM AGGREGATOR
+        ai_breakdown: {                   // ✅ FROM AGGREGATOR
+            copilot: aiToolBreakdown.copilot ?? 0,
+            cursor: aiToolBreakdown.cursor ?? 0,
+            claude: aiToolBreakdown.claude ?? 0,
+            windsurf: aiToolBreakdown.windsurf ?? 0,
+        },
+    };
+    
+    // ... rest of existing code ...
+}
+```
+
+**Step 3**: Add AI tool breakdown aggregation method
+
+**File**: `apps/api/src/services/metrics-aggregator.ts`
+
+```typescript
+// ... existing code ...
+
+/**
+ * Get AI tool detection counts for a user
+ */
+async getAIToolDetectionCounts(userId: string) {
+    const result = await this.db.query(`
+        SELECT
+            COALESCE(SUM(CASE WHEN tool_name = 'copilot' THEN 1 ELSE 0 END), 0) as copilot,
+            COALESCE(SUM(CASE WHEN tool_name = 'cursor' THEN 1 ELSE 0 END), 0) as cursor,
+            COALESCE(SUM(CASE WHEN tool_name = 'claude' THEN 1 ELSE 0 END), 0) as claude,
+            COALESCE(SUM(CASE WHEN tool_name = 'windsurf' THEN 1 ELSE 0 END), 0) as windsurf
+        FROM ai_detections
+        WHERE user_id = ?
+            AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+    `, [userId]);
+    
+    return result[0] || { copilot: 0, cursor: 0, claude: 0, windsurf: 0 };
+}
+
+/**
+ * Get recent activity (snapshots, recoveries, risk detections)
+ */
+async getRecentActivity(userId: string, days: number = 7) {
+    return await this.db.query(`
+        SELECT
+            'snapshot' as type,
+            created_at as timestamp,
+            files_changed as count,
+            reason as description
+        FROM snapshots
+        WHERE user_id = ?
+            AND created_at >= DATE_SUB(NOW(), INTERVAL ? DAY)
+        
+        UNION ALL
+        
+        SELECT
+            'recovery' as type,
+            created_at as timestamp,
+            files_restored as count,
+            status as description
+        FROM recovery_logs
+        WHERE user_id = ?
+            AND created_at >= DATE_SUB(NOW(), INTERVAL ? DAY)
+        
+        ORDER BY timestamp DESC
+        LIMIT 20
+    `, [userId, days, userId, days]);
+}
+```
+
+#### Test Requirements
+
+**File**: `apps/api/test/integration/dashboard/metrics-aggregation.test.ts`
+
+```typescript
+import { describe, it, expect, beforeEach } from 'vitest';
+import { getMetrics } from '../../../modules/dashboard/procedures/get-metrics';
+import { createTestUser, createTestSnapshots } from '../../fixtures';
+
+describe('Dashboard Metrics - Aggregation', () => {
+    let userId: string;
+    
+    beforeEach(async () => {
+        userId = await createTestUser();
+        // Create 5 snapshots with different AI tools detected
+        await createTestSnapshots(userId, [
+            { tool: 'copilot', timestamp: Date.now() - 86400000 },
+            { tool: 'cursor', timestamp: Date.now() - 86400000 },
+            { tool: 'claude', timestamp: Date.now() - 172800000 },
+            { tool: 'copilot', timestamp: Date.now() - 172800000 },
+            { tool: 'windsurf', timestamp: Date.now() - 259200000 },
+        ]);
+    });
+    
+    it('should return aggregated ai_breakdown by tool', async () => {
+        const metrics = await getMetrics({ userId });
+        
+        expect(metrics.ai_breakdown).toEqual({
+            copilot: 2,
+            cursor: 1,
+            claude: 1,
+            windsurf: 1,
+        });
+    });
+    
+    it('should NOT return hardcoded zeros', async () => {
+        const metrics = await getMetrics({ userId });
+        
+        expect(metrics.ai_breakdown.copilot).toBeGreaterThan(0);
+    });
+    
+    it('should include recent_activity with actual events', async () => {
+        const metrics = await getMetrics({ userId });
+        
+        expect(metrics.recent_activity).not.toEqual([]);
+        expect(metrics.recent_activity.length).toBeGreaterThan(0);
+        expect(metrics.recent_activity[0]).toHaveProperty('type');
+        expect(metrics.recent_activity[0]).toHaveProperty('timestamp');
+    });
+});
+```
+
+---
+
+### Task 4.2: Wire CloudBackup Upload or Presigned URLs
+
+**Problem**: Cloud backup infrastructure exists but never called; snapshots can't be uploaded to cloud
+
+**Files**:
+- Primary: `/apps/api/modules/snapshots/procedures/create-snapshot.ts` (lines 167-173)
+- Infrastructure: `/packages/sdk/src/cloud/CloudBackupService.ts` (complete implementation)
+- Config: Snapshot creation payload includes `cloudBackupEnabled`, `encryptionKeyId`, etc.
+
+#### Current State (BROKEN)
+
+**File**: `apps/api/modules/snapshots/procedures/create-snapshot.ts` (lines 167-173)
+
+```typescript
+cloudBackupEnabled: input.cloudBackupEnabled,
+encryptionKeyId: input.encryptionKeyId,
+encryptedDataKey: input.encryptedDataKey,
+encryptionAlgorithm: input.encryptionAlgorithm,
+// cloudBackupUrl would be set by separate upload process if enabled
+metadata: input.metadata,
+```
+
+❌ Comment indicates deferred upload but **no such process exists**
+
+#### Root Cause
+
+- CloudBackupService is fully implemented with S3 upload, compression, checksumming
+- Never integrated into snapshot creation flow
+- No presigned URL generation for client-side uploads
+- Feature flag not enabled in configuration
+
+#### Implementation Steps
+
+**Step 1**: Choose upload strategy (Server-side vs Client-side presigned URLs)
+
+**Option A (Recommended for demo)**: Server-side upload
+- Simpler to implement and test
+- More control over encryption/compression
+- Better for showing progress
+
+**Option B (Better for scale)**: Client presigned URLs
+- Reduces API server load
+- Faster uploads (direct to S3)
+- Client browser handles upload
+
+**For now, implement Option A:**
+
+**Step 2**: Integrate CloudBackupService into snapshot creation
+
+**File**: `apps/api/modules/snapshots/procedures/create-snapshot.ts`
+
+```typescript
+import { CloudBackupService } from '@snapback/sdk/cloud';
+
+// ... existing imports and code ...
+
+export async function createSnapshot(input: CreateSnapshotInput) {
+    // ... existing validation and snapshot creation ...
+    
+    // After snapshot is saved to database
+    const snapshot = await db.snapshots.create({
+        // ... existing fields ...
+        cloudBackupEnabled: input.cloudBackupEnabled,
+        encryptionKeyId: input.encryptionKeyId,
+        encryptedDataKey: input.encryptedDataKey,
+        encryptionAlgorithm: input.encryptionAlgorithm,
+    });
+    
+    // NEW: Upload to cloud if enabled
+    if (input.cloudBackupEnabled && process.env.ENABLE_CLOUD_BACKUP === 'true') {
+        try {
+            const cloudBackupService = new CloudBackupService({
+                s3BucketName: process.env.S3_BUCKET_NAME!,
+                s3Region: process.env.S3_REGION!,
+                encryptionKey: input.encryptedDataKey,
+            });
+            
+            const uploadResult = await cloudBackupService.upload({
+                snapshotId: snapshot.id,
+                content: input.snapshotContent,
+                metadata: input.metadata,
+            });
+            
+            // Store cloud backup URL
+            await db.snapshots.update(snapshot.id, {
+                cloudBackupUrl: uploadResult.url,
+                cloudBackupChecksum: uploadResult.checksum,
+            });
+            
+            logger.info('Cloud backup completed', {
+                snapshotId: snapshot.id,
+                url: uploadResult.url,
+            });
+        } catch (error) {
+            logger.warn('Cloud backup failed (non-blocking)', {
+                snapshotId: snapshot.id,
+                error: toError(error).message,
+            });
+            // Don't fail snapshot creation if backup fails
+        }
+    }
+    
+    return { success: true, snapshot };
+}
+```
+
+**Step 3**: Enable feature flag
+
+**File**: `.env.local` (or wherever feature flags are configured)
+
+```
+ENABLE_CLOUD_BACKUP=true
+S3_BUCKET_NAME=snapback-backups-prod
+S3_REGION=us-east-1
+```
+
+**Step 4**: Add presigned URL endpoint for client-side uploads (Option B for future)
+
+**File**: `apps/api/modules/snapshots/router.ts` (NEW ROUTE)
+
+```typescript
+router.post('/presigned-url', async (input) => {
+    // When client-side upload is ready to implement
+    const cloudBackupService = new CloudBackupService(config);
+    const presignedUrl = await cloudBackupService.getPresignedUploadUrl({
+        snapshotId: input.snapshotId,
+        contentType: 'application/octet-stream',
+        expiresIn: 3600,
+    });
+    return { url: presignedUrl };
+});
+```
+
+#### Test Requirements
+
+**File**: `apps/api/test/integration/snapshots/cloud-backup.test.ts`
+
+```typescript
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { createSnapshot } from '../../../modules/snapshots/procedures/create-snapshot';
+import { mockS3Service } from '../../mocks/s3';
+
+describe('Cloud Backup Integration', () => {
+    beforeEach(() => {
+        process.env.ENABLE_CLOUD_BACKUP = 'true';
+        vi.mock('@snapback/sdk/cloud');
+    });
+    
+    it('should upload snapshot to S3 when cloudBackupEnabled=true', async () => {
+        const mockUpload = vi.fn().mockResolvedValue({
+            url: 's3://bucket/snap-123',
+            checksum: 'abc123',
+        });
+        
+        const result = await createSnapshot({
+            cloudBackupEnabled: true,
+            snapshotContent: 'file content',
+            encryptionKeyId: 'key-1',
+            encryptedDataKey: 'encrypted-data',
+            encryptionAlgorithm: 'AES-256-GCM',
+            metadata: {},
+        });
+        
+        expect(mockUpload).toHaveBeenCalled();
+        expect(result.snapshot.cloudBackupUrl).toBe('s3://bucket/snap-123');
+    });
+    
+    it('should NOT upload when cloudBackupEnabled=false', async () => {
+        const mockUpload = vi.fn();
+        
+        const result = await createSnapshot({
+            cloudBackupEnabled: false,  // ❌ Don't upload
+            snapshotContent: 'file content',
+            metadata: {},
+        });
+        
+        expect(mockUpload).not.toHaveBeenCalled();
+        expect(result.snapshot.cloudBackupUrl).toBeUndefined();
+    });
+    
+    it('should NOT fail snapshot creation if backup fails', async () => {
+        const mockUpload = vi.fn().mockRejectedValue(new Error('S3 error'));
+        
+        const result = await createSnapshot({
+            cloudBackupEnabled: true,
+            snapshotContent: 'file content',
+            metadata: {},
+        });
+        
+        expect(result.success).toBe(true); // Snapshot still created
+        expect(result.snapshot.cloudBackupUrl).toBeUndefined();
+    });
+});
+```
+
+---
+
+### Task 4.3: Connect Offline Event Queue to Network Restoration
+
+**Problem**: Offline queue infrastructure complete but never triggered on network recovery
+
+**Files**:
+- Queue: `/apps/vscode/src/telemetry/OfflineEventQueue.ts` (592 lines, 100% complete)
+- Proxy: `/apps/vscode/src/services/telemetry-proxy.ts` (lines 40-54)
+- Events: Offline mode detection exists but not wired to queue processing
+
+#### Current State (BROKEN)
+
+**File**: `/apps/vscode/src/services/telemetry-proxy.ts` (lines 40-54)
+
+```typescript
+private setupNetworkMonitoring(): void {
+    // Monitors online/offline state
+    window.addEventListener('online', () => {
+        logger.info('Network restored');
+        // ❌ Queue processing never called here
+    });
+    
+    window.addEventListener('offline', () => {
+        logger.info('Network disconnected');
+        // Events should be queued
+    });
+}
+```
+
+#### Root Cause
+
+- `OfflineEventQueue.processQueue()` exists and has exponential backoff retry logic
+- Network restoration event handler doesn't call it
+- Queue is filled but never drained after network recovery
+- Events accumulate indefinitely (7-day TTL prevents data loss but limits utility)
+
+#### Implementation Steps
+
+**Step 1**: Wire queue processor to network restoration event
+
+**File**: `/apps/vscode/src/services/telemetry-proxy.ts`
+
+```typescript
+import { OfflineEventQueue } from '../telemetry/OfflineEventQueue';
+
+export class TelemetryProxy {
+    private offlineQueue: OfflineEventQueue;
+    
+    // ... existing code ...
+    
+    private setupNetworkMonitoring(): void {
+        window.addEventListener('online', () => {
+            logger.info('Network restored, processing offline queue');
+            // ✅ NEW: Process queued events
+            this.offlineQueue.processQueue().catch(error => {
+                logger.error('Failed to process offline queue', { error });
+            });
+        });
+        
+        window.addEventListener('offline', () => {
+            logger.info('Network disconnected, switching to offline mode');
+            // Events will be automatically queued by queueEvent method
+        });
+    }
+    
+    async queueEvent(event: TelemetryEvent): Promise<void> {
+        if (!navigator.onLine) {
+            // Queue for later
+            await this.offlineQueue.enqueue(event);
+            logger.debug('Event queued for offline replay', { eventName: event.name });
+        } else {
+            // Send immediately
+            await this.sendEvent(event);
+        }
+    }
+}
+```
+
+**Step 2**: Add retry mechanism for network errors
+
+**File**: `/apps/vscode/src/services/telemetry-proxy.ts`
+
+```typescript
+private async sendEvent(event: TelemetryEvent): Promise<void> {
+    try {
+        await this.analytics.track(event.name, event.properties);
+    } catch (error) {
+        // If send fails (network dropped), queue for retry
+        logger.warn('Failed to send event, queuing for retry', { 
+            eventName: event.name,
+            error: toError(error).message 
+        });
+        await this.offlineQueue.enqueue(event);
+    }
+}
+```
+
+**Step 3**: Add monitoring for queue processing
+
+**File**: `/apps/vscode/src/telemetry/OfflineEventQueue.ts`
+
+```typescript
+// Add at end of processQueue method:
+async processQueue(): Promise<void> {
+    const queueSize = await this.storage.get('queue:size');
+    logger.info('Processing offline queue', { queueSize });
+    
+    // ... existing process queue logic ...
+    
+    logger.info('Offline queue processing completed', { processed: queueSize });
+}
+```
+
+#### Test Requirements
+
+**File**: `apps/vscode/test/integration/telemetry/offline-queue-integration.test.ts`
+
+```typescript
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { TelemetryProxy } from '../../../src/services/telemetry-proxy';
+import { OfflineEventQueue } from '../../../src/telemetry/OfflineEventQueue';
+
+describe('Offline Queue Integration', () => {
+    let telemetryProxy: TelemetryProxy;
+    let offlineQueue: OfflineEventQueue;
+    
+    beforeEach(() => {
+        offlineQueue = new OfflineEventQueue(mockStorage);
+        telemetryProxy = new TelemetryProxy({ offlineQueue });
+    });
+    
+    it('should queue events when offline', async () => {
+        Object.defineProperty(navigator, 'onLine', {
+            configurable: true,
+            value: false,
+        });
+        
+        const enqueueSpy = vi.spyOn(offlineQueue, 'enqueue');
+        
+        await telemetryProxy.queueEvent({
+            name: 'snapshot_created',
+            properties: { snapshotId: 'snap-123' },
+        });
+        
+        expect(enqueueSpy).toHaveBeenCalled();
+    });
+    
+    it('should process queue when network is restored', async () => {
+        const processSpy = vi.spyOn(offlineQueue, 'processQueue');
+        
+        // Queue some events
+        await offlineQueue.enqueue({ name: 'event1' });
+        await offlineQueue.enqueue({ name: 'event2' });
+        
+        // Simulate network restoration
+        Object.defineProperty(navigator, 'onLine', {
+            configurable: true,
+            value: true,
+        });
+        window.dispatchEvent(new Event('online'));
+        
+        // Give async processing time
+        await new Promise(r => setTimeout(r, 100));
+        
+        expect(processSpy).toHaveBeenCalled();
+    });
+    
+    it('should NOT lose events if network restoration fails', async () => {
+        const mockProcessQueue = vi.fn().mockRejectedValue(new Error('API error'));
+        offlineQueue.processQueue = mockProcessQueue;
+        
+        await offlineQueue.enqueue({ name: 'event1' });
+        
+        // Simulate network restoration that fails
+        window.dispatchEvent(new Event('online'));
+        await new Promise(r => setTimeout(r, 100));
+        
+        // Event should still be in queue
+        const queuedEvents = await offlineQueue.getQueuedEvents();
+        expect(queuedEvents.length).toBeGreaterThan(0);
+    });
+});
+```
+
+---
+
+### Task 4.4: Enable Trust Calibration Loop
+
+**Problem**: Trust score database schema complete but never updated; AI confidence scores mocked in dashboard
+
+**Files**:
+- Schema: `/packages/platform/src/db/schema/snapback/trust-scores.ts` (complete, unused)
+- Dashboard: `/apps/api/lib/dashboard-metrics.ts` (lines 130-137 - hardcoded mock scores)
+- Recovery logs: Schema exists to track outcomes
+
+#### Current State (BROKEN)
+
+**File**: `/apps/api/lib/dashboard-metrics.ts` (lines 130-137)
+
+```typescript
+return aiFeatures.map((feature) => ({
+    tool: formatToolName(feature.featureName),
+    count: feature.count,
+    avgConfidence: 0.9 + Math.random() * 0.09, // ❌ MOCKED: Random 90-99%
+}));
+```
+
+#### Root Cause
+
+- `trust_scores` table has EWMA (Exponentially Weighted Moving Average) fields:
+  - `score`: Current 0.0-1.0 trust rating
+  - `momentum`: -1.0 to 1.0 (for adaptive weighting)
+  - `volatility`: 0.0-1.0 (uncertainty metric)
+  - `recentWindow`: Last 20 outcomes (0 or 1)
+- No code updates these scores based on recovery outcomes
+- No feedback loop from "user approved this change" to trust calibration
+- Confidence scores hardcoded to mock values
+
+#### Implementation Steps
+
+**Step 1**: Create trust calibration engine
+
+**File**: `apps/api/src/services/trust-calibration.ts` (NEW)
+
+```typescript
+import { db } from '@snapback/platform/db';
+import { logger } from '@snapback/infrastructure';
+
+const EWMA_ALPHA = 0.3; // Weight for new observations
+
+export class TrustCalibrationEngine {
+    /**
+     * Update trust score based on recovery outcome
+     * Outcome: 1 = user approved (correct), 0 = user rejected (incorrect)
+     */
+    async recordOutcome(
+        userId: string,
+        aiTool: string,
+        context: string,
+        outcome: 0 | 1
+    ): Promise<void> {
+        const trustScore = await db
+            .select()
+            .from('trust_scores')
+            .where({
+                user_id: userId,
+                tool_name: aiTool,
+                context_type: context,
+            })
+            .first();
+
+        if (!trustScore) {
+            // First observation for this tool/context
+            await db.insert('trust_scores').values({
+                user_id: userId,
+                tool_name: aiTool,
+                context_type: context,
+                score: outcome,
+                momentum: outcome > 0.5 ? 0.1 : -0.1,
+                volatility: 0.5, // High uncertainty initially
+                recentWindow: [outcome],
+            });
+            return;
+        }
+
+        // Update EWMA score
+        const newScore = EWMA_ALPHA * outcome + (1 - EWMA_ALPHA) * trustScore.score;
+        const newMomentum = this.calculateMomentum(trustScore, outcome);
+        const newVolatility = this.calculateVolatility(trustScore, outcome);
+        const updatedWindow = [
+            outcome,
+            ...trustScore.recentWindow.slice(0, 19),
+        ];
+
+        await db
+            .update('trust_scores')
+            .set({
+                score: newScore,
+                momentum: newMomentum,
+                volatility: newVolatility,
+                recentWindow: updatedWindow,
+                updated_at: new Date(),
+            })
+            .where({ id: trustScore.id });
+
+        logger.info('Trust score updated', {
+            userId,
+            tool: aiTool,
+            previousScore: trustScore.score.toFixed(3),
+            newScore: newScore.toFixed(3),
+            outcome,
+        });
+    }
+
+    private calculateMomentum(
+        current: typeof trustScores,
+        newOutcome: 0 | 1
+    ): number {
+        // Momentum shows trend direction
+        const recentAvg =
+            current.recentWindow.slice(0, 5).reduce((a, b) => a + b) / 5;
+        const trend = newOutcome > recentAvg ? 0.1 : -0.1;
+        return Math.max(-1, Math.min(1, current.momentum + trend * 0.2));
+    }
+
+    private calculateVolatility(
+        current: typeof trustScores,
+        newOutcome: 0 | 1
+    ): number {
+        // Volatility decreases with more observations (increased confidence)
+        const stdDev = this.standardDeviation(current.recentWindow);
+        const observations = current.recentWindow.length;
+        return stdDev / Math.sqrt(Math.log(observations + 1));
+    }
+
+    private standardDeviation(values: number[]): number {
+        const mean = values.reduce((a, b) => a + b) / values.length;
+        const variance =
+            values.reduce((sq, n) => sq + Math.pow(n - mean, 2), 0) /
+            values.length;
+        return Math.sqrt(variance);
+    }
+}
+```
+
+**Step 2**: Wire trust calibration to recovery outcome webhook
+
+**File**: `apps/api/modules/recovery/router.ts` (NEW ROUTE)
+
+```typescript
+import { TrustCalibrationEngine } from '../../src/services/trust-calibration';
+
+router.post('/outcome', async (input: RecoveryOutcomeInput) => {
+    // Called when user approves or rejects a recovered change
+    const trustEngine = new TrustCalibrationEngine();
+    
+    // 1 = approved (correct), 0 = rejected (incorrect)
+    const outcome = input.approved ? 1 : 0;
+    
+    await trustEngine.recordOutcome(
+        input.userId,
+        input.aiTool,
+        input.context, // e.g., 'code_generation', 'refactoring'
+        outcome
+    );
+    
+    return { success: true, updated: true };
+});
+```
+
+**Step 3**: Use trust scores in dashboard
+
+**File**: `/apps/api/lib/dashboard-metrics.ts`
+
+```typescript
+// ... existing code ...
+
+return aiFeatures.map(async (feature) => {
+    // Get actual trust score instead of mocking
+    const trustScore = await db
+        .select('score')
+        .from('trust_scores')
+        .where({
+            user_id: userId,
+            tool_name: formatToolName(feature.featureName),
+        })
+        .orderBy('updated_at', 'desc')
+        .first();
+    
+    return {
+        tool: formatToolName(feature.featureName),
+        count: feature.count,
+        avgConfidence: trustScore?.score ?? 0.5, // ✅ FROM DATABASE
+    };
+});
+```
+
+#### Test Requirements
+
+**File**: `apps/api/test/unit/services/trust-calibration.test.ts`
+
+```typescript
+import { describe, it, expect, beforeEach } from 'vitest';
+import { TrustCalibrationEngine } from '../../../src/services/trust-calibration';
+
+describe('Trust Calibration Engine', () => {
+    let engine: TrustCalibrationEngine;
+    
+    beforeEach(() => {
+        engine = new TrustCalibrationEngine();
+    });
+    
+    it('should initialize score at first outcome', async () => {
+        await engine.recordOutcome('user-1', 'copilot', 'code_gen', 1);
+        
+        const score = await db
+            .select('score')
+            .from('trust_scores')
+            .where({ user_id: 'user-1', tool_name: 'copilot' })
+            .first();
+        
+        expect(score.score).toBe(1); // Approved
+    });
+    
+    it('should apply EWMA weighting to subsequent outcomes', async () => {
+        // First: approved
+        await engine.recordOutcome('user-1', 'cursor', 'refactor', 1);
+        const score1 = await getScore('user-1', 'cursor');
+        expect(score1).toBe(1);
+        
+        // Second: rejected
+        await engine.recordOutcome('user-1', 'cursor', 'refactor', 0);
+        const score2 = await getScore('user-1', 'cursor');
+        
+        // EWMA: 0.3 * 0 + 0.7 * 1 = 0.7
+        expect(score2).toBeCloseTo(0.7, 2);
+    });
+    
+    it('should track momentum (trend direction)', async () => {
+        // Series of approvals (positive trend)
+        for (let i = 0; i < 5; i++) {
+            await engine.recordOutcome('user-1', 'claude', 'gen', 1);
+        }
+        
+        const score = await db
+            .select('momentum')
+            .from('trust_scores')
+            .where({ user_id: 'user-1', tool_name: 'claude' })
+            .first();
+        
+        expect(score.momentum).toBeGreaterThan(0); // Positive trend
+    });
+    
+    it('should reduce volatility with more observations', async () => {
+        // Few observations = high volatility
+        await engine.recordOutcome('user-1', 'windsurf', 'gen', 1);
+        const vol1 = await getVolatility('user-1', 'windsurf');
+        
+        // Many observations = lower volatility
+        for (let i = 0; i < 15; i++) {
+            await engine.recordOutcome('user-1', 'windsurf', 'gen', i % 2);
+        }
+        const vol2 = await getVolatility('user-1', 'windsurf');
+        
+        expect(vol2).toBeLessThan(vol1);
+    });
+});
+```
+
+---
+
+### Task 4.5: Replace Static Feature Flags with Dynamic PostHog
+
+**Problem**: Feature flags wired to PostHog but never actually used in decision paths; all checks are static env var reads
+
+**Files**:
+- Feature flags: `/packages/config/src/feature-flags.ts` (lines 1-85)
+- Feature manager: `/packages/config/src/utils/feature-flags.ts` (lines 1-41)
+- Current implementation: All checks use static `FEATURE_FLAGS` constant
+
+#### Current State (BROKEN)
+
+**File**: `/packages/config/src/utils/feature-flags.ts` (lines 1-41)
+
+```typescript
+// Static evaluation only - PostHog never consulted
+export function isFeatureEnabled(featureKey: string): boolean {
+    const feature = FEATURE_FLAGS[featureKey as keyof typeof FEATURE_FLAGS];
+    return feature?.enabled ?? false;
+}
+
+// Never called dynamically
+let posthogInstance: PostHog | null = null;
+```
+
+#### Root Cause
+
+- PostHog SDK initialized but never called in actual feature checks
+- `isFeatureEnabled()` only reads static `FEATURE_FLAGS` object from env
+- Changes require code deployment instead of PostHog dashboard
+- No A/B testing, gradual rollouts, or user targeting possible
+
+#### Implementation Steps
+
+**Step 1**: Update FeatureManager to call PostHog
+
+**File**: `/packages/config/src/utils/feature-flags.ts`
+
+```typescript
+import { PostHog } from 'posthog-js';
+import { logger } from '@snapback/infrastructure';
+
+let posthogInstance: PostHog | null = null;
+
+export function initializePostHog(config: {
+    apiKey: string;
+    apiHost: string;
+}): void {
+    posthogInstance = new PostHog(config.apiKey, {
+        api_host: config.apiHost,
+        autocapture: false, // We'll track manually
+    });
+}
+
+/**
+ * Dynamically check if feature is enabled
+ * Falls back to static config if PostHog unavailable
+ */
+export async function isFeatureEnabled(
+    featureKey: string,
+    userId?: string,
+    context?: Record<string, unknown>
+): Promise<boolean> {
+    // Try PostHog first
+    if (posthogInstance && userId) {
+        try {
+            const isEnabled = await posthogInstance.isFeatureEnabled(
+                featureKey,
+                userId,
+                { groups: context }
+            );
+            return isEnabled ?? getFallbackFeatureState(featureKey);
+        } catch (error) {
+            logger.warn('PostHog feature flag check failed, using fallback', {
+                feature: featureKey,
+                error: toError(error).message,
+            });
+        }
+    }
+    
+    // Fallback to static config
+    return getFallbackFeatureState(featureKey);
+}
+
+function getFallbackFeatureState(featureKey: string): boolean {
+    const feature = FEATURE_FLAGS[featureKey as keyof typeof FEATURE_FLAGS];
+    return feature?.enabled ?? false;
+}
+```
+
+**Step 2**: Update all feature check call sites to await PostHog
+
+Search for all uses of `isFeatureEnabled`:
+
+```bash
+grep -rn "isFeatureEnabled" apps/ packages/ --include="*.ts" --include="*.tsx"
+```
+
+Example fixes:
+
+**File**: `apps/api/modules/snapshots/router.ts` (if it checks for feature)
+
+```typescript
+// Before:
+if (isFeatureEnabled('storage.cloud-backup')) {
+    // cloud backup logic
+}
+
+// After:
+const cloudBackupEnabled = await isFeatureEnabled(
+    'storage.cloud-backup',
+    userId,
+    { tier: user.tier } // Context for PostHog targeting
+);
+
+if (cloudBackupEnabled) {
+    // cloud backup logic
+}
+```
+
+**Step 3**: Configure PostHog feature flags in dashboard
+
+After code is deployed:
+1. Log into PostHog.com
+2. Create feature flags:
+   - `storage.cloud-backup` (initially false, enable gradually)
+   - `storage.deduplication` (initially false)
+   - `risk.guardian_v2` (initially false)
+   - `experimental.mcp_tools` (initially true for MCP users)
+   - etc.
+3. Set targeting rules:
+   - Start with internal users (tier: 'team')
+   - Gradually roll out to free users
+   - Use A/B testing for hypothesis validation
+
+#### Test Requirements
+
+**File**: `packages/config/test/unit/feature-flags.test.ts`
+
+```typescript
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { isFeatureEnabled, initializePostHog } from '../../../src/utils/feature-flags';
+
+describe('Feature Flags - Dynamic with PostHog Fallback', () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+    
+    it('should check PostHog when initialized and userId provided', async () => {
+        const mockPostHog = {
+            isFeatureEnabled: vi.fn().mockResolvedValue(true),
+        };
+        
+        initializePostHog(mockPostHog);
+        
+        const result = await isFeatureEnabled('storage.cloud-backup', 'user-123');
+        
+        expect(mockPostHog.isFeatureEnabled).toHaveBeenCalledWith(
+            'storage.cloud-backup',
+            'user-123',
+            expect.any(Object)
+        );
+        expect(result).toBe(true);
+    });
+    
+    it('should fallback to static config if PostHog returns null', async () => {
+        const mockPostHog = {
+            isFeatureEnabled: vi.fn().mockResolvedValue(null),
+        };
+        
+        initializePostHog(mockPostHog);
+        
+        const result = await isFeatureEnabled('storage.cloud-backup', 'user-123');
+        
+        // Should use FEATURE_FLAGS constant
+        expect(result).toBe(FEATURE_FLAGS['storage.cloud-backup'].enabled);
+    });
+    
+    it('should fallback to static config if PostHog throws error', async () => {
+        const mockPostHog = {
+            isFeatureEnabled: vi.fn().mockRejectedValue(new Error('API error')),
+        };
+        
+        initializePostHog(mockPostHog);
+        
+        const result = await isFeatureEnabled('storage.cloud-backup', 'user-123');
+        
+        // Should use FEATURE_FLAGS constant, not throw
+        expect(result).toBe(FEATURE_FLAGS['storage.cloud-backup'].enabled);
+    });
+    
+    it('should use static config when no PostHog or userId', async () => {
+        // Initialize with null (offline mode)
+        initializePostHog(null);
+        
+        const result = await isFeatureEnabled('storage.cloud-backup');
+        
+        expect(result).toBe(FEATURE_FLAGS['storage.cloud-backup'].enabled);
+    });
+    
+    it('should respect user context for targeting', async () => {
+        const mockPostHog = {
+            isFeatureEnabled: vi.fn().mockResolvedValue(true),
+        };
+        
+        initializePostHog(mockPostHog);
+        
+        await isFeatureEnabled('experimental.mcp_tools', 'user-123', {
+            tier: 'pro',
+            hasGithub: true,
+        });
+        
+        expect(mockPostHog.isFeatureEnabled).toHaveBeenCalledWith(
+            'experimental.mcp_tools',
+            'user-123',
+            expect.objectContaining({ groups: { tier: 'pro', hasGithub: true } })
+        );
+    });
+});
+```
+
+---
+
+## Success Metrics for Phase 4
+
+| Gap | Status | Metric | Before | After |
+|-----|--------|--------|--------|-------|
+| Dashboard Metrics | 4.1 | ai_breakdown data | Hardcoded zeros | Actual counts |
+| Cloud Backup | 4.2 | snapshots with cloud URL | 0% | 100% (if enabled) |
+| Offline Queue | 4.3 | queued events replayed | 0% | 100% on network restore |
+| Trust Calibration | 4.4 | confidence from model | Mocked 90-99% | From trust_scores table |
+| Feature Flags | 4.5 | flags checked dynamically | 0% | 100% PostHog-driven |
+
+---
+
+## Next: Recommended Execution Order
+
+1. **Task 4.1: Dashboard Metrics** (4-6 hours)
+   - Smallest scope, immediate visibility
+   - Shows working metrics on dashboard
+
+2. **Task 4.5: Feature Flags** (3-4 hours)
+   - Unblocks all other feature rollout
+   - Enables gradual testing of 4.2-4.4
+
+3. **Task 4.2: Cloud Backup** (5-8 hours)
+   - Most infrastructure already done
+   - Enables Pro feature differentiation
+
+4. **Task 4.3: Offline Queue** (3-5 hours)
+   - Well-tested existing code
+   - Straightforward wiring
+
+5. **Task 4.4: Trust Calibration** (6-8 hours)
+   - Most complex logic
+   - Foundation for future ML improvements
+
+**Total:** 21-31 hours across 2-3 weeks
+
+---
+
 ## Success Metrics
 
 | Metric | Before | Target |
 |--------|--------|--------|
-| Decision points in VSCode | 8+ | 0 |
-| SDK interface coverage | ~40% | 80%+ |
-| Contract test count | 0 | 10+ |
-| Trust chain violations | 3 | 0 |
-| Duplicate state stores | 6+ | 0 |
-| Bundle size | Current | Same or smaller |
+| Dashboard metrics hardcoded | Yes | No |
+| Cloud backup integration | Broken | Functional |
+| Offline telemetry replay | Non-functional | Functional |
+| AI confidence scores mocked | Yes | From database |
+| Feature flags dynamic | No | Yes (PostHog) |
+| Features shipped end-to-end | 0/5 | 5/5 |
+| Integration tests added | 0 | 15+ |

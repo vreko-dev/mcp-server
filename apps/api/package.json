@@ -23,6 +23,7 @@
 		"@snapback/integrations": "workspace:*",
 		"@snapback/platform": "workspace:*",
 		"@snapback/policy-engine": "workspace:*",
+		"@snapback/sdk": "workspace:*",
 		"better-auth": "catalog:",
 		"hono": "catalog:",
 		"jose": "catalog:",

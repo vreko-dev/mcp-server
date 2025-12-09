@@ -615,6 +615,148 @@ async function showProtectionWarning(filePath: string): Promise<boolean> {
 // RUN TEST → MUST still pass (behavior unchanged)
 ```
 
+### 🔄 STEP 3.5: INCREMENTAL VERIFICATION (During Development)
+
+**CRITICAL: Run these checks AFTER each RED-GREEN-REFACTOR cycle, NOT just at the end.**
+
+**DO NOT write 10 tests then check. Check EACH test as you write it.**
+
+#### After RED Phase:
+
+```bash
+# Verify test actually fails
+pnpm test path/to/test.ts
+
+# Expected output:
+# ❌ FAIL  apps/api/src/services/__tests__/metrics-aggregator.test.ts
+#   ● getAIToolDetectionCounts › should aggregate counts
+#     TypeError: aggregator.getAIToolDetectionCounts is not a function
+#
+#       425 |       // ACT
+#       426 |       const result = await aggregator.getAIToolDetectionCounts("user_123");
+#           |                                      ^
+```
+
+**If test passes in RED phase → You're NOT doing TDD. Start over.**
+
+#### After GREEN Phase:
+
+```bash
+# Verify test now passes
+pnpm test path/to/test.ts
+
+# Expected output:
+# ✅ PASS  apps/api/src/services/__tests__/metrics-aggregator.test.ts
+#   ✓ getAIToolDetectionCounts › should aggregate counts (15ms)
+```
+
+**Run compliance check immediately on THIS ONE TEST:**
+
+```bash
+# Check this specific test for violations
+grep -n "toBeGreaterThan\|toBeTruthy\|toBeDefined" apps/api/src/services/__tests__/metrics-aggregator.test.ts | grep -A 2 -B 2 "line-425"
+
+# Expected: No output (0 violations)
+# If violations found: Fix NOW before writing next test
+```
+
+#### After Each Test (Before Writing Next One):
+
+**Immediate Quality Checklist:**
+
+- [ ] Assertion is specific (exact value or `toMatchObject` with type matchers)
+- [ ] No vague checks (`toBeTruthy`, `toBeDefined`, `toBeGreaterThan(0)`)
+- [ ] Test name follows `should [behavior] when [condition]` format
+- [ ] AAA structure (Arrange-Act-Assert) clearly separated with comments
+- [ ] Mock setup is minimal (only what's needed for THIS test)
+
+**Example - Good Incremental Check:**
+
+```typescript
+// ✅ Just wrote this test - check it NOW:
+it("should aggregate AI tool detection counts by tool name", async () => {
+  // ARRANGE
+  const mockGroupBy = vi.fn();
+  mockWhere.mockReturnValue({ groupBy: mockGroupBy });
+  mockGroupBy.mockResolvedValueOnce([
+    { featureName: "GitHub Copilot", count: 7 },
+    { featureName: "Cursor AI", count: 3 },
+  ]);
+
+  // ACT
+  const result = await aggregator.getAIToolDetectionCounts("user_123");
+
+  // ASSERT
+  expect(result.success).toBe(true);
+  if (result.success) {
+    expect(result.value).toEqual({  // ✅ Specific object match
+      copilot: 7,
+      cursor: 3,
+      claude: 0,
+      windsurf: 0,
+    });
+  }
+});
+
+// Check this test RIGHT NOW:
+// ✅ Specific assertion? YES (toEqual with exact object)
+// ✅ No vague checks? YES (no toBeTruthy/toBeDefined)
+// ✅ Good naming? YES (describes behavior + condition)
+// ✅ AAA structure? YES (clear sections)
+// → APPROVED, move to next test
+```
+
+**Example - Bad Incremental Check:**
+
+```typescript
+// ❌ Just wrote this test - STOP, this is wrong:
+it("should get recent metrics", async () => {
+  mockOrderBy.mockResolvedValueOnce([{ date: new Date(), snapshotsCreated: 5 }]);
+  
+  const result = await aggregator.getRecentDailyMetrics("user_123");
+  
+  expect(result.success).toBe(true);
+  if (result.success) {
+    expect(result.value.length).toBeGreaterThanOrEqual(0);  // ❌ VAGUE!
+  }
+});
+
+// Check this test RIGHT NOW:
+// ❌ Specific assertion? NO (toBeGreaterThanOrEqual accepts ANY value)
+// ❌ No vague checks? NO (this IS a vague check)
+// → FAILED, fix before continuing:
+
+it("should get metrics for last 30 days by default", async () => {
+  // ARRANGE
+  mockOrderBy.mockResolvedValueOnce([
+    { date: new Date("2025-12-01"), snapshotsCreated: 5, snapshotsRestored: 1 },
+  ]);
+  
+  // ACT
+  const result = await aggregator.getRecentDailyMetrics("user_123");
+  
+  // ASSERT
+  expect(result.success).toBe(true);
+  if (result.success) {
+    expect(result.value).toHaveLength(1);  // ✅ Specific length
+    expect(result.value[0]).toMatchObject({  // ✅ Specific structure
+      date: expect.any(Date),
+      snapshotsCreated: 5,
+      snapshotsRestored: 1,
+    });
+  }
+});
+// → NOW approved, continue
+```
+
+**Key Principle: Fix violations IMMEDIATELY, not "after finishing all tests"**
+
+Why? Because:
+- Easier to fix one test than rewrite 10
+- Pattern violations compound (copy-paste bad patterns)
+- Harder to remember context later
+- Incremental verification catches issues early
+
 ### ⚠️ CRITICAL: Never Skip RED Phase
 
 ```typescript
@@ -636,6 +778,156 @@ it("should create snapshot", () => {
   expect(snapshot.id).toBeDefined();
 });
 // THEN implement minimal code
+```
+
+---
+
+## ⚠️ SELF-VERIFICATION (Before Claiming Complete)
+
+**MANDATORY: Run this checklist BEFORE declaring any task "complete" or "ready for review".**
+
+### Pre-Certification Checklist
+
+**Run these checks in ORDER. If ANY item fails, task is NOT complete:**
+
+#### 1. Grep for Violations
+
+```bash
+# Check for vague assertions
+grep -rn "toBeGreaterThan\|toBeGreaterThanOrEqual\|toBeTruthy\|toBeDefined\|not.toBeNull" apps/*/src/**/*.test.ts packages/*/src/**/*.test.ts 2>/dev/null
+# Must return 0 results
+
+# Check for direct Date usage in tests
+grep -rn "new Date()" apps/*/src/**/*.test.ts packages/*/src/**/*.test.ts 2>/dev/null | grep -v "// Expected" | grep -v "mockResolvedValue"
+# Must return 0 results (use DeterministicTime)
+
+# Check for missing cleanup infrastructure
+for file in $(find apps/*/src packages/*/src -name "*.test.ts" 2>/dev/null); do
+  if ! grep -q "TestCleanupManager\|afterEach" "$file"; then
+    echo "❌ Missing cleanup: $file"
+  fi
+done
+```
+
+#### 2. Count Coverage Paths Per Method
+
+```bash
+# For EACH public method, verify 4 test categories exist:
+# - Happy Path (normal success)
+# - Sad Path (validation failures)
+# - Edge Cases (boundaries, limits, special chars)
+# - Error Cases (DB failures, network timeouts)
+
+# Example verification for getAIToolDetectionCounts:
+echo "Checking 4-path coverage for getAIToolDetectionCounts:"
+grep "it(" apps/api/src/services/__tests__/metrics-aggregator.test.ts | grep -A 1 "getAIToolDetectionCounts" -B 1
+# Should show at least 4 tests:
+#   - 1+ Happy path
+#   - 1+ Sad path (empty/invalid input)
+#   - 2+ Edge cases (boundaries, special values)
+#   - 1+ Error path (DB/network failure)
+```
+
+#### 3. Visual Inspection Checklist
+
+- [ ] Open test file in editor
+- [ ] Scroll through ALL assertions line-by-line
+- [ ] Verify ZERO instances of:
+  - `expect(result).toBeTruthy()`
+  - `expect(result).toBeDefined()`
+  - `expect(value).toBeGreaterThan(0)` (without knowing exact expected value)
+  - `expect(value).toBeGreaterThanOrEqual(0)` (accepts ANY value including 0)
+  - Chained `toHaveProperty` calls (use `toMatchObject` instead)
+- [ ] Every assertion checks SPECIFIC value or uses `toMatchObject` with type matchers
+
+#### 4. Run Automated Quality Check
+
+```bash
+# Run the test quality verification script (see tools/test-quality-check.sh)
+pnpm test:quality-check
+
+# Expected output:
+# ✅ No vague assertions found
+# ✅ No direct Date() usage in tests
+# ✅ All test files have cleanup infrastructure
+# ✅ All TDD compliance checks passed
+```
+
+#### 5. Evidence Collection
+
+**Before claiming "Phase X.X Complete", you MUST have:**
+
+- [ ] Screenshot of RED phase showing test failure with error like:
+  ```
+  TypeError: aggregator.getAIToolDetectionCounts is not a function
+  ```
+- [ ] Terminal output showing specific failure reason (not generic timeout)
+- [ ] Git diff showing test was committed BEFORE implementation
+- [ ] Final test run output showing ALL tests pass:
+  ```bash
+  ✓ getAIToolDetectionCounts (6 tests)
+    ✓ should aggregate counts (12ms)
+    ✓ should return error for empty user (3ms)
+    ✓ should return zeros when no detections (5ms)
+    ✓ should normalize tool names (8ms)
+    ✓ should ignore unknown tools (4ms)
+    ✓ should handle database errors (6ms)
+  ```
+- [ ] Coverage report showing 4-path completion:
+  ```
+  | Method                      | Happy | Sad | Edge | Error |
+  |-----------------------------|-------|-----|------|-------|
+  | getAIToolDetectionCounts    |   ✅  |  ✅ |  ✅  |   ✅  |
+  | getRecentActivity           |   ✅  |  ✅ |  ✅  |   ✅  |
+  ```
+
+**IF ANY CHECK FAILS:**
+
+- ❌ Task is NOT complete
+- ❌ DO NOT claim "ready for review"
+- ❌ DO NOT update task status to COMPLETE
+- ❌ DO NOT certify in PR description
+- ✅ Fix violations FIRST
+- ✅ Re-run ALL checks
+- ✅ Collect evidence
+- ✅ Only THEN proceed to certification
+
+### Common False Positives
+
+**Tests pass ≠ Task complete**
+
+```bash
+# ❌ This is NOT sufficient:
+$ pnpm test
+Test Suites: 1 passed, 1 total
+Tests:       14 passed, 14 total
+
+# ✅ This IS sufficient:
+$ pnpm test
+Test Suites: 1 passed, 1 total
+Tests:       14 passed, 14 total
+
+$ bash tools/test-quality-check.sh
+✅ No vague assertions
+✅ No Date() usage
+✅ All files have cleanup
+✅ 4-path coverage verified
+
+$ grep -rn "toBeGreaterThan" apps/api/src/services/__tests__/
+(no output)
+```
+
+**Type checking passes ≠ Quality assured**
+
+```bash
+# ❌ This proves types are correct, NOT that tests are good:
+$ pnpm type-check
+✓ Type checking passed
+
+# ✅ This proves tests meet quality standards:
+$ pnpm type-check && bash tools/test-quality-check.sh
+✓ Type checking passed
+✅ All TDD compliance checks passed
 ```
 
 ---
@@ -782,6 +1074,417 @@ describe("createSnapshot - error handling", () => {
 ```
 
 **VERIFICATION:** Every function MUST have tests in all 4 categories.
+
+---
+
+## 🚫 ANTI-PATTERNS: What "Passing Tests" Looks Like When WRONG
+
+**CRITICAL: These examples show code that PASSES all tests but VIOLATES TDD_AGENT_PROMPT.**
+
+Use these as negative examples when reviewing your own code. If your tests look like these, they're WRONG even if they pass.
+
+### Anti-Pattern 1: Vague Assertions That Pass
+
+```typescript
+// ❌ ANTI-PATTERN: All assertions pass, but test is useless
+describe("getRecentDailyMetrics", () => {
+  it("should get metrics for last 30 days by default", async () => {
+    // ARRANGE
+    mockOrderBy.mockResolvedValueOnce([
+      { date: new Date(), snapshotsCreated: 5, snapshotsRestored: 1 }
+    ]);
+
+    // ACT
+    const result = await aggregator.getRecentDailyMetrics("user_123");
+
+    // ASSERT
+    expect(result.success).toBe(true);  // ✅ Passes
+    if (result.success) {
+      expect(result.value.length).toBeGreaterThanOrEqual(0);  // ❌ VAGUE!
+      // ^^ This passes if value is [], [1 item], [100 items], [null], etc.
+      // It tells us NOTHING about correctness!
+    }
+  });
+});
+
+// ✅ CORRECT: Specific assertion
+describe("getRecentDailyMetrics", () => {
+  it("should return metrics for last 30 days by default", async () => {
+    // ARRANGE
+    mockOrderBy.mockResolvedValueOnce([
+      { date: new Date("2025-12-01"), snapshotsCreated: 5, snapshotsRestored: 1 },
+      { date: new Date("2025-12-02"), snapshotsCreated: 3, snapshotsRestored: 0 },
+    ]);
+
+    // ACT  
+    const result = await aggregator.getRecentDailyMetrics("user_123");
+
+    // ASSERT
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.value).toHaveLength(2);  // ✅ Exact length
+      expect(result.value[0]).toMatchObject({  // ✅ Specific structure
+        date: expect.any(Date),
+        snapshotsCreated: 5,
+        snapshotsRestored: 1,
+        minutesSavedEstimate: expect.any(Number),
+      });
+      expect(result.value[1]).toMatchObject({
+        date: expect.any(Date),
+        snapshotsCreated: 3,
+        snapshotsRestored: 0,
+      });
+    }
+  });
+});
+```
+
+**Why Anti-Pattern 1 is Dangerous:**
+- Test passes even if implementation returns `[]` (empty array)
+- Test passes even if implementation returns garbage data
+- Gives false confidence ("all tests passing" means nothing)
+- Production bugs slip through
+
+### Anti-Pattern 2: Missing Cleanup (Tests Pass Locally, Fail in CI)
+
+```typescript
+// ❌ ANTI-PATTERN: Tests pass individually, fail when run together
+describe("CloudBackupService", () => {
+  beforeEach(() => {
+    process.env.ENABLE_CLOUD_BACKUP = 'true';  // ❌ Mutates global state
+    process.env.S3_BUCKET_NAME = 'test-bucket';
+    process.env.S3_REGION = 'us-east-1';
+  });
+
+  it("should upload snapshot to S3 when enabled", async () => {
+    const result = await cloudService.upload(snapshot);
+    expect(result.success).toBe(true);  // ✅ Passes
+  });
+  
+  it("should skip upload when disabled", async () => {
+    process.env.ENABLE_CLOUD_BACKUP = 'false';
+    const result = await cloudService.upload(snapshot);
+    expect(result.success).toBe(true);  // ✅ Passes
+  });
+  
+  // ❌ NO afterEach cleanup!
+  // Next test file inherits these env vars
+  // CI runs tests in parallel → race conditions → flaky failures
+});
+
+// ✅ CORRECT: Always clean up global state
+describe("CloudBackupService", () => {
+  let cleanup: TestCleanupManager;
+  let originalEnv: NodeJS.ProcessEnv;
+
+  beforeEach(() => {
+    cleanup = new TestCleanupManager();
+    originalEnv = { ...process.env };
+    
+    process.env.ENABLE_CLOUD_BACKUP = 'true';
+    process.env.S3_BUCKET_NAME = 'test-bucket';
+    process.env.S3_REGION = 'us-east-1';
+  });
+
+  afterEach(async () => {
+    process.env = originalEnv;  // ✅ Restore original state
+    await cleanup.runAll();      // ✅ LIFO cleanup
+  });
+
+  it("should upload snapshot to S3 when enabled", async () => {
+    const result = await cloudService.upload(snapshot);
+    expect(result.success).toBe(true);
+  });
+  
+  // Cleanup happens automatically
+});
+```
+
+**Why Anti-Pattern 2 is Dangerous:**
+- Works on developer machine (tests run in isolation)
+- Fails in CI (tests run in parallel)
+- Intermittent failures ("works on my machine")
+- Wastes hours debugging flaky tests
+
+### Anti-Pattern 3: Incomplete 4-Path Coverage (Looks Complete, Isn't)
+
+```typescript
+// ❌ ANTI-PATTERN: "All tests pass" but only 25% coverage (1/4 paths)
+describe("getAIToolDetectionCounts", () => {
+  it("should aggregate AI tool counts", async () => {
+    // ARRANGE
+    mockGroupBy.mockResolvedValueOnce([
+      { featureName: "copilot", count: 5 },
+      { featureName: "cursor", count: 3 },
+    ]);
+
+    // ACT
+    const result = await aggregator.getAIToolDetectionCounts("user_123");
+
+    // ASSERT
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.value.copilot).toBe(5);
+      expect(result.value.cursor).toBe(3);
+    }
+  });
+  
+  // ❌ MISSING: Sad path (empty user, null user, whitespace-only user)
+  // ❌ MISSING: Edge cases (0 detections, case variations, unknown tools)
+  // ❌ MISSING: Error path (database failure, connection timeout)
+  
+  // Result: 75% of code paths untested!
+});
+
+// ✅ CORRECT: All 4 paths covered
+describe("getAIToolDetectionCounts", () => {
+  // Happy Path: Normal operation
+  it("should aggregate counts for multiple tools", async () => {
+    mockGroupBy.mockResolvedValueOnce([
+      { featureName: "GitHub Copilot", count: 7 },
+      { featureName: "Cursor AI", count: 3 },
+    ]);
+
+    const result = await aggregator.getAIToolDetectionCounts("user_123");
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.value).toEqual({ copilot: 7, cursor: 3, claude: 0, windsurf: 0 });
+    }
+  });
+
+  // Sad Path: Validation failures
+  it("should return error for empty user ID", async () => {
+    const result = await aggregator.getAIToolDetectionCounts("");
+
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.code).toBe("MISSING_USER_ID");
+    }
+  });
+
+  // Edge Cases: Boundaries and special values
+  it("should return all zeros when user has no detections", async () => {
+    mockGroupBy.mockResolvedValueOnce([]);
+
+    const result = await aggregator.getAIToolDetectionCounts("user_no_activity");
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.value).toEqual({ copilot: 0, cursor: 0, claude: 0, windsurf: 0 });
+    }
+  });
+
+  it("should normalize tool names (case-insensitive)", async () => {
+    mockGroupBy.mockResolvedValueOnce([
+      { featureName: "GITHUB COPILOT", count: 5 },
+      { featureName: "copilot", count: 2 },
+    ]);
+
+    const result = await aggregator.getAIToolDetectionCounts("user_123");
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.value.copilot).toBe(7);  // 5 + 2 = 7
+    }
+  });
+
+  // Error Path: Unexpected failures
+  it("should handle database errors gracefully", async () => {
+    mockGroupBy.mockRejectedValueOnce(new Error("Connection timeout"));
+
+    const result = await aggregator.getAIToolDetectionCounts("user_123");
+
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.code).toBe("FETCH_FAILED");
+    }
+  });
+});
+```
+
+**Why Anti-Pattern 3 is Dangerous:**
+- Happy path only = 25% code coverage
+- Production edge cases untested (null, empty, special chars)
+- Error handling untested (DB failures, network issues)
+- First production error exposes the gap
+
+### Anti-Pattern 4: Mock Setup That Doesn't Work (False Confidence)
+
+```typescript
+// ❌ ANTI-PATTERN: Mock defined but not wired to implementation
+beforeEach(() => {
+  vi.mock('@snapback/sdk/cloud');  // ❌ Declares mock at wrong scope
+});
+
+it("should upload to S3", async () => {
+  const mockUpload = vi.fn().mockResolvedValue({ success: true });  // ❌ Local mock not injected
+  
+  await cloudService.upload(snapshot);
+  
+  expect(mockUpload).toHaveBeenCalled();  // ❌ ALWAYS FAILS - mock never connected!
+  // Test fails with: "Expected mock to be called but it wasn't"
+});
+
+// ✅ CORRECT: Use MSW for HTTP mocking
+import { http, HttpResponse } from "msw";
+import { server } from "@/test/setup";
+
+it("should upload to S3 via HTTP PUT", async () => {
+  // Intercept at network level
+  server.use(
+    http.put("https://s3.amazonaws.com/test-bucket/:key", ({ params }) => {
+      return new HttpResponse(null, { status: 200 });
+    })
+  );
+  
+  const result = await cloudService.upload(snapshot);
+  
+  expect(result.success).toBe(true);
+  // Actual HTTP request was intercepted by MSW
+});
+
+// ✅ CORRECT: Properly inject service mocks
+it("should call CloudBackupService.upload", async () => {
+  const mockCloudService = {
+    upload: vi.fn().mockResolvedValue({ success: true }),
+  };
+
+  // Inject mock via constructor/DI
+  const handler = new SnapshotHandler({ cloudService: mockCloudService });
+  
+  await handler.createSnapshot(data);
+  
+  expect(mockCloudService.upload).toHaveBeenCalled();  // ✅ Works - mock properly injected
+});
+```
+
+**Why Anti-Pattern 4 is Dangerous:**
+- Test ALWAYS fails (mock never invoked)
+- Developers spend hours debugging "why mock not called"
+- May disable test with `.skip` instead of fixing
+- False failures erode trust in test suite
+
+### Anti-Pattern 5: Certification Without Evidence
+
+```markdown
+❌ ANTI-PATTERN: "Phase 4.1 Complete" claim without proof
+
+## Phase 4.1: Wire MetricsAggregator into Dashboard Metrics - COMPLETE ✅
+
+### Summary
+Successfully implemented Phase 4.1 following TDD:
+
+- Added getAIToolDetectionCounts() method to MetricsAggregator
+- Added getRecentActivity() method to MetricsAggregator  
+- All tests pass
+- Architecture compliant
+- Zero shortcuts
+
+[No screenshots, no failing test evidence, no verification checklist]
+[No grep output showing zero violations]
+[No 4-path coverage matrix]
+```
+
+```markdown
+✅ CORRECT: Evidence-based certification
+
+## Phase 4.1: Wire MetricsAggregator into Dashboard Metrics - COMPLETE ✅
+
+### RED Phase Evidence
+
+**Screenshot of failing test:**
+```
+❌ FAIL  apps/api/src/services/__tests__/metrics-aggregator.test.ts
+  ● getAIToolDetectionCounts › should aggregate counts
+    TypeError: aggregator.getAIToolDetectionCounts is not a function
+
+      425 |   // ACT
+      426 |   const result = await aggregator.getAIToolDetectionCounts("user_123");
+          |                                  ^
+```
+
+### GREEN Phase Evidence
+
+**Terminal output:**
+```bash
+$ pnpm test metrics-aggregator
+
+✅ PASS  apps/api/src/services/__tests__/metrics-aggregator.test.ts
+  ✓ getAIToolDetectionCounts (6 tests, 47ms)
+    ✓ should aggregate counts (12ms)
+    ✓ should return error for empty user (3ms)
+    ✓ should return zeros when no detections (5ms)
+    ✓ should normalize tool names (8ms)
+    ✓ should ignore unknown tools (6ms)
+    ✓ should handle database errors (13ms)
+```
+
+### Compliance Verification
+
+**Automated checks:**
+```bash
+$ bash tools/test-quality-check.sh
+✅ No vague assertions found
+✅ No direct Date() usage in tests
+✅ All test files have cleanup infrastructure
+✅ All TDD compliance checks passed
+
+$ grep -rn "toBeGreaterThan\|toBeTruthy\|toBeDefined" apps/api/src/services/__tests__/metrics-aggregator.test.ts
+(no output - zero violations)
+```
+
+### 4-Path Coverage Matrix
+
+| Method | Happy | Sad | Edge | Error |
+|--------|-------|-----|------|-------|
+| getAIToolDetectionCounts | ✅ Line 413 | ✅ Line 440 | ✅ Lines 451, 470, 496 | ✅ Line 518 |
+| getRecentActivity | ✅ Line 558 | ✅ Lines 598, 612 | ✅ Lines 627, 644, 659 | ✅ Lines 673, 690 |
+
+**Coverage details:**
+- Happy: Normal aggregation with multiple tools
+- Sad: Empty user ID, whitespace-only user ID
+- Edge: No detections (all zeros), case normalization, unknown tools ignored, max 20 items
+- Error: Database connection failure, query timeout, permission denied
+
+### Architecture Compliance
+
+**STEP 0 Audit:**
+```bash
+$ find apps/api/src/services -name "*metrics*"
+apps/api/src/services/metrics-aggregator.ts  ✅ Service exists
+
+$ grep "getAIToolDetectionCounts\|getRecentActivity" apps/api/src/services/metrics-aggregator.ts
+export async getAIToolDetectionCounts(userId: string)  ✅ Method added to service
+export async getRecentActivity(userId: string, days = 7)  ✅ Method added to service
+
+$ grep -r "db.select.*featureUsage" apps/api/modules/dashboard/procedures/get-metrics.ts
+(no output - no inline queries)  ✅ No service bypass
+```
+
+**Result: Architecture compliant - service layer used correctly**
+
+---
+
+**This level of evidence is REQUIRED before claiming "complete".**
+```
+
+**Why Anti-Pattern 5 is Dangerous:**
+- No proof that RED phase actually happened (may have skipped TDD)
+- No verification that vague assertions were avoided
+- No confirmation of 4-path coverage
+- Impossible to audit during code review
+- Erodes trust in "complete" certifications
+
+### Quick Reference: Spotting Anti-Patterns
+
+| Anti-Pattern | Symptom | Fix |
+|--------------|---------|-----|
+| Vague Assertions | `toBeGreaterThanOrEqual(0)`, `toBeTruthy()` | Use exact values or `toMatchObject` |
+| Missing Cleanup | No `afterEach`, no `TestCleanupManager` | Add cleanup in every test file |
+| Incomplete Coverage | Only happy path tested | Add Sad, Edge, Error tests |
+| Broken Mocks | Mock defined but never called | Use MSW or proper DI |
+| No Evidence | "All tests pass" claim only | Provide screenshots, grep output, coverage matrix |
 
 ---
 
@@ -1811,18 +2514,21 @@ Before submitting PR, verify ALL items:
 **Every line of production code MUST:**
 1. **Pass architecture audit** (STEP 0 - verify no service bypass)
 2. **Pass AI suitability check** (is this task appropriate for AI?)
-3. Start with a failing test (RED)
-4. Be implemented minimally (GREEN)
-5. Be refactored without behavior change (BLUE)
-6. Pass all 4 coverage paths (Happy/Sad/Edge/Error)
-7. Use specific assertions (no vague checks)
-8. Use deterministic infrastructure
-9. Pass all quality gates
-10. **Pass security verification** (if AI-generated)
+3. **Pass automated quality check** (`pnpm test:quality-check` - ZERO violations)
+4. Start with a failing test (RED)
+5. Be implemented minimally (GREEN)
+6. Be refactored without behavior change (BLUE)
+7. Pass all 4 coverage paths (Happy/Sad/Edge/Error)
+8. Use specific assertions (no vague checks)
+9. Use deterministic infrastructure
+10. Pass all quality gates
+11. **Pass security verification** (if AI-generated)
+12. **Provide certification evidence** (screenshots, grep output, coverage matrix)
 
 **Zero tolerance for:**
 - **Bypassing existing services/aggregators** 
 - **Skipping architecture audit (STEP 0)** 
+- **Skipping automated quality check** (`pnpm test:quality-check`) ← NEW
 - **Unchecked iteration loops** (max 3 before human review) ← NEW
 - **Blind trust in AI code** (review with SAME rigor as human code) ← NEW
 - **DRY violations** (search for existing utilities first) ← NEW
@@ -1833,6 +2539,28 @@ Before submitting PR, verify ALL items:
 - Vague assertions
 - Production code without failing test
 - Flaky tests
+
+**Automated Enforcement:**
+
+```bash
+# Run BEFORE claiming "task complete"
+pnpm test:quality-check
+
+# Expected output:
+# ✅ No vague assertions found
+# ✅ No direct Date() usage in tests
+# ✅ All test files have cleanup infrastructure
+# ✅ No placeholder tests
+# ✅ Consistent .test.ts naming
+# ✅ All TDD compliance checks PASSED
+```
+
+**If quality check fails:**
+- ❌ Task is NOT complete
+- ❌ DO NOT claim "ready for review"
+- ✅ Fix ALL violations reported by script
+- ✅ Re-run `pnpm test:quality-check` until ZERO violations
+- ✅ THEN collect evidence and certify
 
 **Real-World Enforcement Example:**
 
@@ -1851,7 +2579,11 @@ const aiBreakdownResult = await db
 const metricsAggregator = new MetricsAggregator(db);
 const aiBreakdown = await metricsAggregator.getAIToolDetectionCounts(userId);
 // Correct: STEP 0 found service, added method, followed architecture
+// Quality check passes: pnpm test:quality-check ✅
 ```
+
+**Script Location:** `/tools/test-quality-check.sh`
+**Usage:** `pnpm test:quality-check` or `bash tools/test-quality-check.sh`
 
 **This is not negotiable. This is the standard.**
 

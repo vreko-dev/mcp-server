@@ -1,0 +1,43 @@
+{
+	"version": "1.0.0",
+	"generated": "2025-12-09T17:13:11.694Z",
+	"description": "Configuration drift detection baseline - DO NOT EDIT MANUALLY",
+	"configs": {
+		"biome.json": {
+			"hash": "sha256:e4e6a8363d1522bded5dcac83f4b285a294a359eae95c1a01d1de6568c4be60f",
+			"scope": "root-only",
+			"allowWorkspaceExtend": false,
+			"description": "Code quality and formatting rules"
+		},
+		"tsconfig.base.json": {
+			"hash": "sha256:efcec49a59dda48774285cec9b75306e8024f62f28377c077724e4e18f0cec6a",
+			"scope": "root-only",
+			"allowWorkspaceExtend": true,
+			"description": "TypeScript compiler base configuration"
+		},
+		".lefthook.yml": {
+			"hash": "sha256:d4b511460c3b300acdfc9164604045383c2fb31bbafbda42cd0a6c9a8f4c798f",
+			"scope": "root-only",
+			"allowWorkspaceExtend": false,
+			"description": "Git hook automation"
+		},
+		"turbo.json": {
+			"hash": "sha256:c3b42faecf51ca966bf569b4d217f5fb6aab4c6114b4f87988c1228790c57e81",
+			"scope": "root-only",
+			"allowWorkspaceExtend": false,
+			"description": "Build orchestration and caching"
+		},
+		"packages/platform/drizzle.config.ts": {
+			"hash": "sha256:2e27916ed729c5a50bf7ae0c179fd5764e40c4d1520ca3fe47d6b0e042967063",
+			"scope": "workspace",
+			"allowWorkspaceExtend": false,
+			"description": "Database configuration (platform)"
+		},
+		".snapbackrc": {
+			"hash": "sha256:b92a77a8f0dba529665bebcf227a2ec66637657fe4ba23b21cffe6b3a6d2cb8b",
+			"scope": "root-only",
+			"allowWorkspaceExtend": false,
+			"description": "SnapBack file protection policies"
+		}
+	}
+}

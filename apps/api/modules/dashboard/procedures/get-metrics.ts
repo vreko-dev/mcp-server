@@ -143,10 +143,15 @@ export const getMetricsHandler = async ({ context }: { context: unknown }): Prom
 					let aiTool: "copilot" | "cursor" | "claude" | "windsurf" | undefined;
 					if (activity.type === "ai_detection" && activity.description) {
 						const toolName = activity.description.toLowerCase();
-						if (toolName.includes("copilot")) aiTool = "copilot";
-						else if (toolName.includes("cursor")) aiTool = "cursor";
-						else if (toolName.includes("claude")) aiTool = "claude";
-						else if (toolName.includes("windsurf")) aiTool = "windsurf";
+						if (toolName.includes("copilot")) {
+							aiTool = "copilot";
+						} else if (toolName.includes("cursor")) {
+							aiTool = "cursor";
+						} else if (toolName.includes("claude")) {
+							aiTool = "claude";
+						} else if (toolName.includes("windsurf")) {
+							aiTool = "windsurf";
+						}
 					}
 
 					return {

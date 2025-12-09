@@ -14,7 +14,9 @@ export function MobileHero() {
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		if (!email || isSubmitting) return;
+		if (!email || isSubmitting) {
+			return;
+		}
 
 		setIsSubmitting(true);
 		captureEvent("mobile_hero_email_capture", { email });

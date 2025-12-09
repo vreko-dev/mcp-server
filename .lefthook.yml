@@ -184,6 +184,14 @@ post-checkout:
                   pnpm install --frozen-lockfile
                 fi
 
+        build-workspace-deps:
+            run: |
+                # Check if any workspace package source files changed
+                if git diff HEAD@{1} HEAD --name-only | grep -qE '^packages/(sdk|contracts|infrastructure|events|config|core)/src/'; then
+                  echo '🔨 Workspace package sources changed, rebuilding dependencies...'
+                  pnpm build:oss
+                fi
+
 post-merge:
     commands:
         install-deps:
@@ -191,4 +199,12 @@ post-merge:
                 if git diff HEAD@{1} HEAD --name-only | grep -q pnpm-lock.yaml; then
                   echo '📦 pnpm-lock.yaml merged, installing dependencies...'
                   pnpm install --frozen-lockfile
+                fi
+
+        build-workspace-deps:
+            run: |
+                # Check if any workspace package source files changed
+                if git diff HEAD@{1} HEAD --name-only | grep -qE '^packages/(sdk|contracts|infrastructure|events|config|core)/src/'; then
+                  echo '🔨 Workspace package sources changed, rebuilding dependencies...'
+                  pnpm build:oss
                 fi

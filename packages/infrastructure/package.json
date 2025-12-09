@@ -5,7 +5,7 @@
   "author": "SnapBack Team",
   "repository": {
     "type": "git",
-    "url": "https://github.com/snapback-dev/snapback.dev.git",
+    "url": "https://github.com/snapback-dev.git",
     "directory": "packages/infrastructure"
   },
   "dependencies": {
@@ -86,6 +86,7 @@
   "private": true,
   "scripts": {
     "build": "tsup && tsc --build --force",
+    "dev": "tsup --watch",
     "check": "biome check .",
     "format": "biome format --write .",
     "lint": "biome lint .",

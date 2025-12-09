@@ -39,9 +39,6 @@ catalogs:
     '@commitlint/config-conventional':
       specifier: 19.8.1
       version: 19.8.1
-    '@electron/rebuild':
-      specifier: 4.0.1
-      version: 4.0.1
     '@evilmartians/lefthook':
       specifier: 2.0.2
       version: 2.0.2
@@ -192,9 +189,6 @@ catalogs:
     '@sindresorhus/slugify':
       specifier: 3.0.0
       version: 3.0.0
-    '@size-limit/file':
-      specifier: 11.2.0
-      version: 11.2.0
     '@supabase/ssr':
       specifier: 0.5.2
       version: 0.5.2
@@ -261,9 +255,6 @@ catalogs:
     '@types/js-cookie':
       specifier: 3.0.6
       version: 3.0.6
-    '@types/mocha':
-      specifier: 10.0.10
-      version: 10.0.10
     '@types/morgan':
       specifier: 1.9.9
       version: 1.9.9
@@ -288,9 +279,6 @@ catalogs:
     '@types/uuid':
       specifier: 11.0.0
       version: 11.0.0
-    '@types/vscode':
-      specifier: 1.99.0
-      version: 1.99.0
     '@typescript-eslint/parser':
       specifier: 8.46.2
       version: 8.46.2
@@ -312,30 +300,18 @@ catalogs:
     '@vitest/ui':
       specifier: 3.2.4
       version: 3.2.4
-    '@vscode/test-cli':
-      specifier: 0.0.10
-      version: 0.0.10
-    '@vscode/test-electron':
-      specifier: 2.4.1
-      version: 2.4.1
     ai:
       specifier: 5.0.44
       version: 5.0.44
     ajv:
       specifier: 8.17.1
       version: 8.17.1
-    async-lock:
-      specifier: 1.4.1
-      version: 1.4.1
     async-retry:
       specifier: 1.3.3
       version: 1.3.3
     autoprefixer:
       specifier: 10.4.21
       version: 10.4.21
-    base64url:
-      specifier: 3.0.1
-      version: 3.0.1
     bcrypt:
       specifier: 6.0.0
       version: 6.0.0
@@ -369,9 +345,6 @@ catalogs:
     commander:
       specifier: 9.5.0
       version: 9.5.0
-    conf:
-      specifier: 13.0.1
-      version: 13.0.1
     cors:
       specifier: 2.8.5
       version: 2.8.5
@@ -417,9 +390,6 @@ catalogs:
     express:
       specifier: 5.1.0
       version: 5.1.0
-    fast-glob:
-      specifier: 3.3.3
-      version: 3.3.3
     fumadocs-mdx:
       specifier: 13.0.8
       version: 13.0.8
@@ -441,15 +411,9 @@ catalogs:
     helmet:
       specifier: 8.1.0
       version: 8.1.0
-    ignore:
-      specifier: 6.0.2
-      version: 6.0.2
     input-otp:
       specifier: 1.4.2
       version: 1.4.2
-    inquirer:
-      specifier: 12.9.6
-      version: 12.9.6
     jose:
       specifier: 6.1.0
       version: 6.1.0
@@ -462,9 +426,6 @@ catalogs:
     jsdom:
       specifier: 26.0.0
       version: 26.0.0
-    json5:
-      specifier: 2.2.3
-      version: 2.2.3
     ky:
       specifier: 1.7.2
       version: 1.7.2
@@ -489,18 +450,12 @@ catalogs:
     madge:
       specifier: 8.0.0
       version: 8.0.0
-    memfs:
-      specifier: 4.17.0
-      version: 4.17.0
     mermaid:
       specifier: 11.12.0
       version: 11.12.0
     minimatch:
       specifier: 10.0.1
       version: 10.0.1
-    mocha:
-      specifier: 10.8.2
-      version: 10.8.2
     morgan:
       specifier: 1.10.1
       version: 1.10.1
@@ -525,24 +480,15 @@ catalogs:
     next-themes:
       specifier: 0.4.6
       version: 0.4.6
-    node-notifier:
-      specifier: 10.0.1
-      version: 10.0.1
     nodemailer:
       specifier: 7.0.10
       version: 7.0.10
-    npm-run-all:
-      specifier: 4.1.5
-      version: 4.1.5
     nprogress:
       specifier: 0.2.0
       version: 0.2.0
     nuqs:
       specifier: 2.6.0
       version: 2.6.0
-    object-hash:
-      specifier: 3.0.0
-      version: 3.0.0
     opossum:
       specifier: 9.0.0
       version: 9.0.0
@@ -555,9 +501,6 @@ catalogs:
     p-limit:
       specifier: 3.1.0
       version: 3.1.0
-    p-queue:
-      specifier: 9.0.0
-      version: 9.0.0
     p-retry:
       specifier: 6.2.0
       version: 6.2.0
@@ -642,9 +585,6 @@ catalogs:
     resend:
       specifier: 6.2.2
       version: 6.2.2
-    rimraf:
-      specifier: 6.0.1
-      version: 6.0.1
     semver:
       specifier: 7.6.3
       version: 7.6.3
@@ -657,18 +597,12 @@ catalogs:
     simple-git:
       specifier: 3.28.0
       version: 3.28.0
-    size-limit:
-      specifier: 11.2.0
-      version: 11.2.0
     sonner:
       specifier: 2.0.7
       version: 2.0.7
     stripe:
       specifier: 19.1.0
       version: 19.1.0
-    svgo:
-      specifier: 3.3.2
-      version: 3.3.2
     syncpack:
       specifier: 13.0.0
       version: 13.0.0
@@ -690,9 +624,6 @@ catalogs:
     turbo:
       specifier: 2.3.4
       version: 2.3.4
-    tweetnacl:
-      specifier: 1.0.3
-      version: 1.0.3
     typescript:
       specifier: 5.9.2
       version: 5.9.2
@@ -957,6 +888,9 @@ importers:
       '@snapback/policy-engine':
         specifier: workspace:*
         version: link:../../packages/policy-engine
+      '@snapback/sdk':
+        specifier: workspace:*
+        version: link:../../packages/sdk
       better-auth:
         specifier: 'catalog:'
         version: 1.3.34(next@16.0.3(@opentelemetry/api@1.9.0)(@playwright/test@1.50.1)(react-dom@19.1.2(react@19.1.2))(react@19.1.2))(react-dom@19.1.2(react@19.1.2))(react@19.1.2)
@@ -1359,80 +1293,80 @@ importers:
         specifier: workspace:*
         version: link:../../packages/sdk
       ajv:
-        specifier: 'catalog:'
+        specifier: 8.17.1
         version: 8.17.1
       async-lock:
-        specifier: 'catalog:'
+        specifier: 1.4.1
         version: 1.4.1
       base64url:
-        specifier: 'catalog:'
+        specifier: 3.0.1
         version: 3.0.1
       chokidar:
-        specifier: 'catalog:'
+        specifier: 4.0.3
         version: 4.0.3
       conf:
-        specifier: 'catalog:'
+        specifier: 13.0.1
         version: 13.0.1
       diff:
-        specifier: 'catalog:'
+        specifier: 7.0.0
         version: 7.0.0
       es-toolkit:
-        specifier: 'catalog:'
+        specifier: 1.39.10
         version: 1.39.10
       fast-glob:
-        specifier: 'catalog:'
+        specifier: 3.3.3
         version: 3.3.3
       ignore:
-        specifier: 'catalog:'
+        specifier: 6.0.2
         version: 6.0.2
       inquirer:
-        specifier: 'catalog:'
+        specifier: 12.9.6
         version: 12.9.6(@types/node@24.5.1)
       json5:
-        specifier: 'catalog:'
+        specifier: 2.2.3
         version: 2.2.3
       minimatch:
-        specifier: 'catalog:'
+        specifier: 10.0.1
         version: 10.0.1
       node-machine-id:
         specifier: ^1.1.12
         version: 1.1.12
       node-notifier:
-        specifier: 'catalog:'
+        specifier: 10.0.1
         version: 10.0.1
       object-hash:
-        specifier: 'catalog:'
+        specifier: 3.0.0
         version: 3.0.0
       p-queue:
-        specifier: 'catalog:'
+        specifier: 9.0.0
         version: 9.0.0
       pino:
-        specifier: 'catalog:'
+        specifier: 9.5.0
         version: 9.5.0
       rimraf:
-        specifier: 'catalog:'
+        specifier: 6.0.1
         version: 6.0.1
       semver:
-        specifier: 'catalog:'
+        specifier: 7.6.3
         version: 7.6.3
       simple-git:
-        specifier: 'catalog:'
+        specifier: 3.28.0
         version: 3.28.0
       tweetnacl:
-        specifier: 'catalog:'
+        specifier: 1.0.3
         version: 1.0.3
     devDependencies:
       '@biomejs/biome':
-        specifier: 'catalog:'
+        specifier: 2.2.4
         version: 2.2.4
       '@electron/rebuild':
-        specifier: 'catalog:'
+        specifier: 4.0.1
         version: 4.0.1
       '@playwright/test':
         specifier: 1.50.1
         version: 1.50.1
       '@size-limit/file':
-        specifier: 'catalog:'
+        specifier: 11.2.0
         version: 11.2.0(size-limit@11.2.0)
       '@snapback/testing':
         specifier: workspace:*
@@ -1441,25 +1375,25 @@ importers:
         specifier: 7.1.1
         version: 7.1.1
       '@types/mocha':
-        specifier: 'catalog:'
+        specifier: 10.0.10
         version: 10.0.10
       '@types/node':
-        specifier: 'catalog:'
+        specifier: 24.5.1
         version: 24.5.1
       '@types/semver':
-        specifier: 'catalog:'
+        specifier: 7.5.8
         version: 7.5.8
       '@types/vscode':
-        specifier: 'catalog:'
+        specifier: 1.99.0
         version: 1.99.0
       '@vitest/ui':
-        specifier: 'catalog:'
+        specifier: 3.2.4
         version: 3.2.4(vitest@3.2.4)
       '@vscode/test-cli':
-        specifier: 'catalog:'
+        specifier: 0.0.10
         version: 0.0.10
       '@vscode/test-electron':
-        specifier: 'catalog:'
+        specifier: 2.4.1
         version: 2.4.1
       esbuild:
         specifier: ^0.25.0
@@ -1468,31 +1402,31 @@ importers:
         specifier: ^0.7.0
         version: 0.7.0
       glob:
-        specifier: 'catalog:'
+        specifier: 11.0.0
         version: 11.0.0
       memfs:
-        specifier: 'catalog:'
+        specifier: 4.17.0
         version: 4.17.0
       mocha:
-        specifier: 'catalog:'
+        specifier: 10.8.2
         version: 10.8.2
       msw:
-        specifier: 'catalog:'
+        specifier: 2.4.0
         version: 2.4.0(graphql@16.12.0)(typescript@5.9.2)
       npm-run-all:
-        specifier: 'catalog:'
+        specifier: 4.1.5
         version: 4.1.5
       size-limit:
-        specifier: 'catalog:'
+        specifier: 11.2.0
         version: 11.2.0
       svgo:
-        specifier: 'catalog:'
+        specifier: 3.3.2
         version: 3.3.2
       typescript:
-        specifier: 'catalog:'
+        specifier: 5.9.2
         version: 5.9.2
       vitest:
-        specifier: 'catalog:'
+        specifier: 3.2.4
         version: 3.2.4(@types/debug@4.1.12)(@types/node@24.5.1)(@vitest/ui@3.2.4)(happy-dom@20.0.10)(jiti@2.6.1)(jsdom@26.0.0)(lightningcss@1.30.1)(msw@2.4.0(graphql@16.12.0)(typescript@5.9.2))(terser@5.44.1)(tsx@4.20.5)(yaml@2.8.2)
 
   apps/vscode/test-fixtures: {}
@@ -4571,14 +4505,6 @@ packages:
     peerDependenciesMeta:
       '@types/node':
         optional: true
-
-  '@isaacs/balanced-match@4.0.1':
-    resolution: {integrity: sha512-yzMTt9lEb8Gv7zRioUilSglI0c0smZ9k5D65677DLWLtWJaXIS3CqcGyUFByYKlnUj6TkjLVs54fBl6+TiGQDQ==}
-    engines: {node: 20 || >=22}
-
-  '@isaacs/brace-expansion@5.0.0':
-    resolution: {integrity: sha512-ZT55BDLV0yv0RBm2czMiZ+SqCGO7AvmOM3G/w2xhVPH+te0aKgFjmBvGlL1dH+ql2tgGO3MVrbb3jCKyvpgnxA==}
-    engines: {node: 20 || >=22}
 
   '@isaacs/cliui@8.0.2':
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}
@@ -10182,11 +10108,6 @@ packages:
     engines: {node: 20 || >=22}
     hasBin: true
 
-  glob@11.1.0:
-    resolution: {integrity: sha512-vuNwKSaKiqm7g0THUBu2x7ckSs3XJLXE+2ssL7/MfTGPLLcrJQ/4Uq1CjPTtO5cCIiRxqvN6Twy1qOwhL0Xjcw==}
-    engines: {node: 20 || >=22}
-    hasBin: true
-
   glob@7.2.3:
     resolution: {integrity: sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q==}
     deprecated: Glob versions prior to v9 are no longer supported
@@ -11736,10 +11657,6 @@ packages:
 
   minimatch@10.0.1:
     resolution: {integrity: sha512-ethXTt3SGGR+95gudmqJ1eNhRO7eGEGIgYA9vnPatK4/etz2MEVDno5GMCibdMTuBMyElzIlgxMna3K94XDIDQ==}
-    engines: {node: 20 || >=22}
-
-  minimatch@10.1.1:
-    resolution: {integrity: sha512-enIvLvRAFZYXJzkCYG5RKmPfrFArdLv+R+lbQ53BmIMLIry74bjKzX6iHAm8WYamJkhSSEabrWN5D97XnKObjQ==}
     engines: {node: 20 || >=22}
 
   minimatch@3.1.2:
@@ -16021,7 +15938,7 @@ snapshots:
       outdent: 0.5.0
       prettier: 2.8.8
       resolve-from: 5.0.0
-      semver: 7.7.3
+      semver: 7.6.3
 
   '@changesets/assemble-release-plan@6.0.9':
     dependencies:
@@ -16030,7 +15947,7 @@ snapshots:
       '@changesets/should-skip-package': 0.1.2
       '@changesets/types': 6.1.0
       '@manypkg/get-packages': 1.1.3
-      semver: 7.7.3
+      semver: 7.6.3
 
   '@changesets/changelog-git@0.2.1':
     dependencies:
@@ -16063,7 +15980,7 @@ snapshots:
       package-manager-detector: 0.2.11
       picocolors: 1.1.1
       resolve-from: 5.0.0
-      semver: 7.7.3
+      semver: 7.6.3
       spawndamnit: 3.0.1
       term-size: 2.2.1
     transitivePeerDependencies:
@@ -16088,7 +16005,7 @@ snapshots:
       '@changesets/types': 6.1.0
       '@manypkg/get-packages': 1.1.3
       picocolors: 1.1.1
-      semver: 7.7.3
+      semver: 7.6.3
 
   '@changesets/get-release-plan@4.0.14':
     dependencies:
@@ -16321,7 +16238,7 @@ snapshots:
   '@commitlint/is-ignored@19.8.1':
     dependencies:
       '@commitlint/types': 19.8.1
-      semver: 7.7.3
+      semver: 7.6.3
 
   '@commitlint/lint@19.8.1':
     dependencies:
@@ -17181,12 +17098,6 @@ snapshots:
     optionalDependencies:
       '@types/node': 24.5.1
 
-  '@isaacs/balanced-match@4.0.1': {}
-
-  '@isaacs/brace-expansion@5.0.0':
-    dependencies:
-      '@isaacs/balanced-match': 4.0.1
-
   '@isaacs/cliui@8.0.2':
     dependencies:
       string-width: 5.1.2
@@ -17717,7 +17628,7 @@ snapshots:
 
   '@npmcli/fs@4.0.0':
     dependencies:
-      semver: 7.7.3
+      semver: 7.6.3
 
   '@octokit/auth-token@2.5.0':
     dependencies:
@@ -17955,7 +17866,7 @@ snapshots:
       '@opentelemetry/instrumentation': 0.57.1(@opentelemetry/api@1.9.0)
       '@opentelemetry/semantic-conventions': 1.28.0
       forwarded-parse: 2.1.2
-      semver: 7.7.3
+      semver: 7.6.3
     transitivePeerDependencies:
       - supports-color
     optional: true
@@ -18103,7 +18014,7 @@ snapshots:
       '@types/shimmer': 1.2.0
       import-in-the-middle: 1.15.0
       require-in-the-middle: 8.0.1
-      semver: 7.7.3
+      semver: 7.6.3
       shimmer: 1.2.1
     transitivePeerDependencies:
       - supports-color
@@ -18116,7 +18027,7 @@ snapshots:
       '@types/shimmer': 1.2.0
       import-in-the-middle: 1.15.0
       require-in-the-middle: 8.0.1
-      semver: 7.7.3
+      semver: 7.6.3
       shimmer: 1.2.1
     transitivePeerDependencies:
       - supports-color
@@ -18129,7 +18040,7 @@ snapshots:
       '@types/shimmer': 1.2.0
       import-in-the-middle: 1.15.0
       require-in-the-middle: 8.0.1
-      semver: 7.7.3
+      semver: 7.6.3
       shimmer: 1.2.1
     transitivePeerDependencies:
       - supports-color
@@ -18285,7 +18196,7 @@ snapshots:
       '@opentelemetry/propagator-b3': 1.28.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/propagator-jaeger': 1.28.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/sdk-trace-base': 1.28.0(@opentelemetry/api@1.9.0)
-      semver: 7.7.3
+      semver: 7.6.3
 
   '@opentelemetry/sdk-trace-node@1.30.1(@opentelemetry/api@1.9.0)':
     dependencies:
@@ -18295,7 +18206,7 @@ snapshots:
       '@opentelemetry/propagator-b3': 1.30.1(@opentelemetry/api@1.9.0)
       '@opentelemetry/propagator-jaeger': 1.30.1(@opentelemetry/api@1.9.0)
       '@opentelemetry/sdk-trace-base': 1.30.1(@opentelemetry/api@1.9.0)
-      semver: 7.7.3
+      semver: 7.6.3
 
   '@opentelemetry/semantic-conventions@1.13.0': {}
 
@@ -21039,7 +20950,7 @@ snapshots:
       fast-glob: 3.3.3
       is-glob: 4.0.3
       minimatch: 9.0.5
-      semver: 7.7.3
+      semver: 7.6.3
       ts-api-utils: 2.1.0(typescript@5.9.2)
       typescript: 5.9.2
     transitivePeerDependencies:
@@ -21053,7 +20964,7 @@ snapshots:
       '@typescript-eslint/visitor-keys': 8.48.1
       debug: 4.4.3(supports-color@8.1.1)
       minimatch: 9.0.5
-      semver: 7.7.3
+      semver: 7.6.3
       tinyglobby: 0.2.15
       ts-api-utils: 2.1.0(typescript@5.9.2)
       typescript: 5.9.2
@@ -21216,7 +21127,7 @@ snapshots:
       https-proxy-agent: 7.0.6
       jszip: 3.10.1
       ora: 8.2.0
-      semver: 7.7.3
+      semver: 7.6.3
     transitivePeerDependencies:
       - supports-color
 
@@ -21802,7 +21713,7 @@ snapshots:
 
   chalk-template@1.1.0:
     dependencies:
-      chalk: 5.3.0
+      chalk: 5.6.2
 
   chalk@2.4.2:
     dependencies:
@@ -23608,16 +23519,7 @@ snapshots:
     dependencies:
       foreground-child: 3.3.1
       jackspeak: 4.1.1
-      minimatch: 10.1.1
-      minipass: 7.1.2
-      package-json-from-dist: 1.0.1
-      path-scurry: 2.0.1
-
-  glob@11.1.0:
-    dependencies:
-      foreground-child: 3.3.1
-      jackspeak: 4.1.1
-      minimatch: 10.1.1
+      minimatch: 10.0.1
       minipass: 7.1.2
       package-json-from-dist: 1.0.1
       path-scurry: 2.0.1
@@ -24808,7 +24710,7 @@ snapshots:
 
   make-dir@4.0.0:
     dependencies:
-      semver: 7.7.3
+      semver: 7.6.3
 
   make-fetch-happen@14.0.3:
     dependencies:
@@ -25779,10 +25681,6 @@ snapshots:
     dependencies:
       brace-expansion: 2.0.2
 
-  minimatch@10.1.1:
-    dependencies:
-      '@isaacs/brace-expansion': 5.0.0
-
   minimatch@3.1.2:
     dependencies:
       brace-expansion: 1.1.12
@@ -26073,7 +25971,7 @@ snapshots:
 
   node-abi@3.85.0:
     dependencies:
-      semver: 7.7.3
+      semver: 7.6.3
 
   node-abi@4.24.0:
     dependencies:
@@ -26163,7 +26061,7 @@ snapshots:
     dependencies:
       hosted-git-info: 7.0.2
       proc-log: 4.2.0
-      semver: 7.7.3
+      semver: 7.6.3
       validate-npm-package-name: 5.0.1
 
   npm-run-all@4.1.5:
@@ -26319,7 +26217,7 @@ snapshots:
 
   ora@8.0.1:
     dependencies:
-      chalk: 5.3.0
+      chalk: 5.6.2
       cli-cursor: 4.0.0
       cli-spinners: 2.9.2
       is-interactive: 2.0.0
@@ -27022,7 +26920,7 @@ snapshots:
       commander: 13.1.0
       debounce: 2.2.0
       esbuild: 0.25.12
-      glob: 11.1.0
+      glob: 11.0.0
       jiti: 2.4.2
       log-symbols: 7.0.1
       mime-types: 3.0.2
@@ -27684,7 +27582,8 @@ snapshots:
 
   semver@7.6.3: {}
 
-  semver@7.7.3: {}
+  semver@7.7.3:
+    optional: true
 
   send@1.2.0:
     dependencies:
@@ -27751,7 +27650,7 @@ snapshots:
     dependencies:
       color: 4.2.3
       detect-libc: 2.1.2
-      semver: 7.7.3
+      semver: 7.6.3
     optionalDependencies:
       '@img/sharp-darwin-arm64': 0.33.5
       '@img/sharp-darwin-x64': 0.33.5

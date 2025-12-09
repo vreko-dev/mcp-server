@@ -40,7 +40,7 @@ export function EditorFrame({
 	useEffect(() => {
 		if (isRestored) {
 			setShowConfetti(true);
-			const start = 0;
+			const _start = 0;
 			const end = 47;
 			const duration = 500; // 0.5s animation
 			const startTime = Date.now();

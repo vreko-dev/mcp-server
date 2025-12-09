@@ -5,9 +5,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-const files = process.argv
-	.slice(2)
-	.filter((f) => f !== "-" && f.endsWith("tsconfig.json"));
+const files = process.argv.slice(2).filter((f) => f !== "-" && f.endsWith("tsconfig.json"));
 let hasErrors = false;
 
 if (files.length === 0) {
@@ -35,16 +33,12 @@ for (const file of files) {
 			const paths = content.compilerOptions.paths;
 			for (const [key, values] of Object.entries(paths)) {
 				if (!Array.isArray(values)) {
-					console.error(
-						`❌ ${file}: Path "${key}" value must be array, got ${typeof values}`
-					);
+					console.error(`❌ ${file}: Path "${key}" value must be array, got ${typeof values}`);
 					hasErrors = true;
 				} else {
 					for (const val of values) {
 						if (typeof val !== "string") {
-							console.error(
-								`❌ ${file}: Path value must be string, got ${typeof val}`
-							);
+							console.error(`❌ ${file}: Path value must be string, got ${typeof val}`);
 							hasErrors = true;
 						}
 					}
@@ -53,14 +47,9 @@ for (const file of files) {
 		}
 
 		// Warn about extends chain
-		if (
-			content.extends &&
-			!content.extends.includes("tsconfig.base.json")
-		) {
+		if (content.extends && !content.extends.includes("tsconfig.base.json")) {
 			if (pkg.name?.startsWith("@snapback")) {
-				console.warn(
-					`⚠️  ${pkg.name} extends non-standard tsconfig: ${content.extends}`
-				);
+				console.warn(`⚠️  ${pkg.name} extends non-standard tsconfig: ${content.extends}`);
 			}
 		}
 	} catch (e) {

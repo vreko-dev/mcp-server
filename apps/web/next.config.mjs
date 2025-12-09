@@ -34,11 +34,7 @@ const nextConfig = {
 			},
 		],
 	},
-	transpilePackages: [
-		"@snapback/contracts",
-		"@snapback/sdk",
-		"@snapback/events",
-	],
+	transpilePackages: ["@snapback/contracts", "@snapback/sdk", "@snapback/events"],
 	serverExternalPackages: ["@snapback/infrastructure"],
 	experimental: {
 		// Next.js 16: Enable Turbopack filesystem caching for faster dev rebuilds
@@ -157,7 +153,7 @@ const nextConfig = {
 			new webpack.IgnorePlugin({
 				resourceRegExp: /^piscina$/,
 				contextRegExp: /./,
-			})
+			}),
 		);
 
 		return config;

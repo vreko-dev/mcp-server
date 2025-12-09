@@ -6,7 +6,7 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/snapback-dev/snapback.dev.git",
+    "url": "https://github.com/snapback-dev.git",
     "directory": "packages/sdk"
   },
   "dependencies": {
@@ -75,6 +75,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsup && tsc --emitDeclarationOnly --outDir dist-types -p tsconfig.build.json",
+    "dev": "tsup --watch",
     "check": "biome check .",
     "format": "biome format --write .",
     "lint": "biome lint .",

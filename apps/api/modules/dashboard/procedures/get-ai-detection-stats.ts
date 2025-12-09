@@ -1,10 +1,12 @@
 import { ORPCError } from "@orpc/server";
 import { logger } from "@snapback/infrastructure";
+// @ts-expect-error - featureUsage has implicit any type from platform package
 import { featureUsage } from "@snapback/platform";
 import { and, count, desc, eq } from "drizzle-orm";
 import { z } from "zod";
 import { protectedProcedure } from "@/orpc/procedures";
 import { getDb } from "@/src/services/database";
+import { getTrustCalibrationService } from "@/src/services/trust-calibration";
 
 const aiDetectionStatSchema = z.object({
 	tool: z.string(),
@@ -36,13 +38,18 @@ export const getAIDetectionStats = protectedProcedure
 				.groupBy(featureUsage.featureName)
 				.orderBy(desc(count()));
 
-			// Map feature names to friendly tool names with mock confidence
-			// In production, confidence would come from telemetry metadata
-			return aiFeatures.map((feature) => ({
-				tool: formatToolName(feature.featureName),
-				count: feature.count,
-				avgConfidence: 0.9 + Math.random() * 0.09, // Mock: 90-99% confidence
-			}));
+			// Map feature names to friendly tool names with REAL confidence scores
+			// Get trust calibration service for real scores instead of random mocking
+			const trustService = getTrustCalibrationService();
+
+			return Promise.all(
+				aiFeatures.map(async (feature: any) => ({
+					tool: formatToolName(feature.featureName),
+					count: feature.count,
+					// Get REAL confidence score from trust calibration instead of Math.random()
+					avgConfidence: await trustService.getConfidenceScore(userId, formatToolName(feature.featureName)),
+				})),
+			);
 		} catch (error) {
 			logger.error("Failed to get AI detection stats", { userId, error });
 			throw new ORPCError("INTERNAL_SERVER_ERROR", {

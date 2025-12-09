@@ -1,9 +1,109 @@
+import { logger } from "@snapback/infrastructure";
 import { apiKeys, snapshotFiles, snapshots, subscriptions, usageLimits } from "@snapback/platform";
 import { and, eq, gte, lte, sql } from "drizzle-orm";
 import { z } from "zod";
 import { trackUsage } from "@/lib/usage";
 import { protectedProcedure } from "@/orpc/procedures";
 import { getDb } from "@/src/services/database";
+
+/**
+ * Cloud Backup Configuration
+ */
+interface S3Config {
+	region: string;
+	bucket: string;
+	enabled: boolean;
+}
+
+function getS3Config(): S3Config {
+	return {
+		region: process.env.AWS_REGION || "us-east-1",
+		bucket: process.env.S3_BACKUP_BUCKET || "snapback-backups",
+		enabled: process.env.CLOUD_BACKUP_ENABLED === "true",
+	};
+}
+
+/**
+ * Initialize CloudBackupService with error handling
+ */
+async function initializeCloudBackupService(config: S3Config) {
+	if (!config.enabled) {
+		return null;
+	}
+
+	try {
+		const { CloudBackupService } = await import("@snapback/sdk");
+		return new CloudBackupService(config);
+	} catch (err) {
+		logger.warn("Could not initialize CloudBackupService", {
+			error: err instanceof Error ? err.message : String(err),
+		});
+		return null;
+	}
+}
+
+/**
+ * Upload snapshot to S3 (non-blocking)
+ */
+async function uploadSnapshotToS3(service: any, snapshot: any, userId: string, db: any) {
+	try {
+		logger.info("Starting S3 upload for snapshot", {
+			snapshotId: snapshot.id,
+			userId,
+		});
+
+		// Build snapshot object for upload
+		const snapshotForBackup = {
+			id: snapshot.id,
+			name: snapshot.name,
+			description: snapshot.description,
+			trigger: snapshot.trigger,
+			fileCount: snapshot.fileCount,
+			totalSizeBytes: snapshot.totalSizeBytes,
+			fileHashes: snapshot.fileHashes,
+			timestamp: snapshot.createdAt?.getTime() || Date.now(),
+			metadata: snapshot.metadata,
+		};
+
+		// Upload to S3
+		const uploadResult = await service.upload(snapshotForBackup, userId);
+
+		if (uploadResult.success) {
+			// Update snapshot with S3 URL
+			await db
+				.update(snapshots)
+				.set({
+					cloudBackupUrl: uploadResult.s3Key,
+				})
+				.where(eq(snapshots.id, snapshot.id));
+
+			logger.info("Snapshot uploaded to S3 successfully", {
+				snapshotId: snapshot.id,
+				userId,
+				s3Key: uploadResult.s3Key,
+				checksum: uploadResult.checksum,
+			});
+
+			// Return URL for response
+			return uploadResult.s3Key;
+		}
+		// Non-blocking failure: log but don't throw
+		logger.warn("Snapshot S3 upload failed (non-blocking)", {
+			snapshotId: snapshot.id,
+			userId,
+			error: uploadResult.error,
+		});
+		return null;
+	} catch (uploadError) {
+		// Non-blocking error: snapshot creation succeeds even if backup fails
+		logger.error("Unexpected error during S3 upload (non-blocking)", {
+			snapshotId: snapshot.id,
+			userId,
+			error: uploadError instanceof Error ? uploadError.message : String(uploadError),
+		});
+		return null;
+	}
+}
 
 const createSnapshotSchema = z.object({
 	name: z.string().optional(),
@@ -145,6 +245,11 @@ export const createSnapshot = protectedProcedure.input(createSnapshotSchema).han
 		throw new Error("Cloud backup not available on your plan. Upgrade to Solo or Team.");
 	}
 
+	// Initialize Cloud Backup Service if S3 is configured
+	const s3Config = getS3Config();
+	const cloudBackupService =
+		input.cloudBackupEnabled && permissions.cloudBackup ? await initializeCloudBackupService(s3Config) : null;
+
 	// 5. Create snapshot (metadata only)
 	const newSnapshotResult = await db
 		.insert(snapshots)
@@ -180,6 +285,17 @@ export const createSnapshot = protectedProcedure.input(createSnapshotSchema).han
 	}
 
 	const newSnapshot = newSnapshotResult[0];
+
+	// PHASE 3: Upload snapshot to S3 if cloud backup is enabled (non-blocking)
+	if (input.cloudBackupEnabled && cloudBackupService && permissions.cloudBackup) {
+		const db3 = getDb();
+		if (db3) {
+			const cloudBackupUrl = await uploadSnapshotToS3(cloudBackupService, newSnapshot, user.id, db3);
+			if (cloudBackupUrl) {
+				newSnapshot.cloudBackupUrl = cloudBackupUrl;
+			}
+		}
+	}
 
 	// 6. Insert file metadata
 	if (input.files.length > 0) {

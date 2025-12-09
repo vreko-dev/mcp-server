@@ -56,7 +56,14 @@
 			"inputs": ["apps/vscode/package.base.json", "apps/vscode/package-contributes/**"]
 		},
 		"build": {
-			"dependsOn": ["validate:catalog", "validate:infrastructure", "validate:exports", "build:package", "^generate", "^build"],
+			"dependsOn": [
+				"validate:catalog",
+				"validate:infrastructure",
+				"validate:exports",
+				"build:package",
+				"^generate",
+				"^build"
+			],
 			"outputs": ["dist/**", "*.tsbuildinfo", ".next/**", "!.next/cache/**", "out/**"],
 			"inputs": [
 				"$TURBO_DEFAULT$",
@@ -182,6 +189,11 @@
 				"packages/platform/.env.local",
 				"packages/auth/.env.local"
 			]
+		},
+		"watch": {
+			"cache": false,
+			"persistent": true,
+			"dependsOn": ["^build"]
 		},
 		"start": {
 			"cache": false,

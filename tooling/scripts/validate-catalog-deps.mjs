@@ -23,24 +23,15 @@ const workspaceRoot = path.resolve(__dirname, "../..");
 const FORBIDDEN_PACKAGES = new Map([
 	// Framework conflicts
 	["@angular/core", "Angular is incompatible with this React-based monorepo"],
-	[
-		"@angular/common",
-		"Angular is incompatible with this React-based monorepo",
-	],
+	["@angular/common", "Angular is incompatible with this React-based monorepo"],
 	["vue", "Vue is incompatible with this React-based monorepo"],
 	["svelte", "Svelte is incompatible with this React-based monorepo"],
 
 	// RPC conflicts - we use oRPC, not tRPC
 	["@trpc/client", "Use @orpc/client instead - this monorepo uses oRPC"],
 	["@trpc/server", "Use @orpc/server instead - this monorepo uses oRPC"],
-	[
-		"@trpc/next",
-		"Use @orpc/tanstack-query instead - this monorepo uses oRPC",
-	],
-	[
-		"@trpc/react-query",
-		"Use @orpc/tanstack-query instead - this monorepo uses oRPC",
-	],
+	["@trpc/next", "Use @orpc/tanstack-query instead - this monorepo uses oRPC"],
+	["@trpc/react-query", "Use @orpc/tanstack-query instead - this monorepo uses oRPC"],
 
 	// Replaced by Biome
 	["prettier", "Use Biome for formatting - run 'pnpm format'"],
@@ -129,16 +120,13 @@ function validatePackageJson(filePath, catalogPackages) {
 		return { errors, warnings };
 	}
 
-	const depTypes = [
-		"dependencies",
-		"devDependencies",
-		"peerDependencies",
-		"optionalDependencies",
-	];
+	const depTypes = ["dependencies", "devDependencies", "peerDependencies", "optionalDependencies"];
 
 	for (const depType of depTypes) {
 		const deps = pkg[depType];
-		if (!deps) continue;
+		if (!deps) {
+			continue;
+		}
 
 		for (const [pkgName, version] of Object.entries(deps)) {
 			// Check forbidden packages
@@ -146,7 +134,7 @@ function validatePackageJson(filePath, catalogPackages) {
 				errors.push(
 					`🚫 FORBIDDEN: ${pkgName} in ${depType}\n` +
 						`   Reason: ${FORBIDDEN_PACKAGES.get(pkgName)}\n` +
-						`   File: ${filePath}`
+						`   File: ${filePath}`,
 				);
 				continue;
 			}
@@ -155,10 +143,8 @@ function validatePackageJson(filePath, catalogPackages) {
 			if (PACKAGE_ALTERNATIVES.has(pkgName)) {
 				warnings.push(
 					`⚠️  ALTERNATIVE: ${pkgName} in ${depType}\n` +
-						`   Suggestion: ${PACKAGE_ALTERNATIVES.get(
-							pkgName
-						)}\n` +
-						`   File: ${filePath}`
+						`   Suggestion: ${PACKAGE_ALTERNATIVES.get(pkgName)}\n` +
+						`   File: ${filePath}`,
 				);
 			}
 
@@ -168,15 +154,12 @@ function validatePackageJson(filePath, catalogPackages) {
 			}
 
 			// Check if package is in catalog but not using catalog: protocol
-			if (
-				catalogPackages.has(pkgName) &&
-				!version.startsWith("catalog:")
-			) {
+			if (catalogPackages.has(pkgName) && !version.startsWith("catalog:")) {
 				errors.push(
 					`📦 USE CATALOG: ${pkgName}@${version} in ${depType}\n` +
 						`   This package is in the catalog. Use "catalog:" protocol.\n` +
 						`   Change: "${pkgName}": "${version}" → "${pkgName}": "catalog:"\n` +
-						`   File: ${filePath}`
+						`   File: ${filePath}`,
 				);
 			}
 		}
@@ -191,9 +174,7 @@ function validatePackageJson(filePath, catalogPackages) {
 let files = process.argv.slice(2).filter((f) => f.endsWith("package.json"));
 
 if (files.length === 0) {
-	console.log(
-		"Usage: node validate-catalog-deps.mjs [package.json files...]"
-	);
+	console.log("Usage: node validate-catalog-deps.mjs [package.json files...]");
 	console.log("No files provided, scanning all package.json files...\n");
 
 	// Find all package.json files using simple recursion
@@ -202,11 +183,7 @@ if (files.length === 0) {
 		for (const entry of entries) {
 			const fullPath = path.join(dir, entry.name);
 			if (entry.isDirectory()) {
-				if (
-					entry.name !== "node_modules" &&
-					entry.name !== ".git" &&
-					entry.name !== "dist"
-				) {
+				if (entry.name !== "node_modules" && entry.name !== ".git" && entry.name !== "dist") {
 					findPackageJsonFiles(fullPath, results);
 				}
 			} else if (entry.name === "package.json") {
@@ -252,9 +229,7 @@ if (totalErrors > 0) {
 }
 
 if (totalWarnings > 0) {
-	console.warn(
-		"⚠️  Validation passed with warnings. Consider addressing them."
-	);
+	console.warn("⚠️  Validation passed with warnings. Consider addressing them.");
 }
 
 console.log("✅ All dependency validations passed!");

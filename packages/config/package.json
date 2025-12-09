@@ -6,7 +6,7 @@
   "author": "SnapBack Team",
   "repository": {
     "type": "git",
-    "url": "https://github.com/snapback-dev/snapback.dev.git",
+    "url": "https://github.com/snapback-dev.git",
     "directory": "packages/config"
   },
   "private": true,
@@ -84,6 +84,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsup && tsc --build --force && node ../../scripts/verify-build.js",
+    "dev": "tsup --watch",
     "check": "biome check .",
     "format": "biome format --write .",
     "lint": "biome lint .",

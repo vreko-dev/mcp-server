@@ -1,12 +1,20 @@
 # TDD Red-Green-Refactor Prompt for Coding Agents
 
-**Purpose:** Ensure coding agents perform thorough Test-Driven Development without shortcuts, placeholder tests, or useless tests, while maintaining strict architectural compliance.
+**Purpose:** Ensure coding agents perform thorough Test-Driven Development without shortcuts, placeholder tests, or useless tests, while maintaining strict architectural compliance and AI-safety awareness.
 
-**Authority:** This prompt synthesizes 12 comprehensive testing documents (~9,000 lines) + real-world architecture violation analysis into actionable rules.
+**Authority:** This prompt synthesizes:
+- 12 comprehensive testing documents (~9,000 lines)
+- Real-world architecture violation analysis (Task 4.1.A)
+- External AI research on coding pitfalls (6 peer-reviewed sources)
 
-**Zero Tolerance:** Violations of FORBIDDEN patterns OR architectural bypasses will fail code review and CI/CD checks.
+**Zero Tolerance:** Violations of FORBIDDEN patterns, architectural bypasses, or AI-safety failures will fail code review and CI/CD checks.
 
-**Critical Update (2025-12-09):** Added mandatory STEP 0 (Architecture Audit) to prevent service layer bypasses and duplicate logic creation.
+**Critical Updates (2025-12-09):**
+- Added STEP 0: Architecture Audit (prevents service layer bypasses)
+- Added FORBIDDEN #9-11: Iteration loops, blind trust, DRY violations
+- Added Security Verification section (AI-specific vulnerabilities)
+- Added AI suitability assessment (when NOT to use AI)
+- Integrated 6 external research sources on AI coding failures
 
 ---
 
@@ -196,6 +204,103 @@ export const getMetricsHandler = async ({ context }) => {
 };
 ```
 
+#### ❌ FORBIDDEN #9: Iterative Fix Loops Without Human Review
+
+**Research Finding (IEEE-ISTAS 2025):** Each AI "fix" iteration can introduce NEW vulnerabilities.
+After 5 iterations: **37.6% increase in critical vulnerabilities.**
+
+```typescript
+// ❌ FORBIDDEN PATTERN - Unchecked iteration loop
+// Iteration 1: AI generates code
+// User: "Fix the error"
+// Iteration 2: AI fixes error, breaks validation
+// User: "Fix the validation"
+// Iteration 3: AI fixes validation, adds SQL injection
+// User: "Fix the security issue"
+// Iteration 4: AI patches SQL, removes rate limiting
+// Iteration 5: 37.6% MORE vulnerabilities than iteration 1!
+
+// ✅ REQUIRED PATTERN - Mandatory review checkpoint
+// After 3 AI iterations on the SAME code block:
+// 1. STOP and review ALL changes holistically
+// 2. Consider manual rewrite vs. continued AI iteration
+// 3. Document why iterations were needed
+// 4. Run security scan before proceeding
+```
+
+**Maximum Iterations Rule:**
+- ✅ 1-2 iterations: Proceed normally
+- ⚠️ 3 iterations: Mandatory pause + human review
+- ❌ 4+ iterations: Consider manual rewrite (AI may be creating circular fixes)
+
+**Why This Matters:**
+AI doesn't "understand" your codebase - it pattern-matches. Each fix attempts to satisfy
+the immediate error without holistic awareness, often breaking something else.
+
+#### ❌ FORBIDDEN #10: Blind Trust in AI-Generated Code
+
+**Research Finding (Stanford Study):** Developers using AI produce less secure code
+while BELIEVING it to be MORE secure. This "false confidence effect" is dangerous.
+
+**Statistics:**
+- 76% of developers use AI coding tools
+- Only 43% trust their accuracy
+- Yet developers review AI code LESS critically than human code
+
+```typescript
+// ❌ FORBIDDEN - Accepting AI code without scrutiny
+const apiKey = "sk-abc123";  // AI hardcoded this "for simplicity"
+const cors = "*";            // AI used permissive CORS "to avoid issues"
+const query = `SELECT * FROM users WHERE id = ${userId}`; // AI concatenated SQL
+
+// ✅ REQUIRED - Treat AI code with HEIGHTENED scrutiny
+// Ask for EVERY AI-generated line:
+// 1. "Would I approve this in a human's PR?" (same standard)
+// 2. "What could go wrong?" (adversarial thinking)
+// 3. "Does this follow our patterns?" (architectural check)
+// 4. "Is there a security implication?" (threat modeling)
+```
+
+**Anti-Complacency Rules:**
+1. **Never** approve AI code faster than human code
+2. **Always** verify security-sensitive operations manually
+3. **Question** every "simplification" AI makes (often removes safety)
+4. **Test** edge cases AI may not have considered
+5. **Check** for hardcoded values AI adds for "convenience"
+
+#### ❌ FORBIDDEN #11: Violating DRY with AI-Generated Duplicates
+
+**Research Finding (GitClear):** **8x increase** in duplicated code blocks since AI adoption.
+AI generates NEW code instead of finding/reusing existing utilities.
+
+```typescript
+// ❌ FORBIDDEN - AI generates duplicate utility
+// File: apps/api/modules/users/utils.ts
+function validateEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+// File: apps/api/modules/auth/helpers.ts  
+// AI generates IDENTICAL function instead of importing!
+function validateEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+// ✅ REQUIRED - Search before creating
+// BEFORE writing any utility/helper:
+grep -r "function validate" packages/*/src/ apps/*/lib/
+grep -r "export const validate" packages/*/src/ apps/*/lib/
+
+// Found existing? Import it:
+import { validateEmail } from "@snapback/contracts/validation";
+```
+
+**DRY Compliance Checklist:**
+- [ ] Searched for existing utilities before creating new ones
+- [ ] Checked `packages/*/src/utils/` for shared helpers
+- [ ] Checked `apps/*/lib/` for app-specific utilities
+- [ ] If creating new utility, placed in SHARED location (not module-specific)
+
 ---
 
 ## ✅ MANDATORY TDD WORKFLOW
@@ -373,6 +478,31 @@ describe("MetricsAggregator", () => {
 - [ ] **Confirmed abstraction layer** (service vs procedure vs controller)
 - [ ] **Documented audit results** (added to commit message or PR description)
 - [ ] **No existing patterns bypassed** (using services, not bypassing them)
+- [ ] **Searched for existing utilities** (grep for helpers/validators before creating new)
+- [ ] **Verified environment context** (no hardcoded env values, uses ConfigService)
+- [ ] **Assessed AI suitability** (is this task better done manually? See below)
+
+##### When to Use AI vs Manual Coding
+
+**Research Finding (METR Study):** Experienced developers are **19% SLOWER** with AI on complex tasks.
+
+| Scenario | Recommendation | Reason |
+|----------|----------------|--------|
+| Simple CRUD operations | ✅ Manual faster | Less verification overhead |
+| Greenfield project | ✅ AI helpful | No existing patterns to match |
+| Legacy codebase | ⚠️ Caution | AI lacks tacit knowledge |
+| Security-sensitive code | ❌ Manual preferred | AI misses security patterns |
+| Business logic | ❌ Manual preferred | AI doesn't know your domain |
+| Boilerplate/repetitive | ✅ AI helpful | Low-risk, high-volume |
+| Complex algorithms | ⚠️ Case-by-case | Verify every step |
+
+**Quick Decision Framework:**
+```
+1. Does AI have enough CONTEXT? (No → Manual)
+2. Is this SECURITY-sensitive? (Yes → Manual)
+3. Do patterns ALREADY EXIST? (Yes → Manual adaptation, not AI generation)
+4. Will VERIFICATION take longer than writing? (Yes → Manual)
+```
 
 **Time Investment:** 5-10 minutes
 **Value:** Prevents hours of refactoring + architectural debt
@@ -1208,6 +1338,103 @@ export default defineConfig({
 
 ---
 
+## 🔒 SECURITY VERIFICATION (AI-Generated Code)
+
+**Research Finding:** 29.1% of AI-generated Python code contains security weaknesses.
+45% of AI-assisted tasks introduce critical security flaws.
+
+**CRITICAL:** AI coding tools have systematic security blind spots. This checklist is MANDATORY
+for all AI-generated or AI-assisted code before merge.
+
+### Mandatory Security Checklist
+
+**Before merging any AI-generated code, verify:**
+
+#### Secrets & Configuration
+- [ ] **No hardcoded secrets** (passwords, API keys, tokens, connection strings)
+- [ ] **No hardcoded environment values** (uses process.env or ConfigService)
+- [ ] **Secrets use proper management** (env vars, vault, secrets manager)
+- [ ] **Config files excluded from git** (.env files in .gitignore)
+
+#### Input Validation
+- [ ] **All user inputs validated** (length, type, format checks)
+- [ ] **SQL parameterized** (no string concatenation in queries)
+- [ ] **Path traversal prevented** (no `../` in file paths)
+- [ ] **Command injection prevented** (no user input in shell commands)
+
+#### Access Control
+- [ ] **Authentication checks present** on protected routes
+- [ ] **Authorization verified** (not just authentication)
+- [ ] **Rate limiting configured** on public endpoints
+- [ ] **CORS properly scoped** (not `*` in production)
+
+#### Error Handling
+- [ ] **No stack traces exposed** to clients
+- [ ] **Sensitive data not logged** (passwords, tokens, PII)
+- [ ] **Generic error messages** for users (detailed logs internally)
+
+#### Dependencies
+- [ ] **No known CVEs** in added dependencies
+- [ ] **Minimal new dependencies** (avoid dependency bloat)
+- [ ] **Dependencies from trusted sources** (npm, not random URLs)
+
+### AI Security Anti-Patterns
+
+**Common vulnerabilities AI introduces "for simplicity":**
+
+```typescript
+// ❌ AI Pattern: Hardcoded credentials
+const db = new Database({
+  host: "localhost",
+  password: "admin123"  // AI added this "to get it working"
+});
+
+// ✅ Secure: Environment-based
+const db = new Database({
+  host: process.env.DB_HOST,
+  password: process.env.DB_PASSWORD
+});
+
+// ❌ AI Pattern: SQL concatenation
+const query = `SELECT * FROM users WHERE id = ${userId}`;
+
+// ✅ Secure: Parameterized query
+const query = sql`SELECT * FROM users WHERE id = ${userId}`;
+
+// ❌ AI Pattern: Overly permissive CORS
+app.use(cors({ origin: "*" }));  // AI added this "to fix CORS errors"
+
+// ✅ Secure: Scoped CORS
+app.use(cors({ origin: process.env.ALLOWED_ORIGINS?.split(",") }));
+
+// ❌ AI Pattern: Exposed error details
+catch (error) {
+  res.status(500).json({ error: error.stack });  // Leaks internals
+}
+
+// ✅ Secure: Generic response
+catch (error) {
+  logger.error("Operation failed", { error });
+  res.status(500).json({ error: "Internal server error" });
+}
+```
+
+### Security Review Trigger
+
+**Mandatory security review for AI-generated code touching:**
+- Authentication/authorization logic
+- Database queries
+- File system operations
+- External API calls
+- User input processing
+- Cryptographic operations
+- Session management
+- Payment/billing logic
+
+**Reviewer must verify:** Each item in the security checklist above.
+
+---
+
 ## 🏗️ TEST NAMING CONVENTIONS
 
 ### Mandatory Format
@@ -1530,6 +1757,21 @@ Before submitting PR, verify ALL items:
 - [ ] Trust chain tests for multi-layer flows
 - [ ] IP-safety verified (no proprietary logic in public packages)
 
+### AI-Specific Safety (NEW - Research-Backed)
+- [ ] **Iteration count tracked**: Max 3 AI iterations before mandatory human review
+- [ ] **DRY compliance verified**: Searched for existing utilities before creating new
+- [ ] **False confidence countered**: Reviewed AI code with SAME rigor as human code
+- [ ] **Context blindness checked**: No hardcoded env values, uses existing patterns
+- [ ] **Security checklist completed**: All items in Security Verification section verified
+
+### Security (For AI-Generated Code)
+- [ ] **No hardcoded secrets**: All credentials from env vars or secret manager
+- [ ] **Input validation present**: All user inputs sanitized and validated
+- [ ] **SQL parameterized**: No string concatenation in database queries
+- [ ] **Error handling secure**: No stack traces exposed, sensitive data not logged
+- [ ] **CORS properly scoped**: Not using wildcard `*` in production
+- [ ] **Dependencies vetted**: No known CVEs in new dependencies
+
 ---
 
 ## 📚 ENFORCEMENT SUMMARY
@@ -1568,17 +1810,23 @@ Before submitting PR, verify ALL items:
 
 **Every line of production code MUST:**
 1. **Pass architecture audit** (STEP 0 - verify no service bypass)
-2. Start with a failing test (RED)
-3. Be implemented minimally (GREEN)
-4. Be refactored without behavior change (BLUE)
-5. Pass all 4 coverage paths (Happy/Sad/Edge/Error)
-6. Use specific assertions (no vague checks)
-7. Use deterministic infrastructure
-8. Pass all quality gates
+2. **Pass AI suitability check** (is this task appropriate for AI?)
+3. Start with a failing test (RED)
+4. Be implemented minimally (GREEN)
+5. Be refactored without behavior change (BLUE)
+6. Pass all 4 coverage paths (Happy/Sad/Edge/Error)
+7. Use specific assertions (no vague checks)
+8. Use deterministic infrastructure
+9. Pass all quality gates
+10. **Pass security verification** (if AI-generated)
 
 **Zero tolerance for:**
-- **Bypassing existing services/aggregators** (← NEW)
-- **Skipping architecture audit (STEP 0)** (← NEW)
+- **Bypassing existing services/aggregators** 
+- **Skipping architecture audit (STEP 0)** 
+- **Unchecked iteration loops** (max 3 before human review) ← NEW
+- **Blind trust in AI code** (review with SAME rigor as human code) ← NEW
+- **DRY violations** (search for existing utilities first) ← NEW
+- **Security blind spots** (hardcoded secrets, SQL injection, etc.) ← NEW
 - Placeholder tests
 - TODO markers without implementation
 - .skip without GitHub issue
@@ -1609,6 +1857,15 @@ const aiBreakdown = await metricsAggregator.getAIToolDetectionCounts(userId);
 
 ---
 
-**Generated from:** 12 testing documents (~9,000 lines) + Task 4.1.A architecture violation analysis
-**Last Updated:** 2025-12-09 (Added STEP 0: Architecture Audit)
+**Generated from:** 12 testing documents (~9,000 lines) + Task 4.1.A architecture violation analysis + External AI research
+
+**Research Sources Integrated:**
+- IEEE-ISTAS 2025: Iterative AI code degradation (37.6% vulnerability increase)
+- METR/LinkedIn Study: Experienced developers 19% slower with AI
+- GitClear Report: 8x increase in duplicate code blocks
+- Stanford Study: False confidence effect in AI-assisted coding
+- GitHub Statistics: 29.1% of AI Python code contains security weaknesses
+- VentureBeat: AI coding agents operational awareness gaps
+
+**Last Updated:** 2025-12-09 (Added STEP 0 + AI Safety Research)
 **Authority:** Workspace-wide testing standard

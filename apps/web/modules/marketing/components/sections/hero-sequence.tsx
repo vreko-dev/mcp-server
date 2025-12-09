@@ -42,24 +42,6 @@ const HeroSequence = () => {
 			{/* Spotlight Effect */}
 			<Spotlight className="-top-40 left-0 md:left-60 md:-top-20" fill="white" />
 
-			{/* Animated Background Elements */}
-			<div className="absolute inset-0 overflow-hidden">
-				{[...Array(6)].map((_, i) => (
-					<m.div
-						key={i}
-						className="absolute w-2 h-2 bg-primary rounded-full opacity-20"
-						initial={isMounted ? { x: "-100vw", y: `${i * 20}%` } : { x: 0, y: `${i * 20}%` }}
-						animate={isMounted ? { x: "100vw" } : { x: 0 }}
-						transition={{
-							duration: 20 + i * 5,
-							repeat: Number.POSITIVE_INFINITY,
-							ease: "linear",
-							delay: i * 2,
-						}}
-					/>
-				))}
-			</div>
-
 			<div className="max-w-6xl mx-auto text-center z-10">
 				{/* Main Heading */}
 				<m.h1

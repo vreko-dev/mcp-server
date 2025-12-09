@@ -339,5 +339,92 @@ describe("getMetrics", () => {
             expect(metrics.ai_breakdown.cursor).toBe(3);
         });
     });
+
+    // 🔴 RED PHASE: Error Path Tests (Task 4.1.A - Complete 4-Path Coverage)
+    describe("Error Handling", () => {
+        it("should return error when database connection fails", async () => {
+            // ARRANGE: Simulate database connection error
+            mockDb.select.mockRejectedValueOnce(new Error("ECONNREFUSED: Connection refused"));
+
+            // ACT
+            const result = await getMetricsHandler({ context: mockContext });
+
+            // ASSERT - Should return error response, not throw
+            expect(result).toHaveProperty("error", true);
+            if ("error" in result) {
+                expect(result.code).toBe("INTERNAL_ERROR");
+                expect(result.message).toBe("Failed to fetch dashboard metrics");
+            }
+        });
+
+        it("should return error when featureUsage query fails mid-execution", async () => {
+            // ARRANGE: First 4 queries succeed, featureUsage query fails
+            const createQb = (result: any) => ({
+                from: vi.fn().mockReturnThis(),
+                where: vi.fn().mockReturnThis(),
+                groupBy: vi.fn().mockReturnThis(),
+                then: vi.fn((resolve) => resolve(result)),
+            });
+
+            mockDb.select
+                .mockReturnValueOnce(createQb([{ count: 10 }]))  // checkpoints - success
+                .mockReturnValueOnce(createQb([{ count: 2 }]))   // recoveries - success
+                .mockReturnValueOnce(createQb([{ count: 5 }]))   // files - success
+                .mockReturnValueOnce(createQb([{ count: 8 }]))   // ai detected - success
+                .mockReturnValueOnce(createQb([]))               // recent activity - success
+                .mockRejectedValueOnce(new Error("ETIMEDOUT: Query timeout")); // featureUsage - FAIL
+
+            // ACT
+            const result = await getMetricsHandler({ context: mockContext });
+
+            // ASSERT - Should return error (fail-fast approach)
+            expect(result).toHaveProperty("error", true);
+            if ("error" in result) {
+                expect(result.code).toBe("INTERNAL_ERROR");
+                expect(result.message).toBe("Failed to fetch dashboard metrics");
+            }
+        });
+
+        it("should handle malformed featureUsage data without crashing", async () => {
+            // ARRANGE: featureUsage returns rows with null/undefined featureName
+            const createQb = (result: any) => ({
+                from: vi.fn().mockReturnThis(),
+                where: vi.fn().mockReturnThis(),
+                groupBy: vi.fn().mockReturnThis(),
+                orderBy: vi.fn().mockReturnThis(),
+                limit: vi.fn().mockReturnThis(),
+                then: vi.fn((resolve) => resolve(result)),
+            });
+
+            const malformedAiBreakdown = [
+                { featureName: null, count: 5 },        // null featureName
+                { featureName: undefined, count: 3 },   // undefined featureName
+                { featureName: "copilot", count: 7 },   // valid row
+            ];
+
+            mockDb.select
+                .mockReturnValueOnce(createQb([{ count: 10 }]))
+                .mockReturnValueOnce(createQb([{ count: 2 }]))
+                .mockReturnValueOnce(createQb([{ count: 5 }]))
+                .mockReturnValueOnce(createQb([{ count: 8 }]))
+                .mockReturnValueOnce(createQb([]))
+                .mockReturnValueOnce(createQb(malformedAiBreakdown));
+
+            // ACT - Should not crash on null/undefined featureName
+            const result = await getMetricsHandler({ context: mockContext });
+
+            // ASSERT - Should either return error OR skip invalid rows gracefully
+            if ("error" in result) {
+                // Option 1: Return error for malformed data
+                expect(result.code).toBe("INTERNAL_ERROR");
+            } else {
+                // Option 2: Skip invalid rows, only count valid ones
+                expect(result.ai_breakdown.copilot).toBe(7);
+                expect(result.ai_breakdown.cursor).toBe(0);
+                expect(result.ai_breakdown.claude).toBe(0);
+                expect(result.ai_breakdown.windsurf).toBe(0);
+            }
+        });
+    });
 });
 

@@ -56,8 +56,27 @@ pre-commit:
                 - rebase
 
 pre-push:
-    parallel: true
+    parallel: false
     commands:
+        test-suite-validation:
+            glob: "**/*.test.ts"
+            run: |
+                echo '🧪 Running core test suite validation...'
+                pnpm vitest run apps/vscode/test/unit/detection apps/vscode/test/unit/restore apps/vscode/test/unit/domain/snapshotOrchestrator.test.ts --reporter=verbose
+                if [ $? -ne 0 ]; then
+                  echo '❌ Test suite validation failed'
+                  exit 1
+                fi
+                pnpm vitest run --filter=@snapback/mcp-server -- test/unit/tools
+                if [ $? -ne 0 ]; then
+                  echo '❌ MCP test suite validation failed'
+                  exit 1
+                fi
+                echo '✅ All core tests validated successfully'
+            skip:
+                - merge
+                - rebase
+
         type-check-full:
             glob: "**/*.{ts,tsx}"
             run: pnpm turbo run type-check --no-cache

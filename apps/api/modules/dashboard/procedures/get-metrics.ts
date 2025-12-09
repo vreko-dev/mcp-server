@@ -188,10 +188,18 @@ function normalizeToolName(featureName: string): string {
 	const normalized = featureName.toLowerCase();
 
 	// Map common variations to canonical names
-	if (normalized.includes("copilot")) return "copilot";
-	if (normalized.includes("cursor")) return "cursor";
-	if (normalized.includes("claude")) return "claude";
-	if (normalized.includes("windsurf")) return "windsurf";
+	if (normalized.includes("copilot")) {
+		return "copilot";
+	}
+	if (normalized.includes("cursor")) {
+		return "cursor";
+	}
+	if (normalized.includes("claude")) {
+		return "claude";
+	}
+	if (normalized.includes("windsurf")) {
+		return "windsurf";
+	}
 
 	// Return as-is for unknown tools (won't match aiBreakdown keys)
 	return normalized;

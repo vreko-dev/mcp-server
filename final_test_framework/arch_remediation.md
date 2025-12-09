@@ -1240,23 +1240,23 @@ export function startDailyMetricsAggregation(): void {
     const job = new CronJob('0 0 * * *', async () => {  // Daily at midnight
         try {
             logger.info('Starting daily metrics aggregation');
-            
+
             const aggregator = new MetricsAggregator(db);
             const allUsers = await db.query(
                 'SELECT DISTINCT user_id FROM snapshots'
             );
-            
+
             for (const { user_id } of allUsers) {
                 const metrics = await aggregator.aggregateDailyMetrics(user_id);
                 await db.insert('user_daily_metrics').values(metrics);
             }
-            
+
             logger.info('Daily metrics aggregation completed');
         } catch (error) {
             logger.error('Daily metrics aggregation failed', { error });
         }
     });
-    
+
     job.start();
 }
 
@@ -1273,13 +1273,13 @@ import { MetricsAggregator } from '../../../src/services/metrics-aggregator';
 
 export async function getMetrics(input: GetMetricsInput) {
     // ... existing code for checksums ...
-    
+
     const aggregator = new MetricsAggregator(db);
-    
+
     // Replace hardcoded values with aggregated data
     const aiToolBreakdown = await aggregator.getAIToolDetectionCounts(userId);
     const recentActivity = await aggregator.getRecentActivity(userId, 7); // Last 7 days
-    
+
     const metrics = {
         protection_status: "active" as const,
         total_checkpoints: totalCheckpoints,
@@ -1294,7 +1294,7 @@ export async function getMetrics(input: GetMetricsInput) {
             windsurf: aiToolBreakdown.windsurf ?? 0,
         },
     };
-    
+
     // ... rest of existing code ...
 }
 ```
@@ -1320,7 +1320,7 @@ async getAIToolDetectionCounts(userId: string) {
         WHERE user_id = ?
             AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
     `, [userId]);
-    
+
     return result[0] || { copilot: 0, cursor: 0, claude: 0, windsurf: 0 };
 }
 
@@ -1337,9 +1337,9 @@ async getRecentActivity(userId: string, days: number = 7) {
         FROM snapshots
         WHERE user_id = ?
             AND created_at >= DATE_SUB(NOW(), INTERVAL ? DAY)
-        
+
         UNION ALL
-        
+
         SELECT
             'recovery' as type,
             created_at as timestamp,
@@ -1348,7 +1348,7 @@ async getRecentActivity(userId: string, days: number = 7) {
         FROM recovery_logs
         WHERE user_id = ?
             AND created_at >= DATE_SUB(NOW(), INTERVAL ? DAY)
-        
+
         ORDER BY timestamp DESC
         LIMIT 20
     `, [userId, days, userId, days]);
@@ -1366,7 +1366,7 @@ import { createTestUser, createTestSnapshots } from '../../fixtures';
 
 describe('Dashboard Metrics - Aggregation', () => {
     let userId: string;
-    
+
     beforeEach(async () => {
         userId = await createTestUser();
         // Create 5 snapshots with different AI tools detected
@@ -1378,10 +1378,10 @@ describe('Dashboard Metrics - Aggregation', () => {
             { tool: 'windsurf', timestamp: Date.now() - 259200000 },
         ]);
     });
-    
+
     it('should return aggregated ai_breakdown by tool', async () => {
         const metrics = await getMetrics({ userId });
-        
+
         expect(metrics.ai_breakdown).toEqual({
             copilot: 2,
             cursor: 1,
@@ -1389,16 +1389,16 @@ describe('Dashboard Metrics - Aggregation', () => {
             windsurf: 1,
         });
     });
-    
+
     it('should NOT return hardcoded zeros', async () => {
         const metrics = await getMetrics({ userId });
-        
+
         expect(metrics.ai_breakdown.copilot).toBeGreaterThan(0);
     });
-    
+
     it('should include recent_activity with actual events', async () => {
         const metrics = await getMetrics({ userId });
-        
+
         expect(metrics.recent_activity).not.toEqual([]);
         expect(metrics.recent_activity.length).toBeGreaterThan(0);
         expect(metrics.recent_activity[0]).toHaveProperty('type');
@@ -1467,7 +1467,7 @@ import { CloudBackupService } from '@snapback/sdk/cloud';
 
 export async function createSnapshot(input: CreateSnapshotInput) {
     // ... existing validation and snapshot creation ...
-    
+
     // After snapshot is saved to database
     const snapshot = await db.snapshots.create({
         // ... existing fields ...
@@ -1476,7 +1476,7 @@ export async function createSnapshot(input: CreateSnapshotInput) {
         encryptedDataKey: input.encryptedDataKey,
         encryptionAlgorithm: input.encryptionAlgorithm,
     });
-    
+
     // NEW: Upload to cloud if enabled
     if (input.cloudBackupEnabled && process.env.ENABLE_CLOUD_BACKUP === 'true') {
         try {
@@ -1485,19 +1485,19 @@ export async function createSnapshot(input: CreateSnapshotInput) {
                 s3Region: process.env.S3_REGION!,
                 encryptionKey: input.encryptedDataKey,
             });
-            
+
             const uploadResult = await cloudBackupService.upload({
                 snapshotId: snapshot.id,
                 content: input.snapshotContent,
                 metadata: input.metadata,
             });
-            
+
             // Store cloud backup URL
             await db.snapshots.update(snapshot.id, {
                 cloudBackupUrl: uploadResult.url,
                 cloudBackupChecksum: uploadResult.checksum,
             });
-            
+
             logger.info('Cloud backup completed', {
                 snapshotId: snapshot.id,
                 url: uploadResult.url,
@@ -1510,7 +1510,7 @@ export async function createSnapshot(input: CreateSnapshotInput) {
             // Don't fail snapshot creation if backup fails
         }
     }
-    
+
     return { success: true, snapshot };
 }
 ```
@@ -1556,13 +1556,13 @@ describe('Cloud Backup Integration', () => {
         process.env.ENABLE_CLOUD_BACKUP = 'true';
         vi.mock('@snapback/sdk/cloud');
     });
-    
+
     it('should upload snapshot to S3 when cloudBackupEnabled=true', async () => {
         const mockUpload = vi.fn().mockResolvedValue({
             url: 's3://bucket/snap-123',
             checksum: 'abc123',
         });
-        
+
         const result = await createSnapshot({
             cloudBackupEnabled: true,
             snapshotContent: 'file content',
@@ -1571,33 +1571,33 @@ describe('Cloud Backup Integration', () => {
             encryptionAlgorithm: 'AES-256-GCM',
             metadata: {},
         });
-        
+
         expect(mockUpload).toHaveBeenCalled();
         expect(result.snapshot.cloudBackupUrl).toBe('s3://bucket/snap-123');
     });
-    
+
     it('should NOT upload when cloudBackupEnabled=false', async () => {
         const mockUpload = vi.fn();
-        
+
         const result = await createSnapshot({
             cloudBackupEnabled: false,  // ❌ Don't upload
             snapshotContent: 'file content',
             metadata: {},
         });
-        
+
         expect(mockUpload).not.toHaveBeenCalled();
         expect(result.snapshot.cloudBackupUrl).toBeUndefined();
     });
-    
+
     it('should NOT fail snapshot creation if backup fails', async () => {
         const mockUpload = vi.fn().mockRejectedValue(new Error('S3 error'));
-        
+
         const result = await createSnapshot({
             cloudBackupEnabled: true,
             snapshotContent: 'file content',
             metadata: {},
         });
-        
+
         expect(result.success).toBe(true); // Snapshot still created
         expect(result.snapshot.cloudBackupUrl).toBeUndefined();
     });
@@ -1626,7 +1626,7 @@ private setupNetworkMonitoring(): void {
         logger.info('Network restored');
         // ❌ Queue processing never called here
     });
-    
+
     window.addEventListener('offline', () => {
         logger.info('Network disconnected');
         // Events should be queued
@@ -1652,9 +1652,9 @@ import { OfflineEventQueue } from '../telemetry/OfflineEventQueue';
 
 export class TelemetryProxy {
     private offlineQueue: OfflineEventQueue;
-    
+
     // ... existing code ...
-    
+
     private setupNetworkMonitoring(): void {
         window.addEventListener('online', () => {
             logger.info('Network restored, processing offline queue');
@@ -1663,13 +1663,13 @@ export class TelemetryProxy {
                 logger.error('Failed to process offline queue', { error });
             });
         });
-        
+
         window.addEventListener('offline', () => {
             logger.info('Network disconnected, switching to offline mode');
             // Events will be automatically queued by queueEvent method
         });
     }
-    
+
     async queueEvent(event: TelemetryEvent): Promise<void> {
         if (!navigator.onLine) {
             // Queue for later
@@ -1693,9 +1693,9 @@ private async sendEvent(event: TelemetryEvent): Promise<void> {
         await this.analytics.track(event.name, event.properties);
     } catch (error) {
         // If send fails (network dropped), queue for retry
-        logger.warn('Failed to send event, queuing for retry', { 
+        logger.warn('Failed to send event, queuing for retry', {
             eventName: event.name,
-            error: toError(error).message 
+            error: toError(error).message
         });
         await this.offlineQueue.enqueue(event);
     }
@@ -1711,9 +1711,9 @@ private async sendEvent(event: TelemetryEvent): Promise<void> {
 async processQueue(): Promise<void> {
     const queueSize = await this.storage.get('queue:size');
     logger.info('Processing offline queue', { queueSize });
-    
+
     // ... existing process queue logic ...
-    
+
     logger.info('Offline queue processing completed', { processed: queueSize });
 }
 ```
@@ -1730,58 +1730,58 @@ import { OfflineEventQueue } from '../../../src/telemetry/OfflineEventQueue';
 describe('Offline Queue Integration', () => {
     let telemetryProxy: TelemetryProxy;
     let offlineQueue: OfflineEventQueue;
-    
+
     beforeEach(() => {
         offlineQueue = new OfflineEventQueue(mockStorage);
         telemetryProxy = new TelemetryProxy({ offlineQueue });
     });
-    
+
     it('should queue events when offline', async () => {
         Object.defineProperty(navigator, 'onLine', {
             configurable: true,
             value: false,
         });
-        
+
         const enqueueSpy = vi.spyOn(offlineQueue, 'enqueue');
-        
+
         await telemetryProxy.queueEvent({
             name: 'snapshot_created',
             properties: { snapshotId: 'snap-123' },
         });
-        
+
         expect(enqueueSpy).toHaveBeenCalled();
     });
-    
+
     it('should process queue when network is restored', async () => {
         const processSpy = vi.spyOn(offlineQueue, 'processQueue');
-        
+
         // Queue some events
         await offlineQueue.enqueue({ name: 'event1' });
         await offlineQueue.enqueue({ name: 'event2' });
-        
+
         // Simulate network restoration
         Object.defineProperty(navigator, 'onLine', {
             configurable: true,
             value: true,
         });
         window.dispatchEvent(new Event('online'));
-        
+
         // Give async processing time
         await new Promise(r => setTimeout(r, 100));
-        
+
         expect(processSpy).toHaveBeenCalled();
     });
-    
+
     it('should NOT lose events if network restoration fails', async () => {
         const mockProcessQueue = vi.fn().mockRejectedValue(new Error('API error'));
         offlineQueue.processQueue = mockProcessQueue;
-        
+
         await offlineQueue.enqueue({ name: 'event1' });
-        
+
         // Simulate network restoration that fails
         window.dispatchEvent(new Event('online'));
         await new Promise(r => setTimeout(r, 100));
-        
+
         // Event should still be in queue
         const queuedEvents = await offlineQueue.getQueuedEvents();
         expect(queuedEvents.length).toBeGreaterThan(0);
@@ -1940,17 +1940,17 @@ import { TrustCalibrationEngine } from '../../src/services/trust-calibration';
 router.post('/outcome', async (input: RecoveryOutcomeInput) => {
     // Called when user approves or rejects a recovered change
     const trustEngine = new TrustCalibrationEngine();
-    
+
     // 1 = approved (correct), 0 = rejected (incorrect)
     const outcome = input.approved ? 1 : 0;
-    
+
     await trustEngine.recordOutcome(
         input.userId,
         input.aiTool,
         input.context, // e.g., 'code_generation', 'refactoring'
         outcome
     );
-    
+
     return { success: true, updated: true };
 });
 ```
@@ -1973,7 +1973,7 @@ return aiFeatures.map(async (feature) => {
         })
         .orderBy('updated_at', 'desc')
         .first();
-    
+
     return {
         tool: formatToolName(feature.featureName),
         count: feature.count,
@@ -1992,63 +1992,63 @@ import { TrustCalibrationEngine } from '../../../src/services/trust-calibration'
 
 describe('Trust Calibration Engine', () => {
     let engine: TrustCalibrationEngine;
-    
+
     beforeEach(() => {
         engine = new TrustCalibrationEngine();
     });
-    
+
     it('should initialize score at first outcome', async () => {
         await engine.recordOutcome('user-1', 'copilot', 'code_gen', 1);
-        
+
         const score = await db
             .select('score')
             .from('trust_scores')
             .where({ user_id: 'user-1', tool_name: 'copilot' })
             .first();
-        
+
         expect(score.score).toBe(1); // Approved
     });
-    
+
     it('should apply EWMA weighting to subsequent outcomes', async () => {
         // First: approved
         await engine.recordOutcome('user-1', 'cursor', 'refactor', 1);
         const score1 = await getScore('user-1', 'cursor');
         expect(score1).toBe(1);
-        
+
         // Second: rejected
         await engine.recordOutcome('user-1', 'cursor', 'refactor', 0);
         const score2 = await getScore('user-1', 'cursor');
-        
+
         // EWMA: 0.3 * 0 + 0.7 * 1 = 0.7
         expect(score2).toBeCloseTo(0.7, 2);
     });
-    
+
     it('should track momentum (trend direction)', async () => {
         // Series of approvals (positive trend)
         for (let i = 0; i < 5; i++) {
             await engine.recordOutcome('user-1', 'claude', 'gen', 1);
         }
-        
+
         const score = await db
             .select('momentum')
             .from('trust_scores')
             .where({ user_id: 'user-1', tool_name: 'claude' })
             .first();
-        
+
         expect(score.momentum).toBeGreaterThan(0); // Positive trend
     });
-    
+
     it('should reduce volatility with more observations', async () => {
         // Few observations = high volatility
         await engine.recordOutcome('user-1', 'windsurf', 'gen', 1);
         const vol1 = await getVolatility('user-1', 'windsurf');
-        
+
         // Many observations = lower volatility
         for (let i = 0; i < 15; i++) {
             await engine.recordOutcome('user-1', 'windsurf', 'gen', i % 2);
         }
         const vol2 = await getVolatility('user-1', 'windsurf');
-        
+
         expect(vol2).toBeLessThan(vol1);
     });
 });
@@ -2134,7 +2134,7 @@ export async function isFeatureEnabled(
             });
         }
     }
-    
+
     // Fallback to static config
     return getFallbackFeatureState(featureKey);
 }
@@ -2202,16 +2202,16 @@ describe('Feature Flags - Dynamic with PostHog Fallback', () => {
     beforeEach(() => {
         vi.clearAllMocks();
     });
-    
+
     it('should check PostHog when initialized and userId provided', async () => {
         const mockPostHog = {
             isFeatureEnabled: vi.fn().mockResolvedValue(true),
         };
-        
+
         initializePostHog(mockPostHog);
-        
+
         const result = await isFeatureEnabled('storage.cloud-backup', 'user-123');
-        
+
         expect(mockPostHog.isFeatureEnabled).toHaveBeenCalledWith(
             'storage.cloud-backup',
             'user-123',
@@ -2219,54 +2219,54 @@ describe('Feature Flags - Dynamic with PostHog Fallback', () => {
         );
         expect(result).toBe(true);
     });
-    
+
     it('should fallback to static config if PostHog returns null', async () => {
         const mockPostHog = {
             isFeatureEnabled: vi.fn().mockResolvedValue(null),
         };
-        
+
         initializePostHog(mockPostHog);
-        
+
         const result = await isFeatureEnabled('storage.cloud-backup', 'user-123');
-        
+
         // Should use FEATURE_FLAGS constant
         expect(result).toBe(FEATURE_FLAGS['storage.cloud-backup'].enabled);
     });
-    
+
     it('should fallback to static config if PostHog throws error', async () => {
         const mockPostHog = {
             isFeatureEnabled: vi.fn().mockRejectedValue(new Error('API error')),
         };
-        
+
         initializePostHog(mockPostHog);
-        
+
         const result = await isFeatureEnabled('storage.cloud-backup', 'user-123');
-        
+
         // Should use FEATURE_FLAGS constant, not throw
         expect(result).toBe(FEATURE_FLAGS['storage.cloud-backup'].enabled);
     });
-    
+
     it('should use static config when no PostHog or userId', async () => {
         // Initialize with null (offline mode)
         initializePostHog(null);
-        
+
         const result = await isFeatureEnabled('storage.cloud-backup');
-        
+
         expect(result).toBe(FEATURE_FLAGS['storage.cloud-backup'].enabled);
     });
-    
+
     it('should respect user context for targeting', async () => {
         const mockPostHog = {
             isFeatureEnabled: vi.fn().mockResolvedValue(true),
         };
-        
+
         initializePostHog(mockPostHog);
-        
+
         await isFeatureEnabled('experimental.mcp_tools', 'user-123', {
             tier: 'pro',
             hasGithub: true,
         });
-        
+
         expect(mockPostHog.isFeatureEnabled).toHaveBeenCalledWith(
             'experimental.mcp_tools',
             'user-123',

@@ -1,10 +1,12 @@
 # TDD Red-Green-Refactor Prompt for Coding Agents
 
-**Purpose:** Ensure coding agents perform thorough Test-Driven Development without shortcuts, placeholder tests, or useless tests.
+**Purpose:** Ensure coding agents perform thorough Test-Driven Development without shortcuts, placeholder tests, or useless tests, while maintaining strict architectural compliance.
 
-**Authority:** This prompt synthesizes 12 comprehensive testing documents (~9,000 lines) into actionable rules.
+**Authority:** This prompt synthesizes 12 comprehensive testing documents (~9,000 lines) + real-world architecture violation analysis into actionable rules.
 
-**Zero Tolerance:** Violations of FORBIDDEN patterns will fail code review and CI/CD checks.
+**Zero Tolerance:** Violations of FORBIDDEN patterns OR architectural bypasses will fail code review and CI/CD checks.
+
+**Critical Update (2025-12-09):** Added mandatory STEP 0 (Architecture Audit) to prevent service layer bypasses and duplicate logic creation.
 
 ---
 
@@ -98,6 +100,102 @@ expect(mockLogger.info).toHaveBeenCalled(); // Mocked dependency
 // 3. Refactor
 ```
 
+#### ❌ FORBIDDEN #8: Bypassing Existing Services/Aggregators
+
+```typescript
+// ❌ FORBIDDEN - Inline DB query when MetricsAggregator exists
+// apps/api/modules/dashboard/procedures/get-metrics.ts
+const aiBreakdown = await db
+  .select({ featureName: featureUsage.featureName, count: count() })
+  .from(featureUsage)
+  .where(eq(featureUsage.userId, userId))
+  .groupBy(featureUsage.featureName);
+// Problem: Bypasses MetricsAggregator service, creates duplicate logic
+
+// ✅ REQUIRED - Use existing service
+// apps/api/modules/dashboard/procedures/get-metrics.ts
+const metricsAggregator = new MetricsAggregator(db);
+const aiBreakdown = await metricsAggregator.getAIToolDetectionCounts(userId);
+// Correct: Uses service layer, follows architecture
+```
+
+**How to verify before implementing:**
+
+```bash
+# 1. Search for existing services in domain
+find apps/api/src/services -name "*<domain>*"
+
+# 2. Example: For metrics feature
+find apps/api/src/services -name "*metrics*"
+# Output: apps/api/src/services/metrics-aggregator.ts ← Service exists!
+
+# 3. Read the service file
+cat apps/api/src/services/metrics-aggregator.ts
+# Check: Does it have the method you need?
+#   - YES → Use it
+#   - NO → Add method to service (don't bypass!)
+```
+
+**Enforcement Rules:**
+
+If a service exists for your domain, you MUST:
+1. ✅ Add methods to the existing service
+2. ✅ Test the service methods (not inline queries)
+3. ✅ Use the service in procedures/routes
+4. ❌ NEVER write inline DB queries in procedures
+5. ❌ NEVER bypass service layer "because it's faster"
+
+**Real-World Example:**
+
+```typescript
+// SCENARIO: Need to get AI tool detection counts
+
+// ❌ WRONG APPROACH (bypasses architecture)
+// File: apps/api/modules/dashboard/procedures/get-metrics.ts
+export const getMetricsHandler = async ({ context }) => {
+  const { userId } = context;
+  
+  // Inline DB query (FORBIDDEN!)
+  const aiBreakdownResult = await db
+    .select({ featureName: featureUsage.featureName, count: count() })
+    .from(featureUsage)
+    .where(and(
+      eq(featureUsage.userId, userId),
+      eq(featureUsage.featureCategory, "ai_assistance")
+    ))
+    .groupBy(featureUsage.featureName);
+  
+  // Map results...
+};
+
+// ✅ CORRECT APPROACH (follows architecture)
+// File: apps/api/src/services/metrics-aggregator.ts
+export class MetricsAggregator {
+  // Add method to service
+  async getAIToolDetectionCounts(userId: string) {
+    const results = await this.db
+      .select({ featureName: featureUsage.featureName, count: count() })
+      .from(featureUsage)
+      .where(and(
+        eq(featureUsage.userId, userId),
+        eq(featureUsage.featureCategory, "ai_assistance")
+      ))
+      .groupBy(featureUsage.featureName);
+    
+    return this.mapToAIBreakdown(results);
+  }
+}
+
+// File: apps/api/modules/dashboard/procedures/get-metrics.ts
+export const getMetricsHandler = async ({ context }) => {
+  const { userId } = context;
+  const metricsAggregator = new MetricsAggregator(db);
+  
+  // Use service (CORRECT!)
+  const aiBreakdown = await metricsAggregator.getAIToolDetectionCounts(userId);
+};
+```
+
 ---
 
 ## ✅ MANDATORY TDD WORKFLOW
@@ -105,6 +203,181 @@ expect(mockLogger.info).toHaveBeenCalled(); // Mocked dependency
 ### The Red-Green-Refactor Cycle
 
 **EVERY feature MUST follow this exact cycle. NO EXCEPTIONS.**
+
+### 🔍 STEP 0: ARCHITECTURE AUDIT (MANDATORY BEFORE RED)
+
+**CRITICAL: Run this architectural compliance check BEFORE writing any tests.**
+
+**This step prevents:**
+- ❌ Bypassing existing services/aggregators
+- ❌ Creating duplicate logic in wrong layers
+- ❌ Violating canonical location rules
+- ❌ Testing implementation that doesn't match architecture docs
+
+#### Mandatory Checklist (MUST complete ALL items):
+
+##### 1. Search for Existing Services/Aggregators
+
+```bash
+# Search for domain-specific services
+find apps/api/src/services -name "*aggregator*" -o -name "*service*" -o -name "*manager*"
+
+# Search for similar functionality
+grep -r "<feature-name>" apps/api/src/services/
+
+# Example: For metrics feature
+find apps/api/src/services -name "*metrics*"
+# → Found: metrics-aggregator.ts ✅
+```
+
+**Decision Tree:**
+- ✅ **No service found** → Proceed with inline implementation (document why)
+- ❌ **Service exists** → MUST add methods to service (never bypass)
+- ⚠️ **Uncertain** → Ask team/check architecture docs
+
+##### 2. Review Architecture Documentation
+
+```bash
+# Check for architecture plans mentioning this task
+grep -r "Task <X.X>" docs/architecture/ ai_dev_utils/ *.md
+
+# Check remediation roadmaps
+cat INTEGRATION_GAPS_REMEDIATION_ROADMAP.md | grep -A 10 "<task-id>"
+cat PHASE_4_QUICK_START.md | grep -A 10 "<feature-name>"
+```
+
+**Questions to answer:**
+- [ ] Does architecture doc specify WHERE to implement this?
+- [ ] Does it reference a specific service/class/module?
+- [ ] Are there abstraction layer requirements?
+- [ ] Are there integration points documented?
+
+##### 3. Check Canonical Locations
+
+```bash
+# Review consolidation rules
+cat docs/rules/always-code-consolidation.md
+
+# Search for existing patterns
+grep -r "similar-functionality" packages/ apps/
+```
+
+**Canonical Location Rules:**
+| Component | Location | Status |
+|-----------|----------|--------|
+| Error Handling | `@snapback-oss/sdk/utils/errorHelpers.ts` | ✅ Use this |
+| Retry Logic | `@snapback-oss/sdk/utils/retry.ts` | ✅ Use this |
+| Logger | `@snapback/infrastructure/logging/logger.ts` | ✅ Use this |
+| **Metrics** | `apps/api/src/services/metrics-aggregator.ts` | ✅ Use this |
+| Auth | `@snapback/auth` | ✅ Use this |
+| Validation | `apps/api/middleware/validation.ts` | ✅ Use this |
+
+##### 4. Verify Abstraction Layer
+
+**Critical Questions:**
+- [ ] Am I testing the **correct layer**? (service vs procedure vs controller)
+- [ ] Will this create **duplicate logic**?
+- [ ] Does this violate **Single Responsibility Principle**?
+- [ ] Am I bypassing an **existing abstraction**?
+
+**Example - Correct Layer Identification:**
+
+```typescript
+// ❌ WRONG LAYER: Inline DB query in procedure
+// apps/api/modules/dashboard/procedures/get-metrics.ts
+const aiBreakdown = await db
+  .select({ featureName: featureUsage.featureName, count: count() })
+  .from(featureUsage)
+  .where(eq(featureUsage.userId, userId))
+  .groupBy(featureUsage.featureName);
+
+// ✅ CORRECT LAYER: Service encapsulates logic
+// apps/api/src/services/metrics-aggregator.ts
+export class MetricsAggregator {
+  async getAIToolDetectionCounts(userId: string) {
+    return await this.db
+      .select({ featureName: featureUsage.featureName, count: count() })
+      .from(featureUsage)
+      .where(eq(featureUsage.userId, userId))
+      .groupBy(featureUsage.featureName);
+  }
+}
+
+// apps/api/modules/dashboard/procedures/get-metrics.ts
+const aiBreakdown = await metricsAggregator.getAIToolDetectionCounts(userId);
+```
+
+##### 5. Document Architecture Audit Results
+
+**Before proceeding to RED phase, document your findings:**
+
+```markdown
+## Architecture Audit - Task <X.X>
+
+### Services Found:
+- ✅ MetricsAggregator exists at apps/api/src/services/metrics-aggregator.ts
+- Methods: getUserLifetimeMetrics(), getDailyMetricsForRange()
+- Missing: getAIToolDetectionCounts() ← NEED TO ADD
+
+### Architecture Docs:
+- PHASE_4_QUICK_START.md line 45: "Add methods to MetricsAggregator"
+- arch_remediation.md: Specifies service layer pattern
+
+### Canonical Location:
+- Metrics logic belongs in MetricsAggregator (confirmed)
+
+### Abstraction Layer:
+- Service layer: MetricsAggregator.getAIToolDetectionCounts()
+- Procedure layer: get-metrics.ts calls service method
+
+### Decision:
+✅ Proceed with adding method to MetricsAggregator
+❌ Do NOT add inline query to get-metrics.ts
+```
+
+#### 🚨 FORBIDDEN: Skipping Architecture Audit
+
+```typescript
+// ❌ FORBIDDEN WORKFLOW - Jump to implementation
+describe("get-metrics", () => {
+  it("should query featureUsage table", async () => {
+    // Tests inline DB query (bypasses MetricsAggregator!)
+    const result = await db.select().from(featureUsage)...;
+  });
+});
+
+// ✅ REQUIRED WORKFLOW - Architecture audit first
+// 1. Search: find apps/api/src/services -name "*metrics*"
+//    → Found MetricsAggregator ✅
+// 2. Read: cat apps/api/src/services/metrics-aggregator.ts
+//    → Missing getAIToolDetectionCounts() method
+// 3. Decide: Add method to service (not inline query)
+// 4. Write RED test for SERVICE method:
+
+describe("MetricsAggregator", () => {
+  describe("getAIToolDetectionCounts", () => {
+    it("should return AI tool usage from featureUsage table", async () => {
+      // Test the SERVICE layer (correct abstraction)
+      const result = await aggregator.getAIToolDetectionCounts("user-123");
+      expect(result).toEqual({ copilot: 7, cursor: 3, claude: 0, windsurf: 0 });
+    });
+  });
+});
+```
+
+#### Verification Checklist:
+
+- [ ] **Searched for services** (ran `find` command, documented results)
+- [ ] **Read architecture docs** (checked roadmaps, remediation plans)
+- [ ] **Verified canonical location** (no duplicate logic will be created)
+- [ ] **Confirmed abstraction layer** (service vs procedure vs controller)
+- [ ] **Documented audit results** (added to commit message or PR description)
+- [ ] **No existing patterns bypassed** (using services, not bypassing them)
+
+**Time Investment:** 5-10 minutes
+**Value:** Prevents hours of refactoring + architectural debt
+
+---
 
 ### 🔴 STEP 1: RED (Write Failing Test)
 
@@ -505,6 +778,141 @@ try {
   expect(error).toBeDefined(); // Too vague
 }
 ```
+
+### Pattern 6: Architectural Compliance Assertions
+
+**CRITICAL: Tests MUST verify the correct abstraction layer is being used.**
+
+```typescript
+// ✅ GOOD - Tests service layer (correct abstraction)
+describe("MetricsAggregator", () => {
+  describe("getAIToolDetectionCounts", () => {
+    it("should return AI tool usage from featureUsage table", async () => {
+      // Arrange - Mock database at service layer
+      const mockDb = {
+        select: vi.fn().mockReturnValue({
+          from: vi.fn().mockReturnThis(),
+          where: vi.fn().mockReturnThis(),
+          groupBy: vi.fn().mockResolvedValue([
+            { featureName: "copilot", count: 7 },
+            { featureName: "cursor", count: 3 }
+          ])
+        })
+      };
+      const aggregator = new MetricsAggregator(mockDb);
+
+      // Act - Test the SERVICE method
+      const result = await aggregator.getAIToolDetectionCounts("user-123");
+
+      // Assert - Verify service returns aggregated data
+      expect(result).toEqual({
+        copilot: 7,
+        cursor: 3,
+        claude: 0,
+        windsurf: 0
+      });
+      
+      // Verify service used correct query
+      expect(mockDb.select).toHaveBeenCalledWith({
+        featureName: expect.anything(),
+        count: expect.any(Function)
+      });
+    });
+  });
+});
+
+// ✅ GOOD - Procedure tests use service (not inline queries)
+describe("get-metrics procedure", () => {
+  it("should fetch AI breakdown from MetricsAggregator", async () => {
+    // Arrange - Mock the SERVICE, not the database
+    const mockAggregator = {
+      getAIToolDetectionCounts: vi.fn().mockResolvedValue({
+        copilot: 5,
+        cursor: 2,
+        claude: 1,
+        windsurf: 0
+      })
+    };
+
+    // Act - Procedure calls service
+    const result = await getMetricsHandler({ 
+      context: { userId: "user-123" },
+      services: { metricsAggregator: mockAggregator }
+    });
+
+    // Assert - Verify service was called (not DB directly)
+    expect(mockAggregator.getAIToolDetectionCounts).toHaveBeenCalledWith("user-123");
+    expect(result.ai_breakdown).toEqual({
+      copilot: 5,
+      cursor: 2,
+      claude: 1,
+      windsurf: 0
+    });
+  });
+});
+
+// ❌ BAD - Tests inline DB query in procedure (wrong layer)
+describe("get-metrics procedure", () => {
+  it("should query featureUsage directly", async () => {
+    // ❌ WRONG: Testing inline query bypasses service layer!
+    const mockDb = {
+      select: vi.fn().mockReturnValue({
+        from: vi.fn().mockReturnThis(),
+        where: vi.fn().mockReturnThis(),
+        groupBy: vi.fn().mockResolvedValue([...])
+      })
+    };
+
+    const result = await getMetricsHandler({ db: mockDb });
+    
+    // This test encourages bypassing MetricsAggregator!
+    expect(mockDb.select).toHaveBeenCalled();
+  });
+});
+
+// ❌ BAD - Tests implementation details, not service contract
+describe("MetricsAggregator", () => {
+  it("should call db.select with groupBy", async () => {
+    // ❌ WRONG: Tests HOW (implementation), not WHAT (contract)
+    const mockDb = { select: vi.fn() };
+    await aggregator.getAIToolDetectionCounts("user-123");
+    
+    expect(mockDb.select).toHaveBeenCalled(); // Too vague
+  });
+});
+```
+
+**Architectural Compliance Rules:**
+
+1. **Service Layer Tests**:
+   - ✅ Test public methods (contract)
+   - ✅ Mock database/external dependencies
+   - ✅ Verify return values match expected schema
+   - ❌ Never test private methods
+   - ❌ Never test implementation details (SQL syntax, etc.)
+
+2. **Procedure/Controller Layer Tests**:
+   - ✅ Mock service dependencies (not database)
+   - ✅ Verify services are called with correct arguments
+   - ✅ Verify response transformation/formatting
+   - ❌ Never mock database directly in procedure tests
+   - ❌ Never test inline DB queries in procedures
+
+3. **Layer Verification Checklist**:
+   ```typescript
+   // Before writing test, ask:
+   // 1. Does a service exist for this domain?
+   //    YES → Test the service, not inline code
+   //    NO → Document why service doesn't exist
+   //
+   // 2. Am I testing the right layer?
+   //    Service test → Mock DB, test business logic
+   //    Procedure test → Mock service, test orchestration
+   //
+   // 3. Will this test encourage bad architecture?
+   //    If test mocks DB in procedure → BAD (bypasses service)
+   //    If test mocks service in procedure → GOOD (uses service)
+   ```
 
 ---
 
@@ -1072,6 +1480,15 @@ describe("Billing", () => {
 
 Before submitting PR, verify ALL items:
 
+### Architecture Compliance (CRITICAL - NEW)
+- [ ] **STEP 0 completed**: Architecture audit performed before RED phase
+- [ ] **Services searched**: Ran `find` command to locate existing services
+- [ ] **Architecture docs reviewed**: Checked roadmaps, remediation plans, task specifications
+- [ ] **Canonical locations verified**: No duplicate logic created, no consolidation rules violated
+- [ ] **Abstraction layer confirmed**: Testing correct layer (service vs procedure vs controller)
+- [ ] **No service bypass**: If service exists for domain, it is being used (not bypassed)
+- [ ] **Audit documented**: Architecture decisions recorded in commit/PR description
+
 ### Test Quality
 - [ ] All tests follow TDD red-green-refactor workflow
 - [ ] Every test has RED phase (verified failure screenshot/log)
@@ -1150,15 +1567,18 @@ Before submitting PR, verify ALL items:
 ## 🎯 FINAL MANDATE
 
 **Every line of production code MUST:**
-1. Start with a failing test (RED)
-2. Be implemented minimally (GREEN)
-3. Be refactored without behavior change (BLUE)
-4. Pass all 4 coverage paths (Happy/Sad/Edge/Error)
-5. Use specific assertions (no vague checks)
-6. Use deterministic infrastructure
-7. Pass all quality gates
+1. **Pass architecture audit** (STEP 0 - verify no service bypass)
+2. Start with a failing test (RED)
+3. Be implemented minimally (GREEN)
+4. Be refactored without behavior change (BLUE)
+5. Pass all 4 coverage paths (Happy/Sad/Edge/Error)
+6. Use specific assertions (no vague checks)
+7. Use deterministic infrastructure
+8. Pass all quality gates
 
 **Zero tolerance for:**
+- **Bypassing existing services/aggregators** (← NEW)
+- **Skipping architecture audit (STEP 0)** (← NEW)
 - Placeholder tests
 - TODO markers without implementation
 - .skip without GitHub issue
@@ -1166,10 +1586,29 @@ Before submitting PR, verify ALL items:
 - Production code without failing test
 - Flaky tests
 
+**Real-World Enforcement Example:**
+
+```typescript
+// ❌ FORBIDDEN - Bypassed MetricsAggregator service
+// Task 4.1.A incorrect implementation:
+const aiBreakdownResult = await db
+  .select({ featureName: featureUsage.featureName, count: count() })
+  .from(featureUsage)
+  .groupBy(featureUsage.featureName);
+// Problem: Works perfectly, all tests pass, BUT violates architecture
+// Missing STEP 0: Didn't check if MetricsAggregator exists
+
+// ✅ CORRECT - Used MetricsAggregator service
+// Task 4.1.A correct implementation:
+const metricsAggregator = new MetricsAggregator(db);
+const aiBreakdown = await metricsAggregator.getAIToolDetectionCounts(userId);
+// Correct: STEP 0 found service, added method, followed architecture
+```
+
 **This is not negotiable. This is the standard.**
 
 ---
 
-**Generated from:** 12 testing documents (~9,000 lines)
-**Last Updated:** 2025-12-08
+**Generated from:** 12 testing documents (~9,000 lines) + Task 4.1.A architecture violation analysis
+**Last Updated:** 2025-12-09 (Added STEP 0: Architecture Audit)
 **Authority:** Workspace-wide testing standard

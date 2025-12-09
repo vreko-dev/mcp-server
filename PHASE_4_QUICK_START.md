@@ -1,9 +1,9 @@
 # Phase 4: Quick Start Guide
 
-**What**: 5 integration gaps → ready-to-implement fixes  
-**Where**: `final_test_framework/arch_remediation.md` (Tasks 4.1-4.5)  
-**When**: 1 week (3-4 engineers)  
-**How**: Follow task checklist below  
+**What**: 5 integration gaps → ready-to-implement fixes
+**Where**: `final_test_framework/arch_remediation.md` (Tasks 4.1-4.5)
+**When**: 1 week (3-4 engineers)
+**How**: Follow task checklist below
 
 ---
 
@@ -277,13 +277,13 @@ pnpm test && pnpm typecheck && pnpm build
 
 ## Questions?
 
-**For full details**: See `final_test_framework/arch_remediation.md`  
-**For strategic overview**: See `INTEGRATION_GAPS_REMEDIATION_ROADMAP.md`  
-**For summary**: See `REMEDIATION_PLAN_SUMMARY.md`  
+**For full details**: See `final_test_framework/arch_remediation.md`
+**For strategic overview**: See `INTEGRATION_GAPS_REMEDIATION_ROADMAP.md`
+**For summary**: See `REMEDIATION_PLAN_SUMMARY.md`
 
 ---
 
-**Status**: ✅ Ready to implement  
-**Time to complete**: 1 week (3-4 engineers)  
-**Effort**: 21-31 hours total  
+**Status**: ✅ Ready to implement
+**Time to complete**: 1 week (3-4 engineers)
+**Effort**: 21-31 hours total
 **Impact**: 5 major features → functional end-to-end

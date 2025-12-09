@@ -25,6 +25,7 @@ export default defineConfig({
 		environment: "node",
 		passWithNoTests: true,
 		include: ["**/*.test.ts", "**/*.spec.ts", "__tests__/**/*.ts"],
+		setupFiles: ["./vitest.setup.ts"],
 		// Module directories for monorepo dependency resolution
 		deps: {
 			moduleDirectories: ["node_modules", resolve(__dirname, "../../node_modules")],

@@ -2,242 +2,242 @@
   "protection": [
     {
       "pattern": "**/package-lock.json",
-      "level": "Protected",
+      "level": "block",
       "reason": "Lock file - wrong version breaks reproducible Node.js builds"
     },
     {
       "pattern": "**/yarn.lock",
-      "level": "Protected",
+      "level": "block",
       "reason": "Lock file - ensures reproducible Yarn installs"
     },
     {
       "pattern": "**/pnpm-lock.yaml",
-      "level": "Protected",
+      "level": "block",
       "reason": "Lock file - critical for pnpm monorepos"
     },
     {
       "pattern": "**/poetry.lock",
-      "level": "Protected",
+      "level": "block",
       "reason": "Lock file - Python dependency lock"
     },
     {
       "pattern": "**/Cargo.lock",
-      "level": "Protected",
+      "level": "block",
       "reason": "Lock file - Rust dependency lock"
     },
     {
       "pattern": "**/go.sum",
-      "level": "Protected",
+      "level": "block",
       "reason": "Lock file - Go module checksums"
     },
     {
       "pattern": "**/Gemfile.lock",
-      "level": "Protected",
+      "level": "block",
       "reason": "Lock file - Ruby gem dependencies"
     },
     {
       "pattern": "**/composer.lock",
-      "level": "Protected",
+      "level": "block",
       "reason": "Lock file - PHP composer dependencies"
     },
     {
       "pattern": "**/.env*",
-      "level": "Protected",
+      "level": "block",
       "reason": "Sensitive environment variables and secrets"
     },
     {
       "pattern": "package.json",
-      "level": "Warning",
+      "level": "warn",
       "reason": "Core Node.js configuration - dependencies and scripts"
     },
     {
       "pattern": "tsconfig.json",
-      "level": "Warning",
+      "level": "warn",
       "reason": "TypeScript compiler configuration"
     },
     {
       "pattern": "Dockerfile",
-      "level": "Warning",
+      "level": "warn",
       "reason": "Container image definition"
     },
     {
       "pattern": "docker-compose.yml",
-      "level": "Warning",
+      "level": "warn",
       "reason": "Multi-container orchestration"
     },
     {
       "pattern": "**/docker-compose.yaml",
-      "level": "Warning",
+      "level": "warn",
       "reason": "Multi-container orchestration (yaml variant)"
     },
     {
       "pattern": "**/*.tf",
-      "level": "Warning",
+      "level": "warn",
       "reason": "Terraform infrastructure definitions"
     },
     {
       "pattern": ".github/workflows/*.yml",
-      "level": "Warning",
+      "level": "warn",
       "reason": "GitHub Actions CI/CD workflows"
     },
     {
       "pattern": ".github/workflows/*.yaml",
-      "level": "Warning",
+      "level": "warn",
       "reason": "GitHub Actions CI/CD workflows (yaml variant)"
     },
     {
       "pattern": "*.md",
-      "level": "Watched",
+      "level": "watch",
       "reason": "Documentation files"
     },
     {
       "pattern": "*.txt",
-      "level": "Watched",
+      "level": "watch",
       "reason": "Text files"
     },
     {
       "pattern": "README*",
-      "level": "Watched",
+      "level": "watch",
       "reason": "README documentation"
     },
     {
       "pattern": "*.json",
-      "level": "Watched",
+      "level": "watch",
       "reason": "JSON configuration files"
     },
     {
       "pattern": ".editorconfig",
-      "level": "Watched",
+      "level": "watch",
       "reason": "Editor configuration"
     },
     {
       "pattern": ".prettierrc*",
-      "level": "Watched",
+      "level": "watch",
       "reason": "Prettier formatting configuration"
     },
     {
       "pattern": ".eslintrc*",
-      "level": "Watched",
+      "level": "watch",
       "reason": "ESLint configuration"
     },
     {
       "pattern": ".babelrc",
-      "level": "Watched",
+      "level": "watch",
       "reason": "Babel transpiler configuration"
     },
     {
       "pattern": ".gitignore",
-      "level": "Warning",
+      "level": "warn",
       "reason": "Git ignore rules"
     },
     {
       "pattern": ".vscode/settings.json",
-      "level": "Watched",
+      "level": "watch",
       "reason": "VS Code settings"
     },
     {
       "pattern": ".idea/**",
-      "level": "Watched",
+      "level": "watch",
       "reason": "IDE configuration directory"
     },
     {
       "pattern": "vite.config.*",
-      "level": "Warning",
+      "level": "warn",
       "reason": "Vite bundler configuration"
     },
     {
       "pattern": "webpack.config.*",
-      "level": "Warning",
+      "level": "warn",
       "reason": "Webpack bundler configuration"
     },
     {
       "pattern": "rollup.config.*",
-      "level": "Warning",
+      "level": "warn",
       "reason": "Rollup bundler configuration"
     },
     {
       "pattern": "esbuild.config.*",
-      "level": "Warning",
+      "level": "warn",
       "reason": "esbuild bundler configuration"
     },
     {
       "pattern": "Makefile",
-      "level": "Watched",
+      "level": "watch",
       "reason": "Make build configuration"
     },
     {
       "pattern": "CMakeLists.txt",
-      "level": "Watched",
+      "level": "watch",
       "reason": "CMake build configuration"
     },
     {
       "pattern": "requirements.txt",
-      "level": "Watched",
+      "level": "watch",
       "reason": "Python dependencies"
     },
     {
       "pattern": "Gemfile",
-      "level": "Warning",
+      "level": "warn",
       "reason": "Ruby gem configuration"
     },
     {
       "pattern": "composer.json",
-      "level": "Warning",
+      "level": "warn",
       "reason": "PHP composer configuration"
     },
     {
       "pattern": "setup.py",
-      "level": "Warning",
+      "level": "warn",
       "reason": "Python package setup"
     },
     {
       "pattern": "pyproject.toml",
-      "level": "Warning",
+      "level": "warn",
       "reason": "Python project configuration"
     },
     {
       "pattern": "pom.xml",
-      "level": "Warning",
+      "level": "warn",
       "reason": "Maven Java build configuration"
     },
     {
       "pattern": "build.gradle*",
-      "level": "Warning",
+      "level": "warn",
       "reason": "Gradle Java build configuration"
     },
     {
       "pattern": "*.csproj",
-      "level": "Warning",
+      "level": "warn",
       "reason": ".NET C# project file"
     },
     {
       "pattern": "go.mod",
-      "level": "Warning",
+      "level": "warn",
       "reason": "Go module definition"
     },
     {
       "pattern": "Cargo.toml",
-      "level": "Warning",
+      "level": "warn",
       "reason": "Rust package configuration"
     },
     {
       "pattern": "bunfig.toml",
-      "level": "Warning",
+      "level": "warn",
       "reason": "Bun runtime configuration"
     },
     {
       "pattern": "*.sln",
-      "level": "Watched",
+      "level": "watch",
       "reason": "Visual Studio solution file"
     },
     {
       "pattern": "kubernetes/*.yaml",
-      "level": "Warning",
+      "level": "warn",
       "reason": "Kubernetes manifests"
     },
     {
       "pattern": "apps/vscode/src/activation/phase2-storage.ts",
-      "level": "Protected"
+      "level": "block"
     }
   ],
   "ignore": [

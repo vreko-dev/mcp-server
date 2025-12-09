@@ -1,7 +1,7 @@
 # SnapBack Final Testing Lane
 
-**Version**: 1.0  
-**Purpose**: Consolidated testing strategy with centralized utilities  
+**Version**: 1.0
+**Purpose**: Consolidated testing strategy with centralized utilities
 **Last Updated**: December 2024
 
 ---
@@ -96,15 +96,15 @@ describe('MyComponent', () => {
   it('should work', async () => {
     const user = createTestUser({ tier: 'pro' });
     const snapshot = createTestSnapshot({ userId: user.id });
-    
+
     expect(snapshot.userId).toBe(user.id);
   });
 
   it('should handle console output', async () => {
     const capture = captureConsole();
-    
+
     console.log('test message');
-    
+
     expect(capture.logs).toContain('test message');
     capture.restore();
   });
@@ -120,10 +120,10 @@ For VS Code extension tests, use the centralized mocks:
 ```typescript
 // test/setup.ts
 import { vi } from 'vitest';
-import { 
-  mockVscode, 
+import {
+  mockVscode,
   MockEventEmitter,
-  createMockOutputChannel 
+  createMockOutputChannel
 } from '@snapback/testing/mocks/vscode';
 
 vi.mock('vscode', () => mockVscode);
@@ -200,7 +200,7 @@ it('should handle API error', async () => {
       return new HttpResponse(null, { status: 500 });
     })
   );
-  
+
   // Test error handling...
 });
 ```
@@ -210,7 +210,7 @@ it('should handle API error', async () => {
 ## Test Data Factories
 
 ```typescript
-import { 
+import {
   createTestUser,
   createTestSnapshot,
   createTestApiKey,

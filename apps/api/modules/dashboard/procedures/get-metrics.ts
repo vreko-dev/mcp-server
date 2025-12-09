@@ -67,42 +67,59 @@ export const getMetricsHandler = async ({ context }: { context: unknown }): Prom
 		}
 
 		// ===== Import tables (Drizzle ORM) =====
-		const { snapshots, snapshotFiles, telemetryEvents } = await import("@snapback/platform");
-		const { count, eq, sql } = await import("drizzle-orm");
+		const { snapshots, snapshotFiles, telemetryEvents, featureUsage } = await import("@snapback/platform");
+		const { count, eq, sql, and } = await import("drizzle-orm");
 
 		// Execute queries in parallel for performance
-		const [checkpointsResult, recoveriesResult, filesProtectedResult, aiDetectedResult, _recentActivityResult] =
-			await Promise.all([
-				// 1. Total Checkpoints (count of snapshots)
-				db
-					.select({ count: count() })
-					.from(snapshots),
+		const [
+			checkpointsResult,
+			recoveriesResult,
+			filesProtectedResult,
+			aiDetectedResult,
+			_recentActivityResult,
+			aiBreakdownResult,
+		] = await Promise.all([
+			// 1. Total Checkpoints (count of snapshots)
+			db
+				.select({ count: count() })
+				.from(snapshots),
 
-				// 2. Total Recoveries (telemetry events)
-				// MVP: Counting all 'value:disaster_averted' events
-				db
-					.select({ count: count() })
-					.from(telemetryEvents)
-					.where(eq(telemetryEvents.eventType, "value:disaster_averted")),
+			// 2. Total Recoveries (telemetry events)
+			// MVP: Counting all 'value:disaster_averted' events
+			db
+				.select({ count: count() })
+				.from(telemetryEvents)
+				.where(eq(telemetryEvents.eventType, "value:disaster_averted")),
 
-				// 3. Files Protected (distinct file paths in snapshots)
-				// Note: using count(distinct) on snapshotFiles.filePath
-				db
-					.select({
-						count: sql<number>`count(distinct ${snapshotFiles.filePath})`,
-					})
-					.from(snapshotFiles),
+			// 3. Files Protected (distinct file paths in snapshots)
+			// Note: using count(distinct) on snapshotFiles.filePath
+			db
+				.select({
+					count: sql<number>`count(distinct ${snapshotFiles.filePath})`,
+				})
+				.from(snapshotFiles),
 
-				// 4. AI Detections (snapshots triggered by risk detection)
-				db
-					.select({ count: count() })
-					.from(snapshots)
-					.where(eq(snapshots.trigger, "risk_detection")),
+			// 4. AI Detections (snapshots triggered by risk detection)
+			db
+				.select({ count: count() })
+				.from(snapshots)
+				.where(eq(snapshots.trigger, "risk_detection")),
 
-				// 5. Recent Activity (placeholder for now as schema support varies)
-				// We'll leave recent activity empty or mock it for this step until activity feed schema is solid
-				Promise.resolve([]),
-			]);
+			// 5. Recent Activity (placeholder for now as schema support varies)
+			// We'll leave recent activity empty or mock it for this step until activity feed schema is solid
+			Promise.resolve([]),
+
+			// 6. AI Breakdown by Tool (Task 4.1.A - GREEN Phase)
+			// Query featureUsage table for AI tool detection counts
+			db
+				.select({
+					featureName: featureUsage.featureName,
+					count: count(),
+				})
+				.from(featureUsage)
+				.where(and(eq(featureUsage.userId, userId), eq(featureUsage.featureCategory, "ai_assistance")))
+				.groupBy(featureUsage.featureName),
+		]);
 
 		const totalCheckpoints = checkpointsResult[0]?.count ?? 0;
 		const totalRecoveries = recoveriesResult[0]?.count ?? 0;
@@ -112,6 +129,23 @@ export const getMetricsHandler = async ({ context }: { context: unknown }): Prom
 		// Calculate rates (safely handle division by zero)
 		const aiDetectionRate = totalCheckpoints > 0 ? Math.round((aiDetectedCount / totalCheckpoints) * 100) : 0;
 
+		// Aggregate AI tool breakdown (Task 4.1.A - GREEN Phase)
+		// Normalize tool names and fill in missing tools with 0
+		const aiBreakdown = {
+			copilot: 0,
+			cursor: 0,
+			claude: 0,
+			windsurf: 0,
+		};
+
+		// Map database results to normalized tool names
+		for (const row of aiBreakdownResult) {
+			const normalizedTool = normalizeToolName(row.featureName);
+			if (normalizedTool in aiBreakdown) {
+				aiBreakdown[normalizedTool as keyof typeof aiBreakdown] = row.count;
+			}
+		}
+
 		const metrics = {
 			protection_status: "active" as const,
 			total_checkpoints: totalCheckpoints,
@@ -119,12 +153,7 @@ export const getMetricsHandler = async ({ context }: { context: unknown }): Prom
 			files_protected: filesProtected,
 			ai_detection_rate: aiDetectionRate,
 			recent_activity: [],
-			ai_breakdown: {
-				copilot: 0,
-				cursor: 0,
-				claude: 0,
-				windsurf: 0,
-			},
+			ai_breakdown: aiBreakdown,
 		};
 
 		logger.info("Dashboard metrics fetched", {
@@ -150,6 +179,23 @@ export const getMetricsHandler = async ({ context }: { context: unknown }): Prom
 		};
 	}
 };
+
+/**
+ * Normalize tool name to lowercase canonical form
+ * Handles case variations: "GitHub Copilot", "CURSOR", "copilot" → "copilot"
+ */
+function normalizeToolName(featureName: string): string {
+	const normalized = featureName.toLowerCase();
+
+	// Map common variations to canonical names
+	if (normalized.includes("copilot")) return "copilot";
+	if (normalized.includes("cursor")) return "cursor";
+	if (normalized.includes("claude")) return "claude";
+	if (normalized.includes("windsurf")) return "windsurf";
+
+	// Return as-is for unknown tools (won't match aiBreakdown keys)
+	return normalized;
+}
 
 export const getMetrics = protectedProcedure
 	.output(z.union([DashboardMetricsSchema, DashboardMetricsErrorSchema]))

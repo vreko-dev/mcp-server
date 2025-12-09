@@ -22,6 +22,7 @@ vi.mock("@snapback/platform", () => ({
     snapshotFiles: { filePath: 'file_path_field' },
     telemetryEvents: { eventType: 'event_type_field' },
     analysisEvents: {},
+    featureUsage: { userId: 'user_id_field', featureName: 'feature_name_field', featureCategory: 'feature_category_field' },
 }));
 
 
@@ -81,12 +82,14 @@ describe("getMetrics", () => {
         // 3. files protected
         // 4. ai detected
         // 5. static promise (ignored by mockDb)
+        // 6. ai breakdown (Task 4.1.A - added)
 
         mockDb.select
             .mockReturnValueOnce(createQb(mockCheckpoints))
             .mockReturnValueOnce(createQb(mockRecoveries))
             .mockReturnValueOnce(createQb(mockFilesProtected))
-            .mockReturnValueOnce(createQb(mockAiDetected));
+            .mockReturnValueOnce(createQb(mockAiDetected))
+            .mockReturnValueOnce(createQb([])); // ai breakdown - empty for this test
 
         mockDb.selectDistinct.mockReturnValue(createQb([])); // fallback
 
@@ -109,12 +112,36 @@ describe("getMetrics", () => {
              return {
                 from: vi.fn().mockReturnThis(),
                 where: vi.fn().mockReturnThis(),
+                groupBy: vi.fn().mockReturnThis(),
                 then: vi.fn((resolve) => resolve([{ count: 0 }])),
             };
         };
 
         mockDb.select.mockReturnValue(createEmptyQb());
         mockDb.selectDistinct.mockReturnValue(createEmptyQb()); // Also mock selectDistinct for consistency
+
+        // Need 6 queries now (including ai_breakdown)
+        // Queries 1-4 return count:0, query 5-6 return empty arrays
+        const createCountZeroQb = () => ({
+            from: vi.fn().mockReturnThis(),
+            where: vi.fn().mockReturnThis(),
+            groupBy: vi.fn().mockReturnThis(),
+            then: vi.fn((resolve) => resolve([{ count: 0 }])),
+        });
+
+        const createEmptyArrayQb = () => ({
+            from: vi.fn().mockReturnThis(),
+            where: vi.fn().mockReturnThis(),
+            groupBy: vi.fn().mockReturnThis(),
+            then: vi.fn((resolve) => resolve([])),
+        });
+
+        mockDb.select
+            .mockReturnValueOnce(createCountZeroQb())  // checkpoints
+            .mockReturnValueOnce(createCountZeroQb())  // recoveries
+            .mockReturnValueOnce(createCountZeroQb())  // files protected
+            .mockReturnValueOnce(createCountZeroQb())  // ai detected
+            .mockReturnValueOnce(createEmptyArrayQb()); // ai breakdown - empty array, no featureName
 
         const result = await getMetricsHandler({ context: mockContext });
 

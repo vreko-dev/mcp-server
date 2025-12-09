@@ -1,6 +1,13 @@
 pre-commit:
     parallel: true
     commands:
+        config-drift-detect:
+            priority: 1
+            run: node tooling/scripts/config-drift-check.mjs --warn-only
+            skip:
+                - merge
+                - rebase
+
         quality:
             glob: "**/*.{ts,tsx,js,jsx,json}"
             run: pnpm biome check --write --no-errors-on-unmatched {staged_files}

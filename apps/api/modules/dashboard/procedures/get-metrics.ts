@@ -1,12 +1,15 @@
 /**
- * Dashboard Metrics API Procedure (GREEN Phase Implementation)
+ * Dashboard Metrics API Procedure (GREEN Phase Implementation - Refactored)
  *
- * Implements the get-metrics endpoint that returns aggregated dashboard metrics.
- * Follows TDD pattern: RED tests defined, now implementing to make them GREEN.
+ * Implements the get-metrics endpoint using MetricsAggregator service.
+ * Follows TDD pattern and architectural requirements:
+ * - Uses MetricsAggregator service (no inline queries)
+ * - Follows Result<T, E> pattern for error handling
+ * - Service layer encapsulates business logic
  *
  * Contract: DashboardMetricsResponse from @snapback/contracts
  * Auth: Requires authenticated user (protectedProcedure)
- * Database: Queries snapshots, checkpoints, ai_activities tables
+ * Architecture: Task 4.1 - Wire MetricsAggregator into Dashboard Metrics
  */
 
 import {
@@ -18,6 +21,7 @@ import { logger } from "@snapback/infrastructure";
 import { z } from "zod";
 import { protectedProcedure } from "@/orpc/procedures";
 import { getDb } from "@/src/services/database";
+import { MetricsAggregator } from "@/src/services/metrics-aggregator";
 
 /**
  * Get dashboard metrics for authenticated user
@@ -67,8 +71,11 @@ export const getMetricsHandler = async ({ context }: { context: unknown }): Prom
 		}
 
 		// ===== Import tables (Drizzle ORM) =====
-		const { snapshots, snapshotFiles, telemetryEvents, featureUsage } = await import("@snapback/platform");
-		const { count, eq, sql, and } = await import("drizzle-orm");
+		const { snapshots, snapshotFiles, telemetryEvents } = await import("@snapback/platform");
+		const { count, eq, sql } = await import("drizzle-orm");
+
+		// Instantiate MetricsAggregator service (Task 4.1)
+		const aggregator = new MetricsAggregator(db as any);
 
 		// Execute queries in parallel for performance
 		const [
@@ -76,8 +83,8 @@ export const getMetricsHandler = async ({ context }: { context: unknown }): Prom
 			recoveriesResult,
 			filesProtectedResult,
 			aiDetectedResult,
-			_recentActivityResult,
 			aiBreakdownResult,
+			recentActivityResult,
 		] = await Promise.all([
 			// 1. Total Checkpoints (count of snapshots)
 			db
@@ -85,14 +92,12 @@ export const getMetricsHandler = async ({ context }: { context: unknown }): Prom
 				.from(snapshots),
 
 			// 2. Total Recoveries (telemetry events)
-			// MVP: Counting all 'value:disaster_averted' events
 			db
 				.select({ count: count() })
 				.from(telemetryEvents)
 				.where(eq(telemetryEvents.eventType, "value:disaster_averted")),
 
 			// 3. Files Protected (distinct file paths in snapshots)
-			// Note: using count(distinct) on snapshotFiles.filePath
 			db
 				.select({
 					count: sql<number>`count(distinct ${snapshotFiles.filePath})`,
@@ -105,20 +110,11 @@ export const getMetricsHandler = async ({ context }: { context: unknown }): Prom
 				.from(snapshots)
 				.where(eq(snapshots.trigger, "risk_detection")),
 
-			// 5. Recent Activity (placeholder for now as schema support varies)
-			// We'll leave recent activity empty or mock it for this step until activity feed schema is solid
-			Promise.resolve([]),
+			// 5. AI Breakdown by Tool (Task 4.1.A - Using MetricsAggregator)
+			aggregator.getAIToolDetectionCounts(userId),
 
-			// 6. AI Breakdown by Tool (Task 4.1.A - GREEN Phase)
-			// Query featureUsage table for AI tool detection counts
-			db
-				.select({
-					featureName: featureUsage.featureName,
-					count: count(),
-				})
-				.from(featureUsage)
-				.where(and(eq(featureUsage.userId, userId), eq(featureUsage.featureCategory, "ai_assistance")))
-				.groupBy(featureUsage.featureName),
+			// 6. Recent Activity (Task 4.1.B - Using MetricsAggregator)
+			aggregator.getRecentActivity(userId, 7),
 		]);
 
 		const totalCheckpoints = checkpointsResult[0]?.count ?? 0;
@@ -129,22 +125,43 @@ export const getMetricsHandler = async ({ context }: { context: unknown }): Prom
 		// Calculate rates (safely handle division by zero)
 		const aiDetectionRate = totalCheckpoints > 0 ? Math.round((aiDetectedCount / totalCheckpoints) * 100) : 0;
 
-		// Aggregate AI tool breakdown (Task 4.1.A - GREEN Phase)
-		// Normalize tool names and fill in missing tools with 0
-		const aiBreakdown = {
-			copilot: 0,
-			cursor: 0,
-			claude: 0,
-			windsurf: 0,
-		};
+		// Extract AI breakdown from service result (Task 4.1.A)
+		const aiBreakdown = aiBreakdownResult.success
+			? aiBreakdownResult.value
+			: {
+					copilot: 0,
+					cursor: 0,
+					claude: 0,
+					windsurf: 0,
+				};
 
-		// Map database results to normalized tool names
-		for (const row of aiBreakdownResult) {
-			const normalizedTool = normalizeToolName(row.featureName);
-			if (normalizedTool in aiBreakdown) {
-				aiBreakdown[normalizedTool as keyof typeof aiBreakdown] = row.count;
-			}
-		}
+		// Extract recent activity from service result (Task 4.1.B)
+		// Transform to match contract: RecentActivitySchema
+		const recentActivity = recentActivityResult.success
+			? recentActivityResult.value.map((activity) => {
+					// Extract AI tool from feature name if it's an AI detection activity
+					let aiTool: "copilot" | "cursor" | "claude" | "windsurf" | undefined;
+					if (activity.type === "ai_detection" && activity.description) {
+						const toolName = activity.description.toLowerCase();
+						if (toolName.includes("copilot")) aiTool = "copilot";
+						else if (toolName.includes("cursor")) aiTool = "cursor";
+						else if (toolName.includes("claude")) aiTool = "claude";
+						else if (toolName.includes("windsurf")) aiTool = "windsurf";
+					}
+
+					return {
+						timestamp: activity.timestamp.getTime(),
+						action:
+							activity.type === "snapshot"
+								? ("checkpoint_created" as const)
+								: activity.type === "recovery"
+									? ("recovery_performed" as const)
+									: ("ai_detected" as const),
+						file: activity.description || "Unknown file",
+						ai_tool: aiTool,
+					};
+				})
+			: [];
 
 		const metrics = {
 			protection_status: "active" as const,
@@ -152,7 +169,7 @@ export const getMetricsHandler = async ({ context }: { context: unknown }): Prom
 			total_recoveries: totalRecoveries,
 			files_protected: filesProtected,
 			ai_detection_rate: aiDetectionRate,
-			recent_activity: [],
+			recent_activity: recentActivity,
 			ai_breakdown: aiBreakdown,
 		};
 
@@ -162,6 +179,8 @@ export const getMetricsHandler = async ({ context }: { context: unknown }): Prom
 			recoveries: metrics.total_recoveries,
 			filesProtected: metrics.files_protected,
 			aiDetectionRate: metrics.ai_detection_rate,
+			aiBreakdownSource: aiBreakdownResult.success ? "aggregator" : "fallback",
+			recentActivityCount: recentActivity.length,
 		});
 
 		return metrics;
@@ -179,37 +198,6 @@ export const getMetricsHandler = async ({ context }: { context: unknown }): Prom
 		};
 	}
 };
-
-/**
- * Normalize tool name to lowercase canonical form
- * Handles case variations: "GitHub Copilot", "CURSOR", "copilot" → "copilot"
- * Safely handles null/undefined values by returning empty string
- */
-function normalizeToolName(featureName: string | null | undefined): string {
-	// Guard against null/undefined (Task 4.1.A - Error Path handling)
-	if (!featureName || typeof featureName !== "string") {
-		return "";
-	}
-
-	const normalized = featureName.toLowerCase();
-
-	// Map common variations to canonical names
-	if (normalized.includes("copilot")) {
-		return "copilot";
-	}
-	if (normalized.includes("cursor")) {
-		return "cursor";
-	}
-	if (normalized.includes("claude")) {
-		return "claude";
-	}
-	if (normalized.includes("windsurf")) {
-		return "windsurf";
-	}
-
-	// Return as-is for unknown tools (won't match aiBreakdown keys)
-	return normalized;
-}
 
 export const getMetrics = protectedProcedure
 	.output(z.union([DashboardMetricsSchema, DashboardMetricsErrorSchema]))

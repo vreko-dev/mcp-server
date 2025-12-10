@@ -41,7 +41,7 @@ export const StickyScrollReveal = ({
 		setActiveCard(closestBreakpointIndex);
 	});
 
-	const backgroundColors = ["var(--slate-900)", "var(--black)", "var(--neutral-900)"];
+	const backgroundColors = ["#0f172a", "#000000", "#171717"]; // slate-900, black, neutral-900
 
 	return (
 		<motion.div
@@ -96,7 +96,7 @@ export const StickyScrollReveal = ({
 			</div>
 			<div
 				className={cn(
-					"hidden lg:block h-60 w-80 rounded-md bg-white sticky top-0 overflow-hidden",
+					"hidden lg:block h-60 w-80 rounded-md bg-white sticky top-10 overflow-hidden",
 					contentClassName,
 				)}
 			>

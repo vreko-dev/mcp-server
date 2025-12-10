@@ -34,7 +34,11 @@ const nextConfig = {
 			},
 		],
 	},
-	transpilePackages: ["@snapback/contracts", "@snapback/sdk", "@snapback/events"],
+	transpilePackages: [
+		"@snapback/contracts",
+		"@snapback/sdk",
+		"@snapback/events",
+	],
 	serverExternalPackages: ["@snapback/infrastructure"],
 	experimental: {
 		// Next.js 16: Enable Turbopack filesystem caching for faster dev rebuilds
@@ -120,6 +124,14 @@ const nextConfig = {
 	},
 	// Reverse proxy for PostHog analytics (hides API key from client)
 	async rewrites() {
+		const isDev = process.env.NODE_ENV === "development";
+
+		// In development, skip PostHog proxy to avoid SSL errors
+		// PostHog will be disabled if NEXT_PUBLIC_POSTHOG_KEY is not set
+		if (isDev) {
+			return [];
+		}
+
 		return [
 			{
 				source: "/ingest/static/:path*",
@@ -148,13 +160,22 @@ const nextConfig = {
 			".js": [".js", ".ts", ".tsx"],
 			".jsx": [".jsx", ".tsx"],
 		};
+
 		// Handle native modules on client and server side
 		config.plugins.push(
 			new webpack.IgnorePlugin({
 				resourceRegExp: /^piscina$/,
 				contextRegExp: /./,
-			}),
+			})
 		);
+
+		// Suppress client-side warnings for server-only packages
+		if (!isServer) {
+			config.resolve.alias = {
+				...config.resolve.alias,
+				"@snapback/infrastructure": false,
+			};
+		}
 
 		return config;
 	},

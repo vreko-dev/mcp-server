@@ -1,5 +1,5 @@
 import { Hero } from "@marketing/home/components/Hero";
-import { FinalCTA, HowItWorks, Metrics, ProblemSection } from "@marketing/sections/launch";
+import { FinalCTA, Metrics, ProblemSection } from "@marketing/sections/launch";
 import type { Metadata } from "next";
 import { StorySection } from "@/components/landing/story-section";
 
@@ -61,9 +61,6 @@ export default function Home() {
 
 			{/* Intelligence Story (ProblemSection reused/moved up) */}
 			<ProblemSection />
-
-			{/* How It Works Section */}
-			<HowItWorks />
 
 			{/* Metrics Section */}
 			<Metrics />

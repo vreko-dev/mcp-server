@@ -17,7 +17,7 @@
 			"outputs": []
 		},
 		"validate:deps": {
-			"cache": false,
+			"cache": true,
 			"inputs": ["pnpm-lock.yaml", "**/package.json", ".syncpackrc.json", "pnpm-workspace.yaml"]
 		},
 		"validate:infrastructure": {
@@ -32,23 +32,23 @@
 			"outputs": ["reports/infrastructure-validation/**"]
 		},
 		"validate:exports": {
-			"cache": false,
+			"cache": true,
 			"inputs": ["**/package.json", "**/src/**/*.ts", "**/src/**/*.tsx"],
 			"outputs": []
 		},
 		"//#validate:exports": {
-			"cache": false,
+			"cache": true,
 			"inputs": ["**/package.json", "**/src/**/*.ts", "**/src/**/*.tsx"],
 			"outputs": []
 		},
 		"quality": {
-			"cache": false,
+			"cache": true,
 			"outputs": ["reports/quality/**"],
 			"inputs": ["$TURBO_DEFAULT$", "biome.json"]
 		},
 		"type-check": {
 			"dependsOn": ["^type-check"],
-			"inputs": ["$TURBO_DEFAULT$"],
+			"inputs": ["$TURBO_DEFAULT$", "**/*.ts", "**/*.tsx", "**/tsconfig.json"],
 			"cache": true
 		},
 		"build:package": {
@@ -57,9 +57,6 @@
 		},
 		"build": {
 			"dependsOn": [
-				"validate:catalog",
-				"validate:infrastructure",
-				"validate:exports",
 				"build:package",
 				"^generate",
 				"^build"

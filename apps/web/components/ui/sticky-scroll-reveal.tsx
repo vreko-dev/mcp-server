@@ -41,23 +41,22 @@ export const StickyScrollReveal = ({
 		setActiveCard(closestBreakpointIndex);
 	});
 
-	const backgroundColors = ["#0f172a", "#000000", "#171717"]; // slate-900, black, neutral-900
-
 	return (
 		<motion.div
-			animate={{
-				backgroundColor: backgroundColors[activeCard % backgroundColors.length],
-			}}
 			className={cn(
-				"h-[30rem] overflow-y-auto flex justify-center relative space-x-10 rounded-md p-10 py-0 no-visible-scrollbar",
+				"h-[40rem] overflow-y-auto flex justify-center items-start relative space-x-10 rounded-md p-10 py-0 scrollbar-hide bg-[#0A0A0A]",
 				className,
 			)}
 			ref={ref}
+			style={{
+				scrollbarWidth: "none",
+				msOverflowStyle: "none",
+			}}
 		>
 			<div className="div relative flex items-start px-4">
 				<div className="max-w-2xl">
 					{content.map((item, index) => (
-						<div key={item.title + index} className="my-20">
+						<div key={item.title + index} className={index === 0 ? "mb-[30vh]" : "my-[30vh]"}>
 							<motion.h2
 								initial={{
 									opacity: 0,
@@ -83,7 +82,7 @@ export const StickyScrollReveal = ({
 							{/* Mobile Only Content */}
 							<div
 								className={cn(
-									"block lg:hidden h-60 w-full mt-4 rounded-md bg-white sticky overflow-hidden",
+									"block lg:hidden aspect-video w-full mt-4 rounded-md bg-[#0A0A0A] sticky overflow-hidden",
 									contentClassName,
 								)}
 							>
@@ -91,12 +90,12 @@ export const StickyScrollReveal = ({
 							</div>
 						</div>
 					))}
-					<div className="h-40" />
+					<div className="h-[50vh]" />
 				</div>
 			</div>
 			<div
 				className={cn(
-					"hidden lg:block h-60 w-80 rounded-md bg-white sticky top-10 overflow-hidden",
+					"hidden lg:block aspect-video w-[720px] rounded-md bg-[#0A0A0A] sticky top-0 overflow-hidden",
 					contentClassName,
 				)}
 			>

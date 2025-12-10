@@ -1,6 +1,8 @@
 "use client";
 
 import { AnimatedList, NotificationItem } from "@marketing/components/ui/animated-list";
+import { LearningStageCard } from "@marketing/components/ui/learning-stage-card";
+import { LEARNING_STAGES } from "@marketing/constants/learning-stages";
 
 export function ProblemStatement() {
 	const notifications = [
@@ -68,19 +70,11 @@ export function ProblemStatement() {
 					</AnimatedList>
 				</div>
 
+				{/* Enhanced "Gets Smarter" Cards */}
 				<div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-					<div className="bg-card border rounded-xl p-6 text-center">
-						<div className="text-3xl font-bold text-primary">94%</div>
-						<div className="mt-2 text-sm text-muted-foreground">Accuracy Day 1</div>
-					</div>
-					<div className="bg-card border rounded-xl p-6 text-center">
-						<div className="text-3xl font-bold text-primary">98%</div>
-						<div className="mt-2 text-sm text-muted-foreground">Accuracy Day 30</div>
-					</div>
-					<div className="bg-card border rounded-xl p-6 text-center">
-						<div className="text-3xl font-bold text-primary">99%+</div>
-						<div className="mt-2 text-sm text-muted-foreground">Accuracy Month 3</div>
-					</div>
+					{LEARNING_STAGES.map((stage, index) => (
+						<LearningStageCard key={stage.period} stage={stage} index={index} variant="light" />
+					))}
 				</div>
 			</div>
 		</section>

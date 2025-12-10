@@ -1,5 +1,5 @@
 "use client";
-import { m, useScroll } from "motion/react";
+import { AnimatePresence, m, useScroll } from "motion/react";
 import type React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
@@ -26,7 +26,7 @@ export const StickyScrollReveal = ({
 
 	useEffect(() => {
 		const unsubscribe = scrollYProgress.onChange((latest) => {
-			const cardsBreakpoints = content.map((_, index) => index / cardLength);
+			const cardsBreakpoints = content.map((_, index) => index / Math.max(cardLength - 1, 1));
 			const closestBreakpointIndex = cardsBreakpoints.reduce((acc, breakpoint, index) => {
 				const distance = Math.abs(latest - breakpoint);
 				if (distance < Math.abs(latest - (cardsBreakpoints[acc] ?? 0))) {
@@ -71,38 +71,51 @@ export const StickyScrollReveal = ({
 						<div key={item.title + index} className="my-20">
 							<m.h2
 								initial={{
-									opacity: 0,
+									opacity: 1,
 								}}
 								animate={{
 									opacity: activeCard === index ? 1 : 0.3,
 								}}
+								transition={{ duration: 0.3 }}
 								className="text-2xl font-bold text-foreground"
 							>
 								{item.title}
 							</m.h2>
 							<m.p
 								initial={{
-									opacity: 0,
+									opacity: 1,
 								}}
 								animate={{
 									opacity: activeCard === index ? 1 : 0.3,
 								}}
+								transition={{ duration: 0.3 }}
 								className="text-lg text-muted-foreground max-w-sm mt-10"
 							>
 								{item.description}
 							</m.p>
 						</div>
 					))}
-					<div className="h-40" />
+					<div className="h-60" />
 				</div>
 			</div>
 			<div
-				className={`hidden lg:block h-60 w-80 rounded-md sticky top-10 overflow-hidden border border-border/20 ${contentClassName}`}
+				className={`hidden lg:block h-60 w-80 rounded-md bg-black sticky top-10 overflow-hidden border border-border/20 ${contentClassName}`}
 				style={{
 					background: backgroundGradient,
 				}}
 			>
-				{content[activeCard]?.content ?? null}
+				<AnimatePresence mode="wait">
+					<m.div
+						key={activeCard}
+						initial={{ opacity: 0 }}
+						animate={{ opacity: 1 }}
+						exit={{ opacity: 0 }}
+						transition={{ duration: 0.5, ease: "easeInOut" }}
+						className="h-full w-full"
+					>
+						{content[activeCard]?.content ?? null}
+					</m.div>
+				</AnimatePresence>
 			</div>
 		</m.div>
 	);

@@ -2,8 +2,6 @@
 
 import { AnalyticsEvents } from "@analytics";
 import { siteSpec } from "@marketing/config/site-config";
-import { cn } from "@marketing/lib/utils";
-import { BentoGrid, BentoGridItem } from "@ui/components/aceternity/bento-grid";
 import { RotateCcw, Save, Zap } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -24,42 +22,36 @@ export function HowItWorks() {
 					</h2>
 				</div>
 
-				<BentoGrid className="max-w-5xl mx-auto">
+				{/* Simple 3-column grid instead of bento */}
+				<div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
 					{how_it_works.content.steps.map((step, i) => (
-						<BentoGridItem
+						<div
 							key={i}
-							title={step.title}
-							description={step.body}
-							header={
-								step.screenshot && !step.screenshot.includes("[TODO") ? (
-									<div className="relative w-full h-full rounded-xl overflow-hidden">
-										<Image
-											src={step.screenshot}
-											alt={step.title}
-											fill
-											className="object-cover group-hover:scale-105 transition-transform duration-300"
-										/>
+							className="bg-[#111] border border-[#222] rounded-xl p-6 hover:border-[var(--snapback-green)]/50 transition-colors"
+						>
+							{step.screenshot && !step.screenshot.includes("[TODO") ? (
+								<div className="relative w-full h-48 rounded-xl overflow-hidden mb-4">
+									<Image src={step.screenshot} alt={step.title} fill className="object-cover" />
+								</div>
+							) : (
+								<div className="flex flex-col items-center justify-center py-8 mb-4">
+									<div className="text-[var(--snapback-green)] mb-3">
+										{step.step_number === 1 && <Save className="w-12 h-12" />}
+										{step.step_number === 2 && <Zap className="w-12 h-12" />}
+										{step.step_number === 3 && <RotateCcw className="w-12 h-12" />}
 									</div>
-								) : (
-									<div className="flex flex-1 w-full h-full min-h-[6rem] rounded-xl bg-gradient-to-br from-[#111] to-[#050505] border border-[#222] flex-col items-center justify-center p-4 group-hover:border-[var(--snapback-green)]/50 transition-colors">
-										{/* Icon based on step number */}
-										<div className="text-5xl mb-2 text-[var(--snapback-green)] group-hover:scale-110 transition-transform">
-											{step.step_number === 1 && <Save className="w-12 h-12" />}
-											{step.step_number === 2 && <Zap className="w-12 h-12" />}
-											{step.step_number === 3 && <RotateCcw className="w-12 h-12" />}
+									{step.tag && (
+										<div className="text-xs text-[#666] bg-[#0A0A0A] px-2 py-1 rounded border border-[#222]">
+											{step.tag}
 										</div>
-										{step.tag && (
-											<div className="text-xs text-[#666] bg-[#111] px-2 py-1 rounded border border-[#222]">
-												{step.tag}
-											</div>
-										)}
-									</div>
-								)
-							}
-							className={cn(i === 0 || i === 3 ? "md:col-span-2" : "")}
-						/>
+									)}
+								</div>
+							)}
+							<h3 className="text-lg font-semibold text-white mb-2">{step.title}</h3>
+							<p className="text-sm text-[#999]">{step.body}</p>
+						</div>
 					))}
-				</BentoGrid>
+				</div>
 
 				<div className="text-center mt-12">
 					<Link

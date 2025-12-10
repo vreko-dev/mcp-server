@@ -11,8 +11,12 @@ export function AnalyticsScript() {
 			return;
 		}
 
+		// Use direct PostHog URL in development to avoid SSL proxy issues
+		const isDev = process.env.NODE_ENV === "development";
+		const apiHost = isDev ? process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com" : "/ingest";
+
 		posthog.init(posthogKey, {
-			api_host: "/ingest",
+			api_host: apiHost,
 			person_profiles: "identified_only",
 			autocapture: true,
 			capture_pageview: true,
@@ -26,7 +30,7 @@ export function AnalyticsScript() {
 			advanced_disable_decide: true,
 			advanced_disable_toolbar_metrics: true,
 			loaded: (posthog) => {
-				if (process.env.NODE_ENV === "development") {
+				if (isDev) {
 					posthog.debug();
 				}
 			},

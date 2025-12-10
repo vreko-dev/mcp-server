@@ -1,100 +1,137 @@
 {
-	"task": "Task 4.3: Connect Offline Event Queue to Network Restoration",
-	"phase": "DONE",
-	"startedAt": "2025-12-09T13:47:55Z",
-	"completedAt": "2025-12-09T14:02:00Z",
-	"completedPhases": ["audit", "red", "green", "refactor", "quality", "certify", "certify"],
-	"violations": [],
-	"evidence": {
-		"serviceLocation": "apps/vscode/src/services/telemetry-proxy.ts",
-		"testFile": "apps/vscode/test/unit/telemetry-proxy-offline-queue.test.ts",
-		"auditReport": {
-			"task": "Task 4.3: Connect Offline Event Queue to Network Restoration",
-			"serviceSearchCompleted": true,
-			"existingServiceFound": true,
-			"serviceLocation": "apps/vscode/src/telemetry/OfflineEventQueue.ts",
-			"proxyLocation": "apps/vscode/src/services/telemetry-proxy.ts",
-			"testLocation": "apps/vscode/test/integration/",
-			"layer": "service",
-			"architectureConflicts": "none",
-			"findings": {
-				"offlineEventQueue": {
-					"status": "FULLY IMPLEMENTED",
-					"location": "apps/vscode/src/telemetry/OfflineEventQueue.ts",
-					"lines": 240,
-					"features": [
-						"Persistent queue with VS Code globalState storage",
-						"Exponential backoff retry logic (1s to 60s)",
-						"Max 100 events with 7-day TTL",
-						"Methods: enqueue, dequeue, peek, isEmpty, getRetryDelay, shouldRetry"
-					],
-					"testCoverage": "apps/vscode/test/unit/telemetry/OfflineEventQueue.test.ts exists"
-				},
-				"telemetryProxy": {
-					"status": "PARTIALLY INTEGRATED",
-					"location": "apps/vscode/src/services/telemetry-proxy.ts",
-					"lines": 352,
-					"existingFeatures": [
-						"Constructor initializes OfflineEventQueue (line 34)",
-						"Background queue processor via startQueueProcessor() (line 37)",
-						"processQueue() method with exponential backoff (lines 282-340)",
-						"queueEvent() on send failure (lines 71, 77)"
-					],
-					"missingFeatures": [
-						"NO network event listeners for 'online'/'offline' events",
-						"NO setupNetworkMonitoring() method",
-						"Background processor only runs every 30s, not on-demand on network restore"
-					]
-				},
-				"rootCause": {
-					"problem": "Network restoration event ('online') never triggers immediate queue processing",
-					"currentBehavior": "Queue drains on 30-second polling interval only",
-					"expectedBehavior": "Queue should process immediately when network is restored",
-					"impact": "Offline telemetry delayed up to 30 seconds, defeating the purpose of offline support"
-				}
-			},
-			"implementation": {
-				"requiredChanges": [
-					{
-						"file": "apps/vscode/src/services/telemetry-proxy.ts",
-						"action": "Add setupNetworkMonitoring() method and call from constructor",
-						"lines": "Between line 38 and constructor end",
-						"complexity": "LOW - 15-20 lines of code"
-					},
-					{
-						"file": "apps/vscode/src/telemetry/OfflineEventQueue.ts",
-						"action": "Add optional logging in queue processing (optional enhancement)",
-						"complexity": "OPTIONAL"
-					}
-				],
-				"existingUtilities": [
-					"calculateBackoff() from @snapback/sdk - already used in OfflineEventQueue.getRetryDelay()",
-					"toError() from ../utils/errorHelpers - already imported in TelemetryProxy",
-					"logger from ../utils/logger - already imported in TelemetryProxy"
-				],
-				"noNewUtilitiesNeeded": true
-			},
-			"canonicalLocations": {
-				"service": "apps/vscode/src/services/telemetry-proxy.ts (CORRECT)",
-				"domain": "VSCode extension - telemetry/offline queue integration",
-				"existingPattern": "Service layer handles network events and delegates to OfflineEventQueue (existing pattern matches requirement)"
-			},
-			"noArchitectureViolations": true,
-			"auditConclusion": "This is a HIGH-PRIORITY, HIGH-ROI integration task. Infrastructure is 100% complete and tested. Only missing: wiring network events to trigger queue processing. Expected implementation time: 30-60 minutes."
+	"task": "OAuth Flow Integration Tests with MSW Mocking",
+	"phase": "PHASE_1_COMPLETE_PHASE_2_IN_PROGRESS",
+	"type": "P0",
+	"taskType": "BUG_FIX",
+	"startedAt": "2025-12-10T06:05:00Z",
+	"scope": "apps/vscode/src/auth/",
+	"architecture": {
+		"context": "apps/vscode (VSCode Extension)",
+		"primaryFile": "apps/vscode/src/auth/OAuthProvider.ts",
+		"relatedFiles": ["apps/vscode/src/auth/UnifiedAuthProvider.ts", "apps/vscode/src/auth/MockAuthProvider.ts"],
+		"testLocation": "apps/vscode/test/unit/auth/OAuthProvider.test.ts",
+		"serviceLayer": "OAuthProvider implements vscode.AuthenticationProvider",
+		"architectureNotes": "Service implements OAuth 2.0 with PKCE, state parameter CSRF protection, token refresh, and expiry handling"
+	},
+	"phase0": {
+		"status": "COMPLETE",
+		"sequentialThinking": "Applied",
+		"steps": [
+			"Task classified as BUG_FIX (code exists, needs comprehensive tests)",
+			"Context identified: VSCode extension with proper service structure",
+			"Code examined: 424 lines covering OAuth 2.0 full flow",
+			"Services verified: OAuthProvider is canonical location, no duplicates",
+			"Testing infrastructure: MSW for HTTP, vscode mocks, TestCleanupManager ready",
+			"4-path coverage planned: Happy (full flow), Sad (user denies), Edge (token refresh), Error (network)"
+		],
+		"findings": {
+			"codeQuality": "HIGH - Well-structured OAuth implementation with PKCE and CSRF protection",
+			"testingGaps": "CRITICAL - No OAuth flow integration tests exist",
+			"serviceBypass": "NONE - Proper service implementation",
+			"architectureViolations": "NONE"
 		}
 	},
-	"certification": {
-		"status": "COMPLETE",
-		"timestamp": "2025-12-09T14:02:00Z",
-		"statement": "Task 4.3 completed through strict TDD. All phases passed with gate verification.",
-		"evidence": {
-			"architecture_audit_passed": true,
-			"test_creation_passed": true,
-			"implementation_passed": true,
-			"code_quality_passed": true,
-			"tests_passing": "4/4 (1 skipped tracked)",
-			"build_successful": true,
-			"canonical_patterns_verified": true
-		}
-	}
+	"phase1": {
+		"status": "PENDING",
+		"testCases": [
+			{
+				"id": "OAUTH-001",
+				"name": "HAPPY PATH: Complete OAuth flow",
+				"description": "User authorizes → token exchange succeeds → session stored",
+				"methods": ["createSession", "exchangeCodeForToken"],
+				"mocking": "MSW for POST /oauth/token"
+			},
+			{
+				"id": "OAUTH-002",
+				"name": "HAPPY PATH: Retrieve existing session",
+				"description": "Session exists and valid → getSessions returns it",
+				"methods": ["getSessions"],
+				"mocking": "No HTTP needed"
+			},
+			{
+				"id": "OAUTH-003",
+				"name": "HAPPY PATH: Session expiry check and auto-refresh",
+				"description": "Token expired → auto-refresh triggers → new token obtained",
+				"methods": ["getSessions", "refreshSession"],
+				"mocking": "MSW for POST /oauth/token (refresh)"
+			},
+			{
+				"id": "OAUTH-004",
+				"name": "SAD PATH: User denies authorization",
+				"description": "OAuth endpoint returns error → createSession rejects",
+				"methods": ["createSession"],
+				"mocking": "MSW returns error response"
+			},
+			{
+				"id": "OAUTH-005",
+				"name": "SAD PATH: Token exchange fails",
+				"description": "exchangeCodeForToken fails → session not created",
+				"methods": ["exchangeCodeForToken"],
+				"mocking": "MSW returns 400 error"
+			},
+			{
+				"id": "OAUTH-006",
+				"name": "EDGE PATH: CSRF protection (state parameter)",
+				"description": "Mismatched state parameter → reject callback",
+				"methods": ["waitForAuthCallback"],
+				"mocking": "URI handler with wrong state"
+			},
+			{
+				"id": "OAUTH-007",
+				"name": "EDGE PATH: Token refresh fails",
+				"description": "Refresh fails → session remains valid until manual re-auth",
+				"methods": ["refreshSession"],
+				"mocking": "MSW returns 401 on refresh"
+			},
+			{
+				"id": "OAUTH-008",
+				"name": "ERROR PATH: Network timeout during token exchange",
+				"description": "Network timeout → error thrown and handled gracefully",
+				"methods": ["exchangeCodeForToken"],
+				"mocking": "MSW delayed response → timeout"
+			},
+			{
+				"id": "OAUTH-009",
+				"name": "ERROR PATH: Invalid PKCE code verifier",
+				"description": "Wrong code verifier → token exchange fails",
+				"methods": ["exchangeCodeForToken"],
+				"mocking": "MSW returns 400 invalid_grant"
+			},
+			{
+				"id": "OAUTH-010",
+				"name": "ERROR PATH: Session removal",
+				"description": "removeSession clears stored session and state",
+				"methods": ["removeSession"],
+				"mocking": "No HTTP needed"
+			}
+		]
+	},
+	"mswStrategy": {
+		"description": "Mock Service Worker for all HTTP calls",
+		"handlers": [
+			{
+				"endpoint": "POST https://auth.snapback.dev/oauth/token",
+				"scenarios": [
+					"Success: Returns access_token, refresh_token, expires_in",
+					"Error: Returns error, error_description",
+					"Timeout: Delayed response to test timeout logic"
+				]
+			},
+			{
+				"endpoint": "POST https://auth.snapback.dev/oauth/revoke",
+				"scenarios": ["Success: Returns 200 OK"]
+			}
+		],
+		"nonHttpMocks": [
+			"vscode.env.openExternal() - verify called with correct URL",
+			"vscode.env.asExternalUri() - return mocked callback URI",
+			"vscode.window.registerUriHandler() - capture and fire callback",
+			"context.secrets.store/get() - use in-memory storage"
+		]
+	},
+	"estimatedTestCount": 10,
+	"estimatedLinesOfTestCode": "400-500 lines (including helpers and setup)",
+	"completedPhases": [],
+	"violations": [],
+	"evidence": {}
 }

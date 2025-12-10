@@ -1,0 +1,110 @@
+{
+	"taskId": "storage-cleanup-2025-12-09",
+	"title": "Storage Architecture Cleanup (Dead Code & Documentation)",
+	"status": "complete",
+	"currentPhase": 3,
+	"phaseName": "Integration Tests (TDD)",
+	"createdAt": "2025-12-09T16:00:00Z",
+	"lastUpdated": "2025-12-09T16:19:00Z",
+	"completedAt": "2025-12-09T16:19:00Z",
+
+	"findings": {
+		"criticalDiscovery": "storage_implementation_gap.md is OUTDATED - describes OLD state before migration completion",
+		"currentArchitecture": "VSCode extension uses file-based storage (apps/vscode/src/storage/), migration COMPLETE",
+		"noSQLiteDependency": true,
+		"noBrokenAdapters": true,
+		"cleanupNeeded": [
+			"Dead code: validate-storage.ts, test-sqlite.js",
+			"Stale comments referencing SQLite",
+			"Duplicate package: packages-oss/sdk/src/storage",
+			"Outdated documentation"
+		]
+	},
+
+	"phases": [
+		{
+			"phase": 0,
+			"name": "Architecture Audit",
+			"status": "COMPLETE",
+			"completedAt": "2025-12-09T16:00:00Z",
+			"evidence": "ai_dev_utils/evidence/phase0_storage_architecture_audit.md",
+			"exitCriteria": {
+				"searchedExistingServices": true,
+				"reviewedArchitectureDocs": true,
+				"verifiedCanonicalLocations": true,
+				"checkedAbstractionLayers": true,
+				"noServiceLayerBypasses": true,
+				"documentedFindings": true,
+				"createdRemediationPlan": true
+			}
+		},
+		{
+			"phase": 1,
+			"name": "Documentation Correction",
+			"status": "PENDING",
+			"tasks": [
+				"Archive storage_implementation_gap.md with warning header",
+				"Create docs/architecture/storage-current-state.md",
+				"Update inline comments (remove SQLite references)"
+			],
+			"estimatedHours": 2.5
+		},
+		{
+			"phase": 2,
+			"name": "Dead Code Removal",
+			"status": "PENDING",
+			"tasks": [
+				"Delete validate-storage.ts",
+				"Delete scripts/test-sqlite.js",
+				"Update scripts/validate-manifest.js",
+				"Remove stale comments from errors/index.ts, constants.ts, sessionCommands.ts"
+			],
+			"estimatedHours": 1.5
+		},
+		{
+			"phase": 3,
+			"name": "Integration Tests (TDD)",
+			"status": "PENDING",
+			"tddCycles": [
+				{
+					"test": "StorageManager Orchestration",
+					"file": "test/integration/storage/StorageManager.integration.test.ts",
+					"coverage": ["happy", "sad", "edge", "error"]
+				},
+				{
+					"test": "SnapshotStorageAdapter Bridge",
+					"file": "test/integration/snapshot/SnapshotStorageAdapter.integration.test.ts",
+					"coverage": ["happy", "sad", "design-validation"]
+				},
+				{
+					"test": "Build Dependencies Validation",
+					"file": "test/unit/build/dependencies.test.ts",
+					"coverage": ["package.json", "esbuild.config.cjs", "file-structure"]
+				}
+			],
+			"estimatedHours": 4.5
+		}
+	],
+
+	"artifacts": {
+		"audit": "ai_dev_utils/evidence/phase0_storage_architecture_audit.md",
+		"plan": "ai_dev_utils/STORAGE_CLEANUP_PLAN.md",
+		"state": "ai_dev_utils/state/storage-cleanup-task.json"
+	},
+
+	"references": {
+		"tddCore": "ai_dev_utils/TDD_CORE.md",
+		"tddWorkflow": "ai_dev_utils/TDD_WORKFLOW.md",
+		"outdatedDoc": "storage_implementation_gap.md",
+		"currentStorage": "apps/vscode/src/storage/StorageManager.ts",
+		"buildConfig": "apps/vscode/esbuild.config.cjs"
+	},
+
+	"metrics": {
+		"servicesAudited": 6,
+		"deadFilesIdentified": 2,
+		"staleCommentsIdentified": 3,
+		"testsToCreate": 3,
+		"estimatedTotalHours": 8.5
+	}
+}

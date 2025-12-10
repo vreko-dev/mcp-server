@@ -5,6 +5,194 @@
 
 ---
 
+## Step 0: Classify Task Type
+
+Before diving into architecture, identify what kind of work this is.
+
+**Task Types:**
+
+### BUG_FIX
+**When:** Something broken that should work
+**Focus:** Verify bug exists, locate broken code
+**Services:** Usually no new services needed
+**Example:** "Fix activation race in auth flow", "Fix missing command registration"
+
+**State file entry:**
+```json
+{
+  "taskType": "BUG_FIX",
+  "scope": "apps/vscode/src/commands/authCommands.ts"
+}
+```
+
+**Phase 0 priorities:**
+- ✅ Reproduce the bug
+- ✅ Locate the broken code
+- ✅ Check if fix already exists
+- ⏭️ Skip service search (usually not needed)
+
+---
+
+### NEW_FEATURE
+**When:** Adding new capability that didn't exist
+**Focus:** Search for existing services, identify canonical location
+**Services:** May need new service methods or entire service
+**Example:** "Add AI tool detection counts to dashboard", "Implement file deduplication"
+
+**State file entry:**
+```json
+{
+  "taskType": "NEW_FEATURE",
+  "scope": "apps/api/src/services/"
+}
+```
+
+**Phase 0 priorities:**
+- ✅ Search for existing services thoroughly
+- ✅ Identify canonical location
+- ✅ Check for similar features
+- ✅ Plan service architecture
+
+---
+
+### REFACTORING
+**When:** Improving code quality without changing behavior
+**Focus:** Identify duplication, extract to canonical locations
+**Services:** Consolidate existing, don't create new
+**Example:** "Extract shared auth logic to helper", "Eliminate code duplication"
+
+**State file entry:**
+```json
+{
+  "taskType": "REFACTORING",
+  "scope": "apps/vscode/src/commands/"
+}
+```
+
+**Phase 0 priorities:**
+- ✅ Find all instances of duplicated code
+- ✅ Verify canonical location exists
+- ✅ Plan extraction without behavior changes
+- ✅ Ensure tests exist for current behavior
+
+---
+
+### HOTFIX
+**When:** Production P0 incident requiring immediate fix
+**Focus:** Minimal change to restore service
+**Services:** Use existing, no new services
+**Example:** "Fix critical auth failure", "Patch security vulnerability"
+
+**State file entry:**
+```json
+{
+  "taskType": "HOTFIX",
+  "scheduledFollowup": "GH-####"
+}
+```
+
+**Phase 0 priorities:**
+- ✅ Identify root cause quickly
+- ✅ Plan minimal fix
+- ⏭️ Skip extensive service search
+- ✅ Schedule proper TDD workflow post-deploy
+
+---
+
+## Step 0.5: Context-Specific Architecture Rules
+
+**Identify your context before proceeding:**
+
+### Working in `apps/api/` (Backend Services)
+
+**Architecture rules:**
+- ✅ Business logic MUST go in `apps/api/src/services/`
+- ✅ Procedures MUST NOT have inline DB queries
+- ✅ Use Drizzle ORM for database access
+- ✅ Validate input in procedures, process in services
+
+**Service layer compliance:**
+```bash
+# Check for service bypasses
+grep -n "db\.\|prisma\." apps/api/modules/*/procedures/*.ts
+```
+**Expected:** Empty or only service instantiation
+
+---
+
+### Working in `apps/vscode/` (VS Code Extension)
+
+**Architecture rules:**
+- ✅ Commands go in `apps/vscode/src/commands/`
+- ✅ Services go in `apps/vscode/src/services/`
+- ✅ NEVER register commands before dependencies exist (activation race)
+- ✅ ALWAYS use disposables for cleanup
+- ✅ Use constants for command IDs from `constants/commands.ts`
+
+**Activation order matters:**
+```typescript
+// ✅ CORRECT
+1. Initialize service
+2. Register listener that depends on service
+
+// ❌ WRONG (activation race)
+1. Register listener
+2. Initialize service (listener fires with null service)
+```
+
+---
+
+### Working in `apps/web/` (Next.js Web App)
+
+**Architecture rules:**
+- ✅ API routes in `apps/web/app/api/`
+- ✅ Business logic in hooks or server actions
+- ✅ NEVER put business logic in components
+- ✅ Server-side validation required
+- ✅ Client components for UI only
+
+**Component structure:**
+```typescript
+// ✅ CORRECT
+component → hook → server action → API
+
+// ❌ WRONG
+component → inline fetch → process data
+```
+
+---
+
+## Step 0.9: Efficiency Check - Is Issue Already Fixed?
+
+**Before proceeding with full audit:**
+
+```bash
+# For BUG_FIX tasks: Check if bug still exists
+grep -n "[SUSPECTED_FIX]" [FILE_PATH]
+```
+
+**If bug is already fixed:**
+1. Document in state:
+```json
+{
+  "evidence": {
+    "auditReport": {
+      "status": "ALREADY_FIXED",
+      "fixLocation": "apps/vscode/src/extension.ts:350-368",
+      "fixVerified": true
+    }
+  }
+}
+```
+
+2. Verify fix is correct (review code)
+3. Check tests exist (if not, add them in Phase 1)
+4. ✅ **SKIP to Phase 4** (Quality Verification)
+
+**Exit early:** No need for full service search if issue is resolved.
+
+---
+
 ## Step 1: Search for Existing Services
 
 **Execute:**
@@ -180,7 +368,7 @@ export class MetricsAggregator {
 
 ---
 
-**Remember:** 
+**Remember:**
 - Architecture violations pass tests but violate design
 - 5-10 minutes now saves hours of refactoring later
 - NEVER skip this phase

@@ -70,7 +70,7 @@ For EACH method implemented, verify all 4 paths:
 ```typescript
 it('should return AI tool counts when valid user', async () => {
   const result = await aggregator.getAIToolCounts('user-123');
-  
+
   expect(result).toEqual([
     { tool: 'code completion', count: 42 },
     { tool: 'code review', count: 15 }
@@ -82,7 +82,7 @@ it('should return AI tool counts when valid user', async () => {
 ```typescript
 it('should return empty array when user has no AI usage', async () => {
   const result = await aggregator.getAIToolCounts('new-user');
-  
+
   expect(result).toEqual([]);
 });
 ```
@@ -91,9 +91,9 @@ it('should return empty array when user has no AI usage', async () => {
 ```typescript
 it('should handle user at boundary (exactly 0 usage)', async () => {
   await db.insert(users).values({ id: 'user-zero', aiUsage: 0 });
-  
+
   const result = await aggregator.getAIToolCounts('user-zero');
-  
+
   expect(result).toEqual([]);
 });
 ```
@@ -103,7 +103,7 @@ it('should handle user at boundary (exactly 0 usage)', async () => {
 it('should handle database connection failure', async () => {
   // Mock DB failure
   vi.spyOn(db, 'select').mockRejectedValueOnce(new Error('Connection lost'));
-  
+
   await expect(aggregator.getAIToolCounts('user-123'))
     .rejects
     .toThrow('Connection lost');
@@ -114,10 +114,52 @@ it('should handle database connection failure', async () => {
 
 ### Check 4: Service Layer Compliance
 
+**Context-specific check:**
+
+#### IF working in `apps/api/` (Backend Services)
+
 ```bash
 # Verify no business logic in procedures
 grep -n "db\.\|prisma\.\|drizzle\." apps/api/modules/[RELATED_MODULE]/procedures/*.ts
 ```
+
+**Expected:** Empty or only service instantiation
+
+**Violations:**
+```
+[LIST ANY FILES WITH INLINE QUERIES]
+```
+
+#### IF working in `apps/vscode/` (VS Code Extension)
+
+**Check:**
+- [ ] Commands registered with disposables
+- [ ] No activation races (dependencies before listeners)
+- [ ] ExtensionContext cleanup in deactivate()
+- [ ] Constants used for command IDs
+
+**Verification:**
+```bash
+# Check command registration pattern
+grep -n "registerCommand" apps/vscode/src/commands/*.ts
+```
+
+#### IF working in `apps/web/` (Web App)
+
+**Check:**
+- [ ] No business logic in components
+- [ ] Server-side validation present
+- [ ] Client components for UI only
+- [ ] API routes properly structured
+
+**Verification:**
+```bash
+# Check for inline fetch in components
+grep -n "fetch(" apps/web/components/**/*.tsx
+```
+**Expected:** Empty (use hooks or server actions)
+
+---
 
 **Output:**
 ```
@@ -384,6 +426,53 @@ $ grep -n "db\." apps/api/modules/dashboard/procedures/get-metrics.ts
 ```
 
 **Fix:** Move query to service, call service from procedure.
+
+### Failure 4: Terminal Output Issues
+
+**Problem:** `run_in_terminal` doesn't return output reliably
+**Fix:** Use alternative verification methods:
+```bash
+# For type checking
+get_problems(["file_path"])
+
+# For pattern matching
+grep_code(regex="pattern", path="file")
+
+# For file content
+read_file("file_path")
+```
+
+### Failure 5: Evidence Files Not Persisted
+
+**Problem:** Created .txt evidence files disappear between turns
+**Fix:**
+- Capture evidence inline in state JSON
+- Use `tee` to save terminal output
+- Store evidence paths in state file
+- Document in state rather than external files
+
+### Failure 6: VS Code Module Mocking
+
+**Problem:** Integration tests fail on vscode imports
+**Fix:**
+- Write unit tests for logic
+- Test constants and data structures
+- Skip VS Code API integration tests
+- Use `as any` for unused mock properties
+
+### Failure 7: Type Checking False Positives
+
+**Problem:** Mock objects missing TypeScript properties
+**Fix:**
+```typescript
+// Use type assertions for test mocks
+const mockContext = {
+  subscriptions: [],
+  // ... only required properties
+  storageUri: undefined as any,
+  globalStorageUri: undefined as any,
+} as vscode.ExtensionContext;
+```
 
 ---
 

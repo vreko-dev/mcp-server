@@ -94,6 +94,37 @@ NOT_STARTED ──▶ AUDIT ──▶ RED ──▶ GREEN ──▶ REFACTOR ─
                                Retry Phase
 ```
 
+**Emergency Hotfix Path (P0 Production Incidents Only):**
+
+```
+HOTFIX ──▶ AUDIT (quick) ──▶ RED (minimal) ──▶ GREEN (fix) ──▶ VERIFY ──▶ DEPLOY
+   │                                                              │
+   └──────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+                    Schedule Full TDD Workflow
+                              │
+                              ▼
+                      Track in GitHub Issue
+```
+
+**Hotfix rules:**
+1. Still create failing test (proves bug exists)
+2. Still implement minimal fix
+3. Run quality checks (no skipping)
+4. **Temporarily skip REFACTOR**
+5. **Schedule proper TDD workflow post-deploy**
+
+**Document in state:**
+```json
+{
+  "taskType": "HOTFIX",
+  "scheduledFollowup": "GH-####",
+  "skipReason": "P0 production incident",
+  "deployedAt": "2025-12-09T23:00:00Z"
+}
+```
+
 ---
 
 ## Commands

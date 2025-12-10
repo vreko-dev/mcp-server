@@ -12,6 +12,32 @@
 
 ---
 
+## Efficiency Check: Is This a Minimal Change?
+
+**Before implementing, assess complexity:**
+
+```json
+{
+  "evidence": {
+    "implementationSize": "MINIMAL" | "MODERATE" | "COMPLEX",
+    "linesChanged": 0,
+    "estimatedComplexity": "LOW" | "MEDIUM" | "HIGH"
+  }
+}
+```
+
+**MINIMAL change (< 10 lines, low risk):**
+- ✅ Proceed with standard GREEN phase
+- ✅ Verify test passes
+- ⚡ Consider fast-tracking REFACTOR (only if no duplication found)
+
+**MODERATE/COMPLEX change:**
+- ✅ Break into smaller subtasks
+- ✅ Implement incrementally
+- ✅ Test after each increment
+
+---
+
 ## Step 1: Implement in Correct Location
 
 **Implementation goes in:**
@@ -59,6 +85,17 @@ export async function methodName(input: InputType): Promise<OutputType> {
 pnpm test [TEST_FILE_PATH] 2>&1 | tee ai_dev_utils/state/green-phase-output.txt
 ```
 
+**Update state file:**
+```bash
+jq '.evidence.implementationFile = "[IMPLEMENTATION_FILE_PATH]"' \
+  ai_dev_utils/state/current-task.json > tmp.json && \
+  mv tmp.json ai_dev_utils/state/current-task.json
+
+jq '.evidence.greenPhaseEvidence = "ai_dev_utils/state/green-phase-output.txt"' \
+  ai_dev_utils/state/current-task.json > tmp.json && \
+  mv tmp.json ai_dev_utils/state/current-task.json
+```
+
 **Expected:**
 ```
 ✅ PASS  apps/api/src/services/__tests__/metrics-aggregator.test.ts
@@ -94,23 +131,23 @@ Check your implementation:
 export async function getAIToolCounts(userId: string) {
   // Validate input
   if (!userId) throw new Error('Missing userId');
-  
+
   // Log entry
   logger.info('Getting AI tool counts', { userId });
-  
+
   // Query with caching
   const cached = await cache.get(`ai-counts-${userId}`);
   if (cached) return cached;
-  
+
   // Actual query
   const results = await db.query(/* ... */);
-  
+
   // Cache results
   await cache.set(`ai-counts-${userId}`, results, { ttl: 300 });
-  
+
   // Log exit
   logger.info('AI tool counts retrieved', { count: results.length });
-  
+
   return results;
 }
 
@@ -121,7 +158,7 @@ export async function getAIToolCounts(userId: string) {
     .from(featureUsage)
     .where(eq(featureUsage.userId, userId))
     .groupBy(featureUsage.featureName);
-    
+
   return results;
 }
 ```

@@ -1,7 +1,7 @@
 # TDD Core - SnapBack Codebase
 
-**Token Budget:** ~400 tokens (always loaded)
-**Purpose:** Non-negotiable rules that apply to ALL phases
+**Token Budget:** ~650 tokens (always loaded)
+**Purpose:** Non-negotiable rules + task classification for all phases
 
 ---
 
@@ -13,24 +13,53 @@ You cannot proceed to the next phase until the current gate passes.
 
 ---
 
-## Absolute Rules (Gate-Enforced)
+## Task Classification
 
+Before Phase 0, identify task type:
+
+**BUG_FIX:** Fix broken behavior (usually no new services)
+**NEW_FEATURE:** Add new capability (may need new services)
+**REFACTORING:** Improve code quality (consolidate, don't create)
+**HOTFIX:** P0 production incident (minimal fix, schedule proper TDD after)
+
+**See Phase 0 for detailed classification guide.**
+
+---
+
+## Absolute Rules (Universal)
+
+### Core TDD Principles
 1. **NEVER** write implementation before a failing test exists
-2. **NEVER** bypass the service layer - business logic lives in `apps/api/src/services/`
-3. **NEVER** use vague assertions: `.toBeTruthy()`, `.toBeDefined()`, `.toBeNull()` alone
-4. **NEVER** skip the architecture audit (Phase 0)
-5. **NEVER** proceed without evidence captured
-6. **ALWAYS** require 4-path coverage: happy, sad, edge, error
-7. **ALWAYS** search for existing services before creating new ones
-8. **ALWAYS** run the phase gate before claiming completion
-9. **ALWAYS** document violations with justification
-10. **ALWAYS** update patterns after violations
+2. **NEVER** use vague assertions: `.toBeTruthy()`, `.toBeDefined()`, `.toBeNull()` alone
+3. **NEVER** skip the architecture audit (Phase 0)
+4. **NEVER** proceed without evidence captured
+5. **ALWAYS** require 4-path coverage: happy, sad, edge, error
+6. **ALWAYS** search for existing utilities before creating new ones
+7. **ALWAYS** run the phase gate before claiming completion
+8. **ALWAYS** document violations with justification
+9. **ALWAYS** update patterns after violations
+
+### Context-Specific Rules
+
+**See Phase 0 for detailed context rules:**
+- API/Backend: Service layer compliance
+- VS Code Extension: Activation order, disposables
+- Web App: Component structure, validation
 
 ---
 
 ## Workflow Entry
 
-**To start a TDD task:**
+**🚀 NEW: Automatic Task Router (Recommended)**
+```
+Load: @TASK_ROUTER.md
+Say: "Route my task: [YOUR DESCRIPTION]"
+```
+**Router auto-detects context (Frontend/Backend/Extension) and guides you through the entire workflow.**
+
+---
+
+**📖 Manual Entry (For learning/debugging):**
 1. Load this document (TDD_CORE.md)
 2. Load @TDD_WORKFLOW.md
 3. Begin at Phase 0
@@ -58,17 +87,24 @@ After EACH phase:
 
 ## Quick Reference
 
-**Service locations:**
-- Dashboard metrics: `apps/api/src/services/metrics-aggregator.ts`
-- Analytics: `apps/api/src/services/analytics-service.ts`
-- Snapshots: `packages/core/src/snapshot/`
+**Canonical Locations:**
+- Error Handling: `@snapback-oss/sdk/utils/errorHelpers.ts`
+- Retry Logic: `@snapback-oss/sdk/utils/retry.ts`
+- Logger: `@snapback/infrastructure/logging/logger.ts`
+- Auth: `@snapback/auth`
+- Types: `@snapback/contracts`
 
-**Test utilities:**
+**Context-Specific:**
+- API Services: `apps/api/src/services/`
+- VS Code Commands: `apps/vscode/src/commands/`
+- Web Components: `apps/web/components/`
+
+**Test Utilities:**
 - Cleanup: `TestCleanupManager`
 - Time mocking: `DeterministicTime`
 - DB setup: `setupTestDatabase()`
 
-**Forbidden patterns:** See `@patterns/assertion-examples.md`
+**See Phase 1 for detailed test patterns.**
 
 ---
 
@@ -111,8 +147,8 @@ After EACH phase:
 
 ## Canonical Locations (Dec 2025)
 
-| Component | Canonical Location | Status |
-|-----------|-------------------|--------|
+| Component | Canonical Location | Context |
+|-----------|-------------------|---------|
 | Error Handling | `@snapback-oss/sdk/utils/errorHelpers.ts` | ✅ Use this |
 | Retry Logic | `@snapback-oss/sdk/utils/retry.ts` | ✅ Use this |
 | Logger | `@snapback/infrastructure/logging/logger.ts` | ✅ Use this |
@@ -120,57 +156,6 @@ After EACH phase:
 | Validation | `apps/api/middleware/validation.ts` + `@snapback/contracts` | ✅ Use this |
 | Types | `@snapback/contracts` | ✅ Use this |
 | API Client | `@snapback/sdk/client/SnapshotClient.ts` | ✅ Use this |
-
----
-
-## Test Patterns
-
-### Database Tests
-```typescript
-import { setupTestDatabase, TestCleanupManager } from '@/test-utils';
-
-describe('ServiceName', () => {
-  let cleanup: TestCleanupManager;
-
-  beforeAll(async () => {
-    cleanup = await setupTestDatabase();
-  });
-
-  afterAll(async () => {
-    await cleanup.dispose();
-  });
-
-  afterEach(async () => {
-    await cleanup.clear();
-  });
-});
-```
-
-### Time-Dependent Tests
-```typescript
-import { DeterministicTime } from '@/test-utils';
-
-it('should handle time correctly', () => {
-  const time = new DeterministicTime('2024-01-15T10:00:00Z');
-  // Use time.now() instead of Date.now()
-});
-```
-
-### Network Mocking
-```typescript
-import { http, HttpResponse } from 'msw';
-import { setupServer } from 'msw/node';
-
-const server = setupServer(
-  http.get('/api/data', () => {
-    return HttpResponse.json({ data: 'test' });
-  })
-);
-
-beforeAll(() => server.listen());
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
-```
 
 ---
 

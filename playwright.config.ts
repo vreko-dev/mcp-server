@@ -1,10 +1,9 @@
 import { defineConfig, devices } from "@playwright/test";
 
 /**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
+ * Playwright config with automatic package build.
+ * Fixes "Cannot find module" errors by ensuring @snapback/* packages are built first.
  */
-// require('dotenv/config');
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -83,6 +82,7 @@ export default defineConfig({
 	outputDir: "test-results/",
 
 	/* Run your local dev server before starting the tests */
+	/* IMPORTANT: webServer now includes automatic package building via make dev */
 	webServer: {
 		command: "make dev",
 		url: "http://snapback.dev",

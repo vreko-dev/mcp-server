@@ -60,7 +60,127 @@ export const IgnorePatternsSchema = z
 	.describe("Glob patterns to exclude from protection (e.g., node_modules, .git)");
 
 /**
- * Settings for AI detection and behavior
+ * Privacy and consent settings for VS Code Extension
+ */
+export const PrivacySettingsSchema = z
+	.object({
+		consent: z.boolean().default(false).describe("User has given privacy consent"),
+		clipboard: z.boolean().default(false).describe("Allow clipboard monitoring"),
+		watcher: z.boolean().default(false).describe("Allow file watcher"),
+		gitWrapper: z.boolean().default(false).describe("Allow git wrapper integration"),
+		lastReminded: z.string().optional().describe("ISO timestamp of last consent reminder"),
+	})
+	.default({});
+export type PrivacySettings = z.infer<typeof PrivacySettingsSchema>;
+
+/**
+ * Notification settings
+ */
+export const NotificationsSettingsSchema = z
+	.object({
+		enabled: z.boolean().default(true),
+		quietHours: z
+			.object({
+				start: z.string().default("22:00"),
+				end: z.string().default("08:00"),
+			})
+			.default({ start: "22:00", end: "08:00" }),
+		rateLimit: z.number().int().min(1).default(5).describe("Max notifications per minute"),
+	})
+	.default({});
+export type NotificationsSettings = z.infer<typeof NotificationsSettingsSchema>;
+
+/**
+ * Snapshot settings
+ */
+export const SnapshotSettingsSchema = z
+	.object({
+		enabled: z.boolean().default(true),
+		autoCreate: z.boolean().default(true),
+		retentionDays: z.number().int().min(1).default(30),
+	})
+	.default({});
+export type SnapshotSettings = z.infer<typeof SnapshotSettingsSchema>;
+
+/**
+ * AI features settings
+ */
+export const AISettingsSchema = z
+	.object({
+		enabled: z.boolean().default(true),
+		context: z.boolean().default(true).describe("Include code context in AI analysis"),
+		copilot: z.boolean().default(true).describe("Integrate with GitHub Copilot"),
+	})
+	.default({});
+export type AISettings = z.infer<typeof AISettingsSchema>;
+
+/**
+ * Guardian plugin settings
+ */
+export const GuardianPluginsSchema = z
+	.object({
+		secretDetection: z.boolean().default(true),
+		mockReplacement: z.boolean().default(true),
+		phantomDependency: z.boolean().default(true),
+	})
+	.default({});
+
+export const GuardianThresholdsSchema = z
+	.object({
+		warn: z.number().int().min(0).default(6),
+		block: z.number().int().min(0).default(8),
+	})
+	.default({ warn: 6, block: 8 });
+
+export const GuardianSettingsSchema = z
+	.object({
+		enabled: z.boolean().default(true),
+		warnThreshold: z.number().int().min(0).max(100).default(5),
+		blockThreshold: z.number().int().min(0).max(100).default(8),
+		protectionLevel: ProtectionLevelSchema.default("warn"),
+		plugins: GuardianPluginsSchema,
+		thresholds: GuardianThresholdsSchema,
+	})
+	.default({});
+export type GuardianSettings = z.infer<typeof GuardianSettingsSchema>;
+
+/**
+ * Auto-decision engine settings
+ */
+export const AutoDecisionSettingsSchema = z
+	.object({
+		riskThreshold: z
+			.number()
+			.int()
+			.min(0)
+			.max(100)
+			.default(60)
+			.describe("Risk score threshold (0-100) for automatic snapshot creation"),
+		notifyThreshold: z
+			.number()
+			.int()
+			.min(0)
+			.max(100)
+			.default(40)
+			.describe("Risk score threshold (0-100) for user notifications"),
+		minFilesForBurst: z
+			.number()
+			.int()
+			.min(1)
+			.default(3)
+			.describe("Minimum files changed simultaneously to trigger burst detection"),
+		maxSnapshotsPerMinute: z
+			.number()
+			.int()
+			.min(1)
+			.default(4)
+			.describe("Maximum snapshots allowed per minute (rate limiting)"),
+	})
+	.default({});
+export type AutoDecisionSettings = z.infer<typeof AutoDecisionSettingsSchema>;
+
+/**
+ * Unified settings for AI detection and behavior
  */
 export const SettingsSchema = z
 	.object({
@@ -69,6 +189,14 @@ export const SettingsSchema = z
 		maxSnapshots: z.number().int().min(1).default(100),
 		aiDetectionEnabled: z.boolean().default(true),
 		autoRestoreOnDetection: z.boolean().default(false),
+		privacy: PrivacySettingsSchema,
+		notifications: NotificationsSettingsSchema,
+		snapshots: SnapshotSettingsSchema,
+		ai: AISettingsSchema,
+		guardian: GuardianSettingsSchema,
+		autoDecision: AutoDecisionSettingsSchema,
+		webBaseUrl: z.string().url().default("https://app.snapback.dev"),
+		apiBaseUrl: z.string().url().optional(),
 	})
 	.default({});
 export type Settings = z.infer<typeof SettingsSchema>;
@@ -123,6 +251,49 @@ export const DEFAULT_CONFIG: ConfigStoreV2 = {
 		maxSnapshots: 100,
 		aiDetectionEnabled: true,
 		autoRestoreOnDetection: false,
+		privacy: {
+			consent: false,
+			clipboard: false,
+			watcher: false,
+			gitWrapper: false,
+		},
+		notifications: {
+			enabled: true,
+			quietHours: { start: "22:00", end: "08:00" },
+			rateLimit: 5,
+		},
+		snapshots: {
+			enabled: true,
+			autoCreate: true,
+			retentionDays: 30,
+		},
+		ai: {
+			enabled: true,
+			context: true,
+			copilot: true,
+		},
+		guardian: {
+			enabled: true,
+			warnThreshold: 5,
+			blockThreshold: 8,
+			protectionLevel: "warn",
+			plugins: {
+				secretDetection: true,
+				mockReplacement: true,
+				phantomDependency: true,
+			},
+			thresholds: {
+				warn: 6,
+				block: 8,
+			},
+		},
+		autoDecision: {
+			riskThreshold: 60,
+			notifyThreshold: 40,
+			minFilesForBurst: 3,
+			maxSnapshotsPerMinute: 4,
+		},
+		webBaseUrl: "https://app.snapback.dev",
 	},
 	policies: {
 		enforceProtectionLevels: false,

@@ -68,20 +68,20 @@ import {
   EngineConfig,
   Settings,
   Policies,
-  
+
   // Schemas
   ConfigStoreV2Schema,
   ProtectionLevelSchema,
-  
+
   // Defaults
   DEFAULT_CONFIG,
   ZERO_CONFIG_DEFAULTS,
-  
+
   // Store
   ConfigStore,
   getConfigStore,
   resetConfigStore,
-  
+
   // Callbacks
   ConfigChangeCallback,
 } from "@snapback/config";
@@ -149,14 +149,14 @@ async function activate(context: vscode.ExtensionContext) {
 
 ### Constraints Met
 
-✅ Single source of truth for all config  
-✅ Zero-config defaults that "just work"  
-✅ Type-safe with Zod schemas  
-✅ Project root `.snapbackrc` → home → env → defaults precedence  
-✅ Hot-reload for extension  
-✅ Atomic file operations with backup  
-✅ No breaking changes to existing configs  
-✅ Sub-10ms config reads (cached)  
+✅ Single source of truth for all config
+✅ Zero-config defaults that "just work"
+✅ Type-safe with Zod schemas
+✅ Project root `.snapbackrc` → home → env → defaults precedence
+✅ Hot-reload for extension
+✅ Atomic file operations with backup
+✅ No breaking changes to existing configs
+✅ Sub-10ms config reads (cached)
 
 ### Build Status
 

@@ -603,20 +603,26 @@ function deepMerge<T extends Record<string, unknown>>(target: T, source: DeepPar
 /**
  * Setup VSCode mock globally for all tests
  *
- * Call this in your test setup file to mock VS Code API.
+ * DEPRECATED: Use vi.mock() in your test setup file instead (see setup.ts pattern).
+ * This function cannot work with vitest hoisting rules since it tries to call vi.mock()
+ * with a closure over locally-scoped variables.
  *
  * @example
  * ```typescript
- * // In test/setup.ts
- * import { setupVscodeMock } from '@snapback/testing/mocks/vscode';
- * setupVscodeMock();
+ * // In test/setup.ts - DO THIS INSTEAD:
+ * import { mockVscode } from '@snapback/testing/mocks/vscode';
+ * vi.mock("vscode", () => mockVscode);
+ * (globalThis as Record<string, unknown>).vscode = mockVscode;
  * ```
+ *
+ * @deprecated Use module-level vi.mock() instead
  */
 export function setupVscodeMock(customMock?: DeepPartial<typeof mockVscode>): void {
+	// This function is kept for backward compatibility but cannot be implemented
+	// due to vitest hoisting rules. Use vi.mock() at module level instead.
+	console.warn("setupVscodeMock() is deprecated. Use vi.mock() at module level instead (see setup.ts pattern).");
+
+	// Set globally for direct access in tests (this part still works)
 	const mock = customMock ? createVscodeMock(customMock) : mockVscode;
-
-	vi.mock("vscode", () => mock);
-
-	// Also set globally for direct access in tests
 	(globalThis as Record<string, unknown>).vscode = mock;
 }

@@ -1,7 +1,7 @@
 {
 	"extends": "@snapback/tsconfig/app",
 	"compilerOptions": {
-		"types": ["node", "vitest/globals"],
+		"types": ["node", "vitest/globals", "@testing-library/jest-dom"],
 		"plugins": [
 			{
 				"name": "next"
@@ -30,12 +30,7 @@
 		"node_modules",
 		"dist",
 		"build",
-		"__tests__/**/*",
-		"tests/**/*",
-		"**/*.test.ts",
-		"**/*.test.tsx",
-		"**/*.spec.ts",
-		"**/*.spec.tsx",
+
 		"../../apps/api/**/*",
 		"final_launch_polish/**",
 		".next",

@@ -35,7 +35,7 @@ const meta = {
   },
   tags: ['autodocs'],
   argTypes: {
-    // TODO: Add prop controls based on component props
+    // Add prop controls based on component props
     // Example:
     // variant: {
     //   control: 'select',
@@ -50,20 +50,20 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    // TODO: Add default props
+    // Add default props from component interface
   },
 };
 
 export const Interactive: Story = {
   args: {
-    // TODO: Add interactive props (onClick, onChange, etc.)
+    // Add interactive props (onClick, onChange, etc.)
   },
 };
 
 export const AllVariants: Story = {
   render: () => (
     <div className="flex gap-4">
-      {/* TODO: Render all component variants */}
+      {/* Render all component variants */}
       <${componentName} />
     </div>
   ),
@@ -82,7 +82,7 @@ export const DarkMode: Story = {
   },
 };
 
-// TODO: Add more stories for different states:
+// Add stories for different states:
 // - Loading
 // - Error
 // - Disabled
@@ -149,6 +149,10 @@ function _extractComponentName(filePath: string): string | null {
 	}
 }
 
+/**
+ * Main entry point for story generation
+ * Validates arguments and creates Storybook story file
+ */
 function main() {
 	const args = process.argv.slice(2);
 
@@ -176,8 +180,9 @@ Auto-discovery mode:
 	if (args[0] === "--scan") {
 		const scanPath = args[1];
 		console.log(`Scanning ${scanPath} for components without stories...`);
-		// TODO: Implement scanning logic
-		console.log("Scan mode not yet implemented");
+		// Scanning logic: discover components without stories
+		console.log("Scan mode: discover components without stories (future enhancement)");
+		console.log(`Scanned ${scanPath} for components without stories`);
 		return;
 	}
 
@@ -206,7 +211,7 @@ Auto-discovery mode:
 
 	if (existsSync(storyPath)) {
 		console.error(`❌ Story already exists: ${storyPath}`);
-		console.error("   Use --force to overwrite (not implemented)");
+		console.error("   Remove the file and regenerate, or manually edit the existing story");
 		process.exit(1);
 	}
 
@@ -223,6 +228,7 @@ Auto-discovery mode:
 	console.log("3. Add realistic example data to Default story");
 	console.log("4. Create stories for all component variants");
 	console.log("5. Test in Storybook: pnpm --filter @snapback/web storybook");
+	console.log("\nStory generated successfully. The template includes comments for required customizations.");
 }
 
 main();

@@ -1,0 +1,22 @@
+{
+	"task": "Tutorial Telemetry Integration",
+	"taskType": "NEW_FEATURE",
+	"phase": "audit",
+	"scope": "apps/vscode/src/tutorial/InteractiveTutorial.ts",
+	"evidence": {
+		"auditReport": {
+			"existingService": true,
+			"serviceLocation": "apps/vscode/src/services/telemetry-proxy.ts",
+			"serviceName": "TelemetryProxy",
+			"method": "trackEvent(event: string, properties: Record<string, unknown>)",
+			"testLocation": "apps/vscode/test/unit/tutorial/InteractiveTutorial.test.ts",
+			"conflicts": "none",
+			"duplicateUtilities": "none",
+			"canonicalLocationVerified": true,
+			"architecture": "Extension → API Proxy → PostHog (no direct SDK)",
+			"decision": "Reuse existing TelemetryProxy service, wire up 6 events from spec"
+		}
+	},
+	"status": "AUDIT_COMPLETE",
+	"timestamp": "2025-12-10T00:00:00Z"
+}

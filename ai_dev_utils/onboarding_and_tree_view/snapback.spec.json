@@ -1,0 +1,53 @@
+{
+	"project": "SnapBack",
+	"version": "1.0.0",
+	"status": "Beta (Pioneer Program Active)",
+	"architecture_philosophy": [
+		"Privacy-First: Source code never leaves the machine.",
+		"Pioneer-First: Features are gated by engagement tier via PioneerGatekeeper.",
+		"Local-First: Storage and Intelligence run locally.",
+		"Atomic-Safety: Snapshots are immutable and restored transactionally."
+	],
+	"layers": {
+		"pioneer": {
+			"components": ["PioneerAuth", "PioneerGatekeeper", "PointsTracker", "StatusBarItem"],
+			"auth_strategy": "Native VS Code (GitHub)",
+			"profile_schema": {
+				"id": "string",
+				"username": "string",
+				"tier": "'seedling' | 'grower' | 'cultivator' | 'guardian'",
+				"totalPoints": "number"
+			},
+			"gating_logic": {
+				"clusters": "Allowed for ALL Pioneers (Seedling+)",
+				"co_change": "Restricted to Grower+ (Rank >= 1)",
+				"upsell": "Sidebar shows 'Locked' state for related files if guest"
+			}
+		},
+		"engine": {
+			"components": ["BurstDetector", "ProtectionManager", "GraphEngine", "CooldownCache"],
+			"inheritance_rule": "Anchor(BLOCK) -> Direct(WARN) -> Transitive(WATCH)",
+			"max_depth": 2,
+			"interception": "OnWillSave -> Check Gatekeeper -> Snapshot Cluster (if allowed) or Ignore"
+		},
+		"storage": {
+			"components": ["StorageManager", "BlobStore", "SnapshotStore", "AuditLog", "ConfigStore"],
+			"root": "~/.config/Code/User/globalStorage/snapback.id/",
+			"structure": {
+				"blobs": "blobs/ab/cd/<hash> (Raw Text)",
+				"snapshots": "snapshots/snap-<timestamp>.json",
+				"audit": "audit.jsonl"
+			}
+		},
+		"ui": {
+			"components": ["SidebarProvider", "InteractiveTutorial"],
+			"sidebar_states": ["Guest (CTA)", "Pioneer (Badged)", "Cluster (Locked/Unlocked)"],
+			"tutorial_handoff": "Close Editor -> Wait 100ms -> Focus Sidebar -> Reveal Snapshot"
+		},
+		"telemetry": {
+			"provider": "PostHog",
+			"privacy": "Strict Scrubbing (Hashes only)",
+			"events": ["pioneer_signup", "snapshot_created", "cluster_locked", "tutorial_complete"]
+		}
+	}
+}

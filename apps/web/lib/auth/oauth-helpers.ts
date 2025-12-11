@@ -54,9 +54,15 @@ export async function initiateOAuthFlow(provider: OAuthProvider, callbackURL = "
 		});
 
 		if (error) {
+			// Better Auth error type is not exposed, so we safely extract message
+			const errorMessage =
+				typeof error === "object" && error !== null && "message" in error
+					? String((error as { message: unknown }).message)
+					: `${provider} sign in failed`;
+
 			return {
 				success: false,
-				error: (error as any).message || `${provider} sign in failed`,
+				error: errorMessage,
 			};
 		}
 

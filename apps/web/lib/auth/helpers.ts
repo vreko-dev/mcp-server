@@ -140,9 +140,15 @@ export async function signInWithGithub(callbackURL = "/dashboard"): Promise<Auth
 		});
 
 		if (error) {
+			// Better Auth error type is not exposed, so we safely extract message
+			const errorMessage =
+				typeof error === "object" && error !== null && "message" in error
+					? String((error as { message: unknown }).message)
+					: "GitHub sign in failed";
+
 			return {
 				success: false,
-				error: (error as any).message || "GitHub sign in failed",
+				error: errorMessage,
 			};
 		}
 

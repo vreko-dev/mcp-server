@@ -12,10 +12,15 @@
  */
 
 import { logger } from "@snapback/infrastructure";
-// @ts-expect-error - postAcceptOutcomes has implicit any type from platform package
 import { postAcceptOutcomes } from "@snapback/platform";
 import { and, desc, eq } from "drizzle-orm";
 import { getDb } from "./database";
+import {
+	calculateScoreFromOutcomeSequence,
+	clampScore,
+	EWMA_CONFIG,
+	extractToolFromEdits,
+} from "./trust-calibration-helpers";
 
 // Type for PostAcceptOutcome records
 type PostAcceptOutcome = any;
@@ -61,7 +66,7 @@ export class TrustCalibrationService {
 	 * @returns Updated trust score (0-1)
 	 * @throws Error if validation fails or database operation fails
 	 */
-	async recordOutcome(userId: string, aiTool: string, context, outcome: number): Promise<number> {
+	async recordOutcome(userId: string, aiTool: string, context: string, outcome: number): Promise<number> {
 		// Input validation
 		if (!userId || typeof userId !== "string") {
 			throw new Error("userId is required and must be a string");
@@ -87,7 +92,6 @@ export class TrustCalibrationService {
 			const clampedScore = Math.max(SCORE_MIN, Math.min(SCORE_MAX, newScore));
 
 			// Persist outcome to database
-			// @ts-expect-error - postAcceptOutcomes type issue
 			await db.insert(postAcceptOutcomes).values({
 				id: `trust-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
 				userId,
@@ -136,7 +140,6 @@ export class TrustCalibrationService {
 
 			// Query outcomes for this user/tool
 			// Filter by userFeedback containing the tool name and outcome data
-			// @ts-expect-error - postAcceptOutcomes type issue from platform package
 			const outcomes = await db
 				.select()
 				.from(postAcceptOutcomes)

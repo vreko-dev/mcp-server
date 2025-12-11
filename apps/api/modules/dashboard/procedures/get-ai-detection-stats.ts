@@ -1,6 +1,5 @@
 import { ORPCError } from "@orpc/server";
 import { logger } from "@snapback/infrastructure";
-// @ts-expect-error - featureUsage has implicit any type from platform package
 import { featureUsage } from "@snapback/platform";
 import { and, count, desc, eq } from "drizzle-orm";
 import { z } from "zod";

@@ -1,23 +1,26 @@
 {
-	"task": "Fix SessionCoordinator Test Failures - TDD Wrapper Pattern Compliance",
-	"phase": "DONE",
+	"task": "Fix API Package TypeScript Type Errors (24 errors)",
+	"phase": "RED",
 	"type": "BUG_FIX",
 	"taskType": "BUG_FIX",
-	"startedAt": "2025-12-11T00:00:00Z",
-	"completedAt": "2025-12-11T08:00:00Z",
-	"scope": "apps/vscode/test/unit/snapshot/sessionCoordinator.test.ts",
-	"serviceLocation": "apps/vscode/src/snapshot/SessionCoordinator.ts",
+	"startedAt": "2025-12-11T08:56:00Z",
+	"completedAt": null,
+	"scope": "apps/api (Pioneer module, CloudBackup, TrustCalibration)",
+	"serviceLocation": "apps/api/src/services/",
 	"architecture": {
-		"context": "apps/vscode",
-		"primaryFile": "apps/vscode/src/snapshot/SessionCoordinator.ts",
-		"relatedFiles": [
-			"packages/sdk/src/core/session/SessionCoordinator.ts",
-			"apps/vscode/src/adapters/VscodeEventEmitterAdapter.ts",
-			"apps/vscode/test/unit/snapshot/sessionCoordinator.test.ts"
+		"context": "apps/api",
+		"primaryFiles": [
+			"apps/api/modules/pioneer/procedures/actions/list.ts",
+			"apps/api/src/services/trust-calibration.ts",
+			"apps/api/src/services/cloud-backup.ts"
 		],
-		"testLocation": "apps/vscode/test/unit/snapshot/sessionCoordinator.test.ts",
-		"serviceLayer": "VSCode wrapper delegates to SDK SessionCoordinator (platform-agnostic)",
-		"architectureNotes": "Adapter pattern: VSCode wrapper -> SDK core. Tests assumed old monolithic architecture, now need wrapper-aware patterns."
+		"relatedFiles": [
+			"apps/api/src/services/trust-calibration-helpers.ts",
+			"apps/api/modules/pioneer/services/pioneer-service.ts"
+		],
+		"existingServices": true,
+		"serviceLayer": "Backend API services with proper separation",
+		"architectureNotes": "BUG_FIX task: Missing imports, unused directives, stub types for WIP features. No new services needed - all utilities exist in trust-calibration-helpers.ts"
 	},
 	"verification": {
 		"status": "COMPLETE",
@@ -42,7 +45,7 @@
 		"coverage": "100% success rate for runnable tests",
 		"tddCompliance": "Phase 1 COMPLETE - All violations resolved"
 	},
-	"completedPhases": ["PHASE_0_AUDIT", "PHASE_1_RED", "audit", "red", "certify"],
+	"completedPhases": ["PHASE_0_AUDIT", "PHASE_1_RED", "audit", "red", "certify", "audit"],
 	"violations": [],
 	"evidence": {
 		"serviceLocation": "apps/vscode/src/snapshot/SessionCoordinator.ts",

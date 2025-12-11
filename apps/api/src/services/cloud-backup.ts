@@ -12,6 +12,55 @@ import type { Snapshot } from "@snapback/contracts";
 import { logger } from "@snapback/infrastructure";
 
 /**
+ * Cloud backup configuration
+ * TODO: Move to @snapback/contracts when feature is complete
+ */
+export interface CloudBackupConfig {
+	region: string;
+	bucket: string;
+	enabled: boolean;
+}
+
+/**
+ * Upload result from S3 operations
+ * TODO: Move to @snapback/contracts when feature is complete
+ */
+export interface UploadResult {
+	success: boolean;
+	s3Key?: string;
+	checksum?: string;
+	error?: string;
+}
+
+/**
+ * Cloud Backup Service (stub)
+ * TODO: Implement in @snapback/sdk when feature is ready
+ */
+export class CloudBackupService {
+	private config: CloudBackupConfig;
+
+	constructor(config: CloudBackupConfig) {
+		this.config = config;
+		logger.debug("CloudBackupService initialized (stub)", { config });
+	}
+
+	async upload(_snapshot: Snapshot, _userId: string): Promise<UploadResult> {
+		// Stub implementation - feature not yet complete
+		return { success: false, error: "Feature not implemented" };
+	}
+
+	async exists(_snapshotId: string, _userId: string): Promise<boolean> {
+		// Stub implementation - feature not yet complete
+		return false;
+	}
+
+	async getPresignedUrl(_snapshotId: string, _userId: string): Promise<string | null> {
+		// Stub implementation - feature not yet complete
+		return null;
+	}
+}
+
+/**
  * Error types for cloud backup operations
  */
 export class CloudBackupError extends Error {

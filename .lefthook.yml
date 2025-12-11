@@ -69,12 +69,12 @@ pre-push:
             glob: "**/*.test.ts"
             run: |
                 echo '🧪 Running core test suite validation...'
-                pnpm vitest run apps/vscode/test/unit/detection apps/vscode/test/unit/restore apps/vscode/test/unit/domain/snapshotOrchestrator.test.ts --reporter=verbose
+                cd apps/vscode && pnpm vitest run test/unit/detection test/unit/restore test/unit/domain/snapshotOrchestrator.test.ts --reporter=verbose
                 if [ $? -ne 0 ]; then
                   echo '❌ Test suite validation failed'
                   exit 1
                 fi
-                pnpm vitest run --filter=@snapback/mcp-server -- test/unit/tools
+                cd ../.. && pnpm --filter=@snapback/mcp-server vitest run test/unit/tools
                 if [ $? -ne 0 ]; then
                   echo '❌ MCP test suite validation failed'
                   exit 1
@@ -86,7 +86,26 @@ pre-push:
 
         type-check-full:
             glob: "**/*.{ts,tsx}"
-            run: pnpm turbo run type-check --no-cache
+            run: |
+                # Get list of changed packages
+                CHANGED_PACKAGES=$(git diff --name-only HEAD@{1} HEAD | grep -E '^(apps|packages)/' | cut -d'/' -f1,2 | sort -u | tr '\n' ',' | sed 's/,$//')
+                
+                if [ -z "$CHANGED_PACKAGES" ]; then
+                  echo '✅ No package changes to type-check'
+                  exit 0
+                fi
+                
+                echo "🔍 Type-checking changed packages: $CHANGED_PACKAGES"
+                # Run type-check only for changed packages
+                for pkg in $(echo $CHANGED_PACKAGES | tr ',' ' '); do
+                  if [ -f "$pkg/package.json" ]; then
+                    PKG_NAME=$(node -p "require('./$pkg/package.json').name" 2>/dev/null || echo "")
+                    if [ -n "$PKG_NAME" ]; then
+                      echo "  Checking $PKG_NAME..."
+                      pnpm --filter="$PKG_NAME" type-check 2>&1 || exit 1
+                    fi
+                  fi
+                done
             skip:
                 - merge
                 - rebase

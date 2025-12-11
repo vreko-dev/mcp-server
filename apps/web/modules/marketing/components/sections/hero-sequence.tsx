@@ -1,9 +1,9 @@
-"use client";
 import { Spotlight } from "@marketing/components/ui/aceternity/spotlight";
 import { MagneticButton } from "@marketing/components/ui/magnetic-button";
 import { Terminal } from "@marketing/components/ui/terminal";
 import content from "@marketing/content/snapback.json";
 import { m } from "motion/react";
+import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
 
 const HeroSequence = () => {
@@ -103,31 +103,27 @@ const HeroSequence = () => {
 						damping: 15,
 					}}
 				>
-					<MagneticButton
-						className="btn-neon px-8 py-4 text-lg font-semibold"
-						strength={0.5}
-						radius={80}
-						whileHover={{
-							scale: 1.05,
-							transition: {
-								type: "spring",
-								stiffness: 400,
-								damping: 17,
-							},
-						}}
-						whileTap={{
-							scale: 0.95,
-							transition: { duration: 0.1 },
-						}}
-						onClick={() => {
-							const waitlistSection = document.querySelector("#waitlist");
-							waitlistSection?.scrollIntoView({
-								behavior: "smooth",
-							});
-						}}
-					>
-						Join Beta Waitlist
-					</MagneticButton>
+					<Link href="/pioneer">
+						<MagneticButton
+							className="btn-neon px-8 py-4 text-lg font-semibold"
+							strength={0.5}
+							radius={80}
+							whileHover={{
+								scale: 1.05,
+								transition: {
+									type: "spring",
+									stiffness: 400,
+									damping: 17,
+								},
+							}}
+							whileTap={{
+								scale: 0.95,
+								transition: { duration: 0.1 },
+							}}
+						>
+							Be a Pioneer
+						</MagneticButton>
+					</Link>
 
 					<MagneticButton
 						variant="ghost"

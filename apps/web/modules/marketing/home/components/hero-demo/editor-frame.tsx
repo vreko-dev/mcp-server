@@ -3,7 +3,7 @@
 import { IconCursor, IconVSCode } from "@marketing/components/icons";
 import { Button } from "@ui/components/button";
 import { Confetti } from "@ui/components/motion/magic/confetti";
-import { AlertTriangle, Circle, Download, RotateCcw, ShieldCheck, X } from "lucide-react";
+import { AlertTriangle, Circle, Download, MousePointerClick, RotateCcw, ShieldCheck, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -294,15 +294,16 @@ export function EditorFrame({
 								exit={{ opacity: 0, y: 5 }}
 								className="absolute bottom-3 right-3 z-50 flex flex-col items-end gap-1.5"
 							>
-								{/* Hint Text */}
-								<motion.p
+								{/* Hint Text with Icon */}
+								<motion.div
 									initial={{ opacity: 0 }}
 									animate={{ opacity: 1 }}
 									transition={{ delay: 0.3 }}
-									className="text-[10px] text-emerald-400/90 font-mono bg-black/60 px-2 py-1 rounded border border-emerald-500/20"
+									className="text-[10px] text-emerald-400/90 font-mono bg-black/60 px-2 py-1 rounded border border-emerald-500/20 flex items-center gap-1"
 								>
-									Click to restore →
-								</motion.p>
+									<MousePointerClick className="w-3 h-3 animate-bounce" />
+									<span>Click to restore 453 files</span>
+								</motion.div>
 								<Button
 									size="sm"
 									onClick={onRestore}

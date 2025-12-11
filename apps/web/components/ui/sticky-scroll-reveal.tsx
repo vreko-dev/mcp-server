@@ -95,7 +95,7 @@ export const StickyScrollReveal = ({
 			</div>
 			<div
 				className={cn(
-					"hidden lg:block aspect-video w-[720px] rounded-md bg-[#0A0A0A] sticky top-0 overflow-hidden",
+					"hidden lg:block aspect-video w-[720px] rounded-md bg-[#0A0A0A] sticky top-1/2 -translate-y-1/2 overflow-hidden",
 					contentClassName,
 				)}
 			>

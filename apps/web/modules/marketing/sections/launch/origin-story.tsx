@@ -27,20 +27,28 @@ export function OriginStory() {
 						viewport={{ once: true }}
 						className="space-y-6 text-lg text-[#A0A0A0] leading-relaxed"
 					>
-						<p>In 2024, we asked an AI assistant to "clean up" our config files.</p>
-
 						<p>
-							It deleted production database credentials. Overwrote environment variables. "Simplified"
-							our webpack config into something that couldn't build.
+							<strong>Claude mass-edited 453 files.</strong> No recent commits. Git couldn't help.
 						</p>
 
 						<p>
-							By the time we noticed, we'd already saved. Git couldn't help— the AI had made commits. Time
-							Machine was too slow. Three days and $12,000 later, we were back online.
+							It deleted credentials. Overwrote configs. "Simplified" our webpack setup into something
+							that wouldn't build.
+						</p>
+
+						<p className="italic text-[#888888]">&quot;stop this shit man...&quot;</p>
+
+						<p>
+							By the time we noticed, we'd already saved. Three days and $12,000 later, we were back
+							online.
 						</p>
 
 						<p className="text-white font-medium">
-							We built SnapBack so this never happens to anyone again.
+							If SnapBack had been running: one click.{" "}
+							<code className="bg-white/5 px-2 py-1 rounded text-green-400 font-mono text-sm">
+								&lt;200ms
+							</code>
+							. All 453 files restored.
 						</p>
 					</m.div>
 

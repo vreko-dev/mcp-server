@@ -68,19 +68,41 @@ export function Hero() {
 						<AlphaBadge />
 					</motion.div>
 
-					{/* Main headline - Smaller for Better Balance */}
+					{/* Main headline - Bigger, bolder typography */}
 					<motion.h1
 						variants={animations.fadeInUp}
-						className="text-center text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[0.95] mb-8 md:mb-10 drop-shadow-2xl"
+						className="text-center text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[0.95] mb-6 md:mb-8 drop-shadow-2xl"
 					>
-						<span className="text-text-primary">Code Breaks.</span>
-						<br />
-						<span className="text-green-500 drop-shadow-[0_0_25px_rgba(52,211,153,0.4)]">Snap Back.</span>
+						<span className="text-text-primary">Cursor just mass-edited 453 files.</span>
 					</motion.h1>
 
+					{/* Subheadline - Problem to Solution */}
+					<motion.h2
+						variants={animations.fadeInUp}
+						className="text-center text-2xl md:text-3xl font-semibold tracking-tight leading-[1.2] mb-8 md:mb-10"
+					>
+						<span className="text-[#A0A0A0]">Git can't help. </span>
+						<span className="text-green-500 drop-shadow-[0_0_25px_rgba(52,211,153,0.4)]">
+							SnapBack can.
+						</span>
+					</motion.h2>
+
 					{/* NEW: Interactive Hero Demo - Constrained for Golden Ratio */}
-					<motion.div variants={animations.fadeInUp} className="w-full max-w-5xl mx-auto mb-8 md:mb-10">
+					<motion.div
+						variants={animations.fadeInUp}
+						className="w-full max-w-5xl mx-auto mb-4 md:mb-6 relative"
+					>
 						<HeroDemo />
+
+						{/* Interaction Hint Below Demo */}
+						<motion.div
+							initial={{ opacity: 0, y: -10 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ delay: 1.5, duration: 0.6 }}
+							className="mt-4 text-center text-sm text-[#A0A0A0] flex items-center justify-center gap-2"
+						>
+							<span>↓ Click 'Snap Back' to undo the damage</span>
+						</motion.div>
 					</motion.div>
 
 					{/* Founder Story (Secondary) */}

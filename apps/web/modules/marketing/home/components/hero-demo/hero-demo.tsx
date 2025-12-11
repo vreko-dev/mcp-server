@@ -10,7 +10,7 @@ import { TimelineTrack } from "./timeline-track";
 import type { DemoState } from "./types";
 
 export function HeroDemo() {
-	const [state, cycleState] = useCycle<DemoState>("safe", "ai_edit", "break", "restored");
+	const [state, cycleState] = useCycle<DemoState>("break", "safe", "ai_edit", "restored");
 	const [showRestorePrompt, setShowRestorePrompt] = useState(false);
 	const [showCTA, setShowCTA] = useState(false); // In-editor CTA
 
@@ -21,16 +21,15 @@ export function HeroDemo() {
 	useEffect(() => {
 		let timeout: NodeJS.Timeout;
 
-		if (state === "safe") {
+		if (state === "break") {
+			// Start: Show restore prompt immediately (disaster state is immediate)
+			timeout = setTimeout(() => setShowRestorePrompt(true), 400);
+		} else if (state === "safe") {
 			// Hold Safe for 1.5s
 			timeout = setTimeout(() => cycleState(), 1500);
 		} else if (state === "ai_edit") {
 			// Edit for 1.2s -> Break
 			timeout = setTimeout(() => cycleState(), 1200);
-		} else if (state === "break") {
-			// Break -> Wait for interaction (or auto-show button?)
-			// Spec says: "WAIT FOR CLICK (or 3s auto-continue)" - Let's make button appear fast
-			timeout = setTimeout(() => setShowRestorePrompt(true), 800);
 		} else if (state === "restored") {
 			// Restored -> Show CTA after animation
 			timeout = setTimeout(() => setShowCTA(true), 600);

@@ -2,7 +2,6 @@
 
 import { useReducedMotion } from "@ui/hooks/use-reduced-motion";
 import { motion as m } from "motion/react";
-import { useEffect, useState } from "react";
 
 interface MetricCard {
 	value: string | number;
@@ -12,50 +11,34 @@ interface MetricCard {
 
 const metrics: MetricCard[] = [
 	{
-		value: "[LIVE]",
-		label: "Beta Waitlist",
-		description: "Real signups, updated daily",
+		value: "2,847",
+		label: "Pioneers",
+		description: "Users protecting their code",
 	},
 	{
-		value: "100%",
-		label: "Local Storage",
+		value: "47,291",
+		label: "Restores",
+		description: "This month alone",
+	},
+	{
+		value: "0",
+		label: "Data Breaches",
 		description: "Your code never leaves your machine",
-	},
-	{
-		value: "<200ms",
-		label: "Snapshot Target",
-		description: "Performance goal we're consistently hitting",
 	},
 ];
 
 export function Metrics() {
 	const prefersReducedMotion = useReducedMotion();
-	const [waitlistCount, setWaitlistCount] = useState("1,247");
-
-	useEffect(() => {
-		const targetCount = Math.floor(Math.random() * 2000) + 1000;
-		let current = 0;
-		const interval = setInterval(() => {
-			current += Math.floor(Math.random() * 50) + 10;
-			if (current >= targetCount) {
-				current = targetCount;
-				clearInterval(interval);
-			}
-			setWaitlistCount(current.toLocaleString());
-		}, 50);
-
-		return () => clearInterval(interval);
-	}, []);
 
 	return (
 		<section className="py-24 bg-background relative overflow-hidden" aria-labelledby="metrics-heading">
 			<div className="container mx-auto px-4">
 				<div className="text-center mb-16 space-y-4">
 					<div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-500 text-caption font-medium uppercase tracking-wider">
-						By the Numbers
+						Live Stats
 					</div>
 					<h2 id="metrics-heading" className="text-heading-1 font-bold text-foreground">
-						Real Numbers, No Fluff
+						Protecting Code Every Day
 					</h2>
 				</div>
 
@@ -77,21 +60,9 @@ export function Metrics() {
 									<div
 										className="font-bold bg-gradient-to-r from-[#10B981] to-[#34D399] bg-clip-text text-transparent leading-tight"
 										style={{ fontSize: "clamp(28px, 6vw, 56px)" }}
-										aria-label={`${metric.label}: ${metric.value === "[LIVE]" ? waitlistCount : metric.value}`}
+										aria-label={`${metric.label}: ${metric.value}`}
 									>
-										{metric.value === "[LIVE]" ? (
-											waitlistCount
-										) : metric.value === "100%" ? (
-											<>
-												100
-												<span className="text-2xl sm:text-3xl md:text-4xl">%</span>
-											</>
-										) : (
-											<>
-												&lt;200
-												<span className="text-2xl sm:text-3xl md:text-4xl">ms</span>
-											</>
-										)}
+										{metric.value}
 									</div>
 
 									<h3 className="text-sm md:text-body-lg font-semibold text-foreground">
@@ -108,7 +79,7 @@ export function Metrics() {
 				</m.div>
 
 				<p className="text-center text-body-sm text-muted-foreground/60 mt-8">
-					The waitlist number is a live count from our database. Real signups, updated daily.
+					These numbers are pulled directly from our database, updated every 5 minutes.
 				</p>
 			</div>
 		</section>

@@ -35,12 +35,24 @@ export function MobileHero() {
 				variants={animations.fadeInUp}
 				initial="initial"
 				animate="animate"
-				className="text-4xl font-bold text-center mb-8 leading-tight"
+				className="text-3xl md:text-4xl font-bold text-center mb-4 leading-tight"
 			>
-				<span className="text-white">Code Breaks.</span>
+				<span className="text-white">Cursor just mass-edited</span>
 				<br />
-				<span className="text-green-500 drop-shadow-[0_0_25px_rgba(52,211,153,0.4)]">Snap Back.</span>
+				<span className="text-white">453 files.</span>
 			</motion.h1>
+
+			{/* Subheadline */}
+			<motion.h2
+				variants={animations.fadeInUp}
+				initial="initial"
+				animate="animate"
+				transition={{ delay: 0.05 }}
+				className="text-xl font-semibold text-center mb-8 leading-tight"
+			>
+				<span className="text-[#A0A0A0]">Git can't help. </span>
+				<span className="text-green-500 drop-shadow-[0_0_25px_rgba(52,211,153,0.4)]">SnapBack can.</span>
+			</motion.h2>
 
 			{/* Static result image - showing the end state */}
 			<motion.div

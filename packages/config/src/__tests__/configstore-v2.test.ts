@@ -11,8 +11,8 @@
  * - Precedence: Correct override behavior
  */
 
-import * as fs from "fs/promises";
-import * as path from "path";
+import * as fs from "node:fs/promises";
+import * as path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ConfigStore, DEFAULT_CONFIG, resetConfigStore } from "../index";
 

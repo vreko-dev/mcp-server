@@ -14,10 +14,10 @@
  * 4. ZERO_CONFIG_DEFAULTS
  */
 
-import * as fsSync from "fs";
-import * as fs from "fs/promises";
-import { homedir } from "os";
-import * as path from "path";
+import * as fsSync from "node:fs";
+import * as fs from "node:fs/promises";
+import { homedir } from "node:os";
+import * as path from "node:path";
 import type { ConfigStoreV2 } from "./schemas";
 import { DEFAULT_CONFIG, validateConfig, ZERO_CONFIG_DEFAULTS } from "./schemas";
 

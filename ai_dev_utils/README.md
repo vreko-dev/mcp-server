@@ -8,6 +8,14 @@ This directory contains consolidated documentation and prompts designed to guide
 ai_dev_utils/
 ├── README.md                          # This file
 ├── TDD_AGENT_PROMPT.md               # Comprehensive TDD prompt for coding agents
+├── TDD_CORE.md                       # Core TDD rules and requirements
+├── feedback/                          # 🆕 Feature completion & violation tracking
+│   ├── COMPLETION_TRACKER.md         # Central tracker for completed features ⭐
+│   ├── README.md                     # Feedback system guide
+│   └── violation-template.md         # Template for violation reports
+├── state/                             # Current task status
+│   ├── current-task.json             # Active task tracking
+│   └── ... other state files
 └── testing_docs/                      # Source testing documents (12 files)
     ├── testing_blueprint.md           # Definitive testing reference (844 lines)
     ├── code-review-standards.md       # Testing standards & code review (2,295 lines)
@@ -22,6 +30,27 @@ ai_dev_utils/
     ├── quality-assurance.md           # QA guide with quality gates (274 lines)
     └── snapback-testing-architecture.md # 5-layer testing strategy (1,477 lines)
 ```
+
+## 📋 Feedback System - Track Completions & Violations
+
+**NEW:** The `feedback/` directory provides a centralized tracking system for monitoring feature completions and violations.
+
+**Quick Links:**
+- 📊 **[COMPLETION_TRACKER.md](feedback/COMPLETION_TRACKER.md)** - See what's been completed
+- 📝 **[violation-template.md](feedback/violation-template.md)** - Report violations and issues
+- ℹ️ **[feedback/README.md](feedback/README.md)** - How to use the feedback system
+
+**Current Status:**
+- ✅ **FeedbackManager** - COMPLETE (35/35 tests passing)
+- ✅ **Auth Infrastructure** - VERIFIED
+- ✅ **Vitest Setup** - VERIFIED
+
+**Usage:**
+1. Add completed features to `COMPLETION_TRACKER.md`
+2. Report violations using `violation-template.md`
+3. Keep `current-task.json` synchronized with active work
+
+---
 
 ## 🎯 Primary Resource: TDD_AGENT_PROMPT.md
 

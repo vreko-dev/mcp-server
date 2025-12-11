@@ -1,6 +1,6 @@
-# Violation Report
+# Violation & Completion Report
 
-**Fill this out when ANY gate fails.**
+**Fill this out when ANY gate fails OR when a feature is completed for tracking.**
 
 ---
 

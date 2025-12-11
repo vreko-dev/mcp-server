@@ -17,7 +17,8 @@
   },
   "devDependencies": {
     "tsup": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   },
   "exports": {
     ".": {
@@ -85,6 +86,7 @@
   "scripts": {
     "build": "tsup && tsc --build --force && node ../../scripts/verify-build.js",
     "dev": "tsup --watch",
+    "test": "vitest run src/__tests__",
     "check": "biome check .",
     "format": "biome format --write .",
     "lint": "biome lint .",

@@ -253,6 +253,12 @@ export class EmailService {
  * Follows the pattern defined in email_system.md (lines 1688-1746)
  */
 export class EmailOrchestrator {
+	private emailService: EmailService;
+
+	constructor(emailService: EmailService) {
+		this.emailService = emailService;
+	}
+
 	/**
 	 * Send welcome email on user signup
 	 * Introduces SnapBack and provides next steps

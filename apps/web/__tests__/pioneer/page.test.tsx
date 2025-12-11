@@ -1,13 +1,13 @@
 import { render,screen } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import PioneerPage from "../../app/pioneer/page";
-import * as usePioneerProgressHook from "../../modules/pioneer/hooks/use-pioneer-progress";
-import * as useLeaderboardHook from "../../modules/pioneer/hooks/use-leaderboard";
-import { ACTIONS } from "../../modules/pioneer/lib/actions";
+import PioneerPage from "@/app/pioneer/page";
+import * as usePioneerProgressHook from "@/modules/pioneer/hooks/use-pioneer-progress";
+import * as useLeaderboardHook from "@/modules/pioneer/hooks/use-leaderboard";
+import { ACTIONS } from "@/modules/pioneer/lib/actions";
 
 // Mock the hooks
-vi.mock("../../modules/pioneer/hooks/use-pioneer-progress");
-vi.mock("../../modules/pioneer/hooks/use-leaderboard");
+vi.mock("@/modules/pioneer/hooks/use-pioneer-progress");
+vi.mock("@/modules/pioneer/hooks/use-leaderboard");
 
 // Mock UI components that might have complex internal logic/animations
 vi.mock("@/components/ui/particles", () => ({ Particles: () => <div data-testid="particles" /> }));
@@ -111,6 +111,15 @@ describe("Pioneer Page", () => {
           expect(screen.getByText("Pioneer")).toBeInTheDocument();
           expect(screen.getByText("Tier")).toBeInTheDocument();
           expect(screen.getByText("Points")).toBeInTheDocument();
+      });
+  });
+
+  describe("Sub-routes", () => {
+      // Basic check that links exist
+      it("renders links to sub-routes", () => {
+          render(<PioneerPage />);
+          const leaderboardLink = screen.getByText(/View Full Leaderboard/i);
+          expect(leaderboardLink.closest('a')).toHaveAttribute('href', '/pioneer/leaderboard');
       });
   });
 });

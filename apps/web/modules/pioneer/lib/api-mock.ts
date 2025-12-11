@@ -78,3 +78,36 @@ export async function fetchLeaderboard(limit = 10): Promise<{ leaderboard: Leade
 		total: 2112,
 	};
 }
+
+export interface ReferralStats {
+	referralCode: string;
+	referralUrl: string;
+	stats: {
+		totalSignups: number;
+		activatedSignups: number;
+		pointsEarned: number;
+	};
+	referrals: {
+		username: string;
+		status: "pending" | "activated";
+		signedUpAt: string;
+	}[];
+}
+
+export async function fetchReferrals(): Promise<ReferralStats> {
+	await delay(700);
+	return {
+		referralCode: "ninja450",
+		referralUrl: "https://snapback.dev/join/ninja450",
+		stats: {
+			totalSignups: 12,
+			activatedSignups: 4,
+			pointsEarned: 800,
+		},
+		referrals: [
+			{ username: "newbie_coder", status: "activated", signedUpAt: "2024-12-01" },
+			{ username: "react_fan", status: "pending", signedUpAt: "2024-12-05" },
+			{ username: "fullstack_dev", status: "activated", signedUpAt: "2024-11-20" },
+		],
+	};
+}

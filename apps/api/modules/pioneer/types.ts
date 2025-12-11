@@ -58,8 +58,14 @@ export const POINT_VALUES: Record<string, number> = {
 };
 
 export function calculateTierFromPoints(points: number): Tier {
-	if (points >= TIER_THRESHOLDS.guardian.min) return "guardian";
-	if (points >= TIER_THRESHOLDS.cultivator.min) return "cultivator";
-	if (points >= TIER_THRESHOLDS.grower.min) return "grower";
+	if (points >= TIER_THRESHOLDS.guardian.min) {
+		return "guardian";
+	}
+	if (points >= TIER_THRESHOLDS.cultivator.min) {
+		return "cultivator";
+	}
+	if (points >= TIER_THRESHOLDS.grower.min) {
+		return "grower";
+	}
 	return "seedling";
 }

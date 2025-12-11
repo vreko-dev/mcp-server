@@ -89,12 +89,12 @@ pre-push:
             run: |
                 # Get list of changed packages
                 CHANGED_PACKAGES=$(git diff --name-only HEAD@{1} HEAD | grep -E '^(apps|packages)/' | cut -d'/' -f1,2 | sort -u | tr '\n' ',' | sed 's/,$//')
-                
+
                 if [ -z "$CHANGED_PACKAGES" ]; then
                   echo '✅ No package changes to type-check'
                   exit 0
                 fi
-                
+
                 echo "🔍 Type-checking changed packages: $CHANGED_PACKAGES"
                 # Run type-check only for changed packages
                 for pkg in $(echo $CHANGED_PACKAGES | tr ',' ' '); do

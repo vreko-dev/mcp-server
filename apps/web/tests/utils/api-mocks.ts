@@ -5,7 +5,7 @@
  * Follows industry best practices for mock management.
  */
 
-import type { Page, Route } from "@playwright/test";
+import type { Page } from "@playwright/test";
 
 /**
  * Mock user data structure

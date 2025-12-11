@@ -12,19 +12,40 @@
 // For public packages, we'll fall back to the minimal console implementation
 let infrastructureLogger: any = null;
 
-try {
-	// Only try to import infrastructure logger in Node.js environments (not in browsers)
-	if (typeof window === "undefined") {
-		try {
-			infrastructureLogger = require("@snapback/infrastructure").logger;
-		} catch (_error) {
-			// If infrastructure logger is not available, use fallback
-			infrastructureLogger = null;
-		}
+// Initialize logger lazily to avoid build-time resolution errors
+function initializeLogger() {
+	if (infrastructureLogger !== null) {
+		return; // Already initialized
 	}
-} catch (_error) {
-	// If infrastructure logger is not available, we'll use the minimal implementation
-	infrastructureLogger = null;
+
+	try {
+		// Only try in Node.js environments (not in browsers)
+		if (typeof window === "undefined" && typeof require !== "undefined") {
+			try {
+				// Use require in a way that bundlers won't statically analyze
+				// eslint-disable-next-line @typescript-eslint/no-require-imports
+				const mod = require("@snapback/infrastructure");
+				if (mod?.logger) {
+					infrastructureLogger = mod.logger;
+				}
+			} catch (_error) {
+				// If infrastructure logger is not available, use fallback
+				infrastructureLogger = false; // Mark as tried
+			}
+		} else {
+			infrastructureLogger = false; // Mark as tried (browser environment)
+		}
+	} catch (_error) {
+		infrastructureLogger = false; // Mark as tried
+	}
+}
+
+// Lazy initialization
+function getInfrastructureLogger() {
+	if (infrastructureLogger === null) {
+		initializeLogger();
+	}
+	return infrastructureLogger || null;
 }
 
 export interface Logger {
@@ -96,10 +117,13 @@ export interface LoggerOptions {
  * ```
  */
 export function createLogger(options: LoggerOptions): Logger {
+	// Get infrastructure logger lazily
+	const logger = getInfrastructureLogger();
+
 	// If infrastructure logger is available, use it
-	if (infrastructureLogger) {
+	if (logger) {
 		// Create a child logger with the specified name
-		const childLogger = infrastructureLogger.child({
+		const childLogger = logger.child({
 			module: options.name,
 		});
 

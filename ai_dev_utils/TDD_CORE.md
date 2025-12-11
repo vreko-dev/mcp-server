@@ -46,6 +46,47 @@ Before Phase 0, identify task type:
 - VS Code Extension: Activation order, disposables
 - Web App: Component structure, validation
 
+### Refactoring Rules (Task Type: REFACTORING)
+
+**BEFORE any config/schema/state migration:**
+
+1. **ALWAYS** create backup of current state
+2. **ALWAYS** write characterization tests for existing behavior
+3. **ALWAYS** implement rollback capability
+4. **ALWAYS** test with real production data samples (10+ fixtures)
+5. **NEVER** migrate without forward/backward compatibility tests
+6. **NEVER** proceed with <80% test coverage on target code
+
+**For any config schema changes:**
+
+1. **Version all schemas** - `{ version: number }` field mandatory
+2. **Write migration functions** - `migrate(v1) → v2` with 20+ test scenarios
+3. **Test edge cases** - empty, partial, corrupted, large configs
+4. **Validate before/after** - schema validation on both sides
+5. **Property-based testing** - use fast-check for schema validation
+
+**State consistency gates (run after EACH refactoring step)**:
+
+```bash
+# Verify: config sources in sync, no orphaned files, schema versions aligned
+./ai_dev_utils/scripts/validate-state-consistency.sh
+```
+
+**Zero-coverage violation (BLOCKER)**:
+
+- If target code has 0% test coverage → STOP, implement tests first
+- If characterization tests don't exist → STOP, write them first
+- If migration paths lack tests → STOP, test migrations first
+
+**Configuration-specific test requirements (mandatory)**:
+
+1. **Multi-source precedence** - VSCode > .snapbackrc > defaults
+2. **Concurrent modification** - Two instances, file watchers
+3. **Corruption recovery** - Invalid JSON, missing fields
+4. **Large-scale performance** - 10K+ entries, <1s migration time
+5. **Migration scenarios** - V0→V1 with 20+ fixtures per version
+6. **Rollback scenarios** - Migration failure recovery with validation
+
 ---
 
 ## Workflow Entry

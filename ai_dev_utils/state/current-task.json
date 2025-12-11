@@ -1,11 +1,11 @@
 {
-	"task": "Fix API Package TypeScript Type Errors (24 errors)",
-	"phase": "RED",
+	"task": "Fix Pioneer web app TypeScript errors",
+	"phase": "PHASE_0_AUDIT",
 	"type": "BUG_FIX",
 	"taskType": "BUG_FIX",
 	"startedAt": "2025-12-11T08:56:00Z",
 	"completedAt": null,
-	"scope": "apps/api (Pioneer module, CloudBackup, TrustCalibration)",
+	"scope": "apps/web/app/pioneer/",
 	"serviceLocation": "apps/api/src/services/",
 	"architecture": {
 		"context": "apps/api",

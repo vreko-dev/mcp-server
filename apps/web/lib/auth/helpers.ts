@@ -5,6 +5,8 @@
  * with comprehensive validation and user-friendly error messages.
  */
 
+import { authClient } from "@snapback/auth/client";
+import { signInWithGoogle as signInWithGoogleOAuth } from "./oauth-helpers";
 import { validatePassword } from "./password-validation";
 import { sessionClient } from "./session-client";
 
@@ -103,16 +105,50 @@ export async function signInWithEmail(email: string, password: string): Promise<
 /**
  * Sign in with GitHub OAuth
  *
- * Initiates GitHub OAuth flow and redirects to dashboard on success
+ * Initiates GitHub OAuth flow via Better Auth social provider.
+ * Better Auth handles:
+ * - OAuth state parameter (CSRF protection)
+ * - GitHub OAuth exchange (code → access token)
+ * - Session creation and cookie setting
+ * - Automatic redirect to callback URL
  *
- * @param callbackURL - Optional callback URL (defaults to /dashboard)
+ * After successful OAuth:
+ * 1. Session is created (httpOnly cookie set)
+ * 2. User is redirected to callback URL
+ * 3. Frontend verifies session and auto-creates Pioneer profile
+ *
+ * @param callbackURL - Optional callback URL after OAuth success (defaults to /dashboard)
  * @returns Authentication result
+ *
+ * @security
+ * - State parameter prevents CSRF attacks
+ * - Session cookie is HttpOnly, Secure, SameSite=Lax
+ * - OAuth code is short-lived (typically 10 minutes)
+ * - No tokens exposed to client-side JavaScript
  */
-export async function signInWithGithub(_callbackURL = "/dashboard"): Promise<AuthResult> {
+export async function signInWithGithub(callbackURL = "/dashboard"): Promise<AuthResult> {
 	try {
-		// TODO: Implement proper API call to backend auth service
-		// await authClient.signIn.social({ provider: "github", callbackURL });
+		// Use Better Auth's social OAuth flow
+		// This initiates OAuth and Better Auth handles:
+		// 1. Generate state parameter for CSRF protection
+		// 2. Redirect to GitHub authorize endpoint
+		// 3. Handle callback and exchange code for token
+		// 4. Create session with httpOnly cookie
+		const { error } = await authClient.signIn.social({
+			provider: "github",
+			callbackURL,
+		});
 
+		if (error) {
+			return {
+				success: false,
+				error: (error as any).message || "GitHub sign in failed",
+			};
+		}
+
+		// OAuth redirect will happen automatically via Better Auth
+		// This indicates the OAuth flow was initiated successfully
+		// The frontend will auto-populate Pioneer profile after successful session creation
 		return { success: true };
 	} catch (error) {
 		console.error("GitHub sign in error:", error);
@@ -126,24 +162,15 @@ export async function signInWithGithub(_callbackURL = "/dashboard"): Promise<Aut
 /**
  * Sign in with Google OAuth
  *
- * Initiates Google OAuth flow and redirects to dashboard on success
+ * Delegates to consolidated OAuth helper. See oauth-helpers.ts for full documentation.
  *
- * @param callbackURL - Optional callback URL (defaults to /dashboard)
+ * @param callbackURL - Optional callback URL after OAuth success (defaults to /dashboard)
  * @returns Authentication result
+ *
+ * @deprecated Use signInWithGoogleOAuth from oauth-helpers.ts instead
  */
-export async function signInWithGoogle(_callbackURL = "/dashboard"): Promise<AuthResult> {
-	try {
-		// TODO: Implement proper API call to backend auth service
-		// await authClient.signIn.social({ provider: "google", callbackURL });
-
-		return { success: true };
-	} catch (error) {
-		console.error("Google sign in error:", error);
-		return {
-			success: false,
-			error: error instanceof Error ? error.message : "Google authentication failed",
-		};
-	}
+export async function signInWithGoogle(callbackURL = "/dashboard"): Promise<AuthResult> {
+	return signInWithGoogleOAuth(callbackURL);
 }
 
 /**

@@ -180,6 +180,39 @@ export const AutoDecisionSettingsSchema = z
 export type AutoDecisionSettings = z.infer<typeof AutoDecisionSettingsSchema>;
 
 /**
+ * MCP Server configuration
+ */
+export const MCPSettingsSchema = z
+	.object({
+		performanceBudgets: z
+			.record(z.number().int().min(0))
+			.default({ analyze_risk: 200, create_snapshot: 500 })
+			.describe("Performance budgets (ms) for MCP operations"),
+		context7: z
+			.object({
+				apiKey: z.string().optional(),
+				apiUrl: z.string().url().default("https://context7.com/api"),
+				cacheTtlSearch: z.number().int().min(0).default(3600),
+				cacheTtlDocs: z.number().int().min(0).default(86400),
+			})
+			.default({}),
+		api: z
+			.object({
+				apiKey: z.string().optional(),
+				baseUrl: z.string().url().default("https://api.snapback.dev"),
+			})
+			.default({}),
+		http: z
+			.object({
+				allowedOrigins: z.array(z.string()).default(["*"]),
+				apiUrl: z.string().url().default("http://api:8080"),
+			})
+			.default({}),
+	})
+	.default({});
+export type MCPSettings = z.infer<typeof MCPSettingsSchema>;
+
+/**
  * Unified settings for AI detection and behavior
  */
 export const SettingsSchema = z
@@ -197,6 +230,7 @@ export const SettingsSchema = z
 		autoDecision: AutoDecisionSettingsSchema,
 		webBaseUrl: z.string().url().default("https://app.snapback.dev"),
 		apiBaseUrl: z.string().url().optional(),
+		mcp: MCPSettingsSchema,
 	})
 	.default({});
 export type Settings = z.infer<typeof SettingsSchema>;
@@ -229,6 +263,7 @@ export const ConfigStoreV2Schema = z.object({
 	engine: EngineConfigSchema.default({}),
 	settings: SettingsSchema,
 	policies: PoliciesSchema,
+	mcp: MCPSettingsSchema.optional(),
 });
 
 export type ConfigStoreV2 = z.infer<typeof ConfigStoreV2Schema>;
@@ -294,6 +329,12 @@ export const DEFAULT_CONFIG: ConfigStoreV2 = {
 			maxSnapshotsPerMinute: 4,
 		},
 		webBaseUrl: "https://app.snapback.dev",
+		mcp: {
+			performanceBudgets: { analyze_risk: 200, create_snapshot: 500 },
+			context7: { apiUrl: "https://context7.com/api", cacheTtlSearch: 3600, cacheTtlDocs: 86400 },
+			api: { baseUrl: "https://api.snapback.dev" },
+			http: { allowedOrigins: ["*"], apiUrl: "http://api:8080" },
+		},
 	},
 	policies: {
 		enforceProtectionLevels: false,

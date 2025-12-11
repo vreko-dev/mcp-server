@@ -13,6 +13,7 @@ import { feedbackRouter } from "../modules/feedback/router";
 import { newsletterRouter } from "../modules/newsletter/router";
 import { organizationsRouter } from "../modules/organizations/router";
 import { paymentsRouter } from "../modules/payments/router";
+import { pioneerRouter } from "../modules/pioneer/router";
 import { privacyRouter } from "../modules/privacy/router";
 import { riskRouter } from "../modules/risk/router";
 import { rulesRouter } from "../modules/rules/router";
@@ -49,6 +50,7 @@ export const router = publicProcedure
 		featureFlags: featureFlagsRouter,
 		feedback: feedbackRouter,
 		waitlist: waitlistRouter,
+		pioneer: pioneerRouter,
 	});
 
 export type ApiRouterClient = RouterClient<typeof router>;

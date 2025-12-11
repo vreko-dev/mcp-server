@@ -314,6 +314,17 @@ export const auth = betterAuth({
 					await trackEvent("auth.signup", {
 						userId: user.id,
 					});
+
+					// ✅ NEW: Auto-populate Pioneer profile on OAuth signup
+					// This ensures every user automatically gets a Pioneer profile
+					// with proper tier tracking and referral codes
+					try {
+						const { onOAuthSuccess } = await import("./lib/pioneer-oauth-hook");
+						await onOAuthSuccess(user);
+					} catch (error) {
+						// Don't fail auth flow if pioneer hook fails
+						logger.error("Pioneer OAuth hook failed", { userId: user.id, error });
+					}
 				},
 			},
 		},

@@ -58,7 +58,7 @@ describe("Device Authorization Flow (RED - Failing Tests)", () => {
 			//   interval: 5
 			// }
 
-			expect(true).toBe(true); // Placeholder
+			// Placeholder - will be implemented in GREEN phase
 		});
 
 		it("RED: should generate unique device_code for each request", async () => {
@@ -106,7 +106,7 @@ describe("Device Authorization Flow (RED - Failing Tests)", () => {
 			// FAILING: Auth validation not implemented
 			// Request without auth → 401 Unauthorized
 
-			expect(true).toBe(true); // Placeholder
+			// Placeholder - will be implemented in GREEN phase
 		});
 
 		it("RED: should reject requests from non-extension clients", async () => {
@@ -114,7 +114,7 @@ describe("Device Authorization Flow (RED - Failing Tests)", () => {
 			// Only VS Code extension, CLI should be allowed
 			// Web should use standard OAuth flow
 
-			expect(true).toBe(true); // Placeholder
+			// Placeholder - will be implemented in GREEN phase
 		});
 	});
 
@@ -179,14 +179,14 @@ describe("Device Authorization Flow (RED - Failing Tests)", () => {
 			// FAILING: Validation not implemented
 			// Missing device_code → 400 Bad Request
 
-			expect(true).toBe(true); // Placeholder
+			// Placeholder - will be implemented in GREEN phase
 		});
 
 		it("RED: should not accept invalid device_code", async () => {
 			// FAILING: Validation not implemented
 			// Non-existent device_code → 'expired_token' or 'invalid_request'
 
-			expect(true).toBe(true); // Placeholder
+			// Placeholder - will be implemented in GREEN phase
 		});
 
 		it("RED: should only allow 5 failed attempts before invalidating device_code", async () => {
@@ -205,7 +205,7 @@ describe("Device Authorization Flow (RED - Failing Tests)", () => {
 			// Polling at t=899 seconds → should succeed
 			// Polling at t=901 seconds → should fail with 'expired_token'
 
-			expect(true).toBe(true); // Placeholder
+			// Placeholder - will be implemented in GREEN phase
 		});
 
 		it("RED: should invalidate device_code after approval", async () => {
@@ -213,7 +213,7 @@ describe("Device Authorization Flow (RED - Failing Tests)", () => {
 			// Once API key issued, device_code becomes invalid
 			// Second poll with same device_code → 'invalid_request'
 
-			expect(true).toBe(true); // Placeholder
+			// Placeholder - will be implemented in GREEN phase
 		});
 
 		it("RED: should allow multiple polls for same device_code (idempotency)", async () => {
@@ -221,7 +221,7 @@ describe("Device Authorization Flow (RED - Failing Tests)", () => {
 			// Client might retry due to network issues
 			// Multiple calls before approval should return same state
 
-			expect(true).toBe(true); // Placeholder
+			// Placeholder - will be implemented in GREEN phase
 		});
 
 		it("RED: should support polling with exponential backoff", async () => {
@@ -241,7 +241,7 @@ describe("Device Authorization Flow (RED - Failing Tests)", () => {
 			// URL: /auth/device?code=ABCD-WXYZ
 			// Should show form asking user to sign in
 
-			expect(true).toBe(true); // Placeholder
+			// Placeholder - will be implemented in GREEN phase
 		});
 
 		it("RED: should validate user_code from browser request", async () => {
@@ -249,7 +249,7 @@ describe("Device Authorization Flow (RED - Failing Tests)", () => {
 			// User enters code → lookup in database
 			// Should match the generated user_code
 
-			expect(true).toBe(true); // Placeholder
+			// Placeholder - will be implemented in GREEN phase
 		});
 
 		it("RED: should initiate OAuth flow after code validation", async () => {
@@ -259,7 +259,7 @@ describe("Device Authorization Flow (RED - Failing Tests)", () => {
 			// 2. User signs in
 			// 3. User approves SnapBack app permissions
 
-			expect(true).toBe(true); // Placeholder
+			// Placeholder - will be implemented in GREEN phase
 		});
 
 		it("RED: should mark device_code as approved after OAuth callback", async () => {
@@ -268,14 +268,14 @@ describe("Device Authorization Flow (RED - Failing Tests)", () => {
 			// 1. Mark device_code in database as approved
 			// 2. Next extension poll gets API key
 
-			expect(true).toBe(true); // Placeholder
+			// Placeholder - will be implemented in GREEN phase
 		});
 
 		it("RED: should show helpful error messages for expired codes", async () => {
 			// FAILING: Error UX not implemented
 			// If code expired: show 'Code expired. Try again: /auth/device'
 
-			expect(true).toBe(true); // Placeholder
+			// Placeholder - will be implemented in GREEN phase
 		});
 	});
 
@@ -294,7 +294,7 @@ describe("Device Authorization Flow (RED - Failing Tests)", () => {
 			// device_code stays in extension's memory
 			// Server verifies relationship
 
-			expect(true).toBe(true); // Placeholder
+			// Placeholder - will be implemented in GREEN phase
 		});
 
 		it("RED: should validate device_code format on poll (prevent injection)", async () => {
@@ -310,14 +310,14 @@ describe("Device Authorization Flow (RED - Failing Tests)", () => {
 			// FAILING: Audit logging not implemented
 			// Log: code request, polling attempts, approvals, failures
 
-			expect(true).toBe(true); // Placeholder
+			// Placeholder - will be implemented in GREEN phase
 		});
 
 		it("RED: should not allow code reuse (prevent replay attacks)", async () => {
 			// FAILING: Replay prevention not implemented
 			// Once device_code is used to get API key, it's invalid forever
 
-			expect(true).toBe(true); // Placeholder
+			// Placeholder - will be implemented in GREEN phase
 		});
 	});
 
@@ -337,7 +337,7 @@ describe("Device Authorization Flow (RED - Failing Tests)", () => {
 			// FAILING: Error descriptions not implemented
 			// Example: 'error_description': 'Device code expired. Please request a new code.'
 
-			expect(true).toBe(true); // Placeholder
+			// Placeholder - will be implemented in GREEN phase
 		});
 
 		it("RED: should handle missing or malformed requests gracefully", async () => {
@@ -345,7 +345,7 @@ describe("Device Authorization Flow (RED - Failing Tests)", () => {
 			// POST with no body → 400 Bad Request
 			// POST with wrong content-type → 400 Bad Request
 
-			expect(true).toBe(true); // Placeholder
+			// Placeholder - will be implemented in GREEN phase
 		});
 	});
 
@@ -355,7 +355,7 @@ describe("Device Authorization Flow (RED - Failing Tests)", () => {
 			// Device flow is specifically for clients without HTTP callback capability
 			// Should use polling instead of callbacks
 
-			expect(true).toBe(true); // Placeholder
+			// Placeholder - will be implemented in GREEN phase
 		});
 
 		it("RED: should generate API key (not JWT) on approval", async () => {
@@ -372,7 +372,7 @@ describe("Device Authorization Flow (RED - Failing Tests)", () => {
 			// Extension must store in VS Code's secure storage
 			// Not in globalState or localStorage
 
-			expect(true).toBe(true); // Placeholder
+			// Placeholder - will be implemented in GREEN phase
 		});
 	});
 
@@ -383,7 +383,7 @@ describe("Device Authorization Flow (RED - Failing Tests)", () => {
 			// Open browser button for verification_uri
 			// Status updates as user authenticates
 
-			expect(true).toBe(true); // Placeholder
+			// Placeholder - will be implemented in GREEN phase
 		});
 
 		it("RED: should handle network failures during polling gracefully", async () => {
@@ -391,7 +391,7 @@ describe("Device Authorization Flow (RED - Failing Tests)", () => {
 			// Network error during poll → log and retry
 			// Don't crash or lose state
 
-			expect(true).toBe(true); // Placeholder
+			// Placeholder - will be implemented in GREEN phase
 		});
 
 		it("RED: should timeout polling after 15 minutes (when code expires)", async () => {
@@ -399,7 +399,7 @@ describe("Device Authorization Flow (RED - Failing Tests)", () => {
 			// Even if network is healthy, stop polling after 15 min
 			// Show user: 'Code expired. Start over.'
 
-			expect(true).toBe(true); // Placeholder
+			// Placeholder - will be implemented in GREEN phase
 		});
 
 		it("RED: should allow user to cancel auth flow at any time", async () => {
@@ -407,7 +407,7 @@ describe("Device Authorization Flow (RED - Failing Tests)", () => {
 			// User closes extension → stop polling
 			// No cleanup needed (device_code expires on its own)
 
-			expect(true).toBe(true); // Placeholder
+			// Placeholder - will be implemented in GREEN phase
 		});
 	});
 });

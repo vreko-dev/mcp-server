@@ -27,6 +27,19 @@ export const subscriptionStatusEnum = pgEnum("subscription_status", [
 
 export const planTypeEnum = pgEnum("plan_type", ["free", "pro", "team", "enterprise"]);
 
+// Pioneer Program enums
+export const tierEnum = pgEnum("pioneer_tier", ["seedling", "grower", "cultivator", "guardian"]);
+export const actionTypeEnum = pgEnum("pioneer_action_type", [
+	"github_star",
+	"discord_join",
+	"referral_direct",
+	"referral_bonus",
+	"feedback",
+	"bug_report",
+	"tutorial_complete",
+	"waitlist_early",
+]);
+
 // Tables
 export const user = pgTable("user", {
 	id: varchar("id", { length: 255 })
@@ -557,6 +570,97 @@ export const newsletterSubscribers = pgTable(
 
 export const newsletterSubscribersRelations = relations(newsletterSubscribers, () => ({}));
 
+// Pioneer Program tables
+export const pioneers = pgTable(
+	"pioneers",
+	{
+		id: text("id")
+			.primaryKey()
+			.$defaultFn(() => cuid()),
+		userId: text("user_id")
+			.notNull()
+			.references(() => user.id, { onDelete: "cascade" }),
+		username: text("username").notNull(),
+		githubId: text("github_id").notNull(),
+		tier: tierEnum("tier").notNull().default("seedling"),
+		totalPoints: integer("total_points").notNull().default(0),
+		joinedAt: timestamp("joined_at").notNull().defaultNow(),
+		referralCode: text("referral_code").notNull().unique(),
+		githubStarred: boolean("github_starred").notNull().default(false),
+		lastSyncedAt: timestamp("last_synced_at"),
+		createdAt: timestamp("created_at").notNull().defaultNow(),
+		updatedAt: timestamp("updated_at").notNull().defaultNow(),
+	},
+	(table) => [
+		uniqueIndex("pioneers_user_id_idx").on(table.userId),
+		uniqueIndex("pioneers_github_id_idx").on(table.githubId),
+		uniqueIndex("pioneers_referral_code_idx").on(table.referralCode),
+	],
+);
+
+export const pioneerActions = pgTable(
+	"pioneer_actions",
+	{
+		id: text("id")
+			.primaryKey()
+			.$defaultFn(() => cuid()),
+		pioneerId: text("pioneer_id")
+			.notNull()
+			.references(() => pioneers.id, { onDelete: "cascade" }),
+		actionType: actionTypeEnum("action_type").notNull(),
+		points: integer("points").notNull(),
+		verified: boolean("verified").notNull().default(false),
+		metadata: json("metadata").$type<Record<string, any>>(),
+		createdAt: timestamp("created_at").notNull().defaultNow(),
+	},
+	(table) => [
+		index("pioneer_actions_pioneer_id_idx").on(table.pioneerId),
+		index("pioneer_actions_action_type_idx").on(table.actionType),
+		index("pioneer_actions_created_at_idx").on(table.createdAt),
+	],
+);
+
+export const pioneerTierHistory = pgTable(
+	"pioneer_tier_history",
+	{
+		id: text("id")
+			.primaryKey()
+			.$defaultFn(() => cuid()),
+		pioneerId: text("pioneer_id")
+			.notNull()
+			.references(() => pioneers.id, { onDelete: "cascade" }),
+		previousTier: tierEnum("previous_tier"),
+		newTier: tierEnum("new_tier").notNull(),
+		pointsAtTransition: integer("points_at_transition").notNull(),
+		createdAt: timestamp("created_at").notNull().defaultNow(),
+	},
+	(table) => [index("pioneer_tier_history_pioneer_id_idx").on(table.pioneerId)],
+);
+
+// Pioneer Program relations
+export const pioneersRelations = relations(pioneers, ({ one, many }: any) => ({
+	user: one(user, {
+		fields: [pioneers.userId],
+		references: [user.id],
+	}),
+	actions: many(pioneerActions),
+	tierHistory: many(pioneerTierHistory),
+}));
+
+export const pioneerActionsRelations = relations(pioneerActions, ({ one }: any) => ({
+	pioneer: one(pioneers, {
+		fields: [pioneerActions.pioneerId],
+		references: [pioneers.id],
+	}),
+}));
+
+export const pioneerTierHistoryRelations = relations(pioneerTierHistory, ({ one }: any) => ({
+	pioneer: one(pioneers, {
+		fields: [pioneerTierHistory.pioneerId],
+		references: [pioneers.id],
+	}),
+}));
+
 export { deviceTrials } from "./snapback/device-trials";
 // Snapback schema imports
 export * from "./snapback/snapshots";
@@ -584,6 +688,9 @@ export const schema = {
 	subscriptions,
 	usageLimits,
 	newsletterSubscribers,
+	pioneers,
+	pioneerActions,
+	pioneerTierHistory,
 	waitlist,
 	waitlistReferrals,
 	waitlistTasks,
@@ -674,6 +781,21 @@ export type Database = {
 				Insert: typeof newsletterSubscribers.$inferInsert;
 				Update: Partial<typeof newsletterSubscribers.$inferInsert>;
 			};
+			pioneers: {
+				Row: typeof pioneers.$inferSelect;
+				Insert: typeof pioneers.$inferInsert;
+				Update: Partial<typeof pioneers.$inferInsert>;
+			};
+			pioneer_actions: {
+				Row: typeof pioneerActions.$inferSelect;
+				Insert: typeof pioneerActions.$inferInsert;
+				Update: Partial<typeof pioneerActions.$inferInsert>;
+			};
+			pioneer_tier_history: {
+				Row: typeof pioneerTierHistory.$inferSelect;
+				Insert: typeof pioneerTierHistory.$inferInsert;
+				Update: Partial<typeof pioneerTierHistory.$inferInsert>;
+			};
 		};
 	};
 };
@@ -687,6 +809,12 @@ export type Subscription = typeof subscriptions.$inferSelect;
 export type NewSubscription = typeof subscriptions.$inferInsert;
 export type NewsletterSubscriber = typeof newsletterSubscribers.$inferSelect;
 export type NewNewsletterSubscriber = typeof newsletterSubscribers.$inferInsert;
+export type Pioneer = typeof pioneers.$inferSelect;
+export type NewPioneer = typeof pioneers.$inferInsert;
+export type PioneerAction = typeof pioneerActions.$inferSelect;
+export type NewPioneerAction = typeof pioneerActions.$inferInsert;
+export type PioneerTierHistory = typeof pioneerTierHistory.$inferSelect;
+export type NewPioneerTierHistory = typeof pioneerTierHistory.$inferInsert;
 
 // Agent Suggestions table
 export const agentSuggestions = pgTable(

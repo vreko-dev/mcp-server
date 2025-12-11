@@ -1,0 +1,75 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"title": "Cleanup Queue Schema",
+	"type": "object",
+	"required": ["phase", "items"],
+	"properties": {
+		"phase": {
+			"const": "cleanup"
+		},
+		"items": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"required": ["id", "description", "files", "lines_to_delete", "status", "prerequisites"],
+				"properties": {
+					"id": {
+						"type": "string",
+						"pattern": "^ARC_"
+					},
+					"description": {
+						"type": "string"
+					},
+					"files": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					},
+					"lines_to_delete": {
+						"type": "integer",
+						"minimum": 0
+					},
+					"status": {
+						"type": "string",
+						"enum": ["PENDING", "BLOCKED", "READY", "IN_PROGRESS", "COMPLETE", "DEFERRED"]
+					},
+					"prerequisites": {
+						"type": "object",
+						"required": [
+							"migration_complete",
+							"tests_passing",
+							"feature_flag_100",
+							"cooldown_complete",
+							"human_approval"
+						],
+						"properties": {
+							"migration_complete": {
+								"type": "boolean"
+							},
+							"tests_passing": {
+								"type": "boolean"
+							},
+							"feature_flag_100": {
+								"type": "boolean"
+							},
+							"cooldown_complete": {
+								"type": "boolean"
+							},
+							"human_approval": {
+								"type": "boolean"
+							}
+						}
+					},
+					"backup_location": {
+						"type": "string"
+					},
+					"completed_at": {
+						"type": "string",
+						"format": "date-time"
+					}
+				}
+			}
+		}
+	}
+}

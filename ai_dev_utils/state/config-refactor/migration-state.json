@@ -1,0 +1,13 @@
+{
+	"phase": "migrate",
+	"opportunities_completed": [],
+	"opportunities_in_progress": [],
+	"opportunities_blocked": [],
+	"test_coverage": {},
+	"validation_results": {
+		"schema_validation": "PENDING",
+		"business_logic_validation": "PENDING",
+		"multi_source_consistency": "PENDING"
+	},
+	"rollout_status": null
+}

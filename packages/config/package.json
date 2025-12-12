@@ -12,6 +12,7 @@
   "private": true,
   "dependencies": {
     "@snapback/contracts": "workspace:*",
+    "chokidar": "^3.6.0",
     "posthog-node": "catalog:",
     "zod": "catalog:"
   },

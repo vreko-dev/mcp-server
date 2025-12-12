@@ -14,6 +14,7 @@ import { z } from "zod";
 import { authenticate, hasToolAccess } from "./auth";
 import { ExtensionIPCClient } from "./client/extension-ipc";
 import { SnapBackAPIClient } from "./client/snapback-api";
+import { getMCPConfig, onMCPConfigChange } from "./config";
 import { Context7Service } from "./context7/index";
 import { MCPHttpServer } from "./http-server";
 import { AnalysisRouter } from "./services/AnalysisRouter";
@@ -29,7 +30,15 @@ import { initializeSecurityTelemetry, setWorkspaceRoot } from "./utils/security"
  * Note: Performance budgets are MCP-specific operational constraints.
  * For data-related thresholds (risk scores, session timeouts, etc.),
  * use centralized THRESHOLDS from @snapback/sdk.
+ *
+ * Performance budgets are loaded from ConfigStore at startup and can be
+ * updated via hot-reload without restarting the MCP server.
  */
+let currentPerformanceBudgets: Record<string, number> = {
+	analyze_risk: 200, // Budget for risk analysis operation
+	create_snapshot: 500, // Budget for snapshot creation
+};
+
 async function trackPerformance<T>(operation: string, fn: () => Promise<T>): Promise<T> {
 	const start = Date.now();
 	try {
@@ -38,14 +47,7 @@ async function trackPerformance<T>(operation: string, fn: () => Promise<T>): Pro
 		const duration = Date.now() - start;
 		console.error(`[PERF] ${operation}: ${duration}ms`);
 
-		// MCP-specific performance budgets (operational, not data thresholds)
-		// For data thresholds (risk, session, protection), import THRESHOLDS from @snapback/sdk
-		const PERFORMANCE_BUDGETS: Record<string, number> = {
-			analyze_risk: 200, // Budget for risk analysis operation
-			create_snapshot: 500, // Budget for snapshot creation
-		};
-
-		const budget = PERFORMANCE_BUDGETS[operation] || 1000;
+		const budget = currentPerformanceBudgets[operation] || 1000;
 		if (duration > budget) {
 			console.warn(`[PERF] ⚠️  ${operation} exceeded budget: ${duration}ms > ${budget}ms`);
 		}
@@ -126,13 +128,22 @@ export async function startServer(): Promise<{
 		console.error("[SnapBack MCP] Failed to connect to Extension IPC:", err);
 	}
 
+	// Initialize ConfigStore and load MCP configuration
+	const mcpConfig = await getMCPConfig();
+	console.error("[SnapBack MCP] Loaded configuration from ConfigStore", {
+		performanceBudgets: mcpConfig.performanceBudgets,
+		context7Configured: !!mcpConfig.context7?.apiKey,
+		apiConfigured: !!mcpConfig.api?.apiKey,
+	});
+
+	// Update current performance budgets from config
+	currentPerformanceBudgets = mcpConfig.performanceBudgets;
+
 	// Initialize AnalysisRouter with optional API client
-	const apiClient = process.env.SNAPBACK_API_KEY
-		? new SnapBackAPIClient({
-				baseUrl: process.env.SNAPBACK_API_URL || "https://api.snapback.dev",
-				apiKey: process.env.SNAPBACK_API_KEY,
-			})
-		: undefined;
+	// Use ConfigStore settings with fallback to environment variables
+	const apiKey = mcpConfig.api?.apiKey || process.env.SNAPBACK_API_KEY;
+	const baseUrl = mcpConfig.api?.baseUrl || process.env.SNAPBACK_API_URL || "https://api.snapback.dev";
+	const apiClient = apiKey ? new SnapBackAPIClient({ baseUrl, apiKey }) : undefined;
 	const _analysisRouter = new AnalysisRouter(apiClient);
 
 	// Set workspace root for path validation
@@ -143,6 +154,42 @@ export async function startServer(): Promise<{
 	// Initialize security telemetry
 	// In a real implementation, this would come from configuration
 	initializeSecurityTelemetry("https://telemetry.snapback.dev");
+
+	// Wire hot-reload listener for configuration changes
+	try {
+		await onMCPConfigChange((updatedConfig) => {
+			console.error("[SnapBack MCP] Configuration updated via hot-reload");
+
+			// Update performance budgets
+			if (updatedConfig.performanceBudgets) {
+				currentPerformanceBudgets = updatedConfig.performanceBudgets;
+				console.error("[SnapBack MCP] Performance budgets updated", updatedConfig.performanceBudgets);
+			}
+
+			// Update Context7 configuration if changed
+			if (updatedConfig.context7) {
+				console.error("[SnapBack MCP] Context7 configuration updated", {
+					apiUrl: updatedConfig.context7.apiUrl,
+					cacheTtlSearch: updatedConfig.context7.cacheTtlSearch,
+					cacheTtlDocs: updatedConfig.context7.cacheTtlDocs,
+				});
+				// Note: Context7Service would need a method to update config
+				// For now, new instances would pick up the changes
+			}
+
+			// Update API client configuration if changed
+			if (updatedConfig.api) {
+				console.error("[SnapBack MCP] API configuration updated", {
+					baseUrl: updatedConfig.api.baseUrl,
+				});
+				// Note: AnalysisRouter would need a method to update API client
+			}
+		});
+		console.error("[SnapBack MCP] Hot-reload configuration watcher initialized");
+	} catch (error) {
+		console.error("[SnapBack MCP] Failed to wire hot-reload listener", error);
+		// Don't crash startup - continue with current config
+	}
 
 	const server = new Server(
 		{ name: "snapback-mcp", version: "0.1.1" },

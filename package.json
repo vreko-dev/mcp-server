@@ -20,6 +20,7 @@
     "@faker-js/faker": "catalog:",
     "@playwright/test": "1.50.1",
     "@snapback/tsconfig": "workspace:*",
+    "@snapback/vitest-config": "workspace:*",
     "@swc/core": "^1.15.3",
     "@testing-library/react": "catalog:",
     "@testing-library/user-event": "catalog:",

@@ -1,13 +1,17 @@
 import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { jsdomConfig } from "@snapback/vitest-config";
 import react from "@vitejs/plugin-react";
-import { defineConfig } from "vitest/config";
+import { defineProject } from "vitest/config";
 
-export default defineConfig({
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+export default defineProject({
+	...jsdomConfig,
 	plugins: [react()],
 	test: {
+		...jsdomConfig.test,
 		name: "@snapback/web",
-		globals: true,
-		environment: "jsdom",
 		include: ["**/*.{test,spec}.{js,ts,jsx,tsx}"],
 		exclude: [
 			"**/node_modules/**",
@@ -25,6 +29,7 @@ export default defineConfig({
 	},
 	resolve: {
 		alias: {
+			...jsdomConfig.resolve?.alias,
 			"@": path.resolve(__dirname, "."),
 			"@marketing": path.resolve(__dirname, "./modules/marketing"),
 			"@saas": path.resolve(__dirname, "./modules/saas"),

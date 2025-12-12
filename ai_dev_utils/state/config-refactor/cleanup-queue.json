@@ -1,4 +1,28 @@
 {
 	"phase": "cleanup",
-	"items": []
+	"items": [
+		{
+			"id": "ARC_OLD_CONFIG_STORE_V1",
+			"description": "Remove old v1 ConfigStore after v2 migration validation",
+			"files": [
+				"apps/vscode/src/storage/ConfigStore.ts",
+				"apps/vscode/test/unit/storage/ConfigStore.red.test.ts"
+			],
+			"lines_to_delete": 370,
+			"status": "READY",
+			"prerequisites": {
+				"migration_complete": true,
+				"tests_passing": true,
+				"feature_flag_100": false,
+				"cooldown_complete": false,
+				"human_approval": false
+			},
+			"backup_location": ".archive/2025-12-12/ARC_OLD_CONFIG_STORE_V1.tar.gz",
+			"notes": [
+				"TDD_CORE.md Line 63: Feature flag rollout required",
+				"TDD_CORE.md Line 88: 7-day cooldown mandatory",
+				"Execute guide: docs_to_review/config-refactor-99-percent-execution-guide.md Phase 4"
+			]
+		}
+	]
 }

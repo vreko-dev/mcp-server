@@ -1,16 +1,19 @@
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { defineConfig, type UserConfigExport } from "vitest/config";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export const createVitestConfig = (_options: UserConfigExport = {}) => {
 	return defineConfig({
 		resolve: {
 			// CENTRALIZED ALIASES: No more duplicate path definitions
 			alias: {
-				"@snapback/platform": path.resolve(__dirname, "../../packages/platform/src"),
-				"@snapback/contracts": path.resolve(__dirname, "../../packages/contracts/src"),
-				"@snapback/infrastructure": path.resolve(__dirname, "../../packages/infrastructure/src"),
-				"@snapback/core": path.resolve(__dirname, "../../packages/core/src"),
-				"@snapback/auth": path.resolve(__dirname, "../../packages/auth/src"),
+				"@snapback/platform": path.resolve(__dirname, "../../../packages/platform/src"),
+				"@snapback/contracts": path.resolve(__dirname, "../../../packages/contracts/src"),
+				"@snapback/infrastructure": path.resolve(__dirname, "../../../packages/infrastructure/src"),
+				"@snapback/core": path.resolve(__dirname, "../../../packages/core/src"),
+				"@snapback/auth": path.resolve(__dirname, "../../../packages/auth/src"),
 				// Add other shared packages here
 			},
 		},

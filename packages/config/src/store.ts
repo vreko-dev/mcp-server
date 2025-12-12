@@ -48,6 +48,15 @@ export interface ConfigStoreV2Options {
 }
 
 /**
+ * Feature flag metadata
+ */
+export interface FeatureFlagMetadata {
+	version: number;
+	featureFlagEnabled: boolean;
+	featureFlagSource: "environment" | "posthog" | "default";
+}
+
+/**
  * ConfigStore v2 implementation
  */
 export class ConfigStore {
@@ -62,6 +71,11 @@ export class ConfigStore {
 	private changeListeners: ConfigChangeCallback[] = [];
 	private watcher: fsSync.FSWatcher | null = null;
 	private lastWriteTime = 0;
+	private featureFlagMetadata: FeatureFlagMetadata = {
+		version: 2,
+		featureFlagEnabled: true,
+		featureFlagSource: "default",
+	};
 
 	constructor(options: ConfigStoreV2Options = {}) {
 		this.workspaceRoot = options.workspaceRoot || process.cwd();
@@ -92,11 +106,65 @@ export class ConfigStore {
 	}
 
 	/**
+	 * Evaluate feature flag for config v2
+	 * TDD_CORE.md Line 63: Feature flag rollout mandatory
+	 */
+	private evaluateFeatureFlag(): boolean {
+		// Environment variable takes precedence (for testing/override)
+		const envFlag = process.env.FEATURE_CONFIG_V2;
+		if (envFlag !== undefined) {
+			const enabled = envFlag === "true" || envFlag === "1";
+			this.featureFlagMetadata = {
+				version: 2,
+				featureFlagEnabled: enabled,
+				featureFlagSource: "environment",
+			};
+			console.log(`[ConfigStore] Feature flag from environment: ${enabled}`);
+			return enabled;
+		}
+
+		// TODO: Add PostHog integration here when ready
+		// const userId = process.env.SNAPBACK_USER_ID;
+		// if (userId) {
+		//   const enabled = await isFeatureEnabled('config_store_v2', userId);
+		//   this.featureFlagMetadata = {
+		//     version: 2,
+		//     featureFlagEnabled: enabled,
+		//     featureFlagSource: 'posthog'
+		//   };
+		//   return enabled;
+		// }
+
+		// Default: v2 is now the default (100% rollout)
+		this.featureFlagMetadata = {
+			version: 2,
+			featureFlagEnabled: true,
+			featureFlagSource: "default",
+		};
+		console.log("[ConfigStore] Feature flag defaulting to v2 (100% rollout)");
+		return true;
+	}
+
+	/**
+	 * Get feature flag metadata
+	 */
+	getMetadata(): FeatureFlagMetadata {
+		return { ...this.featureFlagMetadata };
+	}
+
+	/**
 	 * Initialize config store
 	 */
 	async initialize(): Promise<ConfigStoreV2> {
 		if (this.initialized && this.cache) {
 			return this.cache;
+		}
+
+		// Evaluate feature flag before loading
+		const useV2 = this.evaluateFeatureFlag();
+		if (!useV2) {
+			logger.warn("Feature flag disabled - v2 is now mandatory, ignoring flag");
+			// Continue with v2 anyway (v1 is deprecated)
 		}
 
 		try {

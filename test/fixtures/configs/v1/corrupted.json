@@ -1,0 +1,17 @@
+{
+	"version": 1,
+	"protections": {
+		"invalid-file.ts": {
+			"level": "invalid-level",
+			"isAnchor": "not-a-boolean",
+			"setAt": "not-a-number"
+		}
+	},
+	"engine": {
+		"maxDepth": -1,
+		"burstThreshold": 0,
+		"cooldowns": {
+			"block": -1000
+		}
+	}
+}

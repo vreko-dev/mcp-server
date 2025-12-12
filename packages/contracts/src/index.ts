@@ -51,7 +51,6 @@ export {
 	type UpdateProfileResponse,
 	UpdateProfileResponseSchema,
 } from "./auth/index";
-export * from "./dashboard/metrics";
 export * from "./eventBus";
 export * from "./events/index";
 export * from "./exports";

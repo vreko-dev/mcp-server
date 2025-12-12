@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@snapback/testing": "workspace:*",
+    "@snapback/vitest-config": "workspace:*",
     "@types/better-sqlite3": "catalog:",
     "@types/node": "catalog:",
     "tsup": "catalog:",

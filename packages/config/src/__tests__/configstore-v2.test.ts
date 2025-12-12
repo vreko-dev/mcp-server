@@ -366,11 +366,20 @@ describe("ConfigStore v2 - RED Phase", () => {
 			const store = new ConfigStore({ workspaceRoot: TEST_DIR });
 			await store.initialize();
 
+			const changeListener = vi.fn();
+			store.onChange(changeListener);
+
+			// Start watching
 			store.watchForChanges();
+
+			// Stop watching should not throw
+			store.stopWatching();
+
+			// Calling stopWatching again should also be safe (idempotent)
 			store.stopWatching();
 
 			// No error should be thrown
-			expect(true).toBe(true);
+			expect(store).toBeDefined();
 		});
 	});
 

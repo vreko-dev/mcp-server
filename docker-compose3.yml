@@ -1,0 +1,12 @@
+services:
+  actual:
+    image: actualbudget/actual-server:latest
+    container_name: actual
+    ports:
+      - "5006:5006"
+    volumes:
+      - ./data:/data
+    restart: unless-stopped
+# Note: This service is for Actual Budget, a local-first personal finance tool
+# Access it at http://localhost:5006 after starting with 'docker-compose up'
+# Data is persisted in the ./data directory

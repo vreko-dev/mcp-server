@@ -1,24 +1,25 @@
-import { resolve } from "node:path";
-import { defineConfig } from "vitest/config";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { nodeConfig } from "@snapback/vitest-config";
+import { defineProject } from "vitest/config";
 
-export default defineConfig({
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+export default defineProject({
+	...nodeConfig,
 	resolve: {
 		alias: {
-			"@snapback-sdk": resolve(__dirname, "./src"),
-			"@snapback-sdk/core": resolve(__dirname, "./src/core"),
-			"@snapback-sdk/storage": resolve(__dirname, "./src/storage"),
+			...nodeConfig.resolve?.alias,
+			"@snapback-sdk": path.resolve(__dirname, "./src"),
+			"@snapback-sdk/core": path.resolve(__dirname, "./src/core"),
+			"@snapback-sdk/storage": path.resolve(__dirname, "./src/storage"),
+			"@snapback/contracts": path.resolve(__dirname, "../../packages/contracts/src"),
 		},
 	},
 	test: {
+		...nodeConfig.test,
 		name: "@snapback/sdk",
-		globals: true,
-		environment: "node",
 		include: ["tests/**/*.test.ts", "__tests__/**/*.test.ts", "src/**/__tests__/**/*.test.ts"],
 		setupFiles: ["./__tests__/setup.ts"],
-		coverage: {
-			provider: "v8",
-			reporter: ["text", "json", "html"],
-			exclude: ["**/node_modules/**", "**/__tests__/**", "**/dist/**", "**/*.config.*"],
-		},
 	},
 });

@@ -1,0 +1,234 @@
+{
+	"meta": {
+		"createdAt": "2025-12-11T14:46:00Z",
+		"plan": "TDD_CORE.md Implementation for Three Interconnected Features",
+		"methodology": "Strict TDD with Phase 0-5 gates",
+		"status": "PLANNED"
+	},
+	"tasks": [
+		{
+			"id": "TASK_MCP_CONFIGSTORE",
+			"title": "MCP Server ConfigStore Integration - Completion",
+			"type": "REFACTORING",
+			"priority": "P0",
+			"complexity": "HIGH",
+			"status": "READY_FOR_PHASE_0",
+			"phases": {
+				"phase_0_audit": {
+					"description": "Verify MCP ConfigStore integration completeness",
+					"gate": "audit",
+					"checklist": [
+						"✅ Config initialization in startServer()",
+						"✅ Hot-reload listener wired",
+						"✅ Performance budgets reactive",
+						"✅ 20 integration tests passing",
+						"Verify: All configurable behaviors updated via hot-reload"
+					]
+				},
+				"phase_1_red": {
+					"description": "Write tests for missing hot-reload behaviors",
+					"tests": [
+						"Context7Service config hot-reload",
+						"AnalysisRouter API settings hot-reload",
+						"HTTP server allowed origins update",
+						"Performance budget enforcement"
+					]
+				},
+				"phase_2_green": {
+					"description": "Implement hot-reload for Context7Service and AnalysisRouter",
+					"files": [
+						"apps/mcp-server/src/context7/Context7Service.ts - add updateConfig()",
+						"apps/mcp-server/src/services/AnalysisRouter.ts - add updateApiClient()",
+						"apps/mcp-server/src/index.ts - wire callbacks to services"
+					]
+				},
+				"phase_3_refactor": {
+					"description": "Extract hot-reload logic to utility",
+					"refactoring": [
+						"Create ConfigUpdateManager utility",
+						"Consolidate listener registration",
+						"Add error handling decorator"
+					]
+				},
+				"phase_4_quality": {
+					"description": "Verify all checks pass",
+					"checks": [
+						"Build passes",
+						"100% of config-related tests passing",
+						"Linting clean",
+						"Coverage >95% for config code"
+					]
+				},
+				"phase_5_certification": {
+					"description": "Final validation and sign-off",
+					"certification": [
+						"All hot-reload paths tested",
+						"Performance: <10ms config updates",
+						"Zero breaking changes",
+						"Backward compatible"
+					]
+				}
+			},
+			"estimatedEffort": "2-3 days",
+			"blockers": []
+		},
+		{
+			"id": "TASK_RECOVERY_UX",
+			"title": "Recovery UX - Snapshot Restore Flow UI",
+			"type": "NEW_FEATURE",
+			"priority": "P1",
+			"complexity": "MEDIUM",
+			"status": "READY_FOR_PHASE_0",
+			"dependencies": ["TASK_MCP_CONFIGSTORE"],
+			"phases": {
+				"phase_0_audit": {
+					"description": "Audit existing recovery/restore capabilities",
+					"discovery": [
+						"Search: Where is snapshot restore currently implemented?",
+						"Search: What recovery UX patterns exist in extension?",
+						"Search: Existing error recovery UI patterns",
+						"Check: MCP restore_snapshot tool implementation",
+						"Check: Extension recovery command handlers"
+					]
+				},
+				"phase_1_red": {
+					"description": "Write tests for recovery UX flows",
+					"tests": [
+						"Recovery initiation (detect invalid state)",
+						"Snapshot selection (list + filter)",
+						"Restore preview (show diffs)",
+						"Restore confirmation (safety checks)",
+						"Post-restore verification (state validation)"
+					]
+				},
+				"phase_2_green": {
+					"description": "Implement recovery UX components",
+					"components": [
+						"RecoveryIndicator - shows when recovery available",
+						"SnapshotPicker - list with filtering",
+						"RestorePreview - diff visualization",
+						"RestoreConfirmation - safety modal"
+					]
+				},
+				"phase_3_refactor": {
+					"description": "Consolidate recovery state management",
+					"refactoring": [
+						"Extract RecoveryStateMachine utility",
+						"Consolidate error handling",
+						"Improve accessibility"
+					]
+				},
+				"phase_4_quality": {
+					"description": "Quality verification",
+					"checks": [
+						"E2E tests for recovery flow",
+						"Accessibility audit (WCAG 2.1 AA)",
+						"Performance: <500ms restore",
+						"Error messages are clear"
+					]
+				},
+				"phase_5_certification": {
+					"description": "User experience sign-off",
+					"certification": [
+						"Recovery flow tested with real scenarios",
+						"Accessibility passed",
+						"Performance meets SLA",
+						"Documentation complete"
+					]
+				}
+			},
+			"estimatedEffort": "3-4 days",
+			"blockers": ["TASK_MCP_CONFIGSTORE must complete Phase 2"]
+		},
+		{
+			"id": "TASK_FIRST_SNAPSHOT_TELEMETRY",
+			"title": "First Snapshot Telemetry - Funnel Tracking",
+			"type": "NEW_FEATURE",
+			"priority": "P2",
+			"complexity": "MEDIUM",
+			"status": "READY_FOR_PHASE_0",
+			"dependencies": [],
+			"phases": {
+				"phase_0_audit": {
+					"description": "Audit existing telemetry infrastructure",
+					"discovery": [
+						"Search: Where is telemetry sent from?",
+						"Search: PostHog integration points",
+						"Search: Existing activation funnel telemetry",
+						"Check: How is first snapshot tracked currently?",
+						"Check: Telemetry error handling"
+					]
+				},
+				"phase_1_red": {
+					"description": "Write tests for first snapshot funnel",
+					"tests": [
+						"Track snapshot_creation_initiated event",
+						"Track snapshot_creation_completed event",
+						"Track snapshot_creation_failed event",
+						"Track first_snapshot_milestone event",
+						"Funnel: activation → first_snapshot → success/failure"
+					]
+				},
+				"phase_2_green": {
+					"description": "Implement first snapshot telemetry",
+					"implementation": [
+						"Add telemetry to createSnapshot tool (MCP)",
+						"Add telemetry to snapshot creation command (Extension)",
+						"Track milestones (first, tenth, hundredth)",
+						"Error tracking with error codes"
+					]
+				},
+				"phase_3_refactor": {
+					"description": "Consolidate telemetry utilities",
+					"refactoring": [
+						"Extract TelemetryFunnel utility",
+						"Create reusable milestone tracker",
+						"Improve error tracking"
+					]
+				},
+				"phase_4_quality": {
+					"description": "Quality verification",
+					"checks": [
+						"100% funnel coverage",
+						"No telemetry data leaks (PII)",
+						"Offline-safe telemetry queuing",
+						"Performance: <5ms per telemetry call"
+					]
+				},
+				"phase_5_certification": {
+					"description": "Data quality sign-off",
+					"certification": [
+						"Sample data verified in PostHog",
+						"Privacy review passed",
+						"Error tracking comprehensive",
+						"Funnel attribution correct"
+					]
+				}
+			},
+			"estimatedEffort": "2-3 days",
+			"blockers": []
+		}
+	],
+	"integrationPoints": {
+		"MCP_to_Recovery": "ConfigStore enables dynamic MCP behavior changes during recovery",
+		"Recovery_to_Telemetry": "Recovery actions trigger telemetry events",
+		"Telemetry_to_MCP": "Telemetry config loaded from ConfigStore"
+	},
+	"executionSequence": [
+		"Start: TASK_MCP_CONFIGSTORE Phase 0 (2 hours)",
+		"Parallel: TASK_FIRST_SNAPSHOT_TELEMETRY Phase 0 (2 hours)",
+		"Complete: TASK_MCP_CONFIGSTORE Phases 1-5 (2 days)",
+		"Start: TASK_RECOVERY_UX Phase 0 (2 hours)",
+		"Complete: TASK_FIRST_SNAPSHOT_TELEMETRY Phases 1-5 (2 days)",
+		"Complete: TASK_RECOVERY_UX Phases 1-5 (3 days)"
+	],
+	"totalEffort": "7-9 days with strict TDD methodology",
+	"criteria": {
+		"phase0Audit": "All architecture questions answered",
+		"phase1Red": "All tests FAILING with specific assertions",
+		"phase2Green": "All tests PASSING with minimal code",
+		"phase3Refactor": "Code quality improved, tests still passing",
+		"phase4Quality": "All automated checks pass, no vague assertions",
+		"phase5Certification": "Evidence captured, sign-off ready"
+	}
+}

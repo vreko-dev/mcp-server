@@ -13,6 +13,7 @@
  */
 
 import { randomBytes } from "node:crypto";
+import type { SessionId, SnapshotId } from "@snapback/contracts";
 
 /**
  * ID prefixes for different entity types
@@ -48,10 +49,10 @@ function randomSuffix(length = 6): string {
  * Format: sess-<timestamp>-<random>
  * Example: sess-1733657123456-a1b2c3
  *
- * @returns Session ID string
+ * @returns Session ID (branded type)
  */
-export function generateSessionId(): string {
-	return `${ID_PREFIX.SESSION}-${Date.now()}-${randomSuffix()}`;
+export function generateSessionId(): SessionId {
+	return `${ID_PREFIX.SESSION}-${Date.now()}-${randomSuffix()}` as SessionId;
 }
 
 /**
@@ -60,10 +61,10 @@ export function generateSessionId(): string {
  * Format: snap-<timestamp>-<random>
  * Example: snap-1733657123456-x9y8z7
  *
- * @returns Snapshot ID string
+ * @returns Snapshot ID (branded type)
  */
-export function generateSnapshotId(): string {
-	return `${ID_PREFIX.SNAPSHOT}-${Date.now()}-${randomSuffix()}`;
+export function generateSnapshotId(): SnapshotId {
+	return `${ID_PREFIX.SNAPSHOT}-${Date.now()}-${randomSuffix()}` as SnapshotId;
 }
 
 /**

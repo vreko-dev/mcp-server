@@ -332,8 +332,8 @@ After extension integration:
 // apps/cli/src/config.ts
 import { getConfigStore } from "@snapback/config";
 
-const store = await getConfigStore({ 
-  workspaceRoot: process.cwd() 
+const store = await getConfigStore({
+  workspaceRoot: process.cwd()
 });
 
 const config = store.getConfig();
@@ -350,7 +350,7 @@ import { getConfigStore } from "@snapback/config";
 
 async function initializeMCP() {
   const store = await getConfigStore();
-  
+
   store.onChange((config) => {
     // Reload MCP services if config changes
   });

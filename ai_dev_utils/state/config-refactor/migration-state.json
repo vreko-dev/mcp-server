@@ -1,13 +1,35 @@
 {
 	"phase": "migrate",
+	"status": "READY_TO_START",
+	"discovery_complete": true,
 	"opportunities_completed": [],
 	"opportunities_in_progress": [],
+	"opportunities_ready": ["OP_CONFIG_V1_TO_V2"],
 	"opportunities_blocked": [],
-	"test_coverage": {},
+	"current_task": {
+		"id": "OP_CONFIG_V1_TO_V2",
+		"step": "CREATE_MIGRATION_FUNCTION",
+		"next_steps": [
+			"1. Create packages/config/src/migrations/v1-to-v2.ts",
+			"2. Create packages/config/src/__tests__/migration.test.ts",
+			"3. Run tests (pnpm --filter @snapback/config test)",
+			"4. Update packages/config/src/index.ts exports",
+			"5. Build package (pnpm --filter @snapback/config build)",
+			"6. Create apps/vscode/src/config/migrate.ts",
+			"7. Update apps/vscode/src/extension.ts activation",
+			"8. Test extension manually",
+			"9. Delete old ConfigStore after validation"
+		]
+	},
+	"test_coverage": {
+		"packages_config_store": "33 tests passing",
+		"migration": "NOT_STARTED"
+	},
 	"validation_results": {
 		"schema_validation": "PENDING",
 		"business_logic_validation": "PENDING",
 		"multi_source_consistency": "PENDING"
 	},
-	"rollout_status": null
+	"rollout_status": null,
+	"context_document": "ai_dev_utils/state/config-refactor/AGENT_EXECUTION_CONTEXT.md"
 }

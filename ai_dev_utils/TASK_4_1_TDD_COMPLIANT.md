@@ -435,7 +435,7 @@ async getAIToolDetectionCounts(userId: string) {
  */
 async getRecentActivity(userId: string, days: number = 7) {
   const limit = 20;
-  
+
   return await this.db.query(`
     SELECT
       'snapshot' as type,
@@ -475,7 +475,7 @@ export async function getMetrics(input: GetMetricsInput) {
 
   // NEW: Use aggregator instead of hardcoded values
   const aggregator = new MetricsAggregator(db);
-  
+
   const aiToolBreakdown = await aggregator.getAIToolDetectionCounts(userId);
   const recentActivity = await aggregator.getRecentActivity(userId, 7);
 

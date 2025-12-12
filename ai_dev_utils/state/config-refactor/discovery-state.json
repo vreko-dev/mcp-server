@@ -1,7 +1,77 @@
 {
 	"phase": "discovery",
-	"passes_completed": [],
-	"findings": {},
-	"duplications": {},
-	"opportunities": {}
+	"status": "COMPLETE",
+	"completed_at": "2024-12-11T00:00:00Z",
+	"passes_completed": ["SYS_CONFIG_STORE", "SYS_SCHEMA_DIFF", "SYS_STORAGE_LOCATIONS"],
+	"findings": {
+		"F_DUAL_CONFIG_STORES": {
+			"description": "Two parallel ConfigStore implementations exist",
+			"v1_location": "apps/vscode/src/storage/ConfigStore.ts",
+			"v2_location": "packages/config/src/store.ts",
+			"v2_wrapper": "apps/vscode/src/config/configStore.ts",
+			"impact": "HIGH - causes drift, debugging complexity"
+		},
+		"F_SCHEMA_MISMATCH": {
+			"description": "V1 uses object-keyed protections, V2 uses array",
+			"v1_schema": "{ protections: Record<string, {level, isAnchor, clusterId, setAt}> }",
+			"v2_schema": "{ protections: Array<{pattern, level, reason, precedence}> }",
+			"impact": "MEDIUM - requires transformation logic"
+		},
+		"F_STORAGE_LOCATION_DIFF": {
+			"description": "V1 stores in VS Code globalStorage, V2 uses .snapbackrc",
+			"v1_path": "~/.config/Code/User/globalStorage/snapback.id/config.json",
+			"v2_path": ".snapbackrc (project root)",
+			"impact": "LOW - migration handles this transparently"
+		},
+		"F_ANCHOR_ENCODING": {
+			"description": "V1 has explicit isAnchor boolean, V2 uses precedence + reason",
+			"migration_strategy": "isAnchor=true → precedence=100, reason='Anchor file'",
+			"impact": "LOW - straightforward mapping"
+		},
+		"F_CLUSTER_ENCODING": {
+			"description": "V1 has explicit clusterId field, V2 encodes in reason",
+			"migration_strategy": "clusterId → reason='Cluster: {id}'",
+			"impact": "LOW - straightforward mapping"
+		}
+	},
+	"duplications": {
+		"D_CONFIG_STORAGE": {
+			"sources": ["apps/vscode/src/storage/ConfigStore.ts", "packages/config/src/store.ts"],
+			"conflict": "Both store protection levels with different schemas",
+			"resolution": "Migrate to v2, delete v1 after validation"
+		},
+		"D_ENGINE_CONFIG": {
+			"sources": ["apps/vscode/src/storage/ConfigStore.ts (v1)", "packages/config/src/schemas.ts (v2)"],
+			"conflict": "Engine config defined in both places",
+			"resolution": "V2 schema is canonical, v1 values migrate"
+		}
+	},
+	"opportunities": {
+		"OP_CONFIG_V1_TO_V2": {
+			"priority": "P0",
+			"status": "READY",
+			"impact": "HIGH",
+			"risk": "MEDIUM",
+			"estimated_loc": 300,
+			"files_to_create": [
+				"packages/config/src/migrations/v1-to-v2.ts",
+				"packages/config/src/__tests__/migration.test.ts",
+				"apps/vscode/src/config/migrate.ts"
+			],
+			"files_to_modify": ["packages/config/src/index.ts", "apps/vscode/src/extension.ts"],
+			"files_to_delete_after_validation": [
+				"apps/vscode/src/storage/ConfigStore.ts",
+				"apps/vscode/test/unit/storage/ConfigStore.red.test.ts"
+			],
+			"tests_required": 15,
+			"description": "Create migration bridge from v1 to v2 ConfigStore"
+		}
+	},
+	"v2_status": {
+		"schema": "COMPLETE",
+		"store": "COMPLETE",
+		"tests": "33 passing",
+		"wrapper": "COMPLETE",
+		"migration": "NOT_STARTED"
+	}
 }

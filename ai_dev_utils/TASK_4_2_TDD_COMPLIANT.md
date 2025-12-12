@@ -145,7 +145,7 @@ const s3BaseUrl = 'https://snapback-backups-prod.s3.us-east-1.amazonaws.com';
 const s3Server = setupServer(
   http.put(`${s3BaseUrl}/:snapshotId`, async ({ request, params }) => {
     const content = await request.text();
-    
+
     if (!content || content.length === 0) {
       return new HttpResponse(null, { status: 400 });
     }
@@ -158,7 +158,7 @@ const s3Server = setupServer(
       { status: 200 }
     );
   }),
-  
+
   http.head(`${s3BaseUrl}/:snapshotId`, () => {
     return new HttpResponse(null, { status: 200 });
   })
@@ -299,7 +299,7 @@ describe('Cloud Backup Integration [4-Path Coverage]', () => {
       // ARRANGE
       const snapshotContent = 'test content';
       const s3PutHandler = vi.fn();
-      
+
       s3Server.use(
         http.put(`${s3BaseUrl}/:snapshotId`, ({ request }) => {
           s3PutHandler();
@@ -325,7 +325,7 @@ describe('Cloud Backup Integration [4-Path Coverage]', () => {
       // ARRANGE
       process.env.ENABLE_CLOUD_BACKUP = 'false';
       const s3PutHandler = vi.fn();
-      
+
       s3Server.use(
         http.put(`${s3BaseUrl}/:snapshotId`, ({ request }) => {
           s3PutHandler();
@@ -754,9 +754,9 @@ pnpm test apps/api/test/integration/snapshots/cloud-backup.test.ts
 
 ```typescript
 // Extract helper
-function validateS3Configuration(): { 
-  isValid: boolean; 
-  bucketName?: string; 
+function validateS3Configuration(): {
+  isValid: boolean;
+  bucketName?: string;
   region?: string;
 } {
   const s3BucketName = process.env.S3_BUCKET_NAME;

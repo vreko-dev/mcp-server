@@ -14,7 +14,9 @@
     "@snapback/contracts": "workspace:*",
     "chokidar": "^3.6.0",
     "posthog-node": "catalog:",
-    "zod": "catalog:"
+    "zod": "catalog:",
+    "ajv": "^8.12.0",
+    "ajv-formats": "^2.1.1"
   },
   "devDependencies": {
     "fast-check": "^4.4.0",
@@ -85,6 +87,9 @@
     }
   },
   "main": "dist/index.js",
+  "bin": {
+    "snapback-migrate": "./dist/bin/migrate.js"
+  },
   "scripts": {
     "build": "tsup && tsc --build --force && node ../../scripts/verify-build.js",
     "dev": "tsup --watch",

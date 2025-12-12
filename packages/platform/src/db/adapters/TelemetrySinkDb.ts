@@ -14,7 +14,9 @@ function redactString(value: string): string {
  * Replace with actual implementation from @snapback/contracts
  */
 function redactObject(obj: any): any {
-	if (!obj || typeof obj !== "object") return obj;
+	if (!obj || typeof obj !== "object") {
+		return obj;
+	}
 	const redacted: any = Array.isArray(obj) ? [] : {};
 	for (const key in obj) {
 		if (typeof obj[key] === "string") {

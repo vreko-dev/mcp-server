@@ -1,4 +1,33 @@
-import { redactObject, redactString } from "@snapback/analytics";
+// Removed circular dependency - redaction functions moved inline
+// TODO: Move to @snapback/contracts/utils/redaction.ts for proper sharing
+
+/**
+ * Redact string values (simple placeholder)
+ * Replace with actual implementation from @snapback/contracts
+ */
+function redactString(value: string): string {
+	return value.replace(/./g, "*");
+}
+
+/**
+ * Redact object values (simple placeholder)
+ * Replace with actual implementation from @snapback/contracts
+ */
+function redactObject(obj: any): any {
+	if (!obj || typeof obj !== "object") return obj;
+	const redacted: any = Array.isArray(obj) ? [] : {};
+	for (const key in obj) {
+		if (typeof obj[key] === "string") {
+			redacted[key] = redactString(obj[key]);
+		} else if (typeof obj[key] === "object") {
+			redacted[key] = redactObject(obj[key]);
+		} else {
+			redacted[key] = obj[key];
+		}
+	}
+	return redacted;
+}
+
 import { eq } from "drizzle-orm";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { agentSuggestions } from "../schema/postgres";

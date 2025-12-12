@@ -61,7 +61,7 @@ export const GetSnapshotRequestSchema = z.object({
 
 export type GetSnapshotRequest = z.infer<typeof GetSnapshotRequestSchema>;
 
-export const GetSnapshotResponseSchema = z.union([
+export const GetSnapshotResponseSchema = z.discriminatedUnion("success", [
 	z.object({
 		success: z.literal(true),
 		snapshot: SnapshotSchema,
@@ -83,7 +83,7 @@ export const UpdateSnapshotRequestSchema = z.object({
 
 export type UpdateSnapshotRequest = z.infer<typeof UpdateSnapshotRequestSchema>;
 
-export const UpdateSnapshotResponseSchema = z.union([
+export const UpdateSnapshotResponseSchema = z.discriminatedUnion("success", [
 	z.object({
 		success: z.literal(true),
 		snapshot: SnapshotSchema,
@@ -104,7 +104,7 @@ export const DeleteSnapshotRequestSchema = z.object({
 
 export type DeleteSnapshotRequest = z.infer<typeof DeleteSnapshotRequestSchema>;
 
-export const DeleteSnapshotResponseSchema = z.union([
+export const DeleteSnapshotResponseSchema = z.discriminatedUnion("success", [
 	z.object({
 		success: z.literal(true),
 		deletedId: z.string(),
@@ -127,7 +127,7 @@ export const RestoreSnapshotRequestSchema = z.object({
 
 export type RestoreSnapshotRequest = z.infer<typeof RestoreSnapshotRequestSchema>;
 
-export const RestoreSnapshotResponseSchema = z.union([
+export const RestoreSnapshotResponseSchema = z.discriminatedUnion("success", [
 	z.object({
 		success: z.literal(true),
 		result: SnapshotRestoreResultSchema,

@@ -37,7 +37,7 @@ export const SetProtectionLevelRequestSchema = z.object({
 
 export type SetProtectionLevelRequest = z.infer<typeof SetProtectionLevelRequestSchema>;
 
-export const SetProtectionLevelResponseSchema = z.union([
+export const SetProtectionLevelResponseSchema = z.discriminatedUnion("success", [
 	z.object({
 		success: z.literal(true),
 		filePath: z.string(),
@@ -60,7 +60,7 @@ export const RemoveProtectionRequestSchema = z.object({
 
 export type RemoveProtectionRequest = z.infer<typeof RemoveProtectionRequestSchema>;
 
-export const RemoveProtectionResponseSchema = z.union([
+export const RemoveProtectionResponseSchema = z.discriminatedUnion("success", [
 	z.object({
 		success: z.literal(true),
 		filePath: z.string(),
@@ -132,7 +132,7 @@ export const UpdateProtectionConfigRequestSchema = z.object({
 
 export type UpdateProtectionConfigRequest = z.infer<typeof UpdateProtectionConfigRequestSchema>;
 
-export const UpdateProtectionConfigResponseSchema = z.union([
+export const UpdateProtectionConfigResponseSchema = z.discriminatedUnion("success", [
 	z.object({
 		success: z.literal(true),
 		config: ProtectionConfigSchema,

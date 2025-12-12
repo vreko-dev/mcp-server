@@ -67,6 +67,7 @@ export * from "./tiers";
 // Note: telemetry re-exports from events, so not exported here to avoid conflicts
 
 export * from "./session";
+export * from "./types/branded";
 export * from "./types/config";
 export * from "./types/protection";
 export * from "./types/protection-utils";

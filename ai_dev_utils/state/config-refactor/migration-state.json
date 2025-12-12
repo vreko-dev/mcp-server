@@ -1,7 +1,15 @@
 {
-	"phase": "migrate",
-	"status": "FEATURE_FLAG_COMPLETE",
-	"completed_at": "2024-12-12T09:50:00Z",
+	"phase": "rollout",
+	"status": "PHASE1_COMPLETE_PHASE2_READY",
+	"completed_at": "2025-12-12T12:00:00Z",
+	"phase_status": {
+		"phase1_internal_testing": "COMPLETE",
+		"phase2_gradual_rollout": "READY",
+		"phase3_cooldown": "PENDING",
+		"phase4_cleanup": "PENDING"
+	},
+	"cooldown_start_date": null,
+	"cooldown_end_date": null,
 	"discovery_complete": true,
 	"opportunities_completed": ["OP_CONFIG_V1_TO_V2"],
 	"opportunities_in_progress": [],
@@ -140,12 +148,13 @@
 	},
 	"rollout_status": null,
 	"next_steps": [
-		"1. ✅ Feature flag implemented - COMPLETE",
-		"2. Deploy to production with FEATURE_CONFIG_V2=true",
-		"3. Test with internal users",
-		"4. Enable PostHog integration (uncomment code in store.ts)",
-		"5. Gradual rollout: 10% → 50% → 100%",
-		"6. Monitor for 7 days at 100%",
-		"7. Execute cleanup (see cleanup-queue.json)"
+		"1. ✅ Phase 1 COMPLETE: Feature flag implemented, 88 tests passing",
+		"2. ⏳ Phase 2 READY: Deploy with FEATURE_CONFIG_V2=true, monitor",
+		"3.   Day 2 (2025-12-13): 10% rollout",
+		"4.   Day 3 (2025-12-14): 50% rollout",
+		"5.   Day 4 (2025-12-15): 100% rollout",
+		"6. ⏳ Phase 3: 7-day cooldown @ 100% (Days 5-11)",
+		"7. ⏳ Phase 4: Cleanup after cooldown (Day 12+, see PRODUCTION_ROLLOUT_PLAN.md)",
+		"8. See PRODUCTION_ROLLOUT_PLAN.md for rollback criteria, monitoring, and edge cases"
 	]
 }

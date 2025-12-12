@@ -17,6 +17,8 @@ export {
 	DEFAULT_CONFIG,
 	type EngineConfig,
 	EngineConfigSchema,
+	type MCPSettings,
+	MCPSettingsSchema,
 	type Policies,
 	PoliciesSchema,
 	type ProtectionLevel,
@@ -41,3 +43,12 @@ export {
 	getConfigStore,
 	resetConfigStore,
 } from "./store";
+
+// Re-export subscription config types
+export { PLAN_PERMISSIONS, type PlanTier } from "./subscription-config";
+
+// Re-export Config type for backward compatibility
+export type { Config } from "./types";
+
+// Re-export feature flags
+export { isFeatureEnabled } from "./utils/feature-flags";

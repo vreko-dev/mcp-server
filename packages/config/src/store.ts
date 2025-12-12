@@ -123,17 +123,10 @@ export class ConfigStore {
 			return enabled;
 		}
 
-		// TODO: Add PostHog integration here when ready
-		// const userId = process.env.SNAPBACK_USER_ID;
-		// if (userId) {
-		//   const enabled = await isFeatureEnabled('config_store_v2', userId);
-		//   this.featureFlagMetadata = {
-		//     version: 2,
-		//     featureFlagEnabled: enabled,
-		//     featureFlagSource: 'posthog'
-		//   };
-		//   return enabled;
-		// }
+		// PostHog integration - will use FeatureManager when available
+		// Currently using environment variable (FEATURE_CONFIG_V2)
+		// For production rollout, this can be integrated with FeatureManager.setPostHogClient()
+		// TODO: After Phase 5 certification, integrate with FeatureManager for gradual rollout
 
 		// Default: v2 is now the default (100% rollout)
 		this.featureFlagMetadata = {

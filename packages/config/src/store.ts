@@ -18,6 +18,7 @@ import * as fsSync from "node:fs";
 import * as fs from "node:fs/promises";
 import { homedir } from "node:os";
 import * as path from "node:path";
+import type { ConfigPath, PathValue } from "./path-types";
 import type { ConfigStoreV2 } from "./schemas";
 import { DEFAULT_CONFIG, validateConfig, ZERO_CONFIG_DEFAULTS } from "./schemas";
 
@@ -208,10 +209,16 @@ export class ConfigStore {
 	}
 
 	/**
-	 * Get config value by dot notation path
-	 * Example: get<number>("engine.maxDepth") => 2
+	 * Get config value by dot notation path (TYPE-SAFE)
+	 *
+	 * Examples:
+	 * ```ts
+	 * const consent = store.get("settings.privacy.consent"); // boolean
+	 * const maxDepth = store.get("engine.maxDepth"); // number
+	 * const invalid = store.get("fake.path"); // ❌ Compile error
+	 * ```
 	 */
-	get<T>(path: string): T {
+	get<P extends ConfigPath<ConfigStoreV2> & string>(path: P): PathValue<ConfigStoreV2, P> | undefined {
 		if (!this.initialized || !this.cache) {
 			throw new Error("ConfigStore not initialized. Call initialize() first");
 		}
@@ -221,12 +228,12 @@ export class ConfigStore {
 
 		for (const key of keys) {
 			if (current === null || current === undefined) {
-				return undefined as T;
+				return undefined;
 			}
 			current = current[key];
 		}
 
-		return current as T;
+		return current as PathValue<ConfigStoreV2, P> | undefined;
 	}
 
 	/**

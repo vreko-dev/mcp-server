@@ -144,8 +144,8 @@ echo -e "${GREEN}✅ Files deleted ($DELETED_LINES lines removed)${NC}"
 echo ""
 echo "Updating cleanup queue..."
 
-jq '.items[0].status = "COMPLETE" | 
-    .items[0].completed_at = now | 
+jq '.items[0].status = "COMPLETE" |
+    .items[0].completed_at = now |
     .items[0].archive_location = "'"$ARCHIVE_FILE"'"' \
   "$CLEANUP_QUEUE" > "$CLEANUP_QUEUE.tmp"
 

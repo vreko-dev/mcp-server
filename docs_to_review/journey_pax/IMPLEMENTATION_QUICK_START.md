@@ -1,7 +1,7 @@
 # SnapBack Telemetry Implementation - Quick Start Guide
 
-**Target**: Complete config-based event registry in 4 weeks  
-**Framework**: TDD_CORE.md + PostHog 2025 patterns  
+**Target**: Complete config-based event registry in 4 weeks
+**Framework**: TDD_CORE.md + PostHog 2025 patterns
 **Output**: Type-safe, privacy-compliant, fully tracked user journeys
 
 ---
@@ -196,7 +196,7 @@ pnpm lint
 ```typescript
 /**
  * Canonical Journey Telemetry Registry
- * 
+ *
  * Single source of truth for all user journey events.
  * Auto-generates schemas, funnel definitions, and documentation.
  */
@@ -375,13 +375,13 @@ export const JOURNEY_TELEMETRY = {
  */
 export function getAllEventNames(): CoreTelemetryEventName[] {
   const events: CoreTelemetryEventName[] = [];
-  
+
   for (const journey of Object.values(JOURNEY_TELEMETRY)) {
     for (const event of Object.values(journey)) {
       events.push(event.event as CoreTelemetryEventName);
     }
   }
-  
+
   return events;
 }
 
@@ -390,7 +390,7 @@ export function getAllEventNames(): CoreTelemetryEventName[] {
  */
 export function getEventsByPlatform(platform: string): EventDefinition[] {
   const events: EventDefinition[] = [];
-  
+
   for (const journey of Object.values(JOURNEY_TELEMETRY)) {
     for (const event of Object.values(journey)) {
       if (event.platforms.includes(platform as any)) {
@@ -398,7 +398,7 @@ export function getEventsByPlatform(platform: string): EventDefinition[] {
       }
     }
   }
-  
+
   return events;
 }
 
@@ -407,7 +407,7 @@ export function getEventsByPlatform(platform: string): EventDefinition[] {
  */
 export function getFunnelSteps(): EventDefinition[] {
   const events: EventDefinition[] = [];
-  
+
   for (const journey of Object.values(JOURNEY_TELEMETRY)) {
     for (const event of Object.values(journey)) {
       if (event.funnel_step) {
@@ -415,7 +415,7 @@ export function getFunnelSteps(): EventDefinition[] {
       }
     }
   }
-  
+
   return events.sort((a, b) => (a.funnel_step || 0) - (b.funnel_step || 0));
 }
 ```
@@ -771,6 +771,6 @@ apps/api/modules/analytics/
 
 ---
 
-**Estimated Effort**: 160 hours (4 weeks × 40 hours)  
-**Team Size**: 1-2 engineers  
-**ROI**: Data-driven product decisions enabled  
+**Estimated Effort**: 160 hours (4 weeks × 40 hours)
+**Team Size**: 1-2 engineers
+**ROI**: Data-driven product decisions enabled

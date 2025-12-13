@@ -91,13 +91,13 @@ else
     COMPLETED_EPOCH=$(date -j -f "%Y-%m-%dT%H:%M:%SZ" "$COMPLETED_AT" "+%s" 2>/dev/null || echo "0")
     CURRENT_EPOCH=$(date "+%s")
   fi
-  
+
   if [ "$COMPLETED_EPOCH" = "0" ]; then
     echo -e "${RED}   ❌ Invalid completion timestamp: $COMPLETED_AT${NC}"
     FAILURES=$((FAILURES + 1))
   else
     DAYS_ELAPSED=$(( (CURRENT_EPOCH - COMPLETED_EPOCH) / 86400 ))
-    
+
     if [ "$DAYS_ELAPSED" -ge 7 ]; then
       echo -e "${GREEN}   ✅ Cooldown period complete: $DAYS_ELAPSED days${NC}"
     else

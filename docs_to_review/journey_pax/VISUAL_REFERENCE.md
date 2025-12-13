@@ -11,7 +11,7 @@ CURRENT (13 events)          TARGET (24 events)
 =====================        ==================
 
 ✅ save_attempt              ✅ save_attempt
-✅ snapshot_created          ✅ snapshot_created  
+✅ snapshot_created          ✅ snapshot_created
 ✅ session_finalized         ✅ session_finalized
 ✅ issue_created             ✅ issue_created
 ✅ issue_resolved            ✅ issue_resolved
@@ -33,7 +33,7 @@ CURRENT (13 events)          TARGET (24 events)
                             ❌ session_started
                             ❌ recovery_rollback_requested
                             ❌ other cli/mcp events
-                            
+
 COVERAGE: 54% → 100% (11 events to add)
 ```
 
@@ -61,7 +61,7 @@ COVERAGE: 54% → 100% (11 events to add)
         │ (10% of installs → use)
         ▼
   CONVERSION COMPLETE ✅
-  
+
 Expected Rate: 0.001% (1 in 100k)
 Target: >0.1% for product-market fit
 ```
@@ -82,7 +82,7 @@ Target: >0.1% for product-market fit
         │ (Pro feature engagement)
         ▼
    CONVERSION: Free → Solo ✅
-   
+
 Expected Rate: 15% (Free users → Solo)
 Target: 20%+ for SaaS metric
 ```
@@ -103,7 +103,7 @@ Target: 20%+ for SaaS metric
         │ (80% - user recovers)
         ▼
    RECOVERY COMPLETE ✅
-   
+
 Expected Rate: 68% recovery success
 Target: >85% for safety confidence
 ```
@@ -190,7 +190,7 @@ Total: 24 events across 8 journey categories
 ```
 Week 1: Events
 ├─ Mon-Tue: Create journey-events.ts
-├─ Wed: Add 5 missing event schemas  
+├─ Wed: Add 5 missing event schemas
 ├─ Thu-Fri: Write tests & type-check
 └─ Output: 5 new event schemas (READY TO MERGE)
 
@@ -379,7 +379,7 @@ User Engagement
 
 Business Metrics
 ├─ Waitlist → Signup: track daily
-├─ Signup → API Key: track weekly  
+├─ Signup → API Key: track weekly
 └─ API Key → Pro: track weekly
 ```
 
@@ -401,6 +401,6 @@ Business Metrics
 
 ---
 
-**Reference Version**: 1.0  
-**Last Updated**: December 12, 2025  
+**Reference Version**: 1.0
+**Last Updated**: December 12, 2025
 **Status**: Ready for Quick Reference During Implementation

@@ -1,8 +1,8 @@
 # Safeguards Implementation Guide (TDD-First Approach)
 
-**Authority**: TDD_CORE.md (test-first, 4-path coverage)  
-**Status**: Ready for implementation  
-**Effort**: ~12-14 hours (can be parallelized across team)  
+**Authority**: TDD_CORE.md (test-first, 4-path coverage)
+**Status**: Ready for implementation
+**Effort**: ~12-14 hours (can be parallelized across team)
 
 ---
 
@@ -36,21 +36,21 @@ describe('Safeguard 1: Migration Checksums', () => {
     it('should preserve data integrity (before/after protection count)');
     it('should validate checksum match returns true for valid migration');
   });
-  
+
   // SAD PATH
   describe('should detect data loss', () => {
     it('should detect missing protections in migration');
     it('should detect engine config corruption');
     it('should fail validation when checksums differ');
   });
-  
+
   // EDGE PATH
   describe('should handle boundary conditions', () => {
     it('should handle empty configs (0 protections)');
     it('should handle large configs (10K+ entries)');
     it('should handle special characters in paths');
   });
-  
+
   // ERROR PATH
   describe('should handle errors gracefully', () => {
     it('should throw on null/undefined config');
@@ -108,21 +108,21 @@ describe('Safeguard 2: Chokidar File Watcher', () => {
     it('should reload config on change');
     it('should debounce rapid changes');
   });
-  
+
   // SAD PATH
   describe('should handle watcher errors', () => {
     it('should gracefully handle EMFILE errors');
     it('should retry on transient failures');
     it('should stop watching if max errors exceeded');
   });
-  
+
   // EDGE PATH
   describe('should handle edge cases', () => {
     it('should handle file moves/renames');
     it('should handle atomic writes');
     it('should respect resource limits (max 50 watchers)');
   });
-  
+
   // ERROR PATH
   describe('should handle watcher lifecycle', () => {
     it('should close watcher and cleanup');
@@ -145,11 +145,11 @@ export class ConfigWatcher {
     // - depth: 0 (only this file)
     // - maxListeners: 10
   }
-  
+
   private handleConfigChange(path: string): void {
     // Implementation: Debounce with 300ms delay
   }
-  
+
   stopWatching(): void {
     // Implementation: Close watcher, cleanup
   }
@@ -176,15 +176,15 @@ describe('Safeguard 3: Performance Monitoring', () => {
   // HAPPY PATH
   it('should measure config load under 100ms');
   it('should track performance metrics to PostHog');
-  
+
   // SAD PATH
   it('should alert if load time exceeds 500ms');
   it('should log slow operations with context');
-  
+
   // EDGE PATH
   it('should handle 10K+ entry configs');
   it('should measure with minimal overhead');
-  
+
   // ERROR PATH
   it('should continue operating if monitoring fails');
 });
@@ -214,15 +214,15 @@ describe('Safeguard 4: Feature Flag Validation', () => {
   // HAPPY PATH
   it('should validate true/"1" as enabled');
   it('should validate false/"0" as disabled');
-  
+
   // SAD PATH
   it('should reject invalid values (default to true)');
   it('should handle undefined gracefully');
-  
+
   // EDGE PATH
   it('should handle case-insensitivity');
   it('should trim whitespace');
-  
+
   // ERROR PATH
   it('should log invalid flags');
 });
@@ -252,15 +252,15 @@ describe('Safeguard 5: Atomic Writes & Locks', () => {
   it('should write config atomically (temp → rename)');
   it('should fsync to disk');
   it('should acquire and release locks');
-  
+
   // SAD PATH
   it('should fail safely if lock timeout');
   it('should cleanup temp file on error');
-  
+
   // EDGE PATH
   it('should handle concurrent write attempts');
   it('should recover from partial writes');
-  
+
   // ERROR PATH
   it('should throw ConfigWriteError on failure');
 });
@@ -299,13 +299,13 @@ describe('Safeguard 6: Compatibility Shim', () => {
   // HAPPY PATH
   it('should read v1 format configs');
   it('should convert v1 requests to v2 internally');
-  
+
   // SAD PATH
   it('should handle v2-only features gracefully');
-  
+
   // EDGE PATH
   it('should maintain backward compatibility');
-  
+
   // ERROR PATH
   it('should log unsupported features');
 });
@@ -334,14 +334,14 @@ describe('Safeguard 7: Percentage Rollout', () => {
   it('should enable for 100% of users at 1.0');
   it('should disable for 0% of users at 0.0');
   it('should enable for ~50% at 0.5');
-  
+
   // SAD PATH
   it('should handle invalid percentages');
-  
+
   // EDGE PATH
   it('should be deterministic (same user always gets same result)');
   it('should use consistent hashing');
-  
+
   // ERROR PATH
   it('should default to enabled on calculation error');
 });
@@ -369,13 +369,13 @@ describe('Safeguard 8: Rollback', () => {
   // HAPPY PATH
   it('should rollback from v2 to v1');
   it('should preserve data during rollback');
-  
+
   // SAD PATH
   it('should handle rollback failures');
-  
+
   // EDGE PATH
   it('should be idempotent (multiple rollbacks safe)');
-  
+
   // ERROR PATH
   it('should auto-trigger on error rate >1%');
 });
@@ -522,6 +522,6 @@ Total: 12-16 hours (parallelizable)
 
 ---
 
-**Authority**: TDD_CORE.md (test-first, 4-path coverage mandatory)  
-**Status**: Ready for team execution  
+**Authority**: TDD_CORE.md (test-first, 4-path coverage mandatory)
+**Status**: Ready for team execution
 **Risk Reduction**: 40% → <2% (upon completion)

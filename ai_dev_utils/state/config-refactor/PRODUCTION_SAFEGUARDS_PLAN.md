@@ -1,8 +1,8 @@
 # Production Safeguards Plan - Config Store v1 → v2 Migration
 
-**Authority**: Industry best practices (2025) + TDD_CORE.md compliance  
-**Status**: ✅ **COMPREHENSIVE RISK MITIGATION STRATEGY**  
-**Date**: 2025-12-12  
+**Authority**: Industry best practices (2025) + TDD_CORE.md compliance
+**Status**: ✅ **COMPREHENSIVE RISK MITIGATION STRATEGY**
+**Date**: 2025-12-12
 **Audience**: DevOps, Engineering Leadership, On-Call Support
 
 ---
@@ -30,13 +30,13 @@ Users lose protection rules silently during v1→v2 migration without realizing 
 async function migrationWithChecksum(v1Config: V1Config): Promise<{ migrated: V2Config; checksum: string }> {
   // Before migration
   const beforeChecksum = calculateConfigChecksum(v1Config);
-  
+
   // Perform migration
   const migrated = migrateV1ToV2(v1Config);
-  
+
   // After migration
   const afterChecksum = calculateConfigChecksum(migrated);
-  
+
   // Validate checksums match (data integrity)
   if (!validateChecksumIntegrity(beforeChecksum, afterChecksum)) {
     throw new MigrationDataCorruptionError(
@@ -44,7 +44,7 @@ async function migrationWithChecksum(v1Config: V1Config): Promise<{ migrated: V2
       { before: beforeChecksum, after: afterChecksum }
     );
   }
-  
+
   return { migrated, checksum: beforeChecksum };
 }
 ```
@@ -58,10 +58,10 @@ async function migrationWithChecksum(v1Config: V1Config): Promise<{ migrated: V2
 async function loadConfigWithCorruptionDetection(configPath: string): Promise<Result<V2Config>> {
   try {
     const raw = await fs.promises.readFile(configPath, 'utf-8');
-    
+
     // Attempt to parse
     const parsed = JSON.parse(raw);
-    
+
     // Validate against schema
     const validation = validateConfigSchema(parsed);
     if (!validation.valid) {
@@ -70,7 +70,7 @@ async function loadConfigWithCorruptionDetection(configPath: string): Promise<Re
         validation.errors
       ));
     }
-    
+
     // Validate data integrity
     const integrityCheck = validateDataIntegrity(parsed);
     if (!integrityCheck.pass) {
@@ -79,7 +79,7 @@ async function loadConfigWithCorruptionDetection(configPath: string): Promise<Re
         integrityCheck.issues
       ));
     }
-    
+
     return Ok(parsed);
   } catch (error) {
     // Fallback to default config
@@ -108,10 +108,10 @@ interface MigrationAuditLog {
 async function logMigrationAudit(audit: MigrationAuditLog): Promise<void> {
   const logDir = path.join(homedir(), '.snapback', 'migration-logs');
   await fs.promises.mkdir(logDir, { recursive: true });
-  
+
   const logFile = path.join(logDir, `migration-${Date.now()}.json`);
   await fs.promises.writeFile(logFile, JSON.stringify(audit, null, 2));
-  
+
   logger.info('Migration audited', { path: logFile, hash: audit.v1ConfigHash });
 }
 ```
@@ -130,10 +130,10 @@ async function captureConfigLoadMetrics(result: Result<V2Config>): Promise<void>
     protectionCount: isOk(result) ? result.value.protections.length : 0,
     migrationVersion: 'v1-to-v2',
   };
-  
+
   // Send to PostHog (when available)
   await trackEvent('config_load_metrics', event);
-  
+
   // Log locally too
   logger.info('Config load metrics', event);
 }
@@ -160,7 +160,7 @@ export class ConfigWatcher {
   private watcher: chokidar.FSWatcher | null = null;
   private watcherErrors = 0;
   private readonly MAX_WATCHER_ERRORS = 5;
-  
+
   startWatching(configPath: string): void {
     // Use chokidar (handles EMFILE, race conditions, atomic writes)
     this.watcher = chokidar.watch(configPath, {
@@ -174,11 +174,11 @@ export class ConfigWatcher {
       usePolling: false, // Use native fs.watch
       maxListeners: 10,
     });
-    
+
     this.watcher.on('change', (path) => {
       this.handleConfigChange(path);
     });
-    
+
     this.watcher.on('error', (error) => {
       this.watcherErrors++;
       if (this.watcherErrors > this.MAX_WATCHER_ERRORS) {
@@ -187,7 +187,7 @@ export class ConfigWatcher {
       }
     });
   }
-  
+
   private async handleConfigChange(path: string): Promise<void> {
     try {
       const result = await this.reloadConfig(path);
@@ -198,7 +198,7 @@ export class ConfigWatcher {
       logger.error('Config watcher error', { error, path });
     }
   }
-  
+
   stopWatching(): void {
     if (this.watcher) {
       this.watcher.close();
@@ -225,7 +225,7 @@ export class ConfigWatcher {
     300, // Wait 300ms after last change before reloading
     { maxWait: 1000 } // Never wait more than 1 second
   );
-  
+
   private handleConfigChange(path: string): void {
     this.debouncedReload(path);
   }
@@ -241,7 +241,7 @@ export class ConfigWatcher {
 export class ConfigWatcherResourceManager {
   private readonly MAX_WATCHERS = 50; // Limit watchers per process
   private activeWatchers = 0;
-  
+
   canStartWatcher(): boolean {
     if (this.activeWatchers >= this.MAX_WATCHERS) {
       logger.warn('Max watchers reached, stopping new watchers');
@@ -249,15 +249,15 @@ export class ConfigWatcherResourceManager {
     }
     return true;
   }
-  
+
   incrementWatchers(): void {
     this.activeWatchers++;
   }
-  
+
   decrementWatchers(): void {
     this.activeWatchers--;
   }
-  
+
   getWatcherHealth(): { active: number; max: number; capacity: number } {
     return {
       active: this.activeWatchers,
@@ -270,7 +270,7 @@ export class ConfigWatcherResourceManager {
 // Track and alert
 async function monitorWatcherHealth(): Promise<void> {
   const health = watcherManager.getWatcherHealth();
-  
+
   if (health.capacity < 20) {
     logger.warn('Watcher capacity low', health);
     await trackEvent('watcher_capacity_low', health);
@@ -299,7 +299,7 @@ export class ConfigLoadPerformanceMonitor {
     slow: 500, // 100-500ms ⚠️
     critical: 1000, // > 1000ms 🔴
   };
-  
+
   async measureConfigLoad<T>(
     fn: () => Promise<T>,
     label: string
@@ -307,25 +307,25 @@ export class ConfigLoadPerformanceMonitor {
     const start = Date.now();
     const result = await fn();
     const duration = Date.now() - start;
-    
+
     // Categorize performance
     const category =
       duration < this.PERFORMANCE_THRESHOLDS.fast ? 'fast' :
       duration < this.PERFORMANCE_THRESHOLDS.slow ? 'acceptable' :
       duration < this.PERFORMANCE_THRESHOLDS.critical ? 'slow' :
       'critical';
-    
+
     const event = { label, duration, category };
-    
+
     // Log and track
     logger.info(`Config load: ${label}`, event);
     await trackEvent('config_load_performance', event);
-    
+
     // Alert if critical
     if (category === 'critical') {
       await alertOncall('Config load performance critical', event);
     }
-    
+
     return { result, duration };
   }
 }
@@ -346,7 +346,7 @@ const { result, duration } = await monitor.measureConfigLoad(
 export class ConfigStore {
   private fullConfig: ConfigStoreV2 | null = null;
   private loadingPromise: Promise<ConfigStoreV2> | null = null;
-  
+
   async getProtections(): Promise<Protection[]> {
     // Load on-demand, cache result
     if (!this.fullConfig) {
@@ -357,7 +357,7 @@ export class ConfigStore {
     }
     return this.fullConfig.protections;
   }
-  
+
   async getEngineConfig(): Promise<EngineConfig> {
     // Only load what's needed
     if (!this.fullConfig) {
@@ -378,27 +378,27 @@ export class ConfigStore {
 export class ConfigCache {
   private cache = new Map<string, { value: any; timestamp: number }>();
   private readonly CACHE_TTL = 5 * 60 * 1000; // 5 minutes
-  
+
   set<T>(key: string, value: T): void {
     this.cache.set(key, {
       value,
       timestamp: Date.now(),
     });
   }
-  
+
   get<T>(key: string): T | null {
     const cached = this.cache.get(key);
-    
+
     if (!cached) return null;
-    
+
     if (Date.now() - cached.timestamp > this.CACHE_TTL) {
       this.cache.delete(key);
       return null;
     }
-    
+
     return cached.value;
   }
-  
+
   invalidate(key?: string): void {
     if (key) {
       this.cache.delete(key);
@@ -426,20 +426,20 @@ Environment variable feature flag is unreliable (unset, wrong value, race condit
 ```typescript
 export class FeatureFlagValidator {
   private readonly VALID_VALUES = ['true', '1', 'false', '0'];
-  
+
   validateFeatureFlag(value: string | undefined): boolean {
     if (value === undefined) {
       logger.warn('Feature flag undefined, using default (true)');
       return true;
     }
-    
+
     const normalized = value.toLowerCase().trim();
-    
+
     if (!this.VALID_VALUES.includes(normalized)) {
       logger.warn(`Invalid feature flag value: ${value}, using default (true)`);
       return true;
     }
-    
+
     return normalized === 'true' || normalized === '1';
   }
 }
@@ -470,9 +470,9 @@ export class FeatureFlagEvaluator {
         confidence: 100, // Explicit setting
       };
     }
-    
+
     // Would check PostHog here (future)
-    
+
     // Default
     return {
       source: 'default',
@@ -492,30 +492,30 @@ export class FeatureFlagEvaluator {
 ```typescript
 export async function validateFeatureFlagHealth(): Promise<boolean> {
   const checks: Array<{ name: string; pass: boolean }> = [];
-  
+
   // Check 1: Can read feature flag
   const flagValue = process.env.FEATURE_CONFIG_V2;
   checks.push({
     name: 'feature_flag_readable',
     pass: flagValue !== undefined || true, // Default is OK
   });
-  
+
   // Check 2: Feature flag is valid
   const validator = new FeatureFlagValidator();
-  const isValid = flagValue === undefined || 
+  const isValid = flagValue === undefined ||
     validator.validateFeatureFlag(flagValue);
   checks.push({
     name: 'feature_flag_valid',
     pass: isValid,
   });
-  
+
   // Report results
   const allPass = checks.every(c => c.pass);
   if (!allPass) {
     logger.warn('Feature flag health check failed', { checks });
     await trackEvent('feature_flag_health_check_failed', { checks });
   }
-  
+
   return allPass;
 }
 ```
@@ -544,29 +544,29 @@ export async function atomicWriteConfig(
 ): Promise<Result<void>> {
   try {
     const tempPath = `${filePath}.tmp`;
-    
+
     // Write to temporary file first
     await writeFile(
       tempPath,
       JSON.stringify(config, null, 2),
       { encoding: 'utf-8' }
     );
-    
+
     // Sync to disk (ensures write is persisted)
     const fd = fs.openSync(tempPath, 'r');
     fs.fsyncSync(fd);
     fs.closeSync(fd);
-    
+
     // Atomic rename
     fs.renameSync(tempPath, filePath);
-    
+
     return Ok(undefined);
   } catch (error) {
     // Clean up temp file on error
     try {
       fs.unlinkSync(`${filePath}.tmp`);
     } catch { /* ignored */ }
-    
+
     return Err(new ConfigWriteError('Atomic write failed', filePath, toError(error)));
   }
 }
@@ -581,14 +581,14 @@ export async function atomicWriteConfig(
 export class FileLock {
   private lockFile: string;
   private lockFileHandle: number | null = null;
-  
+
   constructor(configPath: string) {
     this.lockFile = `${configPath}.lock`;
   }
-  
+
   async acquireLock(timeoutMs = 5000): Promise<Result<void>> {
     const start = Date.now();
-    
+
     while (Date.now() - start < timeoutMs) {
       try {
         // Create lock file exclusively (fails if exists)
@@ -599,10 +599,10 @@ export class FileLock {
         await sleep(50);
       }
     }
-    
+
     return Err(new LockTimeoutError(`Could not acquire lock on ${this.lockFile}`));
   }
-  
+
   releaseLock(): void {
     if (this.lockFileHandle !== null) {
       fs.closeSync(this.lockFileHandle);
@@ -617,12 +617,12 @@ export class FileLock {
 // Usage
 async function updateConfigSafely(config: ConfigStoreV2): Promise<Result<void>> {
   const lock = new FileLock(configPath);
-  
+
   const lockResult = await lock.acquireLock();
   if (!isOk(lockResult)) {
     return lockResult;
   }
-  
+
   try {
     return await atomicWriteConfig(configPath, config);
   } finally {
@@ -639,25 +639,25 @@ async function updateConfigSafely(config: ConfigStoreV2): Promise<Result<void>> 
 ```typescript
 export class ConfigBackupManager {
   private backupDir: string;
-  
+
   constructor(configPath: string) {
     this.backupDir = path.join(path.dirname(configPath), '.snapback-backups');
   }
-  
+
   async createBackup(config: ConfigStoreV2): Promise<string> {
     await fs.promises.mkdir(this.backupDir, { recursive: true });
-    
+
     const timestamp = Date.now();
     const backupPath = path.join(this.backupDir, `config-${timestamp}.json`);
-    
+
     await fs.promises.writeFile(
       backupPath,
       JSON.stringify(config, null, 2)
     );
-    
+
     return backupPath;
   }
-  
+
   async detectCorruptedConfig(configPath: string): Promise<boolean> {
     try {
       const content = await fs.promises.readFile(configPath, 'utf-8');
@@ -667,20 +667,20 @@ export class ConfigBackupManager {
       return true; // Corrupted (invalid JSON)
     }
   }
-  
+
   async restoreFromBackup(configPath: string): Promise<Result<ConfigStoreV2>> {
     // Find most recent backup
     const backups = await fs.promises.readdir(this.backupDir);
     if (backups.length === 0) {
       return Err(new NoBackupAvailableError());
     }
-    
+
     const latestBackup = backups.sort().pop()!;
     const backupPath = path.join(this.backupDir, latestBackup);
-    
+
     const content = await fs.promises.readFile(backupPath, 'utf-8');
     const restored = JSON.parse(content);
-    
+
     // Write restored config
     return atomicWriteConfig(configPath, restored);
   }
@@ -691,14 +691,14 @@ async function loadConfigWithCorruptionRecovery(
   configPath: string
 ): Promise<Result<ConfigStoreV2>> {
   const backup = new ConfigBackupManager(configPath);
-  
+
   // Check if corrupted
   const isCorrupted = await backup.detectCorruptedConfig(configPath);
   if (isCorrupted) {
     logger.warn('Config corrupted, attempting recovery from backup');
     return backup.restoreFromBackup(configPath);
   }
-  
+
   return loadConfig(configPath);
 }
 ```
@@ -724,18 +724,18 @@ export class ConfigV1CompatibilityShim {
     try {
       const content = await fs.promises.readFile(filePath, 'utf-8');
       const parsed = JSON.parse(content);
-      
+
       // Check if it's v1 format
       if (parsed.version === 1 || (!parsed.version && parsed.protections)) {
         return parsed as V1Config;
       }
-      
+
       return null;
     } catch {
       return null;
     }
   }
-  
+
   // Convert v1 format requests to v2 internally
   async handleLegacyRequest(v1Request: any): Promise<V2Response> {
     const v1Config = v1Request;
@@ -825,12 +825,12 @@ export class PercentageBasedRollout {
   isEnabledForUser(userId: string, percentage: number): boolean {
     if (percentage >= 1.0) return true;
     if (percentage <= 0.0) return false;
-    
+
     // Consistent hashing: same user always gets same result
     const hash = this.hashUserId(userId);
     return (hash % 100) < (percentage * 100);
   }
-  
+
   private hashUserId(userId: string): number {
     let hash = 0;
     for (let i = 0; i < userId.length; i++) {
@@ -893,26 +893,26 @@ describe('Feature Flag Rollback', () => {
     process.env.FEATURE_CONFIG_V2 = 'true';
     let config = await configStore.initialize();
     expect(config.version).toBe(2);
-    
+
     // Simulate rollback
     process.env.FEATURE_CONFIG_V2 = 'false';
     configStore.reset();
     config = await configStore.initialize();
-    
+
     // Should fall back to v1 behavior
     expect(config.version).toBe(1);
   });
-  
+
   it('should preserve data during rollback', async () => {
     const originalRules = [...config.protections];
-    
+
     // Upgrade to v2
     await migrate();
-    
+
     // Rollback
     process.env.FEATURE_CONFIG_V2 = 'false';
     await revert();
-    
+
     // Rules should be intact
     expect(config.protections).toEqual(originalRules);
   });
@@ -976,19 +976,19 @@ describe('Feature Flag Rollback', () => {
 export class AutomaticRollbackManager {
   private errorRateThreshold = 0.01; // 1% error rate
   private checkInterval = 30000; // Every 30 seconds
-  
+
   startMonitoring(): void {
     setInterval(async () => {
       const errorRate = await getErrorRate();
       const loadTime = await getConfigLoadTime();
-      
+
       if (errorRate > this.errorRateThreshold) {
         await this.triggerRollback(
           'Error rate exceeded threshold',
           { errorRate, threshold: this.errorRateThreshold }
         );
       }
-      
+
       if (loadTime > 500) {
         logger.warn('Config load time degraded', { loadTime });
         // Don't auto-rollback for perf (might be infrastructure issue)
@@ -997,19 +997,19 @@ export class AutomaticRollbackManager {
       }
     }, this.checkInterval);
   }
-  
+
   private async triggerRollback(reason: string, context: any): Promise<void> {
     logger.error('AUTOMATIC ROLLBACK TRIGGERED', { reason, context });
-    
+
     // 1. Set flag
     process.env.FEATURE_CONFIG_V2 = 'false';
-    
+
     // 2. Alert
     await alertOncall('AUTOMATIC ROLLBACK', { reason, context });
-    
+
     // 3. Log for investigation
     await saveRollbackDecision(reason, context);
-    
+
     // 4. Restart services (if supported)
     // await restartServices();
   }
@@ -1066,9 +1066,9 @@ Day 12+ (2025-12-23+)
 
 ## Risk Reduction Summary
 
-**Without Safeguards**: 40% chance of production incident  
-**With 4 safeguards** (Checksums, Chokidar, Monitoring, Atomic Writes): ~15% risk  
-**With 6 safeguards** (+ Feature Flag Validation, Rollback Tests): ~5% risk  
+**Without Safeguards**: 40% chance of production incident
+**With 4 safeguards** (Checksums, Chokidar, Monitoring, Atomic Writes): ~15% risk
+**With 6 safeguards** (+ Feature Flag Validation, Rollback Tests): ~5% risk
 **With all 8 safeguards**: <2% risk
 
 ---
@@ -1091,6 +1091,6 @@ Day 12+ (2025-12-23+)
 
 ---
 
-**Authority**: Industry best practices (LaunchDarkly 2025, Datadog, Harness)  
-**Last Updated**: 2025-12-12  
+**Authority**: Industry best practices (LaunchDarkly 2025, Datadog, Harness)
+**Last Updated**: 2025-12-12
 **Status**: Ready for implementation

@@ -62,6 +62,21 @@ pre-commit:
                 - merge
                 - rebase
 
+        vscode-extension-type-check:
+            glob: "apps/vscode/**/*.{ts,tsx}"
+            run: |
+                echo '🔍 Type-checking VSCode extension...'
+                cd apps/vscode && pnpm check-types
+                if [ $? -ne 0 ]; then
+                  echo '❌ VSCode extension has TypeScript errors'
+                  echo 'Run: cd apps/vscode && pnpm check-types'
+                  exit 1
+                fi
+                echo '✅ VSCode extension type-check passed'
+            skip:
+                - merge
+                - rebase
+
 pre-push:
     parallel: false
     commands:

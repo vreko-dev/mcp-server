@@ -1,8 +1,8 @@
 # SnapBack User Journey Telemetry Consolidation
 
-**Date**: December 12, 2025  
-**Status**: ✅ **ANALYSIS COMPLETE** - Ready for Implementation  
-**Framework**: PostHog + TDD_CORE Standards  
+**Date**: December 12, 2025
+**Status**: ✅ **ANALYSIS COMPLETE** - Ready for Implementation
+**Framework**: PostHog + TDD_CORE Standards
 **Compliance**: 100% Privacy-Safe, 99.4% Event Coverage
 
 ---
@@ -93,11 +93,11 @@ interface EventProperties {
   // Required
   event_timestamp: number;
   user_id: string;  // Anonymous/hashed, never PII
-  
+
   // Contextual (2-3)
   platform: "extension" | "web" | "cli" | "mcp";
   version: string;
-  
+
   // Event-specific (3-5)
   property_1: string | number | boolean;
   property_2: string | number | boolean;
@@ -147,7 +147,7 @@ Step 4: auth.approval.received (COMPLETE)
 ```typescript
 /**
  * Canonical Journey Telemetry Registry
- * 
+ *
  * Single source of truth for all journey-level telemetry.
  * Enables:
  * - Automatic funnel definitions
@@ -407,7 +407,7 @@ export const JOURNEY_TELEMETRY = {
 ```
 Waitlist Join → OAuth Complete → Extension Install → First Protected Save
    (1%)    →       (40%)      →       (25%)       →        (10%)
-   
+
 Expected conversion: 0.1% × 0.4 × 0.25 × 0.1 = 0.001% (1 in 100k)
 Baseline: ~50 users in first cohort → 0.5 conversions (target: 5+ for strong product)
 ```
@@ -418,7 +418,7 @@ export const FUNNELS = {
   CORE_ACTIVATION: {
     name: "Core Activation Funnel",
     steps: [
-      { 
+      {
         event: "waitlist_joined",
         name: "Waitlist Join",
       },
@@ -486,7 +486,7 @@ export const FUNNELS = {
 ```
 AI Detected → Notification Shown → Snapshot Created
    (100%)   →      (90%)        →      (85%)
-   
+
 Indicates: 76.5% of AI detections result in protection action
 Baseline: Target >85% for robust coverage
 ```
@@ -508,7 +508,7 @@ export const COHORTS = {
   AI_POWER_USERS: {
     name: "Power Users: 10+ AI Detections/Day",
     conditions: [
-      { 
+      {
         event: "ai_detection_confirmed",
         operator: "count_where",
         value: 10,
@@ -630,7 +630,7 @@ export const JOURNEY_TELEMETRY = { ... } as const;
 // Type extraction
 type JourneyEvent = typeof JOURNEY_TELEMETRY[keyof typeof JOURNEY_TELEMETRY];
 export function validateJourneyEvent(name: string): boolean {
-  return Object.values(JOURNEY_TELEMETRY).some(j => 
+  return Object.values(JOURNEY_TELEMETRY).some(j =>
     Object.values(j).some(e => e.event === name)
   );
 }
@@ -645,7 +645,7 @@ export function validateJourneyEvent(name: string): boolean {
 // apps/api/modules/analytics/procedures/sync-funnels.ts
 export const syncFunnelsToPostHog = publicProcedure.handler(async () => {
   const posthog = getPostHog();
-  
+
   for (const [key, funnel] of Object.entries(FUNNELS)) {
     // PostHog Insight API: Create/update funnel
     const steps = funnel.steps.map((s, i) => ({
@@ -654,7 +654,7 @@ export const syncFunnelsToPostHog = publicProcedure.handler(async () => {
       name: s.name,
       order: i,
     }));
-    
+
     await posthog.createInsight({
       name: funnel.name,
       type: "funnels",
@@ -1010,17 +1010,17 @@ packages/analytics/src/
 
 SnapBack's telemetry foundation is **strong but incomplete**. By implementing the config-based consolidation strategy and adding 11 missing events, we can:
 
-✅ **Track all 24 user journeys** end-to-end  
-✅ **Define conversion funnels** with precision  
-✅ **Identify bottlenecks** in product flows  
-✅ **Enable data-driven product decisions**  
-✅ **Maintain privacy compliance** (100%)  
+✅ **Track all 24 user journeys** end-to-end
+✅ **Define conversion funnels** with precision
+✅ **Identify bottlenecks** in product flows
+✅ **Enable data-driven product decisions**
+✅ **Maintain privacy compliance** (100%)
 
-**Estimated Implementation Time**: 4 weeks  
-**ROI**: High (insights enable 3-5x better product decisions)  
+**Estimated Implementation Time**: 4 weeks
+**ROI**: High (insights enable 3-5x better product decisions)
 
 ---
 
-**Document Version**: 1.0  
-**Last Updated**: December 12, 2025  
+**Document Version**: 1.0
+**Last Updated**: December 12, 2025
 **Status**: Ready for Implementation Review

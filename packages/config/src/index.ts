@@ -19,6 +19,8 @@ export {
 	type V1EngineConfig,
 	type V1ProtectionEntry,
 } from "./migrations/v1-to-v2";
+// Re-export path types for type-safe access
+export type { ConfigPath, PathValue, SafeGet } from "./path-types";
 export {
 	// Schemas
 	type ConfigStoreV2,

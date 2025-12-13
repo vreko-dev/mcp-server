@@ -12,17 +12,17 @@ describe("API Key Plugin Integration (RED PHASE)", () => {
 	describe("apikey-plugin-001: Format validation", () => {
 		it("should validate API key format through better-auth plugin", async () => {
 			// better-auth's apiKey plugin provides format validation:
-			// - Correct prefix (sb_live_ or sb_test_)
+			// - Correct prefix (sk_live_ or sk_test_)
 			// - Minimum length enforcement
 			// - Character set validation (alphanumeric + underscore)
 			// - Not already expired
 			// - Not revoked in database
 
-			const validApiKey = "sb_live_test123456789abcdef";
+			const validApiKey = "sk_live_test123456789abcdef";
 			const invalidKeys = [
 				"invalid_format", // wrong prefix
-				"sb_live_", // too short
-				"sb_live_test!@#$%", // invalid characters
+				"sk_live_", // too short
+				"sk_live_test!@#$%", // invalid characters
 			];
 
 			expect(validApiKey).toMatch(/^sb_(live|test)_/);
@@ -222,11 +222,11 @@ describe("API Key Middleware Integration", () => {
 	describe("authMiddleware: request flow", () => {
 		it("should extract API key from x-api-key header", async () => {
 			const headers = new Headers({
-				"x-api-key": "sb_live_test123456789abcdef",
+				"x-api-key": "sk_live_test123456789abcdef",
 			});
 
 			const apiKey = headers.get("x-api-key");
-			expect(apiKey).toBe("sb_live_test123456789abcdef");
+			expect(apiKey).toBe("sk_live_test123456789abcdef");
 		});
 
 		it("should return 401 when API key is missing", async () => {

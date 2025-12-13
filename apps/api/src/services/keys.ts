@@ -1,5 +1,6 @@
-import { hash, verify } from "@node-rs/argon2";
+import { verify } from "@node-rs/argon2";
 import { createId } from "@paralleldrive/cuid2";
+import { generateApiKey, hashApiKey } from "@snapback/auth";
 
 // In-memory store for API keys
 interface ApiKey {
@@ -27,15 +28,6 @@ const apiKeysStore = new Map<string, ApiKey>();
 const usageLogsBuffer: UsageLog[] = [];
 
 /**
- * Generate a new API key
- * @returns A new API key string
- */
-function generateApiKey(): string {
-	// Generate a secure API key using cuid2 with snapback prefix
-	return `sb_live_${createId()}`;
-}
-
-/**
  * Create a new API key
  * @param userId The user ID to associate with the key
  * @param permissions The permissions for the key
@@ -48,7 +40,7 @@ export async function createApiKey(
 	expiresAt?: Date,
 ): Promise<{ id: string; key: string }> {
 	const key = generateApiKey();
-	const keyHash = await hash(key); // Hash the key for storage
+	const keyHash = await hashApiKey(key); // Hash the key for storage
 	const id = createId();
 
 	const apiKey: ApiKey = {
@@ -89,7 +81,7 @@ export async function getApiKey(id: string): Promise<Omit<ApiKey, "keyHash"> | n
  */
 export async function getApiKeyByKey(keyValue: string): Promise<Omit<ApiKey, "keyHash"> | null> {
 	// Validate key format first
-	if (!keyValue.startsWith("sb_live_")) {
+	if (!keyValue.startsWith("sk_live_")) {
 		return null;
 	}
 
@@ -176,7 +168,7 @@ export async function getUsageLogs(apiKeyId: string): Promise<UsageLog[]> {
  */
 export async function validateApiKey(keyValue: string): Promise<boolean> {
 	// Validate key format first
-	if (!keyValue.startsWith("sb_live_")) {
+	if (!keyValue.startsWith("sk_live_")) {
 		return false;
 	}
 

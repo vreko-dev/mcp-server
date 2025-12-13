@@ -6,7 +6,7 @@ describe("Access Control Integration", () => {
 	it("should allow admin users to access all tools", async () => {
 		// Set up environment for admin user
 		const originalApiKey = process.env.SNAPBACK_API_KEY;
-		process.env.SNAPBACK_API_KEY = "sb_live_admin_testkey123";
+		process.env.SNAPBACK_API_KEY = "sk_live_admin_testkey123";
 
 		try {
 			const { server } = await startServer();
@@ -40,7 +40,7 @@ describe("Access Control Integration", () => {
 	it("should allow pro users to access Pro-tier tools", async () => {
 		// Set up environment for pro user
 		const originalApiKey = process.env.SNAPBACK_API_KEY;
-		process.env.SNAPBACK_API_KEY = "sb_live_testkey123";
+		process.env.SNAPBACK_API_KEY = "sk_live_testkey123";
 
 		try {
 			const { server } = await startServer();

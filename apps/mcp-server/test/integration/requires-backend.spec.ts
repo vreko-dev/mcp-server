@@ -31,7 +31,7 @@ describe("MCP requiresBackend Enforcement", () => {
 		process.env.SNAPBACK_NO_NETWORK = "true";
 
 		// Pro user with checkpoint scope
-		process.env.SNAPBACK_API_KEY = "sb_live_1234567890abcdef";
+		process.env.SNAPBACK_API_KEY = "sk_live_1234567890abcdef";
 		const authResult = await authenticate(process.env.SNAPBACK_API_KEY);
 
 		// All tools should be accessible for Pro users
@@ -45,7 +45,7 @@ describe("MCP requiresBackend Enforcement", () => {
 		process.env.SNAPBACK_NO_NETWORK = "true";
 
 		// Free user with only analyze scope
-		process.env.SNAPBACK_API_KEY = "sb_test_1234567890abcdef";
+		process.env.SNAPBACK_API_KEY = "sk_test_1234567890abcdef";
 		const authResult = await authenticate(process.env.SNAPBACK_API_KEY);
 
 		expect(authResult.valid).toBe(true);

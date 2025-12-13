@@ -16,7 +16,7 @@ describe("MCP Pro Tools Enforcement", () => {
 	it("mcp-pro-001: should authenticate Pro user correctly", async () => {
 		// Set up Pro user
 		process.env.SNAPBACK_NO_NETWORK = "true";
-		const apiKey = "sb_live_1234567890abcdef";
+		const apiKey = "sk_live_1234567890abcdef";
 
 		const authResult = await authenticate(apiKey);
 
@@ -29,7 +29,7 @@ describe("MCP Pro Tools Enforcement", () => {
 	it("mcp-pro-002: should authenticate Free user correctly", async () => {
 		// Set up Free user
 		process.env.SNAPBACK_NO_NETWORK = "true";
-		const apiKey = "sb_test_1234567890abcdef";
+		const apiKey = "sk_test_1234567890abcdef";
 
 		const authResult = await authenticate(apiKey);
 

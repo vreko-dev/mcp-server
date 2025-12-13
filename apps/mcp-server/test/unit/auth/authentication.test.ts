@@ -52,7 +52,7 @@ describe("MCP Authentication - Security Critical", () => {
 		// Test ID: MCP-AUTH-001-001
 		it("should validate API key format correctly", async () => {
 			// GIVEN: Valid API key format
-			const validKey = "sb_live_1234567890abcdef1234567890abcdef";
+			const validKey = "sk_live_1234567890abcdef1234567890abcdef";
 
 			vi.mocked(auth.api.verifyApiKey).mockResolvedValue({
 				isValid: true,
@@ -110,7 +110,7 @@ describe("MCP Authentication - Security Critical", () => {
 		// Test ID: MCP-AUTH-001-004
 		it("should cache authentication results for 1 minute", async () => {
 			// GIVEN: Valid API key
-			const apiKey = "sb_live_cachedkey123456789012345678";
+			const apiKey = "sk_live_cachedkey123456789012345678";
 
 			vi.mocked(auth.api.verifyApiKey).mockResolvedValue({
 				isValid: true,
@@ -132,7 +132,7 @@ describe("MCP Authentication - Security Critical", () => {
 		// Test ID: MCP-AUTH-001-005
 		it("should expire cache after 1 minute", async () => {
 			// GIVEN: Valid API key and mocked timer
-			const apiKey = "sb_live_expirekey12345678901234567";
+			const apiKey = "sk_live_expirekey12345678901234567";
 
 			vi.mocked(auth.api.verifyApiKey).mockResolvedValue({
 				isValid: true,
@@ -184,7 +184,7 @@ describe("MCP Authentication - Security Critical", () => {
 		// Test ID: MCP-AUTH-001-007
 		it("should reject expired API keys", async () => {
 			// GIVEN: Expired API key
-			const expiredKey = "sb_live_expiredkey1234567890123456";
+			const expiredKey = "sk_live_expiredkey1234567890123456";
 
 			vi.mocked(auth.api.verifyApiKey).mockResolvedValue({
 				isValid: false,
@@ -202,7 +202,7 @@ describe("MCP Authentication - Security Critical", () => {
 		// Test ID: MCP-AUTH-001-008
 		it("should reject revoked API keys", async () => {
 			// GIVEN: Revoked API key
-			const revokedKey = "sb_live_revokedkey1234567890123456";
+			const revokedKey = "sk_live_revokedkey1234567890123456";
 
 			vi.mocked(auth.api.verifyApiKey).mockResolvedValue({
 				isValid: false,
@@ -220,7 +220,7 @@ describe("MCP Authentication - Security Critical", () => {
 		// Test ID: MCP-AUTH-001-009
 		it("should handle authentication service errors gracefully", async () => {
 			// GIVEN: API key but service error
-			const apiKey = "sb_live_serviceerror123456789012345";
+			const apiKey = "sk_live_serviceerror123456789012345";
 
 			vi.mocked(auth.api.verifyApiKey).mockRejectedValue(new Error("Database connection failed"));
 
@@ -238,7 +238,7 @@ describe("MCP Authentication - Security Critical", () => {
 		// Test ID: MCP-AUTH-001-010
 		it("should identify free tier correctly", async () => {
 			// GIVEN: Free tier API key
-			const freeKey = "sb_test_freetier12345678901234567";
+			const freeKey = "sk_test_freetier12345678901234567";
 
 			vi.mocked(auth.api.verifyApiKey).mockResolvedValue({
 				isValid: true,
@@ -259,7 +259,7 @@ describe("MCP Authentication - Security Critical", () => {
 		// Test ID: MCP-AUTH-001-011
 		it("should identify pro tier correctly", async () => {
 			// GIVEN: Pro tier API key
-			const proKey = "sb_live_protier123456789012345678";
+			const proKey = "sk_live_protier123456789012345678";
 
 			vi.mocked(auth.api.verifyApiKey).mockResolvedValue({
 				isValid: true,
@@ -283,7 +283,7 @@ describe("MCP Authentication - Security Critical", () => {
 		// Test ID: MCP-AUTH-001-012
 		it("should identify admin tier correctly", async () => {
 			// GIVEN: Admin tier API key
-			const adminKey = "sb_live_admintier1234567890123456";
+			const adminKey = "sk_live_admintier1234567890123456";
 
 			vi.mocked(auth.api.verifyApiKey).mockResolvedValue({
 				isValid: true,
@@ -304,7 +304,7 @@ describe("MCP Authentication - Security Critical", () => {
 		// Test ID: MCP-AUTH-001-013
 		it("should default to free tier when metadata missing", async () => {
 			// GIVEN: API key without tier metadata
-			const keyWithoutTier = "sb_live_notier12345678901234567";
+			const keyWithoutTier = "sk_live_notier12345678901234567";
 
 			vi.mocked(auth.api.verifyApiKey).mockResolvedValue({
 				isValid: true,
@@ -326,7 +326,7 @@ describe("MCP Authentication - Security Critical", () => {
 		// Test ID: MCP-AUTH-001-014
 		it("should extract scopes from permissions correctly", async () => {
 			// GIVEN: API key with multiple permissions
-			const apiKey = "sb_live_multiscope123456789012345";
+			const apiKey = "sk_live_multiscope123456789012345";
 
 			vi.mocked(auth.api.verifyApiKey).mockResolvedValue({
 				isValid: true,
@@ -352,7 +352,7 @@ describe("MCP Authentication - Security Critical", () => {
 		// Test ID: MCP-AUTH-001-015
 		it("should handle empty permissions gracefully", async () => {
 			// GIVEN: API key with no permissions
-			const apiKey = "sb_test_noperms1234567890123456";
+			const apiKey = "sk_test_noperms1234567890123456";
 
 			vi.mocked(auth.api.verifyApiKey).mockResolvedValue({
 				isValid: true,
@@ -373,7 +373,7 @@ describe("MCP Authentication - Security Critical", () => {
 		// Test ID: MCP-AUTH-001-016
 		it("should clear cache when clearAuthCache() called", async () => {
 			// GIVEN: Cached authentication
-			const apiKey = "sb_live_clearcache123456789012345";
+			const apiKey = "sk_live_clearcache123456789012345";
 
 			vi.mocked(auth.api.verifyApiKey).mockResolvedValue({
 				isValid: true,

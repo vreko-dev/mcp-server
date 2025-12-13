@@ -29,7 +29,7 @@ describe("Access Control and Authentication", () => {
 	});
 
 	it("should authenticate admin users correctly", async () => {
-		const result = await authenticate("sb_live_admin_testkey123");
+		const result = await authenticate("sk_live_admin_testkey123");
 
 		expect(result.valid).toBe(true);
 		expect(result.tier).toBe("admin");
@@ -39,7 +39,7 @@ describe("Access Control and Authentication", () => {
 	});
 
 	it("should authenticate pro users correctly", async () => {
-		const result = await authenticate("sb_live_testkey123");
+		const result = await authenticate("sk_live_testkey123");
 
 		expect(result.valid).toBe(true);
 		expect(result.tier).toBe("pro");
@@ -65,7 +65,7 @@ describe("Access Control and Authentication", () => {
 	});
 
 	it("should check permissions correctly for admin users", async () => {
-		const authResult = await authenticate("sb_live_admin_testkey123");
+		const authResult = await authenticate("sk_live_admin_testkey123");
 
 		expect(hasPermission(authResult, PERMISSIONS.ANALYZE_RISK)).toBe(true);
 		expect(hasPermission(authResult, PERMISSIONS.CREATE_CHECKPOINT)).toBe(true);
@@ -75,7 +75,7 @@ describe("Access Control and Authentication", () => {
 	});
 
 	it("should check permissions correctly for pro users", async () => {
-		const authResult = await authenticate("sb_live_testkey123");
+		const authResult = await authenticate("sk_live_testkey123");
 
 		expect(hasPermission(authResult, PERMISSIONS.ANALYZE_RISK)).toBe(true);
 		expect(hasPermission(authResult, PERMISSIONS.CREATE_CHECKPOINT)).toBe(true);
@@ -95,8 +95,8 @@ describe("Access Control and Authentication", () => {
 	});
 
 	it("should check roles correctly", async () => {
-		const adminAuth = await authenticate("sb_live_admin_testkey123");
-		const proAuth = await authenticate("sb_live_testkey123");
+		const adminAuth = await authenticate("sk_live_admin_testkey123");
+		const proAuth = await authenticate("sk_live_testkey123");
 		const freeAuth = await authenticate("");
 
 		expect(hasRole(adminAuth, ROLES.ADMIN)).toBe(true);
@@ -113,8 +113,8 @@ describe("Access Control and Authentication", () => {
 	});
 
 	it("should check tool access correctly", async () => {
-		const adminAuth = await authenticate("sb_live_admin_testkey123");
-		const proAuth = await authenticate("sb_live_testkey123");
+		const adminAuth = await authenticate("sk_live_admin_testkey123");
+		const proAuth = await authenticate("sk_live_testkey123");
 		const freeAuth = await authenticate("");
 
 		// Admin should have access to all tools
@@ -143,16 +143,16 @@ describe("Access Control and Authentication", () => {
 	});
 
 	it("should allow access to unknown tools by default", async () => {
-		const authResult = await authenticate("sb_live_testkey123");
+		const authResult = await authenticate("sk_live_testkey123");
 		expect(hasToolAccess(authResult, "unknown.tool")).toBe(true);
 	});
 
 	it("should cache authentication results", async () => {
 		// First call should authenticate
-		const result1 = await authenticate("sb_live_admin_testkey123");
+		const result1 = await authenticate("sk_live_admin_testkey123");
 
 		// Second call should use cache
-		const result2 = await authenticate("sb_live_admin_testkey123");
+		const result2 = await authenticate("sk_live_admin_testkey123");
 
 		expect(result1).toEqual(result2);
 		expect(result1.valid).toBe(true);
@@ -167,13 +167,13 @@ describe("Access Control and Authentication", () => {
 
 		try {
 			// First call should authenticate
-			const result1 = await authenticate("sb_live_admin_testkey123");
+			const result1 = await authenticate("sk_live_admin_testkey123");
 
 			// Advance time by 61 seconds (past TTL)
 			vi.advanceTimersByTime(61000);
 
 			// Second call should re-authenticate (but will still use mock)
-			const result2 = await authenticate("sb_live_admin_testkey123");
+			const result2 = await authenticate("sk_live_admin_testkey123");
 
 			expect(result1).toEqual(result2);
 			expect(result1.valid).toBe(true);

@@ -22,8 +22,8 @@ export const trackApiUsageProcedure = publicProcedure
 			throw new Error("Database not available");
 		}
 
-		// Dynamically import verifyApiKey and hashApiKey only when needed
-		const { verifyApiKey, hashApiKey } = await import("../../../lib/crypto");
+		// Import crypto functions from canonical auth package
+		const { verifyApiKey, hashApiKey } = await import("@snapback/auth");
 
 		// Always perform a hash comparison to prevent timing attacks
 		// This ensures the function takes the same amount of time regardless of key validity

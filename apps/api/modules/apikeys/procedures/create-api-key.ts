@@ -14,8 +14,8 @@ export const createApiKey = protectedProcedure
 		}),
 	)
 	.handler(async ({ input, context }) => {
-		// Dynamically import crypto functions only when needed
-		const { generateApiKey, hashApiKey } = await import("../../../lib/crypto");
+		// Import crypto functions from canonical auth package
+		const { generateApiKey, hashApiKey } = await import("@snapback/auth");
 
 		// TODO(TICKET-128): Fix context access - should use context.user instead of context.session
 		const user = context.user;

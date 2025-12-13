@@ -18,8 +18,8 @@ export const verifyApiKeyProcedure = publicProcedure
 			throw new Error("Database not available");
 		}
 
-		// Dynamically import verifyApiKey only when needed
-		const { verifyApiKey, hashApiKey } = await import("../../../lib/crypto");
+		// Import crypto functions from canonical auth package
+		const { verifyApiKey, hashApiKey } = await import("@snapback/auth");
 
 		// Rate limit validation attempts to prevent brute force attacks
 		// Note: In production, use Redis-based rate limiting

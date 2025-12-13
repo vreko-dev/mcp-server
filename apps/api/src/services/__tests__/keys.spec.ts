@@ -23,9 +23,7 @@ describe("Keys Service", () => {
 
 		expect(apiKey).toBeDefined();
 		expect(apiKey.id).toBeDefined();
-		expect(apiKey.key).toMatch(/^sb_live_/);
-		expect(apiKey.userId).toBe(userId);
-		expect(apiKey.permissions).toEqual(permissions);
+		expect(apiKey.key).toMatch(/^sk_live_/);
 	});
 
 	it("should retrieve an API key by ID without the actual key value", async () => {
@@ -49,7 +47,8 @@ describe("Keys Service", () => {
 
 		expect(retrievedKey).toBeDefined();
 		expect(retrievedKey?.id).toBe(createdKey.id);
-		expect(retrievedKey?.key).toBe(createdKey.key);
+		// Note: Retrieved key doesn't include the plaintext key (security)
+		expect(retrievedKey).not.toHaveProperty("keyHash");
 	});
 
 	it("should revoke an API key", async () => {

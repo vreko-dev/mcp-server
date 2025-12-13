@@ -287,7 +287,7 @@ describe("API Key Generation → Extension Flow - Sad Path", () => {
 		it("should reject malformed API key", async () => {
 			const invalidKeys = [
 				"sk_test_abcd", // Wrong mode (test instead of live)
-				"sb_live_xyz", // Wrong prefix
+				"sk_live_xyz", // Wrong prefix
 				"sk_live_short", // Too short
 				"not-an-api-key", // Wrong format entirely
 				"", // Empty

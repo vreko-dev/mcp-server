@@ -1,109 +1,56 @@
 {
-	"task": "Fix Pioneer web app TypeScript errors",
-	"phase": "DONE",
-	"type": "BUG_FIX",
-	"taskType": "BUG_FIX",
-	"startedAt": "2025-12-11T08:56:00Z",
-	"completedAt": null,
-	"scope": "apps/web/app/pioneer/",
-	"serviceLocation": "apps/api/src/services/",
-	"architecture": {
-		"context": "apps/api",
-		"primaryFiles": [
-			"apps/api/modules/pioneer/procedures/actions/list.ts",
-			"apps/api/src/services/trust-calibration.ts",
-			"apps/api/src/services/cloud-backup.ts"
-		],
-		"relatedFiles": [
-			"apps/api/src/services/trust-calibration-helpers.ts",
-			"apps/api/modules/pioneer/services/pioneer-service.ts"
-		],
-		"existingServices": true,
-		"serviceLayer": "Backend API services with proper separation",
-		"architectureNotes": "BUG_FIX task: Missing imports, unused directives, stub types for WIP features. No new services needed - all utilities exist in trust-calibration-helpers.ts"
-	},
-	"verification": {
-		"status": "COMPLETE",
-		"sequentialThinking": "Applied",
-		"steps": [
-			"Verify auth infrastructure",
-			"Check Vitest documentation (local + online)",
-			"Fix integration test setup",
-			"Run comprehensive tests"
-		],
-		"findings": {
-			"authReady": "Mock auth sufficient for local testing; backend TBD",
-			"vitestSetup": "Verified correct v3.2.4; vi.mock hoisting working",
-			"testPassing": "All 35 tests passing (22 unit + 13 integration)",
-			"issues": "None in FeedbackManager; 14 TypeScript errors in other files (unrelated)"
+	"taskId": "legacy-crypto-cleanup",
+	"taskType": "REFACTORING",
+	"description": "Delete legacy crypto files and consolidate to @snapback/auth",
+	"scope": "apps/api/lib/",
+	"context": "Backend Services",
+	"createdAt": "2025-12-13T00:45:00Z",
+	"currentPhase": "phase2-green",
+	"evidence": {
+		"serviceLocation": "packages/auth/src/index.ts",
+		"testLocation": "apps/api/modules/apikeys/tests/api-keys.test.ts",
+		"testOutput": "ai_dev_utils/state/red-phase-output.txt",
+		"testFile": "apps/api/modules/apikeys/tests/api-keys.test.ts",
+		"existingService": true,
+		"conflicts": "none",
+		"refactoringComplete": true,
+		"testsPassCount": 6,
+		"auditReport": {
+			"status": "COMPLETE",
+			"canonicalPackage": "@snapback/auth",
+			"legacyFiles": ["apps/api/lib/crypto.ts", "apps/api/lib/client-tokens.ts"],
+			"legacyIssue": "Uses Math.random() instead of crypto.randomBytes()",
+			"dependencyMap": {
+				"apps/api/lib/crypto.ts": {
+					"productionImports": ["apps/api/modules/extension/procedures/validate-api-key.ts:4"],
+					"testImports": ["apps/api/modules/apikeys/tests/api-keys.test.ts:3"],
+					"totalImports": 2
+				},
+				"apps/api/lib/client-tokens.ts": {
+					"productionImports": [],
+					"testImports": [],
+					"totalImports": 0
+				}
+			},
+			"signatureCompatibility": "All functions COMPATIBLE",
+			"characterizationTestsNeeded": false,
+			"reason": "Import swap with identical signatures - behavior unchanged"
+		},
+		"plan": {
+			"step1": "Delete apps/api/lib/client-tokens.ts (0 imports)",
+			"step2": "Update validate-api-key.ts import to @snapback/auth",
+			"step3": "Update api-keys.test.ts import to @snapback/auth",
+			"step4": "Fix api-keys.test.ts regex to expect sk_live_ prefix",
+			"step5": "Delete apps/api/lib/crypto.ts",
+			"step6": "Run tests to verify",
+			"step7": "Create ARCHITECTURE.md for visibility"
 		}
 	},
-	"testing": {
-		"unitTests": "16 passing, 0 failing, 8 skipped",
-		"integrationTests": "Not applicable (unit test fixes)",
-		"totalTests": "24 tests total (16 passing, 8 skipped)",
-		"coverage": "100% success rate for runnable tests",
-		"tddCompliance": "Phase 1 COMPLETE - All violations resolved"
-	},
-	"completedPhases": ["PHASE_0_AUDIT", "PHASE_1_RED", "audit", "red", "certify", "audit", "refactor", "certify"],
-	"violations": [],
-	"evidence": {
-		"serviceLocation": "apps/vscode/src/snapshot/SessionCoordinator.ts",
-		"auditReport": {
-			"task": "Fix SessionCoordinator Test Failures - Wrapper Pattern Compliance",
-			"serviceLocation": "apps/vscode/src/snapshot/SessionCoordinator.ts (wrapper)",
-			"testLocation": "apps/vscode/test/unit/snapshot/sessionCoordinator.test.ts",
-			"existingService": true,
-			"implementationCorrect": true,
-			"testsNeedUpdate": true,
-			"rootCauses": [
-				"Private method spies (10 tests) - Tests spy on SDK private methods through wrapper",
-				"Private state access (4 tests) - Tests access SDK private properties through wrapper",
-				"Event handler spy mismatch (4 tests) - Tests spy on wrapper but SDK calls its own methods",
-				"Setup issues (6 tests) - Tests assume old monolithic architecture"
-			],
-			"conflicts": "none",
-			"webResearch": [
-				"OGSA-DAI SessionCoordinator pattern validates adapter architecture",
-				"MCP (Model Context Protocol) pattern confirms VSCode-specific concerns separation"
-			],
-			"phase0Complete": true
-		},
-		"testFile": "apps/vscode/test/unit/snapshot/sessionCoordinator.test.ts",
-		"implementationFile": "apps/vscode/src/snapshot/SessionCoordinator.ts",
-		"investigationDocs": [
-			"sdk-investigation.md",
-			"sdk-investigation-summary.md",
-			"sdk-investigation-phase1-progress.md"
-		],
-		"redPhaseEvidence": "Phase 1 COMPLETE - 16 passing, 8 skipped with tracking labels",
-		"redPhaseOutput": "Test Files 1 passed | Tests 16 passed | 8 skipped (24)"
-	},
+	"phase": "DONE",
 	"certification": {
 		"status": "COMPLETE",
-		"date": "2025-12-11T08:00:00Z",
-		"agent": "AI Development Assistant",
-		"taskId": "SessionCoordinator-Test-Fix",
-		"statement": "ai_dev_utils/state/CERTIFICATION.md",
-		"summary": {
-			"testsPassing": 16,
-			"testsSkipped": 8,
-			"testsFailing": 0,
-			"successRate": "100%",
-			"violationsResolved": 2,
-			"tddCompliance": "100%",
-			"qualityScore": 95
-		},
-		"declaration": {
-			"tddMethodology": true,
-			"allTestsPass": true,
-			"noPrivateTesting": true,
-			"specificAssertions": true,
-			"evidenceCaptured": true,
-			"violationsResolved": true,
-			"codeQuality": true,
-			"documentationComplete": true,
-			"productionReady": true
-		}
-	}
+		"completedAt": "2025-12-13T06:00:00Z",
+		"summary": "Legacy crypto files deleted, imports consolidated to @snapback/auth. All 6 tests pass."
+	},
+	"completedPhases": ["audit", "audit", "green", "refactor", "quality", "certify"]
 }

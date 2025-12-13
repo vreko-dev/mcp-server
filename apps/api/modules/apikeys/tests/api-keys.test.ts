@@ -1,26 +1,26 @@
-import { db as drizzle } from "@snapback/platform";
 import { describe, expect, it, vi } from "vitest";
-import { generateApiKey, hashApiKey, verifyApiKey } from "../../lib/crypto";
+import { generateApiKey, hashApiKey, verifyApiKey } from "@snapback/auth";
+
+// Create mock db object using vi.hoisted for proper hoisting
+const mockDb = vi.hoisted(() => ({
+	insert: vi.fn().mockReturnThis(),
+	values: vi.fn().mockResolvedValue({}),
+	returning: vi.fn().mockResolvedValue([{}]),
+	select: vi.fn().mockReturnThis(),
+	from: vi.fn().mockReturnThis(),
+	where: vi.fn().mockReturnThis(),
+	limit: vi.fn().mockResolvedValue([]),
+	update: vi.fn().mockReturnThis(),
+	set: vi.fn().mockReturnThis(),
+	delete: vi.fn().mockReturnThis(),
+}));
 
 // Mock the database
-vi.mock("@snapback/platform", () => {
-	const actual = vi.importActual("@snapback/platform");
+vi.mock("@snapback/platform", async (importOriginal) => {
+	const actual = await importOriginal<typeof import("@snapback/platform")>();
 	return {
 		...actual,
-		drizzle: {
-			db: {
-				insert: vi.fn().mockReturnThis(),
-				values: vi.fn().mockResolvedValue({}),
-				returning: vi.fn().mockResolvedValue([{}]),
-				select: vi.fn().mockReturnThis(),
-				from: vi.fn().mockReturnThis(),
-				where: vi.fn().mockReturnThis(),
-				limit: vi.fn().mockResolvedValue([]),
-				update: vi.fn().mockReturnThis(),
-				set: vi.fn().mockReturnThis(),
-				delete: vi.fn().mockReturnThis(),
-			},
-		},
+		db: mockDb,
 	};
 });
 
@@ -33,7 +33,7 @@ describe("API Key Management", () => {
 			const lastFour = rawKey.slice(-4);
 
 			// THEN: Key should have correct format
-			expect(rawKey).toMatch(/^sb_[a-zA-Z0-9]{32}$/);
+			expect(rawKey).toMatch(/^sk_live_[a-f0-9]{32}$/);
 			expect(lastFour).toHaveLength(4);
 			expect(hashedKey).toBeDefined();
 			expect(hashedKey).not.toBe(rawKey); // Should be hashed
@@ -94,11 +94,11 @@ describe("API Key Management", () => {
 				},
 			];
 
-			(drizzle.insert as any).mockReturnThis();
-			(drizzle.values as any).mockResolvedValue({
+			(mockDb.insert as any).mockReturnThis();
+			(mockDb.values as any).mockResolvedValue({
 				returning: vi.fn().mockResolvedValue(mockResult),
 			});
-			(drizzle.returning as any).mockResolvedValue(mockResult);
+			(mockDb.returning as any).mockResolvedValue(mockResult);
 
 			// THEN: The key should be stored securely
 			expect(hashedKey).toBeDefined();

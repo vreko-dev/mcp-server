@@ -35,7 +35,7 @@ describe("AUTH2: API endpoints for rotate/revoke", () => {
 		const mockUser = { id: "user-123", email: "test@example.com" };
 		const mockApiKey = {
 			id: "key-123",
-			key: "sb_live_testkey123",
+			key: "sk_live_testkey123",
 			userId: "user-123",
 			createdAt: new Date(),
 			permissions: { policyEvaluation: true },
@@ -61,7 +61,7 @@ describe("AUTH2: API endpoints for rotate/revoke", () => {
 		const data = await res.json();
 		expect(data).toEqual({
 			id: "key-123",
-			key: "sb_live_testkey123",
+			key: "sk_live_testkey123",
 			createdAt: mockApiKey.createdAt.toISOString(),
 			permissions: { policyEvaluation: true },
 		});

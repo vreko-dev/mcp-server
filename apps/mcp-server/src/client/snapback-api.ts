@@ -1,4 +1,6 @@
 import {
+	type CircuitBreakerPolicy,
+	type CircuitState,
 	ConsecutiveBreaker,
 	circuitBreaker,
 	ExponentialBackoff,
@@ -109,10 +111,9 @@ const SessionResponseSchema = z.object({
 export class SnapBackAPIClient {
 	private client: KyInstance;
 	private resilience: IPolicy;
+	private circuitBreakerPolicy: CircuitBreakerPolicy;
 
 	constructor(config: SnapBackConfig) {
-		this.config = config;
-
 		// Configure ky WITHOUT retry or timeout - cockatiel handles these
 		const kyOptions: Options = {
 			prefixUrl: config.baseUrl,
@@ -147,7 +148,7 @@ export class SnapBackAPIClient {
 			}),
 		});
 
-		const circuitBreakerPolicy = circuitBreaker(handleAll, {
+		this.circuitBreakerPolicy = circuitBreaker(handleAll, {
 			halfOpenAfter: 30000, // 30s
 			breaker: new ConsecutiveBreaker(5), // Open after 5 consecutive failures
 		});
@@ -155,7 +156,7 @@ export class SnapBackAPIClient {
 		const timeoutPolicy = timeout(config.timeout ?? 30000, TimeoutStrategy.Cooperative);
 
 		// Compose policies: timeout → retry → circuitBreaker
-		this.resilience = wrap(timeoutPolicy, wrap(retryPolicy, circuitBreakerPolicy));
+		this.resilience = wrap(timeoutPolicy, wrap(retryPolicy, this.circuitBreakerPolicy));
 	}
 
 	private async fetchAPI<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
@@ -238,10 +239,10 @@ export class SnapBackAPIClient {
 
 	/**
 	 * Get circuit breaker state for monitoring
+	 * Returns the CircuitState enum from cockatiel
 	 */
-	getCircuitBreakerState(): "closed" | "open" | "half-open" | "isolated" {
-		// Access the circuit breaker policy state
-		// Note: This assumes the circuit breaker is the last policy in the chain
-		return "closed"; // TODO: Implement state access
+	getCircuitBreakerState(): CircuitState {
+		// Access the circuit breaker policy state directly
+		return this.circuitBreakerPolicy.state;
 	}
 }

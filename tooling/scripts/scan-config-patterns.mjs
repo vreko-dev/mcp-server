@@ -18,7 +18,7 @@
 import { execSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
-import { dirname, relative, resolve, basename } from "node:path";
+import { basename, dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -125,7 +125,10 @@ function analyzeConfig(filePath, content) {
 	const schema = {
 		type: ext,
 		size: content.length,
-		hash: createHash("sha256").update(content).digest("hex").substring(0, 16),
+		hash: createHash("sha256")
+			.update(content)
+			.digest("hex")
+			.substring(0, 16),
 	};
 
 	// Parse based on extension
@@ -139,7 +142,9 @@ function analyzeConfig(filePath, content) {
 			schema.parseError = "Invalid JSON";
 		}
 	} else if (ext === "ts" || ext === "js" || ext === "mjs" || ext === "cjs") {
-		schema.hasExport = /export\s+(default|const|function|class)/.test(content);
+		schema.hasExport = /export\s+(default|const|function|class)/.test(
+			content
+		);
 		schema.importsCount = (content.match(/^import\s+/gm) || []).length;
 		schema.hasExtends = /extends\s+/.test(content);
 	} else if (baseName.startsWith(".env")) {
@@ -237,7 +242,9 @@ function detectDriftRisks(files) {
 				const content = readCachedFile(resolve(ROOT_DIR, loc));
 				return {
 					file: loc,
-					schema: content ? analyzeConfig(loc, content) : { error: "Failed to read" },
+					schema: content
+						? analyzeConfig(loc, content)
+						: { error: "Failed to read" },
 				};
 			});
 
@@ -290,7 +297,9 @@ function detectDriftRisks(files) {
 				severity: "medium",
 				file: "package.json",
 				locations: packageJsons,
-				message: `Package versions vary across workspace: ${Object.keys(versions).join(", ")}`,
+				message: `Package versions vary across workspace: ${Object.keys(
+					versions
+				).join(", ")}`,
 			});
 		}
 	}
@@ -302,7 +311,7 @@ function detectDriftRisks(files) {
  * Generate markdown report
  */
 function generateReport(configs, categories, patterns, risks) {
-	let report = `# Configuration Pattern Analysis Report
+	const report = `# Configuration Pattern Analysis Report
 
 Generated: ${new Date().toISOString()}
 
@@ -420,7 +429,9 @@ function main() {
 			const content = readCachedFile(resolve(ROOT_DIR, file));
 			return {
 				path: file,
-				schema: content ? analyzeConfig(file, content) : { error: "Failed to read" },
+				schema: content
+					? analyzeConfig(file, content)
+					: { error: "Failed to read" },
 			};
 		}),
 	};
@@ -433,7 +444,12 @@ function main() {
 
 	if (GENERATE_REPORT) {
 		const markdown = generateReport(configs, categories, patterns, risks);
-		console.log(`\nReport path: ${relative(ROOT_DIR, ".config-baselines/PATTERNS.md")}\n`);
+		console.log(
+			`\nReport path: ${relative(
+				ROOT_DIR,
+				".config-baselines/PATTERNS.md"
+			)}\n`
+		);
 		console.log(markdown);
 		console.error(`\n⏱️  Completed in ${elapsed}ms`);
 		return;
@@ -442,8 +458,12 @@ function main() {
 	// Console output
 	console.log(`\n📋 ${categories.root.length} root configs`);
 	console.log(`📱 ${Object.keys(categories.apps).length} apps with configs`);
-	console.log(`📦 ${Object.keys(categories.packages).length} packages with configs`);
-	console.log(`🔗 ${Object.keys(patterns).length} inheritance patterns detected`);
+	console.log(
+		`📦 ${Object.keys(categories.packages).length} packages with configs`
+	);
+	console.log(
+		`🔗 ${Object.keys(patterns).length} inheritance patterns detected`
+	);
 	console.log(`⚠️  ${risks.length} potential drift risks`);
 	console.log(`⏱️  Completed in ${elapsed}ms\n`);
 

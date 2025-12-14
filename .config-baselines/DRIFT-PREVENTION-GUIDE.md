@@ -340,7 +340,7 @@ node tooling/scripts/config-drift-check.mjs --all
 
 ---
 
-**Last Updated**: 2025-12-13  
-**Manifest Version**: 1.0.0  
-**Tracked Configs**: 6+ critical files  
+**Last Updated**: 2025-12-13
+**Manifest Version**: 1.0.0
+**Tracked Configs**: 6+ critical files
 **Workspace Configs**: ~150 app/package configs

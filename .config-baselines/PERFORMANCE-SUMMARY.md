@@ -52,7 +52,7 @@ return COMPILED_PATTERNS.some((p) => p.regex.test(file));
 
 ### 3. **Single Inheritance Regex** ✅
 ```javascript
-const INHERITANCE_REGEX = 
+const INHERITANCE_REGEX =
   /(?:["']extends["']\s*:\s*["']([^"']+)["']|require\(["']([^"']+)["']\)|from\s+["']([^"']+)["'])/g;
 
 // One test instead of three
@@ -167,6 +167,6 @@ pnpm config:update-baseline
 
 ---
 
-**Last Updated**: 2025-12-13  
-**Scanner Version**: 1.0.0  
+**Last Updated**: 2025-12-13
+**Scanner Version**: 1.0.0
 **Baseline Version**: 1.0.0

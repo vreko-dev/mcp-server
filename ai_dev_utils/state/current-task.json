@@ -1,56 +1,39 @@
 {
-	"taskId": "legacy-crypto-cleanup",
-	"taskType": "REFACTORING",
-	"description": "Delete legacy crypto files and consolidate to @snapback/auth",
-	"scope": "apps/api/lib/",
-	"context": "Backend Services",
-	"createdAt": "2025-12-13T00:45:00Z",
-	"currentPhase": "phase2-green",
-	"evidence": {
-		"serviceLocation": "packages/auth/src/index.ts",
-		"testLocation": "apps/api/modules/apikeys/tests/api-keys.test.ts",
-		"testOutput": "ai_dev_utils/state/red-phase-output.txt",
-		"testFile": "apps/api/modules/apikeys/tests/api-keys.test.ts",
-		"existingService": true,
-		"conflicts": "none",
-		"refactoringComplete": true,
-		"testsPassCount": 6,
-		"auditReport": {
-			"status": "COMPLETE",
-			"canonicalPackage": "@snapback/auth",
-			"legacyFiles": ["apps/api/lib/crypto.ts", "apps/api/lib/client-tokens.ts"],
-			"legacyIssue": "Uses Math.random() instead of crypto.randomBytes()",
-			"dependencyMap": {
-				"apps/api/lib/crypto.ts": {
-					"productionImports": ["apps/api/modules/extension/procedures/validate-api-key.ts:4"],
-					"testImports": ["apps/api/modules/apikeys/tests/api-keys.test.ts:3"],
-					"totalImports": 2
-				},
-				"apps/api/lib/client-tokens.ts": {
-					"productionImports": [],
-					"testImports": [],
-					"totalImports": 0
-				}
-			},
-			"signatureCompatibility": "All functions COMPATIBLE",
-			"characterizationTestsNeeded": false,
-			"reason": "Import swap with identical signatures - behavior unchanged"
-		},
-		"plan": {
-			"step1": "Delete apps/api/lib/client-tokens.ts (0 imports)",
-			"step2": "Update validate-api-key.ts import to @snapback/auth",
-			"step3": "Update api-keys.test.ts import to @snapback/auth",
-			"step4": "Fix api-keys.test.ts regex to expect sk_live_ prefix",
-			"step5": "Delete apps/api/lib/crypto.ts",
-			"step6": "Run tests to verify",
-			"step7": "Create ARCHITECTURE.md for visibility"
-		}
-	},
-	"phase": "DONE",
-	"certification": {
-		"status": "COMPLETE",
-		"completedAt": "2025-12-13T06:00:00Z",
-		"summary": "Legacy crypto files deleted, imports consolidated to @snapback/auth. All 6 tests pass."
-	},
-	"completedPhases": ["audit", "audit", "green", "refactor", "quality", "certify"]
+  "taskId": "schema-v2-migration",
+  "taskType": "REFACTORING",
+  "description": "Migrate SnapshotManifest from V1 to V2 schema with PRE checkpoint support",
+  "scope": "apps/vscode/src/storage/",
+  "context": "VS Code Extension",
+  "createdAt": "2025-12-13T20:24:00Z",
+  "currentPhase": "COMPLETE",
+  "evidence": {
+    "auditReport": { "status": "COMPLETE" },
+    "testOutput": "ai_dev_utils/state/red-phase-output.txt",
+    "testFile": "apps/vscode/test/unit/storage/schemaV2.test.ts",
+    "redPhaseStatus": "PASS",
+    "redPhaseFailures": 14,
+    "greenPhaseStatus": "PASS",
+    "greenPhaseTests": 14,
+    "refactorPhaseStatus": "PASS",
+    "qualityStatus": "PASS",
+    "implementationFile": "apps/vscode/src/storage/types.ts",
+    "linesAdded": 131,
+    "refactorings": [
+      "Added SCHEMA_VERSION_V2 constant",
+      "Added CHECKPOINT_TYPES const assertion array",
+      "Added CheckpointType union type",
+      "Added isCheckpointType type guard",
+      "Added SnapshotFileRefV2 interface",
+      "Added SnapshotManifestV2 interface",
+      "Added isSnapshotManifestV2 type guard"
+    ],
+    "totalTestsPassing": 48
+  },
+  "phase": "COMPLETE",
+  "completedPhases": ["audit", "red", "green", "refactor", "quality"],
+  "certification": {
+    "status": "CERTIFIED",
+    "completedAt": "2025-12-13T21:06:00Z",
+    "summary": "Schema V2 types added with type guards. 14 new tests + 34 existing = 48 tests passing."
+  }
 }

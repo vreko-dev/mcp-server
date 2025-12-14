@@ -1,28 +1,25 @@
-import { serverLibraryPreset } from "../../tooling/tsup-config";
+import { multiEntryLibraryPreset } from "../../tooling/tsup-config";
 
 // Server library with migration utilities
-// DTS enabled with resolve: true to support downstream type imports
-export default serverLibraryPreset({
-	entry: [
-		"src/index.ts",
-		"src/subscription-config.ts",
-		"src/utils/index.ts",
-		"src/utils/base-url.ts",
-		"src/utils/monorepo-flattener.ts",
-		"src/utils/path-transformer.ts",
-		"src/utils/feature-flags.ts",
-		"src/migrations/index.ts",
-		"src/migrations/cleanup.ts",
-		"src/migrations/orchestrator.ts",
-		"src/migrations/v1-to-v2.ts",
-		"src/migrations/validator.ts",
-		"src/bin/migrate.ts",
-	],
-	dts: {
-		resolve: true,
-		compilerOptions: {
-			skipLibCheck: true,
-		},
+// Uses multiEntryLibraryPreset for multiple subpath exports
+// dts: { resolve: true } is provided by the preset
+export default multiEntryLibraryPreset(
+	{
+		index: "src/index.ts",
+		"subscription-config": "src/subscription-config.ts",
+		"utils/index": "src/utils/index.ts",
+		"utils/base-url": "src/utils/base-url.ts",
+		"utils/monorepo-flattener": "src/utils/monorepo-flattener.ts",
+		"utils/path-transformer": "src/utils/path-transformer.ts",
+		"utils/feature-flags": "src/utils/feature-flags.ts",
+		"migrations/index": "src/migrations/index.ts",
+		"migrations/cleanup": "src/migrations/cleanup.ts",
+		"migrations/orchestrator": "src/migrations/orchestrator.ts",
+		"migrations/v1-to-v2": "src/migrations/v1-to-v2.ts",
+		"migrations/validator": "src/migrations/validator.ts",
+		"bin/migrate": "src/bin/migrate.ts",
 	},
-	external: ["@snapback/infrastructure"],
-});
+	{
+		external: ["@snapback/infrastructure"],
+	},
+);

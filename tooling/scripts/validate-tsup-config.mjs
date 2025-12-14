@@ -51,7 +51,15 @@ for (const file of files) {
 
 		// Check DTS resolution requirement
 		if (requiresDtsResolve.includes(packageName)) {
-			if (!content.includes("dts:") || !content.includes("resolve:") || !content.includes("true")) {
+			// Check for explicit dts: { resolve: true } or presets that include it
+			const hasExplicitDtsResolve =
+				content.includes("dts:") && content.includes("resolve:") && content.includes("true");
+			const usesPresetWithDtsResolve =
+				content.includes("multiEntryLibraryPreset") ||
+				content.includes("browserLibraryPreset") ||
+				content.includes("serverLibraryPreset");
+
+			if (!hasExplicitDtsResolve && !usesPresetWithDtsResolve) {
 				validationErrors.push(`❌ ${packageName}: missing 'dts: { resolve: true }'`);
 				_hasErrors = true;
 			}

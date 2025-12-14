@@ -1,0 +1,489 @@
+{
+	"audit_date": "2025-12-13T16:56:00.000Z",
+	"spec_reference": "Snapback Local Safety Net v1.0.0 (Target Architecture)",
+	"codebase_reference": "apps/vscode/src/ and packages/*/src/",
+	"summary": {
+		"total_components": 24,
+		"fully_implemented": 8,
+		"partial_implemented": 10,
+		"missing": 5,
+		"misaligned": 6,
+		"completion_percentage": 62
+	},
+	"components": [
+		{
+			"name": "SnapshotStore",
+			"spec_location": "Section: Storage Layer",
+			"code_path": "apps/vscode/src/storage/SnapshotStore.ts",
+			"status": "PARTIAL",
+			"exists": true,
+			"file_size": "6.3KB",
+			"exports": ["SnapshotStore class"],
+			"gaps": [
+				"Missing: SnapshotManifestV2 schema (no schemaVersion, seq, parentSeq, parentId, type fields)",
+				"Missing: createPreCheckpoint method for PRE checkpoint type",
+				"Missing: PRE_ROLLBACK checkpoint type support",
+				"Misaligned: uses 'blob' instead of spec's 'blobHash' field name",
+				"Missing: Sequence number tracking (lastSeq)"
+			],
+			"connections": {
+				"wired_to": ["StorageManager", "SnapshotManager"],
+				"should_wire_to": ["StorageManager", "SnapshotManager", "RollbackService"],
+				"missing_wiring": ["RollbackService for PRE_ROLLBACK creation"]
+			}
+		},
+		{
+			"name": "BlobStore",
+			"spec_location": "Section: Storage Layer - CAS",
+			"code_path": "apps/vscode/src/storage/BlobStore.ts",
+			"status": "COMPLETE",
+			"exists": true,
+			"file_size": "4.7KB",
+			"exports": ["BlobStore class"],
+			"gaps": [],
+			"matches_spec": [
+				"Uses content-addressable paths: blobs/ab/cd/<hash> (2-level hierarchy)",
+				"SHA-256 hashing for blob IDs",
+				"Automatic deduplication on store()",
+				"Atomic writes implemented via atomicWriteFile utility"
+			]
+		},
+		{
+			"name": "SessionStore",
+			"spec_location": "Section: Storage Layer",
+			"code_path": "apps/vscode/src/storage/SessionStore.ts",
+			"status": "COMPLETE",
+			"exists": true,
+			"file_size": "5.9KB",
+			"exports": ["SessionStore class"],
+			"gaps": []
+		},
+		{
+			"name": "StorageManager",
+			"spec_location": "Section: Storage Layer - Orchestrator",
+			"code_path": "apps/vscode/src/storage/StorageManager.ts",
+			"status": "PARTIAL",
+			"exists": true,
+			"file_size": "15.0KB",
+			"exports": ["StorageManager class"],
+			"gaps": [
+				"Missing: state.json file with lastSeq and headId fields",
+				"Missing: index.json file with bySeq and byId mappings",
+				"Missing: Corruption check on startup",
+				"Missing: Index rebuild capability"
+			],
+			"notes": [
+				"Uses storage.json for metadata (version, createdAt, stats)",
+				"Lazy initialization for performance (<50ms activation)",
+				"Proper error handling for disk space and permissions"
+			]
+		},
+		{
+			"name": "types.ts (Storage Schemas)",
+			"spec_location": "Section: Storage Schema",
+			"code_path": "apps/vscode/src/storage/types.ts",
+			"status": "MISALIGNED",
+			"exists": true,
+			"file_size": "5.2KB",
+			"exports": ["SnapshotManifest", "SnapshotFileRef", "SessionManifest", "IStorageManager"],
+			"gaps": [
+				"Missing: schemaVersion field (spec requires value '2')",
+				"Missing: seq field (monotonic sequence number)",
+				"Missing: parentSeq field",
+				"Missing: parentId field",
+				"Missing: type field ('POST' | 'PRE' | 'PRE_ROLLBACK')",
+				"Misaligned: 'blob' field should be 'blobHash'",
+				"Uses 'trigger' enum instead of 'type' for checkpoint classification"
+			]
+		},
+		{
+			"name": "atomicWrite utils",
+			"spec_location": "Section: Storage - Atomic Operations",
+			"code_path": "apps/vscode/src/storage/utils/atomicWrite.ts",
+			"status": "COMPLETE",
+			"exists": true,
+			"file_size": "2.4KB",
+			"exports": ["atomicWriteFile", "writeJsonFile", "readJsonFile", "ensureDirectory", "fileExists"],
+			"gaps": [],
+			"notes": ["Implements write temp → rename pattern for atomic writes"]
+		},
+		{
+			"name": "SignalAggregator",
+			"spec_location": "Section: Detection Layer",
+			"code_path": "apps/vscode/src/domain/signalAggregator.ts",
+			"status": "COMPLETE",
+			"exists": true,
+			"file_size": "4.9KB",
+			"exports": [
+				"SignalAggregator class",
+				"createSignalAggregator",
+				"AISignal",
+				"RiskSignal",
+				"BurstSignal",
+				"CriticalFileSignal",
+				"SessionSignal"
+			],
+			"gaps": []
+		},
+		{
+			"name": "BurstDetector",
+			"spec_location": "Section: Detection Layer",
+			"code_path": "apps/vscode/src/engine/BurstDetector.ts",
+			"status": "PARTIAL",
+			"exists": true,
+			"gaps": [
+				"Missing: velocity feature calculation (chars/time)",
+				"Missing: paste detection feature",
+				"Missing: deletion spike detection"
+			],
+			"notes": ["Default threshold: 30 chars/100ms", "Sliding window: 100ms", "Debounce: 500ms cooldown"]
+		},
+		{
+			"name": "AutoDecisionEngine",
+			"spec_location": "Section: Decision Layer",
+			"code_path": "apps/vscode/src/domain/engine.ts",
+			"status": "PARTIAL",
+			"exists": true,
+			"file_size": "9.4KB",
+			"exports": ["AutoDecisionEngine class"],
+			"gaps": [
+				"Missing: ReasonCode enum for structured explainability",
+				"Missing: OriginLabel (INTERACTIVE/AUTOMATED) classification",
+				"Missing: PRE checkpoint creation path triggered by risk threshold",
+				"Missing: Rate limiting on PRE checkpoint creation"
+			],
+			"notes": [
+				"Has risk scoring mechanism (0-100 scale, normalizable to 0-1)",
+				"Configurable thresholds (riskThreshold, notifyThreshold)",
+				"Pure function with no external dependencies",
+				"Supports AI detection, burst, critical files, session size signals"
+			]
+		},
+		{
+			"name": "AutoDecisionIntegration",
+			"spec_location": "Section: Client Layer - Wiring",
+			"code_path": "apps/vscode/src/integration/AutoDecisionIntegration.ts",
+			"status": "PARTIAL",
+			"exists": true,
+			"file_size": "687 lines",
+			"exports": ["AutoDecisionIntegration class", "createAutoDecisionIntegration"],
+			"gaps": [
+				"Missing: PRE checkpoint creation before high-risk changes",
+				"AIRiskService is wired but not called in main decision flow (uses local fallback)",
+				"Missing: OriginLabel classification for events"
+			],
+			"notes": [
+				"Bridges VS Code events to AutoDecisionEngine",
+				"300ms debounce on file changes",
+				"Creates snapshots via SnapshotManager on decision"
+			]
+		},
+		{
+			"name": "RollbackService",
+			"spec_location": "Section: Rollback Layer",
+			"code_path": "apps/vscode/src/rollback/",
+			"status": "MISSING",
+			"exists": false,
+			"gaps": [
+				"No dedicated RollbackService class",
+				"Missing: PRE_ROLLBACK checkpoint creation before applying rollback",
+				"Missing: WorkspaceEdit API usage for atomic multi-file restore",
+				"Missing: Rollback placement on editor undo stack"
+			],
+			"notes": [
+				"RecoveryDetection.ts exists but only validates rules state",
+				"RestorePreview.ts exists but is incomplete",
+				"SnapshotPicker.ts exists for UI selection",
+				"Restore functionality spread across SnapshotRestoreUI and OperationCoordinator"
+			]
+		},
+		{
+			"name": "SaveHandler",
+			"spec_location": "Section: Client Layer - Save Interception",
+			"code_path": "apps/vscode/src/handlers/SaveHandler.ts",
+			"status": "COMPLETE",
+			"exists": true,
+			"file_size": "699 lines",
+			"exports": ["SaveHandler class"],
+			"gaps": [],
+			"notes": [
+				"Uses vscode.workspace.onWillSaveTextDocument",
+				"Captures PRE-SAVE content from disk before save",
+				"Forwards to ProtectionLevelHandler and AnalysisCoordinator",
+				"Cluster detection with in-memory cache"
+			]
+		},
+		{
+			"name": "extension.ts (Activation)",
+			"spec_location": "Section: Client Layer - Extension Host",
+			"code_path": "apps/vscode/src/extension.ts",
+			"status": "PARTIAL",
+			"exists": true,
+			"file_size": "37.8KB",
+			"exports": ["activate", "deactivate"],
+			"gaps": [
+				"Missing: Corruption check on StorageManager.initialize()",
+				"Missing: Index rebuild if storage corrupted"
+			],
+			"notes": [
+				"Uses context.globalStorageUri for storage root",
+				"Phased initialization (5 phases)",
+				"AutoDecisionIntegration is wired and activated",
+				"SaveHandler registered with context"
+			]
+		},
+		{
+			"name": "SnapshotRestoreUI",
+			"spec_location": "Section: Client Layer - Timeline UI",
+			"code_path": "apps/vscode/src/ui/SnapshotRestoreUI.ts",
+			"status": "PARTIAL",
+			"exists": true,
+			"file_size": "481 lines",
+			"exports": ["SnapshotRestoreUI class"],
+			"gaps": [
+				"Missing: PRE_ROLLBACK checkpoint before restore",
+				"Uses executeCommand('vscode.diff') but not WorkspaceEdit for restore",
+				"waitForRestoreDecision currently resolves false (commented out modal)"
+			]
+		},
+		{
+			"name": "ProtectionDecisionEngine (SDK)",
+			"spec_location": "Section: Decision Layer",
+			"code_path": "packages/sdk/src/protection/ProtectionDecisionEngine.ts",
+			"status": "PARTIAL",
+			"exists": true,
+			"exports": ["ProtectionDecisionEngine class", "DefaultRiskAnalyzer class"],
+			"gaps": ["Missing: PRE checkpoint creation support", "Missing: OriginLabel classification"]
+		},
+		{
+			"name": "state.json",
+			"spec_location": "Section: Storage Layer - State Management",
+			"code_path": null,
+			"status": "MISSING",
+			"exists": false,
+			"gaps": ["File does not exist", "Should contain lastSeq and headId for snapshot chain tracking"]
+		},
+		{
+			"name": "index.json",
+			"spec_location": "Section: Storage Layer - Indexing",
+			"code_path": null,
+			"status": "MISSING",
+			"exists": false,
+			"gaps": ["File does not exist", "Should contain bySeq and byId mappings for O(1) lookup"]
+		},
+		{
+			"name": "CheckpointType enum",
+			"spec_location": "Section: Schema Definitions",
+			"code_path": null,
+			"status": "MISSING",
+			"exists": false,
+			"gaps": [
+				"Type 'POST' | 'PRE' | 'PRE_ROLLBACK' not defined",
+				"Current system uses 'trigger' enum: 'auto' | 'manual' | 'ai-detected' | 'pre-save'"
+			]
+		},
+		{
+			"name": "ReasonCode enum",
+			"spec_location": "Section: Decision Layer - Explainability",
+			"code_path": null,
+			"status": "MISSING",
+			"exists": false,
+			"gaps": [
+				"No structured ReasonCode enum",
+				"Current: uses string array 'reasons' with values like 'ai_detected', 'risk_threshold', 'burst_pattern'"
+			]
+		}
+	],
+	"data_flows": [
+		{
+			"name": "Save Event Flow",
+			"steps": [
+				{ "step": "onWillSaveTextDocument", "status": "EXISTS", "file": "SaveHandler.ts:292" },
+				{ "step": "SignalAggregator", "status": "EXISTS", "file": "signalAggregator.ts" },
+				{ "step": "AutoDecisionEngine.makeDecision()", "status": "EXISTS", "file": "engine.ts:34" },
+				{ "step": "PRE checkpoint creation", "status": "MISSING", "file": null },
+				{ "step": "StorageManager.createSnapshot()", "status": "EXISTS", "file": "StorageManager.ts:311" },
+				{ "step": "POST checkpoint stored", "status": "EXISTS", "file": "SnapshotStore.ts:38" }
+			],
+			"breaks_at": "PRE checkpoint creation",
+			"notes": "Flow exists but lacks PRE checkpoint step before risky changes"
+		},
+		{
+			"name": "Rollback Flow",
+			"steps": [
+				{
+					"step": "User Command (snapback.restoreSnapshot)",
+					"status": "EXISTS",
+					"file": "snapshotRecoveryCommands.ts:39"
+				},
+				{ "step": "RollbackService", "status": "MISSING", "file": null },
+				{ "step": "PRE_ROLLBACK creation", "status": "MISSING", "file": null },
+				{
+					"step": "Fetch target snapshot",
+					"status": "EXISTS",
+					"file": "OperationCoordinator.restoreToSnapshot()"
+				},
+				{ "step": "WorkspaceEdit apply", "status": "MISSING", "file": null }
+			],
+			"breaks_at": "RollbackService + PRE_ROLLBACK creation",
+			"notes": "Restore uses file write, not WorkspaceEdit for atomic multi-file restore"
+		},
+		{
+			"name": "Startup Flow",
+			"steps": [
+				{ "step": "activate()", "status": "EXISTS", "file": "extension.ts:76" },
+				{ "step": "StorageManager.initialize()", "status": "EXISTS", "file": "StorageManager.ts:74" },
+				{ "step": "Corruption check", "status": "MISSING", "file": null },
+				{ "step": "Index rebuild if needed", "status": "MISSING", "file": null }
+			],
+			"breaks_at": "Corruption check + Index rebuild"
+		}
+	],
+	"schema_alignment": {
+		"manifest_v2": {
+			"aligned_fields": [
+				"id",
+				"timestamp",
+				"name",
+				"anchorFile",
+				"files",
+				"metadata.riskScore",
+				"metadata.aiDetection",
+				"metadata.sessionId"
+			],
+			"missing_fields": ["schemaVersion", "seq", "parentSeq", "parentId", "type"],
+			"misnamed_fields": [{ "spec": "blobHash", "actual": "blob" }],
+			"extra_fields": ["trigger (should be 'type')"]
+		},
+		"file_ref": {
+			"aligned_fields": ["size"],
+			"misnamed_fields": [{ "spec": "blobHash", "actual": "blob" }]
+		},
+		"metadata": {
+			"aligned_fields": [
+				"riskScore",
+				"aiDetection.detected",
+				"aiDetection.tool",
+				"aiDetection.confidence",
+				"sessionId"
+			],
+			"missing_fields": ["origin (OriginLabel)", "reasons (ReasonCode[])"]
+		}
+	},
+	"performance_budget_compliance": {
+		"detection_latency": {
+			"budget": "<10ms",
+			"implementation": "AutoDecisionEngine.makeDecision() is pure/synchronous",
+			"measured": false,
+			"notes": "Appears to meet budget but no explicit measurement"
+		},
+		"pre_checkpoint": {
+			"budget": "<15ms p95",
+			"implementation": "NOT IMPLEMENTED",
+			"measured": false
+		},
+		"post_checkpoint_1mb": {
+			"budget": "<100ms",
+			"implementation": "SnapshotStore.create() + BlobStore.store()",
+			"measured": false,
+			"notes": "Uses vscode.workspace.fs for atomic writes"
+		},
+		"save_intercept_no_snap": {
+			"budget": "<50ms",
+			"implementation": "SaveHandler + early exit paths",
+			"measured": false
+		},
+		"rollback_single_file": {
+			"budget": "<500ms",
+			"implementation": "OperationCoordinator.restoreToSnapshot()",
+			"measured": false
+		},
+		"memory_resident": {
+			"budget": "<50MB",
+			"implementation": "Lazy initialization, in-memory caches",
+			"measured": false
+		}
+	},
+	"test_coverage": {
+		"AutoDecisionEngine": {
+			"unit_tests": true,
+			"test_file": "test/unit/domain/engine.test.ts",
+			"passing": "likely",
+			"coverage_notes": "Table-driven tests covering all signal combinations"
+		},
+		"SignalAggregator": {
+			"unit_tests": true,
+			"test_file": "test/unit/domain/signalAggregator.test.ts",
+			"passing": "likely"
+		},
+		"SnapshotStore": {
+			"unit_tests": true,
+			"test_file": "test/unit/snapshot/snapshotManager.test.ts",
+			"coverage_notes": "Tests exist but may not cover V2 schema (which doesn't exist)"
+		},
+		"BlobStore": {
+			"unit_tests": false,
+			"test_file": null,
+			"coverage_notes": "No dedicated BlobStore tests found"
+		},
+		"StorageManager": {
+			"unit_tests": false,
+			"test_file": null,
+			"coverage_notes": "Tested indirectly through integration tests"
+		},
+		"RollbackService": {
+			"unit_tests": false,
+			"test_file": null,
+			"coverage_notes": "Component doesn't exist"
+		},
+		"SaveHandler": {
+			"unit_tests": true,
+			"test_file": "test/unit/onWillSaveTextDocument.unit.test.ts",
+			"coverage_notes": "Performance test exists: save-handler.performance.test.ts"
+		}
+	},
+	"priority_gaps": [
+		{
+			"gap": "No PRE checkpoint support",
+			"impact": "Cannot capture pre-risk state before AI changes",
+			"effort": "M",
+			"blocks": ["PRW (Pre-Risk Window) feature", "Safe rollback"],
+			"recommendation": "Add 'type' field to schema, implement createPreCheckpoint()"
+		},
+		{
+			"gap": "No PRE_ROLLBACK checkpoint",
+			"impact": "Rollback is destructive with no recovery point",
+			"effort": "S",
+			"blocks": ["Safe rollback guarantee"],
+			"recommendation": "Create PRE_ROLLBACK before any restore operation"
+		},
+		{
+			"gap": "Missing RollbackService with WorkspaceEdit",
+			"impact": "Multi-file restore not atomic, no undo stack integration",
+			"effort": "M",
+			"blocks": ["Atomic multi-file restore", "Editor undo integration"],
+			"recommendation": "Create RollbackService using vscode.WorkspaceEdit"
+		},
+		{
+			"gap": "Schema V1 vs V2 misalignment",
+			"impact": "Cannot track snapshot chain (parentId/parentSeq)",
+			"effort": "M",
+			"blocks": ["Snapshot lineage tracking", "Efficient pruning"],
+			"recommendation": "Migrate SnapshotManifest to V2 schema"
+		},
+		{
+			"gap": "No state.json / index.json",
+			"impact": "No O(1) lookup by seq, no headId tracking",
+			"effort": "S",
+			"blocks": ["Fast snapshot lookup", "Corruption recovery"],
+			"recommendation": "Implement state management files"
+		},
+		{
+			"gap": "AIRiskService not called in decision flow",
+			"impact": "AI risk analysis uses only local heuristics",
+			"effort": "S",
+			"blocks": ["Server-side AI analysis integration"],
+			"recommendation": "Wire RemoteAIRiskService.assessChange() into AutoDecisionIntegration"
+		}
+	]
+}

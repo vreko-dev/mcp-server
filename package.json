@@ -141,6 +141,8 @@
     "type-check": "turbo type-check",
     "type-check:all": "turbo run type-check",
     "type-check:tsc": "tsc --build --force",
+    "type-check:profile": "tsc --build --extendedDiagnostics",
+    "type-check:profile:force": "tsc --build --force --extendedDiagnostics",
     "validate": "tsx scripts/validate-project.ts",
     "validate:catalog": "node tooling/scripts/validate-catalog-deps.mjs",
     "validate:exports": "node scripts/validate-exports-integrity.mjs",

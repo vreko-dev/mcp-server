@@ -5,6 +5,7 @@
 		"declaration": true,
 		"declarationMap": true,
 		"incremental": true,
+		"assumeChangesOnlyAffectDirectDependencies": true,
 		"skipLibCheck": true,
 		"types": ["node"],
 		"moduleResolution": "bundler",

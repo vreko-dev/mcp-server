@@ -5,7 +5,9 @@
 import fs from "node:fs";
 import path from "node:path";
 
-const files = process.argv.slice(2).filter((f) => f !== "-" && f.includes("tsup.config"));
+const files = process.argv
+	.slice(2)
+	.filter((f) => f !== "-" && f.includes("tsup.config"));
 let _hasErrors = false;
 const validationErrors = [];
 const warnings = [];
@@ -25,7 +27,11 @@ const requiresDtsResolve = [
 ];
 
 // Browser packages that MUST mark server dependencies as external
-const browserPackages = ["@snapback/contracts", "@snapback/config", "@snapback/auth"];
+const browserPackages = [
+	"@snapback/contracts",
+	"@snapback/config",
+	"@snapback/auth",
+];
 
 if (files.length === 0) {
 	console.log("✅ tsup configurations validated (no files to check)");
@@ -53,29 +59,37 @@ for (const file of files) {
 		if (requiresDtsResolve.includes(packageName)) {
 			// Check for explicit dts: { resolve: true } or presets that include it
 			const hasExplicitDtsResolve =
-				content.includes("dts:") && content.includes("resolve:") && content.includes("true");
+				content.includes("dts:") &&
+				content.includes("resolve:") &&
+				content.includes("true");
 			const usesPresetWithDtsResolve =
 				content.includes("multiEntryLibraryPreset") ||
 				content.includes("browserLibraryPreset") ||
 				content.includes("serverLibraryPreset");
 
 			if (!hasExplicitDtsResolve && !usesPresetWithDtsResolve) {
-				validationErrors.push(`❌ ${packageName}: missing 'dts: { resolve: true }'`);
+				validationErrors.push(
+					`❌ ${packageName}: missing 'dts: { resolve: true }'`
+				);
 				_hasErrors = true;
 			}
 		}
 
 		// Check browser packages have external declarations
 		if (browserPackages.includes(packageName)) {
-			const hasExternalDeclaration = content.includes("external:") && !content.includes("external: undefined");
+			const hasExternalDeclaration =
+				content.includes("external:") &&
+				!content.includes("external: undefined");
 			if (!hasExternalDeclaration) {
 				validationErrors.push(
-					`❌ ${packageName}: browser package missing proper 'external: [...]' declaration`,
+					`❌ ${packageName}: browser package missing proper 'external: [...]' declaration`
 				);
 				_hasErrors = true;
 			}
 			if (!content.includes("@snapback/infrastructure")) {
-				warnings.push(`⚠️  ${packageName}: consider adding '@snapback/infrastructure' to external array`);
+				warnings.push(
+					`⚠️  ${packageName}: consider adding '@snapback/infrastructure' to external array`
+				);
 			}
 		}
 
@@ -85,12 +99,19 @@ for (const file of files) {
 			!content.includes("DTS generation disabled") &&
 			!content.includes("DTS disabled")
 		) {
-			warnings.push(`⚠️  ${packageName}: dts: false without explanation - document why in comment`);
+			warnings.push(
+				`⚠️  ${packageName}: dts: false without explanation - document why in comment`
+			);
 		}
 
 		// Check for missing skipNodeModulesBundle
-		if (!content.includes("skipNodeModulesBundle: true") && content.includes("format:")) {
-			warnings.push(`⚠️  ${packageName}: consider adding 'skipNodeModulesBundle: true'`);
+		if (
+			!content.includes("skipNodeModulesBundle: true") &&
+			content.includes("format:")
+		) {
+			warnings.push(
+				`⚠️  ${packageName}: consider adding 'skipNodeModulesBundle: true'`
+			);
 		}
 	} catch (e) {
 		console.error(`❌ Failed to process ${file}: ${e.message}`);
@@ -108,7 +129,9 @@ if (validationErrors.length > 0) {
 	for (const err of validationErrors) {
 		console.error(err);
 	}
-	console.error(`\n❌ tsup validation failed with ${validationErrors.length} error(s).`);
+	console.error(
+		`\n❌ tsup validation failed with ${validationErrors.length} error(s).`
+	);
 	process.exit(1);
 }
 

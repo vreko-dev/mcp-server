@@ -1,5 +1,16 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi, afterEach, afterAll, beforeAll } from "vitest";
+import { setupServer } from "msw/node";
+import { http, HttpResponse } from "msw";
 import { createOrUpdateHubSpotContact } from "../hubspot-service";
+
+// @quest:msw:complete
+// MSW server for mocking HubSpot API calls
+const server = setupServer();
+
+beforeAll(() => server.listen());
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
+// @quest:msw:complete
 
 // Mock the logger
 vi.mock("@snapback/infrastructure", () => ({

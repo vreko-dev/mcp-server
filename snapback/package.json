@@ -1,0 +1,48 @@
+{
+  "name": "@snapback/core-v2",
+  "version": "2.0.0-alpha.1",
+  "description": "SnapBack simplified architecture - script-driven code protection",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest",
+    "test:signals": "vitest --dir scripts/signals",
+    "test:validators": "vitest --dir scripts/validators",
+    "typecheck": "tsc --noEmit",
+    "mcp": "tsx transports/mcp.ts",
+    "lint": "biome check .",
+    "lint:fix": "biome check --apply ."
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "biome": "catalog:",
+    "madge": "catalog:",
+    "tsup": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "files": [
+    "dist",
+    "scripts"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./runtime/*": {
+      "types": "./dist/runtime/*.d.ts",
+      "import": "./dist/runtime/*.js"
+    }
+  }
+}

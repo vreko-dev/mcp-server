@@ -1,7 +1,6 @@
 packages:
   - apps/**
   - packages/*
-  - snapback
   - packages-oss/*
   - tests
   - e2e

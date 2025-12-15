@@ -15,8 +15,8 @@
  * - scripts/validate-project.ts (script execution patterns)
  */
 
-import { type ChildProcess, spawn } from "child_process";
-import { join } from "path";
+import { type ChildProcess, spawn } from "node:child_process";
+import { join } from "node:path";
 import type { FileChange, OrchestratorResult, SessionHealth, SignalOutput, ValidatorOutput } from "../types";
 import { eventBus } from "./events";
 

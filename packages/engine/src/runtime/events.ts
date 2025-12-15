@@ -17,7 +17,7 @@
  * - packages/contracts/src/events/legacy.ts (DELETE - deprecated)
  */
 
-import { EventEmitter } from "events";
+import { EventEmitter } from "node:events";
 
 // =============================================================================
 // EVENT DEFINITIONS (~15 events total)

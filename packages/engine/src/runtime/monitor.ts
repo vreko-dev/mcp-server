@@ -142,7 +142,7 @@ export class SessionMonitor {
 
 		// Emit session ended event
 		if (this.baseline) {
-			const health = this.getHealth();
+			const _health = this.getHealth();
 			eventBus.emit(
 				createEvent({
 					type: "session.ended",
@@ -338,9 +338,15 @@ export class SessionMonitor {
 	 * Determine coaching level based on health score
 	 */
 	private getCoachingLevel(score: number): "silent" | "gentle" | "firm" | "urgent" {
-		if (score >= 90) return "silent";
-		if (score >= 70) return "gentle";
-		if (score >= 50) return "firm";
+		if (score >= 90) {
+			return "silent";
+		}
+		if (score >= 70) {
+			return "gentle";
+		}
+		if (score >= 50) {
+			return "firm";
+		}
 		return "urgent";
 	}
 
@@ -361,7 +367,7 @@ export class SessionMonitor {
 			case "urgent":
 				return (
 					`🛑 STOP: Session health critical (${score}/100). ` +
-					`Cycles introduced: ${this.current!.cycleCount - this.baseline!.cycleCount}. ` +
+					`Cycles introduced: ${this.current?.cycleCount - this.baseline?.cycleCount}. ` +
 					`Recommended: ${this.suggestions[0] ?? "Review recent changes"}`
 				);
 		}

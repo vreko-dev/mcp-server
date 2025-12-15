@@ -1,2 +1,2 @@
-// Signal exports will be added as signals are implemented
-export {};
+// Signal exports
+export * from "./burst";

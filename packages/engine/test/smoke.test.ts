@@ -11,8 +11,8 @@
  */
 
 import { describe, expect, it, vi } from "vitest";
-import { eventBus, orchestrator } from "../index";
-import type { FileChange } from "../types";
+import { eventBus, orchestrator } from "../src/index";
+import type { FileChange } from "../src/types";
 
 describe("SnapBack Simplified Architecture - Smoke Test", () => {
 	describe("Orchestrator", () => {

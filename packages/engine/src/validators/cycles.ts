@@ -32,7 +32,7 @@
  */
 
 import { execSync } from "node:child_process";
-import type { FileChange, ValidationError, ValidatorOutput } from "../../types";
+import type { FileChange, ValidationError, ValidatorOutput } from "../types.js";
 
 // =============================================================================
 // INPUT PARSING

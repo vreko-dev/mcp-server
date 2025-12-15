@@ -25,7 +25,7 @@ import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readdirSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { gunzipSync, gzipSync } from "node:zlib";
-import { createEvent, eventBus } from "./events.js";
+import { eventBus } from "./events.js";
 
 // =============================================================================
 // TYPES
@@ -163,15 +163,15 @@ export class Storage {
 		const manifestPath = join(this.snapshotsDir, `${id}.json`);
 		writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
 
-		// Emit event
-		eventBus.emit(
-			createEvent({
-				type: "snapshot.created",
-				id,
-				fileCount: files.length,
-				bytes: totalSize,
-			}),
-		);
+		// Emit event (map ai-detection to risk for event type)
+		const triggerType = options.trigger === "ai-detection" ? "risk" : options.trigger || "auto";
+		eventBus.emit("snapshot.created", {
+			snapshotId: id,
+			fileCount: files.length,
+			totalBytes: totalSize,
+			trigger: triggerType,
+			riskScore: 0, // TODO: Pass from caller
+		});
 
 		return manifest;
 	}
@@ -200,13 +200,11 @@ export class Storage {
 		}
 
 		// Emit event
-		eventBus.emit(
-			createEvent({
-				type: "snapshot.restored",
-				id: snapshotId,
-				files: files.map((f) => f.path),
-			}),
-		);
+		eventBus.emit("snapshot.restored", {
+			snapshotId,
+			filesRestored: files.length,
+			duration: 0, // TODO: Track duration
+		});
 
 		return files;
 	}

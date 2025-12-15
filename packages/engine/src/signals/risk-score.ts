@@ -66,7 +66,7 @@
  * }
  */
 
-import type { FileChange, SignalOutput } from "../../types";
+import type { FileChange, SignalOutput } from "../types.js";
 
 // =============================================================================
 // INPUT PARSING

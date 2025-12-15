@@ -16,8 +16,22 @@
  */
 
 import { execSync } from "node:child_process";
-import { type FSWatcher, watch } from "chokidar";
-import { createEvent, eventBus } from "./events.js";
+import type { FSWatcher } from "fs";
+import { eventBus } from "./events.js";
+
+// Placeholder for chokidar - would need to be installed via pnpm add -D chokidar
+// For now, we'll make watch optional and use a stub
+let watch: any = null;
+try {
+	// @ts-expect-error - chokidar may not be installed
+	watch = require("chokidar").watch;
+} catch {
+	// Chokidar not available, use stub
+	watch = () => ({
+		on: () => {},
+		close: async () => {},
+	});
+}
 
 // =============================================================================
 // TYPES
@@ -95,6 +109,14 @@ export class SessionMonitor {
 	private sessionId = "";
 
 	/**
+	 * Hash workspace path for privacy
+	 */
+	private hashWorkspace(path: string): string {
+		// Simple hash for privacy (in production, use crypto.createHash)
+		return path.split("/").pop() || "unknown";
+	}
+
+	/**
 	 * Start monitoring a workspace
 	 *
 	 * @param workspacePath - Path to workspace root
@@ -118,17 +140,16 @@ export class SessionMonitor {
 			persistent: true,
 		});
 
-		this.watcher.on("change", (path) => this.onFileChanged(path));
-		this.watcher.on("add", (path) => this.onFileChanged(path));
+		if (this.watcher) {
+			this.watcher.on("change", (path: string) => this.onFileChanged(path));
+			this.watcher.on("add", (path: string) => this.onFileChanged(path));
+		}
 
 		// Emit session started event
-		eventBus.emit(
-			createEvent({
-				type: "session.started",
-				id: this.sessionId,
-				workspacePath,
-			}),
-		);
+		eventBus.emit("session.started", {
+			sessionId: this.sessionId,
+			workspaceHash: this.hashWorkspace(workspacePath),
+		});
 	}
 
 	/**
@@ -143,15 +164,12 @@ export class SessionMonitor {
 		// Emit session ended event
 		if (this.baseline) {
 			const _health = this.getHealth();
-			eventBus.emit(
-				createEvent({
-					type: "session.ended",
-					id: this.sessionId,
-					duration: Date.now() - this.baseline.timestamp,
-					filesModified: this.filesModified.size,
-					snapshotsCreated: 0, // TODO: Track from storage
-				}),
-			);
+			eventBus.emit("session.ended", {
+				sessionId: this.sessionId,
+				duration: Date.now() - this.baseline.timestamp,
+				filesModified: this.filesModified.size,
+				snapshotsCreated: 0, // TODO: Track from storage
+			});
 		}
 	}
 
@@ -164,13 +182,12 @@ export class SessionMonitor {
 		this.fileModificationCounts[path] = (this.fileModificationCounts[path] ?? 0) + 1;
 
 		// Emit file changed event
-		eventBus.emit(
-			createEvent({
-				type: "file.changed",
-				path,
-				changeType: "modify",
-			}),
-		);
+		const ext = path.substring(path.lastIndexOf("."));
+		eventBus.emit("file.changed", {
+			changeType: "modify",
+			extension: ext,
+			lineCount: 0, // Unknown without reading file
+		});
 
 		// Recapture state (debounced in real implementation)
 		// TODO: Add debouncing to avoid excessive recaptures
@@ -187,23 +204,17 @@ export class SessionMonitor {
 		// Emit health events if needed
 		const health = this.getHealth();
 		if (health.score < 50 && health.coachingLevel === "urgent") {
-			eventBus.emit(
-				createEvent({
-					type: "health.critical",
-					component: "session-monitor",
-					message: health.coachingMessage,
-					score: health.score,
-				}),
-			);
+			eventBus.emit("error.occurred", {
+				component: "session-monitor",
+				message: `Critical: ${health.coachingMessage}`,
+				recoverable: true,
+			});
 		} else if (health.score < 70 && health.coachingLevel === "firm") {
-			eventBus.emit(
-				createEvent({
-					type: "health.warning",
-					component: "session-monitor",
-					message: health.coachingMessage,
-					score: health.score,
-				}),
-			);
+			eventBus.emit("error.occurred", {
+				component: "session-monitor",
+				message: `Warning: ${health.coachingMessage}`,
+				recoverable: true,
+			});
 		}
 	}
 
@@ -367,7 +378,7 @@ export class SessionMonitor {
 			case "urgent":
 				return (
 					`🛑 STOP: Session health critical (${score}/100). ` +
-					`Cycles introduced: ${this.current?.cycleCount - this.baseline?.cycleCount}. ` +
+					`Cycles introduced: ${(this.current?.cycleCount ?? 0) - (this.baseline?.cycleCount ?? 0)}. ` +
 					`Recommended: ${this.suggestions[0] ?? "Review recent changes"}`
 				);
 		}

@@ -40,7 +40,7 @@
 
 import { execSync } from "node:child_process";
 import { dirname, join } from "node:path";
-import type { FileChange, SignalOutput } from "../../types";
+import type { FileChange, SignalOutput } from "../types.js";
 
 // =============================================================================
 // INPUT PARSING

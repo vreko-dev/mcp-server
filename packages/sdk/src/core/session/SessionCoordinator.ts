@@ -163,10 +163,23 @@ export class SessionCoordinator {
 			const now = Date.now();
 			const sessionDuration = now - this.sessionStart;
 
-			// Don't create sessions that are too short
-			if (sessionDuration < this.config.minSessionDuration && this.candidates.size === 0) {
-				this.logger.debug("Skipping session finalization - session too short or no candidates", {
+			// CRITICAL FIX: Skip session creation if there are no candidates
+			// This prevents 0-file sessions from being created
+			// Previously used && which allowed 0-file sessions when duration was long enough
+			if (this.candidates.size === 0) {
+				this.logger.debug("Skipping session finalization - no candidates to save", {
 					duration: sessionDuration,
+					reason,
+				});
+				this.resetSession();
+				return null;
+			}
+
+			// Also skip sessions that are too short
+			if (sessionDuration < this.config.minSessionDuration) {
+				this.logger.debug("Skipping session finalization - session too short", {
+					duration: sessionDuration,
+					minDuration: this.config.minSessionDuration,
 					candidateCount: this.candidates.size,
 				});
 				this.resetSession();

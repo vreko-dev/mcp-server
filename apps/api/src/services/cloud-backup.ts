@@ -37,6 +37,8 @@ export interface UploadResult {
  * TODO: Implement in @snapback/sdk when feature is ready
  */
 export class CloudBackupService {
+	private readonly config: CloudBackupConfig;
+
 	constructor(config: CloudBackupConfig) {
 		this.config = config;
 		logger.debug("CloudBackupService initialized (stub)", { config });

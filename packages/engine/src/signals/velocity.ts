@@ -59,7 +59,11 @@ function recordChange(): void {
 	CHANGE_HISTORY.push(Date.now());
 	// Keep only last 5 minutes
 	const fiveMinAgo = Date.now() - 5 * 60 * 1000;
-	while (CHANGE_HISTORY.length > 0 && CHANGE_HISTORY[0]! < fiveMinAgo) {
+	while (CHANGE_HISTORY.length > 0) {
+		const firstChange = CHANGE_HISTORY[0];
+		if (firstChange === undefined || firstChange >= fiveMinAgo) {
+			break;
+		}
 		CHANGE_HISTORY.shift();
 	}
 }

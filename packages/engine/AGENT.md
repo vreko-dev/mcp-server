@@ -103,7 +103,7 @@ This eliminates parallel code paths and consolidates all analysis into `@snapbac
 |-----------|---------------|----------|------------|-------------|
 | MCP | `MCPEngineAdapter` | apps/mcp-server/src/index.ts | `MCPChange[]` | `MCPRiskResult` |
 | HTTP | `HTTPEngineAdapter` | apps/api/modules/risk/... | `HTTPFileInput[]` | `HTTPRiskResponse` |
-| CLI | `CLIEngineAdapter` | apps/cli/src/check.ts | `CLIInput` | `CLIOutput` |
+| CLI | `CLIEngineAdapter` | apps/cli/src/index.ts, apps/cli/src/check.ts | `CLIInput` | `CLIOutput` |
 
 ### Migration Steps for Removing V1
 
@@ -117,7 +117,7 @@ if (config.useV2Engine) {
 }
 ```
 
-**Phase 2: Replace V1 in CLI** - 🔜 READY
+**Phase 2: Replace V1 in CLI** - ✅ DONE (2025-12-16)
 ```typescript
 // apps/cli/src/index.ts
 // BEFORE (V1):
@@ -129,30 +129,26 @@ import { CLIEngineAdapter } from "@snapback/engine/transports/cli";
 const engineAdapter = new CLIEngineAdapter();
 ```
 
-**Phase 3: Replace V1 in API** - 🔜 READY
+**Phase 3: Replace V1 in API** - ✅ DONE (2025-12-16)
 ```typescript
-// apps/api/src/routes/v1/analyze.ts
-// BEFORE (V1):
-import { Guardian } from "@snapback/core";
-const guardian = new Guardian();
-
-// AFTER (V2):
+// apps/api/modules/risk/procedures/analyze-risk.ts already uses HTTPEngineAdapter
 import { HTTPEngineAdapter } from "@snapback/engine/transports/http";
 const engineAdapter = new HTTPEngineAdapter();
 ```
 
-**Phase 4: Remove Guardian Exports** - AFTER VERIFICATION
-- Remove `Guardian` export from `@snapback/core`
-- Remove detection plugins from `@snapback/core/detection`
-- Mark deprecated in v0.x, remove in v1.0
+**Phase 4: Deprecate Guardian** - ✅ DONE (2025-12-16)
+- Added `@deprecated` JSDoc annotations to Guardian class
+- Added runtime deprecation warning on first Guardian instantiation
+- Added `@deprecated` annotations to detection plugins
+- Guardian and plugins will be removed in v1.0.0
 
 ### Deprecation Timeline
 
-| Version | Action |
-|---------|--------|
-| v0.9.x | V2 engine feature-flagged (opt-in) |
-| v0.10.x | V2 engine default, V1 deprecated warning |
-| v1.0.0 | V1 Guardian removed, V2 only |
+| Version | Action | Status |
+|---------|--------|--------|
+| v0.9.x | V2 engine feature-flagged (opt-in) | ✅ DONE |
+| v0.10.x | V2 engine default, V1 deprecated warning | ✅ DONE |
+| v1.0.0 | V1 Guardian removed, V2 only | PLANNED |
 
 ---
 

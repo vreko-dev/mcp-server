@@ -16,23 +16,44 @@ export interface AnalysisResult {
 
 /**
  * Guardian options for dependency injection
+ * @deprecated Use CLIEngineAdapter, HTTPEngineAdapter, or MCPEngineAdapter from @snapback/engine instead.
  */
 export interface GuardianOptions {
 	/** Logger for debug/info messages (optional) */
 	logger?: Logger;
 }
 
+/**
+ * @deprecated The Guardian class is deprecated and will be removed in v1.0.0.
+ * Use the V2 engine adapters instead:
+ * - CLI: `import { CLIEngineAdapter } from "@snapback/engine/transports/cli"`
+ * - HTTP: `import { HTTPEngineAdapter } from "@snapback/engine/transports/http"`
+ * - MCP: `import { MCPEngineAdapter } from "@snapback/engine/transports/mcp"`
+ *
+ * Migration guide: See packages/engine/AGENT.md for V1 → V2 migration instructions.
+ */
 export class Guardian {
 	private plugins: AnalysisPlugin[] = [];
 	private logger: Logger;
+	private static deprecationWarningShown = false;
 
 	/**
 	 * Creates a new Guardian instance
 	 *
 	 * @param options - Configuration options (optional)
+	 * @deprecated Use CLIEngineAdapter, HTTPEngineAdapter, or MCPEngineAdapter from @snapback/engine instead.
 	 */
 	constructor(options?: GuardianOptions) {
 		this.logger = options?.logger || createSilentLogger();
+
+		// Show deprecation warning once per process
+		if (!Guardian.deprecationWarningShown) {
+			Guardian.deprecationWarningShown = true;
+			console.warn(
+				"[DEPRECATED] Guardian is deprecated and will be removed in v1.0.0. " +
+					"Use @snapback/engine adapters instead. See packages/engine/AGENT.md for migration guide.",
+			);
+		}
 	}
 
 	addPlugin(plugin: AnalysisPlugin) {

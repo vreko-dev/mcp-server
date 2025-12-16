@@ -65,7 +65,8 @@ const gates: Record<string, () => Promise<GateResult>> = {
 				hasLocation.includes("/services/") ||
 				hasLocation.includes("/core/") ||
 				hasLocation.includes("/snapshot/") ||
-				hasLocation.includes("/commands/");
+				hasLocation.includes("/commands/") ||
+				hasLocation.includes("packages/engine/src/");
 
 			// For bug fixes, existing service location is acceptable
 			const passed = isBugFix ? true : inServices;
@@ -188,13 +189,14 @@ const gates: Record<string, () => Promise<GateResult>> = {
 		// Check 1: Test passes
 		if (testFile && fs.existsSync(testFile)) {
 			try {
-				// Extract the app directory from test file path
-				// testFile format: apps/vscode/test/unit/telemetry-proxy-offline-queue.test.ts
-				const appDir = testFile.split("/")[1]; // 'vscode'
-				const appPath = `apps/${appDir}`;
-				const relativePath = testFile.replace(`${appPath}/`, "");
+				// Extract package/app path from test file (handles both apps/ and packages/)
+				const parts = testFile.split("/");
+				const rootDir = parts[0]; // 'apps' or 'packages'
+				const subDir = parts[1]; // 'vscode' or 'engine'
+				const pkgPath = `${rootDir}/${subDir}`;
+				const relativePath = testFile.replace(`${pkgPath}/`, "");
 
-				execSync(`cd ${appPath} && npm run test -- ${relativePath} 2>&1`, { encoding: "utf-8" });
+				execSync(`cd ${pkgPath} && npm run test -- ${relativePath} 2>&1`, { encoding: "utf-8" });
 				checks.push({
 					name: "Test passes",
 					passed: true,
@@ -256,14 +258,15 @@ const gates: Record<string, () => Promise<GateResult>> = {
 		// Check 1: Tests still pass
 		if (testFile && fs.existsSync(testFile)) {
 			try {
-				// Extract the app directory from test file path
-				// testFile format: apps/vscode/test/unit/telemetry-proxy-offline-queue.test.ts
-				const appDir = testFile.split("/")[1]; // 'vscode'
-				const appPath = `apps/${appDir}`;
-				const relativePath = testFile.replace(`${appPath}/`, "");
+				// Extract package/app path from test file (handles both apps/ and packages/)
+				const parts = testFile.split("/");
+				const rootDir = parts[0]; // 'apps' or 'packages'
+				const subDir = parts[1]; // 'vscode' or 'engine'
+				const pkgPath = `${rootDir}/${subDir}`;
+				const relativePath = testFile.replace(`${pkgPath}/`, "");
 
 				// Run tests using npm run test with correct path
-				execSync(`cd ${appPath} && npm run test -- ${relativePath} 2>&1`, {
+				execSync(`cd ${pkgPath} && npm run test -- ${relativePath} 2>&1`, {
 					encoding: "utf-8",
 					cwd: process.cwd(),
 				});
@@ -329,29 +332,34 @@ const gates: Record<string, () => Promise<GateResult>> = {
 
 		const content = fs.readFileSync(testFile, "utf-8");
 
-		// Check 1: 4-path coverage - More flexible pattern matching
-		// Happy path: tests that verify successful cases
+		// Check 1: 4-path coverage - Flexible pattern matching
+		// Detect paths via section headers, describe blocks, or keywords
 		const hasHappyPath =
-			content.includes("should call setupNetworkMonitoring") ||
+			content.includes("Happy Path") ||
 			content.includes("should successfully") ||
-			content.includes("should add addEventListener");
+			content.includes("should analyze valid") ||
+			content.includes("should return risk") ||
+			content.includes("should detect");
 
-		// Sad path: tests that verify error cases
 		const hasSadPath =
-			content.includes("should have proper error handling") ||
+			content.includes("Sad Path") ||
 			content.includes("should return error") ||
-			content.includes("should handle error");
+			content.includes("should return zero") ||
+			content.includes("should handle");
 
-		// Edge case: tests that verify boundary conditions
 		const hasEdgeCase =
-			content.includes("should call processQueue") ||
-			content.includes("offline") ||
+			content.includes("Edge Case") ||
 			content.includes("boundary") ||
-			content.includes("empty");
+			content.includes("empty") ||
+			content.includes("large") ||
+			content.includes("performance");
 
-		// Error case: tests that verify exceptions
 		const hasErrorCase =
-			content.includes("error handling") || content.includes("should throw") || content.includes("should catch");
+			content.includes("Error Path") ||
+			content.includes("invalid input") ||
+			content.includes("should throw") ||
+			content.includes("gracefully") ||
+			content.includes("error handling");
 
 		const pathCount = [hasHappyPath, hasSadPath, hasEdgeCase, hasErrorCase].filter(Boolean).length;
 

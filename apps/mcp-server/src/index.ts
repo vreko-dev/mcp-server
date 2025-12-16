@@ -8,6 +8,7 @@ import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import { DependencyAnalyzer, MCPClientManager, validateToolArgs } from "@snapback/core";
+import { MCPEngineAdapter } from "@snapback/engine/transports/mcp";
 import { SnapBackEventBusEventEmitter2 as SnapBackEventBus } from "@snapback/events";
 import { evaluate } from "@snapback/policy-engine"; // Import the proper policy engine
 import { z } from "zod";
@@ -103,6 +104,11 @@ export async function startServer(): Promise<{
 	// guardian.addPlugin(new PhantomDependencyPlugin());
 
 	const dep = new DependencyAnalyzer();
+
+	// Initialize the new engine adapter for local analysis
+	const engineAdapter = new MCPEngineAdapter();
+	console.error("[SnapBack MCP] Engine adapter initialized for local analysis");
+
 	// Use StorageBrokerAdapter instead of LocalStorage for single-writer discipline
 	// Use the standard workspace database path
 	const sdkModule = await import("@snapback/sdk");
@@ -463,11 +469,9 @@ export async function startServer(): Promise<{
 
 			// Handle SnapBack's native tools
 			if (name === "snapback.analyze_risk") {
-				// ARCHITECTURAL DECISION: API-First Approach
-				// See CLAUDE.md "Architectural Decisions" section for rationale
-				// Current implementation proxies to backend API for consistent detection
-				// Future: AnalysisRouter will provide tier-based routing
-				// See: apps/mcp-server/src/services/AnalysisRouter.IMPLEMENTATION.ts
+				// NEW: Use local engine adapter for analysis
+				// The engine runs signals locally (threats, complexity, velocity, etc.)
+				// and returns aggregated risk assessment with session coaching
 				const parsed = z
 					.object({
 						changes: z.array(
@@ -481,47 +485,24 @@ export async function startServer(): Promise<{
 					})
 					.parse(args);
 
-				// Proxy to backend API instead of using local Guardian
 				try {
-					// Create API client
-					const apiClient = new SnapBackAPIClient({
-						baseUrl: process.env.SNAPBACK_API_URL || "https://api.snapback.dev",
-						apiKey: apiKey,
-					});
+					// Use local engine for analysis
+					const startTime = Date.now();
+					const risk = await engineAdapter.analyzeRisk(parsed.changes);
+					const duration = Date.now() - startTime;
+					console.error(`[PERF] analyze_risk: ${duration}ms`);
 
-					// Prepare the analysis request
-					// Combine all changes into a single code string for analysis
-					const code = parsed.changes.map((change) => change.value).join("\n");
-
-					// For now, we'll use a placeholder file path
-					const filePath = "mcp-analysis.ts";
-
-					const analysisRequest = {
-						code,
-						filePath,
-						context: {
-							projectType: "mcp-analysis",
-							language: "typescript",
-						},
-					};
-
-					// Call the backend API
-					const risk = await apiClient.analyzeFast(analysisRequest);
-
-					// Create SARIF log
+					// Create SARIF log for policy evaluation
 					const sarifLog = createSarifLog("snapback-analyze-risk", "1.0.0");
-
-					// Add results to SARIF log based on risk factors
-					if (risk.factors && risk.factors.length > 0) {
-						risk.factors.forEach((factor, index) => {
+					if (risk.factors.length > 0) {
+						for (const [index, factor] of risk.factors.entries()) {
 							addResult(sarifLog, `risk-factor-${index + 1}`, factor, undefined, undefined);
-						});
+						}
 					} else {
-						// Add a default result if no factors
 						addResult(sarifLog, "analysis-complete", "Risk analysis completed", undefined, undefined);
 					}
 
-					// Evaluate SARIF against policy using the proper policy engine
+					// Evaluate SARIF against policy
 					const policyDecision = evaluate(sarifLog);
 
 					return {
@@ -530,49 +511,26 @@ export async function startServer(): Promise<{
 							{ type: "json", json: sarifLog },
 							{
 								type: "text",
-								text: `Policy Decision: ${policyDecision.action.toUpperCase()}\nReason: ${policyDecision.reason}\nConfidence: ${policyDecision.confidence.toFixed(2)}`,
+								text: `Policy Decision: ${policyDecision.action.toUpperCase()}
+Reason: ${policyDecision.reason}
+Confidence: ${policyDecision.confidence.toFixed(2)}
+
+Session Health: ${risk.session.score}/100
+${risk.session.coaching || ""}`,
 							},
 						],
 					};
 				} catch (error) {
-					// Fallback to basic analysis if API call fails
-					console.error("Backend API call failed, using basic analysis:", error);
-
-					// Create a basic risk analysis as fallback
-					const basicRisk = {
-						riskLevel: "low",
-						score: 0,
-						factors: [],
-						analysisTimeMs: 10,
-						issues: [],
-					};
-
-					// Create SARIF log
-					const sarifLog = createSarifLog("snapback-analyze-risk", "1.0.0");
-					addResult(
-						sarifLog,
-						"analysis-complete",
-						"Risk analysis completed with basic fallback",
-						undefined,
-						undefined,
-					);
-
-					// Evaluate SARIF against policy using the proper policy engine
-					const policyDecision = evaluate(sarifLog);
-
+					console.error("[SnapBack MCP] Engine analysis failed:", error);
+					const sanitized = sanitizeError(error, "analyze_risk");
 					return {
 						content: [
-							{ type: "json", json: basicRisk },
-							{ type: "json", json: sarifLog },
 							{
 								type: "text",
-								text: `Policy Decision: ${policyDecision.action.toUpperCase()}
-Reason: ${policyDecision.reason}
-Confidence Level: ${(policyDecision.confidence * 100).toFixed(0)}%
-
-⚠️ Using basic analysis due to backend connectivity issues.`,
+								text: `❌ Analysis failed: ${sanitized.message} (Log ID: ${sanitized.logId})`,
 							},
 						],
+						isError: true,
 					};
 				}
 			}

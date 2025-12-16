@@ -28,17 +28,17 @@ import { eventBus } from "./events";
 const DEFAULT_TIMEOUT = 30_000;
 
 /** Path to scripts directory (relative to this file) */
-const SCRIPTS_DIR = join(__dirname, "..", "scripts");
+const SCRIPTS_DIR = join(__dirname, "..");
 
 /** Signal scripts to run (in parallel) */
 const SIGNAL_SCRIPTS = [
 	"signals/risk-score.ts",
 	"signals/complexity.ts",
 	"signals/cycles.ts",
-	// TODO: Add more signals as implemented
-	// 'signals/consumers.ts',
-	// 'signals/velocity.ts',
-	// 'signals/threats.ts',
+	"signals/velocity.ts",
+	"signals/consumers.ts",
+	"signals/threats.ts",
+	"signals/phantom-deps.ts",
 ];
 
 /** Validator scripts to run (in parallel) */

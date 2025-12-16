@@ -137,9 +137,9 @@ function detectCycles(workspace: string, files: FileChange[]): string[][] {
 }
 
 /**
- * Get all files affected by cycles
+ * Get all files affected by cycles - exported for testing
  */
-function getAffectedFiles(cycles: string[][]): string[] {
+export function getAffectedFiles(cycles: string[][]): string[] {
 	const files = new Set<string>();
 	for (const cycle of cycles) {
 		for (const file of cycle) {
@@ -147,6 +147,24 @@ function getAffectedFiles(cycles: string[][]): string[] {
 		}
 	}
 	return Array.from(files);
+}
+
+/** Cycles signal result - exported for testing */
+export interface CyclesResult {
+	cycles: string[][];
+	affectedFiles: string[];
+	cycleCount: number;
+}
+
+/**
+ * Analyze cycles results from raw cycle data - exported for testing
+ */
+export function analyzeCycles(cycles: string[][]): CyclesResult {
+	return {
+		cycles,
+		affectedFiles: getAffectedFiles(cycles),
+		cycleCount: cycles.length,
+	};
 }
 
 // =============================================================================

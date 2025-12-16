@@ -1,39 +1,24 @@
 {
-  "taskId": "schema-v2-migration",
-  "taskType": "REFACTORING",
-  "description": "Migrate SnapshotManifest from V1 to V2 schema with PRE checkpoint support",
-  "scope": "apps/vscode/src/storage/",
-  "context": "VS Code Extension",
-  "createdAt": "2025-12-13T20:24:00Z",
-  "currentPhase": "COMPLETE",
-  "evidence": {
-    "auditReport": { "status": "COMPLETE" },
-    "testOutput": "ai_dev_utils/state/red-phase-output.txt",
-    "testFile": "apps/vscode/test/unit/storage/schemaV2.test.ts",
-    "redPhaseStatus": "PASS",
-    "redPhaseFailures": 14,
-    "greenPhaseStatus": "PASS",
-    "greenPhaseTests": 14,
-    "refactorPhaseStatus": "PASS",
-    "qualityStatus": "PASS",
-    "implementationFile": "apps/vscode/src/storage/types.ts",
-    "linesAdded": 131,
-    "refactorings": [
-      "Added SCHEMA_VERSION_V2 constant",
-      "Added CHECKPOINT_TYPES const assertion array",
-      "Added CheckpointType union type",
-      "Added isCheckpointType type guard",
-      "Added SnapshotFileRefV2 interface",
-      "Added SnapshotManifestV2 interface",
-      "Added isSnapshotManifestV2 type guard"
-    ],
-    "totalTestsPassing": 48
-  },
-  "phase": "COMPLETE",
-  "completedPhases": ["audit", "red", "green", "refactor", "quality"],
-  "certification": {
-    "status": "CERTIFIED",
-    "completedAt": "2025-12-13T21:06:00Z",
-    "summary": "Schema V2 types added with type guards. 14 new tests + 34 existing = 48 tests passing."
-  }
+	"taskId": "engine-transports-cli",
+	"taskType": "NEW_FEATURE",
+	"description": "Implement CLI transport adapter to bridge engine with apps/cli",
+	"scope": "packages/engine/src/transports/",
+	"context": "Engine Package",
+	"currentPhase": "REFACTOR",
+	"evidence": {
+		"serviceLocation": "packages/engine/src/transports/cli.ts",
+		"testFile": "packages/engine/test/transports/cli.test.ts",
+		"testCount": 13,
+		"locAfter": 182
+	},
+	"phase": "DONE",
+	"completedPhases": ["audit", "red", "green", "refactor", "quality", "certify"],
+	"certification": {
+		"status": "COMPLETE",
+		"timestamp": "2025-12-16T09:55:00Z",
+		"tests": 13,
+		"coverage": "4-path",
+		"loc": 182
+	},
+	"violations": []
 }

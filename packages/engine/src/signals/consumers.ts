@@ -2,73 +2,35 @@
 /**
  * Consumers Signal - Import Fan-In Analysis
  *
- * STATUS: 📝 TODO - Needs implementation
+ * SOURCE REFERENCE: apps/vscode/src/engine/graph/ImportAnalyzer.ts
  *
- * EXTRACTION SOURCE: apps/vscode/src/engine/graph/ImportAnalyzer.ts
- *
- * This script counts how many files import each of the given files.
+ * Counts how many files import each target file.
  * High fan-in = more impact when changed = higher risk.
  *
- * EXTRACTION STEPS:
- * 1. Read ImportAnalyzer.ts to understand the import graph building
- * 2. Simplify to just count consumers (files that import the target)
- * 3. Use madge or grep-based approach for simplicity
+ * INPUT: JSON via stdin
+ * { "files": ["path/to/file.ts"], "workspace"?: string }
  *
- * INPUTS (via --files or SNAPBACK_FILES env):
- * - Comma-separated list of file paths
- *
- * OUTPUTS (JSON to stdout):
- * {
- *   "status": "pass" | "fail",
- *   "score": number (based on max fan-in),
- *   "details": {
- *     "files": [
- *       { "file": "types.ts", "consumers": 15 },
- *       { "file": "utils.ts", "consumers": 8 }
- *     ],
- *     "maxConsumers": 15,
- *     "avgConsumers": 11.5
- *   }
- * }
- *
- * TARGET: ~50 LOC
+ * OUTPUT: JSON to stdout (SignalOutput schema)
+ * { "signal": "consumers", "value": number, "metadata": { files, maxConsumers, avgConsumers } }
  */
 
 import { execSync } from "node:child_process";
 import { basename, extname } from "node:path";
+import type { SignalOutput } from "../types.js";
 
-// =============================================================================
-// TYPES
-// =============================================================================
-
-interface ScriptResult {
-	status: "pass" | "fail";
-	score: number;
-	reason?: string;
-	details: {
-		files: Array<{ file: string; consumers: number }>;
-		maxConsumers: number;
-		avgConsumers: number;
-	};
+/** Input type - exported for testing */
+export interface ConsumersInput {
+	files: string[];
+	workspace?: string;
 }
 
-// =============================================================================
-// TODO: Implement proper import analysis
-// Reference: apps/vscode/src/engine/graph/ImportAnalyzer.ts
-// =============================================================================
-
-function countConsumers(filePath: string): number {
+/** Count how many files import a given file - exported for testing */
+export function countConsumers(filePath: string, workspace: string): number {
 	try {
-		// Simple grep-based approach
-		// TODO: Replace with proper AST-based analysis from ImportAnalyzer.ts
 		const baseName = basename(filePath, extname(filePath));
 		const result = execSync(
-			`grep -r "from.*['\\"].*${baseName}['\\"]" --include="*.ts" --include="*.tsx" . 2>/dev/null | wc -l`,
-			{
-				encoding: "utf8",
-				timeout: 10000,
-				stdio: ["pipe", "pipe", "pipe"],
-			},
+			`grep -r "from.*['""].*${baseName}['""]" --include="*.ts" --include="*.tsx" . 2>/dev/null | wc -l`,
+			{ encoding: "utf8", timeout: 10000, cwd: workspace },
 		);
 		return Number.parseInt(result.trim(), 10) || 0;
 	} catch {
@@ -76,58 +38,76 @@ function countConsumers(filePath: string): number {
 	}
 }
 
-// =============================================================================
-// MAIN LOGIC
-// =============================================================================
-
-function parseArgs(): string[] {
-	const filesArg = process.argv.find((arg) => arg.startsWith("--files="));
-	if (filesArg) {
-		return filesArg.replace("--files=", "").split(",").filter(Boolean);
-	}
-	return (process.env.SNAPBACK_FILES ?? "").split(",").filter(Boolean);
+/** Consumer analysis result - exported for testing */
+export interface ConsumerResult {
+	fileConsumers: Array<{ file: string; consumers: number }>;
+	maxConsumers: number;
+	avgConsumers: number;
+	score: number;
 }
 
-function main(): void {
-	const files = parseArgs();
+/** Analyze consumers for files - exported for testing */
+export function analyzeConsumers(input: ConsumersInput): ConsumerResult {
+	const workspace = input.workspace || process.cwd();
+	const files = input.files || [];
 
 	if (files.length === 0) {
-		const result: ScriptResult = {
-			status: "pass",
-			score: 0,
-			details: { files: [], maxConsumers: 0, avgConsumers: 0 },
-		};
-		console.log(JSON.stringify(result));
-		return;
+		return { fileConsumers: [], maxConsumers: 0, avgConsumers: 0, score: 0 };
 	}
 
-	// Count consumers for each file
 	const fileConsumers = files.map((file) => ({
 		file,
-		consumers: countConsumers(file),
+		consumers: countConsumers(file, workspace),
 	}));
 
-	const maxConsumers = Math.max(...fileConsumers.map((f) => f.consumers));
+	const maxConsumers = Math.max(...fileConsumers.map((f) => f.consumers), 0);
 	const avgConsumers = fileConsumers.reduce((sum, f) => sum + f.consumers, 0) / files.length;
+	const score = Math.min(10, maxConsumers / 5);
 
-	// Score: 1 point per consumer above threshold (5)
-	const score = Math.max(0, maxConsumers - 5);
+	return { fileConsumers, maxConsumers, avgConsumers, score };
+}
 
-	const result: ScriptResult = {
-		status: maxConsumers > 20 ? "fail" : "pass",
-		score,
-		details: {
-			files: fileConsumers,
-			maxConsumers,
-			avgConsumers: Math.round(avgConsumers * 10) / 10,
-		},
-	};
+async function readInput(): Promise<ConsumersInput> {
+	return new Promise((resolve, reject) => {
+		let data = "";
+		process.stdin.on("data", (chunk) => (data += chunk));
+		process.stdin.on("end", () => {
+			try {
+				resolve(JSON.parse(data));
+			} catch (e) {
+				reject(new Error(`Invalid JSON input: ${e}`));
+			}
+		});
+	});
+}
 
-	if (maxConsumers > 20) {
-		result.reason = `High fan-in detected: ${maxConsumers} consumers`;
+async function main(): Promise<void> {
+	try {
+		const input = await readInput();
+		const result = analyzeConsumers(input);
+
+		const output: SignalOutput = {
+			signal: "consumers",
+			value: Math.round(result.score * 10) / 10,
+			metadata: {
+				files: result.fileConsumers,
+				maxConsumers: result.maxConsumers,
+				avgConsumers: Math.round(result.avgConsumers * 10) / 10,
+			},
+		};
+
+		console.log(JSON.stringify(output));
+		process.exit(0);
+	} catch (err) {
+		console.log(
+			JSON.stringify({
+				signal: "consumers",
+				value: 0,
+				metadata: { error: err instanceof Error ? err.message : String(err) },
+			}),
+		);
+		process.exit(1);
 	}
-
-	console.log(JSON.stringify(result));
 }
 
 main();

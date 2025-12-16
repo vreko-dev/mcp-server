@@ -81,6 +81,26 @@ async function readInput(): Promise<Input> {
 // COMPLEXITY CALCULATION
 // =============================================================================
 
+/** File input for complexity calculation - exported for testing */
+export interface ComplexityInput {
+	files: FileChange[];
+}
+
+/** Complexity result for a single file - exported for testing */
+export interface FileComplexityResult {
+	path: string;
+	complexity: number;
+}
+
+/** Aggregate complexity result - exported for testing */
+export interface ComplexityResult {
+	avgComplexity: number;
+	maxComplexity: number;
+	highComplexityFiles: string[];
+	fileCount: number;
+	value: number;
+}
+
 /**
  * Calculate complexity for a single file
  *
@@ -91,8 +111,10 @@ async function readInput(): Promise<Input> {
  * - 0.3-0.5 = Medium complexity
  * - 0.5-0.7 = High complexity
  * - 0.7-1.0 = Very high complexity
+ *
+ * Exported for direct testing
  */
-function calculateFileComplexity(content: string, lineCount: number): number {
+export function calculateFileComplexity(content: string, lineCount: number): number {
 	// Base complexity on line count (normalized to 0-1)
 	const lineComplexity = Math.min(1, lineCount / 1000);
 
@@ -119,6 +141,38 @@ function calculateFileComplexity(content: string, lineCount: number): number {
 
 	// Combine and cap at 1.0
 	return Math.min(1, lineComplexity + patternComplexity);
+}
+
+/**
+ * Calculate aggregate complexity for multiple files - exported for testing
+ */
+export function calculateComplexityAggregate(files: FileChange[]): ComplexityResult {
+	if (files.length === 0) {
+		return {
+			avgComplexity: 0,
+			maxComplexity: 0,
+			highComplexityFiles: [],
+			fileCount: 0,
+			value: 0,
+		};
+	}
+
+	const complexities = files.map((file) => ({
+		path: file.path,
+		complexity: calculateFileComplexity(file.content, file.lineCount),
+	}));
+
+	const avgComplexity = complexities.reduce((sum, c) => sum + c.complexity, 0) / complexities.length;
+	const maxComplexity = Math.max(...complexities.map((c) => c.complexity));
+	const highComplexityFiles = complexities.filter((c) => c.complexity > 0.7).map((c) => c.path);
+
+	return {
+		avgComplexity: Math.round(avgComplexity * 100) / 100,
+		maxComplexity: Math.round(maxComplexity * 100) / 100,
+		highComplexityFiles,
+		fileCount: files.length,
+		value: Math.round(avgComplexity * 100) / 100,
+	};
 }
 
 // =============================================================================

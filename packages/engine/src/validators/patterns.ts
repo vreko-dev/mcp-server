@@ -19,7 +19,7 @@
 
 import { execSync } from "node:child_process";
 
-interface ValidatorResult {
+export interface ValidatorResult {
 	status: "pass" | "fail";
 	reason?: string;
 	suggestion?: string;
@@ -32,9 +32,9 @@ interface ValidatorResult {
 }
 
 /**
- * Run Biome check on files
+ * Run Biome check on files - exported for testing
  */
-function runBiomeCheck(files: string[]): ValidatorResult {
+export function runBiomeCheck(files: string[]): ValidatorResult {
 	try {
 		// Run biome check (returns non-zero exit on errors, but we treat as warnings)
 		const result = execSync(`pnpm biome check ${files.join(" ")} --reporter=json`, {
@@ -94,9 +94,9 @@ function runBiomeCheck(files: string[]): ValidatorResult {
 }
 
 /**
- * Parse command-line arguments or environment variable
+ * Parse command-line arguments or environment variable - exported for testing
  */
-function parseArgs(): string[] {
+export function parseArgs(): string[] {
 	const filesArg = process.argv.find((arg) => arg.startsWith("--files="));
 	const filesEnv = process.env.SNAPBACK_FILES;
 

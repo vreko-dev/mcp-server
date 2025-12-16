@@ -1,136 +1,123 @@
 #!/usr/bin/env npx tsx
+
 /**
  * Velocity Signal - Change Velocity Tracking
  *
- * STATUS: 📝 TODO - Needs extraction from risk-analyzer.ts
+ * SOURCE REFERENCE: packages/engine/src/signals/burst.ts
  *
- * EXTRACTION SOURCE: packages/core/src/risk-analyzer.ts lines 68-100
- *
- * This script tracks how fast changes are happening (burst detection).
+ * Integrates with BurstDetector for accurate velocity metrics.
  * High velocity = agent making rapid changes = higher risk.
  *
- * EXTRACTION STEPS:
- * 1. Find change tracking logic in risk-analyzer.ts
- * 2. Extract burst detection algorithm
- * 3. Simplify to compute velocity metrics
- *
- * INPUTS (via --files or SNAPBACK_FILES env):
- * - Comma-separated list of file paths
- *
- * OUTPUTS (JSON to stdout):
+ * INPUT: JSON via stdin
  * {
- *   "status": "pass" | "fail",
- *   "score": number,
- *   "details": {
- *     "changesLast5Min": number,
- *     "burstDetected": boolean,
- *     "avgVelocity": number
- *   }
+ *   "files": [{ "path": string, "charCount": number, "timestamp"?: number }]
  * }
  *
- * TARGET: ~40 LOC
+ * OUTPUT: JSON to stdout (SignalOutput schema)
+ * {
+ *   "signal": "velocity",
+ *   "value": number,
+ *   "metadata": { "burstDetected": boolean, "velocity": number, "charCount": number }
+ * }
  */
 
-// =============================================================================
-// TYPES
-// =============================================================================
+import type { SignalOutput } from "../types.js";
+import { BurstDetector } from "./burst.js";
 
-interface ScriptResult {
-	status: "pass" | "fail";
-	score: number;
-	reason?: string;
-	details: {
-		changesLast5Min: number;
-		burstDetected: boolean;
-		avgVelocity: number;
-	};
+/** File input type - exported for testing */
+export interface FileInput {
+	path: string;
+	charCount?: number;
+	timestamp?: number;
 }
 
-// =============================================================================
-// TODO: Extract from packages/core/src/risk-analyzer.ts
-// The current implementation is a placeholder
-// =============================================================================
-
-// In-memory change tracking (reset on script restart)
-// In production, this would read from session state
-const CHANGE_HISTORY: number[] = [];
-
-function recordChange(): void {
-	CHANGE_HISTORY.push(Date.now());
-	// Keep only last 5 minutes
-	const fiveMinAgo = Date.now() - 5 * 60 * 1000;
-	while (CHANGE_HISTORY.length > 0) {
-		const firstChange = CHANGE_HISTORY[0];
-		if (firstChange === undefined || firstChange >= fiveMinAgo) {
-			break;
-		}
-		CHANGE_HISTORY.shift();
-	}
-}
-
-function calculateVelocity(): {
-	changesLast5Min: number;
+/** Velocity calculation result - exported for testing */
+export interface VelocityResult {
 	burstDetected: boolean;
-	avgVelocity: number;
-} {
-	const fiveMinAgo = Date.now() - 5 * 60 * 1000;
-	const recentChanges = CHANGE_HISTORY.filter((t) => t > fiveMinAgo);
-
-	const changesLast5Min = recentChanges.length;
-	const avgVelocity = changesLast5Min / 5; // changes per minute
-
-	// Burst = more than 10 changes in last minute
-	const oneMinAgo = Date.now() - 60 * 1000;
-	const changesLastMin = recentChanges.filter((t) => t > oneMinAgo).length;
-	const burstDetected = changesLastMin > 10;
-
-	return { changesLast5Min, burstDetected, avgVelocity };
+	velocity: number;
+	score: number;
+	totalChars: number;
 }
 
-// =============================================================================
-// MAIN LOGIC
-// =============================================================================
+/** Calculate velocity from file inputs - exported for testing */
+export function calculateVelocity(files: FileInput[], detector?: BurstDetector): VelocityResult {
+	const MIN_BURST_CHARS = 50;
+	const burstDetector = detector || new BurstDetector({ threshold: 30, windowMs: 100 });
 
-function parseArgs(): string[] {
-	const filesArg = process.argv.find((arg) => arg.startsWith("--files="));
-	if (filesArg) {
-		return filesArg.replace("--files=", "").split(",").filter(Boolean);
+	let totalChars = 0;
+	let burstDetected = false;
+	let maxVelocity = 0;
+
+	for (const file of files || []) {
+		const charCount = file.charCount || 0;
+		totalChars += charCount;
+		const burstEvent = burstDetector.processChange(file.path, charCount, file.timestamp || Date.now());
+		if (burstEvent && charCount >= MIN_BURST_CHARS) {
+			burstDetected = true;
+			maxVelocity = Math.max(maxVelocity, burstEvent.velocity);
+		}
 	}
-	return (process.env.SNAPBACK_FILES ?? "").split(",").filter(Boolean);
+
+	const velocity = maxVelocity > 0 ? maxVelocity : totalChars > 0 ? totalChars / 100 : 0;
+	const score = burstDetected ? 10 : Math.min(5, velocity / 2);
+
+	return { burstDetected, velocity, score, totalChars };
 }
 
-function main(): void {
-	const files = parseArgs();
+async function readInput(): Promise<{ files: FileInput[] }> {
+	return new Promise((resolve, reject) => {
+		let data = "";
+		process.stdin.on("data", (chunk) => (data += chunk));
+		process.stdin.on("end", () => {
+			try {
+				resolve(JSON.parse(data));
+			} catch (e) {
+				reject(new Error(`Invalid JSON input: ${e}`));
+			}
+		});
+	});
+}
 
-	// Record changes for each file
-	for (const _ of files) {
-		recordChange();
+async function main(): Promise<void> {
+	try {
+		const input = await readInput();
+		const detector = new BurstDetector({ threshold: 30, windowMs: 100 });
+		const MIN_BURST_CHARS = 50;
+
+		let totalChars = 0;
+		let burstDetected = false;
+		let maxVelocity = 0;
+
+		for (const file of input.files || []) {
+			const charCount = file.charCount || 0;
+			totalChars += charCount;
+			const burstEvent = detector.processChange(file.path, charCount, file.timestamp || Date.now());
+			if (burstEvent && charCount >= MIN_BURST_CHARS) {
+				burstDetected = true;
+				maxVelocity = Math.max(maxVelocity, burstEvent.velocity);
+			}
+		}
+
+		const velocity = maxVelocity > 0 ? maxVelocity : totalChars > 0 ? totalChars / 100 : 0;
+		const score = burstDetected ? 10 : Math.min(5, velocity / 2);
+
+		const output: SignalOutput = {
+			signal: "velocity",
+			value: Math.round(score * 10) / 10,
+			metadata: { burstDetected, velocity: Math.round(velocity * 100) / 100, charCount: totalChars },
+		};
+		console.log(JSON.stringify(output));
+		process.exit(0);
+	} catch (err) {
+		console.log(
+			JSON.stringify({
+				signal: "velocity",
+				value: 0,
+				metadata: { error: err instanceof Error ? err.message : String(err) },
+			}),
+		);
+		process.exit(1);
 	}
-
-	const velocity = calculateVelocity();
-
-	// Score: 5 points per burst, 1 point per 2 changes/min above 2
-	let score = 0;
-	if (velocity.burstDetected) {
-		score += 10;
-	}
-	score += Math.max(0, (velocity.avgVelocity - 2) * 2);
-
-	const result: ScriptResult = {
-		status: velocity.burstDetected ? "fail" : "pass",
-		score: Math.round(score),
-		details: {
-			changesLast5Min: velocity.changesLast5Min,
-			burstDetected: velocity.burstDetected,
-			avgVelocity: Math.round(velocity.avgVelocity * 10) / 10,
-		},
-	};
-
-	if (velocity.burstDetected) {
-		result.reason = "Burst detected: too many changes in short time";
-	}
-
-	console.log(JSON.stringify(result));
 }
 
 main();

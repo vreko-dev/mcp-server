@@ -104,7 +104,8 @@ async function readInput(): Promise<Input> {
  *
  * SOURCE: packages/core/src/risk-analyzer.ts, analyzeSensitiveFiles() method
  */
-const SENSITIVE_PATTERNS = [
+/** Sensitive file patterns - exported for testing */
+export const SENSITIVE_PATTERNS = [
 	/\.env$/i,
 	/config\.json$/i,
 	/package\.json$/i,
@@ -122,7 +123,8 @@ const SENSITIVE_PATTERNS = [
  *
  * SOURCE: packages/core/src/risk-analyzer.ts, detectPatternTriggers() method
  */
-const PATTERN_TRIGGERS = [
+/** Pattern triggers that indicate risky changes - exported for testing */
+export const PATTERN_TRIGGERS = [
 	{ pattern: /package\.json$|package-lock\.json$|pnpm-lock\.yaml$/, label: "Dependency changes" },
 	{ pattern: /webpack\.config|vite\.config|rollup\.config|tsconfig\.json$/, label: "Build config changes" },
 	{ pattern: /\.sql$|schema|migration|prisma/, label: "Database schema changes" },
@@ -131,23 +133,23 @@ const PATTERN_TRIGGERS = [
 ];
 
 /**
- * Check if a file is sensitive
+ * Check if a file is sensitive - exported for testing
  */
-function isSensitiveFile(path: string): boolean {
+export function isSensitiveFile(path: string): boolean {
 	const lowerPath = path.toLowerCase();
 	return SENSITIVE_PATTERNS.some((p) => p.test(lowerPath));
 }
 
 /**
- * Detect pattern triggers
+ * Detect pattern triggers - exported for testing
  */
-function detectTriggers(path: string): string[] {
+export function detectTriggers(path: string): string[] {
 	const lowerPath = path.toLowerCase();
 	return PATTERN_TRIGGERS.filter((t) => t.pattern.test(lowerPath)).map((t) => t.label);
 }
 
 /**
- * Calculate file complexity (simplified)
+ * Calculate file complexity (simplified) - exported for testing
  *
  * SOURCE: packages/core/src/risk-analyzer.ts, analyzeFileComplexity() method
  *
@@ -158,7 +160,7 @@ function detectTriggers(path: string): string[] {
  * - Conditional statements (if/switch/for/while)
  * - Complex operations (try/catch/throw/eval)
  */
-function calculateComplexity(content: string, lineCount: number): number {
+export function calculateComplexity(content: string, lineCount: number): number {
 	// Base complexity on line count
 	const lineComplexity = Math.min(1, lineCount / 1000);
 
@@ -177,11 +179,11 @@ function calculateComplexity(content: string, lineCount: number): number {
 }
 
 /**
- * Main risk score calculation
+ * Main risk score calculation - exported for testing
  *
  * SOURCE: packages/core/src/risk-analyzer.ts, analyzeFileChanges() method
  */
-function calculateRiskScore(files: FileChange[]): { score: number; factors: string[] } {
+export function calculateRiskScore(files: FileChange[]): { score: number; factors: string[] } {
 	let totalScore = 0;
 	const factors: string[] = [];
 

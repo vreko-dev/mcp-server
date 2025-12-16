@@ -21,7 +21,8 @@
 import { readFileSync } from "node:fs";
 import * as esprima from "esprima";
 
-interface ValidatorResult {
+/** Validator result type - exported for testing */
+export interface ValidatorResult {
 	status: "pass" | "fail";
 	reason?: string;
 	suggestion?: string;
@@ -36,14 +37,16 @@ interface ValidatorResult {
 	};
 }
 
-interface Threat {
+/** Threat pattern type - exported for testing */
+export interface Threat {
 	pattern: RegExp;
 	description: string;
 	severity: number;
 }
 
 // Dangerous code patterns (from threat-detection.ts)
-const THREAT_PATTERNS: Record<string, Threat[]> = {
+/** Threat patterns - exported for testing */
+export const THREAT_PATTERNS: Record<string, Threat[]> = {
 	critical: [
 		{ pattern: /rm\s+-rf/i, description: "rm -rf command", severity: 1.0 },
 		{ pattern: /DROP\s+TABLE/i, description: "DROP TABLE SQL", severity: 1.0 },
@@ -58,16 +61,18 @@ const THREAT_PATTERNS: Record<string, Threat[]> = {
 };
 
 /**
- * Detect AST-based security issues (eval, Function constructor)
+ * Detect AST-based security issues (eval, Function constructor) - exported for testing
  */
-function findASTSecurityIssues(content: string, filePath: string): string[] {
+export function findASTSecurityIssues(content: string, filePath: string): string[] {
 	const issues: string[] = [];
 
 	try {
 		const ast = esprima.parseScript(content, { tolerant: true });
 
 		const traverse = (node: any) => {
-			if (!node) return;
+			if (!node) {
+				return;
+			}
 
 			// Check for eval usage
 			if (node.type === "CallExpression" && node.callee?.type === "Identifier" && node.callee.name === "eval") {
@@ -89,7 +94,9 @@ function findASTSecurityIssues(content: string, filePath: string): string[] {
 					const child = node[key];
 					if (typeof child === "object" && child !== null) {
 						if (Array.isArray(child)) {
-							child.forEach((childNode) => traverse(childNode));
+							for (const childNode of child) {
+								traverse(childNode);
+							}
 						} else {
 							traverse(child);
 						}
@@ -107,9 +114,9 @@ function findASTSecurityIssues(content: string, filePath: string): string[] {
 }
 
 /**
- * Detect pattern-based threats (secrets, dangerous commands)
+ * Detect pattern-based threats (secrets, dangerous commands) - exported for testing
  */
-function findPatternThreats(
+export function findPatternThreats(
 	content: string,
 	filePath: string,
 ): Array<{
@@ -155,9 +162,9 @@ function findPatternThreats(
 }
 
 /**
- * Validate security for files
+ * Validate security for files - exported for testing
  */
-function validateSecurity(files: string[]): ValidatorResult {
+export function validateSecurity(files: string[]): ValidatorResult {
 	const allThreats: Array<{
 		type: string;
 		file: string;

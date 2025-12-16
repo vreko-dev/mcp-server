@@ -21,6 +21,18 @@
     "./validators": {
       "import": "./dist/validators/index.js",
       "types": "./dist/validators/index.d.ts"
+    },
+    "./transports/mcp": {
+      "import": "./dist/transports/mcp.js",
+      "types": "./dist/transports/mcp.d.ts"
+    },
+    "./transports/http": {
+      "import": "./dist/transports/http.js",
+      "types": "./dist/transports/http.d.ts"
+    },
+    "./transports/cli": {
+      "import": "./dist/transports/cli.js",
+      "types": "./dist/transports/cli.d.ts"
     }
   },
   "scripts": {
@@ -35,6 +47,7 @@
   },
   "devDependencies": {
     "@snapback/config": "workspace:*",
+    "@types/esprima": "catalog:",
     "tsup": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"

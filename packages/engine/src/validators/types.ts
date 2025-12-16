@@ -66,12 +66,12 @@ async function readInput(): Promise<Input> {
 // =============================================================================
 
 /**
- * Parse TypeScript error output into structured errors
+ * Parse TypeScript error output into structured errors - exported for testing
  *
  * TypeScript error format:
  *   src/index.ts(42,10): error TS2322: Type 'string' is not assignable to type 'number'.
  */
-function parseTypeScriptErrors(output: string): ValidationError[] {
+export function parseTypeScriptErrors(output: string): ValidationError[] {
 	const errors: ValidationError[] = [];
 	const lines = output.split("\n");
 
@@ -94,14 +94,20 @@ function parseTypeScriptErrors(output: string): ValidationError[] {
 	return errors;
 }
 
+/** Type check result - exported for testing */
+export interface TypeCheckResult {
+	passed: boolean;
+	errors: ValidationError[];
+}
+
 /**
- * Run TypeScript type checking
+ * Run TypeScript type checking - exported for testing
  *
  * SOURCE: scripts/validate-project.ts, lines 344-369
  *
  * Uses tsc --noEmit to check types without emitting files.
  */
-function runTypeCheck(workspace: string): { passed: boolean; errors: ValidationError[] } {
+export function runTypeCheck(workspace: string): TypeCheckResult {
 	try {
 		execSync("npx tsc --noEmit", {
 			cwd: workspace,

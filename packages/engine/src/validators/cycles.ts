@@ -95,10 +95,43 @@ function detectCycles(workspace: string): string[][] {
 }
 
 /**
- * Format a cycle as a readable string
+ * Format a cycle as a readable string - exported for testing
  */
-function formatCycle(cycle: string[]): string {
+export function formatCycle(cycle: string[]): string {
 	return cycle.join(" → ");
+}
+
+/** Cycles validation result - exported for testing */
+export interface CyclesValidationResult {
+	passed: boolean;
+	cycles: string[][];
+	errors: ValidationError[];
+	suggestion?: string;
+}
+
+/**
+ * Validate cycles (pure logic) - exported for testing
+ */
+export function validateCycles(cycles: string[][]): CyclesValidationResult {
+	if (cycles.length === 0) {
+		return {
+			passed: true,
+			cycles: [],
+			errors: [],
+		};
+	}
+
+	const errors: ValidationError[] = cycles.map((cycle) => ({
+		message: `Circular dependency: ${formatCycle(cycle)}`,
+		severity: "error" as const,
+	}));
+
+	return {
+		passed: false,
+		cycles,
+		errors,
+		suggestion: "Extract shared logic to a separate module to break the cycle, or use dependency injection",
+	};
 }
 
 // =============================================================================

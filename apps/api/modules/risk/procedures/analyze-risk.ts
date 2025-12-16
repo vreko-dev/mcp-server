@@ -1,3 +1,4 @@
+import { HTTPEngineAdapter } from "@snapback/engine/transports/http";
 import { apiKeys } from "@snapback/platform";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
@@ -305,7 +306,44 @@ export const analyzeRisk = protectedProcedure.input(analyzeRiskSchema).handler(a
 		},
 	}).catch(console.error);
 
-	// 9. Return analysis result
+	// 9. Enhanced analysis using SnapBack engine (if content available)
+	let engineAnalysis:
+		| {
+				engineScore: number;
+				engineLevel: string;
+				engineFactors: string[];
+				session: { score: number; warnings: string[] };
+		  }
+		| undefined;
+
+	try {
+		const filesWithContent = input.files.filter((f) => f.content);
+		if (filesWithContent.length > 0) {
+			const engineAdapter = new HTTPEngineAdapter();
+			const engineResult = await engineAdapter.analyzeFiles(
+				filesWithContent.map((f) => ({
+					path: f.path,
+					content: f.content,
+					changeType: f.changeType,
+					linesAdded: f.linesAdded,
+					linesDeleted: f.linesDeleted,
+				})),
+			);
+			engineAnalysis = {
+				engineScore: engineResult.riskScore,
+				engineLevel: engineResult.riskLevel,
+				engineFactors: engineResult.riskFactors.map((f) => f.message),
+				session: {
+					score: engineResult.session.score,
+					warnings: engineResult.session.warnings,
+				},
+			};
+		}
+	} catch {
+		// Engine analysis is optional - continue without it
+	}
+
+	// 10. Return analysis result
 	return {
 		analysisId,
 		riskScore: finalRiskScore,
@@ -314,6 +352,7 @@ export const analyzeRisk = protectedProcedure.input(analyzeRiskSchema).handler(a
 		summary,
 		recommendations,
 		advancedAnalysis,
+		engineAnalysis,
 		timestamp: new Date().toISOString(),
 	};
 });

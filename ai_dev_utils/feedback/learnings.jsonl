@@ -1,0 +1,5 @@
+{"id":"L001","type":"pattern","trigger":"inline db query in procedure","action":"search for existing service first, add method to service layer","learned_from":"task-4-1-a-violation","added":"2025-12-09"}
+{"id":"L002","type":"pitfall","trigger":"activation race in extension","action":"check command registration order in extension.ts, ensure dependencies initialized first","learned_from":"auth-listener-bug","added":"2025-12-10"}
+{"id":"L003","type":"efficiency","trigger":"test uses Date.now() or real time","action":"use DeterministicTime from test utilities for consistent behavior","learned_from":"timer-test-flakiness","added":"2025-12-11"}
+{"id":"L004","type":"pattern","trigger":"error handling needed","action":"use toError() from @snapback-oss/sdk/utils/errorHelpers.ts","learned_from":"error-handling-consolidation","added":"2025-12-12"}
+{"id":"L005","type":"discovery","trigger":"looking for retry logic","action":"use withRetry() from @snapback-oss/sdk/utils/retry.ts, don't create new","learned_from":"retry-duplication-found","added":"2025-12-14"}

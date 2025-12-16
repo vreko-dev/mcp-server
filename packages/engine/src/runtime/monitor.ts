@@ -16,14 +16,13 @@
  */
 
 import { execSync } from "node:child_process";
-import type { FSWatcher } from "fs";
+import type { FSWatcher } from "node:fs";
 import { eventBus } from "./events.js";
 
 // Placeholder for chokidar - would need to be installed via pnpm add -D chokidar
 // For now, we'll make watch optional and use a stub
 let watch: any = null;
 try {
-	// @ts-expect-error - chokidar may not be installed
 	watch = require("chokidar").watch;
 } catch {
 	// Chokidar not available, use stub

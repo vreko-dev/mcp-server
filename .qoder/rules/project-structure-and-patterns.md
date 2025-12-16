@@ -1,8 +1,8 @@
 # SnapBack Project Rules & Architecture Patterns
 
-**Status:** Active  
-**Applies to:** All code in `apps/`, `packages/`, and `tooling/`  
-**Authority:** Project standards (Y Combinator demo readiness)  
+**Status:** Active
+**Applies to:** All code in `apps/`, `packages/`, and `tooling/`
+**Authority:** Project standards (Y Combinator demo readiness)
 **Last Updated:** 2025-12-15
 
 ---
@@ -131,7 +131,7 @@ export async function handleSaveWithSignals(filePath: string): Promise<void> {
   // Call pure engine function
   const timestamps = await collectTimestamps(filePath);
   const bursts = detectBurst(timestamps, 5);
-  
+
   // Present results via vscode UI
   if (bursts.length > 0) {
     await vscode.window.showInformationMessage(
@@ -261,15 +261,15 @@ async function main(): Promise<void> {
   try {
     // 1. Read JSON input from stdin
     const input = JSON.parse(await readStdin()) as AnalyzeInput;
-    
+
     // 2. Validate input
     if (!input.filePath || !input.content) {
       throw new Error('Missing required fields');
     }
-    
+
     // 3. Process
     const signals = detectSignals(input.content, input.threshold || 5);
-    
+
     // 4. Output JSON to stdout
     const output: AnalyzeOutput = {
       success: true,
@@ -278,7 +278,7 @@ async function main(): Promise<void> {
         signals
       }
     };
-    
+
     console.log(JSON.stringify(output));
     process.exit(0);
   } catch (error) {
@@ -286,7 +286,7 @@ async function main(): Promise<void> {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error'
     };
-    
+
     console.log(JSON.stringify(output));
     process.exit(1);
   }
@@ -304,13 +304,13 @@ export async function analyzeFile(filePath: string): Promise<AnalyzeOutput> {
   return new Promise((resolve, reject) => {
     const child = execFile('node', ['dist/scripts/analyze.js'], (error, stdout) => {
       if (error) return reject(error);
-      
+
       const result = JSON.parse(stdout) as AnalyzeOutput;
       if (!result.success) return reject(new Error(result.error));
-      
+
       resolve(result);
     });
-    
+
     child.stdin?.write(JSON.stringify({ filePath }));
     child.stdin?.end();
   });

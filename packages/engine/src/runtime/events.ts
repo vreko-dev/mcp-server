@@ -87,8 +87,22 @@ export interface SnapBackEvents {
 	};
 
 	// -------------------------------------------------------------------------
-	// Risk & Validation Events (3)
+	// Risk & Validation Events (5)
 	// -------------------------------------------------------------------------
+
+	/** Emitted when a burst of rapid changes is detected (AI paste detection) */
+	"burst.detected": {
+		velocity: number; // chars per millisecond
+		charCount: number;
+		fileExtension: string; // e.g., ".ts", ".js"
+	};
+
+	/** Emitted when AI tool usage is detected */
+	"ai.detected": {
+		tool: string; // e.g., "copilot", "cursor"
+		confidence: number; // 0-1
+		method: "extension" | "velocity" | "pattern" | "combined";
+	};
 
 	/** Emitted when risk is analyzed */
 	"risk.analyzed": {
@@ -140,6 +154,19 @@ export interface SnapBackEvents {
 	"auth.completed": {
 		provider: "github" | "google" | "email";
 		success: boolean;
+	};
+
+	// -------------------------------------------------------------------------
+	// Feedback Events (1)
+	// -------------------------------------------------------------------------
+
+	/** Emitted when user feedback is collected on AI detection */
+	"feedback.collected": {
+		detectionId: string;
+		verdict: "false_positive" | "implicit_true_positive";
+		confidence: number; // 0-1, model's original confidence
+		reason?: string; // "manual", "docs", "refactor", "clipboard"
+		durationMs: number; // time from detection to feedback
 	};
 }
 

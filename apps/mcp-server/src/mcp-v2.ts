@@ -25,9 +25,8 @@
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
-import { eventBus } from "../runtime/events";
-import { orchestrator } from "../runtime/orchestrator";
-import type { FileChange, SessionHealth, TransportResponse } from "../types";
+import type { FileChange, SessionHealth, TransportResponse } from "@snapback/engine";
+import { eventBus, orchestrator } from "@snapback/engine";
 
 // =============================================================================
 // TOOL DEFINITIONS

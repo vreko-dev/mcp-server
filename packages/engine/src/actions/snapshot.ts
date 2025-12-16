@@ -24,7 +24,7 @@
  */
 
 import { readFileSync } from "node:fs";
-import { storage } from "../../runtime/storage.js";
+import { storage } from "../runtime/storage.js";
 
 // =============================================================================
 // TYPES

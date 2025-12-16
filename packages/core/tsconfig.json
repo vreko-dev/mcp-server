@@ -5,7 +5,6 @@
 		"rootDir": "./src",
 		"lib": ["ES2022", "DOM"],
 		"moduleResolution": "node",
-		"baseUrl": ".",
 		"paths": {
 			"@snapback/infrastructure": ["../infrastructure/src"],
 			"@snapback/infrastructure/*": ["../infrastructure/src/*"],

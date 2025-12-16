@@ -370,10 +370,10 @@ try {
 
 **Additional Work Needed:**
 - [ ] Complete `signals/consumers.ts` - Extract full logic from ImportAnalyzer.ts
-- [ ] Complete `signals/velocity.ts` - Integrate with burst.ts detector
-- [ ] Implement `signals/threats.ts` - Extract from threat-detection.ts
-- [ ] Integration testing with existing MCP server (apps/mcp-server)
-- [ ] Update VS Code extension to use new engine
+- [x] Complete `signals/velocity.ts` - Integrate with burst.ts detector
+- [x] Implement `signals/threats.ts` - Extract from threat-detection.ts
+- [x] Integration testing with existing MCP server (apps/mcp-server)
+- [x] Update VS Code extension to use new engine (2025-12-16)
 - [ ] Documentation and migration guide
 
 ### 📊 PROGRESS METRICS

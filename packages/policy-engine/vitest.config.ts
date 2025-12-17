@@ -1,8 +1,15 @@
-import { defineConfig } from "vitest/config";
+import { mergeConfigs, nodeConfig } from "@snapback/vitest-config";
+import { defineProject } from "vitest/config";
 
-export default defineConfig({
-	test: {
-		include: ["test/**/*.{test,spec}.{ts,js}"],
-		environment: "node",
-	},
-});
+/**
+ * Vitest configuration for @snapback/policy-engine
+ * Uses shared nodeConfig preset from @snapback/vitest-config
+ */
+export default defineProject(
+	mergeConfigs(nodeConfig, {
+		test: {
+			name: "@snapback/policy-engine",
+			include: ["test/**/*.test.ts"],
+		},
+	}),
+);

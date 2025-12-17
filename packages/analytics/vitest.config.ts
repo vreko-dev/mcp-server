@@ -1,10 +1,15 @@
-import { defineConfig } from "vitest/config";
+import { mergeConfigs, nodeConfig } from "@snapback/vitest-config";
+import { defineProject } from "vitest/config";
 
-export default defineConfig({
-	test: {
-		globals: true,
-		environment: "node",
-		include: ["test/**/*.{test,spec}.ts"],
-		exclude: ["node_modules", "dist"],
-	},
-});
+/**
+ * Vitest configuration for @snapback/analytics
+ * Uses shared nodeConfig preset from @snapback/vitest-config
+ */
+export default defineProject(
+	mergeConfigs(nodeConfig, {
+		test: {
+			name: "@snapback/analytics",
+			include: ["test/**/*.test.ts"],
+		},
+	}),
+);

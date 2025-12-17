@@ -1,21 +1,22 @@
 import path from "node:path";
-import { defineConfig } from "vitest/config";
+import { mergeConfigs, nodeConfig } from "@snapback/vitest-config";
+import { defineProject } from "vitest/config";
 
-export default defineConfig({
-	resolve: {
-		alias: {
-			"@snapback-oss/sdk": path.resolve(__dirname, "../../packages-oss/sdk/src"),
+/**
+ * Vitest configuration for @snapback/mail
+ * Uses shared nodeConfig preset from @snapback/vitest-config
+ * Note: Tests are colocated in src/ for this package
+ */
+export default defineProject(
+	mergeConfigs(nodeConfig, {
+		resolve: {
+			alias: {
+				"@snapback-oss/sdk": path.resolve(__dirname, "../../packages-oss/sdk/src"),
+			},
 		},
-	},
-	test: {
-		environment: "node",
-		globals: true,
-		include: ["src/**/*.test.ts"],
-		coverage: {
-			provider: "v8",
-			reporter: ["text", "json", "html"],
-			include: ["src/**"],
-			exclude: ["src/**/*.test.ts", "src/**/*.spec.ts"],
+		test: {
+			name: "@snapback/mail",
+			include: ["src/**/*.test.ts"],
 		},
-	},
-});
+	}),
+);

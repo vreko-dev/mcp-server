@@ -1,10 +1,15 @@
-import { defineConfig } from "vitest/config";
+import { mergeConfigs, nodeConfig } from "@snapback/vitest-config";
+import { defineProject } from "vitest/config";
 
-export default defineConfig({
-	test: {
-		globals: true,
-		environment: "node",
-		include: ["test/**/*.test.ts"],
-		passWithNoTests: true,
-	},
-});
+/**
+ * Vitest configuration for @snapback-oss/events
+ * Uses shared nodeConfig preset from @snapback/vitest-config
+ */
+export default defineProject(
+	mergeConfigs(nodeConfig, {
+		test: {
+			name: "@snapback-oss/events",
+			include: ["test/**/*.test.ts"],
+		},
+	}),
+);

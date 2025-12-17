@@ -1,21 +1,21 @@
 import { resolve } from "node:path";
-import { defineConfig } from "vitest/config";
+import { mergeConfigs, nodeConfig } from "@snapback/vitest-config";
+import { defineProject } from "vitest/config";
 
-export default defineConfig({
-	resolve: {
-		alias: {
-			"@snapback-infra": resolve(__dirname, "./src"),
-			"@snapback/config": resolve(__dirname, "../config/src"),
+/**
+ * Vitest configuration for @snapback/infrastructure
+ * Uses shared nodeConfig preset from @snapback/vitest-config
+ */
+export default defineProject(
+	mergeConfigs(nodeConfig, {
+		resolve: {
+			alias: {
+				"@snapback-infra": resolve(__dirname, "./src"),
+			},
 		},
-	},
-	test: {
-		globals: true,
-		environment: "node",
-		include: ["test/**/*.test.ts"],
-		coverage: {
-			provider: "v8",
-			reporter: ["text", "json", "html"],
-			exclude: ["node_modules/**", "dist/**", "**/*.d.ts"],
+		test: {
+			name: "@snapback/infrastructure",
+			include: ["test/**/*.test.ts"],
 		},
-	},
-});
+	}),
+);

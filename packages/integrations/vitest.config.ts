@@ -1,36 +1,32 @@
 import path from "node:path";
-import { defineConfig } from "vitest/config";
+import { COVERAGE_THRESHOLDS, mergeConfigs, nodeConfig } from "@snapback/vitest-config";
+import { defineProject } from "vitest/config";
 
-export default defineConfig({
-	resolve: {
-		alias: {
-			// CRITICAL: Force resolution to source files, not dist
-			// This ensures Vitest tests TypeScript source with dynamic imports preserved
-			"@/": path.resolve(__dirname, "./src/"),
-			// Override package.json exports for relative imports in tests
-			"~/": path.resolve(__dirname, "./src/"),
+/**
+ * Vitest configuration for @snapback/integrations
+ * Uses shared nodeConfig preset from @snapback/vitest-config
+ * Note: Tests are colocated in src/ for this package
+ */
+export default defineProject(
+	mergeConfigs(nodeConfig, {
+		resolve: {
+			alias: {
+				// CRITICAL: Force resolution to source files, not dist
+				"@/": path.resolve(__dirname, "./src/"),
+				"~/": path.resolve(__dirname, "./src/"),
+			},
+			extensions: [".ts", ".tsx", ".js", ".jsx", ".json"],
+			conditions: ["development"],
 		},
-		extensions: [".ts", ".tsx", ".js", ".jsx", ".json"],
-		// Disable package.json "exports" field resolution for this package during tests
-		// This forces Vitest to use source files instead of compiled dist output
-		conditions: ["development"],
-	},
-	test: {
-		globals: true,
-		environment: "node",
-		include: ["src/**/*.test.ts", "src/**/*.test.tsx"],
-		// CRITICAL: Tell Vitest to NOT use the compiled dist/ output
-		exclude: ["node_modules", "dist"],
-		coverage: {
-			provider: "v8",
-			reporter: ["text", "json", "html"],
-			include: ["src/communication/**/*.ts", "src/email/**/*.ts", "!src/**/*.test.ts", "!src/**/*.test.tsx"],
-			thresholds: {
-				lines: 80,
-				functions: 80,
-				branches: 75,
-				statements: 80,
+		test: {
+			name: "@snapback/integrations",
+			include: ["src/**/*.test.ts"],
+			coverage: {
+				provider: "v8",
+				reporter: ["text", "json", "html"],
+				include: ["src/communication/**/*.ts", "src/email/**/*.ts", "!src/**/*.test.ts"],
+				thresholds: COVERAGE_THRESHOLDS.unit,
 			},
 		},
-	},
-});
+	}),
+);

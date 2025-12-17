@@ -1,5 +1,23 @@
 # MCP Bundling: Implementation Quick Reference
 
+> **⚠️ DEPRECATED DOCUMENT (December 2025)**
+>
+> This document describes the **V1 Guardian architecture** which has been replaced by the **V2 Engine**.
+>
+> **Current Architecture:**
+> - `packages/engine/` - V2 script-based architecture (PRIMARY)
+> - `packages/engine/src/signals/` - Risk detection signals (ai-detection, threats, phantom-deps, etc.)
+> - `packages/engine/src/transports/` - MCP, CLI, HTTP adapters
+>
+> **Removed/Deprecated:**
+> - `packages/guardian-lite/` - REMOVED (Week 6 migration complete)
+> - `GuardianLite` class - REMOVED
+> - `Guardian` class in packages/core - DEPRECATED (scheduled for removal in v1.0.0)
+>
+> See `packages/engine/MIGRATION.md` for the V2 architecture and migration guide.
+
+---
+
 **Goal**: Ship VSCode extension with bundled MCP in a single VSIX, protecting IP while enabling standalone use.
 
 ---

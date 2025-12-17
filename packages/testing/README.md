@@ -75,3 +75,62 @@ This package consolidates:
 - `@snapback/perf` → `@snapback/testing/utils/performance`
 - `apps/web/tests/msw` → `@snapback/testing/msw`
 - `apps/api/src/test-utils/msw-server.ts` → `@snapback/testing/msw`
+
+---
+
+## Vitest Configuration Standard
+
+All packages in the monorepo should use `@snapback/vitest-config` for consistent test configuration.
+
+### Standard Pattern
+
+```typescript
+// vitest.config.ts
+import { nodeConfig, mergeConfigs } from "@snapback/vitest-config";
+import { defineProject } from "vitest/config";
+
+export default defineProject(
+  mergeConfigs(nodeConfig, {
+    test: {
+      name: "@snapback/my-package",
+      include: ["test/**/*.test.ts"],
+      // Optional: setupFiles, env, coverage overrides
+    },
+  })
+);
+```
+
+### Available Presets
+
+| Preset | Use Case | Environment |
+|--------|----------|-------------|
+| `nodeConfig` | Node.js packages, SDK, CLI, API | node |
+| `jsdomConfig` | React components, browser testing | jsdom |
+| `vscodeConfig` | VS Code extension testing | node + vscode external |
+| `integrationConfig` | Integration tests | node + 30s timeout |
+| `e2eConfig` | End-to-end tests | node + 60s timeout |
+
+### Available Utilities
+
+```typescript
+import {
+  // Constants
+  TEST_TIMEOUTS,      // { default: 10000, integration: 30000, e2e: 60000 }
+  COVERAGE_THRESHOLDS, // { unit: {...}, integration: {...}, e2e: {...} }
+  INCLUDE_PATTERNS,   // { standard: [...], react: [...], inSrc: [...] }
+  EXCLUDE_PATTERNS,   // { default: [...], web: [...], vscode: [...] }
+
+  // Helper function
+  mergeConfigs,       // Deep merge vitest configs
+} from "@snapback/vitest-config";
+```
+
+### File Naming Convention
+
+| Pattern | Usage |
+|---------|-------|
+| `*.test.ts` | Unit tests |
+| `*.integration.test.ts` | Integration tests |
+| `*.e2e.test.ts` | E2E tests |
+
+**Note:** Use `.test.ts` exclusively (avoid `.spec.ts` for consistency).

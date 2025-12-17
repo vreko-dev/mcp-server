@@ -54,7 +54,7 @@ Protect your files with precision using three distinct protection levels:
 
 ### 🔧 Powerful Command Palette
 
-Access over 30 commands through VS Code's Command Palette:
+Access over 50 commands through VS Code's Command Palette:
 
 -   **Protection Management**: Protect files, change protection levels, unprotect files
 -   **Snapshot Operations**: Create, restore, delete, rename, and compare snapshots
@@ -84,8 +84,7 @@ Access over 30 commands through VS Code's Command Palette:
 
 -   **Content Deduplication**: Content-based deduplication to save storage space
 -   **Intelligent Naming**: Git-aware, semantic, and timestamp-based naming strategies
--   **Full-text Search**: Fast search through snapshot contents
--   **Local-first Storage**: SQLite-based local storage with optional cloud sync
+-   **Local-first Storage**: SQLite-based local storage with offline support
 -   **Session Support**: Atomic multi-file snapshot groups for complex changes
 -   **Timeline Integration**: View snapshots directly in VS Code's built-in Timeline view
 -   **Visual Comparison**: Side-by-side diff views for comparing file changes over time
@@ -99,7 +98,7 @@ Access over 30 commands through VS Code's Command Palette:
 
 ### 🌐 Platform Features
 
--   **VS Code Extension**: Native IDE integration with file decorators, timeline integration, rich UI, and over 30 commands accessible through the Command Palette
+-   **VS Code Extension**: Native IDE integration with file decorators, timeline integration, rich UI, and over 50 commands accessible through the Command Palette
 -   **CLI Tool**: Command-line interface for automation and scripting
 -   **Web SDK**: JavaScript/TypeScript SDK for web applications
 -   **MCP Server**: Model Context Protocol integration for AI assistant interoperability
@@ -194,7 +193,7 @@ The SnapBack platform consists of several key components organized into 10 conso
     -   Supports team collaboration through shared `.snapbackrc` configuration files
     -   Offers offline mode for disconnected work
     -   Includes session-based snapshots for atomic multi-file operations
-    -   Integrates with VS Code's Command Palette for over 30 available commands
+    -   Integrates with VS Code's Command Palette for over 50 available commands
     -   Features keyboard shortcuts for quick access to common operations
 
 For detailed information about the package consolidation and architecture, see [ARCHITECTURE.md](./ARCHITECTURE.md).

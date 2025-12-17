@@ -76,6 +76,7 @@
     "start": "node dist/index.js",
     "start:dev": "tsx src/index.ts",
     "test": "vitest run",
+    "type-check": "tsc --noEmit",
     "docker-build": "docker build -t snapback-mcp:${GIT_SHA:-latest} -f apps/mcp-server/Dockerfile.prod .",
     "docker-build:dev": "docker build -t snapback-mcp:dev -f apps/mcp-server/Dockerfile.dev .",
     "deploy": "npm publish --access public"

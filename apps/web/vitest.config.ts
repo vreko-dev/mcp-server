@@ -20,12 +20,8 @@ export default defineProject({
 			"**/tests/e2e/**", // Exclude Playwright E2E tests
 		],
 		setupFiles: ["./vitest.setup.ts"],
-		coverage: {
-			enabled: true,
-			reporter: ["text", "json", "html"],
-			include: ["modules/**/*.{ts,tsx}", "app/**/*.{ts,tsx}"],
-			exclude: ["**/*.d.ts", "**/*.config.*", "**/types/**", "**/*.stories.{ts,tsx}"],
-		},
+		// Note: coverage config is handled at workspace level in vitest.config.ts root
+		// defineProject does not support the 'coverage' property
 	},
 	resolve: {
 		alias: {

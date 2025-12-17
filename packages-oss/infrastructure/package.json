@@ -22,7 +22,7 @@
     "lint:fix": "biome lint --fix .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit"
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@snapback-oss/contracts": "workspace:*",

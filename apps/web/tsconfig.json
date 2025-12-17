@@ -30,10 +30,16 @@
 		"node_modules",
 		"dist",
 		"build",
-
 		"../../apps/api/**/*",
 		"final_launch_polish/**",
 		".next",
-		"services/**/*"
+		"services/**/*",
+		"__tests__/**/*",
+		"tests/**/*",
+		"test/**/*",
+		"**/*.test.ts",
+		"**/*.test.tsx",
+		"**/*.spec.ts",
+		"**/*.spec.tsx"
 	]
 }

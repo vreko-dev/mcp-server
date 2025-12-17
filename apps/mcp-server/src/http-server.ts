@@ -196,7 +196,7 @@ export class MCPHttpServer {
 	 */
 	private async handleHealthCheck(_req: IncomingMessage, res: ServerResponse): Promise<void> {
 		// Import health check utilities
-		const { createHealthCheck, checkHttpService } = await import("@snapback/health");
+		const { createHealthCheck, checkHttpService } = await import("@snapback/infrastructure/health");
 
 		// Create health check with API dependency
 		const healthCheck = createHealthCheck({

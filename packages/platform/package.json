@@ -85,7 +85,7 @@
     "test": "dotenv -e .env.local -- vitest run",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest watch",
-    "typecheck": "tsc --noEmit"
+    "type-check": "tsc --noEmit"
   },
   "type": "module",
   "types": "dist/index.d.ts",

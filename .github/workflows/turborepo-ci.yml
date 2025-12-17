@@ -116,7 +116,7 @@ jobs:
               run: pnpm turbo run lint --filter='@snapback/*'
 
     # Job 3: Type check all packages
-    typecheck:
+    type-check:
         name: Type Check
         runs-on: ubuntu-latest
         needs: setup
@@ -155,7 +155,7 @@ jobs:
                       ${{ runner.os }}-turbo-
 
             - name: Type check packages
-              run: pnpm turbo run typecheck --filter='@snapback/*'
+              run: pnpm turbo run type-check --filter='@snapback/*'
 
     # Job 4: Test all packages
     test:
@@ -258,7 +258,7 @@ jobs:
     build:
         name: Build
         runs-on: ubuntu-latest
-        needs: [lint, typecheck, test]
+        needs: [lint, type-check, test]
         timeout-minutes: 15
 
         steps:
@@ -388,14 +388,14 @@ jobs:
     ci-status:
         name: CI Status
         runs-on: ubuntu-latest
-        needs: [lint, typecheck, test, build, test-matrix]
+        needs: [lint, type-check, test, build, test-matrix]
         if: always()
 
         steps:
             - name: Check all jobs status
               run: |
                   if [ "${{ needs.lint.result }}" != "success" ] || \
-                     [ "${{ needs.typecheck.result }}" != "success" ] || \
+                     [ "${{ needs.type-check.result }}" != "success" ] || \
                      [ "${{ needs.test.result }}" != "success" ] || \
                      [ "${{ needs.build.result }}" != "success" ] || \
                      [ "${{ needs.test-matrix.result }}" != "success" ]; then

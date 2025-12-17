@@ -51,21 +51,21 @@ export const COVERAGE_THRESHOLDS = {
 /**
  * Standard include patterns - pick ONE pattern per package
  */
-export const INCLUDE_PATTERNS = {
+export const INCLUDE_PATTERNS: Record<string, string[]> = {
 	standard: ["test/**/*.test.ts"],
 	withSpec: ["test/**/*.{test,spec}.ts"],
 	react: ["test/**/*.{test,spec}.{ts,tsx}"],
 	inSrc: ["src/**/*.test.ts"],
-} as const;
+};
 
 /**
  * Standard exclude patterns
  */
-export const EXCLUDE_PATTERNS = {
+export const EXCLUDE_PATTERNS: Record<string, string[]> = {
 	default: ["node_modules", "dist", "out", "coverage"],
 	web: ["node_modules", "dist", "out", ".next"],
 	vscode: ["node_modules", "dist", "out", "*.vsix"],
-} as const;
+};
 
 // =============================================================================
 // Base Configuration

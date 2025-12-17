@@ -67,7 +67,7 @@ jobs:
               run: pnpm build
 
             - name: Type check
-              run: pnpm typecheck
+              run: pnpm type-check
 
     test-unit:
         name: Unit Tests

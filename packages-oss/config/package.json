@@ -21,7 +21,7 @@
     "lint": "biome lint .",
     "lint:fix": "biome lint --fix .",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "type-check": "tsc --noEmit"
   },
   "keywords": [
     "configuration",

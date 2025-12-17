@@ -24,7 +24,7 @@ jobs:
                   pnpm --filter @snapback/storage build
 
             - name: Type check
-              run: pnpm --filter ./apps/mcp-server run typecheck
+              run: pnpm --filter ./apps/mcp-server run type-check
 
             - name: Lint
               run: pnpm --filter ./apps/mcp-server run lint

@@ -66,10 +66,10 @@ pre-commit:
             glob: "apps/vscode/**/*.{ts,tsx}"
             run: |
                 echo '🔍 Type-checking VSCode extension...'
-                cd apps/vscode && pnpm check-types
+                cd apps/vscode && pnpm type-check
                 if [ $? -ne 0 ]; then
                   echo '❌ VSCode extension has TypeScript errors'
-                  echo 'Run: cd apps/vscode && pnpm check-types'
+                  echo 'Run: cd apps/vscode && pnpm type-check'
                   exit 1
                 fi
                 echo '✅ VSCode extension type-check passed'

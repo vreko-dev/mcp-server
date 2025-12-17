@@ -120,7 +120,7 @@
     "lint:fix": "biome lint --fix .",
     "openapi": "node scripts/generate-openapi.mjs || echo \"openapi placeholder\"",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "type-check": "tsc --noEmit"
   },
   "type": "module",
   "types": "dist/index.d.ts"

@@ -12,10 +12,10 @@
   "private": true,
   "dependencies": {
     "@snapback/contracts": "workspace:*",
-    "chokidar": "^3.6.0",
+    "chokidar": "catalog:",
     "posthog-node": "catalog:",
     "zod": "catalog:",
-    "ajv": "^8.12.0",
+    "ajv": "catalog:",
     "ajv-formats": "^2.1.1"
   },
   "devDependencies": {
@@ -99,7 +99,7 @@
     "lint": "biome lint .",
     "lint:fix": "biome lint --fix .",
     "postbuild": "echo 'Build verification completed'",
-    "typecheck": "tsc --noEmit"
+    "type-check": "tsc --noEmit"
   },
   "type": "module",
   "types": "dist/index.d.ts"

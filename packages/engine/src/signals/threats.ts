@@ -70,6 +70,8 @@ export function detectThreats(content: string): Array<{ description: string; sev
 
 	for (const level of ["critical", "high", "medium"] as const) {
 		for (const threat of THREAT_PATTERNS[level]) {
+			// Reset lastIndex for global regexes before each test
+			threat.pattern.lastIndex = 0;
 			if (threat.pattern.test(content)) {
 				threats.push({ description: threat.description, severity: threat.severity });
 			}

@@ -1,5 +1,30 @@
-import { Guardian, MockReplacementPlugin, PhantomDependencyPlugin, SecretDetectionPlugin } from "@snapback/core";
+/**
+ * Analyze Before Apply - V2 Engine Implementation
+ *
+ * Migrated from V1 Guardian to use V2 signal-based analysis.
+ * Uses threat detection signals directly instead of plugin system.
+ */
 import { z } from "zod";
+
+// Threat patterns (migrated from V2 engine)
+const THREAT_PATTERNS = {
+	critical: [
+		{ pattern: /rm\s+-rf/gi, description: "destructive rm -rf command", severity: 10 },
+		{ pattern: /DROP\s+TABLE/gi, description: "DROP TABLE statement", severity: 10 },
+		{ pattern: /TRUNCATE\s+TABLE/gi, description: "TRUNCATE TABLE statement", severity: 10 },
+	],
+	high: [
+		{ pattern: /password\s*[:=]\s*['"][^'"]+['"]/, description: "hardcoded password", severity: 8 },
+		{ pattern: /AKIA[A-Z0-9]{16}/, description: "AWS access key", severity: 9 },
+		{ pattern: /ghp_[a-zA-Z0-9]{36}/, description: "GitHub token", severity: 9 },
+		{ pattern: /eval\(/, description: "eval() usage", severity: 8 },
+	],
+	medium: [
+		{ pattern: /jest\.mock\(/, description: "jest.mock in production", severity: 5 },
+		{ pattern: /vi\.mock\(/, description: "vitest mock in production", severity: 5 },
+		{ pattern: /exec\(/, description: "exec() command execution", severity: 5 },
+	],
+};
 
 // Define the structure for diff changes
 interface DiffChange {
@@ -39,33 +64,35 @@ export async function analyzeBeforeApply(changes: DiffChange[]): Promise<Analysi
 	// Validate input
 	const parsed = AnalyzeBeforeApplyInputSchema.parse({ changes });
 
-	// Initialize Guardian with all plugins
-	const guardian = new Guardian();
-	guardian.addPlugin(new SecretDetectionPlugin());
-	guardian.addPlugin(new MockReplacementPlugin());
-	guardian.addPlugin(new PhantomDependencyPlugin());
-
-	// Convert changes to a format Guardian can analyze
-	// For now, we'll join all the changed lines into a single string for analysis
+	// Convert changes to content for analysis
 	const content = parsed.changes.map((change) => change.value).join("\n");
 
 	try {
-		// Run Guardian analysis
-		const result = await guardian.analyze(content, "mcp-diff");
+		// Run V2 threat detection directly
+		const threats: Array<{ description: string; severity: number }> = [];
+
+		for (const level of ["critical", "high", "medium"] as const) {
+			for (const threat of THREAT_PATTERNS[level]) {
+				// Reset lastIndex for global regexes
+				threat.pattern.lastIndex = 0;
+				if (threat.pattern.test(content)) {
+					threats.push({ description: threat.description, severity: threat.severity });
+				}
+			}
+		}
+
+		// Calculate risk score (max severity found, or 0 if none)
+		const riskScore = threats.length > 0 ? Math.max(...threats.map((t) => t.severity)) : 0;
 
 		// Determine decision based on risk score
-		let decision: "Apply" | "Review" = "Apply";
-		if (result.score >= 8) {
-			decision = "Review";
-		} else if (result.score >= 5) {
-			decision = "Review";
-		}
+		const decision: "Apply" | "Review" = riskScore >= 5 ? "Review" : "Apply";
 
 		return {
 			decision,
-			riskScore: result.score,
-			reasons: result.factors,
-			recommendations: result.recommendations || [],
+			riskScore,
+			reasons: threats.map((t) => t.description),
+			recommendations:
+				threats.length > 0 ? ["Review detected issues before applying", "Consider security implications"] : [],
 		};
 	} catch (error) {
 		// In case of analysis error, default to requiring review

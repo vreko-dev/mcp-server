@@ -2,15 +2,16 @@ export * from "@snapback/contracts";
 export * from "./ai-detection";
 export * from "./circuit-breaker";
 export * from "./dependency-analyzer";
-export * from "./detection/index";
+// V1 Guardian exports removed - use @snapback/engine instead
+// export * from "./detection/index";
 export * from "./git-integration";
-export * from "./guardian";
+// export * from "./guardian"; // DEPRECATED: Use @snapback/engine
 export * from "./mcp-client";
 export * from "./mcp-fallbacks";
 export * from "./mcp-federation";
 export * from "./mcp-response-processor";
-export * from "./risk-analyzer";
-export * from "./threat-detection";
+// export * from "./risk-analyzer"; // DEPRECATED: Use @snapback/engine
+// export * from "./threat-detection"; // DEPRECATED: Use @snapback/engine
 export * from "./utils/cache";
 export * from "./utils/circuit-breaker";
 export * from "./utils/concurrency";

@@ -62,18 +62,6 @@
     "./mcp-fallbacks": {
       "types": "./dist/mcp-fallbacks.d.ts",
       "default": "./dist/mcp-fallbacks.js"
-    },
-    "./risk": {
-      "types": "./dist/risk-analyzer.d.ts",
-      "default": "./dist/risk-analyzer.js"
-    },
-    "./detection": {
-      "types": "./dist/detection/index.d.ts",
-      "default": "./dist/detection/index.js"
-    },
-    "./guardian": {
-      "types": "./dist/guardian.d.ts",
-      "default": "./dist/guardian.js"
     }
   },
   "main": "dist/index.js",

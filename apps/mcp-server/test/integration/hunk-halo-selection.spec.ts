@@ -1,23 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
 import { createChangedLines, filterContentByHunks, selectHunksWithHalo } from "../../src/utils/diff";
 
-// Mock the Guardian class to test that it receives the correct metadata
+// Mock analyze function for testing metadata passing
 const mockAnalyze = vi.fn().mockResolvedValue({
 	score: 0.5,
 	factors: ["test factor"],
 	recommendations: ["test recommendation"],
 	severity: "medium",
-});
-
-vi.mock("@snapback/core", async () => {
-	const actual = await vi.importActual("@snapback/core");
-	return {
-		...actual,
-		Guardian: vi.fn().mockImplementation(() => ({
-			addPlugin: vi.fn(),
-			analyze: mockAnalyze,
-		})),
-	};
 });
 
 describe("Hunk + Halo Selection", () => {
@@ -135,9 +124,9 @@ line 7`;
 		expect(hunks[0].lines).toHaveLength(1);
 	});
 
-	it("mcp-006: should pass metadata.changedLines to plugins", async () => {
-		// This test verifies that the MCP server passes the correct metadata to the Guardian
-		// We'll simulate calling the analyze_risk tool and check that the metadata is passed correctly
+	it("mcp-006: should pass metadata.changedLines to analyze functions", async () => {
+		// This test verifies that metadata is structured correctly for V2 engine analysis
+		// The V2 engine receives file changes with content and line information
 
 		// Reset the mock
 		mockAnalyze.mockClear();
@@ -161,7 +150,7 @@ line 7`;
 			timestamp: Date.now(),
 		};
 
-		// Simulate calling guardian.analyze with the metadata
+		// Simulate calling analyze with the metadata (V2 engine pattern)
 		await mockAnalyze(changes, undefined, metadata);
 
 		// Verify that the metadata was passed correctly

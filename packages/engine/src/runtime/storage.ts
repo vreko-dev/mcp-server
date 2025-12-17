@@ -340,13 +340,23 @@ export class Storage {
 }
 
 // =============================================================================
-// DEFAULT INSTANCE
+// FACTORY FUNCTION (Replaces module-level singleton)
 // =============================================================================
 
 /**
- * Default storage instance using .snapback directory
+ * Create a storage instance with the given workspace root.
+ *
+ * NOTE: We don't export a default singleton because:
+ * 1. It would execute mkdirSync at import time (side effect)
+ * 2. The path must be absolute to avoid CWD issues in VS Code extension host
+ *
+ * @param workspaceRoot - Absolute path to workspace root
+ * @param options - Optional configuration overrides
  */
-export const storage = new Storage({
-	rootDir: ".snapback",
-	compress: true,
-});
+export function createStorage(workspaceRoot: string, options: Partial<StorageConfig> = {}): Storage {
+	const config: StorageConfig = {
+		rootDir: `${workspaceRoot}/.snapback`,
+		compress: options.compress ?? true,
+	};
+	return new Storage(config);
+}

@@ -13,7 +13,7 @@
 
 export { eventBus, type SnapBackEvents } from "./runtime/events";
 export { Orchestrator, orchestrator } from "./runtime/orchestrator";
-export { type SnapshotManifest, Storage, type StorageConfig } from "./runtime/storage";
+export { createStorage, type SnapshotManifest, Storage, type StorageConfig } from "./runtime/storage";
 
 // =============================================================================
 // TYPE EXPORTS

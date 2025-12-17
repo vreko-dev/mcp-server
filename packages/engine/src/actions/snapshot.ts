@@ -24,7 +24,10 @@
  */
 
 import { readFileSync } from "node:fs";
-import { storage } from "../runtime/storage.js";
+import { createStorage } from "../runtime/storage.js";
+
+// Create storage instance with current working directory as workspace root
+const storage = createStorage(process.cwd());
 
 // =============================================================================
 // TYPES

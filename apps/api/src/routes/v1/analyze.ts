@@ -1,12 +1,12 @@
 import { zValidator } from "@hono/zod-validator";
 import { auth } from "@snapback/auth";
-import { apiKeys } from "@snapback/platform";
+import { HTTPEngineAdapter } from "@snapback/engine/transports/http";
+import { analysisEvents, apiKeys } from "@snapback/platform";
 import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
 import { log } from "@/lib/logger";
 import { getDb } from "../../services/database";
-import { GuardianService } from "../../services/guardian";
 
 const app = new Hono();
 
@@ -37,8 +37,8 @@ const analyzeSchema = z.object({
 	branchName: z.string().optional(),
 });
 
-// Initialize Guardian service
-const guardianService = new GuardianService();
+// Initialize V2 Engine adapter (replaces deprecated GuardianService)
+const engineAdapter = new HTTPEngineAdapter();
 
 // POST /api/v1/analyze
 app.post("/analyze", zValidator("json", analyzeSchema), async (c) => {
@@ -90,18 +90,46 @@ app.post("/analyze", zValidator("json", analyzeSchema), async (c) => {
 			return c.json({ error: "API key has expired" }, 401);
 		}
 
-		// Perform analysis
-		const analysisRequest = {
-			files: requestData.files,
-			customRules: requestData.customRules,
-			userId: user.id,
-			apiKeyId: apiKey.id,
-			workspaceId: requestData.workspaceId,
-			commitMessage: requestData.commitMessage,
-			branchName: requestData.branchName,
-		};
+		// Perform analysis using V2 Engine
+		const startTime = Date.now();
+		const result = await engineAdapter.analyzeFiles(
+			requestData.files.map((f) => ({
+				path: f.path,
+				content: f.content,
+				changeType: f.changeType,
+				linesAdded: f.linesAdded,
+				linesDeleted: f.linesDeleted,
+				totalLines: f.totalLines,
+			})),
+		);
 
-		const result = await guardianService.analyze(analysisRequest);
+		// Log analysis event to database (business layer responsibility)
+		try {
+			await db.insert(analysisEvents).values({
+				id: result.analysisId,
+				userId: user.id,
+				apiKeyId: apiKey.id,
+				workspaceId: requestData.workspaceId,
+				riskScore: result.riskScore,
+				riskLevel:
+					result.riskLevel === "safe" ? "low" : result.riskLevel === "critical" ? "high" : result.riskLevel,
+				riskFactors: result.riskFactors,
+				detectedPatterns: [],
+				analysisTimeMs: Date.now() - startTime,
+				clientType: "api",
+				clientVersion: "2.0.0",
+				gitBranch: requestData.branchName,
+				projectId: requestData.workspaceId,
+				requestId: result.analysisId,
+				timestamp: new Date(),
+				createdAt: new Date(),
+			});
+		} catch (dbError) {
+			log.warn("Failed to log analysis event", {
+				context: "Analysis event logging",
+				error: dbError instanceof Error ? dbError.message : String(dbError),
+			});
+		}
 
 		// Update API key last used timestamp
 		await db.update(apiKeys).set({ lastUsedAt: new Date() }).where(eq(apiKeys.id, apiKey.id));

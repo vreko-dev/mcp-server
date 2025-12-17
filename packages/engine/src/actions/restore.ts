@@ -17,7 +17,10 @@
 
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { storage } from "../runtime/storage.js";
+import { createStorage } from "../runtime/storage.js";
+
+// Create storage instance with current working directory as workspace root
+const storage = createStorage(process.cwd());
 
 interface RestoreOptions {
 	id: string;

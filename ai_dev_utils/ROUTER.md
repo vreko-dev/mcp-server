@@ -32,6 +32,7 @@ grep -i "[KEYWORD]" ai_dev_utils/feedback/learnings.jsonl
 | Signal Words | Task Type | Workflow | Priority |
 |--------------|-----------|----------|---------|
 | "fix", "broken", "bug", "error", "crash", "not working" | BUG_FIX | `1_triage.md` → `4_dev_complete.md` | P1-P2 |
+| "slow", "regression", "performance", "timing", "activation time", "unaccounted time", "budget exceeded" | PERFORMANCE_REGRESSION | `2_research.md` (profile) → Sequential Thinking → `4_dev_complete.md` | P0-P1 |
 | "add", "implement", "create", "new feature", "build" | NEW_FEATURE | `2_research.md` → `3_planning.md` → `4_dev_complete.md` | P2-P3 |
 | "refactor", "clean up", "consolidate", "extract", "dedupe" | REFACTORING | `5_refactor.md` | P3-P4 |
 | "UX", "tree view", "sidebar", "UI structure", "layout" | UX_REFACTORING | `5_refactor.md` + UI patterns | P2-P3 |
@@ -47,6 +48,7 @@ grep -i "[KEYWORD]" ai_dev_utils/feedback/learnings.jsonl
 | Context Signal | Detected Area | Special Rules |
 |----------------|---------------|---------------|
 | "VS Code", "extension", "command", "activation" | `apps/vscode/` | Check activation order, disposables, ExtensionContext |
+| "activation slow", "performance regression", "timing", "budget exceeded", "unaccounted time" | `apps/vscode/` | **Use sequential timing analysis**, profile activation phases, check duplicate instances, validate against 500ms budget |
 | "TreeView", "TreeDataProvider", "sidebar" | `apps/vscode/` | See VS Code Extension Patterns below |
 | "API", "endpoint", "backend", "database", "service" | `apps/api/` | Use service layer, no inline DB queries |
 | "web", "dashboard", "component", "React", "Next.js" | `apps/web/` | Business logic in hooks, not components |
@@ -139,6 +141,46 @@ When restructuring tree hierarchy:
 - [ ] Verify group keys match `types.ts` definitions
 - [ ] Update label/description expectations for new formats
 
+### Performance Patterns (Activation)
+
+**CRITICAL:** VS Code extension activation budget is **500ms**. Exceeding this degrades UX.
+
+**Fire-and-Forget IPC Pattern:**
+```typescript
+// ❌ WRONG - Awaiting serializes IPC calls (100ms each)
+async (key, value) => {
+  await vscode.commands.executeCommand("setContext", key, value);
+}
+
+// ✅ CORRECT - Fire-and-forget for performance
+(key, value) => {
+  vscode.commands.executeCommand("setContext", key, value);
+  return Promise.resolve();
+}
+```
+
+**Deferred Initialization:**
+```typescript
+// ⚡ Defer non-critical work after activation
+setImmediate(() => {
+  protectionService.auditRepo().catch(logger.error);
+});
+```
+
+**Common Pitfalls:**
+- **Duplicate Service Instances**: Search for `new ServiceName(` across `extension.ts` and `phase*-*.ts` files
+- **Blocking IPC**: Never `await` setContext during activation (100ms per call)
+- **Synchronous FS Ops**: Use async file operations or defer to background
+- **Missing Budget Validation**: Profile activation and measure against 500ms budget
+
+**Debug Unaccounted Time:**
+```typescript
+// Add timing around unmeasured sections
+const gapStart = Date.now();
+// ... code between phases ...
+logger.debug(`[PERF] Gap time: ${Date.now() - gapStart}ms`);
+```
+
 ---
 
 ## Commit Organization
@@ -157,6 +199,45 @@ When completing multi-phase tasks, organize commits by logical grouping:
 2. Group related files by purpose
 3. Stage and commit each group with descriptive message
 4. Verify clean working directory before finishing
+
+### Performance Regression Commits
+
+**Required sections:**
+```
+perf(scope): brief description
+
+Root Cause Analysis:
+- [Explain what caused the regression]
+- [Use sequential thinking breakdown]
+
+Performance Impact:
+- Before fixes: [timing]ms ([over budget by X]ms)
+- Expected after: [timing]ms ([under budget by X]ms)
+- Removes: ~[timing]ms of [specific overhead]
+
+Validation:
+- [Profiling method]
+- [Test results]
+- [Performance budget reference]
+```
+
+**Example:**
+```
+perf(vscode): fix 83% activation regression from async setContext
+
+Root Cause Analysis:
+- Async setContext added 100ms IPC latency per call
+- ContextManager calls setContext 3× serially = 300ms
+- Total overhead: 900-1000ms matches +1072ms regression
+
+Performance Impact:
+- Before fixes: 2362ms (1862ms over 500ms budget)
+- Expected after: ~1000ms (2× under budget)
+
+Validation:
+- Sequential timing analysis
+- TypeScript compilation: Pass
+```
 
 ---
 
@@ -204,6 +285,18 @@ TRIAGE (classify) → RESEARCH (investigate) → PLANNING (design) → DEV_COMPL
 ```
 8_doc_hygiene.md
 ```
+
+**Performance Regression:**
+```
+2_research.md (profile/measure) → Sequential Thinking Analysis → 4_dev_complete.md (fix + validate)
+```
+
+**Key steps:**
+1. Profile/measure to establish baseline and regression magnitude
+2. Use sequential thinking to trace execution flow and timing gaps
+3. Identify architectural issues (duplicate instances, blocking IPC, etc.)
+4. Validate fixes against performance budget (500ms for activation)
+5. Commit with before/after measurements
 
 ---
 

@@ -1,0 +1,230 @@
+{
+	"auditMetadata": {
+		"generatedAt": "2025-12-17T08:35:00Z",
+		"updatedAt": "2025-12-17T17:20:00Z",
+		"updateReason": "Reconciliation complete: Fixed README command counts, removed vaporware, marked guardian-lite docs as deprecated",
+		"analysisMethod": "Cross-reference documentation claims against codebase implementation"
+	},
+	"inaccurate": [
+		{
+			"file": "apps/vscode/docs/user-guide/getting-started.md",
+			"line": 22,
+			"claim": "Three Protection Levels: Watched, Warning, and Protected",
+			"reality": "Protection levels in code are actually: 'watch', 'warn', 'block' (not 'Watched', 'Warning', 'Protected')",
+			"severity": "LOW",
+			"fix": "Standardize terminology. Use 'Watch', 'Warn', 'Block' consistently or clarify that display names differ from internal values"
+		},
+		{
+			"file": "apps/vscode/docs/user-guide/settings.md",
+			"line": 107,
+			"claim": "Options: watch (Watched), warn (Warning), block (Protected)",
+			"reality": "The mapping uses different terms. Code shows 'watch', 'warn', 'block' as enum values, but UI shows '🟢 Watch', '🟡 Warn', '🔴 Block'",
+			"severity": "LOW",
+			"fix": "Update documentation to use consistent terminology: Watch/Warn/Block throughout"
+		},
+		{
+			"file": "README.md",
+			"line": 57,
+			"claim": "Access over 30 commands through VS Code's Command Palette",
+			"reality": "package.json actually defines 51 commands in contributes.commands (42 implemented)",
+			"severity": "RESOLVED",
+			"fix": "FIXED 2025-12-17: Updated README to say 'over 50 commands'"
+		},
+		{
+			"file": "apps/vscode/docs/user-guide/advanced-features.md",
+			"line": 159,
+			"claim": "5-20 files is typical for most projects; More than 100 files may impact performance",
+			"reality": "Protection lookup is O(1) per the code. The performance claim may be outdated given file-based blob storage.",
+			"severity": "LOW",
+			"fix": "Verify actual performance characteristics and update recommendations"
+		},
+		{
+			"file": "Various documentation",
+			"line": null,
+			"claim": "References to 'Guardian' system and 'Guardian plugins'",
+			"reality": "V2 Engine migration completed Dec 2025. Guardian is deprecated, replaced by packages/engine with signal scripts",
+			"severity": "MEDIUM",
+			"fix": "Replace all Guardian references with V2 Engine. Update: Guardian → Engine, Plugins → Signal Scripts"
+		}
+	],
+	"outdated": [
+		{
+			"file": "apps/vscode/docs/user-guide/settings.md",
+			"line": 21,
+			"claim": "Settings table shows limited list of settings",
+			"reality": "package.json defines 40+ settings including Engine (formerly Guardian), AI Detection, MCP, Telemetry sections not fully documented",
+			"severity": "MEDIUM",
+			"fix": "Add documentation for all settings categories: Engine (7 settings), AI Detection (3 settings), MCP (6 settings), Auto Decision (6 settings), Telemetry (4 settings)"
+		},
+		{
+			"file": "apps/vscode/docs/user-guide/team-configuration.md",
+			"line": 106,
+			"claim": "Protection level strings: 'Watched', 'Warning', 'Protected'",
+			"reality": "Code accepts lowercase values: 'watch', 'warn', 'block'. The capitalized versions may work via normalization but aren't the primary format.",
+			"severity": "LOW",
+			"fix": "Clarify that both lowercase ('watch', 'warn', 'block') and capitalized ('Watched', 'Warning', 'Protected') are accepted"
+		},
+		{
+			"file": "README.md",
+			"line": 117,
+			"claim": "1,204 lines of critical integration tests",
+			"reality": "V2 Engine has 448 tests. This number is outdated.",
+			"severity": "LOW",
+			"fix": "Update to reflect current test count or remove specific numbers that change frequently"
+		},
+		{
+			"file": "Various documentation",
+			"line": null,
+			"claim": "References to packages/guardian-lite",
+			"reality": "guardian-lite package was REMOVED in Week 6 of V2 migration (Dec 2025)",
+			"severity": "PARTIALLY_RESOLVED",
+			"fix": "PARTIAL 2025-12-17: Added deprecation notice to docs/architecture/implementation-quick-reference.md. pnpm-lock.yaml still has stale entry (run pnpm install to regenerate)."
+		}
+	],
+	"missing": [
+		{
+			"feature": "MCP Tools",
+			"implementationLocation": "packages/engine/src/transports/mcp.ts",
+			"description": "8 MCP tools are fully implemented but not documented in user-facing docs",
+			"suggestedDoc": "Create mcp-integration.md in apps/vscode/docs/user-guide/ or update advanced-features.md",
+			"tools": [
+				"snapback.analyze_risk",
+				"snapback.check_dependencies",
+				"snapback.create_snapshot",
+				"snapback.list_snapshots",
+				"snapback.restore_snapshot",
+				"catalog.list_tools",
+				"ctx7.resolve-library-id",
+				"ctx7.get-library-docs"
+			]
+		},
+		{
+			"feature": "Session Commands",
+			"implementationLocation": "apps/vscode/src/commands/sessionCommands.ts",
+			"description": "Session management (list, restore, export) is implemented but not documented in user guide",
+			"suggestedDoc": "Add Session Management section to advanced-features.md or create dedicated sessions.md"
+		},
+		{
+			"feature": "V2 Engine Architecture",
+			"implementationLocation": "packages/engine/",
+			"description": "The new V2 engine with signal scripts is not documented for users or contributors",
+			"suggestedDoc": "Create engine-architecture.md explaining: signals, validators, actions, transports, runtime"
+		},
+		{
+			"feature": "Signal Scripts",
+			"implementationLocation": "packages/engine/src/signals/",
+			"description": "10 signal scripts provide risk analysis but are undocumented",
+			"signals": [
+				"risk-score.ts - Aggregate risk calculation",
+				"ai-detection.ts - AI-generated code detection",
+				"burst.ts - Rapid change detection",
+				"complexity.ts - AST complexity scoring",
+				"consumers.ts - Import fan-in analysis",
+				"cycles.ts - Circular dependency detection",
+				"phantom-deps.ts - Missing dependency detection",
+				"threats.ts - Security threat patterns (secrets, mocks, destructive)",
+				"velocity.ts - Change velocity tracking"
+			],
+			"suggestedDoc": "Create signals-reference.md documenting each signal's purpose and output"
+		},
+		{
+			"feature": "Auto Decision Settings",
+			"implementationLocation": "apps/vscode/package.json + packages/engine/src/runtime/decision.ts",
+			"description": "6 Auto Decision settings control automatic protection but are not in settings.md",
+			"suggestedDoc": "Add Auto Decision section to settings.md documenting: autoDecision.riskThreshold, autoDecision.notifyThreshold, autoDecision.minFilesForBurst, autoDecision.maxSnapshotsPerMinute, snapshot.aiDetectionEnabled, snapshot.autoRestoreOnDetection"
+		},
+		{
+			"feature": "CLI Tool",
+			"implementationLocation": "apps/cli/src/index.ts + packages/engine/src/transports/cli.ts",
+			"description": "5 CLI commands implemented via V2 CLIEngineAdapter but apps/cli/README.md is minimal",
+			"suggestedDoc": "Create comprehensive CLI documentation with examples for: analyze, snapshot, list, interactive, check commands"
+		},
+		{
+			"feature": "API Endpoints",
+			"implementationLocation": "apps/api/src/routes/ + packages/engine/src/transports/http.ts",
+			"description": "14+ API endpoints implemented with HTTPEngineAdapter and OpenAPI schema but no user-facing API docs",
+			"suggestedDoc": "Consider generating API reference documentation from OpenAPI schema at /api/docs"
+		},
+		{
+			"feature": "Authentication Commands",
+			"implementationLocation": "apps/vscode/src/commands/authCommands.ts",
+			"description": "Sign in/out and auth status commands are implemented but not in user guide",
+			"suggestedDoc": "Add Authentication section to getting-started.md or create dedicated auth.md"
+		},
+		{
+			"feature": "Offline Mode",
+			"implementationLocation": "apps/vscode/src/commands/offlineModeCommands.ts",
+			"description": "Toggle Offline Mode command exists with setting but not documented",
+			"suggestedDoc": "Add Offline Mode section to advanced-features.md"
+		},
+		{
+			"feature": "Secure API Key Storage",
+			"implementationLocation": "apps/vscode/src/commands/securityCommands.ts",
+			"description": "Commands for secure API key and MCP token storage exist but not documented",
+			"suggestedDoc": "Add Security section to settings.md or advanced-features.md covering: migrateSecureConfig, setApiKey, setMcpAuthToken"
+		},
+		{
+			"feature": "Telemetry Settings",
+			"implementationLocation": "apps/vscode/package.json",
+			"description": "4 telemetry settings (endpoint, enabled, console, sampleRate) not documented",
+			"suggestedDoc": "Add Telemetry section to settings.md for users who want to configure OpenTelemetry tracing"
+		}
+	],
+	"summary": {
+		"inaccurate": 5,
+		"outdated": 4,
+		"missing": 11,
+		"totalIssues": 20,
+		"resolved": 3,
+		"remainingIssues": 17,
+		"priorities": {
+			"HIGH": 3,
+			"MEDIUM": 5,
+			"LOW": 9,
+			"RESOLVED": 2,
+			"PARTIALLY_RESOLVED": 1
+		}
+	},
+	"recommendations": [
+		{
+			"priority": "HIGH",
+			"action": "Remove all Guardian/guardian-lite references",
+			"description": "V2 Engine migration is complete. All docs referencing Guardian, guardian-lite, or plugin system need updating to reference packages/engine and signal scripts."
+		},
+		{
+			"priority": "HIGH",
+			"action": "Document V2 Engine architecture",
+			"description": "The new signal-based architecture (packages/engine/) is undocumented. Create overview showing signals → runtime → transports flow."
+		},
+		{
+			"priority": "HIGH",
+			"action": "Document all 40+ settings",
+			"description": "settings.md only covers ~15 of the 40+ available settings. Add sections for Engine, Auto Decision, MCP, Telemetry, and API settings."
+		},
+		{
+			"priority": "HIGH",
+			"action": "Document MCP integration",
+			"description": "The MCP server with 8 tools is a key feature for AI assistant integration. Create dedicated documentation explaining how to use MCP tools with Claude, Cursor, etc."
+		},
+		{
+			"priority": "MEDIUM",
+			"action": "Document authentication flow",
+			"description": "Sign in/out commands exist but users don't know how to authenticate. Add auth guide to getting-started.md."
+		},
+		{
+			"priority": "MEDIUM",
+			"action": "Update terminology consistency",
+			"description": "Use 'Watch/Warn/Block' consistently instead of mixing with 'Watched/Warning/Protected'."
+		},
+		{
+			"priority": "MEDIUM",
+			"action": "Create CLI documentation",
+			"description": "The CLI has 5 powerful commands via CLIEngineAdapter but minimal documentation. Create comprehensive guide."
+		},
+		{
+			"priority": "RESOLVED",
+			"action": "Update command counts",
+			"description": "FIXED 2025-12-17: README now says '50+ commands' (was '30 commands')."
+		}
+	]
+}

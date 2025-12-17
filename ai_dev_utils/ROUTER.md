@@ -53,6 +53,55 @@ grep -i "[KEYWORD]" ai_dev_utils/feedback/learnings.jsonl
 
 ---
 
+## Test Infrastructure Rules
+
+**CRITICAL:** When working on tests or vitest configurations, follow these standards:
+
+### Vitest Config Standard
+
+All packages MUST use `@snapback/vitest-config` for consistent test configuration:
+
+```typescript
+// vitest.config.ts - Standard pattern for ALL packages
+import { nodeConfig, mergeConfigs } from "@snapback/vitest-config";
+import { defineProject } from "vitest/config";
+
+export default defineProject(
+  mergeConfigs(nodeConfig, {
+    test: {
+      name: "@snapback/my-package",
+      include: ["test/**/*.test.ts"],
+    },
+  })
+);
+```
+
+### Available Presets
+
+| Preset | Use Case |
+|--------|----------|
+| `nodeConfig` | Node.js packages, SDK, CLI, API |
+| `jsdomConfig` | React components, browser testing |
+| `vscodeConfig` | VS Code extension testing |
+| `integrationConfig` | Integration tests (30s timeout) |
+| `e2eConfig` | End-to-end tests (60s timeout) |
+
+### Test File Naming
+
+- Use `.test.ts` exclusively (NOT `.spec.ts`)
+- Standard location: `test/**/*.test.ts`
+- Integration tests: `test/integration/**/*.test.ts`
+
+### DO NOT
+
+- Create standalone vitest configs without importing `@snapback/vitest-config`
+- Use `defineConfig` instead of `defineProject` for package configs
+- Mix `.test.ts` and `.spec.ts` naming patterns
+
+**Reference:** `packages/testing/README.md` for full documentation
+
+---
+
 ## Workflow Routing
 
 ### Standard Development Flow
@@ -197,5 +246,5 @@ cat ai_dev_utils/state/current-task.json | jq
 
 ---
 
-**Last Verified:** 2025-12-16
+**Last Verified:** 2025-12-17
 **Status:** active

@@ -1,0 +1,296 @@
+{
+	"auditMetadata": {
+		"generatedAt": "2025-12-17T08:35:00Z",
+		"updatedAt": "2025-12-17T12:00:00Z",
+		"updateReason": "Reconciled with V2 engine migration completion (Dec 2025). Several PARTIAL features now IMPLEMENTED.",
+		"analysisMethod": "Comparison of documentation claims vs code implementation"
+	},
+	"features": [
+		{
+			"name": "Cloud Backup Sync",
+			"documentedIn": "README.md:88",
+			"claim": "Local-first Storage: SQLite-based local storage with optional cloud sync",
+			"expectedImplementation": "packages/sdk/src/storage/CloudSync.ts",
+			"currentStatus": "NOT_IMPLEMENTED",
+			"analysis": "Cloud sync mentioned in marketing but not implemented. Local-first blob storage is the architecture. This is vaporware - remove from docs or mark as 'planned'.",
+			"priority": "P3",
+			"effort": "L",
+			"dependencies": ["auth", "api endpoints", "sync protocol design"],
+			"recommendation": "REMOVE from documentation until implemented"
+		},
+		{
+			"name": "Timeline Integration",
+			"documentedIn": "apps/vscode/docs/user-guide/getting-started.md:23",
+			"claim": "Timeline Integration: View snapshots in VS Code's built-in Timeline",
+			"expectedImplementation": "apps/vscode/src/views/checkpointTimelineProvider.ts",
+			"currentStatus": "IMPLEMENTED",
+			"analysis": "VERIFIED 2025-12-17: CheckpointTimelineProvider is fully implemented. registerTimelineProvider is called during activation. Integration tests exist.",
+			"priority": "P1",
+			"effort": "DONE",
+			"dependencies": [],
+			"recommendation": "DOCUMENT this feature"
+		},
+		{
+			"name": "File Health Indicators",
+			"documentedIn": "README.md:46",
+			"claim": "File Health Indicators: Visual indicators (🛡️/⚠️/🚨) show the health status of your files",
+			"expectedImplementation": "apps/vscode/src/decorations/healthDecorationProvider.ts",
+			"currentStatus": "PARTIAL",
+			"analysis": "Setting exists (snapback.showFileHealthDecorations). Decoration provider likely exists. Verify full implementation.",
+			"priority": "P2",
+			"effort": "S",
+			"dependencies": ["file decoration API"],
+			"recommendation": "VERIFY and document"
+		},
+		{
+			"name": "Full-text Search in Snapshots",
+			"documentedIn": "README.md:87",
+			"claim": "Full-text Search: Fast search through snapshot contents",
+			"expectedImplementation": "packages/sdk/src/storage/SearchIndex.ts",
+			"currentStatus": "NOT_IMPLEMENTED",
+			"analysis": "Mentioned in README but no full-text search implementation found. This is vaporware.",
+			"priority": "P3",
+			"effort": "L",
+			"dependencies": ["sqlite FTS5 or separate search index"],
+			"recommendation": "REMOVE from documentation until implemented"
+		},
+		{
+			"name": "Bulk Operations for Snapshots",
+			"documentedIn": "README.md:28 and advanced-features.md:99",
+			"claim": "Bulk Operations: Delete older snapshots, rename snapshots, and protect/unprotect in bulk",
+			"expectedImplementation": "apps/vscode/src/commands/snapshotCommands.ts",
+			"currentStatus": "PARTIAL",
+			"analysis": "deleteOlderSnapshots exists (line 140 per matrix). Multi-select bulk operations in tree view need verification.",
+			"priority": "P2",
+			"effort": "M",
+			"dependencies": ["tree view multi-select"],
+			"recommendation": "VERIFY multi-select support"
+		},
+		{
+			"name": "Policy Override Creation",
+			"documentedIn": "package.json:115 (command defined)",
+			"claim": "Create Policy Override command available in context menu",
+			"expectedImplementation": "apps/vscode/src/commands/policyOverrideCommands.ts",
+			"currentStatus": "IMPLEMENTED",
+			"analysis": "VERIFIED 2025-12-17: Full implementation in policyOverrideCommands.ts. Registered via registerPolicyOverrideCommands. Has ProgressiveDisclosureController integration for ADVANCED users.",
+			"priority": "P2",
+			"effort": "DONE",
+			"dependencies": [],
+			"recommendation": "DOCUMENT this feature"
+		},
+		{
+			"name": "Open Snapshot in Web",
+			"documentedIn": "package.json:199 (command defined)",
+			"claim": "Open Snapshot in Web command to view snapshots in web console",
+			"expectedImplementation": "apps/vscode/src/commands/explorerTree.ts:103",
+			"currentStatus": "IMPLEMENTED",
+			"analysis": "VERIFIED 2025-12-17: Implemented in explorerTree.ts line 103. Has integration tests. Opens snapshot viewer in web console.",
+			"priority": "P3",
+			"effort": "DONE",
+			"dependencies": [],
+			"recommendation": "DOCUMENT this feature"
+		},
+		{
+			"name": "Session-Based Snapshots UI",
+			"documentedIn": "README.md:25 and package.json (sessions view)",
+			"claim": "Session-Based Snapshots: Group related file changes into atomic sessions",
+			"expectedImplementation": "apps/vscode/src/views/sessionsTreeProvider.ts",
+			"currentStatus": "IMPLEMENTED",
+			"analysis": "Session commands (list, restore, export) are implemented per matrix. View defined in package.json. DBSCAN clustering provides intelligent grouping.",
+			"priority": "P1",
+			"effort": "DONE",
+			"dependencies": [],
+			"recommendation": "DOCUMENT this feature properly"
+		},
+		{
+			"name": "Phantom Dependency Detection",
+			"documentedIn": "README.md:34",
+			"claim": "Phantom Dependency Detection: Identifies missing dependencies that could break your application",
+			"expectedImplementation": "packages/engine/src/signals/phantom-deps.ts",
+			"currentStatus": "IMPLEMENTED",
+			"analysis": "FULLY IMPLEMENTED in V2 engine. Signal script extracts ES6/CommonJS/dynamic imports, ignores Node builtins and workspace packages, detects typosquatting.",
+			"priority": "P1",
+			"effort": "DONE",
+			"dependencies": [],
+			"recommendation": "DOCUMENT this feature - it works!"
+		},
+		{
+			"name": "AI Change Tracking",
+			"documentedIn": "README.md:35",
+			"claim": "AI Change Tracking: Detects AI-generated code and tracks changes for security auditing",
+			"expectedImplementation": "packages/engine/src/signals/ai-detection.ts",
+			"currentStatus": "IMPLEMENTED",
+			"analysis": "FULLY IMPLEMENTED in V2 engine. Signal script detects AI patterns, tracks AI-assisted sessions, provides confidence scoring.",
+			"priority": "P1",
+			"effort": "DONE",
+			"dependencies": [],
+			"recommendation": "DOCUMENT this feature - it's a key differentiator!"
+		},
+		{
+			"name": "Mock Detection",
+			"documentedIn": "README.md:33",
+			"claim": "Mock Detection: Prevents test mocks from accidentally entering production code",
+			"expectedImplementation": "packages/engine/src/signals/threats.ts",
+			"currentStatus": "IMPLEMENTED",
+			"analysis": "IMPLEMENTED in V2 engine threats.ts signal. Detects jest.mock, vi.mock, sinon.stub patterns. Part of unified threat detection.",
+			"priority": "P1",
+			"effort": "DONE",
+			"dependencies": [],
+			"recommendation": "DOCUMENT as part of threat detection"
+		},
+		{
+			"name": "Secret Detection",
+			"documentedIn": "README.md:32",
+			"claim": "Secret Detection: Identifies exposed API keys, tokens, and credentials",
+			"expectedImplementation": "packages/engine/src/signals/threats.ts",
+			"currentStatus": "IMPLEMENTED",
+			"analysis": "IMPLEMENTED in V2 engine threats.ts signal. Detects AWS keys, GitHub tokens, OpenAI keys, generic secrets patterns.",
+			"priority": "P1",
+			"effort": "DONE",
+			"dependencies": [],
+			"recommendation": "DOCUMENT as part of threat detection"
+		},
+		{
+			"name": "Destructive Command Detection",
+			"documentedIn": "Implied by threat detection",
+			"claim": "Detects dangerous operations like rm -rf, DROP TABLE, eval()",
+			"expectedImplementation": "packages/engine/src/signals/threats.ts",
+			"currentStatus": "IMPLEMENTED",
+			"analysis": "IMPLEMENTED in V2 engine threats.ts signal. Part of unified threat detection covering secrets, mocks, and destructive commands.",
+			"priority": "P1",
+			"effort": "DONE",
+			"dependencies": [],
+			"recommendation": "DOCUMENT as part of threat detection"
+		},
+		{
+			"name": "Notification Preferences Reset",
+			"documentedIn": "package.json:295 (command defined)",
+			"claim": "Reset Notification Preferences command available",
+			"expectedImplementation": "apps/vscode/src/commands/protectionCommands.ts:671",
+			"currentStatus": "IMPLEMENTED",
+			"analysis": "VERIFIED 2025-12-17: Implemented in protectionCommands.ts line 671. Resets protection level notification acknowledgments. Has integration tests.",
+			"priority": "P3",
+			"effort": "DONE",
+			"dependencies": [],
+			"recommendation": "DOCUMENT this feature"
+		},
+		{
+			"name": "Auto-Restore on Critical Detection",
+			"documentedIn": "package.json:977",
+			"claim": "Auto-Restore on Critical Detection (Experimental) - automatically restore snapshots when critical threats detected",
+			"expectedImplementation": "packages/engine/src/runtime/decision.ts",
+			"currentStatus": "PARTIAL",
+			"analysis": "Setting exists (snapback.snapshot.autoRestoreOnDetection) and marked experimental. V2 decision engine has infrastructure for this. Verify if wired end-to-end.",
+			"priority": "P2",
+			"effort": "M",
+			"dependencies": ["risk detection", "snapshot restore", "decision engine"],
+			"recommendation": "VERIFY end-to-end wiring"
+		},
+		{
+			"name": "Burst Detection",
+			"documentedIn": "Architecture docs only",
+			"claim": "Detects rapid bursts of file changes indicating AI-assisted coding sessions",
+			"expectedImplementation": "packages/engine/src/signals/burst.ts",
+			"currentStatus": "IMPLEMENTED",
+			"analysis": "FULLY IMPLEMENTED in V2 engine. Signal script detects rapid change patterns, provides burst scoring for auto-decision engine.",
+			"priority": "P1",
+			"effort": "DONE",
+			"dependencies": [],
+			"recommendation": "ADD to user-facing documentation"
+		},
+		{
+			"name": "Complexity Analysis",
+			"documentedIn": "Architecture docs only",
+			"claim": "AST-based complexity scoring for risk assessment",
+			"expectedImplementation": "packages/engine/src/signals/complexity.ts",
+			"currentStatus": "IMPLEMENTED",
+			"analysis": "FULLY IMPLEMENTED in V2 engine. Signal script performs AST analysis, calculates cyclomatic complexity, nesting depth.",
+			"priority": "P1",
+			"effort": "DONE",
+			"dependencies": [],
+			"recommendation": "ADD to user-facing documentation"
+		},
+		{
+			"name": "Circular Dependency Detection",
+			"documentedIn": "Architecture docs only",
+			"claim": "Detects circular dependencies in import graphs",
+			"expectedImplementation": "packages/engine/src/signals/cycles.ts",
+			"currentStatus": "IMPLEMENTED",
+			"analysis": "FULLY IMPLEMENTED in V2 engine. Signal script analyzes import graph, detects cycles, reports affected files.",
+			"priority": "P1",
+			"effort": "DONE",
+			"dependencies": [],
+			"recommendation": "ADD to user-facing documentation"
+		}
+	],
+	"summary": {
+		"totalFeatures": 18,
+		"implemented": 14,
+		"partial": 2,
+		"notImplemented": 2,
+		"needsVerification": 0
+	},
+	"statusBreakdown": {
+		"IMPLEMENTED": [
+			"Session-Based Snapshots UI",
+			"Phantom Dependency Detection",
+			"AI Change Tracking",
+			"Mock Detection",
+			"Secret Detection",
+			"Destructive Command Detection",
+			"Burst Detection",
+			"Complexity Analysis",
+			"Circular Dependency Detection",
+			"Timeline Integration",
+			"Policy Override Creation",
+			"Open Snapshot in Web",
+			"Notification Preferences Reset"
+		],
+		"PARTIAL": ["File Health Indicators", "Auto-Restore on Critical Detection"],
+		"NOT_IMPLEMENTED": [
+			"Cloud Backup Sync (vaporware - remove from docs)",
+			"Full-text Search in Snapshots (vaporware - remove from docs)"
+		],
+		"NEEDS_VERIFICATION": []
+	},
+	"prioritySummary": {
+		"P1_DONE": [
+			"Session-Based Snapshots UI",
+			"Phantom Dependency Detection",
+			"AI Change Tracking",
+			"Mock Detection",
+			"Secret Detection",
+			"Destructive Command Detection",
+			"Burst Detection",
+			"Complexity Analysis",
+			"Circular Dependency Detection",
+			"Timeline Integration"
+		],
+		"P2_DONE": ["Policy Override Creation"],
+		"P2_PARTIAL": ["File Health Indicators", "Auto-Restore on Critical Detection"],
+		"P3_DONE": ["Open Snapshot in Web", "Notification Preferences Reset"],
+		"P3_REMOVE": ["Cloud Backup Sync", "Full-text Search"]
+	},
+	"recommendations": [
+		{
+			"priority": "HIGH",
+			"action": "Document implemented V2 signal features",
+			"description": "9 features are IMPLEMENTED but undocumented: AI detection, phantom deps, threats (secrets/mocks/destructive), burst detection, complexity, cycles. These are key differentiators!"
+		},
+		{
+			"priority": "HIGH",
+			"action": "Remove vaporware from README",
+			"description": "Cloud Backup Sync and Full-text Search are NOT implemented. Remove these claims or clearly mark as 'Planned'."
+		},
+		{
+			"priority": "MEDIUM",
+			"action": "Verify NEEDS_VERIFICATION features",
+			"description": "4 features have commands defined but implementation unclear: Timeline, Policy Override, Open in Web, Notification Reset. Verify or remove."
+		},
+		{
+			"priority": "LOW",
+			"action": "Complete PARTIAL features",
+			"description": "File Health Indicators, Bulk Operations, and Auto-Restore are partially implemented. Complete or document current limitations."
+		}
+	]
+}

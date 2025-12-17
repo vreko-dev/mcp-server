@@ -3,3 +3,4 @@
 {"id":"L003","type":"efficiency","trigger":"test uses Date.now() or real time","action":"use DeterministicTime from test utilities for consistent behavior","learned_from":"timer-test-flakiness","added":"2025-12-11"}
 {"id":"L004","type":"pattern","trigger":"error handling needed","action":"use toError() from @snapback-oss/sdk/utils/errorHelpers.ts","learned_from":"error-handling-consolidation","added":"2025-12-12"}
 {"id":"L005","type":"discovery","trigger":"looking for retry logic","action":"use withRetry() from @snapback-oss/sdk/utils/retry.ts, don't create new","learned_from":"retry-duplication-found","added":"2025-12-14"}
+{"id":"L004","type":"pattern","trigger":"vitest config OR test configuration OR new package tests","action":"use @snapback/vitest-config with nodeConfig/jsdomConfig/vscodeConfig presets - see Test Infrastructure Rules in ROUTER.md","learned_from":"test-infrastructure-consolidation-2025-12","added":"2025-12-17"}

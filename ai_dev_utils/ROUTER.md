@@ -30,10 +30,11 @@ grep -i "[KEYWORD]" ai_dev_utils/feedback/learnings.jsonl
 ## Task Classification Matrix
 
 | Signal Words | Task Type | Workflow | Priority |
-|--------------|-----------|----------|----------|
+|--------------|-----------|----------|---------|
 | "fix", "broken", "bug", "error", "crash", "not working" | BUG_FIX | `1_triage.md` → `4_dev_complete.md` | P1-P2 |
 | "add", "implement", "create", "new feature", "build" | NEW_FEATURE | `2_research.md` → `3_planning.md` → `4_dev_complete.md` | P2-P3 |
 | "refactor", "clean up", "consolidate", "extract", "dedupe" | REFACTORING | `5_refactor.md` | P3-P4 |
+| "UX", "tree view", "sidebar", "UI structure", "layout" | UX_REFACTORING | `5_refactor.md` + UI patterns | P2-P3 |
 | "test", "coverage", "edge case", "missing test" | TESTING | `6_test.md` | P3 |
 | "docs", "outdated", "stale", "update docs", "cleanup docs" | DOC_HYGIENE | `8_doc_hygiene.md` | P4 |
 | "P0", "production", "critical", "emergency", "down" | HOTFIX | `7_hotfix.md` | P0 |
@@ -45,7 +46,8 @@ grep -i "[KEYWORD]" ai_dev_utils/feedback/learnings.jsonl
 
 | Context Signal | Detected Area | Special Rules |
 |----------------|---------------|---------------|
-| "VS Code", "extension", "command", "activation" | `apps/vscode/` | Check activation order, disposables |
+| "VS Code", "extension", "command", "activation" | `apps/vscode/` | Check activation order, disposables, ExtensionContext |
+| "TreeView", "TreeDataProvider", "sidebar" | `apps/vscode/` | See VS Code Extension Patterns below |
 | "API", "endpoint", "backend", "database", "service" | `apps/api/` | Use service layer, no inline DB queries |
 | "web", "dashboard", "component", "React", "Next.js" | `apps/web/` | Business logic in hooks, not components |
 | "MCP", "server", "tool" | `apps/mcp-server/` | Follow MCP protocol patterns |
@@ -99,6 +101,62 @@ export default defineProject(
 - Mix `.test.ts` and `.spec.ts` naming patterns
 
 **Reference:** `packages/testing/README.md` for full documentation
+
+---
+
+## VS Code Extension Patterns
+
+### Constructor Changes (ExtensionContext)
+
+When adding `ExtensionContext` as a constructor parameter:
+
+1. **Update ALL test files** - Search for `new ProviderName(` across test files
+2. **Add mockContext** with required properties:
+   ```typescript
+   const mockContext = {
+     globalState: {
+       get: vi.fn().mockReturnValue(undefined),
+       update: vi.fn().mockResolvedValue(undefined),
+     },
+     subscriptions: { push: vi.fn() },
+   };
+   ```
+3. **Static `register()` methods** need full context mock too
+
+### TreeView/TreeDataProvider Refactoring
+
+When restructuring tree hierarchy:
+
+1. **Navigate by `item.data.type`** not `item.label` in tests
+2. **Group keys are hyphenated** (`this-week`) not camelCase (`thisWeek`)
+3. **Create helper functions** like `getSnapshotItemsFromGroup(groupKey)`
+4. **Update all assertions** for new label formats and section names
+
+### Test Migration Checklist
+
+- [ ] Search for constructor instantiations in all test files
+- [ ] Update mock objects with new required properties
+- [ ] Verify group keys match `types.ts` definitions
+- [ ] Update label/description expectations for new formats
+
+---
+
+## Commit Organization
+
+When completing multi-phase tasks, organize commits by logical grouping:
+
+| Order | Type | Prefix | Example |
+|-------|------|--------|--------|
+| 1 | Implementation | `feat:` | Core feature changes |
+| 2 | Tests | `test:` | Test updates for new behavior |
+| 3 | Infrastructure | `chore:` | Config, tooling, deps |
+| 4 | Documentation | `docs:` | README, guides |
+
+**Process:**
+1. Run `git status --short` to see all changes
+2. Group related files by purpose
+3. Stage and commit each group with descriptive message
+4. Verify clean working directory before finishing
 
 ---
 

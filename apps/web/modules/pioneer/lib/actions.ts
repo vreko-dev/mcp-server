@@ -14,6 +14,7 @@ export interface Pioneer {
 	id: string;
 	userId: string;
 	githubUsername: string;
+	contactEmail: string | null;
 	tier: "seedling" | "grower" | "cultivator" | "guardian";
 	totalPoints: number;
 	referralCode: string;

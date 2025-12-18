@@ -8,6 +8,7 @@ const MOCK_PIONEER: Pioneer = {
 	id: "pio_123",
 	userId: "user_123",
 	githubUsername: "devninja",
+	contactEmail: "devninja@example.com",
 	tier: "grower",
 	totalPoints: 450,
 	referralCode: "ninja450",

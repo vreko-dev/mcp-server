@@ -1,0 +1,633 @@
+{
+	"metadata": {
+		"generated": "2025-12-18",
+		"currentSite": "docs.snapback.dev",
+		"sourceDir": "apps/docs/content/docs",
+		"targetVersion": "V2 Stripe-Quality"
+	},
+	"summary": {
+		"currentPages": 26,
+		"targetPages": 45,
+		"pagesToCreate": 19,
+		"pagesToDelete": 9,
+		"pagesToRewrite": 8,
+		"pagesToMigrate": 8,
+		"interactiveDemosNeeded": 3,
+		"contentQualityScore": 6,
+		"targetQualityScore": 9
+	},
+	"criticalIssues": [
+		{
+			"id": "no-interactive-demos",
+			"severity": "high",
+			"description": "No interactive demos - key differentiator missing",
+			"fix": "Create Playground, Risk Analyzer Demo, Diff Visualizer"
+		},
+		{
+			"id": "no-product-pages",
+			"severity": "high",
+			"description": "No dedicated product pages for Extension/CLI/MCP/SDK",
+			"fix": "Create 5 product pages with hero sections"
+		},
+		{
+			"id": "mixed-internal-docs",
+			"severity": "medium",
+			"description": "Internal docs mixed with user docs",
+			"fix": "Delete 9 internal pages, move to GitHub wiki"
+		},
+		{
+			"id": "missing-pioneer",
+			"severity": "high",
+			"description": "Pioneer Program not documented",
+			"fix": "Create 4 Pioneer pages"
+		},
+		{
+			"id": "autodecision-not-documented",
+			"severity": "high",
+			"description": "Docs describe old manual protection levels",
+			"fix": "Rewrite to explain AutoDecisionEngine"
+		},
+		{
+			"id": "broken-links",
+			"severity": "medium",
+			"description": "/vscode, /mcp routes return 404",
+			"fix": "Create missing pages or fix links"
+		}
+	],
+	"currentInventory": [
+		{
+			"file": "index.mdx",
+			"title": "Home",
+			"quality": 7,
+			"action": "rewrite",
+			"priority": "P0",
+			"notes": "Add interactive hero demo"
+		},
+		{
+			"file": "quick-start.mdx",
+			"title": "Quick Start",
+			"quality": 8,
+			"action": "polish",
+			"priority": "P1",
+			"notes": "Good - minor updates"
+		},
+		{
+			"file": "getting-started/first-restore.mdx",
+			"title": "First Restore",
+			"quality": 7,
+			"action": "migrate",
+			"priority": "P1",
+			"notes": "Flatten to root level"
+		},
+		{
+			"file": "why-snapback.mdx",
+			"title": "Why SnapBack",
+			"quality": 6,
+			"action": "rewrite",
+			"priority": "P1",
+			"notes": "Rename to what-is-snapback, make more compelling"
+		},
+		{
+			"file": "protection-levels.mdx",
+			"title": "Protection Levels",
+			"quality": 7,
+			"action": "rewrite",
+			"priority": "P0",
+			"notes": "Update for AutoDecisionEngine"
+		},
+		{
+			"file": "sessions.mdx",
+			"title": "Sessions",
+			"quality": 7,
+			"action": "rewrite",
+			"priority": "P1",
+			"notes": "Add DBSCAN clustering explanation"
+		},
+		{
+			"file": "ai-detection.mdx",
+			"title": "AI Detection",
+			"quality": 8,
+			"action": "polish",
+			"priority": "P1",
+			"notes": "Add real code examples"
+		},
+		{
+			"file": "capabilities/mcp-local.mdx",
+			"title": "Local MCP",
+			"quality": 9,
+			"action": "migrate",
+			"priority": "P1",
+			"notes": "Excellent - merge into products/mcp"
+		},
+		{
+			"file": "capabilities/mcp-backend.mdx",
+			"title": "Backend MCP",
+			"quality": 9,
+			"action": "migrate",
+			"priority": "P1",
+			"notes": "Excellent - merge into products/mcp"
+		},
+		{
+			"file": "integrations/copilot.mdx",
+			"title": "Copilot Integration",
+			"quality": 6,
+			"action": "expand",
+			"priority": "P0",
+			"notes": "Expand to full guide"
+		},
+		{
+			"file": "cli.mdx",
+			"title": "CLI",
+			"quality": 8,
+			"action": "rewrite",
+			"priority": "P1",
+			"notes": "Reframe as product page, verify commands"
+		},
+		{
+			"file": "analytics.mdx",
+			"title": "Analytics",
+			"quality": 5,
+			"action": "delete",
+			"priority": "P2",
+			"notes": "Internal-facing"
+		},
+		{
+			"file": "analytics-faq.mdx",
+			"title": "Analytics FAQ",
+			"quality": 5,
+			"action": "delete",
+			"priority": "P2",
+			"notes": "Internal-facing"
+		},
+		{
+			"file": "interpreting-data.mdx",
+			"title": "Interpreting Data",
+			"quality": 4,
+			"action": "delete",
+			"priority": "P2",
+			"notes": "Internal-facing"
+		},
+		{
+			"file": "retention-correlation.mdx",
+			"title": "Retention Analysis",
+			"quality": 4,
+			"action": "delete",
+			"priority": "P2",
+			"notes": "Internal-facing"
+		},
+		{
+			"file": "privacy.mdx",
+			"title": "Privacy",
+			"quality": 7,
+			"action": "migrate",
+			"priority": "P1",
+			"notes": "Move to security/privacy-architecture"
+		},
+		{
+			"file": "api-reference.mdx",
+			"title": "API Reference",
+			"quality": 3,
+			"action": "rewrite",
+			"priority": "P1",
+			"notes": "Placeholder content - generate from Zod"
+		},
+		{
+			"file": "architecture.mdx",
+			"title": "Architecture",
+			"quality": 4,
+			"action": "delete",
+			"priority": "P2",
+			"notes": "Move to GitHub wiki"
+		},
+		{
+			"file": "developer-guide.mdx",
+			"title": "Developer Guide",
+			"quality": 4,
+			"action": "delete",
+			"priority": "P2",
+			"notes": "Move to GitHub wiki"
+		},
+		{
+			"file": "performance.mdx",
+			"title": "Performance",
+			"quality": 6,
+			"action": "rewrite",
+			"priority": "P2",
+			"notes": "Reframe as user-facing guide"
+		},
+		{
+			"file": "troubleshooting.mdx",
+			"title": "Troubleshooting",
+			"quality": 6,
+			"action": "expand",
+			"priority": "P1",
+			"notes": "Add real issues from support"
+		},
+		{
+			"file": "faq.mdx",
+			"title": "FAQ",
+			"quality": 8,
+			"action": "polish",
+			"priority": "P1",
+			"notes": "Update answers, add Pioneer"
+		},
+		{
+			"file": "contributing.mdx",
+			"title": "Contributing",
+			"quality": 5,
+			"action": "delete",
+			"priority": "P3",
+			"notes": "Move to CONTRIBUTING.md"
+		},
+		{
+			"file": "enterprise/index.mdx",
+			"title": "Enterprise Home",
+			"quality": 5,
+			"action": "rewrite",
+			"priority": "P2",
+			"notes": "Needs compelling content"
+		},
+		{
+			"file": "enterprise/security-privacy.mdx",
+			"title": "Security & Privacy",
+			"quality": 7,
+			"action": "migrate",
+			"priority": "P1",
+			"notes": "Good content"
+		},
+		{
+			"file": "enterprise/sso-saml.mdx",
+			"title": "SSO/SAML",
+			"quality": 3,
+			"action": "delete",
+			"priority": "P3",
+			"notes": "Aspirational - not implemented"
+		},
+		{
+			"file": "enterprise/onboarding-poc.mdx",
+			"title": "Onboarding POC",
+			"quality": 3,
+			"action": "delete",
+			"priority": "P3",
+			"notes": "Internal"
+		},
+		{
+			"file": "plans-limits/index.mdx",
+			"title": "Plans & Limits",
+			"quality": 5,
+			"action": "rewrite",
+			"priority": "P0",
+			"notes": "Rewrite as Pioneer Program"
+		}
+	],
+	"pagesToCreate": [
+		{
+			"path": "what-is-snapback.mdx",
+			"title": "What is SnapBack?",
+			"section": "Get Started",
+			"priority": "P0",
+			"effort": "M",
+			"description": "1-minute explainer with visual"
+		},
+		{
+			"path": "concepts.mdx",
+			"title": "Concepts Overview",
+			"section": "Get Started",
+			"priority": "P1",
+			"effort": "M",
+			"description": "Visual overview of snapshots, sessions, protection"
+		},
+		{
+			"path": "products/extension.mdx",
+			"title": "VS Code Extension",
+			"section": "Products",
+			"priority": "P0",
+			"effort": "M",
+			"description": "Hero product page with screenshots"
+		},
+		{
+			"path": "products/mcp.mdx",
+			"title": "MCP Server",
+			"section": "Products",
+			"priority": "P1",
+			"effort": "M",
+			"description": "Consolidated MCP product page"
+		},
+		{
+			"path": "products/sdk.mdx",
+			"title": "SDK",
+			"section": "Products",
+			"priority": "P2",
+			"effort": "M",
+			"description": "Developer-focused SDK page"
+		},
+		{
+			"path": "products/dashboard.mdx",
+			"title": "Dashboard",
+			"section": "Products",
+			"priority": "P2",
+			"effort": "M",
+			"description": "console.snapback.dev overview"
+		},
+		{
+			"path": "guides/cursor.mdx",
+			"title": "Cursor Guide",
+			"section": "Guides",
+			"priority": "P0",
+			"effort": "M",
+			"description": "Using SnapBack with Cursor"
+		},
+		{
+			"path": "guides/claude.mdx",
+			"title": "Claude Guide",
+			"section": "Guides",
+			"priority": "P1",
+			"effort": "M",
+			"description": "Using SnapBack with Claude"
+		},
+		{
+			"path": "guides/nextjs.mdx",
+			"title": "Next.js Guide",
+			"section": "Guides",
+			"priority": "P1",
+			"effort": "M",
+			"description": "SnapBack for Next.js projects"
+		},
+		{
+			"path": "guides/react.mdx",
+			"title": "React Guide",
+			"section": "Guides",
+			"priority": "P2",
+			"effort": "M",
+			"description": "SnapBack for React projects"
+		},
+		{
+			"path": "guides/nodejs.mdx",
+			"title": "Node.js Guide",
+			"section": "Guides",
+			"priority": "P2",
+			"effort": "M",
+			"description": "SnapBack for Node.js projects"
+		},
+		{
+			"path": "guides/recovering-mistakes.mdx",
+			"title": "Recovering from AI Mistakes",
+			"section": "Guides",
+			"priority": "P0",
+			"effort": "M",
+			"description": "Core value prop guide"
+		},
+		{
+			"path": "guides/protecting-files.mdx",
+			"title": "Protecting Critical Files",
+			"section": "Guides",
+			"priority": "P1",
+			"effort": "M",
+			"description": ".env, secrets, config protection"
+		},
+		{
+			"path": "guides/team-workflows.mdx",
+			"title": "Team Workflows",
+			"section": "Guides",
+			"priority": "P2",
+			"effort": "M",
+			"description": "Team tier collaboration"
+		},
+		{
+			"path": "guides/cicd.mdx",
+			"title": "CI/CD Integration",
+			"section": "Guides",
+			"priority": "P2",
+			"effort": "M",
+			"description": "GitHub Actions, automation"
+		},
+		{
+			"path": "guides/large-codebases.mdx",
+			"title": "Large Codebase Tips",
+			"section": "Guides",
+			"priority": "P2",
+			"effort": "M",
+			"description": "Performance optimization"
+		},
+		{
+			"path": "api/sdk.mdx",
+			"title": "SDK Reference",
+			"section": "API Reference",
+			"priority": "P1",
+			"effort": "L",
+			"description": "Generate from TypeDoc"
+		},
+		{
+			"path": "api/mcp-tools.mdx",
+			"title": "MCP Tools Reference",
+			"section": "API Reference",
+			"priority": "P1",
+			"effort": "M",
+			"description": "All MCP tools documented"
+		},
+		{
+			"path": "api/rest.mdx",
+			"title": "REST API",
+			"section": "API Reference",
+			"priority": "P2",
+			"effort": "L",
+			"description": "api.snapback.dev endpoints"
+		},
+		{
+			"path": "api/webhooks.mdx",
+			"title": "Webhooks",
+			"section": "API Reference",
+			"priority": "P3",
+			"effort": "S",
+			"description": "Coming soon page"
+		},
+		{
+			"path": "playground.mdx",
+			"title": "Playground",
+			"section": "Interactive",
+			"priority": "P0",
+			"effort": "XL",
+			"description": "Monaco-based live demo"
+		},
+		{
+			"path": "demos/risk-analyzer.mdx",
+			"title": "Risk Analyzer Demo",
+			"section": "Interactive",
+			"priority": "P1",
+			"effort": "L",
+			"description": "Live risk analysis"
+		},
+		{
+			"path": "demos/diff-visualizer.mdx",
+			"title": "Diff Visualizer",
+			"section": "Interactive",
+			"priority": "P1",
+			"effort": "L",
+			"description": "Before/after comparison"
+		},
+		{
+			"path": "pioneer/overview.mdx",
+			"title": "Pioneer Program",
+			"section": "Pioneer",
+			"priority": "P0",
+			"effort": "M",
+			"description": "Gamification introduction"
+		},
+		{
+			"path": "pioneer/earning-points.mdx",
+			"title": "Earning Points",
+			"section": "Pioneer",
+			"priority": "P1",
+			"effort": "S",
+			"description": "Actions and point values"
+		},
+		{
+			"path": "pioneer/tier-benefits.mdx",
+			"title": "Tier Benefits",
+			"section": "Pioneer",
+			"priority": "P1",
+			"effort": "S",
+			"description": "Seedling → Guardian progression"
+		},
+		{
+			"path": "pioneer/leaderboard.mdx",
+			"title": "Leaderboard",
+			"section": "Pioneer",
+			"priority": "P2",
+			"effort": "S",
+			"description": "Community rankings"
+		},
+		{
+			"path": "security/faq.mdx",
+			"title": "Security FAQ",
+			"section": "Security",
+			"priority": "P2",
+			"effort": "M",
+			"description": "Common security questions"
+		},
+		{
+			"path": "community.mdx",
+			"title": "Community",
+			"section": "Support",
+			"priority": "P2",
+			"effort": "S",
+			"description": "Discord, GitHub, contributions"
+		},
+		{
+			"path": "contact.mdx",
+			"title": "Contact",
+			"section": "Support",
+			"priority": "P2",
+			"effort": "S",
+			"description": "Support paths"
+		}
+	],
+	"phaseSchedule": {
+		"phase1": {
+			"name": "Demo-Critical",
+			"week": 1,
+			"pageCount": 10,
+			"pages": [
+				"index.mdx (rewrite)",
+				"what-is-snapback.mdx",
+				"products/extension.mdx",
+				"quick-start.mdx (polish)",
+				"first-restore.mdx (polish)",
+				"guides/recovering-mistakes.mdx",
+				"guides/cursor.mdx",
+				"guides/copilot.mdx (expand)",
+				"pioneer/overview.mdx",
+				"playground.mdx"
+			]
+		},
+		"phase2": {
+			"name": "Core Content",
+			"week": 2,
+			"pageCount": 12,
+			"pages": [
+				"concepts.mdx",
+				"protection-levels.mdx (rewrite)",
+				"sessions.mdx (rewrite)",
+				"ai-detection.mdx (polish)",
+				"products/cli.mdx (rewrite)",
+				"products/mcp.mdx",
+				"api/sdk.mdx",
+				"api/mcp-tools.mdx",
+				"security/privacy-architecture.mdx",
+				"faq.mdx (update)",
+				"troubleshooting.mdx (expand)",
+				"security/faq.mdx"
+			]
+		},
+		"phase3": {
+			"name": "Guides",
+			"week": 3,
+			"pageCount": 10,
+			"pages": [
+				"guides/claude.mdx",
+				"guides/nextjs.mdx",
+				"guides/react.mdx",
+				"guides/nodejs.mdx",
+				"guides/protecting-files.mdx",
+				"guides/session-time-travel.mdx",
+				"guides/team-workflows.mdx",
+				"guides/cicd.mdx",
+				"pioneer/earning-points.mdx",
+				"pioneer/tier-benefits.mdx"
+			]
+		},
+		"phase4": {
+			"name": "Polish",
+			"week": 4,
+			"pageCount": 13,
+			"pages": [
+				"products/sdk.mdx",
+				"products/dashboard.mdx",
+				"api/rest.mdx",
+				"api/webhooks.mdx",
+				"demos/risk-analyzer.mdx",
+				"demos/diff-visualizer.mdx",
+				"guides/large-codebases.mdx",
+				"pioneer/leaderboard.mdx",
+				"security/data-handling.mdx",
+				"community.mdx",
+				"contact.mdx",
+				"api/cli-commands.mdx (polish)",
+				"enterprise/index.mdx (rewrite)"
+			]
+		}
+	},
+	"codebaseVerification": {
+		"vscode": {
+			"path": "apps/vscode/",
+			"checks": [
+				"package.json commands match docs",
+				"Settings match documented config",
+				"Protection levels match AutoDecisionEngine",
+				"Keyboard shortcuts are accurate"
+			]
+		},
+		"cli": {
+			"path": "apps/cli/",
+			"checks": ["All documented commands exist", "Command flags are accurate", "Output formats match examples"]
+		},
+		"mcp": {
+			"path": "apps/mcp-server/",
+			"checks": ["Tool names match docs", "Parameters match Zod schemas", "Response formats are accurate"]
+		},
+		"sdk": {
+			"path": "packages/sdk/",
+			"checks": ["Public API methods exist", "Type signatures match docs", "Examples actually work"]
+		},
+		"api": {
+			"path": "apps/api/",
+			"checks": ["Endpoints exist", "Authentication methods accurate", "Rate limits match docs"]
+		}
+	},
+	"effortSizing": {
+		"S": { "hours": "1-2", "description": "Polish existing content" },
+		"M": { "hours": "2-4", "description": "Create new page or significant rewrite" },
+		"L": { "hours": "4-8", "description": "Complex page with code examples" },
+		"XL": { "hours": "8-16", "description": "Interactive component" }
+	}
+}

@@ -16,8 +16,7 @@ import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { publicProcedure } from "@/orpc/procedures";
 import { getDb } from "@/src/services/database";
-import { mapDbProfileToApiProfile } from "../services/pioneer-service";
-import { calculateTierFromPoints, POINT_VALUES } from "../types";
+import { calculateTierFromPoints, mapDbProfileToApiProfile, POINT_VALUES } from "@/src/services/pioneer-service";
 
 const signupSchema = z.object({
 	githubId: z.string().min(1),

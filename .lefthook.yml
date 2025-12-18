@@ -30,6 +30,13 @@ pre-commit:
                 - merge
                 - rebase
 
+        tsconfig-declarations-validator:
+            glob: "**/tsconfig.json"
+            run: node tooling/scripts/validate-tsconfig-declarations.mjs {staged_files}
+            skip:
+                - merge
+                - rebase
+
         relative-import-detector:
             glob: "**/src/**/*.{ts,tsx}"
             run: node tooling/scripts/validate-relative-imports.mjs {staged_files}

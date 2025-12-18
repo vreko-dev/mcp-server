@@ -1,5 +1,5 @@
 import { ORPCError } from "@orpc/client";
-import { config } from "@snapback/config";
+import { config } from "@snapback/config/server";
 import { logger } from "@snapback/infrastructure";
 import { sendEmail } from "@snapback/integrations";
 import { localeMiddleware } from "@/orpc/middleware/locale-middleware";

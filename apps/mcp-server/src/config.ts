@@ -8,7 +8,7 @@
  */
 
 import console from "node:console";
-import { type ConfigStoreV2, getConfigStore, type MCPSettings } from "@snapback/config";
+import { type ConfigStoreV2, getConfigStore, type MCPSettings } from "@snapback/config/server";
 
 /**
  * MCP Configuration Manager

@@ -12,7 +12,7 @@
 import { logger } from "@snapback/infrastructure";
 import { z } from "zod";
 import { protectedProcedure } from "@/orpc/procedures";
-import { getPioneerProfile } from "../services/pioneer-service";
+import { getPioneerProfile } from "@/src/services/pioneer-service";
 
 export const me = protectedProcedure
 	.route({

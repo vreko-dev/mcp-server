@@ -1,6 +1,10 @@
 /**
  * POST /api/pioneer/actions/submit
  * Submit a pioneer action (star, Discord, feedback, bug report, tutorial)
+ *
+ * Broadcasts real-time updates via WebSocket:
+ * - pioneer:points_updated - When action is recorded
+ * - pioneer:tier_changed - When tier threshold is crossed
  */
 
 import { logger } from "@snapback/infrastructure";
@@ -8,9 +12,16 @@ import { pioneerActions, pioneers, pioneerTierHistory } from "@snapback/platform
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { protectedProcedure } from "@/orpc/procedures";
-import { ensureDatabase, getPioneerProfile, mapDbProfileToApiProfile } from "../../services/pioneer-service";
-import type { PioneerAction } from "../../types";
-import { calculateTierFromPoints, POINT_VALUES } from "../../types";
+import {
+	calculateTierFromPoints,
+	ensureDatabase,
+	getPioneerProfile,
+	mapDbProfileToApiProfile,
+	POINT_VALUES,
+	TIER_BENEFITS,
+	type Tier,
+} from "@/src/services/pioneer-service";
+import { getPioneerHub, isPioneerHubInitialized } from "@/ws/pioneer-hub";
 
 const submitActionSchema = z.object({
 	actionType: z.enum(["github_star", "discord_join", "referral", "feedback", "bug_report", "tutorial_complete"]),
@@ -110,12 +121,57 @@ export const submitAction = protectedProcedure
 			newTotalPoints,
 		});
 
+		// Broadcast real-time updates via WebSocket
+		if (isPioneerHubInitialized()) {
+			try {
+				const hub = getPioneerHub();
+
+				// Always broadcast points update
+				hub.broadcastToUser(user.id, {
+					type: "pioneer:points_updated",
+					payload: {
+						userId: user.id,
+						points: newTotalPoints,
+						delta: points,
+						actionType,
+					},
+				});
+
+				// If tier changed, broadcast tier change event
+				if (previousTier !== newTier) {
+					hub.broadcastToUser(user.id, {
+						type: "pioneer:tier_changed",
+						payload: {
+							userId: user.id,
+							from: previousTier as Tier,
+							to: newTier as Tier,
+							points: newTotalPoints,
+							benefits: TIER_BENEFITS[newTier as Tier] || [],
+						},
+					});
+
+					logger.info("Tier change broadcasted", {
+						userId: user.id,
+						from: previousTier,
+						to: newTier,
+					});
+				}
+			} catch (wsError) {
+				// WebSocket errors should not fail the action
+				logger.warn("Failed to broadcast WebSocket event", {
+					error: wsError,
+					actionType,
+					userId: user.id,
+				});
+			}
+		}
+
 		return {
 			success: true,
 			action: {
 				id: action.id,
 				pioneerId: action.pioneerId,
-				actionType: action.actionType as PioneerAction["actionType"],
+				actionType: action.actionType as string,
 				points: action.points,
 				verified: action.verified,
 				metadata: action.metadata,

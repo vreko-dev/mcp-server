@@ -25,6 +25,7 @@
 		"@snapback/platform": "workspace:*",
 		"@snapback/policy-engine": "workspace:*",
 		"@snapback/sdk": "workspace:*",
+		"@types/ws": "^8.18.1",
 		"better-auth": "catalog:",
 		"hono": "catalog:",
 		"jose": "catalog:",
@@ -36,6 +37,7 @@
 		"resend": "catalog:",
 		"semver": "catalog:",
 		"uuid": "catalog:",
+		"ws": "^8.18.3",
 		"zod": "catalog:"
 	},
 	"optionalDependencies": {

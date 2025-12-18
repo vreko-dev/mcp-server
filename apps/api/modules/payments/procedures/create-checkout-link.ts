@@ -1,6 +1,6 @@
 import { ORPCError } from "@orpc/server";
-import type { Config } from "@snapback/config";
-import { config } from "@snapback/config";
+import type { Config } from "@snapback/config/server";
+import { config } from "@snapback/config/server";
 import { logger } from "@snapback/infrastructure";
 import { getOrCreateCustomer } from "@snapback/integrations/stripe/lib/customer";
 import { createCheckoutLink } from "@snapback/integrations/stripe/provider/stripe";

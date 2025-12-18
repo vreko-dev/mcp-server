@@ -59,6 +59,27 @@ export * from "./features";
 export * from "./id-generator";
 export * from "./logger";
 export * from "./observability";
+// Pioneer Program WebSocket types (explicit to avoid Tier naming conflict)
+export {
+	type ClientToServerMessage,
+	type ConnectedMessage,
+	type ErrorMessage,
+	type LeaderboardUpdateMessage,
+	type PingMessage,
+	type PioneerEventType,
+	type PioneerTier,
+	type PioneerWSEvent,
+	type PioneerWSMessage,
+	type PointsUpdatedMessage,
+	type PongMessage,
+	type ReferralConvertedMessage,
+	type ServerToClientMessage,
+	type SubscribeMessage,
+	type TierChangedMessage,
+	type UnsubscribeMessage,
+	WS_CLOSE_CODES,
+	type WSCloseCode,
+} from "./pioneer";
 export * from "./risk-conversion";
 export * from "./schemas";
 // Alpha contracts (Phase 0)

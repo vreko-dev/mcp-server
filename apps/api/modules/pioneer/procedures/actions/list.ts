@@ -8,7 +8,7 @@ import { pioneerActions } from "@snapback/platform";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 import { protectedProcedure } from "@/orpc/procedures";
-import { ensureDatabase, getPioneerProfile } from "../../services/pioneer-service";
+import { ensureDatabase, getPioneerProfile } from "@/src/services/pioneer-service";
 
 const listActionsSchema = z.object({
 	actionType: z

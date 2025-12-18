@@ -6,6 +6,8 @@ import { multiEntryLibraryPreset } from "../../tooling/tsup-config";
 export default multiEntryLibraryPreset(
 	{
 		index: "src/index.ts",
+		client: "src/client.ts",
+		server: "src/server.ts",
 		"subscription-config": "src/subscription-config.ts",
 		"utils/index": "src/utils/index.ts",
 		"utils/base-url": "src/utils/base-url.ts",

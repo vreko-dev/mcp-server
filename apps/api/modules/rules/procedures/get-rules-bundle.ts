@@ -1,7 +1,7 @@
 // Import crypto for better ETag generation
 import { createHash } from "node:crypto";
 // Import environment variables
-import { env } from "@snapback/config";
+import { env } from "@snapback/config/server";
 import { apiKeys, subscriptions } from "@snapback/platform";
 import { eq } from "drizzle-orm";
 // Using jose for JWS signing since it's available in the project

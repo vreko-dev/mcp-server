@@ -40,13 +40,17 @@ function addSecurityHeaders(response: NextResponse): void {
 		? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://i.posthog.com https://us-assets.i.posthog.com https://vercel.live https://cdn.jsdelivr.net https://va.vercel-scripts.com"
 		: "script-src 'self' 'unsafe-inline' https://i.posthog.com https://us-assets.i.posthog.com https://vercel.live https://cdn.jsdelivr.net https://va.vercel-scripts.com";
 
+	const connectSrc = isDev
+		? "connect-src 'self' http://localhost:3001 ws://localhost:3001 https://i.posthog.com https://us.i.posthog.com https://vitals.vercel-insights.com https://cdn.jsdelivr.net https://va.vercel-scripts.com"
+		: "connect-src 'self' https://api.snapback.dev wss://api.snapback.dev https://i.posthog.com https://us.i.posthog.com https://vitals.vercel-insights.com https://cdn.jsdelivr.net https://va.vercel-scripts.com";
+
 	const cspDirectives = [
 		"default-src 'self'",
 		scriptSrc,
 		"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net",
 		"font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net data:",
 		"img-src 'self' data: https: blob:",
-		"connect-src 'self' https://i.posthog.com https://us.i.posthog.com https://vitals.vercel-insights.com https://cdn.jsdelivr.net https://va.vercel-scripts.com",
+		connectSrc,
 		"worker-src 'self' blob: https://cdn.jsdelivr.net",
 		"frame-src 'self' https://vercel.live",
 		"object-src 'none'",

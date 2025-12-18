@@ -1,4 +1,4 @@
-import { type Config, config } from "@snapback/config";
+import { type Config, config } from "@snapback/config/server";
 import type { PurchaseSchema } from "@snapback/platform/db/zod";
 import type { z } from "zod";
 

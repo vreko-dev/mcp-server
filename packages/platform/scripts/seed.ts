@@ -5,12 +5,16 @@ import { subscriptions, user } from "../src/db/schema/postgres";
 async function main() {
 	console.log("🌱 Seeding database...");
 
+	if (!db) {
+		throw new Error("Database connection not available");
+	}
+
 	const TEST_USER_EMAIL = "test@example.com";
 
 	// 1. Upsert Test User
 	console.log(`Upserting user: ${TEST_USER_EMAIL}`);
 	const [testUser] = await db
-		?.insert(user)
+		.insert(user)
 		.values({
 			name: "Test User",
 			email: TEST_USER_EMAIL,
@@ -30,11 +34,11 @@ async function main() {
 
 	// 2. Insert or update Subscription (Team Plan)
 	console.log("Checking for existing subscription...");
-	const existingSub = await db?.select().from(subscriptions).where(eq(subscriptions.userId, testUser.id)).limit(1);
+	const existingSub = await db.select().from(subscriptions).where(eq(subscriptions.userId, testUser.id)).limit(1);
 
 	if (existingSub.length === 0) {
 		console.log("Creating Team subscription...");
-		await db?.insert(subscriptions).values({
+		await db.insert(subscriptions).values({
 			userId: testUser.id,
 			plan: "team",
 			status: "active",
@@ -44,7 +48,7 @@ async function main() {
 	} else {
 		console.log("Updating existing subscription...");
 		await db
-			?.update(subscriptions)
+			.update(subscriptions)
 			.set({
 				plan: "team",
 				status: "active",

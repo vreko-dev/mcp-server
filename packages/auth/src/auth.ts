@@ -1,5 +1,5 @@
 import { createId as cuid } from "@paralleldrive/cuid2";
-import { env, getBaseUrl } from "@snapback/config"; // Use centralized config
+import { env, getBaseUrl } from "@snapback/config/server"; // Use centralized config
 import { logger } from "@snapback/infrastructure";
 import { sendEmail } from "@snapback/integrations/email";
 import { db } from "@snapback/platform";

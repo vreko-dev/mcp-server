@@ -2,7 +2,7 @@ import { OpenAPIGenerator } from "@orpc/openapi";
 import { ZodToJsonSchemaConverter } from "@orpc/zod/zod4";
 import { Scalar } from "@scalar/hono-api-reference";
 import { auth } from "@snapback/auth";
-import { config, getBaseUrl } from "@snapback/config";
+import { config, getBaseUrl } from "@snapback/config/server";
 import { logger } from "@snapback/infrastructure";
 import { webhookHandler as paymentsWebhookHandler } from "@snapback/integrations/stripe/provider/stripe";
 import type { Hono as HonoApp } from "hono";

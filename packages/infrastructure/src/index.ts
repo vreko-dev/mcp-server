@@ -13,6 +13,43 @@ export {
 export * from "./logging/logger";
 export * from "./metrics/index";
 
+// Register the infrastructure logger with @snapback/contracts
+// This allows contracts to use the enhanced pino logger without a compile-time dependency
+import { type LoggerOptions, LogLevel, registerLoggerFactory } from "@snapback/contracts";
+import { logger as infrastructureLogger } from "./logging/logger";
+
+registerLoggerFactory((options: LoggerOptions) => {
+	// Create child logger with module name for better tracing
+	const childLogger = infrastructureLogger.child({ module: options.name });
+
+	// Map log levels if specified
+	const shouldLog = (level: LogLevel) => {
+		if (options.level === undefined) return true;
+		return level >= options.level;
+	};
+
+	return {
+		debug: (message: string, meta?: Record<string, unknown>) => {
+			if (shouldLog(LogLevel.DEBUG)) childLogger.debug(message, meta);
+		},
+		info: (message: string, meta?: Record<string, unknown>) => {
+			if (shouldLog(LogLevel.INFO)) childLogger.info(message, meta);
+		},
+		warn: (message: string, meta?: Record<string, unknown>) => {
+			if (shouldLog(LogLevel.WARN)) childLogger.warn(message, meta);
+		},
+		error: (message: string, meta?: Record<string, unknown> | Error) => {
+			if (shouldLog(LogLevel.ERROR)) {
+				if (meta instanceof Error) {
+					childLogger.error(message, { error: meta.message, stack: meta.stack });
+				} else {
+					childLogger.error(message, meta);
+				}
+			}
+		},
+	};
+});
+
 // PostHog utilities - Explicit named exports for tsup DTS compatibility
 export type {
 	AlertConfig,

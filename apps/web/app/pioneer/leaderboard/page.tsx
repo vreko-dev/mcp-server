@@ -1,5 +1,9 @@
 "use client";
 
+// Force dynamic rendering - this page uses useSession which requires runtime context
+// during the call to useLeaderboard(), so it cannot be statically pre-rendered
+export const dynamic = "force-dynamic";
+
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";

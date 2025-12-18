@@ -16,9 +16,14 @@
  */
 
 import { type ChildProcess, spawn } from "node:child_process";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import type { FileChange, OrchestratorResult, SessionHealth, SignalOutput, ValidatorOutput } from "../types";
 import { eventBus } from "./events";
+
+// ESM compatibility: Define __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // =============================================================================
 // CONFIGURATION

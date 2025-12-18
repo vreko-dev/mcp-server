@@ -4,48 +4,38 @@
  * This interface allows public packages (@snapback/sdk, @snapback/core, @snapback/mcp-server)
  * to log without depending on the private @snapback/infrastructure package.
  *
+ * Browser-safe: No dynamic requires, no node:fs dependencies
+ * Server packages can enhance this with infrastructure logger via DI using registerLoggerFactory()
+ *
  * Private packages can use the full @snapback/infrastructure implementation,
  * which provides advanced features like structured logging, log levels, etc.
  */
 
-// For private packages, we'll use the infrastructure logger when available
-// For public packages, we'll fall back to the minimal console implementation
-let infrastructureLogger: any = null;
+// Global logger factory registry for server-side enhancement
+let _loggerFactory: ((options: LoggerOptions) => Logger) | null = null;
 
-// Initialize logger lazily to avoid build-time resolution errors
-function initializeLogger() {
-	if (infrastructureLogger !== null) {
-		return; // Already initialized
-	}
-
-	try {
-		// Only try in Node.js environments (not in browsers)
-		if (typeof window === "undefined" && typeof require !== "undefined") {
-			try {
-				// Use require in a way that bundlers won't statically analyze
-				// eslint-disable-next-line @typescript-eslint/no-require-imports
-				const mod = require("@snapback/infrastructure");
-				if (mod?.logger) {
-					infrastructureLogger = mod.logger;
-				}
-			} catch (_error) {
-				// If infrastructure logger is not available, use fallback
-				infrastructureLogger = false; // Mark as tried
-			}
-		} else {
-			infrastructureLogger = false; // Mark as tried (browser environment)
-		}
-	} catch (_error) {
-		infrastructureLogger = false; // Mark as tried
-	}
+/**
+ * Register an enhanced logger factory (called by server packages)
+ * This allows @snapback/infrastructure to enhance logging without
+ * being a compile-time dependency.
+ *
+ * @example
+ * ```typescript
+ * // In @snapback/infrastructure/src/index.ts
+ * import { registerLoggerFactory } from '@snapback/contracts'
+ * registerLoggerFactory((options) => createPinoLogger(options))
+ * ```
+ */
+export function registerLoggerFactory(factory: (options: LoggerOptions) => Logger): void {
+	_loggerFactory = factory;
 }
 
-// Lazy initialization
-function getInfrastructureLogger() {
-	if (infrastructureLogger === null) {
-		initializeLogger();
-	}
-	return infrastructureLogger || null;
+/**
+ * Get the registered logger factory, if any
+ * @internal
+ */
+function getLoggerFactory(): ((options: LoggerOptions) => Logger) | null {
+	return _loggerFactory;
 }
 
 export interface Logger {
@@ -104,7 +94,7 @@ export interface LoggerOptions {
 }
 
 /**
- * Enhanced logger that uses infrastructure logger when available,
+ * Enhanced logger that uses registered factory when available,
  * otherwise falls back to minimal console-based implementation
  *
  * @example
@@ -117,56 +107,10 @@ export interface LoggerOptions {
  * ```
  */
 export function createLogger(options: LoggerOptions): Logger {
-	// Get infrastructure logger lazily
-	const logger = getInfrastructureLogger();
-
-	// If infrastructure logger is available, use it
-	if (logger) {
-		// Create a child logger with the specified name
-		const childLogger = logger.child({
-			module: options.name,
-		});
-
-		// Map log levels
-		const levelMap = {
-			[LogLevel.DEBUG]: "debug",
-			[LogLevel.INFO]: "info",
-			[LogLevel.WARN]: "warn",
-			[LogLevel.ERROR]: "error",
-			[LogLevel.SILENT]: "silent",
-		};
-
-		// Set the log level if specified
-		if (options.level !== undefined) {
-			childLogger.level = levelMap[options.level] || "info";
-		}
-
-		return {
-			debug: (message: string, meta?: Record<string, unknown>) => {
-				if (options.level === undefined || options.level <= LogLevel.DEBUG) {
-					childLogger.debug(meta, message);
-				}
-			},
-			info: (message: string, meta?: Record<string, unknown>) => {
-				if (options.level === undefined || options.level <= LogLevel.INFO) {
-					childLogger.info(meta, message);
-				}
-			},
-			warn: (message: string, meta?: Record<string, unknown>) => {
-				if (options.level === undefined || options.level <= LogLevel.WARN) {
-					childLogger.warn(meta, message);
-				}
-			},
-			error: (message: string, meta?: Record<string, unknown> | Error) => {
-				if (options.level === undefined || options.level <= LogLevel.ERROR) {
-					if (meta instanceof Error) {
-						childLogger.error(meta, message);
-					} else {
-						childLogger.error(meta, message);
-					}
-				}
-			},
-		};
+	// If a logger factory has been registered (by @snapback/infrastructure), use it
+	const factory = getLoggerFactory();
+	if (factory) {
+		return factory(options);
 	}
 
 	// Fallback to minimal console implementation

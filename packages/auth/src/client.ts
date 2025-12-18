@@ -6,7 +6,7 @@
  * This creates the client-side auth client that can be used in React components.
  */
 
-import { getBaseUrl } from "@snapback/config";
+import { getBaseUrl } from "@snapback/config/client";
 import {
 	adminClient,
 	apiKeyClient,

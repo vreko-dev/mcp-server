@@ -1,4 +1,4 @@
-import { isFeatureEnabled as isFeatureEnabledCore } from "@snapback/config";
+import { isFeatureEnabled as isFeatureEnabledCore } from "@snapback/config/server";
 import { logger } from "@snapback/infrastructure";
 
 export interface FeatureFlagContext {

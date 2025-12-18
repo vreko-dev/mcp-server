@@ -2,7 +2,7 @@ import { OpenAPIGenerator } from "@orpc/openapi";
 import { ZodToJsonSchemaConverter } from "@orpc/zod/zod4";
 import { Scalar } from "@scalar/hono-api-reference";
 import { auth } from "@snapback/auth";
-import { config, getBaseUrl } from "@snapback/config";
+import { config, getBaseUrl } from "@snapback/config/server";
 import type { InstrumentationProvider } from "@snapback/contracts/observability";
 import { logger, NoOpInstrumentationProvider, OTelInstrumentationProvider } from "@snapback/infrastructure";
 import { webhookHandler as paymentsWebhookHandler } from "@snapback/integrations/stripe/provider/stripe";
@@ -26,33 +26,40 @@ import { testRoutes } from "./routes/test/index";
 // Get service version from package.json or environment
 const SERVICE_VERSION = process.env.npm_package_version || "0.0.0-dev";
 
-// Initialize Sentry first, before any other code runs (skip if disabled)
-if (process.env.DISABLE_SENTRY !== "true") {
-	await initSentryAPI({
-		dsn: process.env.SENTRY_DSN,
-		environment: process.env.NODE_ENV || "development",
-		enabled: true,
+// Function to initialize server components
+async function initializeServer() {
+	// Initialize Sentry first, before any other code runs (skip if disabled)
+	if (process.env.DISABLE_SENTRY !== "true") {
+		await initSentryAPI({
+			dsn: process.env.SENTRY_DSN,
+			environment: process.env.NODE_ENV || "development",
+			enabled: true,
+		});
+	}
+
+	// Initialize OpenTelemetry instrumentation
+	const instrumentationProvider: InstrumentationProvider = process.env.OTEL_EXPORTER_OTLP_ENDPOINT
+		? new OTelInstrumentationProvider({
+				serviceName: "snapback-api",
+				serviceVersion: SERVICE_VERSION,
+				environment: process.env.NODE_ENV || "development",
+				collectorUrl: process.env.OTEL_EXPORTER_OTLP_ENDPOINT,
+				enableConsole: process.env.NODE_ENV === "development",
+				sampleRate: process.env.OTEL_SAMPLE_RATE ? Number.parseFloat(process.env.OTEL_SAMPLE_RATE) : 1.0,
+			})
+		: new NoOpInstrumentationProvider();
+
+	logger.info("Instrumentation initialized", {
+		provider: process.env.OTEL_EXPORTER_OTLP_ENDPOINT ? "OTel" : "NoOp",
+		collectorUrl: process.env.OTEL_EXPORTER_OTLP_ENDPOINT || "disabled",
+		serviceVersion: SERVICE_VERSION,
+		sampleRate: process.env.OTEL_SAMPLE_RATE || "1.0",
 	});
+
+	return { instrumentationProvider };
 }
 
-// Initialize OpenTelemetry instrumentation
-const instrumentationProvider: InstrumentationProvider = process.env.OTEL_EXPORTER_OTLP_ENDPOINT
-	? new OTelInstrumentationProvider({
-			serviceName: "snapback-api",
-			serviceVersion: SERVICE_VERSION,
-			environment: process.env.NODE_ENV || "development",
-			collectorUrl: process.env.OTEL_EXPORTER_OTLP_ENDPOINT,
-			enableConsole: process.env.NODE_ENV === "development",
-			sampleRate: process.env.OTEL_SAMPLE_RATE ? Number.parseFloat(process.env.OTEL_SAMPLE_RATE) : 1.0,
-		})
-	: new NoOpInstrumentationProvider();
-
-logger.info("Instrumentation initialized", {
-	provider: process.env.OTEL_EXPORTER_OTLP_ENDPOINT ? "OTel" : "NoOp",
-	collectorUrl: process.env.OTEL_EXPORTER_OTLP_ENDPOINT || "disabled",
-	serviceVersion: SERVICE_VERSION,
-	sampleRate: process.env.OTEL_SAMPLE_RATE || "1.0",
-});
+let instrumentationProvider: InstrumentationProvider = new NoOpInstrumentationProvider();
 
 // Graceful shutdown handler
 const shutdownHandler = async (signal: string) => {
@@ -72,7 +79,7 @@ process.on("SIGINT", () => shutdownHandler("SIGINT"));
 // Auth handler app - Better Auth expects raw requests with path rewriting
 const authApp: HonoApp = new Hono()
 	// Add instrumentation to auth routes
-	.use("*", instrumentationMiddleware(instrumentationProvider))
+	.use("*", (c, next) => instrumentationMiddleware(instrumentationProvider)(c, next))
 	.all("*", async (c) => {
 		// Rewrite request path for Better Auth
 		// /api/auth/** -> /auth/**
@@ -92,20 +99,35 @@ const authApp: HonoApp = new Hono()
 		return auth.handler(rewrittenRequest);
 	});
 
-// Initialize rate limit middleware
-const rateLimitMiddleware = await createRateLimitMiddleware();
+// Initialize rate limit middleware with promise-based singleton to prevent race condition
+let rateLimitMiddleware: any;
+let rateLimitInitPromise: Promise<any> | null = null;
+
+async function getRateLimitMiddleware() {
+	if (rateLimitMiddleware) return rateLimitMiddleware;
+	if (!rateLimitInitPromise) {
+		rateLimitInitPromise = createRateLimitMiddleware().then((mw) => {
+			rateLimitMiddleware = mw;
+			return mw;
+		});
+	}
+	return rateLimitInitPromise;
+}
 
 // Create the main API app WITHOUT basePath
 const apiApp: HonoApp = new Hono()
 	// Sentry error tracking and performance monitoring
 	.use("*", honoSentryMiddleware())
 	// OpenTelemetry distributed tracing (after Sentry, before business logic)
-	.use("*", instrumentationMiddleware(instrumentationProvider))
+	.use("*", (c, next) => instrumentationMiddleware(instrumentationProvider)(c, next))
 	// ... existing code ...
 	.route("/api/auth", authApp)
 	// Rate limiting middleware - with optional Redis support
 	// Pass Redis client if available: createRateLimitMiddleware(redisClient)
-	.use("*", rateLimitMiddleware)
+	.use("*", async (c, next) => {
+		const mw = await getRateLimitMiddleware();
+		return await mw(c, next);
+	})
 	// Request logging middleware
 	.use("*", requestLoggingMiddleware)
 	// Body limit middleware - 10MB max size
@@ -311,49 +333,76 @@ export const OPTIONS = (req: Request) => app.fetch(req);
 
 // If running directly, start the server
 if (import.meta.url === `file://${process.argv[1]}`) {
-	// Use Node.js HTTP server instead of Bun
-	const http = await import("node:http");
-	const server = http.createServer((req, res) => {
-		// Convert Node.js request to Request object
-		const request = new Request(`http://localhost:${port}${req.url}`, {
-			method: req.method,
-			headers: Object.entries(req.headers).reduce((headers, [key, value]) => {
-				if (Array.isArray(value)) {
-					for (const v of value) {
-						headers.append(key, v);
+	(async () => {
+		// Initialize server components
+		const { instrumentationProvider: provider } = await initializeServer();
+		instrumentationProvider = provider;
+
+		// Initialize rate limit middleware
+		rateLimitMiddleware = await createRateLimitMiddleware();
+
+		// Use Node.js HTTP server instead of Bun
+		const http = await import("node:http");
+		const server = http.createServer((req, res) => {
+			// Convert Node.js request to Request object
+			const request = new Request(`http://localhost:${port}${req.url}`, {
+				method: req.method,
+				headers: Object.entries(req.headers).reduce((headers, [key, value]) => {
+					if (Array.isArray(value)) {
+						for (const v of value) {
+							headers.append(key, v);
+						}
+					} else if (value) {
+						headers.append(key, value);
 					}
-				} else if (value) {
-					headers.append(key, value);
-				}
-				return headers;
-			}, new Headers()),
-			body: req.method !== "GET" && req.method !== "HEAD" ? req : null,
+					return headers;
+				}, new Headers()),
+				body: req.method !== "GET" && req.method !== "HEAD" ? req : null,
+			});
+
+			// Handle the request with Hono app
+			// Fix: Properly handle the Promise without calling .then on it directly
+			const fetchPromise = app.fetch(request) as Promise<Response>;
+			fetchPromise
+				.then(async (response: Response) => {
+					res.statusCode = response.status;
+					response.headers.forEach((value: string, key: string) => {
+						res.setHeader(key, value);
+					});
+					return response.arrayBuffer();
+				})
+				.then((buffer: ArrayBuffer) => {
+					res.end(Buffer.from(buffer));
+				})
+				.catch((error: Error) => {
+					console.error("Server error:", error);
+					res.statusCode = 500;
+					res.end("Internal Server Error");
+				});
 		});
 
-		// Handle the request with Hono app
-		// Fix: Properly handle the Promise without calling .then on it directly
-		const fetchPromise = app.fetch(request) as Promise<Response>;
-		fetchPromise
-			.then(async (response: Response) => {
-				res.statusCode = response.status;
-				response.headers.forEach((value: string, key: string) => {
-					res.setHeader(key, value);
-				});
-				return response.arrayBuffer();
-			})
-			.then((buffer: ArrayBuffer) => {
-				res.end(Buffer.from(buffer));
-			})
-			.catch((error: Error) => {
-				console.error("Server error:", error);
-				res.statusCode = 500;
-				res.end("Internal Server Error");
-			});
-	});
+		server.listen(port, () => {
+			console.log(`🚀 API Server running on port ${port}`);
+			console.log(`📝 Docs available at http://localhost:${port}/api/docs`);
+			console.log(`🏥 Health check at http://localhost:${port}/api/health`);
+			console.log(`🔌 WebSocket at ws://localhost:${port}/ws/pioneer`);
+		});
 
-	server.listen(port, () => {
-		console.log(`🚀 API Server running on port ${port}`);
-		console.log(`📝 Docs available at http://localhost:${port}/api/docs`);
-		console.log(`🏥 Health check at http://localhost:${port}/api/health`);
-	});
+		// Initialize Pioneer WebSocket Hub
+		const { initPioneerHub } = await import("../ws/pioneer-hub");
+		const pioneerHub = initPioneerHub(server);
+		logger.info("Pioneer WebSocket Hub initialized", pioneerHub.getStats());
+
+		// Add WebSocket hub shutdown to graceful shutdown handler
+		const originalShutdownHandler = shutdownHandler;
+		const enhancedShutdownHandler = async (signal: string) => {
+			logger.info("Shutting down Pioneer WebSocket Hub...");
+			pioneerHub.shutdown();
+			await originalShutdownHandler(signal);
+		};
+		process.removeListener("SIGTERM", () => shutdownHandler("SIGTERM"));
+		process.removeListener("SIGINT", () => shutdownHandler("SIGINT"));
+		process.on("SIGTERM", () => enhancedShutdownHandler("SIGTERM"));
+		process.on("SIGINT", () => enhancedShutdownHandler("SIGINT"));
+	})();
 }

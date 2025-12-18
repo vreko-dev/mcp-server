@@ -1,33 +1,42 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { fetchReferrals, type ReferralStats } from "../lib/api-mock";
+import { usePioneerProgress } from "./use-pioneer-progress";
 
+export interface ReferralStats {
+	referralCode: string;
+	referralUrl: string;
+	stats: {
+		totalSignups: number;
+		activatedSignups: number;
+		pointsEarned: number;
+	};
+	referrals: {
+		username: string;
+		status: "pending" | "activated";
+		signedUpAt: string;
+	}[];
+}
+
+/**
+ * Hook to get referral stats for the current pioneer.
+ * Currently derives basic info from pioneer profile.
+ * TODO: Add dedicated /pioneer/referrals API endpoint for full stats.
+ */
 export function useReferrals() {
-	const [data, setData] = useState<ReferralStats | null>(null);
-	const [isLoading, setIsLoading] = useState(true);
-	const [error, setError] = useState<Error | null>(null);
+	const { data: progressData, isLoading, error } = usePioneerProgress();
 
-	useEffect(() => {
-		let mounted = true;
-
-		async function load() {
-			try {
-				const result = await fetchReferrals();
-				if (mounted) setData(result);
-			} catch (err) {
-				if (mounted) setError(err instanceof Error ? err : new Error("Failed to load referrals"));
-			} finally {
-				if (mounted) setIsLoading(false);
+	const data: ReferralStats | null = progressData?.pioneer
+		? {
+				referralCode: progressData.pioneer.referralCode,
+				referralUrl: `https://snapback.dev/join/${progressData.pioneer.referralCode}`,
+				stats: {
+					totalSignups: 0, // TODO: Fetch from API
+					activatedSignups: 0, // TODO: Fetch from API
+					pointsEarned: 0, // TODO: Fetch from API
+				},
+				referrals: [], // TODO: Fetch from API
 			}
-		}
-
-		load();
-
-		return () => {
-			mounted = false;
-		};
-	}, []);
+		: null;
 
 	return { data, isLoading, error };
 }

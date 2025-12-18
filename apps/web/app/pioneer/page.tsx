@@ -2,6 +2,7 @@
 
 import { Check, Star } from "lucide-react"; // Using Lucide icons
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -16,16 +17,22 @@ import { RippleButton } from "@/components/ui/ripple-button";
 import { ShimmerButton } from "@/components/ui/shimmer-button";
 import { Spotlight } from "@/components/ui/spotlight";
 import { Timeline, TimelineContent, TimelineItem } from "@/components/ui/timeline";
+import { signInWithGithub } from "@/lib/auth/helpers";
 import { cn } from "@/lib/utils";
+import { PioneerEmailModal } from "@/modules/pioneer/components/PioneerEmailModal";
 import { TierProgression } from "@/modules/pioneer/components/tier-progression";
 import { useLeaderboard } from "@/modules/pioneer/hooks/use-leaderboard";
 import { usePioneerProgress } from "@/modules/pioneer/hooks/use-pioneer-progress";
 import { ACTIONS } from "@/modules/pioneer/lib/actions";
 import { TIERS } from "@/modules/pioneer/lib/tiers";
+import { orpcClient } from "@/modules/shared/lib/orpc-client";
 
 export default function PioneerPage() {
 	const { data: pioneerData } = usePioneerProgress();
 	const { data: leaderboardData } = useLeaderboard();
+
+	// Email capture modal state
+	const [showEmailModal, setShowEmailModal] = useState(false);
 
 	// Derived state
 	const isAuthenticated = !!pioneerData;
@@ -33,8 +40,28 @@ export default function PioneerPage() {
 	const progress = pioneerData?.progress;
 	const completedActions = pioneerData?.completedActions || [];
 
+	// Show email modal if authenticated but no contact email captured
+	useEffect(() => {
+		if (isAuthenticated && user && !user.contactEmail) {
+			// Small delay to let the page render first
+			const timer = setTimeout(() => setShowEmailModal(true), 1000);
+			return () => clearTimeout(timer);
+		}
+	}, [isAuthenticated, user]);
+
+	// Handle email submission
+	const handleEmailSubmit = async (email: string) => {
+		await orpcClient.pioneer.updateEmail({ email });
+	};
+
 	return (
 		<main className="min-h-screen bg-background overflow-x-hidden">
+			{/* Email Capture Modal */}
+			<PioneerEmailModal
+				isOpen={showEmailModal}
+				onClose={() => setShowEmailModal(false)}
+				onSubmit={handleEmailSubmit}
+			/>
 			{/* ─────────────────────────────────────────────────────────────────
           HERO SECTION
          ───────────────────────────────────────────────────────────────── */}
@@ -83,7 +110,9 @@ export default function PioneerPage() {
 
 					{!isAuthenticated && (
 						<div className="mt-10">
-							<ShimmerButton size="lg">Become a Pioneer</ShimmerButton>
+							<ShimmerButton size="lg" onClick={() => signInWithGithub("/pioneer")}>
+								Become a Pioneer
+							</ShimmerButton>
 						</div>
 					)}
 				</div>
@@ -344,7 +373,9 @@ export default function PioneerPage() {
 					<h2 className="text-3xl md:text-4xl font-bold mb-8">Ready to earn your way to Pro?</h2>
 
 					<div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-						<ShimmerButton size="lg">Become a Pioneer</ShimmerButton>
+						<ShimmerButton size="lg" onClick={() => signInWithGithub("/pioneer")}>
+							Become a Pioneer
+						</ShimmerButton>
 
 						<Button variant="outline" size="lg" asChild>
 							<Link href="/docs/pioneer">View Docs →</Link>

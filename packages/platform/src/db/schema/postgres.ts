@@ -29,6 +29,7 @@ export const planTypeEnum = pgEnum("plan_type", ["free", "pro", "team", "enterpr
 
 // Pioneer Program enums
 export const tierEnum = pgEnum("pioneer_tier", ["seedling", "grower", "cultivator", "guardian"]);
+export const leaderboardVisibilityEnum = pgEnum("leaderboard_visibility", ["public", "anonymous", "hidden"]);
 export const actionTypeEnum = pgEnum("pioneer_action_type", [
 	"github_star",
 	"discord_join",
@@ -582,11 +583,14 @@ export const pioneers = pgTable(
 			.references(() => user.id, { onDelete: "cascade" }),
 		username: text("username").notNull(),
 		githubId: text("github_id").notNull(),
+		// Preferred contact email (may differ from GitHub email)
+		contactEmail: text("contact_email"),
 		tier: tierEnum("tier").notNull().default("seedling"),
 		totalPoints: integer("total_points").notNull().default(0),
 		joinedAt: timestamp("joined_at").notNull().defaultNow(),
 		referralCode: text("referral_code").notNull().unique(),
 		githubStarred: boolean("github_starred").notNull().default(false),
+		leaderboardVisibility: leaderboardVisibilityEnum("leaderboard_visibility").notNull().default("anonymous"),
 		lastSyncedAt: timestamp("last_synced_at"),
 		createdAt: timestamp("created_at").notNull().defaultNow(),
 		updatedAt: timestamp("updated_at").notNull().defaultNow(),
@@ -595,6 +599,7 @@ export const pioneers = pgTable(
 		uniqueIndex("pioneers_user_id_idx").on(table.userId),
 		uniqueIndex("pioneers_github_id_idx").on(table.githubId),
 		uniqueIndex("pioneers_referral_code_idx").on(table.referralCode),
+		index("pioneers_leaderboard_idx").on(table.totalPoints),
 	],
 );
 

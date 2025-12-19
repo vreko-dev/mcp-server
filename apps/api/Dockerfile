@@ -54,7 +54,7 @@ COPY . .
 ENV NODE_ENV=production
 
 # Build the API service
-RUN pnpm build --filter @snapback/api-service
+RUN pnpm build --filter @snapback/api
 
 # ================================
 # Runner stage - Final production image
@@ -63,7 +63,8 @@ FROM base AS runner
 
 # Set production environment
 ENV NODE_ENV=production
-ENV PORT=3001
+# Fly.io expects PORT 8080, but also support 3001 for local Docker
+ENV PORT=8080
 
 # Create app directory and set ownership
 WORKDIR /app
@@ -86,11 +87,11 @@ COPY --chown=nodejs:nodejs apps/api/docker-entrypoint.sh /app/docker-entrypoint.
 RUN chmod +x /app/docker-entrypoint.sh
 
 # Expose the port
-EXPOSE 3001
+EXPOSE 8080
 
 # Add health check endpoint
 RUN echo 'const http = require("http"); \
-const options = { hostname: "localhost", port: 3001, path: "/api/health", timeout: 2000 }; \
+const options = { hostname: "localhost", port: process.env.PORT || 8080, path: "/api/health", timeout: 2000 }; \
 const req = http.request(options, (res) => process.exit(res.statusCode === 200 ? 0 : 1)); \
 req.on("error", () => process.exit(1)); \
 req.on("timeout", () => process.exit(1)); \

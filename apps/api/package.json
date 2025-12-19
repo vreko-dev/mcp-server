@@ -108,7 +108,7 @@
 		"type-check": "tsc --noEmit",
 		"lint": "biome check .",
 		"lint:fix": "biome check --write .",
-		"docker-build": "docker build -t snapback-api:${GIT_SHA:-latest} -f apps/api/Dockerfile.prod .",
+		"docker-build": "docker build -t snapback-api:${GIT_SHA:-latest} -f apps/api/Dockerfile .",
 		"docker-build:dev": "docker build -t snapback-api:dev -f apps/api/Dockerfile.dev .",
 		"deploy": "fly deploy --config apps/api/fly.toml"
 	},

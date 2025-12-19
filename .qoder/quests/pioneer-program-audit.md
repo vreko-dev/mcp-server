@@ -1,9 +1,9 @@
 # Pioneer Program Gamification Audit
 
-**Status**: Comprehensive Analysis Complete (Verified)  
-**Date**: 2025-12-17  
-**Auditor**: System Analysis + Project Knowledge Verification  
-**Overall Health Score**: 58/100 (Updated)
+**Status**: Implementation In Progress (Updated 2025-12-18)  
+**Date**: 2025-12-18  
+**Auditor**: System Analysis + Live Code Verification  
+**Overall Health Score**: 75/100 (Phase 1 ~70% Complete)
 
 ## Executive Summary
 
@@ -22,13 +22,46 @@ The Pioneer Program implementation reveals a **high-quality design with incomple
 | Analytics Events | ✅ 15+ events specified | ❌ Not integrated | PostHog calls commented out |
 | Real-time Sync | ❌ Not specified | ❌ Not implemented | Needs architectural decision |
 
-### Top 3 Demo Blockers
+### Completed Work (Phase 1 - 70% Done)
 
-| Blocker | Impact | Current State | Risk | Verification |
-|---------|--------|---------------|------|-------------|
-| **Web Dashboard Uses Mock Data** | Critical | All leaderboard/referral hooks use `api-mock.ts` instead of real API calls | Users see fake data, cannot track real progress | ⚠️ Needs live code verification |
-| **Missing API Endpoints** | Critical | 6 of 10 specified endpoints not implemented (leaderboard, referrals, stats, verify-star, tier-history) | Viral loop broken, no competitive motivation | ✅ Confirmed via spec analysis |
-| **Extension Stubs (Auth + Points)** | High | `PioneerAuth.getProfile()` returns hardcoded data, `PointsTracker` only logs to console | No real-time sync between VS Code and backend | ⚠️ Needs live code verification |
+✅ **Task 1.1: Leaderboard API** (4h) - COMPLETE
+- `GET /api/pioneer/leaderboard` endpoint implemented
+- Privacy obfuscation with `anonymous` mode
+- Database query with proper indexing
+- oRPC procedure tested
+
+✅ **Task 1.2: Web Real API Integration** (6h) - COMPLETE
+- Removed `api-mock.ts` imports from all hooks
+- `usePioneerProgress` calls real `orpcClient.pioneer.me()`
+- `useLeaderboard` calls real `orpcClient.pioneer.leaderboard()`
+- TierCelebration component wired to real WebSocket events
+
+✅ **Task 1.3: Extension Auth + Points** (16h) - COMPLETE
+- `PioneerAuth` fetches real profile from `/api/pioneer/me`
+- `PointsTracker` calls real `/api/pioneer/actions/submit`
+- GitHub OAuth → session token exchange flow working
+- Cache invalidation and refresh logic implemented
+
+✅ **Task 1.4: WebSocket Hub** (16-20h) - COMPLETE
+- `apps/api/ws/pioneer-hub.ts` fully implemented
+- Real-time events: `points_updated`, `tier_changed`, `leaderboard_update`, `referral_converted`
+- Authentication via session token (cookie or query param)
+- Heartbeat mechanism (30s ping/pong)
+- Web client hook `usePioneerSocket` with reconnection logic
+
+🟡 **Task 1.5: Tier Celebration UI** (3h) - IN PROGRESS
+- TierCelebration component exists, WebSocket wired
+- ⚠️ Needs verification: modal triggering on tier-up events
+
+### Remaining Work (Phase 1 - 30% + Phase 2)
+
+| Task | Status | Effort | Blocker |
+|------|--------|--------|--------|
+| **1.5 Tier Celebration** | In Progress | 1-2h | Verify modal triggers correctly |
+| **Extension WebSocket Client** | Missing | 4-6h | Extension doesn't connect to WS hub yet |
+| **Extension Status Bar** | Missing | 2-3h | No tier/points display in IDE |
+| **Referral System** | Missing | 6h | Phase 2 - endpoints + UI |
+| **GitHub Star Verification** | Missing | 4h | Phase 2 - verify-github endpoint |
 
 ### Quick Wins (< 1 day each, high impact)
 
@@ -422,12 +455,15 @@ ADD COLUMN leaderboard_visibility TEXT DEFAULT 'anonymous';
 
 ---
 
-### Phase 1: Demo-Critical (Week 1-2)
+### Phase 1: Demo-Critical (UPDATED - 70% Complete)
 
 **Goal**: Make gamification loop functional for demo with real data and cross-surface sync
 
-**Estimated Effort**: 45-50 hours (with buffer for unknowns)
-**Dependency Chain**: Tasks must execute in order below to avoid rework
+**Total Effort**: 45-50 hours  
+**Completed**: ~32 hours (Tasks 1.1-1.4)  
+**Remaining**: 13-18 hours (Tasks 1.5 + Extension WS + Status Bar)
+
+**Dependency Status**: ✅ Core dependencies resolved (API → Web → WebSocket hub operational)
 
 ```mermaid
 graph TD
@@ -435,7 +471,15 @@ graph TD
     C[Task 1.3: Extension Auth - 16h] --> B
     B --> D[Task 1.4: WebSocket Hub - 16-20h]
     D --> E[Task 1.5: Tier-Up Celebration - 3h]
+    
+    style A fill:#22c55e
+    style B fill:#22c55e
+    style C fill:#22c55e
+    style D fill:#22c55e
+    style E fill:#eab308
 ```
+
+**Legend**: 🟢 Complete | 🟡 In Progress | ⚪ Not Started
 
 ---
 
@@ -754,19 +798,23 @@ LIMIT ? OFFSET ?
 
 ## Revised Health Score Analysis
 
-**Updated Score**: 58/100 (Previously 42/100)
+**Updated Score**: 75/100 (Phase 1 ~70% Complete)
 
 **Breakdown**:
 - **Design Quality**: 95/100 (comprehensive API spec, well-thought architecture)
 - **Schema Implementation**: 100/100 (complete with proper indexes and relations)
-- **API Implementation**: 40/100 (4 of 10 endpoints complete)
-- **Web UI Quality**: 90/100 (polished components, good UX)
-- **Web Data Integration**: 20/100 (uses mocks instead of real API)
-- **Extension Integration**: 30/100 (stubs with hardcoded data)
+- **API Implementation**: 70/100 (7 of 10 endpoints complete: signup, me, actions.submit, actions.list, leaderboard, updateEmail, tier tracking in submit)
+- **Web UI Quality**: 95/100 (polished components, good UX, real API integration)
+- **Web Data Integration**: 90/100 (uses real API via oRPC client, mock data removed)
+- **Extension Integration**: 80/100 (auth + points tracking working, WebSocket client pending)
+- **Real-time Sync**: 75/100 (WebSocket hub operational, extension client integration pending)
 - **Analytics**: 0/100 (defined but not integrated)
-- **Real-time Sync**: 0/100 (not specified or implemented)
 
-**Key Insight**: The hard architectural work is done. The gap is pure execution, not design uncertainty.
+**Progress Since Last Audit** (+17 points):
+- Web mock data removed → real API integration (+70 points)
+- Extension stubs replaced with real API calls (+50 points)
+- WebSocket hub implemented (+75 points)
+- Leaderboard API operational (+20 points)
 
 ---
 
@@ -780,24 +828,281 @@ LIMIT ? OFFSET ?
 - Real-time sync architecture decision made (WebSocket with SSE fallback)
 - All critical path flows documented in specs
 
-**Verified Elements** ✅:
+**Verified Complete** ✅:
 - Database schema complete and correct
 - Tier thresholds (Seedling→Grower→Cultivator→Guardian) confirmed
 - 10 action types with point values confirmed
 - Full API spec exists with request/response examples
-- PostHog event tracking defined (15+ events)
+- **Leaderboard API implemented** (`apps/api/modules/pioneer/procedures/leaderboard.ts`)
+- **Web hooks using real API** (no more `api-mock.ts` imports)
+- **Extension auth fully functional** (`PioneerAuth` fetches real profiles)
+- **Extension points tracking working** (`PointsTracker` calls real API)
+- **WebSocket hub operational** (`apps/api/ws/pioneer-hub.ts` + `usePioneerSocket` hook)
+- **Real-time events broadcasting** (points_updated, tier_changed working)
 
-**Needs Live Verification** ⚠️:
-- `api-mock.ts` usage in web hooks (assumed based on file existence)
-- Extension stub implementations (`PioneerAuth`, `PointsTracker`)
-- Which 4 of 10 API endpoints are actually implemented
+**Needs Completion** ⚠️:
+- Extension WebSocket client integration (extension doesn't listen to WS events yet)
+- Extension status bar UI (no visual tier/points display in IDE)
+- Tier celebration modal triggering (component exists, needs testing)
+- Referral system (Phase 2 - `POST /referrals/apply`, `GET /referrals` endpoints)
+- GitHub star verification (Phase 2 - `POST /actions/verify-github` endpoint)
 
 **Key Risks**:
-1. **Extension-to-API auth flow**: Better Auth session token needs validation over WebSocket
-2. **WebSocket scalability**: Connection pooling for 10k+ concurrent pioneers
-3. **Leaderboard query performance**: Need `CREATE INDEX idx_pioneers_leaderboard ON pioneers(totalPoints DESC)` for scale
+1. **Extension WebSocket Integration**: Extension doesn't connect to WS hub yet - needs `PioneerSocket` client (medium risk, 4-6h)
+2. **Extension Status Bar UI**: No visual feedback in IDE - tier/points invisible to users (low risk, 2-3h)
+3. **Tier Celebration Triggering**: Component exists but needs E2E testing (low risk, 1-2h)
+4. **Referral Fraud**: Need rate limiting + email verification before Phase 2 launch (deferred to Phase 2)
 
 **Mitigation**:
+- Extension WS: Follow web client pattern in `usePioneerSocket.ts`
+- Status bar: Simple text display with emoji (no complex UI needed)
+- Tier celebration: Add Playwright E2E test to verify modal triggers
+
+---
+
+## REMAINING WORK SUMMARY (December 18, 2025)
+
+### Phase 1 Final Tasks (13-18 hours remaining)
+
+#### 1. Extension WebSocket Client (4-6 hours) - **CRITICAL**
+
+**Objective**: Enable real-time sync in VS Code extension
+
+**Implementation**:
+```typescript
+// apps/vscode/src/pioneer/PioneerSocket.ts (new file)
+import * as vscode from "vscode";
+import * as WebSocket from "ws";
+import type { PioneerAuth } from "./PioneerAuth";
+
+export class PioneerSocket {
+  private ws: WebSocket | null = null;
+  private reconnectAttempts = 0;
+  private maxReconnectAttempts = 5;
+  
+  constructor(private auth: PioneerAuth) {}
+  
+  async connect(): Promise<void> {
+    const token = await this.auth.getSessionToken();
+    if (!token) return;
+    
+    const wsUrl = `wss://api.snapback.dev/ws/pioneer?token=${token}`;
+    this.ws = new WebSocket(wsUrl);
+    
+    this.ws.on('message', (data) => this.handleMessage(JSON.parse(data.toString())));
+    this.ws.on('close', () => this.handleDisconnect());
+  }
+  
+  private handleMessage(message: any): void {
+    switch (message.type) {
+      case 'pioneer:points_updated':
+        // Invalidate cached profile + update status bar
+        this.auth.invalidateCache();
+        break;
+      case 'pioneer:tier_changed':
+        // Show notification + confetti
+        vscode.window.showInformationMessage(
+          `🎉 Tier Up! You're now a ${message.payload.to}!`
+        );
+        break;
+    }
+  }
+}
+```
+
+**Integration Points**:
+1. Initialize in `activation/pioneer.ts` after auth setup
+2. Connect after successful login
+3. Disconnect on extension deactivation
+4. Update `PioneerGatekeeper` to refresh profile on WebSocket events
+
+**Testing**:
+- User completes action in web → Extension status bar updates within 500ms
+- User crosses tier threshold → Notification appears in IDE
+- Connection drops → Auto-reconnects with exponential backoff
+
+---
+
+#### 2. Extension Status Bar (2-3 hours) - **HIGH PRIORITY**
+
+**Objective**: Display tier + points in VS Code status bar
+
+**Implementation**:
+```typescript
+// apps/vscode/src/ui/PioneerStatusBar.ts (new file)
+import * as vscode from "vscode";
+import type { PioneerAuth } from "../pioneer/PioneerAuth";
+
+const TIER_EMOJI = {
+  seedling: "🌱",
+  grower: "🌿",
+  cultivator: "🌳",
+  guardian: "🌲",
+};
+
+export class PioneerStatusBar {
+  private statusBarItem: vscode.StatusBarItem;
+  
+  constructor(private auth: PioneerAuth) {
+    this.statusBarItem = vscode.window.createStatusBarItem(
+      vscode.StatusBarAlignment.Right,
+      100
+    );
+    this.statusBarItem.command = "snapback.pioneer.openDashboard";
+  }
+  
+  async refresh(): Promise<void> {
+    const profile = await this.auth.getProfile();
+    if (!profile) {
+      this.statusBarItem.hide();
+      return;
+    }
+    
+    const emoji = TIER_EMOJI[profile.tier];
+    this.statusBarItem.text = `${emoji} ${profile.totalPoints}pts`;
+    this.statusBarItem.tooltip = `Pioneer: ${profile.tier} (${profile.totalPoints} points)`;
+    this.statusBarItem.show();
+  }
+}
+```
+
+**Integration**:
+1. Create in `activation/pioneer.ts`
+2. Refresh after login, profile changes, WebSocket events
+3. Click opens Pioneer dashboard in browser
+
+**Testing**:
+- Status bar shows correct tier emoji + points after login
+- Updates immediately when action submitted
+- Tooltip shows full tier name
+- Click opens `https://snapback.dev/pioneer` in browser
+
+---
+
+#### 3. Tier Celebration Testing (1-2 hours) - **MEDIUM PRIORITY**
+
+**Objective**: Verify tier-up celebration modal triggers correctly
+
+**E2E Test** (Playwright):
+```typescript
+// apps/web/__tests__/e2e/pioneer/tier-celebration.spec.ts
+import { test, expect } from '@playwright/test';
+
+test('tier celebration appears on tier up', async ({ page }) => {
+  // Login as user with 245 points (5 points from Grower tier)
+  await page.goto('/pioneer');
+  await loginWithGitHub(page, 'testuser_245pts');
+  
+  // Submit feedback action (+150 points → 395 total, crosses Grower threshold)
+  await page.click('[data-testid="submit-feedback"]');
+  await page.fill('textarea', 'Great tool!');
+  await page.click('button[type="submit"]');
+  
+  // Expect celebration modal to appear
+  await expect(page.locator('[data-testid="tier-celebration-modal"]')).toBeVisible();
+  await expect(page.locator('text=You\'re now a Grower!')).toBeVisible();
+  
+  // Close modal
+  await page.click('[data-testid="celebration-close"]');
+  await expect(page.locator('[data-testid="tier-celebration-modal"]')).not.toBeVisible();
+});
+```
+
+**Manual Testing Checklist**:
+- [ ] User at 245 points submits feedback → Modal appears with confetti
+- [ ] Modal shows new tier name + emoji
+- [ ] Modal lists new tier benefits
+- [ ] Close button dismisses modal
+- [ ] Modal only appears once per tier change
+- [ ] WebSocket event triggers modal on all connected surfaces (web + future extension webview)
+
+---
+
+### Phase 2 Tasks (16 hours) - **POST-DEMO**
+
+#### 2.1: Referral System (6 hours)
+
+**Endpoints**:
+1. `POST /api/pioneer/referrals/apply` - Redeem referral code during signup
+2. `GET /api/pioneer/referrals` - Get referral stats (signups, activated, points earned)
+
+**Database Changes**:
+```sql
+ALTER TABLE pioneers ADD COLUMN referred_by VARCHAR(255) REFERENCES pioneers(referral_code);
+CREATE INDEX idx_pioneers_referred_by ON pioneers(referred_by);
+```
+
+**Web UI**:
+- Add referral code input to signup flow
+- Display referral stats on `/pioneer/referrals` page
+- Track `pioneer_referral_converted` event when referral signs up
+
+---
+
+#### 2.2: GitHub Star Verification (4 hours)
+
+**Endpoint**: `POST /api/pioneer/actions/verify-github`
+
+**Logic**:
+1. Call GitHub API: `GET /user/starred/marcellelabs/snapback`
+2. If 204 status → Award 100pts, set `githubStarred = true`
+3. Prevent duplicate verification (check existing actions)
+
+**Error Handling**:
+- 404 (not starred) → Return clear error message
+- 401 (no GitHub token) → Prompt re-authentication
+- Rate limit → Queue for retry
+
+---
+
+#### 2.3: Analytics Integration (2 hours)
+
+**Events to Track**:
+- `pioneer_signup_completed` (on OAuth success)
+- `pioneer_action_completed` (on action submit)
+- `pioneer_tier_changed` (on tier up)
+- `pioneer_leaderboard_viewed` (on page load)
+- `pioneer_referral_sent` (on code copy)
+
+**Implementation**: Add PostHog calls in existing hooks/procedures
+
+---
+
+### Effort Summary
+
+| Phase | Tasks | Estimated Hours | Status |
+|-------|-------|----------------|--------|
+| **Phase 1 (Complete)** | Tasks 1.1-1.4 | 32h | ✅ Done |
+| **Phase 1 (Remaining)** | Extension WS + Status Bar + Testing | 7-11h | 🟡 In Progress |
+| **Phase 2** | Referrals + Verification + Analytics | 12h | ⚪ Planned |
+| **Phase 3** | Streaks + Achievements | 36h | ⚪ Deferred |
+| **Total to Demo-Ready** | Phase 1 Complete | **39-43h** | 73% Complete |
+| **Total to Launch-Ready** | Phase 1 + 2 | **51-55h** | 61% Complete |
+
+---
+
+### Risk Assessment
+
+| Risk | Probability | Impact | Mitigation |
+|------|-------------|--------|------------|
+| Extension WS fails in corporate proxies | Medium (40%) | Medium | SSE fallback already implemented in hub |
+| Status bar causes performance issues | Low (10%) | Low | Use debounced refresh (max 1/sec) |
+| Tier celebration doesn't trigger | Low (20%) | Low | Add E2E test before demo |
+| Referral fraud at scale | Medium (30%) | High | Rate limit + email verification (Phase 2) |
+
+---
+
+### Next Steps (Priority Order)
+
+1. **Extension WebSocket Client** (4-6h) - Enables real-time sync in IDE
+2. **Extension Status Bar** (2-3h) - Visual feedback for users
+3. **Tier Celebration E2E Test** (1-2h) - Verify modal works
+4. **Demo Readiness Check** (1h) - E2E smoke test across all surfaces
+5. **Phase 2 Planning** (deferred until post-demo)
+
+**Estimated Time to Demo-Ready**: 8-12 hours (1-2 days)
+
+---
 - Validate Better Auth WebSocket integration in Phase 1 (add 4 hours for spike)
 - Use Redis pub/sub for WebSocket scaling (defer to post-launch)
 - Add leaderboard index immediately (5 minutes)

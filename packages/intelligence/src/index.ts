@@ -1,0 +1,57 @@
+/**
+ * @snapback/intelligence
+ *
+ * Unified intelligence layer for SnapBack.
+ * Single source of truth for validation, learning, and context retrieval.
+ *
+ * Same algorithms, different data sources:
+ * - Internal: rootDir='ai_dev_utils' (self-learning pair programmer)
+ * - Product: rootDir=workspace (code protection for users)
+ *
+ * @example
+ * ```typescript
+ * import { Intelligence } from "@snapback/intelligence";
+ *
+ * const intel = new Intelligence({
+ *   rootDir: "ai_dev_utils",
+ *   enableLearningLoop: true,
+ * });
+ *
+ * // Get context before implementing
+ * const context = await intel.getContext({
+ *   task: "Add authentication to MCP server",
+ * });
+ *
+ * // Validate code before committing
+ * const validation = await intel.checkPatterns(code, filePath);
+ * ```
+ */
+
+// Sub-modules
+export { ContextEngine, SemanticRetriever } from "./context/index.js";
+// Main facade
+export { Intelligence } from "./Intelligence.js";
+export { LearningEngine, ViolationTracker } from "./learning/index.js";
+// Storage utilities
+export {
+	appendJsonl,
+	appendJsonlAsync,
+	ConfigStore,
+	generateId,
+	loadJsonl,
+	writeJsonl,
+} from "./storage/index.js";
+
+// All types
+export * from "./types/index.js";
+// Validation layers (for customization)
+export {
+	ArchitectureLayer,
+	DependencyLayer,
+	PerformanceLayer,
+	SecurityLayer,
+	SyntaxLayer,
+	TestLayer,
+	TypeLayer,
+	ValidationPipeline,
+} from "./validation/index.js";

@@ -1,0 +1,50 @@
+{
+  "name": "@snapback/internal-mcp",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Internal MCP server for self-learning pair programmer",
+  "type": "module",
+  "scripts": {
+    "start": "tsx server.ts",
+    "dev": "tsx watch server.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:ui": "vitest --ui",
+    "test:unit": "vitest run test/unit",
+    "test:edge": "vitest run test/edge-cases",
+    "test:mcp": "vitest run test/unit/mcp-tools.test.ts",
+    "test:validation": "vitest run test/unit/validation-pipeline.test.ts",
+    "test:router": "vitest run test/unit/router-system.test.ts",
+    "test:learning": "vitest run test/unit/learning-loop.test.ts",
+    "test:security": "vitest run test/edge-cases/security.test.ts",
+    "test:legacy:cache": "tsx test-cache.ts",
+    "test:legacy:semantic": "tsx test-semantic.ts",
+    "test:legacy:validation": "tsx test-validation.ts",
+    "test:legacy:learning": "tsx test-learning.ts",
+    "index": "tsx -e \"import { SemanticContextRetriever } from './semantic-retriever.js'; const r = new SemanticContextRetriever(); r.indexContextFiles().then(console.log).finally(() => r.close())\""
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.71.2",
+    "@huggingface/transformers": "^3.0.0",
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "atomically": "^2.1.0",
+    "bottleneck": "^2.19.5",
+    "chokidar": "^5.0.0",
+    "p-retry": "^7.1.1",
+    "sql.js": "^1.10.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@vitest/coverage-v8": "^4.0.16",
+    "tsx": "^4.19.0",
+    "typescript": "^5.5.0",
+    "vitest": "^4.0.16"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "onnxruntime-node"
+    ]
+  }
+}

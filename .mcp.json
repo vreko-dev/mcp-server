@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "codebase": {
+      "command": "npx",
+      "args": ["-y", "tsx", "/Users/user1/WebstormProjects/SnapBack-Site/ai_dev_utils/mcp/server.ts"]
+    }
+  }
+}

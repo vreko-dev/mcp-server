@@ -290,6 +290,65 @@ if (!validation.valid) {
 
 ---
 
+## @snapback/intelligence Package
+
+**Unified intelligence layer** extracted from `ai_dev_utils/mcp/` for reuse across products.
+
+### Import Paths
+
+```typescript
+// Main facade - use for most cases
+import { Intelligence } from "@snapback/intelligence";
+
+// Subpath imports for specific modules
+import { ValidationPipeline } from "@snapback/intelligence/validation";
+import { LearningEngine, ViolationTracker } from "@snapback/intelligence/learning";
+import { ContextEngine, SemanticRetriever } from "@snapback/intelligence/context";
+import { JsonlStore, ConfigStore } from "@snapback/intelligence/storage";
+```
+
+### Configuration
+
+```typescript
+const intel = await Intelligence.create({
+  rootDir: "/path/to/project",           // Workspace root
+  patternsDir: "ai_dev_utils/patterns",  // Relative to rootDir
+  feedbackDir: "ai_dev_utils/feedback",  // Relative to rootDir
+  constraintsPath: "ai_dev_utils/CONSTRAINTS.md",
+});
+```
+
+### Core APIs
+
+| Method | Description |
+|--------|-------------|
+| `intel.validate(code, filePath)` | Run 7-layer validation pipeline |
+| `intel.getContext(task, keywords)` | Assemble relevant context for a task |
+| `intel.reportViolation(input)` | Track violation with auto-promotion |
+| `intel.recordLearning(input)` | Capture learning for future retrieval |
+| `intel.queryLearnings(keywords)` | Search past learnings |
+| `intel.getViolationsSummary()` | Get violation stats and promotion status |
+
+### 7-Layer Validation Pipeline
+
+| Layer | Checks |
+|-------|--------|
+| `syntax` | Bracket matching, semicolons |
+| `types` | `any` usage, @ts-ignore, non-null assertions |
+| `tests` | Vague assertions (C-003), 4-path coverage (C-004) |
+| `architecture` | Layer boundaries (C-001), service bypass (C-002) |
+| `security` | Hardcoded secrets, eval(), privacy (C-006) |
+| `dependencies` | Deprecated packages |
+| `performance` | console.log (C-007), sync I/O, await in loops |
+
+### Violation Auto-Promotion
+
+- **1x**: Stored in `violations.jsonl`
+- **3x**: Auto-promoted to `codebase-patterns.md`
+- **5x**: Marked for automated detection
+
+---
+
 ## Task Classification Matrix
 
 | Signal Words | Task Type | Workflow | Priority |

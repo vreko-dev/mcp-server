@@ -16,19 +16,24 @@ Automatically discover and read from these directories:
 - `apps/vscode/.qoder/rules/*.md` (VS Code extension rules)
 - Any other app-specific rule directories
 
-**Current rule inventory (12 files):**
+**Current rule inventory (17 files):**
 1. `00-LOAD-ALL-RULES-FIRST.md` (this file)
-2. `always-better-auth-canonical.md` (No custom auth)
-3. `always-code-consolidation.md` ⭐ NEW (Canonical locations)
-4. `always-monorepo-imports.md` (Workspace-wide imports)
-5. `always-react-security-boundaries.md` (React/Next.js security)
-6. `always-result-type-pattern.md` (Error handling)
-7. `always-typescript-patterns.md` (Type safety patterns)
-8. `decision-logging-observability.md` (Structured logging)
-9. `decision-oauth-multi-service.md` (OAuth architecture)
-10. `decision-typescript-esm-testing.md` (TypeScript ESM testing patterns)
-11. `files-docker-deployment.md` (Docker/deployment)
-12. `files-testing-vitest.md` (Testing standards)
+2. `always-mcp-tools-first.md` 🔴 CRITICAL NEW (Use MCP tools before any implementation)
+3. `always-better-auth-canonical.md` (No custom auth)
+4. `always-code-consolidation.md` (Canonical locations)
+5. `always-monorepo-imports.md` (Workspace-wide imports)
+6. `always-react-security-boundaries.md` (React/Next.js security)
+7. `always-result-type-pattern.md` (Error handling)
+8. `always-sdk-wrapping-pattern.md` (SDK wrapping patterns)
+9. `always-turborepo-pnpm-hardening.md` (Turborepo/pnpm security)
+10. `always-typescript-patterns.md` (Type safety patterns)
+11. `decision-logging-observability.md` (Structured logging)
+12. `decision-module-boundary-enforcement.md` (Module boundaries)
+13. `decision-oauth-multi-service.md` (OAuth architecture)
+14. `decision-typescript-esm-testing.md` (TypeScript ESM testing patterns)
+15. `files-docker-deployment.md` (Docker/deployment)
+16. `files-testing-vitest.md` (Testing standards)
+17. `project-structure-and-patterns.md` (Project architecture)
 
 ### Step 2: Read ALL Files Completely
 
@@ -41,11 +46,13 @@ Automatically discover and read from these directories:
 ### Step 3: Categorize Rules by Type
 
 **Always-On Rules** (apply to every task):
+- `always-mcp-tools-first.md` 🔴 → ALWAYS use MCP tools before implementation (get_context, query_learnings, check_patterns)
 - `always-better-auth-canonical.md` → All auth goes through `@snapback/auth`
 - `always-monorepo-imports.md` → All cross-package imports use `@snapback/*`
 - `always-react-security-boundaries.md` → React 19.1.2+, Next.js 15.5.7+ (CVE-2025-55182/66478)
 - `always-result-type-pattern.md` → Public APIs use `Result<T, E>`
 - `always-typescript-patterns.md` → Use discriminated unions, const assertions, type guards
+- `always-code-consolidation.md` → Use canonical package locations (avoid duplication)
 
 **Decision Rules** (apply based on task type):
 - `decision-logging-observability.md` → For critical path operations, request handlers, errors
@@ -60,12 +67,12 @@ Automatically discover and read from these directories:
 
 **Example responses:**
 ```
-Rules loaded (11 total):
-  ✅ Always-on (5): better-auth, imports, react-security, result-type, typescript-patterns
-  ✅ Decision (3): logging (request handler), oauth (multi-service), typescript-esm (mocking issues)
-  ✅ File-specific (2): testing (writing unit tests), docker (deployment changes)
+Rules loaded (17 total):
+  ✅ Always-on (7): mcp-tools (FIRST), better-auth, imports, react-security, result-type, typescript-patterns, code-consolidation
+  ✅ Decision (4): logging (request handler), oauth (multi-service), typescript-esm (mocking issues), module-boundary
+  ✅ File-specific (3): testing (writing unit tests), docker (deployment changes), project-structure
 
-Applying: All 5 always-on + logging + testing
+Applying: All 7 always-on + logging + testing
 ```
 
 ### Step 5: ONLY THEN Respond to User Query
@@ -77,15 +84,17 @@ With complete rule context available
 ## Why This Matters
 
 ### The Problem (Previous Sessions)
-- **24 rules** crafted across workspace-level and app-specific locations
-- **Partial loading:** Only 4 rules discovered, 20 missed
+- **24+ rules** crafted across workspace-level and app-specific locations
+- **Partial loading:** Only some rules discovered, critical ones missed
 - **Architectural violations:** Custom auth code, wrong import patterns, unsafe types
+- **No MCP tool usage:** Manual grep instead of codebase.get_context()
 - **Token waste:** Revisiting same issues, fixing incomplete solutions
 - **Time lost:** Debugging problems rules would have prevented
 
 ### The Solution
 **Automatic comprehensive rule loading** makes this impossible:
-- All 9+ rules loaded and read at session start
+- All 17 rules loaded and read at session start
+- MCP tools consulted BEFORE any implementation
 - Every decision evaluated against complete rule set
 - Consistent architectural patterns applied
 - Fewer errors, faster problem solving
@@ -95,6 +104,13 @@ With complete rule context available
 ## Rule Categories & Quick Reference
 
 ### Always-On Rules (Required for ALL Tasks)
+
+**0. `always-mcp-tools-first.md` (385 lines)** 🔴 CRITICAL
+- Pattern: ALWAYS use MCP tools before implementation
+- Tools: `codebase.get_context()`, `codebase.query_learnings()`, `codebase.check_patterns()`
+- Workflow: Get context → Query learnings → Implement → Validate
+- Forbidden: Using grep to search patterns/violations
+- Performance: 5 min (with MCP) vs 35 min (without MCP)
 
 **1. `always-better-auth-canonical.md` (415 lines)**
 - Pattern: NO custom auth logic ever
@@ -176,9 +192,10 @@ With complete rule context available
 When starting work on ANY user query:
 
 - [ ] NEW session? Load all rules (skip if already loaded, acknowledge)
+- [ ] **FIRST: Use MCP tools** (`codebase.get_context()` before implementing)
 - [ ] `list_dir .qoder/rules` → identify all `.md` files
 - [ ] `read_file` each rule completely (don't skim)
-- [ ] Create mental map: Always-on (5) + Decision (3) + File-specific (3)
+- [ ] Create mental map: Always-on (7) + Decision (4) + File-specific (3)
 - [ ] Categorize current task → which rules apply?
 - [ ] Acknowledge: "Rules loaded. Applying: [list]"
 - [ ] THEN execute work with full context
@@ -233,11 +250,13 @@ Result: Build fails, architectural violation
 ✅ **CORRECT: Full Stack Application**
 ```
 AI: Task "add auth to endpoint" →
+  ✅ MCP tools (codebase.get_context first)
   ✅ Auth rule (use @snapback/auth)
   ✅ Import rule (use @snapback/* imports)
   ✅ Result-type rule (return Result<T, E>)
   ✅ Logging rule (log auth events)
   ✅ TypeScript rule (use proper types)
+  ✅ Validate (codebase.check_patterns before commit)
 Result: Complete, correct implementation
 ```
 
@@ -250,7 +269,8 @@ Result: Complete, correct implementation
 **Acknowledge at start of session:**
 ```
 ✅ Rules loaded from previous context:
-  - All 11 workspace rules available (5 always-on + 3 decision + 3 file-specific)
+  - All 17 workspace rules available (7 always-on + 4 decision + 3 file-specific)
+  - MCP tools ready (codebase.get_context, query_learnings, check_patterns)
   - Ready to apply to current task
   - Will reload if any uncertainty
 ```
@@ -274,8 +294,9 @@ Result: Complete, correct implementation
 ## Performance Note
 
 **Parallel reads are fast:**
-- 11 files × ~385 lines average = 4235 lines
-- Parallel `read_file` calls take ~5-7 seconds
+- 17 files × ~350 lines average = ~6000 lines
+- Parallel `read_file` calls take ~7-10 seconds
+- MCP tool calls add ~3 seconds per query
 - Prevents hours of mistakes and rework
 - **Well worth the minimal overhead**
 
@@ -283,10 +304,11 @@ Result: Complete, correct implementation
 
 ## Version History
 
+- **2025-12-20 v3.0:** Added MCP tools as highest priority rule (always-mcp-tools-first.md)
 - **2025-12-04 v2.1:** Added 2 new rules (react-security-boundaries, typescript-esm-testing), updated inventory
 - **2025-11-20 v2.0:** Complete rule categorization, anti-patterns, decision matrix
 - **2025-11-20 v1.0:** Initial rule loading requirement
 
-**Last Updated:** 2025-12-04
+**Last Updated:** 2025-12-20
 **Priority:** 🔴 CRITICAL - Execute first, every time
 **Maintained By:** Architecture team

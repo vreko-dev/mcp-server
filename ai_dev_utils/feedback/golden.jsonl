@@ -1,0 +1,1 @@
+{"id":"INT-1766233714921-e3l2l00mu","queryType":"authentication","query":"How do I add authentication to the MCP server?","output":"Use @snapback/auth package with verifyApiKey method...","contextUsed":["ARCHITECTURE.md","patterns/codebase-patterns.md"],"addedAt":"2025-12-20T12:28:34.922Z"}

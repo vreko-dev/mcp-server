@@ -70,6 +70,52 @@ it('should handle time correctly', () => {
 
 ---
 
+
+### AP-001: Missing Service Location 🤖 AUTOMATED
+**Frequency:** 10 occurrences
+**First Seen:** 2025-12-09
+**Type:** `MISSING_SERVICE_LOCATION`
+
+**Prevention:** Complete Step 3 in architecture audit and save to state file
+
+**Files affected:**
+
+
+
+---
+
+
+### AP-002: Vague Assertion
+**Frequency:** 4 occurrences
+**First Seen:** 2025-12-09
+**Type:** `VAGUE_ASSERTION`
+
+**Prevention:** Use specific assertions: .toEqual(), .toBe(), .toMatchObject() with real values
+
+**Files affected:**
+- `apps/vscode/test/integration/telemetry-proxy-offline-queue.test.ts`
+- `apps/vscode/test/unit/snapshot/sessionCoordinator.test.ts`
+
+
+---
+
+
+### AP-003: Incomplete Coverage
+**Frequency:** 4 occurrences
+**First Seen:** 2025-12-09
+**Type:** `INCOMPLETE_COVERAGE`
+
+**Prevention:** Add tests for all 4 paths before completing
+
+**Files affected:**
+- `apps/vscode/test/unit/telemetry-proxy-offline-queue.test.ts`
+- `apps/vscode/test/unit/snapshot/sessionCoordinator.test.ts`
+- `apps/api/modules/apikeys/tests/api-keys.test.ts`
+- `packages/engine/test/transports/mcp.test.ts`
+
+
+---
+
 ## Recent Fixes
 
 | Date | Violation | File | Fix Applied |

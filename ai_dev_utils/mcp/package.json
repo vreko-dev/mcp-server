@@ -28,6 +28,7 @@
     "@anthropic-ai/sdk": "^0.71.2",
     "@huggingface/transformers": "^3.0.0",
     "@modelcontextprotocol/sdk": "^1.0.0",
+    "@snapback/intelligence": "workspace:*",
     "atomically": "^2.1.0",
     "bottleneck": "^2.19.5",
     "chokidar": "^5.0.0",

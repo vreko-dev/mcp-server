@@ -5,6 +5,7 @@ packages:
     - tests
     - e2e
     - tooling/*
+    - ai_dev_utils/mcp
     - "!apps/vscode/.vscode-test/**"
     - "!apps/web/.next/**"
 

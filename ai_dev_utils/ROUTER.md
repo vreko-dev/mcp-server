@@ -629,6 +629,35 @@ export default defineProject(
 - Use `defineConfig` instead of `defineProject` for package configs
 - Mix `.test.ts` and `.spec.ts` naming patterns
 
+### 🚨 NO PLACEHOLDER TESTS (Critical)
+
+**NEVER leave placeholder assertions like `expect(true).toBe(true)` or `TODO: Implement`**
+
+**Root Cause Analysis (from 2025-12-21 violation):**
+- Focused on fixing *failing* tests without auditing *passing* tests
+- Tests with `expect(true).toBe(true)` pass silently - no failure signal
+- No verification step to check for TODO/placeholder assertions after test run
+- 25 placeholder tests passed, creating false confidence ("43 tests pass!")
+
+**Why this is critical:**
+- Placeholder tests pass silently - they test NOTHING
+- They create false confidence ("43 tests pass!")
+- They hide untested code paths
+
+**Verification step (MANDATORY after any test changes):**
+```bash
+# Run this BEFORE marking task complete
+grep -rn 'expect(true).toBe(true)\|// TODO' test/
+# If any matches found, FIX THEM before proceeding
+```
+
+**If you inherit placeholder tests:**
+1. Implement them fully with real assertions
+2. Or delete them if they're not needed
+3. Never leave them as-is
+
+**Detection:** `incomplete-test-implementation` violation type
+
 **Reference:** `packages/testing/README.md` for full documentation
 
 ---
@@ -859,6 +888,7 @@ TRIAGE (classify) → RESEARCH (investigate) → PLANNING (design) → DEV_COMPL
 **Don't declare task complete until:**
 - [ ] TypeScript compilation passes
 - [ ] Unit tests pass
+- [ ] **No placeholder tests remain** (run: `grep -rn 'expect(true).toBe(true)\|// TODO' test/`)
 - [ ] **Manual testing confirms bug resolved**
 - [ ] **User validates fix in their environment**
 
@@ -1256,6 +1286,14 @@ cat ai_dev_utils/state/current-task.json | jq
 | L047 | architecture | code path analysis | Search for ALL entry points to operation, validate each independently |
 | L048 | pattern | user feedback, vague reports | Ask for specific UI element, logs, expected behavior, restart status |
 
+**Captured from Phase 3 Vitals session (2025-12-21):**
+
+| ID | Type | Trigger | Solution |
+|----|------|---------|----------|
+| L049 | pitfall | placeholder test, `expect(true).toBe(true)`, TODO | After ANY test changes, run `grep -rn 'expect(true).toBe(true)\|// TODO' test/` - treat matches as blockers |
+| L050 | pattern | test passes but tests nothing | Passing tests with no assertions = false confidence. Audit inherited tests before marking complete |
+| L051 | workflow | test file modification | MANDATORY verification: 1) Tests compile 2) Tests pass 3) No placeholder assertions remain |
+
 ---
 
 ## Success Metrics
@@ -1280,7 +1318,7 @@ cat ai_dev_utils/state/current-task.json | jq
 
 ---
 
-**Last Verified:** 2025-12-20
+**Last Verified:** 2025-12-21
 **Status:** active
 **Philosophy:** Research-first, validation-gated, architecture-aware, self-learning development
 **Methodology:** Hybrid SDD+TDD+Constraints (spec → tests → guardrails)

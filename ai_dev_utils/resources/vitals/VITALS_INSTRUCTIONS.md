@@ -1,8 +1,9 @@
 # Workspace Vitals - Implementation Instructions
 
-**Status**: Design Complete, Implementation Pending  
-**Last Validated**: December 2024  
-**Priority**: Phase 2 (after demo stabilization)
+**Status**: Phase 1, 2 & 3 Complete ✅
+**Last Validated**: December 2024
+**Tests**: 131 passing (packages/intelligence vitals module)
+**Priority**: Phase 4 (Learning & Calibration)
 
 ---
 
@@ -207,7 +208,7 @@ export class AutoDecisionIntegration {
       isAI: detectAIPresence().hasAI,
       tool: detectAIPresence().detectedAssistants[0],
     });
-    
+
     // ... existing processing ...
   }
 
@@ -215,7 +216,7 @@ export class AutoDecisionIntegration {
     // Use vitals for dynamic threshold
     const thresholdMultiplier = this.vitals.getThresholdMultiplier();
     const effectiveThreshold = this.config.riskThreshold * thresholdMultiplier;
-    
+
     // ... rest of processing ...
   }
 }
@@ -278,7 +279,7 @@ export const getWorkspaceVitalsTool = {
     const vitals = WorkspaceVitals.for(workspaceId);
     const current = vitals.current();
     const guidance = vitals.getAgentGuidance();
-    
+
     return {
       vitals: {
         pulse: current.pulse,
@@ -314,8 +315,8 @@ export const acknowledgeRiskTool = {
     type: 'object',
     properties: {
       workspaceId: { type: 'string' },
-      files: { 
-        type: 'array', 
+      files: {
+        type: 'array',
         items: { type: 'string' },
         description: 'Files you intend to modify'
       },
@@ -334,13 +335,13 @@ export const acknowledgeRiskTool = {
       reason: params.reason,
       timestamp: Date.now()
     });
-    
+
     // Emit telemetry
     telemetry.capture('vitals_risk_acknowledged', {
       fileCount: params.files.length,
       hasReason: !!params.reason
     });
-    
+
     return {
       acknowledged: true,
       reminder: 'Consider creating a snapshot after your changes'
@@ -468,33 +469,33 @@ describe('WorkspaceVitals', () => {
     it('should classify critical at >=50 changes/min');
     it('should prune events older than window');
   });
-  
+
   describe('temperature monitoring', () => {
     it('should track AI vs human activity ratio');
     it('should detect AI tool from event');
     it('should decay temperature over 5 minutes');
   });
-  
+
   describe('pressure gauge', () => {
     it('should accumulate pressure on file changes');
     it('should apply 2x multiplier for critical files');
     it('should release 50% pressure on snapshot');
     it('should accumulate time-based pressure');
   });
-  
+
   describe('oxygen sensor', () => {
     it('should track snapshot coverage percentage');
     it('should mark snapshots stale after 30 minutes');
     it('should weight critical files 2x');
   });
-  
+
   describe('trajectory calculation', () => {
     it('should return critical when pressure>80 + burning + oxygen<50');
     it('should return escalating when pressure>60 OR (hot + racing)');
     it('should return recovering when pressure trend down + oxygen>70');
     it('should return stable otherwise');
   });
-  
+
   describe('threshold multiplier', () => {
     it('should lower threshold when temperature is hot (0.8x)');
     it('should raise threshold when oxygen is high (1.2x)');
@@ -519,12 +520,12 @@ export const VITALS_EVENTS = {
   // State changes
   VITALS_TRAJECTORY_CHANGED: 'vitals_trajectory_changed',
   VITALS_CRITICAL_STATE: 'vitals_critical_state',
-  
+
   // Decisions
   VITALS_AUTO_SNAPSHOT: 'vitals_auto_snapshot',
   VITALS_NUDGE_SHOWN: 'vitals_nudge_shown',
   VITALS_RISK_ACKNOWLEDGED: 'vitals_risk_acknowledged',
-  
+
   // MCP usage
   VITALS_AGENT_QUERIED: 'vitals_agent_queried',
   VITALS_AGENT_BLOCKED: 'vitals_agent_blocked'
@@ -535,27 +536,27 @@ export const VITALS_EVENTS = {
 
 ## Migration Checklist
 
-### Phase 1: Foundation (Week 1-2)
-- [ ] Create `packages/intelligence/src/vitals/` directory
-- [ ] Implement PulseTracker with tests
-- [ ] Implement PressureGauge with tests
-- [ ] Add vitals types to `packages/intelligence/src/types/vitals.ts`
-- [ ] Add subpath export to package.json
-- [ ] Export from main index.ts
+### Phase 1: Foundation (Week 1-2) ✅ COMPLETE
+- [x] Create `packages/intelligence/src/vitals/` directory
+- [x] Implement PulseTracker with tests (15 tests passing)
+- [x] Implement PressureGauge with tests (18 tests passing)
+- [x] Add vitals types to `packages/intelligence/src/types/vitals.ts`
+- [x] Add subpath export to package.json
+- [x] Export from main index.ts
 
-### Phase 2: Full Engine (Week 3-4)
-- [ ] Implement TemperatureMonitor (integrate with @snapback/sdk AIPresenceDetector)
-- [ ] Implement OxygenSensor
-- [ ] Implement WorkspaceVitals main class
-- [ ] Add vitals methods to Intelligence facade
-- [ ] Wire to AutoDecisionIntegration in VS Code extension
-- [ ] Add threshold multiplier to engine
+### Phase 2: Full Engine (Week 3-4) ✅ COMPLETE
+- [x] Implement TemperatureMonitor with tests (18 tests passing)
+- [x] Implement OxygenSensor with tests (18 tests passing)
+- [x] Implement WorkspaceVitals main class (25 tests passing)
+- [x] Add vitals methods to Intelligence facade (lines 224-258)
+- [x] Wire to AutoDecisionIntegration in VS Code extension ✅ **DONE**
+- [x] Add threshold multiplier to engine
 
-### Phase 3: UI & MCP (Week 5-6)
-- [ ] Create StatusBar vitals display (VS Code)
-- [ ] Implement get_workspace_vitals MCP tool
-- [ ] Implement acknowledge_risk MCP tool
-- [ ] Add telemetry events to PostHog
+### Phase 3: UI & MCP (Week 5-6) ✅ COMPLETE
+- [x] Create StatusBar vitals display (VS Code) ✅ **DONE** - StatusBarManager + VitalsIntegration wired into extension.ts
+- [x] Implement get_workspace_vitals MCP tool ✅ **DONE**
+- [x] Implement acknowledge_risk MCP tool ✅ **DONE**
+- [x] Add telemetry events to PostHog ✅ **DONE** - vitals_trajectory_changed, vitals_critical_state
 - [ ] Dashboard visualization (future)
 
 ### Phase 4: Learning (Week 7-8)

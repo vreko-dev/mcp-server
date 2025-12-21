@@ -2,6 +2,7 @@
 
 **Hard rules enforced by gate-runner.ts**
 **Violations are tracked and auto-promoted**
+**Last updated:** 2025-12-21
 
 ---
 
@@ -11,7 +12,7 @@
 ```
 RULE: Presentation layer CANNOT import Infrastructure layer
 CHECK: apps/vscode/** cannot contain "@snapback/infrastructure"
-CHECK: apps/web/** cannot contain "@snapback/infrastructure"  
+CHECK: apps/web/** cannot contain "@snapback/infrastructure"
 CHECK: apps/cli/** cannot contain "@snapback/infrastructure"
 VIOLATION_TYPE: LAYER_BOUNDARY_VIOLATION
 ```
@@ -29,6 +30,7 @@ VIOLATION_TYPE: SERVICE_BYPASS
 RULE: Tests MUST use specific assertions, not vague ones
 BANNED: .toBeTruthy(), .toBeDefined(), .toBeFalsy() without value comparison
 REQUIRED: .toEqual(), .toBe(), .toMatchObject() with actual expected values
+EXCEPTION: toBeUndefined() is valid for asserting absence
 VIOLATION_TYPE: VAGUE_ASSERTION
 ```
 
@@ -41,6 +43,19 @@ REQUIRED_PATHS:
   - Edge case (boundary conditions)
   - Error case (unexpected failures)
 VIOLATION_TYPE: INCOMPLETE_COVERAGE
+```
+
+### C-004a: No Placeholder Tests
+```
+RULE: Tests MUST contain real assertions, never placeholders
+BANNED: expect(true).toBe(true)
+BANNED: expect(true).toBeTruthy() with comment "// TODO: Implement"
+BANNED: Test blocks with only TODO comments
+REQUIRED: Every test MUST assert actual behavior with specific expectations
+VERIFICATION: grep -rn 'expect(true).toBe(true)\|// TODO' test/
+VIOLATION_TYPE: INCOMPLETE_TEST_IMPLEMENTATION
+SOURCE: Violation 2025-12-21 - 25 placeholder tests passed with zero coverage
+ROOT_CAUSE: Focused on failing tests without auditing passing tests
 ```
 
 ### C-005: Vitest Config Standard
@@ -75,6 +90,46 @@ RULE: All async operations MUST have error handling
 CHECK: try/catch or .catch() for all await calls in service layer
 CHECK: Error boundaries for React components
 VIOLATION_TYPE: MISSING_ERROR_HANDLING
+```
+
+### C-009: Test File Location
+
+```
+RULE: Test files MUST be in the correct directory per project config
+CHECK: VSCode extension tests MUST be in test/ directory, NOT src/
+CHECK: Verify vitest.config.ts test.include pattern before creating test files
+VIOLATION_TYPE: TEST_FILE_LOCATION_ERROR
+SOURCE: Violation 2025-12-21 - test file in src/ was ignored by runner
+```
+
+### C-010: Path Resolution in MCP/ESM
+
+```
+RULE: MCP servers launched with absolute paths MUST use import.meta.url for paths
+BANNED: process.cwd() for relative path resolution in MCP servers
+REQUIRED: fileURLToPath(import.meta.url) + path.dirname()
+VIOLATION_TYPE: PATH_RESOLUTION_BUG
+SOURCE: Violation 2025-12-21 - prompt-cache.ts failed to load static context
+```
+
+### C-011: Vitest Workspace Glob Patterns
+
+```
+RULE: Vitest projects glob MUST exclude non-package files
+CHECK: Exclude .md files, standalone .ts files like vercel-entry.ts
+REQUIRED: Explicit package paths for packages-oss/* instead of broad globs
+REQUIRED: All internal packages in vitest-config aliases
+VIOLATION_TYPE: CONFIG_PATH_RESOLUTION
+SOURCE: Violation 2025-12-21 - glob matched README.md, vercel-entry.ts
+```
+
+### C-012: MCP Tool Usage Before Implementation
+
+```
+RULE: MUST call codebase:get_context() BEFORE any implementation
+CHECK: Any code changes require prior get_context call
+VIOLATION_TYPE: IGNORED_ROUTER_INSTRUCTIONS
+SOURCE: Violation 2025-12-21 - started task without querying knowledge layer
 ```
 
 ---
@@ -120,6 +175,7 @@ AVOID: x, temp, data, result (without context)
 | C-002 | green | ✅ Yes | error |
 | C-003 | red | ✅ Yes | warning |
 | C-004 | quality | ✅ Yes | warning |
+| C-004a | red, green | ✅ Yes | error |
 | C-005 | audit | ❌ Manual | warning |
 | C-006 | certify | ❌ Manual | error |
 | C-007 | red, green | ✅ Yes | warning |

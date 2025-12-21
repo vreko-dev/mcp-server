@@ -1,5 +1,7 @@
 # SnapBack Development Instructions
 
+**Last updated:** 2025-12-21
+
 ## Codebase Intelligence System
 
 This project has a self-learning context system. **You MUST use these tools for SnapBack development.**
@@ -12,6 +14,23 @@ This project has a self-learning context system. **You MUST use these tools for 
 | **BEFORE committing code** | `codebase:check_patterns` | `codebase:check_patterns({ code: "...", filePath: "..." })` |
 | **AFTER making a mistake** | `codebase:report_violation` | Report it so the system learns |
 | **AFTER completing a task** | `codebase:record_learning` | Capture patterns for future |
+
+### Full Tool Reference
+
+| Tool | Purpose |
+|------|---------|
+| `codebase:start_task` | Initialize task context, load relevant patterns |
+| `codebase:get_context` | Get architecture, constraints, patterns for task |
+| `codebase:check_patterns` | Validate code against constraints before commit |
+| `codebase:report_violation` | Report mistakes for system learning |
+| `codebase:query_learnings` | Search past learnings by keywords |
+| `codebase:get_violations_summary` | View all violations grouped by type |
+| `codebase:record_learning` | Capture new patterns/pitfalls/discoveries |
+| `codebase:ask_ai` | Query intelligence layer for guidance |
+| `codebase:validate_code` | Run 7-layer validation pipeline |
+| `codebase:log_interaction` | Track interactions for learning engine |
+| `codebase:record_feedback` | Provide feedback on validation results |
+| `codebase:get_learning_stats` | View learning engine statistics |
 
 ### Workflow
 
@@ -35,10 +54,10 @@ After task complete: Call codebase:record_learning if you learned something new
 
 The codebase tools provide:
 - **Architecture rules** - Layer boundaries, what can import what
-- **Hard constraints** - Rules that must not be violated (C-001 to C-008)
-- **Learned patterns** - Patterns promoted from past violations
+- **Hard constraints** - Rules that must not be violated (C-001 to C-012)
+- **Learned patterns** - Patterns promoted from past violations (3x → patterns, 5x → automation)
 - **Recent violations** - Mistakes made in the same files
-- **Learnings** - Tips captured from past sessions
+- **Learnings** - Tips captured from past sessions (42+ learnings)
 
 **Skipping these tools means you'll likely repeat past mistakes.**
 
@@ -55,10 +74,30 @@ When working on SnapBack code:
 
 | File | Purpose |
 |------|---------|
-| `ai_dev_utils/ARCHITECTURE.md` | System boundaries, layer rules |
-| `ai_dev_utils/CONSTRAINTS.md` | Hard rules (non-negotiable) |
-| `ai_dev_utils/ROUTER.md` | Task routing, workflows |
-| `ai_dev_utils/patterns/codebase-patterns.md` | Promoted patterns |
+| `ai_dev_utils/ARCHITECTURE.md` | System boundaries, layer rules, package inventory |
+| `ai_dev_utils/CONSTRAINTS.md` | Hard rules C-001 to C-012 (non-negotiable) |
+| `ai_dev_utils/ROUTER.md` | Task routing, workflows, MCP tool requirements |
+| `ai_dev_utils/patterns/codebase-patterns.md` | Promoted patterns from violations |
+| `ai_dev_utils/patterns/violations.jsonl` | Violation history (auto-promotion at 3x/5x) |
+| `ai_dev_utils/feedback/learnings.jsonl` | Session learnings and discoveries |
+
+### Architecture Layers
+
+```
+Presentation: apps/vscode, apps/web, apps/cli, apps/docs
+Service:      apps/mcp-server, apps/api, packages/sdk
+Core:         packages/core, packages/engine, packages/contracts
+Intelligence: packages/intelligence (validation, learning, context, policy, vitals)
+Infra:        packages/platform, packages/integrations, packages/auth
+Observability: packages/infrastructure
+```
+
+### Layer Import Rules
+
+- Presentation → Core, Contracts, SDK (NOT Infrastructure)
+- Service → Core, Infrastructure, Contracts, Intelligence
+- Core → Contracts, Config only
+- Intelligence → Contracts, Storage abstractions only
 
 ### Gate Commands
 
@@ -72,6 +111,14 @@ npx tsx ai_dev_utils/gates/gate-runner.ts red|green|refactor|quality
 # See violation summary
 npx tsx ai_dev_utils/gates/gate-runner.ts summary
 ```
+
+### Violation Auto-Promotion
+
+| Threshold | Action |
+|-----------|--------|
+| 1x | Stored in violations.jsonl |
+| 3x | Auto-promoted to codebase-patterns.md |
+| 5x | Becomes hard constraint (C-XXX) with automated gate check |
 
 ---
 

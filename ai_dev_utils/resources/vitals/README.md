@@ -66,18 +66,18 @@ import { WorkspaceVitals } from '@snapback/intelligence/vitals';
 
 See `../extension-ux/EXTENSION_UX_SPEC.md` for:
 - Status bar vitals display mode
-- Optional sidebar VITALS section  
+- Optional sidebar VITALS section
 - Emoji indicators and formatting
 - How vitals affects threshold multipliers
 
 ## Implementation Priority
 
-| Phase | Focus | Timeline |
-|-------|-------|----------|
-| Phase 1 | PulseTracker + PressureGauge | Week 1-2 |
-| Phase 2 | Temperature + Oxygen + WorkspaceVitals | Week 3-4 |
-| Phase 3 | StatusBar + MCP tools | Week 5-6 |
-| Phase 4 | Learning & calibration | Week 7-8 |
+| Phase | Focus | Timeline | Status |
+|-------|-------|----------|--------|
+| Phase 1 | PulseTracker + PressureGauge | Week 1-2 | ✅ **COMPLETE** (33 tests) |
+| Phase 2 | Temperature + Oxygen + WorkspaceVitals | Week 3-4 | ✅ **COMPLETE** (98 tests) |
+| Phase 3 | StatusBar + MCP tools + Telemetry | Week 5-6 | ✅ **COMPLETE** |
+| Phase 4 | Learning & calibration | Week 7-8 | ⏳ Pending |
 
 ---
 

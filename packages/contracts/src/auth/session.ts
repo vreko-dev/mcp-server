@@ -8,6 +8,12 @@
 import { z } from "zod";
 
 /**
+ * User role type - matches database schema and Better Auth admin plugin
+ */
+export const UserRoleSchema = z.enum(["admin", "user", "viewer"]).nullable();
+export type UserRole = z.infer<typeof UserRoleSchema>;
+
+/**
  * Core user schema - minimal fields needed for authentication
  *
  * This represents the authenticated user object as returned by Better Auth
@@ -17,10 +23,12 @@ export const AuthUserSchema = z.object({
 	id: z.string(),
 	email: z.string().email(),
 	name: z.string().nullable(),
-	image: z.string().url().nullable(),
+	image: z.string().url().nullable().optional(),
 	emailVerified: z.boolean(),
 	createdAt: z.coerce.date(),
 	updatedAt: z.coerce.date(),
+	// Role field from database - nullable as not all users have a role assigned
+	role: UserRoleSchema.optional(),
 });
 
 export type AuthUser = z.infer<typeof AuthUserSchema>;

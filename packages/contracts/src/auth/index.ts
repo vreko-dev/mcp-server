@@ -68,4 +68,6 @@ export {
 	SessionSchema,
 	type SessionWithUser,
 	SessionWithUserSchema,
+	type UserRole,
+	UserRoleSchema,
 } from "./session";

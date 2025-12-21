@@ -4,6 +4,7 @@ import type { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 import contentType from "content-type";
 import getRawBody from "raw-body";
+import { type AuthResult, authenticate } from "./auth";
 
 const MAXIMUM_MESSAGE_SIZE = "4mb";
 
@@ -225,9 +226,10 @@ export class MCPHttpServer {
 	private async handleSSEConnection(req: IncomingMessage, res: ServerResponse) {
 		try {
 			// Authenticate the connection
-			if (!this.authenticateRequest(req)) {
+			const authResult = await this.authenticateRequest(req);
+			if (!authResult || !authResult.valid) {
 				res.writeHead(401, { "Content-Type": "application/json" });
-				res.end(JSON.stringify({ error: "Unauthorized" }));
+				res.end(JSON.stringify({ error: authResult?.error || "Unauthorized" }));
 				return;
 			}
 
@@ -260,9 +262,10 @@ export class MCPHttpServer {
 	private async handlePostMessage(req: IncomingMessage, res: ServerResponse) {
 		try {
 			// Authenticate the request
-			if (!this.authenticateRequest(req)) {
+			const authResult = await this.authenticateRequest(req);
+			if (!authResult || !authResult.valid) {
 				res.writeHead(401, { "Content-Type": "application/json" });
-				res.end(JSON.stringify({ error: "Unauthorized" }));
+				res.end(JSON.stringify({ error: authResult?.error || "Unauthorized" }));
 				return;
 			}
 
@@ -311,34 +314,37 @@ export class MCPHttpServer {
 	}
 
 	/**
-	 * Authenticate incoming requests
+	 * Authenticate incoming requests using @snapback/auth
+	 * ✅ INT-001: Replaced placeholder with canonical auth integration
 	 */
-	private authenticateRequest(req: IncomingMessage): boolean {
+	private async authenticateRequest(req: IncomingMessage): Promise<AuthResult | null> {
 		// Check for Authorization header (Bearer token)
 		const authHeader = req.headers.authorization;
 		if (authHeader?.startsWith("Bearer ")) {
-			const token = authHeader.substring(7); // Remove "Bearer " prefix
-			// In a real implementation, validate the token against a service
-			// For now, we'll accept any non-empty token
-			return token.length > 0;
+			const apiKey = authHeader.substring(7); // Remove "Bearer " prefix
+			if (apiKey.length > 0) {
+				return await authenticate(apiKey);
+			}
 		}
 
 		// Check for X-API-Key header
 		const apiKey = req.headers["x-api-key"];
-		if (apiKey && typeof apiKey === "string") {
-			// In a real implementation, validate the API key against a service
-			// For now, we'll accept any non-empty API key
-			return apiKey.length > 0;
+		if (apiKey && typeof apiKey === "string" && apiKey.length > 0) {
+			return await authenticate(apiKey);
 		}
 
 		// If no authentication provided, reject in production
 		const isDevelopment = process.env.NODE_ENV === "development";
 		if (!isDevelopment) {
-			return false;
+			return null;
 		}
 
-		// In development, allow unauthenticated requests
-		return true;
+		// In development, allow unauthenticated requests with free tier
+		return {
+			valid: true,
+			tier: "free",
+			scopes: [],
+		};
 	}
 
 	/**

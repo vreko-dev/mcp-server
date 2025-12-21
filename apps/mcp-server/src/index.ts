@@ -33,6 +33,7 @@ import {
 import { CreateSnapshotSchema, createSnapshot } from "./tools/create-snapshot";
 import { addSnapshot, listSnapshots } from "./tools/list-snapshots";
 import { restoreSnapshot, storeSnapshotContent } from "./tools/restore-snapshot";
+import { handleAcknowledgeRisk, handleGetWorkspaceVitals, vitalsToolDefinitions } from "./tools/vitals-tools";
 import { addResult, createSarifLog } from "./utils/sarif";
 import { initializeSecurityTelemetry, setWorkspaceRoot } from "./utils/security";
 
@@ -452,6 +453,8 @@ export async function startServer(): Promise<{
 			},
 			// Intelligence context tools (from @snapback/intelligence)
 			...contextToolDefinitions,
+			// Vitals tools (workspace health sensing)
+			...vitalsToolDefinitions,
 		],
 	}));
 
@@ -811,6 +814,15 @@ You can restore this snapshot using its ID.`,
 						{ type: "text", text: result.message },
 					],
 				};
+			}
+
+			// Vitals tools (workspace health sensing)
+			if (name === "snapback.get_workspace_vitals") {
+				return await handleGetWorkspaceVitals(args);
+			}
+
+			if (name === "snapback.acknowledge_risk") {
+				return await handleAcknowledgeRisk(args);
 			}
 
 			throw new Error(`Unknown tool: ${name}`);

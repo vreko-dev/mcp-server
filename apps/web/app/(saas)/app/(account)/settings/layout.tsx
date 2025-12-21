@@ -6,6 +6,7 @@ import { UserAvatar } from "@shared/components/UserAvatar";
 import { CreditCardIcon, LockKeyholeIcon, SettingsIcon, TriangleAlertIcon } from "lucide-react";
 import { redirect } from "next/navigation";
 import type { PropsWithChildren } from "react";
+import type { SessionWithUser } from "@/types/session";
 
 // TODO: Replace with actual config from environment/app settings
 const config = {
@@ -24,7 +25,12 @@ export default async function SettingsLayout({ children }: PropsWithChildren) {
 	const menuItems = [
 		{
 			title: "Account",
-			avatar: <UserAvatar name={(session as any)?.user?.name ?? ""} avatarUrl={(session as any)?.user?.image} />,
+			avatar: (
+				<UserAvatar
+					name={(session as SessionWithUser).user?.name ?? ""}
+					avatarUrl={(session as SessionWithUser).user?.image}
+				/>
+			),
 			items: [
 				{
 					title: "General",

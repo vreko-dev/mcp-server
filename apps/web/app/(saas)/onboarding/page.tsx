@@ -2,6 +2,7 @@ import { getSession } from "@saas/auth/lib/server";
 import { OnboardingForm } from "@saas/onboarding/components/OnboardingForm";
 import { AuthWrapper } from "@saas/shared/components/AuthWrapper";
 import { redirect } from "next/navigation";
+import type { SessionWithUser } from "@/types/session";
 
 // TODO: Replace with actual config from environment/app settings
 const config = {
@@ -27,7 +28,7 @@ export default async function OnboardingPage() {
 	}
 
 	// STUB: In frontend-only mode, session is null, so always allow onboarding
-	const sessionData = (session as any) || {};
+	const sessionData = (session as SessionWithUser | null) || {};
 	if (!config.users.enableOnboarding || sessionData?.user?.onboardingComplete) {
 		redirect("/app");
 	}

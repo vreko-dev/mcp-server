@@ -6,6 +6,7 @@ import { Logo } from "@shared/components/Logo";
 import { Building2Icon, UsersIcon } from "lucide-react";
 import { redirect } from "next/navigation";
 import type { PropsWithChildren } from "react";
+import type { SessionWithUser } from "@/types/session";
 
 // TODO: Replace with actual config from environment/app settings
 const config = {
@@ -22,7 +23,7 @@ export default async function AdminLayout({ children }: PropsWithChildren) {
 	if (!session) {
 		console.warn("[Admin] Accessing admin panel without backend auth - stubbed");
 		// For now, allow access - in production, redirect to auth/login
-	} else if ((session as any).user?.role !== "admin") {
+	} else if ((session as SessionWithUser).user?.role !== "admin") {
 		redirect("/app");
 	}
 

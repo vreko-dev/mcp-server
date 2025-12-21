@@ -7,6 +7,8 @@ import { CreditCardIcon, Settings2Icon, TriangleAlertIcon, Users2Icon } from "lu
 import { redirect } from "next/navigation";
 import type { PropsWithChildren } from "react";
 import { isOrganizationAdmin } from "@/lib/auth/helpers";
+import type { Organization } from "@/types/organization";
+import type { SessionWithUser } from "@/types/session";
 
 // TODO: Replace with actual config from environment/app settings
 const config = {
@@ -24,13 +26,13 @@ export default async function SettingsLayout({
 }>) {
 	const session = await getSession();
 	const { organizationSlug } = await params;
-	const organization = (await getActiveOrganization(organizationSlug)) as any;
+	const organization = (await getActiveOrganization(organizationSlug)) as Organization | null;
 
 	if (!organization) {
 		redirect("/app");
 	}
 
-	const userIsOrganizationAdmin = isOrganizationAdmin(organization, (session as any)?.user);
+	const userIsOrganizationAdmin = isOrganizationAdmin(organization, (session as SessionWithUser | null)?.user);
 
 	const organizationSettingsBasePath = `/app/${organizationSlug}/settings`;
 

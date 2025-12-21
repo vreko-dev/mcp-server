@@ -5,6 +5,7 @@ import { SettingsList } from "@saas/shared/components/SettingsList";
 import { orpcClient } from "@shared/lib/orpc-client";
 import { attemptAsync } from "es-toolkit";
 import { createPurchasesHelper } from "@/lib/auth/helpers";
+import type { SessionWithUser } from "@/types/session";
 
 // TODO: Import from @snapback/platform/db/zod when properly exported
 interface Purchase {
@@ -43,7 +44,7 @@ export default async function BillingSettingsPage() {
 		<SettingsList>
 			{activePlan && <ActivePlan />}
 			{activePlan?.id && typeof activePlan.id === "string" && (
-				<ChangePlan userId={(session as any)?.user?.id} activePlanId={activePlan.id} />
+				<ChangePlan userId={(session as SessionWithUser | null)?.user?.id} activePlanId={activePlan.id} />
 			)}
 		</SettingsList>
 	);

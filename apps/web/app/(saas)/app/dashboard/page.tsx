@@ -2,17 +2,18 @@ import { getSession } from "@saas/auth/lib/server";
 import { orpcClient } from "@shared/lib/orpc-client";
 import { redirect } from "next/navigation";
 import { fetchAIDetectionStats, fetchRecentActivity, fetchUserMetrics } from "@/lib/dashboard/api";
+import type { SessionWithUser } from "@/types/session";
 import { DashboardClient } from "./components/DashboardClient";
 
 export default async function DashboardPage() {
 	// Server-side authentication check
 	const session = await getSession();
 
-	if (!(session as any)?.user) {
+	if (!(session as SessionWithUser | null)?.user) {
 		redirect("/auth/login");
 	}
 
-	const user = (session as any).user;
+	const user = (session as SessionWithUser).user;
 
 	// Server-side data fetching - runs in parallel
 	try {

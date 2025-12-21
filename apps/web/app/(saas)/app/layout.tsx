@@ -4,6 +4,8 @@ import { attemptAsync } from "es-toolkit";
 import { redirect } from "next/navigation";
 import type { PropsWithChildren } from "react";
 import { createPurchasesHelper } from "@/lib/auth/helpers";
+import type { Organization } from "@/types/organization";
+import type { SessionWithUser } from "@/types/session";
 
 // TODO: Replace with actual config from environment/app settings
 interface Purchase {
@@ -42,15 +44,16 @@ export default async function Layout({ children }: PropsWithChildren) {
 		redirect("/auth/login");
 	}
 
-	if (config.users.enableOnboarding && !(session as any)?.user?.onboardingComplete) {
+	if (config.users.enableOnboarding && !(session as SessionWithUser).user?.onboardingComplete) {
 		redirect("/onboarding");
 	}
 
 	const organizations = await getOrganizationList();
 
 	if (config.organizations.enable && config.organizations.requireOrganization) {
+		const typedSession = session as SessionWithUser;
 		const organization =
-			organizations.find((org: { id: string }) => org.id === (session as any)?.session?.activeOrganizationId) ||
+			organizations.find((org: { id: string }) => org.id === typedSession.session.activeOrganizationId) ||
 			organizations[0];
 
 		if (!organization) {
@@ -64,8 +67,9 @@ export default async function Layout({ children }: PropsWithChildren) {
 		((config.organizations.enable && config.organizations.enableBilling) || config.users.enableBilling) &&
 		!hasFreePlan
 	) {
+		const typedSession = session as SessionWithUser;
 		const organizationId = config.organizations.enable
-			? (session as any)?.session?.activeOrganizationId || (organizations as any)?.at(0)?.id
+			? typedSession.session.activeOrganizationId || (organizations as Organization[]).at(0)?.id
 			: undefined;
 
 		const [error, data] = await attemptAsync<{ purchases: Purchase[] }, Error>(() =>

@@ -5,6 +5,8 @@ import { AuthWrapper } from "@saas/shared/components/AuthWrapper";
 import { attemptAsync } from "es-toolkit";
 import { redirect } from "next/navigation";
 import { createPurchasesHelper } from "@/lib/auth/helpers";
+import type { Organization } from "@/types/organization";
+import type { SessionWithUser } from "@/types/session";
 
 // TODO: Replace with actual config from environment/app settings
 const config = {
@@ -32,13 +34,13 @@ export default async function ChoosePlanPage() {
 
 	let organizationId: string | undefined;
 	if (config.organizations.enable && config.organizations.enableBilling) {
-		const organization = (await getOrganizationList()).at(0);
+		const organization = (await getOrganizationList()).at(0) as Organization | undefined;
 
 		if (!organization) {
 			redirect("/new-organization");
 		}
 
-		organizationId = (organization as any)?.id;
+		organizationId = organization.id;
 	}
 
 	const [error, purchases] = await attemptAsync(() => getPurchases(organizationId));
@@ -67,7 +69,7 @@ export default async function ChoosePlanPage() {
 								organizationId,
 							}
 						: {
-								userId: (session as any)?.user?.id,
+								userId: (session as SessionWithUser).user?.id,
 							})}
 				/>
 			</div>

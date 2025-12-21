@@ -1,5 +1,6 @@
 import { getSession } from "@saas/auth/lib/server";
 import { redirect } from "next/navigation";
+import type { SessionWithUser } from "@/types/session";
 import { ApiKeysClient } from "./api-keys-client";
 
 /**
@@ -9,7 +10,7 @@ import { ApiKeysClient } from "./api-keys-client";
 export default async function ApiKeysPage() {
 	const session = await getSession();
 
-	if (!(session as any)?.user) {
+	if (!(session as SessionWithUser | null)?.user) {
 		redirect("/auth/login?returnTo=/app/api-keys");
 	}
 

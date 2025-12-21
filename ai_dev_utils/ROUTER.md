@@ -1,4 +1,12 @@
+🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑
+     STOP: READ THIS BEFORE ANY CODE
+🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑
+
 # Task Router
+
+**This is your BIBLE for working in this codebase.**
+**Every LLM session MUST start here.**
+**Skipping = tracked violation = path to auto-promotion.**
 
 **Purpose:** Intelligent task classification and workflow routing with self-learning
 **Entry Point:** Load this file to start any development task
@@ -7,14 +15,85 @@
 
 ---
 
+## ⚠️ MANDATORY: STOP BEFORE CODING
+
+**DO NOT write ANY code until you complete this checklist:**
+
+### Pre-Flight Checklist (NON-NEGOTIABLE)
+
+- [ ] **1. Call `codebase.start_task()`** (or `get_context` if start_task unavailable)
+  - This is your ENTRY POINT for all work
+  - Bundles: context + learnings + violations + checklist
+  - Returns task-specific guidance
+
+- [ ] **2. Review returned patterns and ACKNOWLEDGE which apply**
+  - Don't just read - explicitly state: "Pattern X applies because..."
+  - Check for anti-patterns in your planned approach
+
+- [ ] **3. Verify existence of all referenced entities**
+  - Packages: `ls packages/[NAME]/package.json`
+  - Files: `test -f [PATH]`
+  - Imports: Never assume, always verify
+
+- [ ] **4. ONLY THEN: Proceed with implementation**
+
+### Enforcement
+
+**User Responsibility:**
+- If LLM skips checklist → Ask: "Did you call start_task?"
+- If LLM says "I'll implement X" without context → Stop the thread
+- If LLM codes first, asks questions later → Point to this section
+
+**System Tracking:**
+- Violation type: `ignored-router-instructions`
+- Current count: **1x** (as of 2025-12-20)
+- Threshold: **3x** = auto-promotion to patterns.md
+- Threshold: **5x** = automated detection rule
+
+**Why This Exists:**
+This exact violation just happened. LLM started deduplication without checking for existing patterns. The MCP tools exist specifically to prevent this. Use them.
+
+---
+
 ## ⚠️ MANDATORY: Use MCP Tools
 
 **DO NOT use grep/cat to search patterns or violations.**
 **ALWAYS use the MCP tools below - they are available and connected.**
 
+### 🚨 PRIMARY TOOL: start_task (USE THIS FIRST)
+
+```typescript
+// 🚨 REQUIRED: Call this BEFORE any implementation
+// Logical name (for documentation):
+codebase.start_task({
+  task: "your task description",
+  keywords: ["relevant", "keywords"],
+  files: ["files/you/will/modify.ts"]
+})
+
+// Actual MCP invocation (in Cursor/Claude/IDE):
+mcp_codebase_start_task({ ... })
+
+// Returns:
+// - taskType: AUTO-CLASSIFIED (BUG_FIX, REFACTORING, etc.)
+// - architecture: { context, hardRules, patterns }
+// - learnings: Past solutions to similar problems
+// - recentViolations: What NOT to do
+// - checklist: Task-specific required steps
+// - beforeCommit: Reminder to call check_patterns
+```
+
+**Why start_task replaces get_context:**
+- Bundles everything you need in ONE call
+- Auto-generates task-specific checklist
+- Classifies task type for workflow routing
+- Makes it impossible to skip learnings/violations
+- Reduces tool call overhead (1 call vs 3-4)
+
 ### Before ANY Implementation
 ```typescript
-// REQUIRED: Call this first
+// ⚠️ DEPRECATED: Use start_task instead
+// LEGACY: Only use if start_task unavailable
 codebase.get_context({
   task: "your task description",
   keywords: ["relevant", "keywords"],
@@ -220,6 +299,23 @@ ai_dev_utils/
 ---
 
 ## MCP Context Tools
+
+**⚠️ SCOPE: This section describes the INTERNAL development MCP server only.**
+**For SnapBack platform customers, see `packages/intelligence/README.md`**
+
+### Internal vs External MCP Servers
+
+| Aspect | Internal (`ai_dev_utils/mcp`) | External (`@snapback/intelligence`) |
+|--------|-------------------------------|--------------------------------------|
+| **Server Name** | `"codebase"` | `"snapback"` (configurable) |
+| **Tool Prefix** | `mcp_codebase_*` | `mcp_snapback_*` |
+| **Users** | SnapBack development team | SnapBack platform customers |
+| **Data Location** | `ai_dev_utils/` (patterns, learnings, violations) | Customer workspace (e.g., `.snapback/`) |
+| **ROUTER.md Access** | ✅ Full access | ❌ No access (internal only) |
+| **Configuration** | `rootDir: 'ai_dev_utils'` | `rootDir: customerWorkspace` |
+| **Purpose** | Self-learning development assistant | Shipped intelligence for customer codebases |
+
+**Same intelligence algorithms, different data sources.**
 
 **Available via Internal MCP Server** (`ai_dev_utils/mcp/server.ts`)
 

@@ -54,19 +54,30 @@ it('should handle time correctly', () => {
 ## Common Violations (Learned)
 
 ### 1. Service Bypass
-**Seen:** 0 times
+**Seen:** 1 time
 **Pattern:** Direct DB queries in procedure files
 **Fix:** Move all business logic to service layer
 
-### 2. Vague Assertions
-**Seen:** 0 times
+### 2. Vague Assertions ✅ PROMOTED (4x)
+**Seen:** 4 times
 **Pattern:** Using `.toBeTruthy()` instead of `.toEqual()`
 **Fix:** Always assert specific values
+**Detection:** `\.(toBeTruthy|toBeFalsy|toBeDefined|toBeUndefined)\(\)` in test files
 
 ### 3. Missing Error Path
-**Seen:** 0 times
+**Seen:** 4 times (as INCOMPLETE_COVERAGE)
 **Pattern:** Only testing happy path
-**Fix:** Always include error case test
+**Fix:** Always include 4-path coverage: happy, sad, edge, error
+
+### 4. Path Resolution Bug
+**Seen:** 1 time
+**Pattern:** Using `process.cwd()` for path resolution in ESM MCP tools
+**Fix:** Use `fileURLToPath(import.meta.url)` + `path.dirname()` pattern
+
+### 5. Ignored Router Instructions
+**Seen:** 1 time
+**Pattern:** Starting implementation without calling `codebase.get_context()` first
+**Fix:** ALWAYS call `codebase.start_task()` or `codebase.get_context()` BEFORE coding
 
 ---
 
@@ -120,8 +131,10 @@ it('should handle time correctly', () => {
 
 | Date | Violation | File | Fix Applied |
 |------|-----------|------|-------------|
-| | | | |
+| 2025-12-20 | path-resolution-bug | ai_dev_utils/mcp/prompt-cache.ts | Changed process.cwd() to fileURLToPath pattern |
+| 2025-12-20 | onnxruntime-deps | packages/intelligence | Added onnxruntime-common, onnxruntime-node |
+| 2025-12-20 | dual-use-mcp | apps/mcp-server | Wired customer MCP with snapback.* tools |
 
 ---
 
-*Last updated: [Automatically updated by violation reports]*
+*Last updated: 2025-12-20 (Priorities 1-4 complete, dual-use MCP integrated)*

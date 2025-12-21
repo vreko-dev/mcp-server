@@ -969,6 +969,28 @@ Web Research (best practices) → Existence Validation → 4_dev_complete.md (im
 4. Validate fixes against performance budget (500ms for activation)
 5. Commit with before/after measurements
 
+**Package Consolidation:**
+```
+2_research.md (find duplicates) → Existence Validation → Migrate → Delete Old → Verify Build
+```
+
+**Key steps:**
+1. Grep for actual imports (not comments) to find real consumers
+2. Check package.json dependencies of consuming packages
+3. If zero consumers → fast delete path (15 min vs 3-4 hours)
+4. If consumers exist:
+   a. Build canonical package FIRST (`pnpm build:oss`)
+   b. Update imports in dependent files
+   c. Delete duplicate package directory
+   d. Update tsconfig.json references if needed
+   e. Run `pnpm install` to rebuild lockfile
+   f. Verify build passes
+
+**Critical checks:**
+- Never delete package with active consumers without migration
+- Build canonical before updating imports
+- Learnings from 2025-12-20: @snapback/analytics and @snapback/mail had zero consumers, deleted in 15 min
+
 ---
 
 ## Workflow Files
@@ -1293,6 +1315,15 @@ cat ai_dev_utils/state/current-task.json | jq
 | L049 | pitfall | placeholder test, `expect(true).toBe(true)`, TODO | After ANY test changes, run `grep -rn 'expect(true).toBe(true)\|// TODO' test/` - treat matches as blockers |
 | L050 | pattern | test passes but tests nothing | Passing tests with no assertions = false confidence. Audit inherited tests before marking complete |
 | L051 | workflow | test file modification | MANDATORY verification: 1) Tests compile 2) Tests pass 3) No placeholder assertions remain |
+
+**Captured from Phase 4 Vitals Learning & Calibration session (2025-12-21):**
+
+| ID | Type | Trigger | Solution |
+|----|------|---------|----------|
+| L052 | pattern | vitals learning calibration | Use packages/intelligence/src/vitals/learning/ with UserBehaviorLearner, ThresholdCalibrator, TrajectoryPredictor |
+| L053 | pattern | calibration lifecycle | Status flow: uncalibrated → learning (5 obs) → calibrated (20 obs) → locked (50 obs) |
+| L054 | pattern | plateau detection | For trend calculations, use last 3 snapshots to detect stable patterns after escalation |
+| L055 | pattern | confidence penalty | Entropy penalty (0.15) when no behavior exceeds 60% dominance - prevents false calibration confidence |
 
 ---
 

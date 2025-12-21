@@ -2,10 +2,10 @@
  * NPS Survey Submission Procedure
  */
 
-import { feedback } from "@snapback/platform";
+import { logger } from "@snapback/infrastructure";
 import { z } from "zod";
 import { protectedProcedure } from "@/orpc/procedures";
-import { getDb } from "@/src/services/database";
+import { submitNPSSurvey } from "../services/feedback-service";
 
 const submitNPSInputSchema = z.object({
 	userId: z.string(),
@@ -15,32 +15,18 @@ const submitNPSInputSchema = z.object({
 });
 
 export const submitNPS = protectedProcedure.input(submitNPSInputSchema).handler(async ({ input, context }) => {
-	const db = getDb();
-
-	if (!db) {
-		throw new Error("Database not available");
+	try {
+		// Delegate to service layer per C-002
+		return await submitNPSSurvey({
+			userId: context.user?.id ?? "",
+			apiKeyId: context.auth?.apiKeyId ?? "session-feedback",
+			sessionId: context.auth?.sessionId,
+			score: input.score,
+			reason: input.reason,
+			timestamp: new Date(input.timestamp),
+		});
+	} catch (error) {
+		logger.error("Failed to submit NPS", { error });
+		throw new Error("Failed to submit NPS survey");
 	}
-
-	// Calculate NPS category
-	const category = input.score >= 9 ? "promoter" : input.score >= 7 ? "passive" : "detractor";
-
-	// Insert into feedback table as NPS type
-	await db.insert(feedback).values({
-		userId: context.user?.id ?? "",
-		apiKeyId: context.auth?.apiKeyId ?? "session-feedback",
-		sessionId: context.auth?.sessionId,
-		feedbackType: "nps",
-		feedbackText: input.reason,
-		rating: input.score,
-		metadata: {
-			category,
-			userId: input.userId,
-		},
-		timestamp: new Date(input.timestamp),
-	});
-
-	return {
-		success: true,
-		category,
-	};
 });

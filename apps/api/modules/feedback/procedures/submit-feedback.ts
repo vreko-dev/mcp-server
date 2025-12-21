@@ -2,10 +2,10 @@
  * Feedback Submission Procedure
  */
 
-import { feedback } from "@snapback/platform";
+import { logger } from "@snapback/infrastructure";
 import { z } from "zod";
 import { protectedProcedure } from "@/orpc/procedures";
-import { getDb } from "@/src/services/database";
+import { sendFeedbackToSlack, submitUserFeedback } from "../services/feedback-service";
 
 const submitFeedbackInputSchema = z.object({
 	category: z.enum(["bug", "feature", "question", "other"]),
@@ -19,64 +19,40 @@ const submitFeedbackInputSchema = z.object({
 export const submitFeedback = protectedProcedure
 	.input(submitFeedbackInputSchema)
 	.handler(async ({ input, context }) => {
-		const db = getDb();
-
-		if (!db) {
-			throw new Error("Database not available");
-		}
-
-		// Insert into database
-		await db.insert(feedback).values({
-			userId: context.user?.id ?? "",
-			apiKeyId: context.auth?.apiKeyId ?? "session-feedback",
-			sessionId: context.auth?.sessionId,
-			feedbackType: input.category,
-			feedbackText: input.message,
-			metadata: {
+		try {
+			// Delegate to service layer per C-002
+			const result = await submitUserFeedback({
+				userId: context.user?.id ?? "",
+				apiKeyId: context.auth?.apiKeyId ?? "session-feedback",
+				sessionId: context.auth?.sessionId,
+				category: input.category,
+				message: input.message,
 				email: input.email,
 				userAgent: input.userAgent,
 				url: input.url,
-			},
-			timestamp: new Date(input.timestamp),
-		});
+				timestamp: new Date(input.timestamp),
+			});
 
-		// Send to Slack webhook (optional)
-		if (process.env.SLACK_FEEDBACK_WEBHOOK) {
+			// Send to Slack webhook (best effort, don't fail if it errors)
 			try {
-				await fetch(process.env.SLACK_FEEDBACK_WEBHOOK, {
-					method: "POST",
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify({
-						text: `New ${input.category} feedback from ${context.user?.email || "anonymous"}`,
-						blocks: [
-							{
-								type: "section",
-								text: {
-									type: "mrkdwn",
-									text: `*${input.category.toUpperCase()} Feedback*\n${input.message}`,
-								},
-							},
-							{
-								type: "context",
-								elements: [
-									{
-										type: "mrkdwn",
-										text: `User: ${context.user?.email || "N/A"} | URL: ${input.url || "N/A"}`,
-									},
-								],
-							},
-						],
-					}),
+				await sendFeedbackToSlack({
+					category: input.category,
+					message: input.message,
+					userEmail: context.user?.email,
+					url: input.url,
+					userId: context.user?.id,
 				});
-
-				console.log("[Feedback] Sent to Slack", { userId: context.user?.id });
+				logger.info("Feedback sent to Slack", { userId: context.user?.id });
 			} catch (error) {
-				console.error("[Feedback] Failed to send to Slack", {
+				logger.error("Failed to send feedback to Slack", {
 					error: error instanceof Error ? error.message : String(error),
 				});
 				// Don't fail the request if Slack is down
 			}
-		}
 
-		return { success: true };
+			return result;
+		} catch (error) {
+			logger.error("Failed to submit feedback", { error });
+			throw new Error("Failed to submit feedback");
+		}
 	});

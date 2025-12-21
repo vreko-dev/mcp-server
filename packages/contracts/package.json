@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@asteasolutions/zod-to-openapi": "catalog:",
+    "eventemitter2": "catalog:",
     "nanoid": "catalog:",
     "zod": "catalog:"
   },
@@ -63,6 +64,11 @@
       "types": "./dist/observability/index.d.ts",
       "import": "./dist/observability/index.js",
       "require": "./dist/observability/index.cjs"
+    },
+    "./eventBus/emitter": {
+      "types": "./dist/eventBus.emitter.d.ts",
+      "import": "./dist/eventBus.emitter.js",
+      "require": "./dist/eventBus.emitter.cjs"
     }
   },
   "publishConfig": {
@@ -106,6 +112,11 @@
         "types": "./dist/observability/index.d.ts",
         "import": "./dist/observability/index.js",
         "require": "./dist/observability/index.cjs"
+      },
+      "./eventBus/emitter": {
+        "types": "./dist/eventBus.emitter.d.ts",
+        "import": "./dist/eventBus.emitter.js",
+        "require": "./dist/eventBus.emitter.cjs"
       }
     }
   },

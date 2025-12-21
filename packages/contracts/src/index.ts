@@ -52,6 +52,19 @@ export {
 	UpdateProfileResponseSchema,
 } from "./auth/index";
 export * from "./eventBus";
+// Event bus emitter implementation (consolidated from @snapback/events)
+export {
+	type EnhancedEvent,
+	type EventAcknowledgment,
+	type FileProtectedPayload,
+	type FileUnprotectedPayload,
+	type ProtectionChangedPayload,
+	QoSLevel,
+	SnapBackEvent,
+	SnapBackEventBus,
+	SnapBackEventBusEventEmitter2,
+	type SnapshotCreatedPayload,
+} from "./eventBus.emitter";
 export * from "./events/index";
 export * from "./exports";
 export * from "./feature-manager";

@@ -7,6 +7,11 @@
  * - Pressure: Risk accumulation
  * - Oxygen: Snapshot coverage
  *
+ * Phase 4 additions:
+ * - User behavior learning
+ * - Per-workspace threshold calibration
+ * - Trajectory prediction
+ *
  * Provides decision support for when to create snapshots and guides AI agents.
  *
  * @performance Budget: <10ms for current() snapshot
@@ -23,6 +28,10 @@ import type {
 	VitalsFileChangeEvent,
 	VitalsSnapshot,
 } from "../types/vitals.js";
+import type { ThresholdAdjustments, TrajectoryForecast } from "../types/vitals-learning.js";
+import { ThresholdCalibrator } from "./learning/ThresholdCalibrator.js";
+import { TrajectoryPredictor } from "./learning/TrajectoryPredictor.js";
+import { UserBehaviorLearner } from "./learning/UserBehaviorLearner.js";
 import { DEFAULT_OXYGEN_CONFIG, OxygenSensor } from "./OxygenSensor.js";
 import { DEFAULT_PRESSURE_CONFIG, PressureGauge } from "./PressureGauge.js";
 import { DEFAULT_PULSE_CONFIG, PulseTracker } from "./PulseTracker.js";
@@ -53,8 +62,15 @@ export class WorkspaceVitals extends EventEmitter {
 	private history: VitalsSnapshot[] = [];
 	private readonly maxHistory = 100;
 
-	private constructor(config: Partial<VitalsConfig> = {}, initialTime: number = Date.now()) {
+	// Phase 4: Learning components
+	private readonly workspaceId: string;
+	private readonly learner: UserBehaviorLearner;
+	private readonly calibrator: ThresholdCalibrator;
+	private readonly predictor: TrajectoryPredictor;
+
+	private constructor(workspaceId: string, config: Partial<VitalsConfig> = {}, initialTime: number = Date.now()) {
 		super();
+		this.workspaceId = workspaceId;
 		this.config = {
 			pulse: { ...DEFAULT_VITALS_CONFIG.pulse, ...config.pulse },
 			temperature: { ...DEFAULT_VITALS_CONFIG.temperature, ...config.temperature },
@@ -66,6 +82,11 @@ export class WorkspaceVitals extends EventEmitter {
 		this.temperature = new TemperatureMonitor(this.config.temperature);
 		this.pressure = new PressureGauge(this.config.pressure, initialTime);
 		this.oxygen = new OxygenSensor(this.config.oxygen);
+
+		// Initialize learning components
+		this.learner = new UserBehaviorLearner(workspaceId);
+		this.calibrator = new ThresholdCalibrator(workspaceId, this.learner);
+		this.predictor = new TrajectoryPredictor(workspaceId);
 	}
 
 	/**
@@ -74,7 +95,7 @@ export class WorkspaceVitals extends EventEmitter {
 	 */
 	static for(workspaceId: string, config?: Partial<VitalsConfig>): WorkspaceVitals {
 		if (!WorkspaceVitals.instances.has(workspaceId)) {
-			WorkspaceVitals.instances.set(workspaceId, new WorkspaceVitals(config));
+			WorkspaceVitals.instances.set(workspaceId, new WorkspaceVitals(workspaceId, config));
 		}
 		return WorkspaceVitals.instances.get(workspaceId)!;
 	}
@@ -83,7 +104,7 @@ export class WorkspaceVitals extends EventEmitter {
 	 * Create a new instance (for testing - bypasses singleton).
 	 */
 	static create(config?: Partial<VitalsConfig>, initialTime?: number): WorkspaceVitals {
-		return new WorkspaceVitals(config, initialTime);
+		return new WorkspaceVitals(`test-${Date.now()}`, config, initialTime);
 	}
 
 	/**
@@ -284,6 +305,70 @@ export class WorkspaceVitals extends EventEmitter {
 		const pressureMultiplier = vitals.pressure.value > 60 ? 0.8 : 1.0;
 
 		return tempMultiplier * oxygenMultiplier * pressureMultiplier;
+	}
+
+	// =========================================================================
+	// PHASE 4: LEARNING & CALIBRATION
+	// =========================================================================
+
+	/**
+	 * Record user behavior for learning.
+	 * Call when user creates a snapshot to learn their patterns.
+	 */
+	recordBehavior(userCreatedSnapshot: boolean, now: number = Date.now()): void {
+		const vitals = this.current(now);
+		const decision = this.shouldSnapshot(now);
+
+		// Record observation
+		this.learner.recordObservation({
+			vitals,
+			userCreatedSnapshot,
+			vitalsRecommended: decision.should,
+		});
+
+		// Update calibration
+		this.calibrator.updateFromBehavior();
+
+		// Record for trajectory prediction
+		this.predictor.recordSnapshots([vitals]);
+	}
+
+	/**
+	 * Get calibrated threshold adjustments.
+	 * Returns per-workspace learned adjustments (multipliers).
+	 */
+	getCalibratedThresholds(): ThresholdAdjustments {
+		return this.calibrator.getAdjustedThresholds();
+	}
+
+	/**
+	 * Get trajectory forecast.
+	 * Predicts future trajectory based on recent history.
+	 */
+	getForecast(): TrajectoryForecast {
+		return this.predictor.predict();
+	}
+
+	/**
+	 * Get user behavior statistics.
+	 */
+	getBehaviorStats() {
+		return this.learner.getStats();
+	}
+
+	/**
+	 * Get workspace calibration profile.
+	 */
+	getCalibrationProfile() {
+		return this.calibrator.getProfile();
+	}
+
+	/**
+	 * Reset learning data for this workspace.
+	 */
+	resetLearning(): void {
+		this.calibrator.reset();
+		this.predictor.reset();
 	}
 
 	// =========================================================================

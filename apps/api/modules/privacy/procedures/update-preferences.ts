@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { protectedProcedure } from "@/orpc/procedures";
-import { getDb } from "@/src/services/database";
+import { buildPrivacyPreferences } from "../services/privacy-service";
 
 const updatePreferencesSchema = z.object({
 	cloudBackupDefault: z.boolean().optional(),
@@ -23,25 +23,8 @@ export const updatePreferences = protectedProcedure
 			throw new Error("Unauthorized");
 		}
 
-		// Check if database is available
-		const db = getDb();
-		if (!db) {
-			throw new Error("Database not available");
-		}
-
-		// For now, we'll just return success without actually updating anything
-		// since the user table doesn't have a metadata field
-		const privacyPreferences = {
-			cloudBackupDefault: input.cloudBackupDefault ?? false,
-			telemetryOptIn: input.telemetryOptIn ?? true,
-			analyticsOptIn: input.analyticsOptIn ?? false,
-			telemetryPreferences: input.telemetryPreferences ?? {
-				errorReporting: true,
-				usageAnalytics: false,
-				performanceMetrics: true,
-			},
-			updatedAt: new Date().toISOString(),
-		};
+		// Build preferences via service
+		const privacyPreferences = buildPrivacyPreferences(input);
 
 		return {
 			success: true,

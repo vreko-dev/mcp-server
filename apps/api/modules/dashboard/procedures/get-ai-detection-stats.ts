@@ -1,11 +1,8 @@
 import { ORPCError } from "@orpc/server";
 import { logger } from "@snapback/infrastructure";
-import { featureUsage } from "@snapback/platform";
-import { and, count, desc, eq } from "drizzle-orm";
 import { z } from "zod";
 import { protectedProcedure } from "@/orpc/procedures";
-import { getDb } from "@/src/services/database";
-import { getTrustCalibrationService } from "@/src/services/trust-calibration";
+import { getAIDetectionStats as getAIDetectionStatsFromService } from "../services/dashboard-service";
 
 const aiDetectionStatSchema = z.object({
 	tool: z.string(),
@@ -21,34 +18,8 @@ export const getAIDetectionStats = protectedProcedure
 		const userId = context.user.id;
 
 		try {
-			const db = getDb();
-			if (!db) {
-				return [];
-			}
-
-			// Optimized query for AI detection stats
-			const aiFeatures = await getDb()
-				.select({
-					featureName: featureUsage.featureName,
-					count: count(),
-				})
-				.from(featureUsage)
-				.where(and(eq(featureUsage.userId, userId), eq(featureUsage.featureCategory, "ai_assistance")))
-				.groupBy(featureUsage.featureName)
-				.orderBy(desc(count()));
-
-			// Map feature names to friendly tool names with REAL confidence scores
-			// Get trust calibration service for real scores instead of random mocking
-			const trustService = getTrustCalibrationService();
-
-			return Promise.all(
-				aiFeatures.map(async (feature: any) => ({
-					tool: formatToolName(feature.featureName),
-					count: feature.count,
-					// Get REAL confidence score from trust calibration instead of Math.random()
-					avgConfidence: await trustService.getConfidenceScore(userId, formatToolName(feature.featureName)),
-				})),
-			);
+			// Delegate to service layer per C-002
+			return await getAIDetectionStatsFromService(userId);
 		} catch (error) {
 			logger.error("Failed to get AI detection stats", { userId, error });
 			throw new ORPCError("INTERNAL_SERVER_ERROR", {

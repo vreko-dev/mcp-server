@@ -1,10 +1,8 @@
 import { ORPCError } from "@orpc/server";
 import { logger } from "@snapback/infrastructure";
-import { featureUsage, snapshots } from "@snapback/platform";
-import { and, desc, eq } from "drizzle-orm";
 import { z } from "zod";
 import { protectedProcedure } from "@/orpc/procedures";
-import { getDb } from "@/src/services/database";
+import { getRecentActivity as getRecentActivityFromService } from "../services/dashboard-service";
 
 const activitySchema = z.object({
 	type: z.enum(["snapshot", "ai_detection", "recovery"]),
@@ -21,57 +19,8 @@ export const getRecentActivity = protectedProcedure
 		const userId = context.user.id;
 
 		try {
-			const db = getDb();
-			if (!db) {
-				return [];
-			}
-
-			// Get recent snapshots (optimized with limit)
-			const recentSnapshots = await getDb()
-				.select({
-					id: snapshots.id,
-					trigger: snapshots.trigger,
-					fileCount: snapshots.fileCount,
-					riskScore: snapshots.riskScore,
-					createdAt: snapshots.createdAt,
-				})
-				.from(snapshots)
-				.where(eq(snapshots.userId, userId))
-				.orderBy(desc(snapshots.createdAt))
-				.limit(5); // Reduced from 10 to 5 for better performance
-
-			// Get recent AI detections (optimized with limit)
-			const recentAI = await getDb()
-				.select({
-					featureName: featureUsage.featureName,
-					createdAt: featureUsage.createdAt,
-					metadata: featureUsage.metadata,
-				})
-				.from(featureUsage)
-				.where(and(eq(featureUsage.userId, userId), eq(featureUsage.featureCategory, "ai_assistance")))
-				.orderBy(desc(featureUsage.createdAt))
-				.limit(5); // Reduced from 10 to 5 for better performance
-
-			// Combine and format activities
-			const activities: z.infer<typeof activitySchema>[] = [
-				...recentSnapshots.map((cp) => ({
-					type: (cp.riskScore && cp.riskScore > 0 ? "recovery" : "snapshot") as "snapshot" | "recovery",
-					message: cp.riskScore && cp.riskScore > 0 ? "Code recovered from risk" : "Snapshot created",
-					timestamp: cp.createdAt ? formatRelativeTime(cp.createdAt) : "unknown",
-					metadata: { files: cp.fileCount, trigger: cp.trigger },
-				})),
-				...recentAI.map((ai) => ({
-					type: "ai_detection" as const,
-					message: `${formatToolName(ai.featureName)} detected`,
-					timestamp: ai.createdAt ? formatRelativeTime(ai.createdAt) : "unknown",
-					metadata: ai.metadata ? (ai.metadata as Record<string, unknown>) : undefined,
-				})),
-			];
-
-			// Sort by timestamp and return top 5
-			return activities
-				.sort((a, b) => parseRelativeTime(b.timestamp).getTime() - parseRelativeTime(a.timestamp).getTime())
-				.slice(0, 5);
+			// Delegate to service layer per C-002
+			return await getRecentActivityFromService(userId);
 		} catch (error) {
 			logger.error("Failed to get recent activity", { userId, error });
 			throw new ORPCError("INTERNAL_SERVER_ERROR", {

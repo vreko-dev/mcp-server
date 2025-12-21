@@ -262,11 +262,12 @@ export class SemanticRetriever {
 
 		// Score all sections by similarity
 		const scored: ScoredSection[] = sections
+			.filter((s): s is Section & { embedding: Uint8Array } => s.embedding !== undefined && s.embedding !== null)
 			.map((s) => {
 				const embeddingArray = new Float32Array(
-					s.embedding?.buffer,
-					s.embedding?.byteOffset,
-					s.embedding?.byteLength / 4,
+					s.embedding.buffer,
+					s.embedding.byteOffset,
+					s.embedding.byteLength / 4,
 				);
 				return {
 					...s,

@@ -1,0 +1,23 @@
+{
+	"mcpServers": {
+		"sequential-thinking": {
+			"command": "npx",
+			"args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+		},
+		"context7": {
+			"command": "npx",
+			"args": ["-y", "@upstash/context7-mcp@latest"]
+		},
+		"fetch": {
+			"command": "uvx",
+			"args": ["mcp-server-fetch"]
+		},
+		"codebase": {
+			"command": "npx",
+			"args": ["-y", "tsx", "/Users/user1/WebstormProjects/SnapBack-Site/ai_dev_utils/mcp/server.ts", "start"],
+			"env": {
+				"ANTHROPIC_API_KEY": "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"
+			}
+		}
+	}
+}

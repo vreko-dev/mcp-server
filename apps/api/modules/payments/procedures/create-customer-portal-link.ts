@@ -1,12 +1,10 @@
 import { ORPCError } from "@orpc/server";
 import { logger } from "@snapback/infrastructure";
 import { createCustomerPortalLink as createCustomerPortalLinkFn } from "@snapback/integrations/stripe/provider/stripe";
-import { member, purchase } from "@snapback/platform";
-import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 import { localeMiddleware } from "@/orpc/middleware/locale-middleware";
 import { protectedProcedure } from "@/orpc/procedures";
-import { getDb } from "@/src/services/database";
+import { checkUserOrganizationOwnership, getPurchaseById } from "../services/payments-service";
 
 export const createCustomerPortalLink = protectedProcedure
 	.use(localeMiddleware)
@@ -32,36 +30,18 @@ export const createCustomerPortalLink = protectedProcedure
 			input: { purchaseId: string; redirectUrl?: string };
 			context: { user: { id: string } };
 		}): Promise<{ customerPortalLink: string }> => {
-			// Check if database is available
-			const db = getDb();
-			if (!db) {
-				throw new Error("Database not available");
-			}
-
-			// Get purchase by ID using Drizzle ORM
-			const purchaseResult = await getDb().select().from(purchase).where(eq(purchase.id, purchaseId)).limit(1);
-
-			if (!purchaseResult || purchaseResult.length === 0) {
-				throw new ORPCError("FORBIDDEN");
-			}
-
-			const purchaseData = purchaseResult[0];
+			// Get purchase via service
+			const purchaseData = await getPurchaseById(purchaseId);
 
 			if (!purchaseData) {
 				throw new ORPCError("FORBIDDEN");
 			}
 
 			if (purchaseData.organizationId) {
-				// Check if user is owner of the organization
-				const membershipResult = await getDb()
-					.select()
-					.from(member)
-					.where(and(eq(member.organizationId, purchaseData.organizationId), eq(member.userId, user.id)))
-					.limit(1);
+				// Check if user is owner of the organization via service
+				const { isOwner } = await checkUserOrganizationOwnership(purchaseData.organizationId, user.id);
 
-				const membership = membershipResult && membershipResult.length > 0 ? membershipResult[0] : null;
-
-				if (membership?.role !== "owner") {
+				if (!isOwner) {
 					throw new ORPCError("FORBIDDEN");
 				}
 			}

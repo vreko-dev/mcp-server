@@ -80,6 +80,8 @@ export const vitalsToolDefinitions = [
 - Oxygen: Snapshot coverage (0-100%)
 - Trajectory: Overall state (stable/escalating/critical/recovering)
 - Guidance: Suggested actions and blocked operations
+- Forecast: Trajectory predictions (5/10 min)
+- Calibration: Learning status and threshold adjustments
 
 **Performance:** < 10ms`,
 		inputSchema: GetWorkspaceVitalsSchema,
@@ -123,6 +125,9 @@ export async function handleGetWorkspaceVitals(args: unknown): Promise<{
 		const current = vitals.current();
 		const guidance = vitals.getAgentGuidance();
 		const snapshotDecision = vitals.shouldSnapshot();
+		const forecast = vitals.getForecast();
+		const calibration = vitals.getCalibrationProfile();
+		const behaviorStats = vitals.getBehaviorStats();
 
 		return {
 			content: [
@@ -148,6 +153,28 @@ export async function handleGetWorkspaceVitals(args: unknown): Promise<{
 							should: snapshotDecision.should,
 							reason: snapshotDecision.reason,
 							urgency: snapshotDecision.urgency,
+						},
+						forecast: {
+							current: forecast.current,
+							in5Minutes: forecast.in5Minutes,
+							in10Minutes: forecast.in10Minutes,
+							trend: forecast.trend,
+							confidence: forecast.confidence,
+							timeToStateChange: forecast.timeToStateChange,
+						},
+						calibration: {
+							status: calibration.status,
+							observationCount: calibration.observationCount,
+							confidence: calibration.confidence,
+							riskTolerance: calibration.riskTolerance,
+						},
+						behaviorStats: {
+							riskProfile: behaviorStats.riskProfile,
+							totalObservations: behaviorStats.totalObservations,
+							alignedSnapshots: behaviorStats.alignedSnapshots,
+							earlySnapshots: behaviorStats.earlySnapshots,
+							lateSnapshots: behaviorStats.lateSnapshots,
+							missedRecommendations: behaviorStats.missedRecommendations,
 						},
 					},
 				},

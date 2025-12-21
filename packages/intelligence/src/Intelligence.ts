@@ -32,6 +32,7 @@ import type {
 	ViolationsSummary,
 } from "./types/index.js";
 import type { AgentGuidance, SnapshotDecision, VitalsConfig, VitalsSnapshot } from "./types/vitals.js";
+import type { ThresholdAdjustments, TrajectoryForecast, WorkspaceProfile } from "./types/vitals-learning.js";
 import type { PipelineResult } from "./validation/ValidationPipeline.js";
 import { ValidationPipeline } from "./validation/ValidationPipeline.js";
 import { WorkspaceVitals } from "./vitals/WorkspaceVitals.js";
@@ -255,6 +256,59 @@ export class Intelligence {
 	getAgentGuidance(workspaceId: string): AgentGuidance | null {
 		const vitals = WorkspaceVitals.tryGet(workspaceId);
 		return vitals?.getAgentGuidance() ?? null;
+	}
+
+	// =========================================================================
+	// VITALS PHASE 4: Learning & Calibration
+	// =========================================================================
+
+	/**
+	 * Record user behavior for learning
+	 * Call when user creates/acknowledges a snapshot
+	 */
+	recordBehavior(workspaceId: string, userCreatedSnapshot: boolean): void {
+		const vitals = WorkspaceVitals.tryGet(workspaceId);
+		vitals?.recordBehavior(userCreatedSnapshot);
+	}
+
+	/**
+	 * Get calibrated thresholds based on learned user behavior
+	 */
+	getCalibratedThresholds(workspaceId: string): ThresholdAdjustments | null {
+		const vitals = WorkspaceVitals.tryGet(workspaceId);
+		return vitals?.getCalibratedThresholds() ?? null;
+	}
+
+	/**
+	 * Get trajectory forecast (5/10 minute predictions)
+	 */
+	getForecast(workspaceId: string): TrajectoryForecast | null {
+		const vitals = WorkspaceVitals.tryGet(workspaceId);
+		return vitals?.getForecast() ?? null;
+	}
+
+	/**
+	 * Get user behavior statistics
+	 */
+	getBehaviorStats(workspaceId: string): ReturnType<WorkspaceVitals["getBehaviorStats"]> | null {
+		const vitals = WorkspaceVitals.tryGet(workspaceId);
+		return vitals?.getBehaviorStats() ?? null;
+	}
+
+	/**
+	 * Get calibration profile for workspace
+	 */
+	getCalibrationProfile(workspaceId: string): WorkspaceProfile | null {
+		const vitals = WorkspaceVitals.tryGet(workspaceId);
+		return vitals?.getCalibrationProfile() ?? null;
+	}
+
+	/**
+	 * Reset learning data for workspace
+	 */
+	resetLearning(workspaceId: string): void {
+		const vitals = WorkspaceVitals.tryGet(workspaceId);
+		vitals?.resetLearning();
 	}
 
 	// =========================================================================

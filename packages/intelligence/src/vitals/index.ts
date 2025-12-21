@@ -37,6 +37,21 @@ export type {
 	VitalsFileChangeEvent,
 	VitalsSnapshot,
 } from "../types/vitals.js";
+export type {
+	BehaviorStats,
+	CalibrationStatus,
+	RiskProfile,
+	SnapshotObservation,
+	ThresholdAdjustments,
+	TrajectoryForecast,
+	WorkspaceProfile,
+} from "./learning/index.js";
+// Phase 4 exports - Learning & Calibration
+export {
+	ThresholdCalibrator,
+	TrajectoryPredictor,
+	UserBehaviorLearner,
+} from "./learning/index.js";
 export type { OxygenState } from "./OxygenSensor.js";
 export { DEFAULT_OXYGEN_CONFIG, OxygenSensor } from "./OxygenSensor.js";
 export type { PressureState } from "./PressureGauge.js";

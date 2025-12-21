@@ -67,3 +67,24 @@ export type {
 	VitalsFileChangeEvent,
 	VitalsSnapshot,
 } from "./vitals.js";
+// Vitals Learning types (Phase 4)
+export type {
+	BehaviorStats,
+	CalibrationEvent,
+	CalibrationStatus,
+	PredictionContext,
+	ProactiveSuggestion,
+	RiskProfile,
+	SnapshotObservation,
+	SnapshotTiming,
+	SuggestionEvent,
+	SuggestionUrgency,
+	ThresholdAdjustments,
+	TrajectoryForecast,
+	VitalsLearningStore,
+	WorkspaceProfile,
+} from "./vitals-learning.js";
+export {
+	CALIBRATION_THRESHOLDS,
+	DEFAULT_THRESHOLD_ADJUSTMENTS,
+} from "./vitals-learning.js";

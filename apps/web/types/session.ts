@@ -14,7 +14,7 @@ import type { AuthUser } from "@snapback/contracts";
  */
 export interface SessionUser extends AuthUser {
 	/** User role (from Better Auth admin plugin) */
-	role?: string;
+	role?: "user" | "admin" | "viewer" | null;
 	/** Username (from Better Auth username plugin) */
 	username?: string;
 	/** Two-factor authentication enabled */

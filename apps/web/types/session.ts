@@ -19,6 +19,8 @@ export interface SessionUser extends AuthUser {
 	username?: string;
 	/** Two-factor authentication enabled */
 	twoFactorEnabled?: boolean;
+	/** Onboarding completion status (SnapBack-specific) */
+	onboardingComplete?: boolean;
 }
 
 /**

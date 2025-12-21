@@ -13,7 +13,8 @@ export default async function DashboardPage() {
 		redirect("/auth/login");
 	}
 
-	const user = (session as SessionWithUser).user;
+	// TypeScript knows session has user after redirect guard
+	const user = (session as unknown as SessionWithUser).user;
 
 	// Server-side data fetching - runs in parallel
 	try {

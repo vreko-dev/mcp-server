@@ -6,7 +6,6 @@ import { SidebarContentLayout } from "@saas/shared/components/SidebarContentLayo
 import { CreditCardIcon, Settings2Icon, TriangleAlertIcon, Users2Icon } from "lucide-react";
 import { redirect } from "next/navigation";
 import type { PropsWithChildren } from "react";
-import { isOrganizationAdmin } from "@/lib/auth/helpers";
 import type { Organization } from "@/types/organization";
 import type { SessionWithUser } from "@/types/session";
 
@@ -32,7 +31,8 @@ export default async function SettingsLayout({
 		redirect("/app");
 	}
 
-	const userIsOrganizationAdmin = isOrganizationAdmin(organization, (session as SessionWithUser | null)?.user);
+	// Check if user is admin by checking session role (Better Auth admin plugin)
+	const userIsOrganizationAdmin = (session as SessionWithUser | null)?.user?.role === "admin";
 
 	const organizationSettingsBasePath = `/app/${organizationSlug}/settings`;
 

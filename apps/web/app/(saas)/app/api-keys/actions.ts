@@ -74,12 +74,12 @@ export async function createApiKeyAction(name: string): Promise<ApiKey & { fullK
 			fullKey: result.apiKey.key, // Backend returns raw key in `key` field for initial creation
 			message: result.message,
 		};
-	} catch (error: any) {
+	} catch (error: unknown) {
 		// Handle unexpected errors (network, rate limit etc)
 		console.error("[ApiKeys] Create Error:", error);
 
 		// Expose user-friendly message if safe
-		if (error.message && !error.message.includes("internal")) {
+		if (error instanceof Error && error.message && !error.message.includes("internal")) {
 			throw new Error(error.message);
 		}
 

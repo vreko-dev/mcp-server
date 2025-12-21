@@ -3,7 +3,6 @@ import { InviteMemberForm } from "@saas/organizations/components/InviteMemberFor
 import { OrganizationMembersBlock } from "@saas/organizations/components/OrganizationMembersBlock";
 import { SettingsList } from "@saas/shared/components/SettingsList";
 import { notFound } from "next/navigation";
-import { isOrganizationAdmin } from "@/lib/auth/helpers";
 import type { Organization } from "@/types/organization";
 import type { SessionWithUser } from "@/types/session";
 export async function generateMetadata() {
@@ -21,11 +20,12 @@ export default async function OrganizationSettingsPage({ params }: { params: Pro
 		return notFound();
 	}
 
+	// Check if user is admin by checking session role
+	const userIsAdmin = (session as SessionWithUser | null)?.user?.role === "admin";
+
 	return (
 		<SettingsList>
-			{isOrganizationAdmin(organization, (session as SessionWithUser | null)?.user) && (
-				<InviteMemberForm organizationId={organization.id} />
-			)}
+			{userIsAdmin && <InviteMemberForm organizationId={organization.id} />}
 			<OrganizationMembersBlock organizationId={organization.id} />
 		</SettingsList>
 	);

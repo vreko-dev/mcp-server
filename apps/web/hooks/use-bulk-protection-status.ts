@@ -53,7 +53,7 @@ export function useBulkProtectionStatus(
 				}
 
 				const statusMap = new Map<string, FileProtectionStatus>(
-					data?.map((item: any) => [
+					data?.map((item: { id: string; protection: string; updated_at: string }) => [
 						item.id,
 						{
 							id: item.id,
@@ -76,29 +76,31 @@ export function useBulkProtectionStatus(
 		// Subscribe to all file changes
 		const chan = supabase
 			.channel("bulk_protection_changes")
-			.on(
+			.on<{ id: string; protection: string; updated_at: string }>(
 				"postgres_changes",
 				{
 					event: "*",
 					schema: "public",
 					table: "protected_files",
-				},
-				(payload: any) => {
+				} as const,
+				(payload) => {
 					// Update if file is in our watched list
 					if (payload.new && "id" in payload.new && fileIds.includes(payload.new.id)) {
-						const newProtection = payload.new.protection as "enabled" | "disabled";
+						// Type assertion after runtime checks
+						const newData = payload.new as { id: string; protection: string; updated_at: string };
+						const newProtection = newData.protection as "enabled" | "disabled";
 						setStatuses((prev: Map<string, FileProtectionStatus>) => {
 							const updated = new Map(prev);
-							updated.set(payload.new.id, {
-								id: payload.new.id,
+							updated.set(newData.id, {
+								id: newData.id,
 								protection: newProtection,
-								updatedAt: payload.new.updated_at,
+								updatedAt: newData.updated_at,
 							});
 							return updated;
 						});
 						// Call onChange callback if provided
 						if (onChange) {
-							onChange(payload.new.id, newProtection);
+							onChange(newData.id, newProtection);
 						}
 					}
 				},

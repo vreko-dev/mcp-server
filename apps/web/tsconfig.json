@@ -14,6 +14,7 @@
 			"@/components/*": ["./components/*"],
 			"@/lib/*": ["./lib/*"],
 			"@/hooks/*": ["./hooks/*"],
+			"@/types/*": ["./types/*"],
 			"@analytics": ["./modules/analytics"],
 			"@analytics/*": ["./modules/analytics/*"],
 			"@marketing/*": ["./modules/marketing/*"],

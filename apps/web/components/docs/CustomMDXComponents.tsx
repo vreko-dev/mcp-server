@@ -1,9 +1,10 @@
+import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { CopyButton, ExpandableSection, StatusBadge } from "@/components/docs/MicroInteractions";
 
 // Enhanced code block with copy functionality
-function PreWithCopy(props: any) {
+function PreWithCopy(props: ComponentPropsWithoutRef<"pre"> & { children?: ReactNode }) {
 	const { children, ...rest } = props;
-	const codeString = children?.props?.children || "";
+	const codeString = (children as { props?: { children?: string } })?.props?.children || "";
 
 	return (
 		<pre {...rest} className="relative">
@@ -14,34 +15,34 @@ function PreWithCopy(props: any) {
 }
 
 // Custom card component
-function Card(props: any) {
+function Card(props: ComponentPropsWithoutRef<"div">) {
 	const { className, ...rest } = props;
 	return <div {...rest} className={`card ${className || ""}`} />;
 }
 
 // Custom callout component
-function Callout(props: any) {
+function Callout(props: ComponentPropsWithoutRef<"div">) {
 	const { className, ...rest } = props;
 	return <div {...rest} className={`callout ${className || ""}`} />;
 }
 
 // Custom alert variants
-function Alert(props: any) {
+function Alert(props: ComponentPropsWithoutRef<"div">) {
 	const { className, ...rest } = props;
 	return <div {...rest} className={`callout ${className || ""}`} />;
 }
 
-function AlertInfo(props: any) {
+function AlertInfo(props: ComponentPropsWithoutRef<"div">) {
 	const { className, ...rest } = props;
 	return <div {...rest} className={`callout alert-info ${className || ""}`} />;
 }
 
-function AlertWarning(props: any) {
+function AlertWarning(props: ComponentPropsWithoutRef<"div">) {
 	const { className, ...rest } = props;
 	return <div {...rest} className={`callout alert-warning ${className || ""}`} />;
 }
 
-function AlertError(props: any) {
+function AlertError(props: ComponentPropsWithoutRef<"div">) {
 	const { className, ...rest } = props;
 	return <div {...rest} className={`callout alert-error ${className || ""}`} />;
 }

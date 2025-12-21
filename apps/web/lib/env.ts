@@ -85,6 +85,24 @@ export const env = createEnv({
 		NEXT_PUBLIC_PRICE_ID_PRO_MONTHLY: z.string().min(1).optional(),
 		NEXT_PUBLIC_PRICE_ID_PRO_YEARLY: z.string().min(1).optional(),
 		NEXT_PUBLIC_PRICE_ID_LIFETIME: z.string().min(1).optional(),
+
+		// Feature Flags
+		NEXT_PUBLIC_FEATURE_ONBOARDING: z
+			.enum(["true", "false"])
+			.transform((v) => v === "true")
+			.default("true"),
+		NEXT_PUBLIC_FEATURE_ORGANIZATIONS: z
+			.enum(["true", "false"])
+			.transform((v) => v === "true")
+			.default("true"),
+		NEXT_PUBLIC_FEATURE_BILLING: z
+			.enum(["true", "false"])
+			.transform((v) => v === "true")
+			.default("true"),
+		NEXT_PUBLIC_FEATURE_REQUIRE_ORGANIZATION: z
+			.enum(["true", "false"])
+			.transform((v) => v === "true")
+			.default("false"),
 	},
 
 	/**
@@ -126,6 +144,12 @@ export const env = createEnv({
 		NEXT_PUBLIC_PRICE_ID_PRO_MONTHLY: process.env.NEXT_PUBLIC_PRICE_ID_PRO_MONTHLY,
 		NEXT_PUBLIC_PRICE_ID_PRO_YEARLY: process.env.NEXT_PUBLIC_PRICE_ID_PRO_YEARLY,
 		NEXT_PUBLIC_PRICE_ID_LIFETIME: process.env.NEXT_PUBLIC_PRICE_ID_LIFETIME,
+
+		// Feature Flags
+		NEXT_PUBLIC_FEATURE_ONBOARDING: process.env.NEXT_PUBLIC_FEATURE_ONBOARDING,
+		NEXT_PUBLIC_FEATURE_ORGANIZATIONS: process.env.NEXT_PUBLIC_FEATURE_ORGANIZATIONS,
+		NEXT_PUBLIC_FEATURE_BILLING: process.env.NEXT_PUBLIC_FEATURE_BILLING,
+		NEXT_PUBLIC_FEATURE_REQUIRE_ORGANIZATION: process.env.NEXT_PUBLIC_FEATURE_REQUIRE_ORGANIZATION,
 	},
 
 	/**

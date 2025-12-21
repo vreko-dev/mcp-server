@@ -6,14 +6,8 @@ import { UserAvatar } from "@shared/components/UserAvatar";
 import { CreditCardIcon, LockKeyholeIcon, SettingsIcon, TriangleAlertIcon } from "lucide-react";
 import { redirect } from "next/navigation";
 import type { PropsWithChildren } from "react";
+import { config } from "@/lib/config";
 import type { SessionWithUser } from "@/types/session";
-
-// TODO: Replace with actual config from environment/app settings
-const config = {
-	users: {
-		enableBilling: true, // Enable billing in user settings
-	},
-};
 
 export default async function SettingsLayout({ children }: PropsWithChildren) {
 	const session = await getSession();

@@ -6,16 +6,9 @@ import { SidebarContentLayout } from "@saas/shared/components/SidebarContentLayo
 import { CreditCardIcon, Settings2Icon, TriangleAlertIcon, Users2Icon } from "lucide-react";
 import { redirect } from "next/navigation";
 import type { PropsWithChildren } from "react";
+import { config } from "@/lib/config";
 import type { Organization } from "@/types/organization";
 import type { SessionWithUser } from "@/types/session";
-
-// TODO: Replace with actual config from environment/app settings
-const config = {
-	organizations: {
-		enable: true,
-		enableBilling: true,
-	},
-};
 
 export default async function SettingsLayout({
 	children,

@@ -4,35 +4,16 @@ import { attemptAsync } from "es-toolkit";
 import { redirect } from "next/navigation";
 import type { PropsWithChildren } from "react";
 import { createPurchasesHelper } from "@/lib/auth/helpers";
+import { config } from "@/lib/config";
 import type { Organization } from "@/types/organization";
 import type { SessionWithUser } from "@/types/session";
 
-// TODO: Replace with actual config from environment/app settings
 interface Purchase {
 	id: string;
 	type: string;
 	status: string;
 	productId?: string;
 }
-
-const config = {
-	users: {
-		enableOnboarding: true,
-		enableBilling: true,
-	},
-	organizations: {
-		enable: true,
-		enableBilling: true,
-		requireOrganization: false,
-	},
-	payments: {
-		plans: {
-			free: { isFree: true, name: "Free" },
-			pro: { isFree: false, name: "Pro" },
-			enterprise: { isFree: false, name: "Enterprise" },
-		},
-	},
-};
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;

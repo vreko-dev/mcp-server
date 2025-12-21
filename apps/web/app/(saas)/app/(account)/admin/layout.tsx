@@ -6,14 +6,8 @@ import { Logo } from "@shared/components/Logo";
 import { Building2Icon, UsersIcon } from "lucide-react";
 import { redirect } from "next/navigation";
 import type { PropsWithChildren } from "react";
+import { config } from "@/lib/config";
 import type { SessionWithUser } from "@/types/session";
-
-// TODO: Replace with actual config from environment/app settings
-const config = {
-	organizations: {
-		enable: true, // Enable organizations management in admin panel
-	},
-};
 
 export default async function AdminLayout({ children }: PropsWithChildren) {
 	const session = await getSession();

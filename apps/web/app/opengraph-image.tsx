@@ -1,9 +1,5 @@
 import { ImageResponse } from "next/og";
-
-// TODO: Replace with actual config from environment/app settings
-const config = {
-	appName: "SnapBack",
-};
+import { config } from "@/lib/config";
 
 export const size = {
 	width: 1200,

@@ -5,16 +5,9 @@ import { AuthWrapper } from "@saas/shared/components/AuthWrapper";
 import { attemptAsync } from "es-toolkit";
 import { redirect } from "next/navigation";
 import { createPurchasesHelper } from "@/lib/auth/helpers";
+import { config } from "@/lib/config";
 import type { Organization } from "@/types/organization";
 import type { SessionWithUser } from "@/types/session";
-
-// TODO: Replace with actual config from environment/app settings
-const config = {
-	organizations: {
-		enable: true,
-		enableBilling: true,
-	},
-};
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;

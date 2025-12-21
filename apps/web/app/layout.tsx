@@ -7,11 +7,7 @@ import { ClientProviders } from "@shared/components/ClientProviders";
 import { cn } from "@ui/lib";
 import { GeistSans } from "geist/font/sans";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
-
-// TODO: Replace with actual config from environment/app settings
-const config = {
-	appName: "SnapBack",
-};
+import { config } from "@/lib/config";
 
 const sansFont = GeistSans;
 

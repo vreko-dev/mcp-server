@@ -2,15 +2,7 @@ import { getOrganizationList } from "@saas/auth/lib/server";
 import { CreateOrganizationForm } from "@saas/organizations/components/CreateOrganizationForm";
 import { AuthWrapper } from "@saas/shared/components/AuthWrapper";
 import { redirect } from "next/navigation";
-
-// TODO: Replace with actual config from environment/app settings
-const config = {
-	organizations: {
-		enable: true,
-		enableUsersToCreateOrganizations: true,
-		requireOrganization: false,
-	},
-};
+import { config } from "@/lib/config";
 
 export const dynamic = "force-dynamic";
 

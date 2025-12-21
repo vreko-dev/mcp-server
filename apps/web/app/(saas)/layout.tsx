@@ -10,16 +10,7 @@ import { getServerQueryClient } from "@shared/lib/server";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { redirect } from "next/navigation";
 import type { PropsWithChildren } from "react";
-
-// TODO: Replace with actual config from environment/app settings
-const config = {
-	organizations: {
-		enable: true,
-	},
-	users: {
-		enableBilling: true,
-	},
-};
+import { config } from "@/lib/config";
 
 export default async function SaaSLayout({ children }: PropsWithChildren) {
 	const session = await getSession();

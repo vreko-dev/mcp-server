@@ -33,7 +33,7 @@
 
 ```
 PHASE 1: RED    → Write failing test
-PHASE 2: GREEN  → Minimal implementation  
+PHASE 2: GREEN  → Minimal implementation
 PHASE 3: REFACTOR → Improve code quality
 PHASE 4: VERIFY → Quality checks
 PHASE 5: CERTIFY → Final certification
@@ -44,6 +44,21 @@ PHASE 5: CERTIFY → Final certification
 ## Phase 1: RED (Failing Test)
 
 **Objective:** Prove the feature doesn't exist yet with a failing test.
+
+### Pre-RED: Constraint Mapping
+
+Before writing tests, identify applicable constraints from `CONSTRAINTS.md`:
+
+```bash
+# Check which constraints apply to this file/domain
+grep -E "C-00[1-8]" ai_dev_utils/CONSTRAINTS.md | head -10
+```
+
+| Constraint | Applies? | Test Coverage Plan |
+|------------|----------|--------------------|
+| C-001 (Layer boundary) | [ ] | Import validation |
+| C-003 (Specific assertions) | [x] | All tests use .toEqual() |
+| C-004 (4-path coverage) | [x] | happy, sad, edge, error |
 
 ### Steps
 
@@ -58,12 +73,12 @@ PHASE 5: CERTIFY → Final certification
      it("should [expected behavior]", async () => {
        // Arrange
        const input = { /* valid input */ };
-       
+
        // Act
        const result = await service.method(input);
-       
+
        // Assert - SPECIFIC, not vague
-       expect(result).toEqual({ 
+       expect(result).toEqual({
          id: expect.any(String),
          status: "success",
          data: expect.objectContaining({ key: "value" })
@@ -135,6 +150,22 @@ PHASE 5: CERTIFY → Final certification
 - **Minimal means minimal** - no "while I'm here" additions
 - **Use existing utilities** - don't reinvent
 - **Follow canonical patterns** - see `patterns/codebase-patterns.md`
+
+### Anti-Cruft Checklist (Prevent Over-Engineering)
+
+Before marking GREEN complete, verify:
+
+- [ ] Implementation is MINIMAL (only what spec requires)
+- [ ] No defensive coding patterns unless spec explicitly requires
+- [ ] No abstractions for single-use cases (YAGNI)
+- [ ] No "future-proofing" that wasn't in spec
+- [ ] Lines added ≤ 2x lines of test (cruft signal if violated)
+
+**Cruft Detection Formula:**
+```
+IF (implementation_lines > 2 * test_lines) AND (no_spec_justification)
+THEN likely over-engineered → simplify before proceeding
+```
 
 ### Gate Check
 
@@ -241,27 +272,27 @@ pnpm test --coverage
 certification:
   task: "[DESCRIPTION]"
   completed_at: "[TIMESTAMP]"
-  
+
 implementation:
   service: "[PATH]"
   test: "[PATH]"
   lines_added: [NUMBER]
   lines_removed: [NUMBER]
-  
+
 quality:
   test_count: [NUMBER]
   coverage: "[PERCENTAGE]"
   all_gates_passed: true
-  
+
 4_path_coverage:
   happy: "[TEST_NAME]"
   sad: "[TEST_NAME]"
   edge: "[TEST_NAME]"
   error: "[TEST_NAME]"
-  
+
 learnings:
   - "[ANYTHING_LEARNED]"
-  
+
 ready_for_merge: true
 ```
 

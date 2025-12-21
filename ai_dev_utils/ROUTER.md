@@ -445,6 +445,56 @@ const intel = await Intelligence.create({
 
 ---
 
+## Development Methodology: Hybrid SDD+TDD+Constraints
+
+**Research-backed approach combining specification, testing, and architectural guardrails.**
+
+### When to Use Each Approach
+
+| Scenario | Methodology | Workflow |
+|----------|-------------|----------|
+| Simple bug fix (known cause) | Pure TDD | Skip spec → `4_dev_complete.md` |
+| New feature | SDD → TDD | `3_planning.md` spec → `4_dev_complete.md` |
+| Complex refactor | Characterization TDD | Document existing behavior → refactor |
+| Architecture change | Full hybrid | Research → Spec → Planning → TDD → Validate |
+
+### The Hybrid Formula
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    SPECIFICATION LAYER (SDD)                     │
+│  Purpose: Strategic context - WHY and WHAT                       │
+│  Location: 3_planning.md Step 0                                  │
+│  Prevents: Superficial test generation, missing requirements     │
+└──────────────────────────────┬──────────────────────────────────┘
+                               │
+┌──────────────────────────────▼──────────────────────────────────┐
+│                    TEST-DRIVEN LAYER (TDD)                       │
+│  Purpose: Tactical validation - regression prevention            │
+│  Location: 4_dev_complete.md RED/GREEN/REFACTOR                  │
+│  Prevents: Code drift, broken existing functionality             │
+└──────────────────────────────┬──────────────────────────────────┘
+                               │
+┌──────────────────────────────▼──────────────────────────────────┐
+│                    CONSTRAINT LAYER (Guardrails)                 │
+│  Purpose: Architectural enforcement - design erosion prevention  │
+│  Location: CONSTRAINTS.md + 7-layer validation pipeline          │
+│  Prevents: Layer violations, over-engineering, security issues   │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Key Insight from Research
+
+> "TDD was invented for AI" — but needs supporting structure to reach full potential.
+
+**Pure TDD weaknesses addressed:**
+- Context inefficiency → Specification provides strategic guidance
+- Superficial tests → Spec explains intent, not just behavior
+- Over-engineering → Constraint layer prevents cruft
+- Design erosion → Architectural guardrails in each phase
+
+---
+
 ## Task Classification Matrix
 
 | Signal Words | Task Type | Workflow | Priority |
@@ -1230,6 +1280,7 @@ cat ai_dev_utils/state/current-task.json | jq
 
 ---
 
-**Last Verified:** 2025-12-19
+**Last Verified:** 2025-12-20
 **Status:** active
 **Philosophy:** Research-first, validation-gated, architecture-aware, self-learning development
+**Methodology:** Hybrid SDD+TDD+Constraints (spec → tests → guardrails)

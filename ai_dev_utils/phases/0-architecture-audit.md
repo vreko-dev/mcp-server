@@ -5,6 +5,23 @@
 
 ---
 
+## Pre-Audit: Check for Specification
+
+**Before architecture audit, verify spec exists (for non-trivial tasks):**
+
+```bash
+# Check if specification was defined in planning
+jq '.specification' ai_dev_utils/state/current-task.json
+```
+
+**If no spec and task is NEW_FEATURE or REFACTORING:**
+→ Return to `3_planning.md` Step 0 to define specification first.
+
+**If BUG_FIX or HOTFIX:**
+→ Quick spec is acceptable, proceed with audit.
+
+---
+
 ## Step 0: Classify Task Type
 
 Before diving into architecture, identify what kind of work this is.

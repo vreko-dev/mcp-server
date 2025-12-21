@@ -96,6 +96,14 @@ function getLearningEngine(workspaceRoot: string): LearningEngine {
 			constraintsFile: ".llm-context/CONSTRAINTS.md",
 			violationsFile: ".snapback/patterns/violations.jsonl",
 			embeddingsDb: ".snapback/embeddings.db",
+			contextFiles: [
+				".llm-context/ARCHITECTURE.md",
+				".llm-context/PATTERNS.md",
+				".llm-context/CONSTRAINTS.md",
+				"ARCHITECTURE.md",
+				"PATTERNS.md",
+				"CONSTRAINTS.md",
+			],
 			enableSemanticSearch: false, // Lazy-load embeddings on demand
 			enableLearningLoop: true,
 			enableAutoPromotion: true,
@@ -293,7 +301,7 @@ export async function handleRecordLearning(
 		const id = `L${Date.now()}`;
 
 		// Record the learning
-		engine.recordLearning({
+		await engine.record({
 			type: type as "pattern" | "pitfall" | "efficiency" | "discovery" | "workflow",
 			trigger,
 			action,

@@ -271,6 +271,59 @@ User Action
 
 ---
 
+## VS Code Extension Activation Phases
+
+The VS Code extension uses a 5-phase activation sequence for optimal startup performance.
+**Critical:** Do not add await calls or blocking operations in early phases.
+
+### Phase Ownership Matrix
+
+| Phase | File | Responsibility | Key Components | Perf Target |
+|-------|------|----------------|----------------|-------------|
+| **1** | phase1-services.ts | Core service lazy loading | ServiceFederation (lazy) | <10ms |
+| **2** | phase2-storage.ts | Storage & configuration | StorageManager, ProtectedFileRegistry, ConfigFileManager, SDK ProtectionManager | <100ms |
+| **3** | phase3-managers.ts | Business logic managers | SessionCoordinator, SnapshotManager, StatusBarController, ProtectionService | <200ms |
+| **4** | phase4-providers.ts | VS Code providers | TreeProviders, CodeLens, Decorations, WelcomeView | <150ms |
+| **5** | phase5-registration.ts | Command registration | TreeView registration, Commands, Event handlers | <50ms |
+
+### Phase Dependencies
+
+```
+Phase 1 (Services)
+    │
+    ▼
+Phase 2 (Storage) ──────────────────┐
+    │                               │
+    ▼                               ▼
+Phase 3 (Managers) ◄─── storage, telemetryProxy, protectedFileRegistry
+    │
+    ▼
+Phase 4 (Providers) ◄─── phase3Result, storage
+    │
+    ▼
+Phase 5 (Registration) ◄─── phase4Result, sessionCoordinator
+```
+
+### Critical Anti-Patterns
+
+| Anti-Pattern | Example | Fix |
+|--------------|---------|-----|
+| Await in Phase 1-2 | `await vscode.commands.executeCommand()` | Fire-and-forget with `Promise.resolve()` |
+| Duplicate service init | `new ServiceFederation()` in multiple phases | Use LazyLoader, initialize once |
+| Blocking setContext | `await vscode.commands.executeCommand('setContext', ...)` | Fire-and-forget, no await |
+| Heavy computation | File scanning in phase1-2 | Defer to phase3+ or lazy load |
+
+### Bridge Pattern (Phase 2)
+
+StorageBridge routes to V1 (file-based) or V2 (SQLite) based on feature flag:
+```typescript
+// In phase2-storage.ts
+const storage = new StorageBridge(context, workspaceRoot);
+// Returns IStorageManager interface, hides implementation
+```
+
+---
+
 ## MCP Architecture (Dual-Use)
 
 ```

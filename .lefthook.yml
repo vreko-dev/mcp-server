@@ -84,6 +84,13 @@ pre-commit:
                 - merge
                 - rebase
 
+        validation-pipeline:
+            glob: "**/*.{ts,tsx}"
+            run: node tooling/scripts/validate-with-pipeline.mjs {staged_files}
+            skip:
+                - merge
+                - rebase
+
 pre-push:
     parallel: false
     commands:

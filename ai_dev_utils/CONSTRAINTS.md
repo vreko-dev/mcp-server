@@ -132,6 +132,28 @@ VIOLATION_TYPE: IGNORED_ROUTER_INSTRUCTIONS
 SOURCE: Violation 2025-12-21 - started task without querying knowledge layer
 ```
 
+### C-013: Stub Component Lifecycle Tracking
+
+```
+RULE: Stub components MUST be tracked and have completion criteria
+CHECK: Stub components must have:
+  - Issue/ticket reference in comment
+  - Completion criteria (what's needed to de-stub)
+  - Target completion date or blocking dependency
+BANNED: Stub components without tracking (orphaned stubs)
+VIOLATION_TYPE: ORPHANED_STUB_COMPONENT
+KNOWN_STUBS:
+  - ActiveOrganizationProvider
+  - DeleteOrganizationForm
+  - OrganizationInvitationModal
+  - ResetPasswordForm
+  - ChangeNameForm
+  - DeleteAccountForm
+  - UserList
+  - OrganizationList
+SOURCE: Historical analysis 2025-12-21 - 10 stub components identified without completion tracking
+```
+
 ---
 
 ## Soft Rules (Warnings)

@@ -127,6 +127,83 @@ it('should handle time correctly', () => {
 
 ---
 
+### AP-004: Test File Location Error
+**Frequency:** 2 occurrences
+**First Seen:** 2025-12-21
+**Type:** `TEST_FILE_LOCATION_ERROR`
+
+**Prevention:** Always check vitest.config.ts test.include pattern before creating test files.
+For VS Code extension: tests MUST be in `test/` directory, NEVER in `src/`.
+
+**Detection:** File path contains `src/*.test.ts` or test not being picked up by vitest
+
+**Files affected:**
+- `apps/vscode/src/ui/VitalsIntegration.test.ts` (moved to test/)
+- `apps/vscode/src/ui/StatusBarManager.test.ts` (moved to test/)
+
+
+---
+
+### AP-005: Path Resolution in ESM/MCP
+**Frequency:** 1 occurrence
+**First Seen:** 2025-12-21
+**Type:** `PATH_RESOLUTION_BUG`
+
+**Prevention:** In MCP servers launched with absolute paths, use `fileURLToPath(import.meta.url)` + `path.dirname()` instead of `process.cwd()`.
+
+**Pattern:**
+```typescript
+// WRONG - process.cwd() returns project root when launched via .mcp.json
+const rootDir = process.cwd();
+
+// CORRECT - use import.meta.url
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const rootDir = join(__dirname, "..");
+```
+
+**Files affected:**
+- `ai_dev_utils/mcp/prompt-cache.ts`
+
+
+---
+
+### AP-006: Vitest Workspace Glob Patterns
+**Frequency:** 1 occurrence
+**First Seen:** 2025-12-21
+**Type:** `CONFIG_PATH_RESOLUTION`
+
+**Prevention:** Vitest projects glob patterns must exclude non-package files:
+- Use explicit paths for packages-oss/* instead of globs
+- Exclude standalone .ts files like vercel-entry.ts
+- Exclude .md files from matching
+
+**Files affected:**
+- `vitest.config.ts`
+- `packages/vitest-config/aliases.ts`
+
+
+---
+
+### AP-007: NO_CONSOLE (20+ occurrences)
+**Frequency:** 200+ total (21 files with 3+ occurrences)
+**First Seen:** 2025-12-21 (audit)
+**Type:** `NO_CONSOLE`
+
+**Prevention:** Replace `console.log` with structured logger from `@snapback/core`.
+ValidationPipeline pre-commit hook now catches new additions.
+
+**Hot Spots:**
+- `apps/vscode/src/activation/phase2-storage.ts` (18)
+- `apps/vscode/src/activation/phase3-managers.ts` (18)
+- `apps/vscode/src/activation/phase4-providers.ts` (15)
+- `apps/vscode/src/handlers/ProtectionLevelHandler.ts` (14)
+
+
+---
+
 ## Recent Fixes
 
 | Date | Violation | File | Fix Applied |

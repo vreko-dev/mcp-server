@@ -1,4 +1,4 @@
-import { SnapBackEventBus } from "@snapback/events";
+import { SnapBackEventBus } from "@snapback/contracts";
 import { ExtensionClient } from "@snapback/sdk";
 import { afterAll, beforeAll, describe, it } from "vitest";
 import { MCPHttpServer } from "../../src/http-server";

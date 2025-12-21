@@ -1,9 +1,9 @@
-import { evaluate } from "@snapback/policy-engine";
+import { evaluate } from "@snapback/intelligence/policy";
 import { describe, expect, it, vi } from "vitest";
 
-// Mock the policy engine module to ensure we're testing the actual implementation
-vi.mock("@snapback/policy-engine", async () => {
-	const actual = await vi.importActual("@snapback/policy-engine");
+// Mock the intelligence policy module to ensure we're testing the actual implementation
+vi.mock("@snapback/intelligence/policy", async () => {
+	const actual = await vi.importActual("@snapback/intelligence/policy");
 	return {
 		...actual,
 	};

@@ -39,6 +39,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@snapback/cli": "workspace:*",
     "@snapback/testing": "workspace:*",
     "@snapback/tsconfig": "workspace:*",
     "@types/async-retry": "catalog:",

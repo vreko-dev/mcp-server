@@ -245,4 +245,23 @@ export class SnapBackAPIClient {
 		// Access the circuit breaker policy state directly
 		return this.circuitBreakerPolicy.state;
 	}
+
+	/**
+	 * Generic request method for MCP operations
+	 * Used by learning tools and activity reporter
+	 *
+	 * @param method - The API method name (e.g., 'mcp.startSession')
+	 * @param params - Optional parameters for the request
+	 * @returns The API response
+	 */
+	async request<T = unknown>(method: string, params?: Record<string, unknown>): Promise<T> {
+		// Convert method name to endpoint path
+		// e.g., 'mcp.startSession' -> 'api/mcp/startSession'
+		const endpoint = `api/${method.replace(/\./g, "/")}`;
+
+		return this.fetchAPI<T>(endpoint, {
+			method: "POST",
+			body: params ? JSON.stringify(params) : undefined,
+		});
+	}
 }

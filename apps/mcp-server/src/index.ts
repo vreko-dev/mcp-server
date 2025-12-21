@@ -6,7 +6,12 @@ if (process.env.SNAPBACK_MCP_SELFTEST === "1") {
 
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
+import {
+	CallToolRequestSchema,
+	ListResourcesRequestSchema,
+	ListToolsRequestSchema,
+	ReadResourceRequestSchema,
+} from "@modelcontextprotocol/sdk/types.js";
 import { SnapBackEventBusEventEmitter2 as SnapBackEventBus } from "@snapback/contracts";
 import { DependencyAnalyzer, MCPClientManager, validateToolArgs } from "@snapback/core";
 import { MCPEngineAdapter } from "@snapback/engine/transports/mcp";
@@ -18,6 +23,7 @@ import { SnapBackAPIClient } from "./client/snapback-api";
 import { getMCPConfig, onMCPConfigChange } from "./config";
 import { Context7Service } from "./context7/index";
 import { MCPHttpServer } from "./http-server";
+import { handleReadResource, listResources } from "./resources/snap-resources";
 import { AnalysisRouter } from "./services/AnalysisRouter";
 import {
 	CheckPatternsSchema,
@@ -31,9 +37,19 @@ import {
 	ValidateCodeSchema,
 } from "./tools/context-tools";
 import { CreateSnapshotSchema, createSnapshot } from "./tools/create-snapshot";
+import {
+	GetRecommendationsSchema,
+	handleGetRecommendations,
+	handleSessionStats,
+	handleStartSession,
+	learningToolDefinitions,
+	SessionStatsSchema,
+	StartSessionSchema,
+} from "./tools/learning-tools";
 import { addSnapshot, listSnapshots } from "./tools/list-snapshots";
 import { restoreSnapshot, storeSnapshotContent } from "./tools/restore-snapshot";
 import { handleAcknowledgeRisk, handleGetWorkspaceVitals, vitalsToolDefinitions } from "./tools/vitals-tools";
+import { ActivityReporter } from "./utils/activity-reporter";
 import { addResult, createSarifLog } from "./utils/sarif";
 import { initializeSecurityTelemetry, setWorkspaceRoot } from "./utils/security";
 
@@ -214,9 +230,14 @@ export async function startServer(): Promise<{
 		{
 			capabilities: {
 				tools: {},
+				resources: {},
 			},
 		},
 	);
+
+	// Initialize ActivityReporter for metadata-only activity tracking
+	const workspaceRoot = process.cwd();
+	const activityReporter = new ActivityReporter(apiClient, "workspace");
 
 	// Register tools listing
 	server.setRequestHandler(ListToolsRequestSchema, async () => ({
@@ -455,6 +476,8 @@ export async function startServer(): Promise<{
 			...contextToolDefinitions,
 			// Vitals tools (workspace health sensing)
 			...vitalsToolDefinitions,
+			// Learning tools (session management and personalized recommendations)
+			...learningToolDefinitions,
 		],
 	}));
 
@@ -825,6 +848,22 @@ You can restore this snapshot using its ID.`,
 				return await handleAcknowledgeRisk(args);
 			}
 
+			// Learning tools (session management and personalized recommendations)
+			if (name === "snapback.start_session") {
+				const parsed = StartSessionSchema.parse(args);
+				return await handleStartSession(parsed, apiClient, workspaceRoot);
+			}
+
+			if (name === "snapback.get_recommendations") {
+				const parsed = GetRecommendationsSchema.parse(args);
+				return await handleGetRecommendations(parsed, apiClient, workspaceRoot);
+			}
+
+			if (name === "snapback.session_stats") {
+				const parsed = SessionStatsSchema.parse(args);
+				return await handleSessionStats(parsed, apiClient, workspaceRoot);
+			}
+
 			throw new Error(`Unknown tool: ${name}`);
 		} catch (error: unknown) {
 			const sanitized = sanitizeError(error, `tool_call_${name}`);
@@ -842,6 +881,41 @@ You can restore this snapshot using its ID.`,
 					message: sanitized.message,
 					code: sanitized.code,
 				},
+			};
+		}
+	});
+
+	// Register resource listing (for @snap mentions in Cursor/Claude/Windsurf)
+	server.setRequestHandler(ListResourcesRequestSchema, async () => {
+		const resources = listResources();
+		return {
+			resources: resources.map((r) => ({
+				uri: r.uri,
+				name: r.name,
+				description: r.description,
+				mimeType: r.mimeType,
+			})),
+		};
+	});
+
+	// Register resource reading
+	server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
+		const { uri } = request.params;
+		try {
+			const result = await handleReadResource(uri, workspaceRoot);
+			return {
+				contents: result.contents,
+			};
+		} catch (error) {
+			const sanitized = sanitizeError(error, `resource_read_${uri}`);
+			return {
+				contents: [
+					{
+						uri,
+						mimeType: "text/plain",
+						text: `Error reading resource: ${sanitized.message}`,
+					},
+				],
 			};
 		}
 	});

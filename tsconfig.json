@@ -7,7 +7,6 @@
 		{ "path": "./apps/vscode" },
 		{ "path": "./apps/web" },
 		{ "path": "./config" },
-		{ "path": "./packages/analytics" },
 		{ "path": "./apps/api" },
 		{ "path": "./packages/auth" },
 		{ "path": "./packages/config" },

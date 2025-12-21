@@ -86,6 +86,7 @@ const baseConfig: UserConfig = {
 			"@snapback/events": path.resolve(__dirname, "../../../packages/events/src"),
 			"@snapback/sdk": path.resolve(__dirname, "../../../packages/sdk/src"),
 			"@snapback/config": path.resolve(__dirname, "../../../packages/config/src"),
+			"@snapback/engine": path.resolve(__dirname, "../../../packages/engine/src"),
 		},
 	},
 	test: {

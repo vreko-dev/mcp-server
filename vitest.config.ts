@@ -18,6 +18,7 @@ export default defineConfig({
 			"@snapback/core": path.resolve(__dirname, "packages/core/src"),
 			"@snapback/events": path.resolve(__dirname, "packages/events/src"),
 			"@snapback/auth": path.resolve(__dirname, "packages/auth/src"),
+			"@snapback/engine": path.resolve(__dirname, "packages/engine/src"),
 		},
 	},
 	test: {
@@ -94,13 +95,41 @@ export default defineConfig({
 		// Watch mode settings
 		watch: false, // Disabled in production
 
-		// Use projects for monorepo
-		projects: ["packages/*", "packages-oss/*", "apps/*"],
+		// Use projects for monorepo (only directories with package.json)
+		projects: [
+			"packages/!(vercel-entry.ts)", // Exclude vercel-entry.ts file
+			"packages-oss/sdk",
+			"packages-oss/contracts",
+			"packages-oss/config",
+			"packages-oss/events",
+			"packages-oss/infrastructure",
+			"apps/*",
+		],
 
 		// Force fresh module resolution and isolation
 		deps: {
 			interopDefault: true,
 		},
+		server: {
+			deps: {
+				// Inline ESM-only packages so they're not loaded via require()
+				inline: [/@snapback\/engine/],
+			},
+		},
 		isolate: true,
+
+		/**
+		 * TODO: ESM Module Loading Order Issue
+		 * When running API tests from root vitest (not via apps/api), the src-based alias
+		 * resolution causes registerLoggerFactory() to not be imported correctly from @snapback/contracts.
+		 * This manifests as "registerLoggerFactory is not a function" when @snapback/infrastructure
+		 * tries to register the logger factory during module initialization.
+		 *
+		 * Status: DEFERRED - Workaround exists
+		 * Workaround: Run API tests via `cd apps/api && pnpm test` uses local config which works fine.
+		 * Root cause: Deep ESM module loading order in vite's alias resolution with src-based paths.
+		 * See learning L6288174866 for investigation details.
+		 * Estimated effort: 2+ hours of ESM debugging.
+		 */
 	},
 });

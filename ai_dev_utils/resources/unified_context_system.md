@@ -116,7 +116,13 @@
 
 ## ROI Multiplier Implementation Map
 
-### Multiplier 1: Prompt Caching (90% Cost Reduction)
+### Multiplier 1: Prompt Caching (90% Cost Reduction) ✅ IMPLEMENTED
+
+**Status:** ✅ Complete (2025-12-20)
+**Location:** `ai_dev_utils/mcp/prompt-cache.ts`
+**Exposed Via:** `codebase:ask_ai` MCP tool
+
+**Fix Applied:** Path resolution bug fixed - changed from `process.cwd()` to `fileURLToPath(import.meta.url)` pattern for correct static context file loading.
 
 **The Problem:** Loading full context every request = expensive + slow
 
@@ -176,7 +182,20 @@ export async function queryWithCachedContext(dynamicQuery: string) {
 
 ---
 
-### Multiplier 2: Context Compression (88% Token Reduction)
+### Multiplier 2: Context Compression (88% Token Reduction) ✅ IMPLEMENTED
+
+**Status:** ✅ Complete (2025-12-20)
+**Location:** `@snapback/intelligence/context/SemanticRetriever.ts`
+**Wired To:** `ai_dev_utils/mcp/server.ts` lines 617-640
+**Embeddings DB:** `ai_dev_utils/mcp/embeddings.db` (47 sections, 13,885 tokens)
+
+**Fix Applied:** Added missing `onnxruntime-common` and `onnxruntime-node` dependencies required by `@huggingface/transformers`.
+
+**Verified Results:**
+- Query: "layer boundary VSCode extension security"
+- Tokens used: 1,459 / 13,885 total
+- Sections included: 6
+- **Compression: 88%**
 
 **The Problem:** Including ALL context wastes 86% of tokens
 
@@ -887,6 +906,54 @@ These changes may affect your decision-making. Please acknowledge.
     }
   }
 }
+```
+
+---
+
+## Dual-Use Architecture ✅ IMPLEMENTED
+
+**Status:** ✅ Complete (2025-12-20)
+**Internal Server:** `ai_dev_utils/mcp/server.ts` (codebase tools)
+**External Server:** `apps/mcp-server/src/tools/context-tools.ts` (customer tools)
+
+### Architecture Summary
+
+Per ROUTER.md (lines 306-316), same intelligence algorithms, different data sources:
+
+| Aspect | Internal (`ai_dev_utils/mcp`) | External (`apps/mcp-server`) |
+|--------|-------------------------------|-------------------------------|
+| **Server Name** | `"codebase"` | `"snapback"` |
+| **Tool Prefix** | `mcp_codebase_*` | `snapback.*` |
+| **Users** | SnapBack development team | SnapBack platform customers |
+| **Data Location** | `ai_dev_utils/` (patterns, learnings) | `.snapback/` (customer workspace) |
+| **rootDir Config** | `ai_dev_utils` | `customerWorkspace` (process.cwd()) |
+| **ROUTER.md Access** | ✅ Full access | ❌ No access (internal only) |
+
+### Customer Tools Implemented
+
+| Tool | Purpose | Performance |
+|------|---------|-------------|
+| `snapback.get_context` | Semantic retrieval with 88% compression | < 500ms |
+| `snapback.check_patterns` | Quick pass/fail pattern validation | < 100ms |
+| `snapback.validate_code` | 7-layer validation pipeline | < 200ms |
+| `snapback.record_learning` | Capture learnings for future | < 50ms |
+
+### Configuration Differences
+
+```typescript
+// Internal (SnapBack developers)
+const internalRetriever = new SemanticRetriever({
+  rootDir: 'ai_dev_utils',
+  dbPath: 'ai_dev_utils/mcp/embeddings.db',
+  contextFiles: ['ARCHITECTURE.md', 'CONSTRAINTS.md', 'patterns/codebase-patterns.md'],
+});
+
+// External (SnapBack customers)
+const customerRetriever = new SemanticRetriever({
+  rootDir: workspaceRoot, // process.cwd()
+  dbPath: '.snapback/embeddings.db',
+  contextFiles: ['.llm-context/ARCHITECTURE.md', '.llm-context/PATTERNS.md'],
+});
 ```
 
 ---

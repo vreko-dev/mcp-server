@@ -12,8 +12,8 @@ With the evolution toward an **intelligence-first architecture** (AutoDecisionEn
 |-------|-------------|--------|-------|
 | **Phase 1** | @snapback/events → @snapback/contracts | ✅ **COMPLETE** | Package deleted, all imports updated |
 | **Phase 2** | @snapback/policy-engine → @snapback/intelligence | ✅ **COMPLETE** | Package deleted, 3 consumers updated |
-| **Phase 3** | @snapback/analytics → contracts + infrastructure | 🔲 PENDING | Medium effort, medium risk |
-| **Phase 4** | @snapback/mail → apps/api | 🔲 PENDING | Low effort, low risk |
+| **Phase 3** | @snapback/analytics → contracts + infrastructure | ✅ **COMPLETE** | Package deleted, no migrations needed (duplicate) |
+| **Phase 4** | @snapback/mail → apps/api | ✅ **COMPLETE** | Package deleted, no migrations needed (duplicate) |
 | **Phase 5** | Final verification and cleanup | 🔲 PENDING | Update pnpm-workspace.yaml |
 
 ### Phase 1 Completion Details
@@ -42,6 +42,45 @@ With the evolution toward an **intelligence-first architecture** (AutoDecisionEn
 - All tests pass (77 passed, 1 pre-existing failure in snapshot-storage.test.ts)
 - Type checking passes for vscode and mcp-server
 - pnpm install successful
+
+---
+
+### Phase 3 Completion Details (2025-12-20)
+
+**What was done:**
+1. Identified `@snapback/analytics` as a **DUPLICATE** package (not consolidation)
+   - Only 1 consumer: `apps/mcp-server` (unused dependency in package.json)
+   - All analytics functionality already implemented in `@snapback/infrastructure/metrics`
+   - Analytics package re-exports from infrastructure: `export * from "@snapback/infrastructure"`
+2. Removed `"@snapback/analytics": "workspace:*"` from `apps/mcp-server/package.json`
+3. Deleted `packages/analytics/` directory entirely
+4. Ran `pnpm install` successfully
+
+**Verification:**
+- pnpm install successful
+- MCP server build passes
+- No import migrations required (no actual usage found)
+
+**Note:** Type-check has 2 pre-existing errors in `src/index.ts` (Context7Service methods) unrelated to this change.
+
+---
+
+### Phase 4 Completion Details (2025-12-20)
+
+**What was done:**
+1. Identified `@snapback/mail` as a **DUPLICATE** package (not migration)
+   - Zero consumers found (grep found no imports)
+   - Email functionality already implemented in `apps/api/src/services/email.ts` (478 lines, using Resend)
+   - Mail package had similar but unused email templates
+2. Deleted `packages/mail/` directory entirely
+3. Ran `pnpm install` successfully
+
+**Verification:**
+- pnpm install successful (reduced from 36 to 34 workspace packages)
+- API build succeeds
+- No import migrations required (no actual usage found)
+
+**Note:** API type-check has 776 pre-existing errors (database schema issues) unrelated to this change.
 
 ---
 

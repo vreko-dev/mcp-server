@@ -25,15 +25,15 @@
 ## P0-P1: CRITICAL - Historical Regressions (HOTFIX → RESEARCH)
 
 ### 8.1 The 83% Activation Regression ⚠️ CRITICAL
-**Status:** Already resolved (Dec 17, 2025)  
-**Learning Captured:** L044 in ROUTER.md  
+**Status:** Already resolved (Dec 17, 2025)
+**Learning Captured:** L044 in ROUTER.md
 **Action:** ✅ COMPLETE - Verify learning applied in future similar tasks
 
 ---
 
 ### 8.2 Auth Syntax Breaking Revert
-**Impact:** 34 files, 218 insertions reverted  
-**Root Cause:** Type errors committed without pre-commit type-check  
+**Impact:** 34 files, 218 insertions reverted
+**Root Cause:** Type errors committed without pre-commit type-check
 **Workflow:** `7_hotfix.md` (if auth still broken) OR `2_research.md` (investigate auth state)
 
 **Task:**
@@ -55,8 +55,8 @@ Questions:
 ---
 
 ### 8.3 Massive File Deletion & Recovery ⚠️ CRITICAL
-**Files Affected:** 1,169 lines across 4 critical files  
-**Pattern:** Repeated deletion/recovery of same files  
+**Files Affected:** 1,169 lines across 4 critical files
+**Pattern:** Repeated deletion/recovery of same files
 **Workflow:** `2_research.md` → Document migration vs deletion criteria
 
 **Task:**
@@ -84,7 +84,7 @@ Deliverables:
 ---
 
 ### 8.4 Package Consolidation Chaos
-**Impact:** 4+ follow-up commits to fix broken imports  
+**Impact:** 4+ follow-up commits to fix broken imports
 **Workflow:** Already documented in ROUTER.md lines 972-993
 
 **Task:**
@@ -107,8 +107,8 @@ Checklist Review:
 ---
 
 ### 8.5 Test File Location Errors ⚠️ URGENT
-**Violation:** C-009 (tests in src/ instead of test/)  
-**Current Status:** Tests moved but may still be staged incorrectly  
+**Violation:** C-009 (tests in src/ instead of test/)
+**Current Status:** Tests moved but may still be staged incorrectly
 **Workflow:** `5_refactor.md` → Fix test locations
 
 **Task:**
@@ -138,8 +138,8 @@ find apps/vscode/src -name "*.test.ts" -o -name "*.spec.ts"
 ## P1-P2: Type Safety Issues (REFACTORING)
 
 ### 2.1 `as any` Type Assertions (16+ occurrences)
-**Violation:** Type safety bypass (should be C-XXX constraint)  
-**Root Cause:** Session and organization types not properly typed  
+**Violation:** Type safety bypass (should be C-XXX constraint)
+**Root Cause:** Session and organization types not properly typed
 **Workflow:** `5_refactor.md`
 
 **Task:**
@@ -191,8 +191,8 @@ Steps:
 ## P2: Logging Violations (REFACTORING)
 
 ### 3.1 `console.log` in Production Code (20+ occurrences)
-**Violation:** C-007 (Console.log in Production)  
-**Detection:** ValidationPipeline already has check  
+**Violation:** C-007 (Console.log in Production)
+**Detection:** ValidationPipeline already has check
 **Workflow:** `5_refactor.md`
 
 **Task:**
@@ -278,7 +278,7 @@ Steps:
 ## P3: Test Coverage Gaps (TESTING)
 
 ### 1.4 Test Coverage Gaps (99 in apps/api/__tests__)
-**Status:** Commented-out tests waiting for middleware  
+**Status:** Commented-out tests waiting for middleware
 **Workflow:** `6_test.md`
 
 **Task:**
@@ -607,6 +607,6 @@ codebase.report_violation({
 
 ---
 
-**Last Updated:** 2025-12-21  
-**Status:** Ready for execution  
+**Last Updated:** 2025-12-21
+**Status:** Ready for execution
 **Routing Complete:** ✅

@@ -1014,14 +1014,14 @@ async function handleValidateCode(args: { code: string; filePath: string }): Pro
 			passed: result.overall.passed,
 			totalIssues: result.overall.totalIssues,
 			focusPoints: result.focusPoints,
-			layers: result.layers.map((l) => ({
+			layers: result.layers.map((l: { layer: any; passed: any; issues: string | any[]; duration: any }) => ({
 				name: l.layer,
 				passed: l.passed,
 				issues: l.issues.length,
 				duration: `${l.duration}ms`,
 			})),
-			issues: result.layers.flatMap((l) =>
-				l.issues.map((i) => ({
+			issues: result.layers.flatMap((l: { issues: any[]; layer: any }) =>
+				l.issues.map((i: { severity: any; type: any; message: any; line: any; fix: any }) => ({
 					layer: l.layer,
 					severity: i.severity,
 					type: i.type,
@@ -1111,7 +1111,7 @@ async function handleGetLearningStats(): Promise<any> {
 			goldenExamples: stats.goldenExamples,
 		},
 		queryTypeBreakdown: stats.queryTypeBreakdown,
-		pendingFeedback: pending.map((p) => ({
+		pendingFeedback: pending.map((p: { id: any; query: string; timestamp: any }) => ({
 			id: p.id,
 			query: p.query.slice(0, 50) + (p.query.length > 50 ? "..." : ""),
 			timestamp: p.timestamp,

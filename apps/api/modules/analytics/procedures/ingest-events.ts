@@ -1,33 +1,16 @@
 /**
  * Analytics Ingestion Procedure
  *
+ * Per C-002: Procedures delegate to service layer for DB operations
  * Receives batches of analytics events from the analytics client
  * Writes to analyticsEvents table and forwards to PostHog
  */
 
 import type { AnalyticsIngestResponse } from "@snapback/contracts";
-import { telemetryEvents } from "@snapback/platform";
 import { z } from "zod";
+import { getPostHogClient } from "@/lib/posthog-server";
 import { protectedProcedure } from "@/orpc/procedures";
-import { getDb } from "@/src/services/database";
-
-// PostHog client (lazy initialized)
-let posthog: any = null;
-
-function getPostHogClient() {
-	if (!posthog && process.env.POSTHOG_KEY) {
-		// Import PostHog only if needed
-		try {
-			const { PostHog } = require("posthog-node");
-			posthog = new PostHog(process.env.POSTHOG_KEY, {
-				host: process.env.POSTHOG_HOST || "https://app.posthog.com",
-			});
-		} catch (error) {
-			console.warn("[Analytics] PostHog not available:", error);
-		}
-	}
-	return posthog;
-}
+import { insertTelemetryEvents } from "../services/analytics-service";
 
 // Input validation schema
 const ingestEventsInputSchema = z.object({
@@ -45,21 +28,16 @@ const ingestEventsInputSchema = z.object({
 
 /**
  * Ingest analytics events
- * Writes to database and forwards to PostHog
+ * Writes to database via service layer and forwards to PostHog
  */
 export const ingestEvents = protectedProcedure
 	.input(ingestEventsInputSchema)
 	.handler(async ({ input, context }): Promise<AnalyticsIngestResponse> => {
-		const db = getDb();
-
-		if (!db) {
-			throw new Error("Database not available");
-		}
 		const errors: string[] = [];
 		let successCount = 0;
 
 		try {
-			// Write events to database
+			// Prepare events for insertion
 			const dbInserts = input.events.map((event) => ({
 				eventType: event.name,
 				userId: event.userId,
@@ -69,10 +47,8 @@ export const ingestEvents = protectedProcedure
 				timestamp: new Date(event.timestamp),
 			}));
 
-			const insertResult = await db
-				.insert(telemetryEvents)
-				.values(dbInserts)
-				.returning({ id: telemetryEvents.id });
+			// Delegate to service layer per C-002
+			const insertResult = await insertTelemetryEvents(dbInserts);
 			successCount = dbInserts.length;
 
 			// Forward to PostHog (optional, non-blocking)

@@ -1,27 +1,11 @@
 import { logger } from "@snapback/infrastructure";
 import { apiKeys, subscriptions } from "@snapback/platform";
 import { eq } from "drizzle-orm";
-import { PostHog } from "posthog-node";
 import { z } from "zod";
+import { getPostHog } from "@/lib/posthog-server";
 import { trackUsage } from "@/lib/usage";
 import { protectedProcedure } from "@/orpc/procedures";
 import { getDb } from "@/src/services/database";
-
-// Initialize PostHog client
-let posthogClient: PostHog | null = null;
-
-function getPostHog(): PostHog {
-	if (!posthogClient) {
-		const posthogKey = process.env.NEXT_PUBLIC_POSTHOG_KEY;
-		if (!posthogKey) {
-			throw new Error("NEXT_PUBLIC_POSTHOG_KEY is required");
-		}
-		posthogClient = new PostHog(posthogKey, {
-			host: process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://app.posthog.com",
-		});
-	}
-	return posthogClient;
-}
 
 // Input validation
 const trackEventSchema = z.object({

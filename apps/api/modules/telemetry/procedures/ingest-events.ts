@@ -1,5 +1,5 @@
-import { PostHog } from "posthog-node";
 import { z } from "zod";
+import { getPostHog } from "@/lib/posthog-server";
 import { publicProcedure } from "@/orpc/procedures";
 
 // Temporarily define the types here
@@ -417,9 +417,8 @@ export const ingestEvents = publicProcedure
 				console.warn("Invalid telemetry events detected:", invalidEvents);
 			}
 
-			const posthog = new PostHog(process.env.POSTHOG_PROJECT_KEY!, {
-				host: process.env.POSTHOG_API_HOST || "https://app.posthog.com",
-			});
+			// Use canonical PostHog client (INT-006)
+			const posthog = getPostHog();
 
 			// Forward validated events to PostHog
 			for (const event of validEvents) {
@@ -437,8 +436,8 @@ export const ingestEvents = publicProcedure
 				});
 			}
 
+			// Flush events (shared client so don't shutdown)
 			await posthog.flush();
-			await posthog.shutdown();
 
 			return {
 				success: true,

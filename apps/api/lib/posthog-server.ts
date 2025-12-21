@@ -31,6 +31,19 @@ export function getPostHogClient(): PostHog | null {
 }
 
 /**
+ * Get PostHog client, initializing if needed (lazy singleton)
+ */
+export function getPostHog(): PostHog {
+	if (!posthogClient) {
+		initializePostHog();
+	}
+	if (!posthogClient) {
+		throw new Error("PostHog not configured - API key required");
+	}
+	return posthogClient;
+}
+
+/**
  * Capture event with PostHog
  */
 export async function captureEvent(

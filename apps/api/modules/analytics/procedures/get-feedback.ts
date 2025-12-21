@@ -1,8 +1,7 @@
 import { ORPCError } from "@orpc/client";
-import { feedback } from "@snapback/platform";
-import { and, desc, eq, gte, lte, type SQL } from "drizzle-orm";
+import { logger } from "@snapback/infrastructure";
 import { protectedProcedure } from "@/orpc/procedures";
-import { getDb } from "@/src/services/database";
+import { getFeedbackFiltered } from "../services/analytics-service";
 import { TelemetryQueryOptionsSchema } from "../types";
 
 export const getFeedback = protectedProcedure
@@ -17,53 +16,10 @@ export const getFeedback = protectedProcedure
 	.input(TelemetryQueryOptionsSchema)
 	.handler(async ({ input, context: _context }) => {
 		try {
-			const db = getDb();
-			if (!db) {
-				throw new ORPCError("INTERNAL_SERVER_ERROR", {
-					message: "Database not available",
-				});
-			}
-
-			const conditions: SQL[] = [];
-
-			if (input.userId) {
-				conditions.push(eq(feedback.userId, input.userId));
-			}
-
-			if (input.apiKeyId) {
-				conditions.push(eq(feedback.apiKeyId, input.apiKeyId));
-			}
-
-			if (input.sessionId) {
-				conditions.push(eq(feedback.sessionId, input.sessionId));
-			}
-
-			if (input.startDate && input.endDate) {
-				conditions.push(gte(feedback.timestamp, input.startDate));
-				conditions.push(lte(feedback.timestamp, input.endDate));
-			}
-
-			// Use the fully constructed query instead of dynamic chaining which loses types
-			// This avoids 'as any' casting by constructing the chain step-by-step
-			let query = getDb().select().from(feedback).$dynamic();
-
-			if (conditions.length > 0) {
-				query = query.where(and(...conditions));
-			}
-
-			query = query.orderBy(desc(feedback.timestamp));
-
-			if (input.limit) {
-				query = query.limit(input.limit);
-			}
-
-			if (input.offset) {
-				query = query.offset(input.offset);
-			}
-
-			const results = await query.execute();
-			return results;
+			// Delegate to service layer per C-002
+			return await getFeedbackFiltered(input);
 		} catch (error) {
+			logger.error("Failed to fetch feedback", { error });
 			if (error instanceof ORPCError) {
 				throw error;
 			}

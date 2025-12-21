@@ -1,8 +1,8 @@
 import { ORPCError } from "@orpc/client";
-import { sql } from "drizzle-orm";
+import { logger } from "@snapback/infrastructure";
 import { z } from "zod";
 import { protectedProcedure } from "@/orpc/procedures";
-import { getDb } from "@/src/services/database";
+import { getDailyMetricsData } from "../services/analytics-service";
 
 const GetDailyMetricsInputSchema = z.object({
 	limit: z.number().int().positive().optional().describe("Maximum number of records to return"),
@@ -20,23 +20,10 @@ export const getDailyMetrics = protectedProcedure
 	.input(GetDailyMetricsInputSchema)
 	.handler(async ({ input, context: _context }) => {
 		try {
-			const db = getDb();
-			if (!db) {
-				throw new ORPCError("INTERNAL_SERVER_ERROR", {
-					message: "Database not available",
-				});
-			}
-
-			// Build query with sql template
-			const limit = input.limit ?? 100;
-			const offset = input.offset ?? 0;
-
-			// Execute the query
-			const results = await db.execute(
-				sql`SELECT * FROM daily_metrics ORDER BY date DESC LIMIT ${limit} OFFSET ${offset}`,
-			);
-			return results;
+			// Delegate to service layer per C-002
+			return await getDailyMetricsData(input);
 		} catch (error) {
+			logger.error("Failed to fetch daily metrics", { error });
 			if (error instanceof ORPCError) {
 				throw error;
 			}

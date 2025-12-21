@@ -1,14 +1,18 @@
+/**
+ * Create Checkout Link Procedure
+ *
+ * Per C-002: Procedures delegate to service layer for DB operations
+ */
+
 import { ORPCError } from "@orpc/server";
 import type { Config } from "@snapback/config/server";
 import { config } from "@snapback/config/server";
 import { logger } from "@snapback/infrastructure";
 import { getOrCreateCustomer } from "@snapback/integrations/stripe/lib/customer";
 import { createCheckoutLink } from "@snapback/integrations/stripe/provider/stripe";
-import { member, organization, user } from "@snapback/platform";
-import { eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import { protectedProcedure } from "@/orpc/procedures";
-import { getDb } from "@/src/services/database";
+import { getOrganizationBillingInfo, getUserForPayments } from "../services/payments-service";
 
 interface CheckoutInput {
 	productId: string;
@@ -41,19 +45,11 @@ export const createCheckoutLinkProcedure = protectedProcedure
 			input: CheckoutInput;
 			context: { user: { id: string; email: string; name?: string } };
 		}) => {
-			// Fetch the full user record from the database to get all fields including subscriptionTier
-			const db = getDb();
-			if (!db) {
-				throw new Error("Database not available");
-			}
-
-			const users = await db.select().from(user).where(eq(user.id, sessionUser.id)).limit(1);
-
-			if (!users || users.length === 0) {
+			// Fetch user via service layer per C-002
+			const fullUser = await getUserForPayments(sessionUser.id);
+			if (!fullUser) {
 				throw new ORPCError("UNAUTHORIZED");
 			}
-
-			const fullUser = users[0];
 
 			const customerId = await getOrCreateCustomer(
 				organizationId
@@ -73,34 +69,14 @@ export const createCheckoutLinkProcedure = protectedProcedure
 			const price = plan?.[1].prices?.find((price) => price.productId === productId);
 			const trialPeriodDays = price && "trialPeriodDays" in price ? price.trialPeriodDays : undefined;
 
-			// The query below correctly uses organizationTable which is the correct table name
-			let organizationData: typeof organization.$inferSelect | null = null;
+			// Get organization billing info via service layer per C-002
+			let organizationData = null;
 			let memberCount = 0;
 
 			if (organizationId) {
-				// Check if database is available
-				const db = getDb();
-				if (!db) {
-					throw new Error("Database not available");
-				}
-
-				const organizations = await db
-					.select()
-					.from(organization)
-					.where(eq(organization.id, organizationId))
-					.limit(1);
-
-				organizationData = organizations && organizations.length > 0 ? organizations[0] : null;
-
-				// Count members for this organization
-				const memberResult = await db
-					.select({
-						count: sql<number>`count(*)`.mapWith(Number),
-					})
-					.from(member)
-					.where(eq(member.organizationId, organizationId));
-
-				memberCount = memberResult && memberResult.length > 0 ? memberResult[0]?.count || 0 : 0;
+				const billingInfo = await getOrganizationBillingInfo(organizationId);
+				organizationData = billingInfo.organization;
+				memberCount = billingInfo.memberCount;
 			}
 
 			if (organizationData === null && organizationId) {

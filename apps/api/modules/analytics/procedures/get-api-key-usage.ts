@@ -1,8 +1,12 @@
+/**
+ * Get API Key Usage Procedure
+ *
+ * Per C-002: Procedures delegate to service layer for DB operations
+ */
+
 import { ORPCError } from "@orpc/client";
-import { apiKeyUsage } from "@snapback/platform";
-import { and, desc, eq, gte, lte, type SQL } from "drizzle-orm";
 import { protectedProcedure } from "@/orpc/procedures";
-import { getDb } from "@/src/services/database";
+import { getApiKeyUsageData } from "../services/analytics-service";
 import { TelemetryQueryOptionsSchema } from "../types";
 
 export const getApiKeyUsage = protectedProcedure
@@ -16,44 +20,14 @@ export const getApiKeyUsage = protectedProcedure
 	.input(TelemetryQueryOptionsSchema)
 	.handler(async ({ input, context: _context }) => {
 		try {
-			const db = getDb();
-			if (!db) {
-				throw new ORPCError("INTERNAL_SERVER_ERROR", {
-					message: "Database not available",
-				});
-			}
-
-			const conditions: SQL[] = [];
-
-			if (input.apiKeyId) {
-				conditions.push(eq(apiKeyUsage.apiKeyId, input.apiKeyId));
-			}
-
-			if (input.startDate && input.endDate) {
-				conditions.push(gte(apiKeyUsage.timestamp, input.startDate));
-				conditions.push(lte(apiKeyUsage.timestamp, input.endDate));
-			}
-
-			// Use the fully constructed query instead of dynamic chaining which loses types
-			// This avoids 'as any' casting by constructing the chain step-by-step
-			let query = getDb().select().from(apiKeyUsage).$dynamic();
-
-			if (conditions.length > 0) {
-				query = query.where(and(...conditions));
-			}
-
-			query = query.orderBy(desc(apiKeyUsage.timestamp));
-
-			if (input.limit) {
-				query = query.limit(input.limit);
-			}
-
-			if (input.offset) {
-				query = query.offset(input.offset);
-			}
-
-			const results = await query.execute();
-			return results;
+			// Delegate to service layer per C-002
+			return await getApiKeyUsageData({
+				apiKeyId: input.apiKeyId,
+				startDate: input.startDate,
+				endDate: input.endDate,
+				limit: input.limit,
+				offset: input.offset,
+			});
 		} catch (error) {
 			if (error instanceof ORPCError) {
 				throw error;

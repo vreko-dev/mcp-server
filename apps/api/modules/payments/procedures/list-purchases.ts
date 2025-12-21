@@ -1,8 +1,12 @@
-import { purchase } from "@snapback/platform";
-import { eq } from "drizzle-orm";
+/**
+ * List Purchases Procedure
+ *
+ * Per C-002: Procedures delegate to service layer for DB operations
+ */
+
 import { z } from "zod";
 import { protectedProcedure } from "@/orpc/procedures";
-import { getDb } from "@/src/services/database";
+import { getOrganizationPurchases, getUserPurchases } from "../services/payments-service";
 
 export const listPurchases = protectedProcedure
 	.route({
@@ -18,19 +22,12 @@ export const listPurchases = protectedProcedure
 		}),
 	)
 	.handler(async ({ input: { organizationId }, context: { user } }) => {
-		// Check if database is available
-		const db = getDb();
-		if (!db) {
-			throw new Error("Database not available");
-		}
-
+		// Delegate to service layer per C-002
 		if (organizationId) {
-			const purchases = await db.select().from(purchase).where(eq(purchase.organizationId, organizationId));
-
+			const purchases = await getOrganizationPurchases(organizationId);
 			return { purchases };
 		}
 
-		const purchases = await db.select().from(purchase).where(eq(purchase.userId, user.id));
-
+		const purchases = await getUserPurchases(user.id);
 		return { purchases };
 	});

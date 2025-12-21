@@ -10,7 +10,14 @@
  * Follows the principle of explicit over implicit - no auth = no context.
  */
 
-import { auth, getUserOrgIds, getUserPermissions, getUserPlan, type UserRole } from "@snapback/auth";
+import {
+	auth,
+	getUserOrgIds,
+	getUserPermissions,
+	getUserPlan,
+	type SubscriptionPlan,
+	type UserRole,
+} from "@snapback/auth";
 import { logger } from "@snapback/infrastructure";
 import { db } from "@snapback/platform";
 import { apiKeys } from "@snapback/platform/db/schema/postgres";
@@ -22,14 +29,30 @@ import { jwtVerify } from "jose";
 // Types
 // ============================================================================
 
+/**
+ * Extended user type that includes role from database
+ * Better Auth's session.user doesn't include role in its type,
+ * but the database and admin plugin add it at runtime.
+ */
+interface BetterAuthUserWithRole {
+	id: string;
+	email: string;
+	name: string;
+	image?: string | null;
+	emailVerified: boolean;
+	createdAt: Date;
+	updatedAt: Date;
+	role?: UserRole;
+}
+
 export interface AuthContext {
 	user: {
 		id: string;
 		email: string;
-		role: "admin" | "user" | "viewer" | null;
+		role: UserRole | null;
 		name: string;
 	};
-	plan: "free" | "pro" | "team" | "enterprise";
+	plan: SubscriptionPlan;
 	permissions: string[];
 	authenticatedVia: "jwt" | "api-key" | "session";
 	apiKeyId?: string;
@@ -154,19 +177,19 @@ export async function extractAuthContext(c: Context, next: Next): Promise<void> 
 			});
 
 			if (session?.user) {
-				const userRecord = session.user;
+				const userRecord = session.user as BetterAuthUserWithRole;
 				const plan = await getUserPlan(userRecord.id);
-				const permissions = await getUserPermissions(userRecord.id, (userRecord as any).role || null, plan);
+				const permissions = await getUserPermissions(userRecord.id, userRecord.role ?? null, plan);
 				const orgIds = await getUserOrgIds(userRecord.id);
 
 				authContext = {
 					user: {
 						id: userRecord.id,
 						email: userRecord.email,
-						role: ((userRecord as any).role as any) || null,
+						role: userRecord.role ?? null,
 						name: userRecord.name,
 					},
-					plan: (plan as any) || "free",
+					plan: plan ?? "free",
 					permissions,
 					authenticatedVia: "jwt",
 					orgIds,
@@ -204,10 +227,10 @@ export async function extractAuthContext(c: Context, next: Next): Promise<void> 
 							user: {
 								id: user.id,
 								email: user.email,
-								role: (user.role as any) || null,
+								role: (user.role as UserRole) ?? null,
 								name: user.name,
 							},
-							plan: (plan as any) || "free",
+							plan: plan ?? "free",
 							permissions,
 							authenticatedVia: "api-key",
 							apiKeyId: verified.keyId,

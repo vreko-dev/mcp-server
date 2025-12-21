@@ -1,5 +1,6 @@
 import { logger } from "@snapback/infrastructure";
 import { checkDatabaseConnection, checkRedisConnection, createHealthCheck } from "@snapback/infrastructure/health";
+import { getStripeClient } from "@snapback/integrations/stripe";
 import { Hono } from "hono";
 
 const app = new Hono();
@@ -46,8 +47,10 @@ async function checkStripeHealth(): Promise<{
 			};
 		}
 
-		// TODO: Add real Stripe API ping when Stripe SDK is integrated
-		// For now, key format validation is the best we can do without SDK
+		// Real Stripe API health check using balance.retrieve() - lightweight endpoint
+		const stripe = getStripeClient();
+		await stripe.balance.retrieve();
+
 		return {
 			status: "healthy",
 			responseTime: Date.now() - start,

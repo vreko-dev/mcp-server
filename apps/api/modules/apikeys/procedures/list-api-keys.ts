@@ -1,7 +1,5 @@
-import { apiKeys } from "@snapback/platform";
-import { eq } from "drizzle-orm";
 import { protectedProcedure } from "@/orpc/procedures";
-import { getDb } from "@/src/services/database";
+import { listApiKeysForUser } from "../services/apikeys-service";
 
 export const listApiKeys = protectedProcedure.handler(async ({ context }) => {
 	const user = context.user;
@@ -9,21 +7,8 @@ export const listApiKeys = protectedProcedure.handler(async ({ context }) => {
 		throw new Error("Unauthorized");
 	}
 
-	const db = getDb();
-	const keys = db
-		? await db
-				.select({
-					id: apiKeys.id,
-					name: apiKeys.name,
-					keyPreview: apiKeys.keyPreview,
-					lastUsedAt: apiKeys.lastUsedAt,
-					createdAt: apiKeys.createdAt,
-					revokedAt: apiKeys.revokedAt,
-				})
-				.from(apiKeys)
-				.where(eq(apiKeys.userId, user.id))
-				.orderBy(apiKeys.createdAt)
-		: [];
+	// Fetch keys via service
+	const keys = await listApiKeysForUser(user.id);
 
 	return { keys };
 });

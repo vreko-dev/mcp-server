@@ -1,9 +1,13 @@
-import { apiKeys, deviceTrials, user } from "@snapback/platform";
-import { eq } from "drizzle-orm";
-import { nanoid } from "nanoid";
 import { z } from "zod";
 import { publicProcedure } from "@/orpc/procedures";
-import { getDb } from "@/src/services/database";
+import {
+	createDeviceUser,
+	findApiKeyByValue,
+	findDeviceTrialByApiKeyId,
+	findUserByEmail,
+	findUserById,
+	linkDeviceTrialToUser,
+} from "../services/device-trials-service";
 
 const linkDeviceSchema = z.object({
 	email: z.string().email(),
@@ -15,11 +19,6 @@ export const linkDevice = publicProcedure.input(linkDeviceSchema).handler(async 
 	const { email, name } = input;
 	// Note: password is validated by schema but not yet used in MVP
 	// In production: await auth.verifyPassword(input.password, existingUser.passwordHash)
-
-	const db = getDb();
-	if (!db) {
-		throw new Error("Database not available");
-	}
 
 	// Extract API key from Authorization header
 	const authHeader = (
@@ -39,10 +38,10 @@ export const linkDevice = publicProcedure.input(linkDeviceSchema).handler(async 
 
 	const apiKeyValue = authHeader.replace("Bearer ", "");
 
-	// Verify API key
-	const apiKeyResult = await db.select().from(apiKeys).where(eq(apiKeys.key, apiKeyValue)).limit(1);
+	// Verify API key via service
+	const apiKey = await findApiKeyByValue(apiKeyValue);
 
-	if (!apiKeyResult || apiKeyResult.length === 0) {
+	if (!apiKey) {
 		throw new Error(
 			JSON.stringify({
 				error: "Invalid API key",
@@ -51,12 +50,10 @@ export const linkDevice = publicProcedure.input(linkDeviceSchema).handler(async 
 		);
 	}
 
-	const apiKey = apiKeyResult[0];
+	// Find associated device trial via service
+	const trial = await findDeviceTrialByApiKeyId(apiKey.id);
 
-	// Find associated device trial
-	const trialResult = await db.select().from(deviceTrials).where(eq(deviceTrials.apiKeyId, apiKey.id)).limit(1);
-
-	if (!trialResult || trialResult.length === 0) {
+	if (!trial) {
 		throw new Error(
 			JSON.stringify({
 				error: "Trial not found",
@@ -65,34 +62,27 @@ export const linkDevice = publicProcedure.input(linkDeviceSchema).handler(async 
 		);
 	}
 
-	const trial = trialResult[0];
-
 	// Check if device is already linked to a different user
 	if (trial.userId) {
-		// Check if trying to link to same user (idempotent)
-		const existingUserResult = await db.select().from(user).where(eq(user.id, trial.userId)).limit(1);
+		const existingUser = await findUserById(trial.userId);
 
-		if (existingUserResult && existingUserResult.length > 0) {
-			const existingUser = existingUserResult[0];
-
-			if (existingUser.email === email) {
-				// Same user, return success (idempotent)
-				return {
-					userId: trial.userId,
-					email: existingUser.email,
-					upgradedLimits: {
-						snapshots: trial.snapshotLimit,
-						apiCalls: trial.apiCallLimit,
-					},
-					trialConverted: true,
-					currentUsage: {
-						snapshots: trial.snapshotsUsed,
-						apiCalls: trial.apiCallsUsed,
-					},
-					emailVerified: existingUser.emailVerified,
-					emailVerificationSent: false,
-				};
-			}
+		if (existingUser && existingUser.email === email) {
+			// Same user, return success (idempotent)
+			return {
+				userId: trial.userId,
+				email: existingUser.email,
+				upgradedLimits: {
+					snapshots: trial.snapshotLimit,
+					apiCalls: trial.apiCallLimit,
+				},
+				trialConverted: true,
+				currentUsage: {
+					snapshots: trial.snapshotsUsed,
+					apiCalls: trial.apiCallsUsed,
+				},
+				emailVerified: existingUser.emailVerified,
+				emailVerificationSent: false,
+			};
 		}
 
 		// Different user - block
@@ -104,49 +94,32 @@ export const linkDevice = publicProcedure.input(linkDeviceSchema).handler(async 
 		);
 	}
 
-	// Check if user already exists
-	const existingUserResult = await db.select().from(user).where(eq(user.email, email)).limit(1);
+	// Check if user already exists via service
+	const existingUser = await findUserByEmail(email);
 
 	let userId: string;
 	let isNewUser = false;
 	let emailVerified = false;
 
-	if (existingUserResult && existingUserResult.length > 0) {
+	if (existingUser) {
 		// Existing user
-		const existingUser = existingUserResult[0];
 		userId = existingUser.id;
-		emailVerified = existingUser.emailVerified || false;
+		emailVerified = existingUser.emailVerified;
 
 		// Note: In production, verify password with Better Auth
 		// const validPassword = await auth.verifyPassword(password, existingUser.passwordHash);
 		// if (!validPassword) throw error
 	} else {
-		// Create new user
+		// Create new user via service
 		isNewUser = true;
-		userId = nanoid();
-
-		await db.insert(user).values({
-			id: userId,
-			email,
-			name: name || email.split("@")[0],
-			emailVerified: false,
-			createdAt: new Date(),
-			updatedAt: new Date(),
-		});
+		const newUser = await createDeviceUser(email, name);
+		userId = newUser.id;
 
 		// In production: await auth.createUser({ email, password });
 	}
 
-	// Link device trial to user and upgrade limits
-	await db
-		.update(deviceTrials)
-		.set({
-			userId,
-			snapshotLimit: 1000, // Email signup: 1000 snapshots
-			convertedAt: new Date(),
-			lastSeenAt: new Date(),
-		})
-		.where(eq(deviceTrials.id, trial.id));
+	// Link device trial to user and upgrade limits via service
+	await linkDeviceTrialToUser(trial.id, userId, 1000);
 
 	// Send email verification if new user
 	const emailVerificationSent = isNewUser;

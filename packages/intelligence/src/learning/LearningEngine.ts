@@ -30,6 +30,7 @@ import { QUERY_TYPE_KEYWORDS } from "../types/learning.js";
  * Learning Engine for feedback loop and golden dataset
  */
 export class LearningEngine {
+	private config: ResolvedConfig;
 	private interactionsPath: string;
 	private goldenPath: string;
 	private learningsPath: string;

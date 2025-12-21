@@ -8,6 +8,7 @@ export default defineConfig({
 		"learning/index": "src/learning/index.ts",
 		"storage/index": "src/storage/index.ts",
 		"types/index": "src/types/index.ts",
+		"policy/index": "src/policy/index.ts",
 	},
 	format: ["esm"],
 	dts: false, // Using tsc for declarations

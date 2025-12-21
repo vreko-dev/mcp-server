@@ -32,6 +32,33 @@ export { ContextEngine, SemanticRetriever } from "./context/index.js";
 // Main facade
 export { Intelligence } from "./Intelligence.js";
 export { LearningEngine, ViolationTracker } from "./learning/index.js";
+// Policy module (migrated from @snapback/policy-engine)
+export {
+	type DetectionEvent,
+	evaluate,
+	loadPolicyConfig,
+	type MockDetectionResult,
+	MockDetector,
+	type MockFinding,
+	PhantomDependencyDetector,
+	type PhantomDependencyFinding,
+	type PhantomDependencyResult,
+	type PolicyAction,
+	type PolicyConfig,
+	type PolicyDecision,
+	PolicyEngine,
+	type PolicyEngineConfig,
+	type PolicyEngineResult,
+	type PolicyRule,
+	SarifFormatter,
+	type SarifLog,
+	type SarifResult,
+	type SarifRule,
+	type SarifRun,
+	type SecretDetectionResult,
+	SecretDetector,
+	type SecretFinding,
+} from "./policy/index.js";
 // Storage utilities
 export {
 	appendJsonl,
@@ -41,7 +68,6 @@ export {
 	loadJsonl,
 	writeJsonl,
 } from "./storage/index.js";
-
 // All types
 export * from "./types/index.js";
 // Validation layers (for customization)

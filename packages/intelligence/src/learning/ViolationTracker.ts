@@ -17,6 +17,7 @@ import { PROMOTION_THRESHOLDS } from "../types/learning.js";
  * Violation Tracker with auto-promotion
  */
 export class ViolationTracker {
+	private config: ResolvedConfig;
 	private violationsPath: string;
 
 	constructor(config: ResolvedConfig) {

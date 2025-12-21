@@ -1,6 +1,6 @@
 import { createId as cuid } from "@paralleldrive/cuid2";
+import { SecretDetector } from "@snapback/intelligence/policy";
 import { analysisEvents, apiKeys, ruleViolations, userSafetyProfiles } from "@snapback/platform";
-import { SecretDetector } from "@snapback/policy-engine";
 import { eq } from "drizzle-orm";
 import { getDb } from "./database";
 

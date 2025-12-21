@@ -1,4 +1,4 @@
-import { SnapBackEventBusEventEmitter2 as SnapBackEventBus } from "@snapback/events";
+import { SnapBackEventBusEventEmitter2 as SnapBackEventBus } from "@snapback/contracts";
 import type {
 	AnalysisRequest,
 	AnalysisResponse,
@@ -43,11 +43,11 @@ export class ExtensionIPCClient {
 	}
 
 	async getIterationStats(filePath: string): Promise<IterationStats> {
-		return await this.eventBus.request("get_iteration_stats", { filePath });
+		return await this.eventBus.request<IterationStats>("get_iteration_stats", { filePath });
 	}
 
 	async createSnapshot(request: SnapshotRequest): Promise<SnapshotResponse> {
-		return await this.eventBus.request("create_snapshot", {
+		return await this.eventBus.request<SnapshotResponse>("create_snapshot", {
 			filePath: request.filePath,
 			reason: request.reason,
 		});

@@ -7,10 +7,10 @@ if (process.env.SNAPBACK_MCP_SELFTEST === "1") {
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
+import { SnapBackEventBusEventEmitter2 as SnapBackEventBus } from "@snapback/contracts";
 import { DependencyAnalyzer, MCPClientManager, validateToolArgs } from "@snapback/core";
 import { MCPEngineAdapter } from "@snapback/engine/transports/mcp";
-import { SnapBackEventBusEventEmitter2 as SnapBackEventBus } from "@snapback/events";
-import { evaluate } from "@snapback/policy-engine"; // Import the proper policy engine
+import { evaluate } from "@snapback/intelligence/policy"; // Migrated from policy-engine
 import { z } from "zod";
 import { authenticate, hasToolAccess } from "./auth";
 import { ExtensionIPCClient } from "./client/extension-ipc";

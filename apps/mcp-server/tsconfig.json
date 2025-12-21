@@ -16,7 +16,7 @@
 	"exclude": ["node_modules", "dist"],
 	"references": [
 		{ "path": "../../packages/contracts" },
-		{ "path": "../../packages/events" },
+		{ "path": "../../packages/intelligence" },
 		{ "path": "../../packages/core" }
 	]
 }

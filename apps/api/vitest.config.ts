@@ -22,7 +22,7 @@ export default defineProject(
 		},
 		test: {
 			name: "@snapback/api",
-			include: ["test/**/*.test.ts", "**/__tests__/**/*.test.ts"],
+			include: ["test/**/*.test.ts", "**/__tests__/**/*.test.ts", "modules/**/tests/**/*.test.ts"],
 			setupFiles: ["./vitest.setup.ts"],
 		},
 	}),

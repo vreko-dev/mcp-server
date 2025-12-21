@@ -19,6 +19,17 @@ import { getMCPConfig, onMCPConfigChange } from "./config";
 import { Context7Service } from "./context7/index";
 import { MCPHttpServer } from "./http-server";
 import { AnalysisRouter } from "./services/AnalysisRouter";
+import {
+	CheckPatternsSchema,
+	contextToolDefinitions,
+	GetContextSchema,
+	handleCheckPatterns,
+	handleGetContext,
+	handleRecordLearning,
+	handleValidateCode,
+	RecordLearningSchema,
+	ValidateCodeSchema,
+} from "./tools/context-tools";
 import { CreateSnapshotSchema, createSnapshot } from "./tools/create-snapshot";
 import { addSnapshot, listSnapshots } from "./tools/list-snapshots";
 import { restoreSnapshot, storeSnapshotContent } from "./tools/restore-snapshot";
@@ -439,6 +450,8 @@ export async function startServer(): Promise<{
 				// Free-tier tool - does not require backend
 				requiresBackend: false,
 			},
+			// Intelligence context tools (from @snapback/intelligence)
+			...contextToolDefinitions,
 		],
 	}));
 
@@ -749,6 +762,55 @@ You can restore this snapshot using its ID.`,
 			if (name.startsWith("ctx7.") || name.startsWith("gh.") || name.startsWith("registry.")) {
 				const result = await mcpManager.callToolByName(name, args);
 				return result;
+			}
+
+			// Intelligence context tools
+			if (name === "snapback.get_context") {
+				const parsed = GetContextSchema.parse(args);
+				const workspaceRoot = process.cwd();
+				const result = await handleGetContext(parsed, workspaceRoot);
+				return {
+					content: [
+						{ type: "json", json: result },
+						{ type: "text", text: result.hint },
+					],
+				};
+			}
+
+			if (name === "snapback.check_patterns") {
+				const parsed = CheckPatternsSchema.parse(args);
+				const workspaceRoot = process.cwd();
+				const result = await handleCheckPatterns(parsed, workspaceRoot);
+				return {
+					content: [
+						{ type: "json", json: result },
+						{ type: "text", text: result.suggestion },
+					],
+				};
+			}
+
+			if (name === "snapback.validate_code") {
+				const parsed = ValidateCodeSchema.parse(args);
+				const workspaceRoot = process.cwd();
+				const result = await handleValidateCode(parsed, workspaceRoot);
+				return {
+					content: [
+						{ type: "json", json: result },
+						{ type: "text", text: result.suggestion },
+					],
+				};
+			}
+
+			if (name === "snapback.record_learning") {
+				const parsed = RecordLearningSchema.parse(args);
+				const workspaceRoot = process.cwd();
+				const result = await handleRecordLearning(parsed, workspaceRoot);
+				return {
+					content: [
+						{ type: "json", json: result },
+						{ type: "text", text: result.message },
+					],
+				};
 			}
 
 			throw new Error(`Unknown tool: ${name}`);

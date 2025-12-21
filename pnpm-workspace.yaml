@@ -144,10 +144,12 @@ catalogs:
         blake3: 2.1.7
         boring-avatars: 2.0.1
         bottleneck: 2.19.5
+        boxen: 8.0.1
         chalk: 4.1.2
         chokidar: 4.0.3
         class-variance-authority: 0.7.1
         clsx: 2.1.1
+        cli-table3: 0.6.5
         cmdk: 1.1.1
         commander: 9.5.0
         conf: 13.0.1
@@ -170,6 +172,7 @@ catalogs:
         esprima: 4.0.1
         eventemitter2: 6.4.9
         express: 5.1.0
+        execa: 9.5.2
         fast-glob: 3.3.3
         fumadocs-core: 15.7.11
         fumadocs-mdx: 13.0.8
@@ -198,6 +201,7 @@ catalogs:
         lint-staged: 15.4.3
         listr2: 8.2.5
         lru-cache: 10.4.3
+        log-update: 6.1.0
         lucide-react: 0.544.0
         madge: 8.0.0
         mdx: 0.3.1

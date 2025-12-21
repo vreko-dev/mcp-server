@@ -9,6 +9,7 @@ export default defineConfig({
 		"storage/index": "src/storage/index.ts",
 		"types/index": "src/types/index.ts",
 		"policy/index": "src/policy/index.ts",
+		"vitals/index": "src/vitals/index.ts",
 	},
 	format: ["esm"],
 	dts: false, // Using tsc for declarations

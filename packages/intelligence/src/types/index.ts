@@ -49,3 +49,21 @@ export type {
 	ValidationResult,
 } from "./validation.js";
 export { CONFIDENCE_THRESHOLDS, ISSUE_THRESHOLDS } from "./validation.js";
+// Vitals types
+export type {
+	AgentGuidance,
+	AIDetectionEvent,
+	OxygenConfig,
+	PressureConfig,
+	PulseConfig,
+	PulseLevel,
+	SnapshotDecision,
+	SnapshotEvent,
+	TemperatureConfig,
+	TempLevel,
+	Trajectory,
+	Urgency,
+	VitalsConfig,
+	VitalsFileChangeEvent,
+	VitalsSnapshot,
+} from "./vitals.js";

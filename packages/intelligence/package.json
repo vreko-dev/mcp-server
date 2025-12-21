@@ -41,6 +41,10 @@
     "./policy": {
       "types": "./dist/policy/index.d.ts",
       "default": "./dist/policy/index.js"
+    },
+    "./vitals": {
+      "types": "./dist/vitals/index.d.ts",
+      "default": "./dist/vitals/index.js"
     }
   },
   "typesVersions": {
@@ -50,7 +54,8 @@
       "learning": ["./dist/learning/index.d.ts"],
       "storage": ["./dist/storage/index.d.ts"],
       "types": ["./dist/types/index.d.ts"],
-      "policy": ["./dist/policy/index.d.ts"]
+      "policy": ["./dist/policy/index.d.ts"],
+      "vitals": ["./dist/vitals/index.d.ts"]
     }
   },
   "scripts": {

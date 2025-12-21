@@ -31,8 +31,10 @@ import type {
 	ViolationStatus,
 	ViolationsSummary,
 } from "./types/index.js";
+import type { AgentGuidance, SnapshotDecision, VitalsConfig, VitalsSnapshot } from "./types/vitals.js";
 import type { PipelineResult } from "./validation/ValidationPipeline.js";
 import { ValidationPipeline } from "./validation/ValidationPipeline.js";
+import { WorkspaceVitals } from "./vitals/WorkspaceVitals.js";
 
 /**
  * Intelligence - Unified AI-assisted development intelligence
@@ -217,6 +219,42 @@ export class Intelligence {
 	 */
 	getViolationsSummary(): ViolationsSummary {
 		return this.violationTracker.getSummary();
+	}
+
+	// =========================================================================
+	// VITALS (Adaptive Risk Sensing)
+	// =========================================================================
+
+	/**
+	 * Get or create WorkspaceVitals instance for a workspace
+	 * Singleton per workspaceId
+	 */
+	getVitals(workspaceId: string, config?: Partial<VitalsConfig>): WorkspaceVitals {
+		return WorkspaceVitals.for(workspaceId, config);
+	}
+
+	/**
+	 * Get current vitals snapshot for a workspace
+	 */
+	getVitalsSnapshot(workspaceId: string): VitalsSnapshot | null {
+		const vitals = WorkspaceVitals.tryGet(workspaceId);
+		return vitals?.current() ?? null;
+	}
+
+	/**
+	 * Get snapshot decision based on current vitals
+	 */
+	shouldSnapshot(workspaceId: string): SnapshotDecision | null {
+		const vitals = WorkspaceVitals.tryGet(workspaceId);
+		return vitals?.shouldSnapshot() ?? null;
+	}
+
+	/**
+	 * Get agent guidance based on current vitals
+	 */
+	getAgentGuidance(workspaceId: string): AgentGuidance | null {
+		const vitals = WorkspaceVitals.tryGet(workspaceId);
+		return vitals?.getAgentGuidance() ?? null;
 	}
 
 	// =========================================================================

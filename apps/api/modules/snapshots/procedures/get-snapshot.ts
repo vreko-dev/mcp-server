@@ -1,8 +1,12 @@
-import { snapshotFiles, snapshots } from "@snapback/platform";
-import { and, eq } from "drizzle-orm";
+/**
+ * Get Snapshot Procedure
+ *
+ * Per C-002: Procedures delegate to service layer for DB operations
+ */
+
 import { z } from "zod";
 import { protectedProcedure } from "@/orpc/procedures";
-import { getDb } from "@/src/services/database";
+import { getSnapshotById, getSnapshotFiles } from "../services/snapshots-service";
 
 const getSnapshotSchema = z.object({
 	id: z.string(),
@@ -14,20 +18,10 @@ export const getSnapshot = protectedProcedure.input(getSnapshotSchema).handler(a
 		throw new Error("Unauthorized");
 	}
 
-	// Check if database is available
-	const db = getDb();
-	if (!db) {
-		throw new Error("Database not available");
-	}
+	// Fetch snapshot via service layer per C-002
+	const snapshot = await getSnapshotById(input.id, user.id);
 
-	// Fetch snapshot (with ownership check)
-	const snapshotResult = await db
-		.select()
-		.from(snapshots)
-		.where(and(eq(snapshots.id, input.id), eq(snapshots.userId, user.id)))
-		.limit(1);
-
-	if (!snapshotResult || snapshotResult.length === 0) {
+	if (!snapshot) {
 		throw new Error(
 			JSON.stringify({
 				error: "Snapshot not found or access denied",
@@ -36,24 +30,8 @@ export const getSnapshot = protectedProcedure.input(getSnapshotSchema).handler(a
 		);
 	}
 
-	const snapshot = snapshotResult[0];
-
-	// Fetch associated files
-	const files = await db
-		.select({
-			id: snapshotFiles.id,
-			filePath: snapshotFiles.filePath,
-			fileHash: snapshotFiles.fileHash,
-			fileSizeBytes: snapshotFiles.fileSizeBytes,
-			changeType: snapshotFiles.changeType,
-			linesChanged: snapshotFiles.linesChanged,
-			containsSecrets: snapshotFiles.containsSecrets,
-			riskLevel: snapshotFiles.riskLevel,
-			cloudBackupUrl: snapshotFiles.cloudBackupUrl,
-			createdAt: snapshotFiles.createdAt,
-		})
-		.from(snapshotFiles)
-		.where(eq(snapshotFiles.snapshotId, snapshot.id));
+	// Fetch associated files via service layer per C-002
+	const files = await getSnapshotFiles(snapshot.id);
 
 	return {
 		snapshot: {

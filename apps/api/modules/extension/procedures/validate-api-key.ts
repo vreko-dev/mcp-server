@@ -1,9 +1,13 @@
+/**
+ * Validate API Key Procedure
+ *
+ * Per C-002: Procedures delegate to service layer for DB operations
+ */
+
 import { verifyApiKey } from "@snapback/auth";
-import { apiKeys } from "@snapback/platform";
-import { eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import { publicProcedure } from "@/orpc/procedures";
-import { getDb } from "@/src/services/database";
+import { type ApiKeyRecord, getAllActiveApiKeys, updateApiKeyLastUsed } from "../services/extension-service";
 
 export const validateApiKey = publicProcedure
 	.input(
@@ -14,17 +18,11 @@ export const validateApiKey = publicProcedure
 	.handler(async ({ input }) => {
 		const { key } = input;
 
-		const db = getDb();
-		if (!db) {
-			throw new Error("Database not available");
-		}
-
-		const allKeysResult = await db.select().from(apiKeys).where(sql`${apiKeys.revokedAt} IS NULL`);
-
-		const allKeys = allKeysResult || [];
+		// Get all active keys via service layer per C-002
+		const allKeys = await getAllActiveApiKeys();
 
 		// Try to find matching key by verifying hash
-		let matchedKey: typeof apiKeys.$inferSelect | null = null;
+		let matchedKey: ApiKeyRecord | null = null;
 
 		for (const dbKey of allKeys) {
 			const isValid = await verifyApiKey(key, dbKey.key);
@@ -42,8 +40,8 @@ export const validateApiKey = publicProcedure
 			throw new Error("API key has been revoked");
 		}
 
-		// Update last used timestamp
-		await db.update(apiKeys).set({ lastUsedAt: new Date() }).where(eq(apiKeys.id, matchedKey.id));
+		// Update last used timestamp via service layer per C-002
+		await updateApiKeyLastUsed(matchedKey.id);
 
 		return {
 			valid: true,

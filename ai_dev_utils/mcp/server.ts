@@ -31,16 +31,14 @@
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
+import { LearningEngine, SemanticRetriever, ValidationPipeline } from "@snapback/intelligence";
 import { writeFile, writeFileSync } from "atomically";
 import Bottleneck from "bottleneck";
 import chokidar from "chokidar";
 import * as fs from "fs";
 import * as path from "path";
 import { fileURLToPath } from "url";
-import { learningEngine } from "./learning-engine.js";
 import { queryWithCachedContext } from "./prompt-cache.js";
-import { SemanticContextRetriever } from "./semantic-retriever.js";
-import { ValidationPipeline } from "./validation-pipeline.js";
 
 // Get directory paths
 const __filename = fileURLToPath(import.meta.url);
@@ -48,10 +46,24 @@ const __dirname = path.dirname(__filename);
 const AI_DEV_UTILS = path.resolve(__dirname, "..");
 
 // Singleton semantic retriever (lazy initialized)
-let semanticRetriever: SemanticContextRetriever | null = null;
+let semanticRetriever: SemanticRetriever | null = null;
 
 // Singleton validation pipeline
 const validationPipeline = new ValidationPipeline();
+
+// Singleton learning engine
+const learningEngine = new LearningEngine({
+	rootDir: AI_DEV_UTILS,
+	patternsDir: "patterns",
+	learningsDir: "feedback",
+	constraintsFile: "CONSTRAINTS.md",
+	violationsFile: "patterns/violations.jsonl",
+	embeddingsDb: "mcp/embeddings.db",
+	contextFiles: ["ARCHITECTURE.md", "CONSTRAINTS.md", "ROUTER.md", "patterns/codebase-patterns.md"],
+	enableSemanticSearch: false,
+	enableLearningLoop: true,
+	enableAutoPromotion: true,
+});
 
 // Rate limiter for API calls (prevents overwhelming services)
 const apiLimiter = new Bottleneck({
@@ -240,10 +252,42 @@ function markForAutomation(type: string): void {
 
 const tools = [
 	{
+		name: "start_task",
+		description: `🚨 MANDATORY FIRST CALL before implementing ANY code changes.
+
+Unified pre-flight check that bundles:
+- Architecture context (layer boundaries, patterns, constraints)
+- Past learnings (solutions to similar problems)
+- Recent violations (what NOT to do)
+- Validation checklist (required steps for this task type)
+- Before-commit reminder
+
+This is your ENTRY POINT for all development work. Replaces separate get_context + query_learnings calls.
+
+⚠️ ROUTER.md Requirement: Lines 16-23, 59-62 mandate calling this before ANY implementation.
+⚠️ Violation tracked if skipped: 'ignored-router-instructions' (currently at 1x, 2 more = auto-promotion)
+
+Example: codebase.start_task({ task: "consolidate duplicate code", files: ["ai_dev_utils/mcp/server.ts"], keywords: ["deduplication", "workspace"] })`,
+		inputSchema: {
+			type: "object",
+			properties: {
+				task: { type: "string", description: "Description of what you want to implement" },
+				files: { type: "array", items: { type: "string" }, description: "Files you plan to modify" },
+				keywords: {
+					type: "array",
+					items: { type: "string" },
+					description: "Keywords to search for in patterns/learnings",
+				},
+			},
+			required: ["task"],
+		},
+	},
+	{
 		name: "get_context",
 		description: `Get architectural context relevant to a development task.
 
-ALWAYS call this BEFORE implementing anything new.
+⚠️ DEPRECATED: Use start_task instead for new work. This tool kept for backward compatibility.
+
 Returns relevant patterns, constraints, learnings, and recent violations for the area.
 
 Example: codebase.get_context({ task: "add authentication to MCP server", files: ["apps/mcp-server/src/auth.ts"], keywords: ["auth", "api-key"] })`,
@@ -450,6 +494,118 @@ Example: codebase.get_learning_stats({})`,
 // TOOL HANDLERS
 // ============================================================================
 
+/**
+ * Unified start_task handler - bundles get_context + query_learnings + violation check
+ */
+async function handleStartTask(args: { task: string; files?: string[]; keywords?: string[] }): Promise<any> {
+	const { task, files = [], keywords = [] } = args;
+
+	// Step 1: Get architectural context (reuse existing handler)
+	const context = await handleGetContext({ task, files, keywords });
+
+	// Step 2: Query learnings for these keywords
+	const learnings = await handleQueryLearnings({ keywords });
+
+	// Step 3: Classify task type for checklist
+	const taskType = classifyTask(task);
+
+	// Step 4: Generate validation checklist based on task type
+	const checklist = generateChecklist(taskType, files);
+
+	return {
+		task,
+		taskType,
+
+		// Bundled context
+		architecture: {
+			context: context.contextSections,
+			hardRules: context.hardRules,
+			patterns: context.patterns,
+			semantic: context.semanticContext,
+		},
+
+		// Past learnings
+		learnings: learnings.matches,
+
+		// What NOT to do
+		recentViolations: context.recentViolations,
+
+		// Required steps
+		checklist: checklist,
+
+		// Pre-commit reminder
+		beforeCommit: "⚠️ REQUIRED: Call codebase.check_patterns() on all modified files before committing",
+
+		hint: `📋 Review checklist and violations before implementing. Task classified as: ${taskType}`,
+	};
+}
+
+/**
+ * Classify task based on signal words (from ROUTER.md Task Classification Matrix)
+ */
+function classifyTask(task: string): string {
+	const lower = task.toLowerCase();
+
+	if (/fix|broken|bug|error|crash|not working/.test(lower)) return "BUG_FIX";
+	if (/still broken|sometimes works|inconsistent/.test(lower)) return "MULTI_PATH_BUG";
+	if (/slow|regression|performance|timing/.test(lower)) return "PERFORMANCE_REGRESSION";
+	if (/add|implement|create|new feature|build/.test(lower)) return "NEW_FEATURE";
+	if (/refactor|clean up|consolidate|extract|dedupe/.test(lower)) return "REFACTORING";
+	if (/docker|deploy|infrastructure|fly\.io|vercel/.test(lower)) return "INFRASTRUCTURE";
+	if (/test|coverage|edge case/.test(lower)) return "TESTING";
+	if (/docs|outdated|stale/.test(lower)) return "DOC_HYGIENE";
+	if (/p0|production|critical|emergency/.test(lower)) return "HOTFIX";
+	if (/investigate|why|how does|understand/.test(lower)) return "RESEARCH";
+
+	return "GENERAL";
+}
+
+/**
+ * Generate task-specific checklist
+ */
+function generateChecklist(taskType: string, _files: string[]): string[] {
+	const baseChecklist = [
+		"✓ Review returned patterns and acknowledge which apply",
+		"✓ Check for anti-patterns in your planned approach",
+		"✓ Verify all referenced files/packages exist before importing",
+	];
+
+	const typeSpecific: Record<string, string[]> = {
+		REFACTORING: [
+			"✓ Build canonical package FIRST before updating imports",
+			"✓ Update imports in dependent files",
+			"✓ Delete duplicates only after imports updated",
+			"✓ Update tests with minimal config",
+			"✓ Verify all tests pass before marking complete",
+		],
+		BUG_FIX: [
+			"✓ Reproduce bug with failing test first (RED)",
+			"✓ Fix implementation to make test pass (GREEN)",
+			"✓ Verify user validates fix in their environment",
+		],
+		MULTI_PATH_BUG: [
+			"✓ Map ALL code paths that trigger the operation",
+			"✓ Test each path independently",
+			"✓ Fix all paths before marking complete",
+			"✓ Check event emission → listeners → state sync",
+		],
+		NEW_FEATURE: [
+			"✓ Check layer boundaries (what can access what)",
+			"✓ Write failing test first (RED)",
+			"✓ Implement minimal solution (GREEN)",
+			"✓ Refactor for quality (REFACTOR)",
+		],
+		TESTING: [
+			"✓ Use @snapback/vitest-config with nodeConfig preset",
+			"✓ Cover 4 paths: happy, sad, edge, error",
+			"✓ Use specific assertions (.toEqual, .toBe), not .toBeTruthy()",
+		],
+	};
+
+	const specific = typeSpecific[taskType] || [];
+	return [...baseChecklist, ...specific];
+}
+
 async function handleGetContext(args: {
 	task: string;
 	files?: string[];
@@ -463,7 +619,11 @@ async function handleGetContext(args: {
 	if (useSemantic) {
 		try {
 			if (!semanticRetriever) {
-				semanticRetriever = new SemanticContextRetriever();
+				semanticRetriever = new SemanticRetriever({
+					rootDir: AI_DEV_UTILS,
+					dbPath: "mcp/embeddings.db",
+					contextFiles: ["ARCHITECTURE.md", "CONSTRAINTS.md", "ROUTER.md", "patterns/codebase-patterns.md"],
+				});
 			}
 
 			// Build query from task and keywords
@@ -992,6 +1152,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 		let result: any;
 
 		switch (name) {
+			case "start_task":
+				result = await handleStartTask(args as any);
+				break;
 			case "get_context":
 				result = await handleGetContext(args as any);
 				break;

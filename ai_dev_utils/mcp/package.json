@@ -26,7 +26,6 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.71.2",
-    "@huggingface/transformers": "^3.0.0",
     "@modelcontextprotocol/sdk": "^1.0.0",
     "@snapback/intelligence": "workspace:*",
     "atomically": "^2.1.0",
@@ -35,6 +34,9 @@
     "p-retry": "^7.1.1",
     "sql.js": "^1.10.0",
     "zod": "^3.23.8"
+  },
+  "optionalDependencies": {
+    "@huggingface/transformers": "^3.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

@@ -19,8 +19,12 @@ import Anthropic from "@anthropic-ai/sdk";
 import * as fs from "fs";
 import pRetry, { AbortError } from "p-retry";
 import * as path from "path";
+import { fileURLToPath } from "url";
 
-const AI_DEV_UTILS = path.resolve(process.cwd(), "..");
+// Get correct directory path (like server.ts does)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const AI_DEV_UTILS = path.resolve(__dirname, "..");
 
 /**
  * Load static context files that will be cached

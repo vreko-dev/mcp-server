@@ -59,7 +59,19 @@ const learningEngine = new LearningEngine({
 	constraintsFile: "CONSTRAINTS.md",
 	violationsFile: "patterns/violations.jsonl",
 	embeddingsDb: "mcp/embeddings.db",
-	contextFiles: ["ARCHITECTURE.md", "CONSTRAINTS.md", "ROUTER.md", "patterns/codebase-patterns.md"],
+	contextFiles: [
+		"ARCHITECTURE.md",
+		"CONSTRAINTS.md",
+		"ROUTER.md",
+		"patterns/codebase-patterns.md",
+		// Modular rules (path-targeted)
+		"rules/00-index.md",
+		"rules/10-vscode-rules.md",
+		"rules/20-testing-rules.md",
+		"rules/30-docker-rules.md",
+		"rules/40-mcp-rules.md",
+		"rules/50-api-rules.md",
+	],
 	enableSemanticSearch: false,
 	enableLearningLoop: true,
 	enableAutoPromotion: true,
@@ -136,6 +148,65 @@ function extractSection(content: string, headerPattern: string): string {
 	const regex = new RegExp(`## ${headerPattern}[\\s\\S]*?(?=## |$)`, "i");
 	const match = content.match(regex);
 	return match ? match[0] : "";
+}
+
+/**
+ * Load modular rules based on file paths (path-targeted rules)
+ * Returns rules where globs match any of the provided files
+ */
+function loadRelevantRules(files: string[]): string {
+	const rulesDir = path.join(AI_DEV_UTILS, "rules");
+	if (!fs.existsSync(rulesDir)) return "";
+
+	const ruleFiles = fs
+		.readdirSync(rulesDir)
+		.filter((f) => f.endsWith(".md"))
+		.sort();
+	let relevantRules = "";
+
+	for (const ruleFile of ruleFiles) {
+		const content = fs.readFileSync(path.join(rulesDir, ruleFile), "utf-8");
+
+		// Parse YAML frontmatter
+		const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
+		if (!frontmatterMatch) continue;
+
+		const frontmatter = frontmatterMatch[1];
+
+		// Check if alwaysApply: true
+		if (frontmatter.includes("alwaysApply: true")) {
+			relevantRules += content.replace(/^---[\s\S]*?---\n/, "") + "\n\n";
+			continue;
+		}
+
+		// Extract globs from frontmatter
+		const globsMatch = frontmatter.match(/globs:\n([\s\S]*?)(?=\n[a-z]|$)/i);
+		if (!globsMatch) continue;
+
+		const globs = globsMatch[1]
+			.split("\n")
+			.map((line) => line.replace(/^\s*-\s*["']?/, "").replace(/["']?\s*$/, ""))
+			.filter((g) => g);
+
+		// Check if any file matches any glob (simple matching)
+		const matches = files.some((file) =>
+			globs.some((glob) => {
+				// Simple glob matching: convert glob to regex
+				const pattern = glob
+					.replace(/\*\*/g, "__DOUBLE_STAR__")
+					.replace(/\*/g, "[^/]*")
+					.replace(/__DOUBLE_STAR__/g, ".*");
+				return new RegExp(pattern).test(file);
+			}),
+		);
+
+		if (matches) {
+			// Remove frontmatter and add rule content
+			relevantRules += content.replace(/^---[\s\S]*?---\n/, "") + "\n\n";
+		}
+	}
+
+	return relevantRules;
 }
 
 /**
@@ -647,6 +718,9 @@ async function handleGetContext(args: {
 	const constraints = loadMd("CONSTRAINTS.md");
 	const patterns = loadMd("patterns/codebase-patterns.md");
 
+	// Load path-targeted modular rules
+	const relevantRules = loadRelevantRules(files);
+
 	// Load violations and filter by relevance
 	const allViolations = loadJsonl("patterns/violations.jsonl");
 	const relevantViolations = allViolations
@@ -676,20 +750,12 @@ async function handleGetContext(args: {
 	// Always include layer boundaries from architecture
 	contextSections += extractSection(architecture, "Layer Responsibilities") + "\n\n";
 
-	if (files.some((f) => f.includes("apps/vscode"))) {
-		contextSections += extractSection(router, "VS Code Extension Patterns") + "\n\n";
-	}
-	if (files.some((f) => f.includes("apps/mcp-server") || f.includes("mcp"))) {
-		contextSections += extractSection(router, "MCP Context Tools") + "\n\n";
-	}
-	if (files.some((f) => f.includes("test"))) {
-		contextSections += extractSection(router, "Test Infrastructure Rules") + "\n\n";
-	}
-	if (files.some((f) => f.includes("apps/api"))) {
-		contextSections += extractSection(router, "Service Locations") + "\n\n";
+	// Add path-targeted modular rules (replaces old ROUTER.md section extraction)
+	if (relevantRules) {
+		contextSections += "## Relevant Rules (Path-Targeted)\n\n" + relevantRules;
 	}
 
-	// Always include task classification
+	// Always include task classification (still in ROUTER.md)
 	contextSections += extractSection(router, "Task Classification Matrix");
 
 	// Extract relevant constraints (hard rules) - use simpler pattern

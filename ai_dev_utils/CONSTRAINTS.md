@@ -154,6 +154,50 @@ KNOWN_STUBS:
 SOURCE: Historical analysis 2025-12-21 - 10 stub components identified without completion tracking
 ```
 
+### C-014: Service Layer Naming Conventions
+
+```
+RULE: Procedures and service functions MUST use distinct naming patterns
+PATTERN:
+  - Procedures: Action verbs matching route intent (get*, post*, patch*, delete*)
+  - Service functions: Domain-focused verbs (query*, fetch*, calculate*, compute*, transform*)
+EXAMPLES:
+  ✅ procedure: getUserMetrics(), service: queryUserMetrics() or fetchUserMetrics()
+  ✅ procedure: getMetrics(), service: calculateMetrics() or aggregateMetrics()
+  ❌ procedure: getUserMetrics(), service: getUserMetrics() [collision, requires aliasing]
+BENEFIT: Self-documenting, eliminates import aliasing confusion
+VIOLATION_TYPE: SERVICE_NAMING_COLLISION
+SOURCE: INTEGRATION_ISSUES_FOUND.md ISSUE-003 (2025-12-21)
+```
+
+### C-015: Service Layer Error Handling Standards
+
+```
+RULE: Service layer MUST use domain-specific error classes, not generic Error
+PATTERN:
+  - Create [Domain]ServiceError exception classes
+  - Throw specific errors: DBUnavailableError, ValidationError, AggregationError
+  - Include context: userId, filePath, operation, timestamp
+REQUIRED: All service functions MUST document error types in JSDoc
+VIOLATION_TYPE: GENERIC_ERROR_HANDLING
+SOURCE: INTEGRATION_ISSUES_FOUND.md ISSUE-005 (2025-12-21)
+IMPACT: Enables proper error routing in procedures without broad catch-all patterns
+```
+
+### C-016: Service Layer Input Validation
+
+```
+RULE: Service functions MUST validate inputs, do not assume procedure validated
+PATTERN:
+  - Add type guards at service boundary
+  - Create interface for filter/input objects
+  - Use Result<T, E> pattern for recoverable errors
+REQUIRED: Standardize on object-based parameters for filters/options
+VIOLATION_TYPE: INCONSISTENT_SIGNATURES
+SOURCE: INTEGRATION_ISSUES_FOUND.md ISSUE-004 (2025-12-21)
+IMPACT: Inconsistent API when refactoring remaining 18 procedures
+```
+
 ---
 
 ## Soft Rules (Warnings)

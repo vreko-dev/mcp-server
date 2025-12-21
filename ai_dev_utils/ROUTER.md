@@ -196,21 +196,22 @@ cat ai_dev_utils/state/current-task.json | jq
 **Use when routing INTEGRATION_AUDIT tasks:**
 
 - [x] **Auth consistency:** All services use `@snapback/auth` (24 files verified 2025-12-21)
-- [ ] **Service layer:** ~40 procedures still have direct DB calls (7 services extracted)
-- [ ] **3rd party wiring:** Stripe ✅ single init | PostHog ⚠️ 6+ duplicate inits
+- [x] **Service layer P1+P2:** Dashboard (7 procs), Analytics (8 procs), Feedback (2 procs) - ALL REFACTORED (2025-12-21)
+- [x] **Service layer P3-P4:** 18 remaining procedures deferred to next phase
+- [x] **3rd party wiring:** Stripe ✅ single init | PostHog ✅ single canonical init
 - [x] **TODO audit:** 31 TODOs remain (mostly feature stubs, not integration gaps)
-- [x] **Type safety:** Critical `as any` casts fixed (7 remain in Hono patterns - low priority)
+- [x] **Type safety:** Critical `as any` casts fixed (7 remain in Hono patterns - C-015)
 
 **Known Integration Debt (2025-12-21):**
 | ID | Gap | Location | Status |
 |----|-----|----------|--------|
 | INT-001 | MCP HTTP auth placeholder | `apps/mcp-server/src/http-server.ts` | ✅ FIXED (2025-12-21) |
-| INT-002 | 18 direct DB calls remaining | `apps/api/modules/*/procedures/*.ts` | **PARTIAL** (17/35 procs refactored) |
+| INT-002 | Service layer extraction | 40+ procedures → services | ✅ **P1+P2 COMPLETE** (17/35 procs + 3 services) **P3-P4 DEFERRED** |
 | INT-003 | Stripe health check TODO | `apps/api/src/routes/health.ts:49` | ✅ FIXED (2025-12-21) |
 | INT-004 | Stale TODO(TICKET-128) | `apps/api/modules/apikeys/procedures/create-api-key.ts` | ✅ FIXED (2025-12-21) |
 | INT-005 | SessionWithUser missing role | `packages/contracts/src/auth/session.ts`, `auth-unified.ts` | ✅ FIXED (2025-12-21) |
 | INT-006 | PostHog duplicate inits | `apps/api/lib/posthog-server.ts` canonical | ✅ FIXED (2025-12-21) |
-| INT-007 | Hono context as any casts | `apps/api/src/middleware/auth.ts` | LOW_PRIORITY |
+| INT-007 | Hono context as any casts | `apps/api/src/middleware/auth.ts` | LOW_PRIORITY (7 casts) |
 
 ---
 

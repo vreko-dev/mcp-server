@@ -205,7 +205,7 @@ cat ai_dev_utils/state/current-task.json | jq
 | ID | Gap | Location | Status |
 |----|-----|----------|--------|
 | INT-001 | MCP HTTP auth placeholder | `apps/mcp-server/src/http-server.ts` | ✅ FIXED (2025-12-21) |
-| INT-002 | 40+ direct DB calls | `apps/api/modules/*/procedures/*.ts` | PARTIAL (7 services + 4 P1 procedures refactored) |
+| INT-002 | 18 direct DB calls remaining | `apps/api/modules/*/procedures/*.ts` | **PARTIAL** (17/35 procs refactored) |
 | INT-003 | Stripe health check TODO | `apps/api/src/routes/health.ts:49` | ✅ FIXED (2025-12-21) |
 | INT-004 | Stale TODO(TICKET-128) | `apps/api/modules/apikeys/procedures/create-api-key.ts` | ✅ FIXED (2025-12-21) |
 | INT-005 | SessionWithUser missing role | `packages/contracts/src/auth/session.ts`, `auth-unified.ts` | ✅ FIXED (2025-12-21) |

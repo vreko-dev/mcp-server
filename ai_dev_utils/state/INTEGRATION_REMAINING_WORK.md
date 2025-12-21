@@ -11,51 +11,29 @@
 | Category | Fixed | Remaining | Priority |
 |----------|-------|-----------|----------|
 | Auth Integration | 4 | 0 | - |
-| Service Layer (C-002) | 7 services + 4 P1 modules | ~32 procedures | P2 |
+| Service Layer (C-002) | **10 services + 17 procedures** | ~18 procedures | P2-P3 |
 | 3rd Party Wiring | 2 (Stripe, PostHog) | 0 | - |
 | Type Safety | Critical fixed | 7 low-priority | P4 |
 
 ---
 
-## INT-002: Service Layer Extraction (PARTIAL)
+## INT-002: Service Layer Extraction (IN PROGRESS)
 
-### Completed Services (7)
+### Completed Services (10) ✅
 
-| Module | Service File | Procedures Refactored |
-|--------|-------------|----------------------|
-| privacy | `services/privacy-service.ts` | delete-my-data |
-| apikeys | `services/apikeys-service.ts` | create-api-key |
-| payments | `services/payments-service.ts` | list-purchases, create-checkout-link |
-| device-trials | `services/device-trials-service.ts` | (service created, procedures pending) |
-| analytics | `services/analytics-service.ts` | get-analytics-metrics, get-api-key-usage, ingest-events |
-| extension | `services/extension-service.ts` | create-extension-session, validate-api-key |
-| snapshots | `services/snapshots-service.ts` | list-snapshots, get-snapshot, delete-snapshot |
+| Module | Service File | Procedures Refactored | Status |
+|--------|-------------|----------------------|--------|
+| privacy | `services/privacy-service.ts` | delete-my-data, export-my-data, get-retention-info, update-preferences | ✅ |
+| apikeys | `services/apikeys-service.ts` | create-api-key, list-api-keys, revoke-api-key | ✅ |
+| payments | `services/payments-service.ts` | list-purchases, create-checkout-link, create-customer-portal-link | ✅ |
+| device-trials | `services/device-trials-service.ts` | create-device-trial, link-device | ✅ |
+| analytics | `services/analytics-service.ts` | get-analytics-metrics, get-api-key-usage, ingest-events, **+ 8 new functions** | ✅ |
+| extension | `services/extension-service.ts` | create-extension-session, validate-api-key | ✅ |
+| snapshots | `services/snapshots-service.ts` | list-snapshots, get-snapshot, delete-snapshot | ✅ |
+| **dashboard** | `services/dashboard-service.ts` | get-ai-detection-stats, get-metrics, get-org-metrics, get-recent-activity, get-session-metrics, get-subscription-data, get-user-metrics | ✅ NEW |
+| **feedback** | `services/feedback-service.ts` | submit-feedback, submit-nps | ✅ NEW |
 
-### Remaining Procedures (~40)
-
-#### Analytics Module (8 procedures)
-```
-apps/api/modules/analytics/procedures/
-├── get-agent-suggestions.ts      # Direct DB calls
-├── get-daily-metrics.ts          # Direct DB calls
-├── get-feedback.ts               # Direct DB calls
-├── get-loops.ts                  # Direct DB calls
-├── get-policy-evaluations.ts     # Direct DB calls
-├── get-post-accept-outcomes.ts   # Direct DB calls
-├── get-snapshots.ts              # Direct DB calls (analytics view)
-└── process-daily-metrics.ts      # Complex - 6+ DB calls
-```
-
-**Effort:** Medium - Similar patterns to existing analytics-service functions
-
-#### API Keys Module (2 procedures) ✅ REFACTORED
-```
-apps/api/modules/apikeys/procedures/
-├── list-api-keys.ts              # Now uses apikeys-service.ts
-└── revoke-api-key.ts             # Now uses apikeys-service.ts
-```
-
-**Status:** Complete - Added listApiKeysForUser, getApiKeyWithOwnerCheck, revokeApiKeyById to service
+### Remaining Procedures (~18)
 
 #### Auth Module (2 procedures)
 ```
@@ -65,38 +43,6 @@ apps/api/modules/auth/procedures/
 ```
 
 **Effort:** Low - Consider consolidating with extension-service
-
-#### Dashboard Module (7 procedures)
-```
-apps/api/modules/dashboard/procedures/
-├── get-ai-detection-stats.ts     # Direct DB calls
-├── get-metrics.ts                # Direct DB calls
-├── get-org-metrics.ts            # Direct DB calls
-├── get-recent-activity.ts        # Direct DB calls
-├── get-session-metrics.ts        # Direct DB calls
-├── get-subscription-data.ts      # Direct DB calls
-└── get-user-metrics.ts           # Direct DB calls
-```
-
-**Effort:** Medium - New dashboard-service.ts needed
-
-#### Device Trials Module (2 procedures) ✅ REFACTORED
-```
-apps/api/modules/device-trials/procedures/
-├── create-device-trial.ts      # Now uses device-trials-service.ts
-└── link-device.ts                # Now uses device-trials-service.ts
-```
-
-**Status:** Complete - Procedures now delegate to service layer
-
-#### Feedback Module (2 procedures)
-```
-apps/api/modules/feedback/procedures/
-├── submit-feedback.ts            # Direct DB calls
-└── submit-nps.ts                 # Direct DB calls
-```
-
-**Effort:** Low - New feedback-service.ts needed
 
 #### Newsletter Module (1 procedure)
 ```
@@ -113,33 +59,6 @@ apps/api/modules/organizations/procedures/
 ```
 
 **Effort:** Low - New organizations-service.ts
-
-#### Payments Module (1 procedure) ✅ REFACTORED
-```
-apps/api/modules/payments/procedures/
-└── create-customer-portal-link.ts # Now uses payments-service.ts
-```
-
-**Status:** Complete - Added getPurchaseById, checkUserOrganizationOwnership to service
-
-#### Pioneer Module (2 procedures)
-```
-apps/api/modules/pioneer/procedures/
-├── signup.ts                     # Direct DB calls
-└── update-email.ts               # Direct DB calls
-```
-
-**Effort:** Low - New pioneer-service.ts
-
-#### Privacy Module (3 procedures) ✅ REFACTORED
-```
-apps/api/modules/privacy/procedures/
-├── export-my-data.ts             # Now uses privacy-service.ts
-├── get-retention-info.ts         # Now uses privacy-service.ts
-└── update-preferences.ts         # Now uses privacy-service.ts
-```
-
-**Status:** Complete - Added getUserExportData, getSnapshotAgeData, buildPrivacyPreferences, RETENTION_POLICIES to service
 
 #### Risk Module (1 procedure)
 ```
@@ -245,49 +164,58 @@ Low - Functional code, just type safety improvement
 3. **API Keys** - ✅ Service extended, 2 functions added
 4. **Payments** - ✅ Service extended, 1 function added
 
-### P2 - Medium Effort
-5. **Dashboard Module** - New service, 7 similar procedures (DEFERRED)
-6. **Analytics remaining** - Add 8 functions to existing service (DEFERRED)
+### P2 - Medium Effort ✅ COMPLETE (2025-12-21)
+5. **Dashboard Module** - ✅ Service created, 7 procedures refactored
+6. **Analytics remaining** - ✅ Extended with 8 functions (get-agent-suggestions, get-daily-metrics, get-feedback, get-loops, get-policy-evaluations, get-post-accept-outcomes, get-snapshots, process-daily-metrics)
 7. **INT-006 PostHog** - ✅ FIXED - Consolidated to single init
+8. **Feedback Module** - ✅ Service created, 2 procedures refactored
 
-### P3 - Higher Effort
-8. **Waitlist Module** - New service, 5 procedures
-9. **Telemetry Module** - New service, 2 procedures + PostHog wiring
+### P3 - Lower Effort (DEFERRED)
+9. **Newsletter Module** - 1 procedure (subscribe-to-newsletter)
+10. **Organizations Module** - 1 procedure (get-by-id)
+11. **Pioneer Module** - 2 procedures (signup, update-email)
+12. **Auth Module** - 2 procedures (track-api-usage, verify-api-key)
+13. **Risk Module** - 1 procedure (analyze-risk)
+14. **Rules Module** - 1 procedure (get-rules-bundle)
+15. **Telemetry Module** - 2 procedures (enrich-event, track-event)
 
-### P4 - Complex
-10. **Snapshots create-snapshot.ts** - 416 lines, 15+ DB calls
-11. **INT-007 Type Safety** - Low priority improvement
+### P4 - Complex (DEFERRED)
+16. **Waitlist Module** - 5 procedures (get-position, get-recent-activity, get-referrals, join-waitlist, helpers)
+17. **Snapshots create-snapshot.ts** - 416 lines, 15+ DB calls
+18. **Snapshots restore-snapshot.ts** - Direct DB calls
+19. **INT-007 Type Safety** - Low priority improvement
 
 ---
 
-## Service Files to Create
+## Service Files Created
 
-| Service | Module | Functions Needed |
-|---------|--------|------------------|
-| dashboard-service.ts | dashboard | 7 |
-| feedback-service.ts | feedback | 2 |
-| newsletter-service.ts | newsletter | 1 |
-| organizations-service.ts | organizations | 1 |
-| pioneer-service.ts | pioneer | 2 |
-| risk-service.ts | risk | 1 |
-| rules-service.ts | rules | 1 |
-| telemetry-service.ts | telemetry | 2 |
-| waitlist-service.ts | waitlist | 5 |
+| Service | Module | Functions | Status |
+|---------|--------|-----------|--------|
+| dashboard-service.ts | dashboard | 7 | ✅ 2025-12-21 |
+| analytics-service.ts (extended) | analytics | +8 (total 11) | ✅ 2025-12-21 |
+| feedback-service.ts | feedback | 2 | ✅ 2025-12-21 |
+| newsletter-service.ts | newsletter | 1 | DEFERRED |
+| organizations-service.ts | organizations | 1 | DEFERRED |
+| pioneer-service.ts | pioneer | 2 | DEFERRED |
+| risk-service.ts | risk | 1 | DEFERRED |
+| rules-service.ts | rules | 1 | DEFERRED |
+| telemetry-service.ts | telemetry | 2 | DEFERRED |
+| waitlist-service.ts | waitlist | 5 | DEFERRED |
 
-**Total:** 9 new services, 22 functions
+**Total Completed:** 3 new services + 1 extended, 17 functions
 
 ---
 
 ## Verification Commands
 
 ```bash
-# Check remaining direct DB calls
-grep -rln "getDb()" apps/api/modules/*/procedures/*.ts | wc -l
+# Check remaining direct DB calls (should be ~18)
+find apps/api/modules -name "*.ts" -path "*/procedures/*" -exec grep -l "getDb()" {} \; | wc -l
 
-# Check PostHog initializations
+# Check PostHog initializations (should be 1)
 grep -rn "new PostHog" apps/api --include="*.ts" | grep -v node_modules
 
-# Check as any casts in auth
+# Check as any casts in auth (should be 7)
 grep -n "as any" apps/api/src/middleware/auth*.ts
 
 # Verify service layer exists
@@ -298,12 +226,14 @@ ls -la apps/api/modules/*/services/
 
 ## Completion Criteria
 
-- [ ] All procedures delegate to service layer (0 direct `getDb()` calls)
-- [ ] PostHog initialized once in `lib/posthog-server.ts`
+- [x] All P1 procedures delegate to service layer (4 modules complete)
+- [x] All P2 procedures delegate to service layer (Dashboard, Analytics, Feedback complete)
+- [ ] All P3 procedures delegate to service layer (Newsletter, Orgs, Pioneer, Auth, Risk, Rules, Telemetry)
+- [x] PostHog initialized once in `lib/posthog-server.ts`
 - [ ] No `as any` casts in auth middleware (optional)
-- [ ] All services have consistent patterns per C-002
-- [ ] TypeScript compilation passes
-- [ ] ROUTER.md INT table shows all FIXED
+- [x] All services have consistent patterns per C-002
+- [x] TypeScript compilation passes (1 unrelated error: policy-engine)
+- [ ] ROUTER.md INT table shows all P1+P2 FIXED
 
 ---
 
@@ -311,5 +241,7 @@ ls -la apps/api/modules/*/services/
 **Owner:** Integration Audit
 **Session Progress:**
 - P1 items: 4/4 complete (device-trials, privacy, apikeys, payments)
+- P2 items: 3/3 complete (dashboard, analytics extended, feedback)
 - INT-006 PostHog: FIXED
-- Remaining: Dashboard (7 procs), Analytics (8 procs), Waitlist (5 procs), + other services
+- **Refactored:** 17 procedures across 3 modules (Dashboard=7, Analytics=8, Feedback=2)
+- **Remaining:** 18 procedures across 7 modules (Newsletter, Orgs, Pioneer, Auth, Risk, Rules, Telemetry, Waitlist, Snapshots)

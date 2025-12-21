@@ -15,8 +15,8 @@
 ### Before ANY Implementation
 ```typescript
 // REQUIRED: Call this first
-codebase.get_context({ 
-  task: "your task description", 
+codebase.get_context({
+  task: "your task description",
   keywords: ["relevant", "keywords"],
   files: ["files/you/will/modify.ts"]
 })
@@ -24,9 +24,9 @@ codebase.get_context({
 
 ### Before Committing
 ```typescript
-codebase.check_patterns({ 
-  code: "your new code", 
-  filePath: "path/to/file.ts" 
+codebase.check_patterns({
+  code: "your new code",
+  filePath: "path/to/file.ts"
 })
 ```
 

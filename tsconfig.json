@@ -13,12 +13,11 @@
 		{ "path": "./packages/config" },
 		{ "path": "./packages/contracts" },
 		{ "path": "./packages/core" },
-		{ "path": "./packages/events" },
 		{ "path": "./packages/github-action" },
 		{ "path": "./packages/infrastructure" },
 		{ "path": "./packages/integrations" },
 		{ "path": "./packages/platform" },
-		{ "path": "./packages/policy-engine" },
+		{ "path": "./packages/intelligence" },
 		{ "path": "./packages/sdk" },
 		{ "path": "./tooling/scripts" },
 		{ "path": "./tooling/tailwind" }

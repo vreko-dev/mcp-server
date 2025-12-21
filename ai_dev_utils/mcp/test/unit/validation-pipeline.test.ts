@@ -20,7 +20,7 @@ let ValidationPipeline: any;
 let pipeline: any;
 
 beforeEach(async () => {
-	const module = await import("../../validation-pipeline.js");
+	const module = await import("@snapback/intelligence");
 	ValidationPipeline = module.ValidationPipeline;
 	pipeline = new ValidationPipeline();
 });
@@ -43,7 +43,7 @@ describe("Layer 1: Syntax Validation", () => {
 			.find((l: any) => l.layer === "syntax")
 			?.issues.find((i: any) => i.type === "SYNTAX_ERROR");
 
-		expect(syntaxIssue).toBeDefined();
+		expect(syntaxIssue?.type).toBe("SYNTAX_ERROR");
 	});
 
 	it("Detects mismatched parentheses", async () => {
@@ -58,7 +58,7 @@ describe("Layer 1: Syntax Validation", () => {
 			.find((l: any) => l.layer === "syntax")
 			?.issues.find((i: any) => i.type === "SYNTAX_ERROR");
 
-		expect(syntaxIssue).toBeDefined();
+		expect(syntaxIssue?.type).toBe("SYNTAX_ERROR");
 	});
 
 	it("Detects double semicolon", async () => {
@@ -72,7 +72,7 @@ describe("Layer 1: Syntax Validation", () => {
 			.find((l: any) => l.layer === "syntax")
 			?.issues.find((i: any) => i.type === "SYNTAX_WARNING");
 
-		expect(warningIssue).toBeDefined();
+		expect(warningIssue?.type).toBe("SYNTAX_WARNING");
 	});
 
 	it("Passes valid syntax", async () => {
@@ -105,7 +105,7 @@ describe("Layer 2: Type Safety Checks", () => {
 			.find((l: any) => l.layer === "types")
 			?.issues.find((i: any) => i.type === "TYPE_SAFETY_BYPASS");
 
-		expect(typeIssue).toBeDefined();
+		expect(typeIssue?.type).toBe("TYPE_SAFETY_BYPASS");
 	});
 
 	it("Detects @ts-ignore without reason", async () => {
@@ -119,7 +119,7 @@ describe("Layer 2: Type Safety Checks", () => {
 			.find((l: any) => l.layer === "types")
 			?.issues.find((i: any) => i.type === "TS_IGNORE_NO_REASON");
 
-		expect(ignoreIssue).toBeDefined();
+		expect(ignoreIssue?.type).toBe("TS_IGNORE_NO_REASON");
 	});
 
 	it("Warns on excessive non-null assertions", async () => {
@@ -135,7 +135,7 @@ describe("Layer 2: Type Safety Checks", () => {
 			.find((l: any) => l.layer === "types")
 			?.issues.find((i: any) => i.type === "EXCESSIVE_NON_NULL");
 
-		expect(nonNullIssue).toBeDefined();
+		expect(nonNullIssue?.type).toBe("EXCESSIVE_NON_NULL");
 	});
 
 	it("Passes code with proper types", async () => {
@@ -169,7 +169,7 @@ describe("Layer 3: Test Coverage Checks", () => {
 			.find((l: any) => l.layer === "tests")
 			?.issues.find((i: any) => i.type === "VAGUE_ASSERTION");
 
-		expect(testIssue).toBeDefined();
+		expect(testIssue?.type).toBe("VAGUE_ASSERTION");
 	});
 
 	it("Warns on incomplete test coverage", async () => {
@@ -186,7 +186,7 @@ describe("Layer 3: Test Coverage Checks", () => {
 			.find((l: any) => l.layer === "tests")
 			?.issues.find((i: any) => i.type === "INCOMPLETE_COVERAGE");
 
-		expect(coverageIssue).toBeDefined();
+		expect(coverageIssue?.type).toBe("INCOMPLETE_COVERAGE");
 	});
 
 	it("Passes well-covered tests with 4 paths", async () => {
@@ -229,7 +229,7 @@ describe("Layer 4: Architecture Validation", () => {
 			.find((l: any) => l.layer === "architecture")
 			?.issues.find((i: any) => i.type === "LAYER_BOUNDARY_VIOLATION");
 
-		expect(archIssue).toBeDefined();
+		expect(archIssue?.type).toBe("LAYER_BOUNDARY_VIOLATION");
 	});
 
 	it("Detects layer boundary violation (web -> infrastructure)", async () => {
@@ -243,7 +243,7 @@ describe("Layer 4: Architecture Validation", () => {
 			.find((l: any) => l.layer === "architecture")
 			?.issues.find((i: any) => i.type === "LAYER_BOUNDARY_VIOLATION");
 
-		expect(archIssue).toBeDefined();
+		expect(archIssue?.type).toBe("LAYER_BOUNDARY_VIOLATION");
 	});
 
 	it("Detects service bypass in procedures", async () => {
@@ -254,7 +254,7 @@ describe("Layer 4: Architecture Validation", () => {
 			.find((l: any) => l.layer === "architecture")
 			?.issues.find((i: any) => i.type === "SERVICE_BYPASS");
 
-		expect(bypassIssue).toBeDefined();
+		expect(bypassIssue?.type).toBe("SERVICE_BYPASS");
 	});
 
 	it("Detects relative imports across packages", async () => {
@@ -267,7 +267,7 @@ describe("Layer 4: Architecture Validation", () => {
 			.find((l: any) => l.layer === "architecture")
 			?.issues.find((i: any) => i.type === "WRONG_IMPORT_PATTERN");
 
-		expect(importIssue).toBeDefined();
+		expect(importIssue?.type).toBe("WRONG_IMPORT_PATTERN");
 	});
 
 	it("Allows infrastructure import in services", async () => {
@@ -297,7 +297,7 @@ describe("Layer 5: Security Validation", () => {
 			.find((l: any) => l.layer === "security")
 			?.issues.find((i: any) => i.type === "HARDCODED_SECRET");
 
-		expect(securityIssue).toBeDefined();
+		expect(securityIssue?.type).toBe("HARDCODED_SECRET");
 	});
 
 	it("Detects hardcoded password", async () => {
@@ -308,7 +308,7 @@ describe("Layer 5: Security Validation", () => {
 			.find((l: any) => l.layer === "security")
 			?.issues.find((i: any) => i.type === "HARDCODED_SECRET");
 
-		expect(securityIssue).toBeDefined();
+		expect(securityIssue?.type).toBe("HARDCODED_SECRET");
 	});
 
 	it("Detects eval usage", async () => {
@@ -321,7 +321,7 @@ describe("Layer 5: Security Validation", () => {
 			.find((l: any) => l.layer === "security")
 			?.issues.find((i: any) => i.type === "UNSAFE_EVAL");
 
-		expect(evalIssue).toBeDefined();
+		expect(evalIssue?.type).toBe("UNSAFE_EVAL");
 	});
 
 	it("Detects new Function usage", async () => {
@@ -334,7 +334,7 @@ describe("Layer 5: Security Validation", () => {
 			.find((l: any) => l.layer === "security")
 			?.issues.find((i: any) => i.type === "UNSAFE_EVAL");
 
-		expect(evalIssue).toBeDefined();
+		expect(evalIssue?.type).toBe("UNSAFE_EVAL");
 	});
 
 	it("Detects privacy violation (file content to external)", async () => {
@@ -348,7 +348,7 @@ describe("Layer 5: Security Validation", () => {
 			.find((l: any) => l.layer === "security")
 			?.issues.find((i: any) => i.type === "PRIVACY_VIOLATION");
 
-		expect(privacyIssue).toBeDefined();
+		expect(privacyIssue?.type).toBe("PRIVACY_VIOLATION");
 	});
 
 	it("Passes secure code", async () => {
@@ -379,7 +379,7 @@ describe("Layer 6: Dependency Validation", () => {
 			.find((l: any) => l.layer === "dependencies")
 			?.issues.find((i: any) => i.type === "DEPRECATED_DEPENDENCY");
 
-		expect(depIssue).toBeDefined();
+		expect(depIssue?.type).toBe("DEPRECATED_DEPENDENCY");
 	});
 
 	it("Warns on deprecated request package", async () => {
@@ -393,7 +393,7 @@ describe("Layer 6: Dependency Validation", () => {
 			.find((l: any) => l.layer === "dependencies")
 			?.issues.find((i: any) => i.type === "DEPRECATED_DEPENDENCY");
 
-		expect(depIssue).toBeDefined();
+		expect(depIssue?.type).toBe("DEPRECATED_DEPENDENCY");
 	});
 
 	it("Passes modern dependencies", async () => {
@@ -426,7 +426,7 @@ describe("Layer 7: Performance Validation", () => {
 			.find((l: any) => l.layer === "performance")
 			?.issues.find((i: any) => i.type === "NO_CONSOLE");
 
-		expect(perfIssue).toBeDefined();
+		expect(perfIssue?.type).toBe("NO_CONSOLE");
 	});
 
 	it("Warns on synchronous file operations", async () => {
@@ -440,7 +440,7 @@ describe("Layer 7: Performance Validation", () => {
 			.find((l: any) => l.layer === "performance")
 			?.issues.find((i: any) => i.type === "SYNC_FILE_IO");
 
-		expect(syncIssue).toBeDefined();
+		expect(syncIssue?.type).toBe("SYNC_FILE_IO");
 	});
 
 	it("Warns on await in loops (N+1)", async () => {
@@ -457,7 +457,7 @@ describe("Layer 7: Performance Validation", () => {
 			.find((l: any) => l.layer === "performance")
 			?.issues.find((i: any) => i.type === "AWAIT_IN_LOOP");
 
-		expect(loopIssue).toBeDefined();
+		expect(loopIssue?.type).toBe("AWAIT_IN_LOOP");
 	});
 
 	it("Allows sync file ops in scripts", async () => {

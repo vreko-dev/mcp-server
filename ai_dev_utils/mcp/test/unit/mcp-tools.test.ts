@@ -21,8 +21,8 @@ let LearningEngine: any;
 
 beforeEach(async () => {
 	// Dynamic imports for ESM compatibility
-	const validationModule = await import("../../validation-pipeline.js");
-	const learningModule = await import("../../learning-engine.js");
+	const validationModule = await import("@snapback/intelligence");
+	const learningModule = await import("@snapback/intelligence");
 	ValidationPipeline = validationModule.ValidationPipeline;
 	LearningEngine = learningModule.LearningEngine;
 });
@@ -38,7 +38,7 @@ describe("MCP Tool: get_context", () => {
 			const task = "add auth to MCP";
 
 			// This tests the context assembly logic
-			expect(task).toBeDefined();
+			expect(typeof task).toBe("string");
 			expect(task.length).toBeGreaterThan(0);
 
 			// Context should be non-empty when task is valid
@@ -52,8 +52,8 @@ describe("MCP Tool: get_context", () => {
 			};
 
 			expect(mockContext.task).toBe(task);
-			expect(mockContext.contextSections).toBeDefined();
-			expect(mockContext.hardRules).toBeDefined();
+			expect(mockContext.contextSections).toBe("## Layer Responsibilities");
+			expect(mockContext.hardRules).toBe("## Hard Rules");
 		});
 
 		it("MCP-CTX-002: Filters by file path", async () => {
@@ -284,7 +284,7 @@ describe("MCP Tool: report_violation", () => {
 				reflection: "Why it happened",
 			};
 
-			expect(violation.date).toBeDefined();
+			expect(violation.date).toMatch(/^\d{4}-\d{2}-\d{2}T/);
 			expect(violation.type).toBe("TEST_VIOLATION");
 			expect(violation.file).toBe("test/file.ts");
 		});
@@ -379,7 +379,7 @@ describe("MCP Tool: record_learning", () => {
 	let engine: any;
 
 	beforeEach(() => {
-		engine = new LearningEngine();
+		engine = new LearningEngine({ rootDir: ".", learningsDir: "feedback" });
 	});
 
 	describe("1.4.1 Storage", () => {
@@ -395,8 +395,8 @@ describe("MCP Tool: record_learning", () => {
 
 			expect(learning.id).toMatch(/^L\d+/);
 			expect(learning.type).toBe("pattern");
-			expect(learning.trigger).toBeDefined();
-			expect(learning.action).toBeDefined();
+			expect(typeof learning.trigger).toBe("string");
+			expect(typeof learning.action).toBe("string");
 		});
 
 		it("MCP-LRN-002: Auto-generates ID", () => {

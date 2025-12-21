@@ -13,8 +13,8 @@ let ValidationPipeline: any;
 let LearningEngine: any;
 
 beforeEach(async () => {
-	const validationModule = await import("../../validation-pipeline.js");
-	const learningModule = await import("../../learning-engine.js");
+	const validationModule = await import("@snapback/intelligence");
+	const learningModule = await import("@snapback/intelligence");
 	ValidationPipeline = validationModule.ValidationPipeline;
 	LearningEngine = learningModule.LearningEngine;
 });
@@ -366,7 +366,7 @@ describe("Performance Tests", () => {
 
 describe("Learning Engine", () => {
 	it("Classifies query types correctly", () => {
-		const engine = new LearningEngine();
+		const engine = new LearningEngine({ rootDir: ".", learningsDir: "feedback" });
 
 		const testCases = [
 			{ query: "add authentication", expected: "authentication" },
@@ -388,14 +388,14 @@ describe("Learning Engine", () => {
 	});
 
 	it("Gets empty golden examples for new type", () => {
-		const engine = new LearningEngine();
+		const engine = new LearningEngine({ rootDir: ".", learningsDir: "feedback" });
 		const examples = engine.getGoldenExamples("nonexistent-type");
 
 		expect(examples).toEqual([]);
 	});
 
 	it("Gets stats with empty data", () => {
-		const engine = new LearningEngine();
+		const engine = new LearningEngine({ rootDir: ".", learningsDir: "feedback" });
 		const stats = engine.getStats();
 
 		expect(stats).toHaveProperty("totalInteractions");

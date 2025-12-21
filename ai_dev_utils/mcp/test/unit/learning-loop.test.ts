@@ -139,7 +139,7 @@ describe("Learning Loop: Violation → Pattern Pipeline", () => {
 			prevention: "How to prevent",
 		});
 
-		expect(loop.violations[0].date).toBeDefined();
+		expect(loop.violations[0].date).toMatch(/^\d{4}-\d{2}-\d{2}T/);
 		expect(new Date(loop.violations[0].date).getTime()).toBeGreaterThan(0);
 	});
 
@@ -349,7 +349,7 @@ describe("Learning Loop: Feedback Loop Closure", () => {
 			source: "session-1",
 		});
 
-		expect(learning.id).toBeDefined();
+		expect(learning.id).toMatch(/^L\d+/);
 
 		// Session 2: Should still be queryable
 		const results = loop.queryLearnings(["service"]);

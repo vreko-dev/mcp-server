@@ -79,6 +79,19 @@ it('should handle time correctly', () => {
 **Pattern:** Starting implementation without calling `codebase.get_context()` first
 **Fix:** ALWAYS call `codebase.start_task()` or `codebase.get_context()` BEFORE coding
 
+### 6. Client-Side Node.js Dependencies
+**Seen:** 1 time (2025-12-22)
+**Pattern:** Importing `@snapback/infrastructure` logger (pino/thread-stream) in client-side React components
+**Fix:** Check for "use client" directive at line 1. If present, use console.* methods. Only use logger in server components/API routes.
+**Root Cause:** Bulk replacements that don't distinguish server vs client context
+**Files:** ContactForm.tsx, Newsletter.tsx, ExitIntentModal.tsx, pricing.tsx, faq.tsx, performance-monitor.tsx, trial-detector.tsx, use-protection-status.ts, analytics.ts, motion-guard.ts, motion-security.ts
+
+### 7. Bundle Analyzer with Turbopack
+**Seen:** 1 time (2025-12-22)
+**Pattern:** Using `@next/bundle-analyzer` with Turbopack (Next.js 15+ default bundler)
+**Fix:** Use `npx next experimental-analyze` for Turbopack, or add `--no-turbo` flag for Webpack fallback
+**Detection:** Build error "bundle analyzer not available" or CommonJS require() in .mjs file
+
 ---
 
 
@@ -208,10 +221,44 @@ ValidationPipeline pre-commit hook now catches new additions.
 
 | Date | Violation | File | Fix Applied |
 |------|-----------|------|-------------|
+| 2025-12-22 | client-side-node-deps | apps/web/modules/marketing/** | Removed @snapback/infrastructure logger from 11 client components, replaced with console.* |
+| 2025-12-22 | bundle-analyzer-config | apps/web/next.config.mjs | Fixed ES module import syntax, added Turbopack/Webpack analyzer options |
+| 2025-12-22 | fumadocs-version | pnpm-workspace.yaml | Updated fumadocs-mdx from 13.0.8 to 14.2.2 for Next.js 16.1 compatibility |
 | 2025-12-20 | path-resolution-bug | ai_dev_utils/mcp/prompt-cache.ts | Changed process.cwd() to fileURLToPath pattern |
 | 2025-12-20 | onnxruntime-deps | packages/intelligence | Added onnxruntime-common, onnxruntime-node |
 | 2025-12-20 | dual-use-mcp | apps/mcp-server | Wired customer MCP with snapback.* tools |
 
 ---
 
-*Last updated: 2025-12-20 (Priorities 1-4 complete, dual-use MCP integrated)*
+## Next.js 16.1 DX Standards (2025-12-22)
+
+**Verified configurations align with 2024/2025 industry best practices:**
+
+### Next.js Configuration ✅
+- Turbopack file system caching enabled (`experimental.turbopackFileSystemCacheForDev: true`)
+- Package import optimization configured for barrel file tree-shaking
+- Server external packages declared (`serverExternalPackages: ["@snapback/infrastructure"]`)
+- Standalone output for Docker optimization
+- Production-grade security headers (CSP, HSTS, X-Frame-Options)
+
+### pnpm Workspace ✅
+- Catalog protocol for centralized version management
+- Next.js ecosystem aligned (all @next/* packages at 16.1.0)
+- Fumadocs version compatibility (ui/core v15, mdx v14)
+- Zero version drift across 580+ packages
+
+### TypeScript ✅
+- Bundler module resolution (Next.js 16 recommended)
+- Composite builds for monorepo optimization
+- Strict mode enabled with ES2022 target
+
+### Tooling ✅
+- Biome (35x faster than Prettier, single tool for format+lint)
+- Turbopack (default bundler, 28% faster dev server)
+- Fumadocs (replaces @next/mdx - NOT duplicative)
+
+**Reference:** See MCP learnings L6402888493 (pitfall), L6402888494 (pattern), L6402888491 (workflow)
+
+---
+
+*Last updated: 2025-12-22 (Next.js 16.1 upgrade, DX audit complete)*

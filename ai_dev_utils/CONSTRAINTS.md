@@ -199,6 +199,33 @@ SOURCE: INTEGRATION_ISSUES_FOUND.md ISSUE-004 (2025-12-21)
 IMPACT: Inconsistent API when refactoring remaining 18 procedures
 ```
 
+### C-017: Client-Side Node.js Dependencies
+
+```
+RULE: Client-side React components MUST NOT import Node.js-only packages
+BANNED: import { logger } from "@snapback/infrastructure" in files with "use client"
+BANNED: Any import of pino, thread-stream, fs, worker_threads in client components
+REQUIRED: Use console.* methods in client components
+REQUIRED: Use logger only in server components, API routes, backend services
+CHECK: "use client" directive MUST be line 1 with proper syntax: "use client";
+VIOLATION_TYPE: CLIENT_SIDE_NODE_DEPENDENCY
+SOURCE: Violation 2025-12-22 - Next.js build failed attempting to bundle thread-stream for browser
+ROOT_CAUSE: Bulk console→logger replacement without filtering for client vs server context
+```
+
+### C-018: Next.js Bundle Analyzer Configuration
+
+```
+RULE: Bundle analyzer MUST use correct bundler-specific implementation
+PATTERN:
+  - Turbopack (Next.js 15+ default): Use npx next experimental-analyze (Next.js 16.1+)
+  - Webpack: Use @next/bundle-analyzer with --no-turbo flag
+BANNED: require() in ES module (.mjs) files
+REQUIRED: ES module import syntax for all config files
+VIOLATION_TYPE: BUNDLE_ANALYZER_CONFIG
+SOURCE: Violation 2025-12-22 - CommonJS require() in next.config.mjs caused module error
+```
+
 ---
 
 ## Soft Rules (Warnings)

@@ -28,12 +28,13 @@ This document provides the roadmap for enhancing the SnapBack CLI with professio
 
 | Spec ID | Name | Priority | Effort | Status |
 |---------|------|----------|--------|--------|
-| [CLI-UX-001](./01-boxen-integration.spec.md) | Boxen Integration | P1 | 2h | Draft |
-| [CLI-UX-002](./02-execa-integration.spec.md) | Execa Integration | P1 | 1h | Draft |
-| [CLI-UX-003](./03-cli-table3-integration.spec.md) | CLI-Table3 Integration | P2 | 2h | Draft |
-| [CLI-UX-004](./04-log-update-integration.spec.md) | Log-Update Integration | P2 | 1h | Draft |
+| [CLI-UX-001](./01-boxen-integration.spec.md) | Boxen Integration | P1 | 2h | ✅ Done |
+| [CLI-UX-002](./02-execa-integration.spec.md) | Execa Integration | P1 | 1h | ✅ Done |
+| [CLI-UX-003](./03-cli-table3-integration.spec.md) | CLI-Table3 Integration | P2 | 2h | ✅ Done |
+| [CLI-UX-004](./04-log-update-integration.spec.md) | Log-Update Integration | P2 | 1h | ✅ Done |
+| **[CLI-UX-005](./05-intelligence-integration.spec.md)** | **Intelligence Integration** | **P0** | **8-12h** | **🏗️ Scaffolded** |
 
-**Total Estimated Effort**: 6 hours
+**Total Estimated Effort**: 14-18 hours (UX: 6h done, Intelligence: 8-12h)
 
 ---
 

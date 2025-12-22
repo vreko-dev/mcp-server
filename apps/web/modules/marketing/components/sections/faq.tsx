@@ -1,6 +1,4 @@
-import { logger } from "@snapback/infrastructure";
-
-("use client");
+"use client";
 
 import { ChevronDown } from "lucide-react";
 import { m } from "motion/react";
@@ -87,7 +85,7 @@ const FAQ = () => {
 
 	const handleContactSupport = () => {
 		// Contact support logic would go here
-		logger.debug("Support contact initiated");
+		console.debug("Support contact initiated");
 	};
 
 	return (

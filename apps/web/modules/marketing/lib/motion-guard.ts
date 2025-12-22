@@ -1,5 +1,3 @@
-import { logger } from "@snapback/infrastructure";
-
 /**
  * Motion Guard - Prevents future regressions of MotionProvider issues
  *
@@ -50,7 +48,7 @@ class MotionGuard {
 			}
 
 			this.status = "ready";
-			logger.info(`[✅ MotionGuard] Motion loaded successfully in ${loadTime}ms`);
+			console.info(`[✅ MotionGuard] Motion loaded successfully in ${loadTime}ms`);
 		} catch (error) {
 			this.status = "failed";
 			console.error("🚨 MotionGuard: Critical motion/react loading failure", error as Error);

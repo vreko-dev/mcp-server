@@ -1,4 +1,3 @@
-import { logger } from "@snapback/infrastructure";
 import posthog from "posthog-js";
 
 /**
@@ -21,7 +20,7 @@ export const analytics = {
 		// No-op: PostHog is initialized in ClientProviders
 		// GA4 is loaded via Next.js third-parties in layout.tsx
 		if (process.env.NODE_ENV === "development") {
-			logger.info("[📊 Analytics] PostHog initialized");
+			console.info("[📊 Analytics] PostHog initialized");
 		}
 	},
 
@@ -36,7 +35,7 @@ export const analytics = {
 
 		// Console in dev
 		if (process.env.NODE_ENV === "development") {
-			logger.debug(`[📊 Track] ${event}`, properties || {});
+			console.debug(`[📊 Track] ${event}`, properties || {});
 		}
 	},
 
@@ -46,7 +45,7 @@ export const analytics = {
 		// No-op: PostHog auto-tracks pageviews in 'history_change' mode
 		// Manual pageview tracking is disabled to prevent duplicates
 		if (process.env.NODE_ENV === "development") {
-			logger.debug(`[📊 Pageview] ${url}`);
+			console.debug(`[📊 Pageview] ${url}`);
 		}
 	},
 };

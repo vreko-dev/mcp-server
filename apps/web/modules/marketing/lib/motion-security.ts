@@ -1,6 +1,4 @@
-("use client");
-
-import { logger } from "@snapback/infrastructure";
+"use client";
 
 /**
  * Motion Security & Stability Framework
@@ -172,7 +170,7 @@ class MotionSecurityManager {
 		// Development logging (detailed)
 		if (process.env.NODE_ENV === "development") {
 			console.group(`🛡️ Motion Security Event: ${event}`);
-			logger.debug("[Motion Security] Data:", sanitizedData);
+			console.debug("[Motion Security] Data:", sanitizedData);
 			console.groupEnd();
 		}
 

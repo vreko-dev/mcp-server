@@ -1,6 +1,4 @@
-import { logger } from "@snapback/infrastructure";
-
-("use client");
+"use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -35,7 +33,7 @@ export function ContactForm() {
 	const contactFormMutation = useMutation({
 		mutationFn: async (data: ContactFormValues) => {
 			// Stub implementation
-			logger.info("Contact form submitted", data);
+			console.info("Contact form submitted", data);
 			return { success: true };
 		},
 	});

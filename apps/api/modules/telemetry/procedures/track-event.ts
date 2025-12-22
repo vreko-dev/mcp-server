@@ -1,11 +1,14 @@
 import { logger } from "@snapback/infrastructure";
-import { apiKeys, subscriptions } from "@snapback/platform";
-import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { getPostHog } from "@/lib/posthog-server";
 import { trackUsage } from "@/lib/usage";
 import { protectedProcedure } from "@/orpc/procedures";
-import { getDb } from "@/src/services/database";
+import {
+	getApiKeyPermissions,
+	getSubscriptionTier,
+	getUserSubscription,
+	requireUserApiKey,
+} from "@/src/services/user-context-service";
 
 // Input validation
 const trackEventSchema = z.object({
@@ -22,24 +25,9 @@ export const trackEvent = protectedProcedure.input(trackEventSchema).handler(asy
 		throw new Error("Unauthorized");
 	}
 
-	// Get user's API key
-	const db = getDb();
-	if (!db) {
-		throw new Error("Database not available");
-	}
-
-	const apiKeyResult = await db.select().from(apiKeys).where(eq(apiKeys.userId, user.id)).limit(1);
-
-	if (!apiKeyResult || apiKeyResult.length === 0) {
-		throw new Error("No API key found");
-	}
-
-	const apiKey = apiKeyResult[0];
-
-	// 1. Get user's subscription for feature flags
-	const subscriptionResult = await db.select().from(subscriptions).where(eq(subscriptions.userId, user.id)).limit(1);
-
-	const subscription = subscriptionResult && subscriptionResult.length > 0 ? subscriptionResult[0] : null;
+	// Get user's API key and subscription (via service layer)
+	const apiKey = await requireUserApiKey(user.id);
+	const subscription = await getUserSubscription(user.id);
 
 	// 2. Sanitize PII from properties
 	const sanitizedProperties = sanitizeProperties(input.properties || {});
@@ -48,7 +36,7 @@ export const trackEvent = protectedProcedure.input(trackEventSchema).handler(asy
 	const enrichedProperties = {
 		...sanitizedProperties,
 		// Subscription context
-		plan: subscription?.plan || "free",
+		plan: getSubscriptionTier(subscription),
 		status: subscription?.status || "active",
 		// Client context
 		clientVersion: input.clientVersion,
@@ -101,17 +89,7 @@ export const trackEvent = protectedProcedure.input(trackEventSchema).handler(asy
 	}).catch(console.error);
 
 	// 7. Get feature flags for user
-	const featureFlags = getFeatureFlags(
-		subscription?.plan || "free",
-		user.id,
-		apiKey.permissions as {
-			maxSnapshots?: number;
-			cloudBackup?: boolean;
-			advancedDetection?: boolean;
-			customRules?: boolean;
-			teamSharing?: boolean;
-		},
-	);
+	const featureFlags = getFeatureFlags(getSubscriptionTier(subscription), user.id, getApiKeyPermissions(apiKey));
 
 	// 8. Return acknowledgment with feature flags
 	return {

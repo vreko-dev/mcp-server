@@ -202,3 +202,44 @@ export async function getLeaderboard(
 
 	return { entries, total, currentUserRank };
 }
+
+// ============================================================================
+// Signup Operations (C-002 compliance)
+// ============================================================================
+
+/**
+ * Find pioneer profile by GitHub ID
+ */
+export async function findPioneerByGithubId(githubId: string) {
+	const db = ensureDatabase();
+	const result = await db.select().from(pioneers).where(eq(pioneers.githubId, githubId)).limit(1);
+	return result && result.length > 0 ? result[0] : null;
+}
+
+/**
+ * Create a new pioneer profile
+ */
+export async function createPioneerProfile(data: {
+	userId: string;
+	username: string;
+	githubId: string;
+	tier: Tier;
+	totalPoints: number;
+	joinedAt: Date;
+	referralCode: string;
+	githubStarred: boolean;
+	lastSyncedAt: Date;
+	createdAt: Date;
+	updatedAt: Date;
+}) {
+	const db = ensureDatabase();
+	const result = await db.insert(pioneers).values(data).returning();
+	return result && result.length > 0 ? result[0] : null;
+}
+
+/**
+ * Generate a unique referral code
+ */
+export function generateReferralCode(username: string): string {
+	return `${username.toUpperCase()}_${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+}

@@ -1,12 +1,15 @@
 import { ORPCError } from "@orpc/server";
 import { logger } from "@snapback/infrastructure";
 import { sendEmail } from "@snapback/integrations";
-import { newsletterSubscribers } from "@snapback/platform";
-import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { protectedProcedure } from "@/orpc/procedures";
-import { getDb } from "@/src/services/database";
 import { createOrUpdateHubSpotContact } from "../services/hubspot-service";
+import {
+	createSubscriber,
+	findSubscriberByEmail,
+	resubscribeUser,
+	updateHubSpotContactId,
+} from "../services/newsletter-service";
 
 const subscribeToNewsletterSchema = z.object({
 	email: z.string().email(),
@@ -27,46 +30,21 @@ export const subscribeToNewsletter = protectedProcedure
 		try {
 			const { email, metadata } = input;
 
-			const db = getDb();
-			if (!db) {
-				throw new ORPCError("INTERNAL_SERVER_ERROR");
-			}
+			// Check if subscriber already exists (via service layer)
+			const existingSubscriber = await findSubscriberByEmail(email);
 
-			// Check if subscriber already exists
-			const existingSubscriber = await db
-				.select()
-				.from(newsletterSubscribers)
-				.where(eq(newsletterSubscribers.email, email))
-				.limit(1);
-
-			if (existingSubscriber && existingSubscriber.length > 0) {
+			if (existingSubscriber) {
 				// If previously unsubscribed, resubscribe
-				if (existingSubscriber[0]?.unsubscribedAt) {
-					await db
-						.update(newsletterSubscribers)
-						.set({
-							unsubscribedAt: null,
-							subscribedAt: new Date(),
-							updatedAt: new Date(),
-						})
-						.where(eq(newsletterSubscribers.email, email));
-
+				if (existingSubscriber.unsubscribedAt) {
+					await resubscribeUser(email);
 					logger.info(`Newsletter resubscription: ${email}`);
 				} else {
 					// Already subscribed
 					return { success: true, message: "Already subscribed" };
 				}
 			} else {
-				// Create new subscriber
-				await db.insert(newsletterSubscribers).values({
-					email,
-					source: "website",
-					metadata,
-					subscribedAt: new Date(),
-					createdAt: new Date(),
-					updatedAt: new Date(),
-				});
-
+				// Create new subscriber (via service layer)
+				await createSubscriber(email, "website", metadata);
 				logger.info(`New newsletter subscription: ${email}`);
 			}
 
@@ -79,17 +57,10 @@ export const subscribeToNewsletter = protectedProcedure
 				utm_campaign: metadata?.utmCampaign,
 			})
 				.then(async (hubspotContactId) => {
-					if (hubspotContactId && db) {
-						// Update subscriber with HubSpot contact ID
+					if (hubspotContactId) {
+						// Update subscriber with HubSpot contact ID (via service layer)
 						try {
-							await db
-								.update(newsletterSubscribers)
-								.set({
-									hubspotContactId,
-									hubspotSyncedAt: new Date(),
-									updatedAt: new Date(),
-								})
-								.where(eq(newsletterSubscribers.email, email));
+							await updateHubSpotContactId(email, hubspotContactId);
 						} catch (error) {
 							logger.error("Failed to update HubSpot contact ID", {
 								error: error instanceof Error ? error.message : String(error),

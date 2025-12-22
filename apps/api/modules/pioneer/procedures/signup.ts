@@ -11,12 +11,16 @@
  */
 
 import { logger } from "@snapback/infrastructure";
-import { pioneers } from "@snapback/platform";
-import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { publicProcedure } from "@/orpc/procedures";
-import { getDb } from "@/src/services/database";
-import { calculateTierFromPoints, mapDbProfileToApiProfile, POINT_VALUES } from "@/src/services/pioneer-service";
+import {
+	calculateTierFromPoints,
+	createPioneerProfile,
+	findPioneerByGithubId,
+	generateReferralCode,
+	mapDbProfileToApiProfile,
+	POINT_VALUES,
+} from "@/src/services/pioneer-service";
 
 const signupSchema = z.object({
 	githubId: z.string().min(1),
@@ -36,22 +40,17 @@ export const signup = publicProcedure
 	.handler(async ({ input }) => {
 		const { githubId, username, githubStarred, isFromWaitlist } = input;
 
-		const db = getDb();
-		if (!db) {
-			throw new Error("DATABASE_UNAVAILABLE");
-		}
+		// Check for existing pioneer profile with this GitHub ID (via service layer)
+		const existingProfile = await findPioneerByGithubId(githubId);
 
-		// Check for existing pioneer profile with this GitHub ID
-		const existingProfile = await db.select().from(pioneers).where(eq(pioneers.githubId, githubId)).limit(1);
-
-		if (existingProfile && existingProfile.length > 0) {
+		if (existingProfile) {
 			logger.info("Pioneer signup: profile already exists", {
 				githubId,
-				userid: existingProfile[0].userId,
+				userid: existingProfile.userId,
 			});
 			return {
 				success: true,
-				profile: mapDbProfileToApiProfile(existingProfile[0]),
+				profile: mapDbProfileToApiProfile(existingProfile),
 				message: "Welcome back!",
 			};
 		}
@@ -67,47 +66,39 @@ export const signup = publicProcedure
 
 		const now = new Date();
 
-		// Generate referral code (format: USERNAME_RANDOM)
-		const referralCode = `${username.toUpperCase()}_${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+		// Generate referral code (via service layer)
+		const referralCode = generateReferralCode(username);
 
-		// Create pioneer profile in database
-		// Note: userId is extracted from the GitHub OAuth session via Better Auth
-		// The context.user.id is the authenticated user's ID from the session
-		// For OAuth users, this is the GitHub ID from the OAuth provider
-		const newPioneer = await db
-			.insert(pioneers)
-			.values({
-				userId: githubId, // GitHub user ID from OAuth (this is the actual user ID)
-				username,
-				githubId,
-				tier: calculateTierFromPoints(initialPoints),
-				totalPoints: initialPoints,
-				joinedAt: now,
-				referralCode,
-				githubStarred,
-				lastSyncedAt: now,
-				createdAt: now,
-				updatedAt: now,
-			})
-			.returning();
+		// Create pioneer profile in database (via service layer)
+		const newPioneer = await createPioneerProfile({
+			userId: githubId, // GitHub user ID from OAuth (this is the actual user ID)
+			username,
+			githubId,
+			tier: calculateTierFromPoints(initialPoints),
+			totalPoints: initialPoints,
+			joinedAt: now,
+			referralCode,
+			githubStarred,
+			lastSyncedAt: now,
+			createdAt: now,
+			updatedAt: now,
+		});
 
-		if (!newPioneer || newPioneer.length === 0) {
+		if (!newPioneer) {
 			throw new Error("FAILED_TO_CREATE_PIONEER");
 		}
 
-		const profile = newPioneer[0];
-
 		logger.info("Pioneer signup: profile created", {
-			pioneerId: profile.id,
+			pioneerId: newPioneer.id,
 			githubId,
-			tier: profile.tier,
+			tier: newPioneer.tier,
 			totalPoints: initialPoints,
 			referralCode,
 		});
 
 		return {
 			success: true,
-			profile: mapDbProfileToApiProfile(profile),
+			profile: mapDbProfileToApiProfile(newPioneer),
 			message: `Welcome to Pioneer Program, ${username}! Your referral code: ${referralCode}`,
 		};
 	});

@@ -42,12 +42,12 @@ Comprehensive cleanup of `apps/api` to improve maintainability and DX:
 
 | ID | Module | Violation Count | Status | Service File |
 |----|--------|-----------------|--------|--------------|
-| P2-1 | risk | 1 | ⬜ PENDING | `services/risk-service.ts` |
-| P2-2 | rules | 2 | ⬜ PENDING | `services/rules-service.ts` |
-| P2-3 | telemetry | 4 | ⬜ PENDING | `services/telemetry-service.ts` |
-| P2-4 | newsletter | 1 | ⬜ PENDING | `services/newsletter-service.ts` |
-| P2-5 | pioneer | 1 | ⬜ PENDING | Extend existing service |
-| P2-6 | snapshots/create | 3 | ⬜ PENDING | `services/snapshots-service.ts` |
+| P2-1 | risk | 1 | ✅ DONE | Used shared `user-context-service.ts` |
+| P2-2 | rules | 2 | ✅ DONE | Used shared `user-context-service.ts` |
+| P2-3 | telemetry | 4 | ✅ DONE | Used shared `user-context-service.ts` |
+| P2-4 | newsletter | 4 | ✅ DONE | Created `newsletter-service.ts` |
+| P2-5 | pioneer | 2 | ✅ DONE | Extended `pioneer-service.ts` |
+| P2-6 | snapshots/create | 6 | ✅ DONE | Extended `snapshots-service.ts` |
 
 ### C-002 Violation Locations
 ```
@@ -121,6 +121,7 @@ packages/platform/src/db/drizzle.config.ts # Deprecated
 | 2025-12-22 | P1 | P1-4 | Deleted deprecated drizzle.config.ts | ✅ |
 | 2025-12-22 | P1 | P1-3 | Deleted legacy middleware/ directory (9 files) | ✅ |
 | 2025-12-22 | P1 | P1-2 | Rate limit consolidation (part of P1-3) | ✅ |
+| 2025-12-22 | P2 | P2-1-6 | Service layer refactor - all 6 modules | ✅ |
 
 ---
 
@@ -134,7 +135,7 @@ If issues arise:
 ---
 
 **Last Updated:** 2025-12-22
-**Next Action:** Execute Phase 2 (Service Layer Compliance)
+**Next Action:** Commit Phase 2 changes
 
 ---
 
@@ -145,3 +146,21 @@ If issues arise:
 **Lines Removed:** ~1,200
 **Security Issues Fixed:** 1 (stub auth bypass risk)
 **Time Taken:** ~15 minutes
+
+---
+
+## Phase 2 Summary
+
+**Completed:** 2025-12-22
+**New Files Created:** 2
+  - `apps/api/src/services/user-context-service.ts` (shared API key/subscription queries)
+  - `apps/api/modules/newsletter/services/newsletter-service.ts`
+**Files Extended:** 2
+  - `apps/api/src/services/pioneer-service.ts` (+3 functions)
+  - `apps/api/modules/snapshots/services/snapshots-service.ts` (+3 functions)
+**Procedures Refactored:** 7
+  - analyze-risk.ts, get-rules-bundle.ts, enrich-event.ts, track-event.ts
+  - subscribe-to-newsletter.ts, signup.ts, create-snapshot.ts
+**C-002 Violations Fixed:** 13
+**Lines Changed:** ~300 lines (net reduction due to consolidation)
+**Time Taken:** ~30 minutes

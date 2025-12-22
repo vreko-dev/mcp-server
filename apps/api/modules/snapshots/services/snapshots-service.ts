@@ -268,3 +268,48 @@ export async function decrementSnapshotUsage(usageId: string, currentCount: numb
 		})
 		.where(eq(usageLimits.id, usageId));
 }
+
+// ============================================================================
+// Create Snapshot Operations (C-002 compliance)
+// ============================================================================
+
+export type SnapshotInsertData = typeof snapshots.$inferInsert;
+export type SnapshotFileInsertData = typeof snapshotFiles.$inferInsert;
+
+/**
+ * Create a new snapshot
+ */
+export async function createSnapshotRecord(data: SnapshotInsertData): Promise<SnapshotRecord> {
+	const db = getDb();
+	if (!db) throw new Error("Database not available");
+
+	const result = await db.insert(snapshots).values(data).returning();
+
+	if (!result || result.length === 0) {
+		throw new Error("Failed to create snapshot");
+	}
+
+	return result[0];
+}
+
+/**
+ * Insert snapshot files in batch
+ */
+export async function insertSnapshotFiles(files: SnapshotFileInsertData[]): Promise<void> {
+	if (files.length === 0) return;
+
+	const db = getDb();
+	if (!db) throw new Error("Database not available");
+
+	await db.insert(snapshotFiles).values(files);
+}
+
+/**
+ * Update snapshot with cloud backup URL
+ */
+export async function updateSnapshotCloudBackupUrl(snapshotId: string, cloudBackupUrl: string): Promise<void> {
+	const db = getDb();
+	if (!db) throw new Error("Database not available");
+
+	await db.update(snapshots).set({ cloudBackupUrl }).where(eq(snapshots.id, snapshotId));
+}

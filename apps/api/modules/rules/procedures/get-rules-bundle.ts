@@ -2,13 +2,11 @@
 import { createHash } from "node:crypto";
 // Import environment variables
 import { env } from "@snapback/config/server";
-import { apiKeys, subscriptions } from "@snapback/platform";
-import { eq } from "drizzle-orm";
 // Using jose for JWS signing since it's available in the project
 import { SignJWT } from "jose";
 import { z } from "zod";
 import { protectedProcedure } from "@/orpc/procedures";
-import { getDb } from "@/src/services/database";
+import { getSubscriptionTier, getUserSubscription, requireUserApiKey } from "@/src/services/user-context-service";
 
 // Temporarily define the types here
 const FEATURE_FLAGS = {
@@ -204,26 +202,10 @@ export const getRulesBundle = protectedProcedure.input(getRulesBundleSchema).han
 		throw new Error("Unauthorized");
 	}
 
-	// Get user's API key to determine subscription tier
-	const db = getDb();
-	if (!db) {
-		throw new Error("Database not available");
-	}
-
-	const apiKeyResult = await db.select().from(apiKeys).where(eq(apiKeys.userId, user.id)).limit(1);
-
-	if (!apiKeyResult || apiKeyResult.length === 0) {
-		throw new Error("No API key found");
-	}
-
-	const _apiKey = apiKeyResult[0];
-
-	// Get user's subscription tier
-	const subscriptionResult = await db.select().from(subscriptions).where(eq(subscriptions.userId, user.id)).limit(1);
-
-	const subscription = subscriptionResult && subscriptionResult.length > 0 ? subscriptionResult[0] : null;
-
-	const tier = subscription?.plan || "free";
+	// Get user's API key and subscription (via service layer)
+	const _apiKey = await requireUserApiKey(user.id);
+	const subscription = await getUserSubscription(user.id);
+	const tier = getSubscriptionTier(subscription);
 
 	// Get tier-specific thresholds
 	const tierThresholds = RULE_THRESHOLDS[tier as keyof typeof RULE_THRESHOLDS] || RULE_THRESHOLDS.free;

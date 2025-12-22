@@ -1,11 +1,12 @@
 import { logger } from "@snapback/infrastructure";
-import { apiKeys, snapbackSchema, subscriptions } from "@snapback/platform";
-import { and, eq, gt } from "drizzle-orm";
+import { snapbackSchema } from "@snapback/platform";
+import { and, gt } from "drizzle-orm";
 import { z } from "zod";
 import { getPostHog } from "@/lib/posthog-server";
 import { trackUsage } from "@/lib/usage";
 import { protectedProcedure } from "@/orpc/procedures";
 import { getDb } from "@/src/services/database";
+import { getSubscriptionTier, getUserSubscription, requireUserApiKey } from "@/src/services/user-context-service";
 
 // Simplified telemetry event types for MVP
 const DecisionEventSchema = z.object({
@@ -70,24 +71,9 @@ export const enrichEvent = protectedProcedure.input(EnrichEventSchema).handler(a
 		}
 	}
 
-	// Get user's API key
-	const db = getDb();
-	if (!db) {
-		throw new Error("Database not available");
-	}
-
-	const apiKeyResult = await db.select().from(apiKeys).where(eq(apiKeys.userId, user.id)).limit(1);
-
-	if (!apiKeyResult || apiKeyResult.length === 0) {
-		throw new Error("No API key found");
-	}
-
-	const apiKey = apiKeyResult[0];
-
-	// Get user's subscription for feature flags
-	const subscriptionResult = await db.select().from(subscriptions).where(eq(subscriptions.userId, user.id)).limit(1);
-
-	const subscription = subscriptionResult && subscriptionResult.length > 0 ? subscriptionResult[0] : null;
+	// Get user's API key and subscription (via service layer)
+	const apiKey = await requireUserApiKey(user.id);
+	const subscription = await getUserSubscription(user.id);
 
 	// Create enriched event data for Postgres storage (product telemetry)
 	const enrichedEvent = {
@@ -145,7 +131,7 @@ export const enrichEvent = protectedProcedure.input(EnrichEventSchema).handler(a
 			event: `telemetry_${input.type}`,
 			properties: {
 				...input,
-				plan: subscription?.plan || "free",
+				plan: getSubscriptionTier(subscription),
 				timestamp: new Date(input.timestamp).toISOString(),
 				// Only send minimal data to PostHog for marketing purposes
 				// Detailed product telemetry stays in our database

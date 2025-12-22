@@ -1,10 +1,8 @@
 import { HTTPEngineAdapter } from "@snapback/engine/transports/http";
-import { apiKeys } from "@snapback/platform";
-import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { trackUsage } from "@/lib/usage";
 import { protectedProcedure } from "@/orpc/procedures";
-import { getDb } from "@/src/services/database";
+import { getApiKeyPermissions, requireUserApiKey } from "@/src/services/user-context-service";
 
 // Risk factor types
 type RiskFactor = {
@@ -44,24 +42,9 @@ export const analyzeRisk = protectedProcedure.input(analyzeRiskSchema).handler(a
 		throw new Error("Unauthorized");
 	}
 
-	// Get user's API key to check permissions
-	const db = getDb();
-	if (!db) {
-		throw new Error("Database not available");
-	}
-
-	const apiKeyResult = await db.select().from(apiKeys).where(eq(apiKeys.userId, user.id)).limit(1);
-
-	if (!apiKeyResult || apiKeyResult.length === 0) {
-		throw new Error("No API key found");
-	}
-
-	const apiKey = apiKeyResult[0];
-
-	const permissions = apiKey.permissions as {
-		advancedDetection?: boolean;
-		customRules?: boolean;
-	};
+	// Get user's API key to check permissions (via service layer)
+	const apiKey = await requireUserApiKey(user.id);
+	const permissions = getApiKeyPermissions(apiKey);
 
 	// Initialize risk analysis
 	const riskFactors: RiskFactor[] = [];

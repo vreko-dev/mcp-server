@@ -1,10 +1,19 @@
 import { logger } from "@snapback/infrastructure";
-import { apiKeys, snapshotFiles, snapshots, subscriptions, usageLimits } from "@snapback/platform";
-import { and, eq, gte, lte, sql } from "drizzle-orm";
+import { snapshots } from "@snapback/platform";
+import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { trackUsage } from "@/lib/usage";
 import { protectedProcedure } from "@/orpc/procedures";
 import { getDb } from "@/src/services/database";
+import { getApiKeyPermissions, getUserSubscription, requireUserApiKey } from "@/src/services/user-context-service";
+import {
+	countUserSnapshots,
+	createInitialUsage,
+	createSnapshotRecord,
+	getMonthlyUsage,
+	incrementSnapshotUsage,
+	insertSnapshotFiles,
+} from "../services/snapshots-service";
 
 /**
  * Cloud Backup Configuration
@@ -160,28 +169,12 @@ export const createSnapshot = protectedProcedure.input(createSnapshotSchema).han
 		throw new Error("Unauthorized");
 	}
 
-	// Check if database is available
-	const db = getDb();
-	if (!db) {
-		throw new Error("Database not available");
-	}
+	// 1. Get user's API key to check permissions (via service layer)
+	const apiKey = await requireUserApiKey(user.id);
+	const permissions = getApiKeyPermissions(apiKey);
 
-	// 1. Get user's API key to check permissions
-	const apiKeyResult = await db.select().from(apiKeys).where(eq(apiKeys.userId, user.id)).limit(1);
-
-	if (!apiKeyResult || apiKeyResult.length === 0) {
-		throw new Error("No API key found");
-	}
-
-	const apiKey = apiKeyResult[0];
-
-	// 2. Check if this is the user's first snapshot
-	const existingSnapshotsCount = await db
-		.select({ count: sql<number>`count(*)` })
-		.from(snapshots)
-		.where(eq(snapshots.userId, user.id))
-		.then((result) => result[0]?.count || 0);
-
+	// 2. Check if this is the user's first snapshot (via service layer)
+	const existingSnapshotsCount = await countUserSnapshots(user.id);
 	const _isFirstSnapshot = existingSnapshotsCount === 0;
 
 	// 3. Check usage limits for current month
@@ -189,42 +182,16 @@ export const createSnapshot = protectedProcedure.input(createSnapshotSchema).han
 	const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
 	const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
-	// Get user's subscription first
-	const subscriptionResult = await db.select().from(subscriptions).where(eq(subscriptions.userId, user.id)).limit(1);
+	// Get user's subscription (via service layer)
+	const subscription = await getUserSubscription(user.id);
 
-	let subscription = null;
-	if (subscriptionResult && subscriptionResult.length > 0) {
-		subscription = subscriptionResult[0];
-	}
-
+	// Get usage for current month (via service layer)
 	let usage = null;
 	if (subscription) {
-		const usageResult = await db
-			.select()
-			.from(usageLimits)
-			.where(
-				and(
-					eq(usageLimits.subscriptionId, subscription.id),
-					gte(usageLimits.month, monthStart),
-					lte(usageLimits.month, monthEnd),
-				),
-			)
-			.limit(1);
-
-		if (usageResult && usageResult.length > 0) {
-			usage = usageResult[0];
-		}
+		usage = await getMonthlyUsage(subscription.id, monthStart, monthEnd);
 	}
 
 	// Check snapshot limit
-	const permissions = apiKey.permissions as {
-		maxSnapshots?: number;
-		cloudBackup?: boolean;
-		advancedDetection?: boolean;
-		customRules?: boolean;
-		teamSharing?: boolean;
-	};
-
 	const snapshotsUsed = usage?.snapshotsUsed || 0;
 	const snapshotsLimit = permissions.maxSnapshots;
 
@@ -250,61 +217,47 @@ export const createSnapshot = protectedProcedure.input(createSnapshotSchema).han
 	const cloudBackupService =
 		input.cloudBackupEnabled && permissions.cloudBackup ? await initializeCloudBackupService(s3Config) : null;
 
-	// 5. Create snapshot (metadata only)
-	const newSnapshotResult = await db
-		.insert(snapshots)
-		.values({
-			userId: user.id,
-			apiKeyId: apiKey.id,
-			name: input.name,
-			description: input.description,
-			trigger: input.trigger,
-			fileCount: input.fileCount,
-			totalSizeBytes: input.totalSizeBytes,
-			fileHashes: input.fileHashes,
-			gitBranch: input.gitBranch,
-			gitCommit: input.gitCommit,
-			gitDirty: input.gitDirty,
-			riskScore: input.riskScore,
-			riskFactors: input.riskFactors,
-			projectPath: input.projectPath,
-			workspaceId: input.workspaceId,
-			cloudBackupEnabled: input.cloudBackupEnabled,
-			// MVP Note: Server-side KMS encryption fields
-			// Post-MVP: Will add client-side E2EE with user-controlled keys
-			encryptionKeyId: input.encryptionKeyId,
-			encryptedDataKey: input.encryptedDataKey,
-			encryptionAlgorithm: input.encryptionAlgorithm,
-			// cloudBackupUrl would be set by separate upload process if enabled
-			metadata: input.metadata,
-		})
-		.returning();
-
-	if (!newSnapshotResult || newSnapshotResult.length === 0) {
-		throw new Error("Failed to create snapshot");
-	}
-
-	const newSnapshot = newSnapshotResult[0];
+	// 5. Create snapshot (metadata only) - via service layer
+	const newSnapshot = await createSnapshotRecord({
+		userId: user.id,
+		apiKeyId: apiKey.id,
+		name: input.name,
+		description: input.description,
+		trigger: input.trigger,
+		fileCount: input.fileCount,
+		totalSizeBytes: input.totalSizeBytes,
+		fileHashes: input.fileHashes,
+		gitBranch: input.gitBranch,
+		gitCommit: input.gitCommit,
+		gitDirty: input.gitDirty,
+		riskScore: input.riskScore,
+		riskFactors: input.riskFactors,
+		projectPath: input.projectPath,
+		workspaceId: input.workspaceId,
+		cloudBackupEnabled: input.cloudBackupEnabled,
+		// MVP Note: Server-side KMS encryption fields
+		// Post-MVP: Will add client-side E2EE with user-controlled keys
+		encryptionKeyId: input.encryptionKeyId,
+		encryptedDataKey: input.encryptedDataKey,
+		encryptionAlgorithm: input.encryptionAlgorithm,
+		// cloudBackupUrl would be set by separate upload process if enabled
+		metadata: input.metadata,
+	});
 
 	// PHASE 3: Upload snapshot to S3 if cloud backup is enabled (non-blocking)
 	if (input.cloudBackupEnabled && cloudBackupService && permissions.cloudBackup) {
-		const db3 = getDb();
-		if (db3) {
-			const cloudBackupUrl = await uploadSnapshotToS3(cloudBackupService, newSnapshot, user.id, db3);
+		const db = getDb();
+		if (db) {
+			const cloudBackupUrl = await uploadSnapshotToS3(cloudBackupService, newSnapshot, user.id, db);
 			if (cloudBackupUrl) {
 				newSnapshot.cloudBackupUrl = cloudBackupUrl;
 			}
 		}
 	}
 
-	// 6. Insert file metadata
+	// 6. Insert file metadata (via service layer)
 	if (input.files.length > 0) {
-		const db2 = getDb();
-		if (!db2) {
-			throw new Error("Database not available");
-		}
-
-		await db2.insert(snapshotFiles).values(
+		await insertSnapshotFiles(
 			input.files.map((file) => ({
 				snapshotId: newSnapshot.id,
 				filePath: file.filePath,
@@ -319,30 +272,12 @@ export const createSnapshot = protectedProcedure.input(createSnapshotSchema).han
 		);
 	}
 
-	// 7. Update usage tracking
+	// 7. Update usage tracking (via service layer)
 	if (usage) {
-		if (!db) {
-			throw new Error("Database not available");
-		}
-
-		await db
-			.update(usageLimits)
-			.set({
-				snapshotsUsed: snapshotsUsed + 1,
-			})
-			.where(eq(usageLimits.id, usage.id));
+		await incrementSnapshotUsage(usage.id, usage.snapshotsUsed || 0);
 	} else if (subscription) {
-		// Create initial usage record
-		if (!db) {
-			throw new Error("Database not available");
-		}
-
-		await db.insert(usageLimits).values({
-			subscriptionId: subscription.id,
-			month: monthStart,
-			snapshotsUsed: 1,
-			snapshotsLimit: permissions.maxSnapshots,
-		});
+		// Create initial usage record (via service layer)
+		await createInitialUsage(subscription.id, monthStart, permissions.maxSnapshots);
 	}
 
 	// 8. Track usage for analytics (async)

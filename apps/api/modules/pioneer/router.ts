@@ -3,6 +3,7 @@
  * Routes for user onboarding, profile management, and action tracking
  */
 
+import { getActionHistory } from "./procedures/actions/history";
 import { listActions } from "./procedures/actions/list";
 import { submitAction } from "./procedures/actions/submit";
 import { leaderboard } from "./procedures/leaderboard";
@@ -18,5 +19,6 @@ export const pioneerRouter = {
 	actions: {
 		submit: submitAction,
 		list: listActions,
+		history: getActionHistory,
 	},
 };

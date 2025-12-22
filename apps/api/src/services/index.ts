@@ -13,15 +13,19 @@ export * from "./database";
 export * from "./email";
 
 // Security
-export * from "./guardian";
+export { type AnalysisRequest, type AnalysisResult, GuardianService, type RiskFactor } from "./guardian";
 export * from "./keys";
+
 // MCP Integration
 export * from "./mcp";
+
 // Metrics & Analytics
 export * from "./metrics-aggregator";
+
 // User & Pioneer
 export * from "./pioneer-service";
 export * from "./secret-detection";
+
 // Trust & Risk
 export * from "./trust-calibration";
 export * from "./trust-calibration-helpers";

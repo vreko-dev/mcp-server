@@ -4,3 +4,4 @@ export { getRecentActivity } from "./get-recent-activity";
 export { getSessionMetrics } from "./get-session-metrics";
 export { getSubscriptionData } from "./get-subscription-data";
 export { getUserMetrics } from "./get-user-metrics";
+export { getVitalsStats } from "./get-vitals-stats";

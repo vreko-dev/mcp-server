@@ -6,6 +6,7 @@ import {
 	getSessionMetrics,
 	getSubscriptionData,
 	getUserMetrics,
+	getVitalsStats,
 } from "./procedures";
 import { getOrgMetrics } from "./procedures/get-org-metrics";
 
@@ -17,4 +18,5 @@ export const dashboardRouter = protectedProcedure.router({
 	getSubscriptionData,
 	getSessionMetrics,
 	getOrgMetrics,
+	getVitalsStats,
 });

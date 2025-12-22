@@ -1,10 +1,31 @@
 import type { AnalyticsResponse, FileMetadata } from "@snapback/contracts";
 import { logger } from "@snapback/infrastructure";
 import ky from "ky";
-import ow from "ow";
 import pRetry, { AbortError } from "p-retry";
+import { z } from "zod";
 import { LRUCache } from "./cache/lru-cache";
 import { PrivacySanitizer } from "./privacy/sanitizer";
+
+// Zod schemas for validation
+const SDKConfigSchema = z.object({
+	endpoint: z.string().url(),
+	apiKey: z.string().min(1, "API key is required"),
+	privacy: z.object({
+		hashFilePaths: z.boolean(),
+		anonymizeWorkspace: z.boolean(),
+	}),
+	cache: z.object({
+		enabled: z.boolean(),
+		ttl: z.record(z.string(), z.number()),
+	}),
+	retry: z.object({
+		maxRetries: z.number().min(0),
+		backoffMs: z.number().min(0),
+	}),
+});
+
+const WorkspaceIdSchema = z.string().min(1, "Workspace ID is required");
+const FilesArraySchema = z.array(z.any()).min(1, "At least one file is required");
 
 export type ClientSurface = "vscode" | "mcp" | "cli" | "web";
 export interface Envelope {
@@ -69,28 +90,8 @@ export class SnapbackClient {
 	private localFallback: LocalFallback;
 
 	constructor(config: SDKConfig) {
-		// Validate config
-		ow(
-			config,
-			ow.object.exactShape({
-				endpoint: ow.string.url,
-				apiKey: ow.string.nonEmpty,
-				privacy: ow.object.exactShape({
-					hashFilePaths: ow.boolean,
-					anonymizeWorkspace: ow.boolean,
-				}),
-				cache: ow.object.exactShape({
-					enabled: ow.boolean,
-					ttl: ow.object,
-				}),
-				retry: ow.object.exactShape({
-					maxRetries: ow.number.greaterThanOrEqual(0),
-					backoffMs: ow.number.greaterThanOrEqual(0),
-				}),
-			}),
-		);
-
-		this.config = config;
+		// Validate config with zod
+		this.config = SDKConfigSchema.parse(config);
 		this.sanitizer = new PrivacySanitizer(config.privacy);
 		this.cache = new LRUCache(config.cache);
 		this.localFallback = new LocalFallback();
@@ -199,9 +200,9 @@ export class SnapbackClient {
 	 * Automatically sanitizes metadata to ensure privacy
 	 */
 	async sendMetadata(workspaceId: string, files: FileMetadata[]): Promise<{ accepted: number; rejected: number }> {
-		// Validate inputs
-		ow(workspaceId, ow.string.nonEmpty);
-		ow(files, ow.array.minLength(1));
+		// Validate inputs with zod
+		WorkspaceIdSchema.parse(workspaceId);
+		FilesArraySchema.parse(files);
 
 		// Privacy validation - ensures no file contents
 		const sanitized = files.map((f) => this.sanitizer.sanitize(f));
@@ -247,8 +248,8 @@ export class SnapbackClient {
 	 * Uses cache when available
 	 */
 	async getAnalytics(workspaceId: string, options?: { forceRefresh?: boolean }): Promise<AnalyticsResponse> {
-		// Validate inputs
-		ow(workspaceId, ow.string.nonEmpty);
+		// Validate inputs with zod
+		WorkspaceIdSchema.parse(workspaceId);
 
 		const cacheKey = `analytics:${workspaceId}`;
 
@@ -292,8 +293,8 @@ export class SnapbackClient {
 	 * Get smart recommendations
 	 */
 	async getRecommendations(workspaceId: string): Promise<AnalyticsResponse["snapshotRecommendations"]> {
-		// Validate inputs
-		ow(workspaceId, ow.string.nonEmpty);
+		// Validate inputs with zod
+		WorkspaceIdSchema.parse(workspaceId);
 
 		try {
 			const response = await this.httpRequest(

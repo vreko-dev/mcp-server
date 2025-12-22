@@ -158,6 +158,51 @@ export interface RulesCachedFallbackEvent {
 	timestamp: number;
 }
 
+// Vitals Events (Phase 5 - Telemetry Integration)
+export interface VitalsTrajectoryChangedEvent {
+	event: "vitals_trajectory_changed";
+	properties: {
+		previousTrajectory: "stable" | "escalating" | "critical" | "recovering";
+		newTrajectory: "stable" | "escalating" | "critical" | "recovering";
+		pressure: number;
+		oxygen: number;
+		tempLevel: "cold" | "warm" | "hot" | "burning";
+	};
+	timestamp: number;
+}
+
+export interface VitalsCriticalStateEvent {
+	event: "vitals_critical_state";
+	properties: {
+		pressure: number;
+		oxygen: number;
+		tempLevel: "cold" | "warm" | "hot" | "burning";
+		unsnapshotedChanges: number;
+	};
+	timestamp: number;
+}
+
+export interface VitalsAutoSnapshotEvent {
+	event: "vitals_auto_snapshot";
+	properties: {
+		trajectory: "stable" | "escalating" | "critical" | "recovering";
+		pressure: number;
+		oxygen: number;
+		filesCount: number;
+	};
+	timestamp: number;
+}
+
+export interface VitalsNudgeShownEvent {
+	event: "vitals_nudge_shown";
+	properties: {
+		trajectory: "stable" | "escalating" | "critical" | "recovering";
+		suggestion: string;
+		actionTaken: string | null;
+	};
+	timestamp: number;
+}
+
 // Union type of all allowed events
 export type AllowedTelemetryEvent =
 	| ExtensionActivatedEvent
@@ -176,7 +221,11 @@ export type AllowedTelemetryEvent =
 	| OnboardingContextualPromptShownEvent
 	| SignatureVerificationSuccessEvent
 	| SignatureVerificationFailedEvent
-	| RulesCachedFallbackEvent;
+	| RulesCachedFallbackEvent
+	| VitalsTrajectoryChangedEvent
+	| VitalsCriticalStateEvent
+	| VitalsAutoSnapshotEvent
+	| VitalsNudgeShownEvent;
 
 // Event name enum for compile-time checking
 export const TELEMETRY_EVENTS = {
@@ -197,6 +246,11 @@ export const TELEMETRY_EVENTS = {
 	SIGNATURE_VERIFICATION_SUCCESS: "signature.verification.success",
 	SIGNATURE_VERIFICATION_FAILED: "signature.verification.failed",
 	RULES_CACHED_FALLBACK: "rules.cached.fallback",
+	// Vitals Events
+	VITALS_TRAJECTORY_CHANGED: "vitals_trajectory_changed",
+	VITALS_CRITICAL_STATE: "vitals_critical_state",
+	VITALS_AUTO_SNAPSHOT: "vitals_auto_snapshot",
+	VITALS_NUDGE_SHOWN: "vitals_nudge_shown",
 } as const;
 
 // Type for the event names
@@ -239,6 +293,14 @@ export function validateTelemetryEvent(event: TelemetryEvent): event is AllowedT
 			return validateSignatureVerificationFailedEvent(event as SignatureVerificationFailedEvent);
 		case TELEMETRY_EVENTS.RULES_CACHED_FALLBACK:
 			return validateRulesCachedFallbackEvent(event as RulesCachedFallbackEvent);
+		case TELEMETRY_EVENTS.VITALS_TRAJECTORY_CHANGED:
+			return validateVitalsTrajectoryChangedEvent(event as VitalsTrajectoryChangedEvent);
+		case TELEMETRY_EVENTS.VITALS_CRITICAL_STATE:
+			return validateVitalsCriticalStateEvent(event as VitalsCriticalStateEvent);
+		case TELEMETRY_EVENTS.VITALS_AUTO_SNAPSHOT:
+			return validateVitalsAutoSnapshotEvent(event as VitalsAutoSnapshotEvent);
+		case TELEMETRY_EVENTS.VITALS_NUDGE_SHOWN:
+			return validateVitalsNudgeShownEvent(event as VitalsNudgeShownEvent);
 		default:
 			return false;
 	}
@@ -338,4 +400,44 @@ function validateSignatureVerificationFailedEvent(event: SignatureVerificationFa
 
 function validateRulesCachedFallbackEvent(event: RulesCachedFallbackEvent): boolean {
 	return Object.keys(event.properties).length === 0;
+}
+
+// Vitals event validators
+const VALID_TRAJECTORIES = ["stable", "escalating", "critical", "recovering"] as const;
+const VALID_TEMP_LEVELS = ["cold", "warm", "hot", "burning"] as const;
+
+function validateVitalsTrajectoryChangedEvent(event: VitalsTrajectoryChangedEvent): boolean {
+	return (
+		VALID_TRAJECTORIES.includes(event.properties.previousTrajectory) &&
+		VALID_TRAJECTORIES.includes(event.properties.newTrajectory) &&
+		typeof event.properties.pressure === "number" &&
+		typeof event.properties.oxygen === "number" &&
+		VALID_TEMP_LEVELS.includes(event.properties.tempLevel)
+	);
+}
+
+function validateVitalsCriticalStateEvent(event: VitalsCriticalStateEvent): boolean {
+	return (
+		typeof event.properties.pressure === "number" &&
+		typeof event.properties.oxygen === "number" &&
+		VALID_TEMP_LEVELS.includes(event.properties.tempLevel) &&
+		typeof event.properties.unsnapshotedChanges === "number"
+	);
+}
+
+function validateVitalsAutoSnapshotEvent(event: VitalsAutoSnapshotEvent): boolean {
+	return (
+		VALID_TRAJECTORIES.includes(event.properties.trajectory) &&
+		typeof event.properties.pressure === "number" &&
+		typeof event.properties.oxygen === "number" &&
+		typeof event.properties.filesCount === "number"
+	);
+}
+
+function validateVitalsNudgeShownEvent(event: VitalsNudgeShownEvent): boolean {
+	return (
+		VALID_TRAJECTORIES.includes(event.properties.trajectory) &&
+		typeof event.properties.suggestion === "string" &&
+		(event.properties.actionTaken === null || typeof event.properties.actionTaken === "string")
+	);
 }

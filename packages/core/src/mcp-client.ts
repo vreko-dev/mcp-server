@@ -2,13 +2,13 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 // WebSocketClientTransport import commented out for MVP - WebSocket implementation removed to simplify architecture
 // import { WebSocketClientTransport } from "@modelcontextprotocol/sdk/client/websocket.js";
-import retry from "async-retry";
 import pLimit from "p-limit";
 import { z } from "zod";
 import { processToolResponse } from "./mcp-response-processor";
 import { getLibraryDocsCached } from "./utils/cache";
 import { withBreaker } from "./utils/circuit-breaker";
 import { logger } from "./utils/logger";
+import { withRetry } from "./utils/retry";
 
 // Type definitions for MCP tools with namespacing
 interface MCPTool {
@@ -280,7 +280,7 @@ export class MCPClientManager {
 		const breaker = withBreaker(`${serverName}-${toolName}`, toolCall);
 		const resilientToolCall = () =>
 			globalLimit(() =>
-				retry(() => breaker(undefined), {
+				withRetry(() => breaker(undefined), {
 					retries: DEFAULT_CONFIG.retry.retries,
 					factor: DEFAULT_CONFIG.retry.factor,
 					minTimeout: DEFAULT_CONFIG.retry.minTimeout,

@@ -77,7 +77,49 @@ mcp_snapback_validate_code({
 })
 ```
 
-### Option 2: Direct API Usage
+### Option 2: CLI Integration (Recommended for Terminal Users)
+
+The `@snapback/cli` package provides a user-friendly interface to intelligence features.
+
+#### Installation
+
+```bash
+npm install -g @snapback/cli
+# or
+pnpm add -g @snapback/cli
+```
+
+#### Commands
+
+| Command | Description | MCP Equivalent |
+|---------|-------------|----------------|
+| `snap context [task]` | Get context before work | `mcp_snapback_get_context` |
+| `snap validate <file>` | Run 7-layer validation | `mcp_snapback_validate_code` |
+| `snap validate --all` | Validate staged files | `mcp_snapback_validate_code` |
+| `snap stats` | Show learning statistics | `mcp_snapback_get_learning_stats` |
+| `snap patterns report` | Report violation | `mcp_snapback_report_violation` |
+
+#### Example Workflow
+
+```bash
+# 1. Get context before starting
+snap context "add authentication" --keywords auth session jwt
+
+# 2. Implement your changes...
+
+# 3. Validate before committing
+snap validate --all
+
+# 4. If issues found, report for learning
+snap patterns report "missing-error-handling" "src/auth.ts" "No try-catch"
+
+# 5. Check learning progress
+snap stats
+```
+
+See [`apps/cli/README.md`](../../apps/cli/README.md) for full CLI documentation.
+
+### Option 3: Direct API Usage
 
 ```typescript
 import { Intelligence } from "@snapback/intelligence";
@@ -117,7 +159,7 @@ await intel.reportViolation({
 const learnings = await intel.queryLearnings(["auth", "jwt"]);
 ```
 
-### Option 3: Subpath Imports
+### Option 4: Subpath Imports
 
 Import specific modules for tree-shaking:
 

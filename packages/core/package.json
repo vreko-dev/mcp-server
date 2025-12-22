@@ -18,7 +18,6 @@
     "@snapback/platform": "workspace:*",
     "@types/esprima": "catalog:",
     "@typescript-eslint/parser": "catalog:",
-    "async-retry": "catalog:",
     "bottleneck": "catalog:",
     "chokidar": "catalog:",
     "cosmiconfig": "catalog:",
@@ -42,7 +41,6 @@
   },
   "devDependencies": {
     "@snapback/tsconfig": "workspace:*",
-    "@types/async-retry": "catalog:",
     "@types/node": "catalog:",
     "@types/opossum": "catalog:",
     "pino-pretty": "catalog:",

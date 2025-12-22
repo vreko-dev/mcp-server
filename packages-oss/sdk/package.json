@@ -22,7 +22,6 @@
     "@snapback-oss/infrastructure": "workspace:*",
     "ky": "catalog:",
     "minimatch": "catalog:",
-    "ow": "catalog:",
     "p-retry": "catalog:",
     "quick-lru": "catalog:",
     "zod": "catalog:"

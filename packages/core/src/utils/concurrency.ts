@@ -1,7 +1,7 @@
-import retry from "async-retry";
 import pLimit from "p-limit";
 import { withBreaker } from "./circuit-breaker";
 import { logger } from "./logger";
+import { withRetry } from "./retry";
 
 // Configuration with safe defaults
 const snapbackDefaults = {
@@ -40,7 +40,7 @@ export const callTool = <I, O>(name: string, raw: (i: I) => Promise<O>) => {
 	const wrapped = withBreaker(name, raw);
 	return (input: I) =>
 		limit(() =>
-			retry(() => wrapped(input), {
+			withRetry(() => wrapped(input), {
 				retries: snapbackDefaults.mcp.retry.retries,
 				factor: snapbackDefaults.mcp.retry.factor,
 				minTimeout: snapbackDefaults.mcp.retry.min,

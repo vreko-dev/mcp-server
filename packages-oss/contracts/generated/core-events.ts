@@ -1,6 +1,6 @@
 /**
  * Generated Core Event Types
- * 
+ *
  * This file is auto-generated from Zod schemas. Do not edit manually.
  */
 

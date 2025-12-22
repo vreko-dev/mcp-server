@@ -1,7 +1,13 @@
 import { logger } from "@snapback/infrastructure";
 import { Hono } from "hono";
 import { z } from "zod";
-import { getAuthContext, requireAuth, requireOrgMembership, requirePlan, requireRole } from "../middleware/auth";
+import {
+	getAuthContext,
+	requireAuth,
+	requireOrgMembership,
+	requirePlan,
+	requireRole,
+} from "../middleware/auth-unified";
 import { validateBody } from "../middleware/validation";
 
 /**
@@ -67,8 +73,9 @@ router.get("/users/profile", requireAuth, async (c) => {
 			id: auth.user.id,
 			email: auth.user.email,
 			role: auth.user.role,
-			plan: auth.user.plan,
+			name: auth.user.name,
 		},
+		plan: auth.plan,
 		permissions: auth.permissions,
 	});
 });
@@ -175,7 +182,7 @@ router.get("/org/:orgId/members", requireOrgMembership("orgId"), async (c) => {
 	logger.info("Org members accessed", {
 		orgId,
 		userId: auth?.user.id,
-		userOrg: auth?.user.orgId,
+		userOrg: auth?.orgIds?.[0],
 	});
 
 	const members = [
@@ -254,7 +261,7 @@ router.post("/advanced-analytics", requirePlan("pro", "enterprise"), async (c) =
 
 	logger.info("Advanced analytics accessed", {
 		userId: auth?.user.id,
-		plan: auth?.user.plan,
+		plan: auth?.plan,
 		query,
 	});
 
@@ -306,7 +313,7 @@ router.post("/export-data", requirePlan("pro", "enterprise"), async (c) => {
 	logger.info("Data export requested", {
 		userId: auth?.user.id,
 		format: options.format,
-		plan: auth?.user.plan,
+		plan: auth?.plan,
 	});
 
 	return c.json({
@@ -329,7 +336,7 @@ router.get("/sso-config", requirePlan("enterprise"), async (c) => {
 
 	logger.info("SSO config accessed", {
 		userId: auth?.user.id,
-		plan: auth?.user.plan,
+		plan: auth?.plan,
 	});
 
 	return c.json({

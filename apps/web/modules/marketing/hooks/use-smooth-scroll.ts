@@ -1,7 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
+/**
+ * Scroll state tracking (velocity, position, etc.)
+ */
 interface ScrollState {
 	velocity: number;
 	position: number;
@@ -9,7 +12,19 @@ interface ScrollState {
 	isScrolling: boolean;
 }
 
-export function useSmoothScroll() {
+/**
+ * Configuration for smooth scroll behavior
+ */
+interface UseSmoothScrollProps {
+	offset?: number;
+	duration?: number;
+}
+
+/**
+ * Core smooth scroll hook with velocity tracking and hash anchor support
+ * Combines velocity tracking + section tracking + anchor navigation
+ */
+export function useSmoothScroll({ offset = 80, duration = 1000 }: UseSmoothScrollProps = {}) {
 	const [scrollState, setScrollState] = useState<ScrollState>({
 		velocity: 0,
 		position: 0,
@@ -17,8 +32,8 @@ export function useSmoothScroll() {
 		isScrolling: false,
 	});
 
+	const [activeSection, setActiveSection] = useState<string>("");
 	const [isMounted, setIsMounted] = useState(false);
-	const rafRef = useRef<number | undefined>(undefined);
 	const lastTimeRef = useRef<number>(0);
 	const lastScrollRef = useRef<number>(0);
 
@@ -26,15 +41,59 @@ export function useSmoothScroll() {
 		setIsMounted(true);
 	}, []);
 
+	// Smooth scroll to element by ID
+	const scrollTo = useCallback(
+		(elementId: string) => {
+			const element = document.getElementById(elementId);
+			if (!element) {
+				return;
+			}
+
+			const elementPosition = element.getBoundingClientRect().top;
+			const offsetPosition = elementPosition + window.pageYOffset - offset;
+
+			const startPosition = window.pageYOffset;
+			const distance = offsetPosition - startPosition;
+			let startTime: number | null = null;
+
+			function animation(currentTime: number) {
+				if (startTime === null) {
+					startTime = currentTime;
+				}
+				const timeElapsed = currentTime - startTime;
+				const run = easeInOutCubic(timeElapsed, startPosition, distance, duration);
+				window.scrollTo(0, run);
+				if (timeElapsed < duration) {
+					requestAnimationFrame(animation);
+				}
+			}
+
+			requestAnimationFrame(animation);
+		},
+		[offset, duration],
+	);
+
+	// Easing function for smooth animation
+	const easeInOutCubic = useCallback((t: number, b: number, c: number, d: number) => {
+		t /= d / 2;
+		if (t < 1) {
+			return (c / 2) * t * t * t + b;
+		}
+		t -= 2;
+		return (c / 2) * (t * t * t + 2) + b;
+	}, []);
+
+	// Track scroll state and velocity
 	useEffect(() => {
 		if (!isMounted) {
 			return;
 		}
+
 		const handleScroll = () => {
 			const currentScroll = window.scrollY;
 			const currentTime = performance.now();
 
-			// Calculate velocity (pixels per ms)
+			// Calculate velocity
 			const timeDelta = currentTime - lastTimeRef.current;
 			const scrollDelta = currentScroll - lastScrollRef.current;
 			const velocity = timeDelta > 0 ? scrollDelta / timeDelta : 0;
@@ -50,31 +109,6 @@ export function useSmoothScroll() {
 			lastScrollRef.current = currentScroll;
 		};
 
-		const smoothScrollTo = (target: number) => {
-			const start = window.scrollY;
-			const distance = target - start;
-			const duration = Math.min(Math.abs(distance) * 0.8, 1200); // More natural timing
-			const startTime = performance.now();
-
-			const easeOutCubic = (t: number) => 1 - (1 - t) ** 3;
-
-			const animate = (currentTime: number) => {
-				const elapsed = currentTime - startTime;
-				const progress = Math.min(elapsed / duration, 1);
-				const easedProgress = easeOutCubic(progress);
-
-				const currentPosition = start + distance * easedProgress;
-				window.scrollTo(0, currentPosition);
-
-				if (progress < 1) {
-					rafRef.current = requestAnimationFrame(animate);
-				}
-			};
-
-			rafRef.current = requestAnimationFrame(animate);
-		};
-
-		// Enhanced scroll behavior
 		let ticking = false;
 		const handleSmoothScroll = () => {
 			if (!ticking) {
@@ -86,62 +120,67 @@ export function useSmoothScroll() {
 			}
 		};
 
-		window.addEventListener("scroll", handleSmoothScroll, {
-			passive: true,
-		});
+		window.addEventListener("scroll", handleSmoothScroll, { passive: true });
+		return () => window.removeEventListener("scroll", handleSmoothScroll);
+	}, [isMounted]);
 
-		// Custom smooth scroll for anchor links
+	// Track active section
+	useEffect(() => {
+		const handleScroll = () => {
+			const sections = document.querySelectorAll("section[id]");
+			const scrollPos = window.scrollY + offset + 100;
+
+			sections.forEach((section) => {
+				const element = section as HTMLElement;
+				const sectionTop = element.offsetTop;
+				const sectionHeight = element.offsetHeight;
+
+				if (scrollPos >= sectionTop && scrollPos < sectionTop + sectionHeight) {
+					setActiveSection(element.id);
+				}
+			});
+		};
+
+		window.addEventListener("scroll", handleScroll, { passive: true });
+		handleScroll();
+		return () => window.removeEventListener("scroll", handleScroll);
+	}, [offset]);
+
+	// Anchor link handling
+	useEffect(() => {
 		const handleAnchorClick = (e: MouseEvent) => {
 			const target = e.target as HTMLElement;
 			const href = target.getAttribute("href") || target.closest("a")?.getAttribute("href");
 
 			if (href?.startsWith("#")) {
 				e.preventDefault();
-				const element = document.querySelector(href);
-				if (element) {
-					const rect = element.getBoundingClientRect();
-					const targetPosition = window.scrollY + rect.top - 120; // Navbar offset
-					smoothScrollTo(targetPosition);
-				}
+				scrollTo(href.slice(1));
 			}
 		};
 
-		// Scroll to hash on initial load and hash changes
-		const scrollToHash = (hash?: string) => {
-			const targetHash = hash || window.location.hash;
-			if (targetHash.startsWith("#")) {
-				const element = document.querySelector(targetHash);
-				if (element) {
-					const rect = element.getBoundingClientRect();
-					const targetPosition = window.scrollY + rect.top - 120; // Navbar offset
-					smoothScrollTo(targetPosition);
-				}
-			}
-		};
-
-		// Handle initial hash on page load
+		// Scroll to hash on initial load
 		if (window.location.hash) {
-			// Delay to ensure page is fully rendered
-			setTimeout(() => scrollToHash(), 100);
+			setTimeout(() => scrollTo(window.location.hash.slice(1)), 100);
 		}
 
-		// Handle hash changes (browser back/forward, manual URL changes)
 		const handleHashChange = () => {
-			scrollToHash();
+			if (window.location.hash) {
+				scrollTo(window.location.hash.slice(1));
+			}
 		};
 
 		document.addEventListener("click", handleAnchorClick);
 		window.addEventListener("hashchange", handleHashChange);
 
 		return () => {
-			window.removeEventListener("scroll", handleSmoothScroll);
 			document.removeEventListener("click", handleAnchorClick);
 			window.removeEventListener("hashchange", handleHashChange);
-			if (rafRef.current) {
-				cancelAnimationFrame(rafRef.current);
-			}
 		};
-	}, []);
+	}, [scrollTo]);
 
-	return scrollState;
+	return {
+		scrollTo,
+		activeSection,
+		...scrollState,
+	};
 }

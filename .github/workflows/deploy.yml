@@ -169,7 +169,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: api-build
-          path: packages/api/dist
+          path: apps/api/dist
           retention-days: 1
 
   deploy-web:
@@ -216,7 +216,7 @@ jobs:
       new-version: ${{ steps.save-fly-version.outputs.NEW_FLY_VERSION }}
     environment:
       name: production-api
-      url: https://api.snapback.com
+      url: https://api.snapback.dev
     steps:
       - uses: actions/checkout@v4
 
@@ -224,7 +224,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: api-build
-          path: packages/api/dist
+          path: apps/api/dist
 
       - name: Setup Fly.io CLI
         uses: superfly/flyctl-actions/setup-flyctl@master
@@ -242,7 +242,7 @@ jobs:
         run: flyctl deploy --remote-only --app snapback-api
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-        working-directory: ./packages/api
+        working-directory: ./apps/api
 
       - name: Save new Fly.io version
         id: save-fly-version
@@ -269,7 +269,7 @@ jobs:
 
       - name: Health check - API
         run: |
-          response=$(curl -s -o /dev/null -w "%{http_code}" https://api.snapback.com/health)
+          response=$(curl -s -o /dev/null -w "%{http_code}" https://api.snapback.dev/health)
           if [ "$response" != "200" ]; then
             echo "API health check failed with status: $response"
             exit 1
@@ -278,7 +278,7 @@ jobs:
 
       - name: Waitlist endpoint test
         run: |
-          response=$(curl -s -X POST https://api.snapback.com/api/waitlist/join \
+          response=$(curl -s -X POST https://api.snapback.dev/api/waitlist/join \
             -H "Content-Type: application/json" \
             -d '{"email":"smoke-test@example.com","editor":"vscode"}')
 
@@ -293,7 +293,7 @@ jobs:
       - name: Rate limit test
         run: |
           # Test rate limiting (should allow first request)
-          response=$(curl -s -o /dev/null -w "%{http_code}" https://api.snapback.com/api/waitlist/getPosition \
+          response=$(curl -s -o /dev/null -w "%{http_code}" https://api.snapback.dev/api/waitlist/getPosition \
             -H "Content-Type: application/json" \
             -d '{"email":"smoke-test@example.com"}')
 
@@ -315,8 +315,8 @@ jobs:
         run: |
           echo "🎉 Deployment successful!"
           echo "Web: https://snapback.dev"
-          echo "API: https://api.snapback.com"
-          echo "Dashboard: https://console.snapback.com"
+          echo "API: https://api.snapback.dev"
+          echo "Dashboard: https://console.snapback.dev"
 
       - name: Notify failure
         if: needs.smoke-tests.result != 'success'

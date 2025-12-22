@@ -3,6 +3,7 @@ import keysRoute from "../keys";
 import snapshotsRoute from "../snapshots";
 import analyzeRoute from "./analyze";
 import detectSecretsRoute from "./detect-secrets";
+import mcpRoute from "./mcp";
 import policyCurrentRoute from "./policy-current";
 import policyEvaluateRoute from "./policy-evaluate";
 import telemetryIngestRoute from "./telemetry-ingest";
@@ -17,5 +18,6 @@ app.route("/policy/current", policyCurrentRoute);
 app.route("/telemetry/ingest", telemetryIngestRoute);
 app.route("/keys", keysRoute);
 app.route("/snapshots", snapshotsRoute);
+app.route("/mcp", mcpRoute);
 
 export default app;

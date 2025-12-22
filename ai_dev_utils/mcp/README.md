@@ -6,13 +6,15 @@ Self-learning pair programmer context tools with **prompt caching** for 90% cost
 
 | Tool | Purpose | When to Use |
 |------|---------|-------------|
-| `codebase:get_context` | Get architectural context | **BEFORE any implementation** |
-| `codebase:check_patterns` | Validate code against patterns | **BEFORE committing** |
-| `codebase:report_violation` | Report a mistake for learning | **AFTER making mistakes** |
-| `codebase:query_learnings` | Search past learnings | When looking for patterns |
-| `codebase:get_violations_summary` | See violation statistics | Check system health |
-| `codebase:record_learning` | Capture new patterns | **AFTER completing tasks** |
-| **`codebase:ask_ai`** ✨ | **Query with cached context** | **90% cost savings via prompt caching** |
+| `codebase.start_task` | Unified pre-flight check | **BEFORE any implementation** (replaces get_context) |
+| `codebase.get_context` | Get architectural context | Legacy - use start_task instead |
+| `codebase.check_patterns` | Validate code against patterns | **BEFORE committing** |
+| `codebase.report_violation` | Report a mistake for learning | **AFTER making mistakes** |
+| `codebase.query_learnings` | Search past learnings | When looking for patterns |
+| `codebase.get_violations_summary` | See violation statistics | Check system health |
+| `codebase.record_learning` | Capture new patterns | **AFTER completing tasks** |
+| `codebase.validate_code` | 7-layer validation pipeline | Before committing for deep validation |
+| **`codebase.ask_ai`** ✨ | **Query with cached context** | **90% cost savings via prompt caching** |
 
 ## Setup
 
@@ -46,24 +48,25 @@ Add to `~/.cursor/mcp.json` or Claude Desktop config:
 ### Verification
 
 After restarting, tools should appear as:
-- `codebase:get_context`
-- `codebase:check_patterns`
+
+- `codebase.start_task`
+- `codebase.check_patterns`
 - etc.
 
 ## Usage Flow
 
 ```
 1. Start task
-   └── codebase:get_context({ task: "...", files: [...] })
+   └── codebase.start_task({ task: "...", files: [...] })
 
 2. Before commit
-   └── codebase:check_patterns({ code: "...", filePath: "..." })
+   └── codebase.check_patterns({ code: "...", filePath: "..." })
 
 3. If mistake made
-   └── codebase:report_violation({ type: "...", ... })
+   └── codebase.report_violation({ type: "...", ... })
 
 4. After task complete
-   └── codebase:record_learning({ type: "pattern", ... })
+   └── codebase.record_learning({ type: "pattern", ... })
 ```
 
 ## Data Files
@@ -92,6 +95,7 @@ Implements **Multiplier 1** from [unified_context_system.md](../resources/unifie
 4. Subsequent calls: cache HIT (90% cheaper)
 
 ### Usage
+
 ```typescript
 // First call - creates cache
 codebase.ask_ai({

@@ -27,7 +27,6 @@ import { handleReadResource, listResources } from "./resources/snap-resources";
 import { AnalysisRouter } from "./services/AnalysisRouter";
 import {
 	CheckPatternsSchema,
-	contextToolDefinitions,
 	GetContextSchema,
 	handleCheckPatterns,
 	handleGetContext,
@@ -48,7 +47,8 @@ import {
 } from "./tools/learning-tools";
 import { addSnapshot, listSnapshots } from "./tools/list-snapshots";
 import { restoreSnapshot, storeSnapshotContent } from "./tools/restore-snapshot";
-import { handleAcknowledgeRisk, handleGetWorkspaceVitals, vitalsToolDefinitions } from "./tools/vitals-tools";
+import { createErrorResult, snapbackToolDefinitions, toolNameMigrations } from "./tools/tool-definitions-v2";
+import { handleAcknowledgeRisk, handleGetWorkspaceVitals } from "./tools/vitals-tools";
 import { ActivityReporter } from "./utils/activity-reporter";
 import { addResult, createSarifLog } from "./utils/sarif";
 import { initializeSecurityTelemetry, setWorkspaceRoot } from "./utils/security";
@@ -239,243 +239,18 @@ export async function startServer(): Promise<{
 	const workspaceRoot = process.cwd();
 	const activityReporter = new ActivityReporter(apiClient, "workspace");
 
-	// Register tools listing
+	// Register tools listing - uses v2 definitions with improved naming and annotations
+	// See: ai_dev_utils/resources/mpc_defs/mcp-tool-naming-audit.md
 	server.setRequestHandler(ListToolsRequestSchema, async () => ({
 		tools: [
-			{
-				name: "snapback.analyze_risk",
-				description: `**Purpose:** Analyze code changes for potential risks before applying them.
-
-**When to Use:**
-- BEFORE accepting AI-generated code suggestions
-- When reviewing pull requests with complex changes
-- For critical files (auth, security, database schemas)
-- When user asks "is this safe to apply?"
-
-**When NOT to Use:**
-- For trivial changes (typo fixes, formatting)
-- For non-code files (images)
-- After changes are already applied
-
-**Returns:**
-- Risk level (safe, low, medium, high, critical)
-- Specific issues detected with severity levels
-- Actionable recommendations for mitigation
-
-**Performance:** < 200ms average`,
-				inputSchema: {
-					type: "object",
-					properties: {
-						changes: {
-							type: "array",
-							description: "Array of diff changes (added/removed lines with content)",
-							items: {
-								type: "object",
-								properties: {
-									added: {
-										type: "boolean",
-										description: "True if this line was added",
-									},
-									removed: {
-										type: "boolean",
-										description: "True if this line was removed",
-									},
-									value: {
-										type: "string",
-										description: "The actual line content",
-									},
-									count: {
-										type: "number",
-										description: "Number of lines (optional)",
-									},
-								},
-								required: ["value"],
-							},
-						},
-					},
-					required: ["changes"],
-				},
-				// Free-tier tool - does not require backend
-				requiresBackend: false,
-			},
-			{
-				name: "snapback.check_dependencies",
-				description: `**Purpose:** Check for dependency-related risks when package.json changes.
-
-**When to Use:**
-- After modifying package.json dependencies
-- Before installing new packages
-- When troubleshooting version conflicts
-- When user adds/removes npm packages
-
-**Returns:**
-- Added dependencies with known vulnerabilities
-- Removed dependencies that might break existing code
-- Version changes that could cause compatibility issues`,
-				inputSchema: {
-					type: "object",
-					properties: {
-						before: {
-							type: "object",
-							description: "Dependencies object before changes",
-							additionalProperties: true,
-						},
-						after: {
-							type: "object",
-							description: "Dependencies object after changes",
-							additionalProperties: true,
-						},
-					},
-					required: ["before", "after"],
-				},
-				// Free-tier tool - does not require backend
-				requiresBackend: false,
-			},
-			{
-				name: "snapback.create_snapshot",
-				description: `**Purpose:** Create a code snapshot before making risky changes.
-
-**When to Use:**
-- Before major refactoring
-- Before implementing breaking changes
-- When about to modify critical files
-- As a safety net for experimental changes
-- When user explicitly asks to "create snapshot" or "save snapshot"
-
-**When NOT to Use:**
-- After every single file save (too frequent)
-- For trivial changes (typo fixes)
-
-**Returns:**
-- Snapshot ID for later restoration
-- Timestamp of snapshot
-- Files included in snapshot
-
-**Performance:** < 500ms average (larger codebases may take longer)`,
-				inputSchema: CreateSnapshotSchema,
-
-				// Pro-tier tool - requires backend
-				requiresBackend: true,
-			},
-			{
-				name: "snapback.list_snapshots",
-				description: `**Purpose:** List all available code snapshots for restoration.
-
-**When to Use:**
-- When user wants to see available restore points
-- Before choosing which snapshot to restore
-- To verify a snapshot was created successfully
-
-**Returns:**
-- Array of snapshots with IDs, timestamps, and descriptions
-- Recent snapshots listed first (up to 500 most recent)`,
-				inputSchema: {
-					type: "object",
-					properties: {},
-				},
-				// Pro-tier tool - requires backend
-				requiresBackend: true,
-			},
-			{
-				name: "snapback.restore_snapshot",
-				description: `**Purpose:** Restore code from a previously created snapshot.
-
-**When to Use:**
-- When user wants to revert to a previous state
-- After realizing changes were problematic
-- To restore from a known good state
-
-**Returns:**
-- The content of the restored snapshot
-- Files and their contents`,
-				inputSchema: {
-					type: "object",
-					properties: {
-						snapshotId: {
-							type: "string",
-							description: "The ID of the snapshot to restore",
-						},
-					},
-					required: ["snapshotId"],
-				},
-				// Pro-tier tool - requires backend
-				requiresBackend: true,
-			},
-			{
-				name: "catalog.list_tools",
-				description:
-					"List available tools from connected external MCP servers (Context7, GitHub, NPM Registry, etc.)",
-				inputSchema: {
-					type: "object",
-					properties: {},
-				},
-				// Free-tier tool - does not require backend
-				requiresBackend: false,
-			},
-			{
-				name: "ctx7.resolve-library-id",
-				description: `**Purpose:** Resolve a library or package name into a Context7-compatible library ID.
-
-**When to Use:**
-- When you need documentation for a specific library
-- Before calling ctx7.get-library-docs
-- To find the correct library ID for a package name
-
-**Returns:**
-- Context7-compatible library ID
-- Library metadata (description, reputation, versions)
-- Multiple matches if applicable`,
-				inputSchema: {
-					type: "object",
-					properties: {
-						libraryName: {
-							type: "string",
-							description: "The name of the library to resolve",
-						},
-					},
-					required: ["libraryName"],
-				},
-				// Free-tier tool - does not require backend
-				requiresBackend: false,
-			},
-			{
-				name: "ctx7.get-library-docs",
-				description: `**Purpose:** Fetch up-to-date documentation for a specific library.
-
-**When to Use:**
-- When you need documentation for a library
-- To understand library APIs and usage patterns
-- For code examples and best practices
-
-**Returns:**
-- Formatted documentation with code examples
-- API references and integration patterns
-- Version-specific information`,
-				inputSchema: {
-					type: "object",
-					properties: {
-						context7CompatibleLibraryID: {
-							type: "string",
-							description: "The Context7-compatible library ID",
-						},
-						topic: {
-							type: "string",
-							description: "Optional topic to filter documentation",
-						},
-						tokens: {
-							type: "number",
-							description: "Optional limit on response size in tokens",
-						},
-					},
-					required: ["context7CompatibleLibraryID"],
-				},
-				// Free-tier tool - does not require backend
-				requiresBackend: false,
-			},
-			// Intelligence context tools (from @snapback/intelligence)
-			...contextToolDefinitions,
-			// Vitals tools (workspace health sensing)
-			...vitalsToolDefinitions,
+			// V2 tool definitions with proper MCP annotations
+			...snapbackToolDefinitions.map((tool) => ({
+				name: tool.name,
+				description: tool.description,
+				inputSchema: tool.inputSchema,
+				// Include annotations if present (per MCP spec)
+				...(tool.annotations && { annotations: tool.annotations }),
+			})),
 			// Learning tools (session management and personalized recommendations)
 			...learningToolDefinitions,
 		],
@@ -483,7 +258,15 @@ export async function startServer(): Promise<{
 
 	// Handle tool calls
 	server.setRequestHandler(CallToolRequestSchema, async (request) => {
-		const { name, arguments: args } = request.params;
+		let { name } = request.params;
+		const { arguments: args } = request.params;
+
+		// Migration layer: map old tool names to new names
+		// See: ai_dev_utils/resources/mpc_defs/mcp-tool-naming-implementation-guide.md
+		if (toolNameMigrations[name]) {
+			console.error(`[MCP] Migrating deprecated tool: ${name} → ${toolNameMigrations[name]}`);
+			name = toolNameMigrations[name];
+		}
 
 		try {
 			// Get API key from environment (for stdio transport)
@@ -495,19 +278,15 @@ export async function startServer(): Promise<{
 
 			// Check if user has access to this tool
 			if (!hasToolAccess(authResult, name)) {
-				return {
-					content: [
-						{
-							type: "text",
-							text: `❌ Access denied. You don't have permission to use the ${name} tool.`,
-						},
-					],
-					isError: true,
-				};
+				return createErrorResult(
+					`Access denied. You don't have permission to use the ${name} tool.`,
+					"Check your API key tier or contact support.",
+				);
 			}
 
 			// Handle SnapBack's native tools
-			if (name === "snapback.analyze_risk") {
+			// V2 renamed: snapback.analyze_risk → snapback.assess_risk
+			if (name === "snapback.assess_risk") {
 				// NEW: Use local engine adapter for analysis
 				// The engine runs signals locally (threats, complexity, velocity, etc.)
 				// and returns aggregated risk assessment with session coaching
@@ -574,7 +353,8 @@ ${risk.session.coaching || ""}`,
 				}
 			}
 
-			if (name === "snapback.check_dependencies") {
+			// V2 renamed: snapback.check_dependencies → snapback.validate_dependencies
+			if (name === "snapback.validate_dependencies") {
 				const parsed = z
 					.object({
 						before: z.record(z.string(), z.any()),
@@ -752,31 +532,38 @@ You can restore this snapshot using its ID.`,
 				return { content: [{ type: "json", json: result.snapshot }] };
 			}
 
-			// Handle catalog tool
-			if (name === "catalog.list_tools") {
+			// V2 renamed: catalog.list_tools → snapback.meta_list_tools
+			if (name === "snapback.meta_list_tools") {
 				const catalog = mcpManager.getToolCatalog();
 				return { content: [{ type: "json", json: catalog }] };
 			}
 
-			// Handle Context7 tools with internal implementation as fallback
-			if (name === "ctx7.resolve-library-id") {
+			// Handle documentation tools (V2 aliases: ctx7.* → snapback.docs_*)
+			// Both old and new names work via migration layer
+			if (name === "snapback.docs_find") {
 				const parsed = z.object({ libraryName: z.string().min(1) }).parse(args);
-				const result = await trackPerformance("ctx7_resolve_library", () =>
+				const result = await trackPerformance("docs_find", () =>
 					context7Service.resolveLibraryId(parsed.libraryName),
 				);
 				return result;
 			}
 
-			if (name === "ctx7.get-library-docs") {
+			if (name === "snapback.docs_fetch") {
 				const parsed = z
 					.object({
-						context7CompatibleLibraryID: z.string().min(1),
+						// Accept both old and new parameter names
+						context7CompatibleLibraryID: z.string().min(1).optional(),
+						library_id: z.string().min(1).optional(),
 						topic: z.string().optional(),
 						tokens: z.number().optional(),
 					})
+					.refine((data) => data.context7CompatibleLibraryID || data.library_id, {
+						message: "Either context7CompatibleLibraryID or library_id is required",
+					})
 					.parse(args);
-				const result = await trackPerformance("ctx7_get_docs", () =>
-					context7Service.getLibraryDocs(parsed.context7CompatibleLibraryID, {
+				const libraryId = parsed.library_id || parsed.context7CompatibleLibraryID || "";
+				const result = await trackPerformance("docs_fetch", () =>
+					context7Service.getLibraryDocs(libraryId, {
 						topic: parsed.topic,
 						tokens: parsed.tokens,
 					}),
@@ -785,7 +572,7 @@ You can restore this snapshot using its ID.`,
 			}
 
 			// Handle proxied tools from external MCP servers
-			if (name.startsWith("ctx7.") || name.startsWith("gh.") || name.startsWith("registry.")) {
+			if (name.startsWith("gh.") || name.startsWith("registry.")) {
 				const result = await mcpManager.callToolByName(name, args);
 				return result;
 			}

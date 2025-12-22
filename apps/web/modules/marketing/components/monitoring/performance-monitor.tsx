@@ -1,4 +1,6 @@
-"use client";
+import { logger } from "@snapback/infrastructure";
+
+("use client");
 
 import { CheckpointPulse } from "@marketing/components/ui/snap-motion";
 import { useEffect, useState } from "react";
@@ -49,7 +51,7 @@ const useWebVitalsMonitoring = (setMetrics: React.Dispatch<React.SetStateAction<
 			});
 
 			onFCP((metric) => {
-				console.log(`⚡ First Contentful Paint: ${metric.value}ms`);
+				logger.debug(`[⚡ FCP] First Contentful Paint: ${metric.value}ms`);
 			});
 		});
 	}, [setMetrics]);
@@ -66,7 +68,7 @@ const usePerformanceMonitoring = (setMetrics: React.Dispatch<React.SetStateActio
 				}));
 
 				if (memoryMB > 50 && document.hidden) {
-					console.warn(`🚨 Memory usage exceeds idle target: ${Math.round(memoryMB)}MB`);
+					logger.warn(`[🚨 Memory] Usage exceeds idle target: ${Math.round(memoryMB)}MB`);
 				}
 			}
 		};
@@ -92,7 +94,7 @@ const usePerformanceMonitoring = (setMetrics: React.Dispatch<React.SetStateActio
 				setMetrics((prev) => ({ ...prev, animationFPS: fps }));
 
 				if (fps < 60) {
-					console.warn(`⚠️ Animation performance degraded: ${fps}fps`);
+					logger.warn(`[⚠️ FPS] Animation performance degraded: ${fps}fps`);
 				}
 
 				frameCount = 0;

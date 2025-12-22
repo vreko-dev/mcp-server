@@ -16,6 +16,9 @@ import { featureUsage, featureUsage202510 } from "./feature-usage";
 import { feedback } from "./feedback";
 import { githubInstallations, githubPrAnalyses } from "./github-integrations";
 import { loops } from "./loops";
+// MCP Server tables (Phase 4)
+import { mcpActivityEvents, mcpAggregatedLearnings } from "./mcp-learnings";
+import { mcpSessions } from "./mcp-sessions";
 import { nurtureTrack } from "./nurture-track";
 import { orgDailyMetrics } from "./org-daily-metrics";
 import { patterns } from "./patterns";
@@ -66,6 +69,9 @@ export * from "./functions";
 export * from "./github-integrations";
 export * from "./loops";
 export * from "./materialized-views";
+// MCP Server (Phase 4)
+export * from "./mcp-learnings";
+export * from "./mcp-sessions";
 export * from "./nurture-track";
 export * from "./org-daily-metrics";
 export * from "./patterns";
@@ -162,6 +168,10 @@ export {
 	engagementActions,
 	githubInstallations,
 	githubPrAnalyses,
+	// MCP Server (Phase 4)
+	mcpSessions,
+	mcpAggregatedLearnings,
+	mcpActivityEvents,
 };
 
 // Export all tables as a namespace object for backward compatibility
@@ -228,4 +238,8 @@ export const snapbackSchema = {
 	engagementActions,
 	githubInstallations,
 	githubPrAnalyses,
+	// MCP Server (Phase 4)
+	mcpSessions,
+	mcpAggregatedLearnings,
+	mcpActivityEvents,
 };

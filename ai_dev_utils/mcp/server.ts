@@ -6,12 +6,15 @@
  * Reads from ai_dev_utils/ to provide architectural context,
  * check patterns, and report violations for learning.
  *
- * Tools:
- *   codebase:get_context      - Get context BEFORE implementing
- *   codebase:check_patterns   - Validate BEFORE committing
- *   codebase:report_violation - Learn from mistakes
- *   codebase:query_learnings  - Search past learnings
- *   codebase:record_learning  - Capture new patterns
+ * Tools (per SEP-986 naming, using `.` separator):
+ *   codebase.start_task       - Unified pre-flight check (BEFORE implementing)
+ *   codebase.get_context      - Get context (legacy, use start_task)
+ *   codebase.check_patterns   - Validate BEFORE committing
+ *   codebase.report_violation - Learn from mistakes
+ *   codebase.query_learnings  - Search past learnings
+ *   codebase.record_learning  - Capture new patterns
+ *   codebase.validate_code    - 7-layer validation pipeline
+ *   codebase.ask_ai           - Query with cached context
  *
  * Usage:
  *   pnpm start          # Run server (stdio transport)

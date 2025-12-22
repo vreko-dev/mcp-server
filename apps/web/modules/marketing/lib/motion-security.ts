@@ -1,5 +1,7 @@
 ("use client");
 
+import { logger } from "@snapback/infrastructure";
+
 /**
  * Motion Security & Stability Framework
  * Implements defense-in-depth for animation system failures
@@ -170,7 +172,7 @@ class MotionSecurityManager {
 		// Development logging (detailed)
 		if (process.env.NODE_ENV === "development") {
 			console.group(`🛡️ Motion Security Event: ${event}`);
-			console.log("Data:", sanitizedData);
+			logger.debug("[Motion Security] Data:", sanitizedData);
 			console.groupEnd();
 		}
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { logger } from "@snapback/infrastructure";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
@@ -113,7 +114,7 @@ export function useProtectionStatus({
 			)
 			.subscribe((subscriptionStatus) => {
 				if (subscriptionStatus === "SUBSCRIBED") {
-					console.log("Connected to real-time protection updates");
+					logger.info("Connected to real-time protection updates");
 					setIsRealtime(true);
 				} else if (subscriptionStatus === "CHANNEL_ERROR") {
 					setIsRealtime(false);

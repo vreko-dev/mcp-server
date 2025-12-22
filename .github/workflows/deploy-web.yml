@@ -6,7 +6,7 @@ on:
       environment:
         type: string
         required: false
-        default: preview
+        default: "preview"
   push:
     branches: [main]
     paths:
@@ -20,7 +20,7 @@ on:
       environment:
         description: "Deployment environment (preview|production)"
         required: true
-        default: preview
+        default: "preview"
 
 jobs:
   validate:
@@ -54,7 +54,7 @@ jobs:
           project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           org-id: ${{ secrets.VERCEL_TEAM_ID }}
           working-directory: apps/web
-          prod: ${{ github.ref == 'refs/heads/main' && (github.event_name != 'workflow_dispatch' || github.event.inputs.environment == 'production') }}
+          prod: ${{ github.ref == 'refs/heads/main' }}
 
       - name: Output deployment URL
-        run: echo "Deployment URL: ${{ steps.deploy.outputs.preview-url }}"
+        run: echo "Deployment URL ${{ steps.deploy.outputs.preview-url }}"

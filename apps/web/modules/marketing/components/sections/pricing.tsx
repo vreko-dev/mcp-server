@@ -1,4 +1,7 @@
-"use client";
+import { logger } from "@snapback/infrastructure";
+
+("use client");
+
 import { Check, Star } from "lucide-react";
 import { m } from "motion/react";
 import { useState } from "react";
@@ -79,7 +82,7 @@ const Pricing = () => {
 
 	const handlePlanAction = (planName: string, action: string) => {
 		// Plan action logic would go here (signup, trial, contact)
-		console.log(`${action} clicked for ${planName} plan`);
+		logger.debug(`Plan interaction: ${action} ${planName}`);
 	};
 
 	return (

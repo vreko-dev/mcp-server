@@ -13,7 +13,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { render, cleanup } from "@testing-library/react";
 import { PostHogProvider, identifyUser, captureEvent, resetUser } from "./posthog-client";
 import { server } from "@snapback/testing/msw/server";
-import { posthogHandlers, posthogErrorHandlers, capturedEvents, resetCapturedEvents } from "../test/mocks/handlers/posthog";
+import { posthogHandlers, posthogErrorHandlers, capturedEvents, resetCapturedEvents } from "../tests/mocks/handlers/posthog";
 
 // Mock posthog-js module
 vi.mock("posthog-js", () => ({

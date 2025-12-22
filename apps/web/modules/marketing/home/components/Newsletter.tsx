@@ -1,4 +1,6 @@
-"use client";
+import { logger } from "@snapback/infrastructure";
+
+("use client");
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { marketingAnalytics } from "@marketing/lib/track-event";
@@ -22,7 +24,7 @@ export function Newsletter() {
 	const newsletterSignupMutation = useMutation({
 		mutationFn: async (data: { email: string }) => {
 			// Stub implementation
-			console.log("Newsletter signup", data);
+			logger.info("Newsletter subscription", data);
 			return { success: true };
 		},
 	});

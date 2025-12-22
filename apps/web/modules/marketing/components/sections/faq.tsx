@@ -1,4 +1,7 @@
-"use client";
+import { logger } from "@snapback/infrastructure";
+
+("use client");
+
 import { ChevronDown } from "lucide-react";
 import { m } from "motion/react";
 import type React from "react";
@@ -84,7 +87,7 @@ const FAQ = () => {
 
 	const handleContactSupport = () => {
 		// Contact support logic would go here
-		console.log("Contact support clicked");
+		logger.debug("Support contact initiated");
 	};
 
 	return (

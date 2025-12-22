@@ -1,60 +1,88 @@
 # GitHub Actions Workflows
 
-This directory contains all the GitHub Actions workflows for the SnapBack project.
+This directory contains all GitHub Actions workflows for the SnapBack project.
+**Last Consolidated:** 2025-12-21
 
-## Workflows Overview
+---
 
-### Continuous Integration (CI)
+## Workflow Categories (24 files)
 
-1. **[turborepo-ci.yml](turborepo-ci.yml)** - Main CI pipeline that tests all packages with proper database integration
-2. **[ci.yml](ci.yml)** - Legacy workflow (redirects to turborepo-ci.yml)
+### Primary CI
+| Workflow | Purpose | Trigger |
+|----------|---------|--------|
+| `turborepo-ci.yml` | **PRIMARY** - Lint, type-check, test, build | push/PR to main, develop |
 
-### Continuous Deployment (CD)
+### Reusable Validators (called by turborepo-ci or standalone)
+| Workflow | Purpose |
+|----------|--------|
+| `vscode-validate.yml` | VS Code extension validation |
+| `vscode-test.yml` | VS Code test matrix (ubuntu/macOS/Windows) |
+| `vscode-performance.yml` | VS Code performance budgets |
+| `mcp-validate.yml` | MCP server validation |
+| `web-validate.yml` | Web app validation |
+| `cli-validate.yml` | CLI validation |
 
-1. **[publish-extension.yml](publish-extension.yml)** - Publishes the VS Code extension to the marketplace
-2. **[update-version.yml](update-version.yml)** - Automatically updates version numbers when a release is created
-3. **[dependency-update.yml](dependency-update.yml)** - Automatically updates dependencies weekly
+### Deployment
+| Workflow | Purpose |
+|----------|--------|
+| `deploy.yml` | Main deployment orchestrator |
+| `deploy-web.yml` | Web app to Vercel (reusable) |
+| `deploy-mcp.yml` | MCP server to Fly.io (reusable) |
 
-## Primary CI Workflow (turborepo-ci.yml)
+### Testing
+| Workflow | Purpose |
+|----------|--------|
+| `e2e.yml` | E2E tests (Playwright) |
+| `e2e-web-auth.yml` | Web auth E2E tests |
+| `integration-test-npm.yml` | Daily npm integration tests |
 
-This is now the **primary and only required CI workflow** for the project. It includes:
+### Quality & Security
+| Workflow | Purpose |
+|----------|--------|
+| `validate-architecture.yml` | Import boundaries, license compliance |
+| `verify.yml` | DB schema assertions |
+| `security-scan.yml` | Security audit + secret scanning |
+| `performance.yml` | Performance budget enforcement |
 
--   Full test suite execution for all packages
--   PostgreSQL database service for integration tests
--   Coverage thresholds enforcement (70% lines, 70% functions, 65% branches, 70% statements)
--   Proper error handling (no --continue flags)
--   Pre-commit hooks and commit linting
+### Publishing
+| Workflow | Purpose |
+|----------|--------|
+| `publish-vscode-extension.yml` | VS Code marketplace |
+| `publish-cli.yml` | CLI to npm |
+| `release.yml` | Release automation |
+| `update-version.yml` | Version bump on release |
+
+### Maintenance
+| Workflow | Purpose |
+|----------|--------|
+| `dependency-update.yml` | Weekly dependency updates |
+| `sync-oss.yml` | OSS package sync |
+| `labeler.yml` | PR auto-labeling |
+
+---
 
 ## Required Secrets
 
-For these workflows to function properly, you'll need to set the following secrets in your GitHub repository:
+| Secret | Purpose |
+|--------|--------|
+| `TURBO_TOKEN` | Turborepo remote caching |
+| `TURBO_TEAM` | Turborepo team name |
+| `CODECOV_TOKEN` | Coverage reporting |
+| `STRIPE_TEST_KEY` | Payment integration tests |
+| `DATABASE_URL` | DB schema verification |
 
--   `TURBO_TOKEN` - Token for Turborepo remote caching
--   `TURBO_TEAM` - Team name for Turborepo remote caching
--   `CODECOV_TOKEN` - Token for Codecov coverage reporting (optional)
--   `STRIPE_TEST_KEY` - Stripe test key for payment integration tests
+---
 
 ## Branch Protection
 
-Configure branch protection rules to require the following status checks:
+Configure branch protection to require:
+- `Turborepo CI / ci-status`
 
--   `Turborepo CI / ci-status` - Ensures all CI checks pass before merging
+---
 
-## Workflow Improvements
+## Best Practices (2025)
 
-### Before (❌ Issues)
-
--   Payments package missing test script
--   No database service in CI
--   --continue flag allowing failures
--   Multiple confusing CI workflows
--   No coverage thresholds
-
-### After (✅ Fixed)
-
--   Payments package now has proper test scripts
--   PostgreSQL service configured for integration tests
--   Removed --continue flags to block on failures
--   Consolidated CI workflows (turborepo-ci.yml is primary)
--   Coverage thresholds enforced (70% minimum)
--   Pre-commit hooks and commit linting
+1. **Reusable workflows** via `workflow_call` - avoid duplication
+2. **Path filters** - only run relevant jobs for changed files
+3. **Single primary CI** - `turborepo-ci.yml` is authoritative
+4. **Turborepo caching** - remote cache for faster builds

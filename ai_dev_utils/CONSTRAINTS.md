@@ -125,11 +125,12 @@ SOURCE: Violation 2025-12-21 - glob matched README.md, vercel-entry.ts
 
 ### C-012: MCP Tool Usage Before Implementation
 
-```
-RULE: MUST call codebase:get_context() BEFORE any implementation
-CHECK: Any code changes require prior get_context call
+```text
+RULE: MUST call codebase.start_task() BEFORE any implementation
+CHECK: Any code changes require prior start_task call
 VIOLATION_TYPE: IGNORED_ROUTER_INSTRUCTIONS
 SOURCE: Violation 2025-12-21 - started task without querying knowledge layer
+NOTE: Tool naming follows SEP-986 (dot separator, not colon)
 ```
 
 ### C-013: Stub Component Lifecycle Tracking

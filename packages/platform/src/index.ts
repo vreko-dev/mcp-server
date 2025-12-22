@@ -77,6 +77,10 @@ export {
 	featureUsage,
 	feedback,
 	loops,
+	// MCP Server (Phase 4)
+	mcpActivityEvents,
+	mcpAggregatedLearnings,
+	mcpSessions,
 	orgDailyMetrics,
 	policyEvaluations,
 	postAcceptOutcomes,

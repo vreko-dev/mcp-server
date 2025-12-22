@@ -1,6 +1,7 @@
 // app/components/trial-detector.tsx
 "use client"; // Client component for Next.js 15
 
+import { logger } from "@snapback/infrastructure";
 import { useEffect } from "react";
 import { getClientFingerprint } from "@/lib/client-fingerprint";
 
@@ -18,14 +19,14 @@ export function TrialDetector() {
 				});
 
 				if (!response.ok) {
-					console.error("Failed to check device trial status");
+					logger.error("Failed to check device trial status");
 					return;
 				}
 
 				const data = await response.json();
-				console.log("Device trial status:", data);
+				logger.debug("Device trial status:", data);
 			} catch (error) {
-				console.error("Error detecting device:", { error });
+				logger.error("Error detecting device:", { error });
 			}
 		}
 

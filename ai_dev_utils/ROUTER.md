@@ -76,6 +76,8 @@ codebase.record_learning({ type, trigger, action, source })
 | "auth", "integration", "3rd party" | Cross-cutting | `rules/50-api-rules.md` + `rules/40-mcp-rules.md` |
 | "docker", "dockerfile", "deploy" | Infrastructure | `rules/30-docker-rules.md` |
 | "test", "vitest", "coverage" | Testing | `rules/20-testing-rules.md` |
+| "CI", "workflow", "GitHub Actions" | CI/CD | `rules/70-cicd-rules.md` |
+| "performance", "budget", "latency" | Cross-cutting | `rules/60-performance-budgets.md` |
 
 ---
 
@@ -149,13 +151,28 @@ ai_dev_utils/
 │   ├── 20-testing-rules.md   # globs: **/*.test.ts
 │   ├── 30-docker-rules.md    # globs: **/Dockerfile*
 │   ├── 40-mcp-rules.md       # globs: ai_dev_utils/mcp/**
-│   └── 50-api-rules.md       # globs: apps/api/**
+│   ├── 50-api-rules.md       # globs: apps/api/**
+│   ├── 60-performance-budgets.md  # Performance budgets (all apps)
+│   └── 70-cicd-rules.md      # globs: .github/workflows/**
 ├── workflows/                # Execution workflows
 ├── patterns/                 # Learned patterns (auto-promoted)
 ├── feedback/                 # Learning system
 ├── state/                    # Current task state
 └── mcp/                      # Internal MCP server
 ```
+
+---
+
+## Runtime Configuration
+
+**`qoder-config.yaml`** (root) contains runtime config for:
+- MCP server definitions and tool priorities
+- Performance budgets (mirrored in `rules/60-performance-budgets.md`)
+- Security policies (egress, crypto, redaction)
+- Monorepo package discovery and dependencies
+- Context pinning (files to always reference)
+
+**Use `rules/*.md` for LLM guidance, `qoder-config.yaml` for runtime behavior.**
 
 ---
 

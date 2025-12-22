@@ -1,21 +1,41 @@
 # Area Labels
-area: vscode:
-  - apps/vscode/**/*
+"area: vscode":
+  - changed-files:
+      - any-glob-to-any-file:
+          - apps/vscode/**/*
 
-area: web:
-  - apps/web/**/*
+"area: web":
+  - changed-files:
+      - any-glob-to-any-file:
+          - apps/web/**/*
 
-area: api:
-  - apps/api/**/*
+"area: api":
+  - changed-files:
+      - any-glob-to-any-file:
+          - apps/api/**/*
 
-area: auth:
-  - packages/auth/**/*
+"area: auth":
+  - changed-files:
+      - any-glob-to-any-file:
+          - packages/auth/**/*
 
-area: documentation:
+"area: mcp":
+  - changed-files:
+      - any-glob-to-any-file:
+          - apps/mcp-server/**/*
+          - ai_dev_utils/mcp/**/*
+
+"area: cli":
+  - changed-files:
+      - any-glob-to-any-file:
+          - apps/cli/**/*
+
+"area: docs":
   - changed-files:
       - any-glob-to-any-file:
           - "**/*.md"
-          - "docs/**/*"
+          - docs/**/*
+          - apps/docs/**/*
 
 # Type Labels
 test:
@@ -33,3 +53,16 @@ config:
           - "**/*.yml"
           - "**/*.yaml"
           - "**/tsconfig.json"
+
+ci:
+  - changed-files:
+      - any-glob-to-any-file:
+          - .github/workflows/**/*
+          - .github/actions/**/*
+
+docker:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "**/Dockerfile*"
+          - docker/**/*
+          - docker-compose*.yml

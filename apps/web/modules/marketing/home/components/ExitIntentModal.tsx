@@ -1,4 +1,6 @@
-"use client";
+import { logger } from "@snapback/infrastructure";
+
+("use client");
 
 import { Button } from "@ui/components/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@ui/components/dialog";
@@ -7,7 +9,7 @@ import { useEffect, useState } from "react";
 
 // Add tracking function
 const trackEvent = (event: string, category: string, label: string) => {
-	console.log("📊 Track:", { event, category, label });
+	logger.debug("Analytics event:", { event, category, label });
 	// In a real implementation, this would connect to your analytics service
 };
 

@@ -10,44 +10,44 @@ This project has a self-learning context system. **You MUST use these tools for 
 
 | When | Tool | Example |
 |------|------|---------|
-| **BEFORE any implementation** | `codebase:get_context` | `codebase:get_context({ task: "add auth", files: ["apps/api/src/auth.ts"] })` |
-| **BEFORE committing code** | `codebase:check_patterns` | `codebase:check_patterns({ code: "...", filePath: "..." })` |
-| **AFTER making a mistake** | `codebase:report_violation` | Report it so the system learns |
-| **AFTER completing a task** | `codebase:record_learning` | Capture patterns for future |
+| **BEFORE any implementation** | `codebase.start_task` | `codebase.start_task({ task: "add auth", files: ["apps/api/src/auth.ts"] })` |
+| **BEFORE committing code** | `codebase.check_patterns` | `codebase.check_patterns({ code: "...", filePath: "..." })` |
+| **AFTER making a mistake** | `codebase.report_violation` | Report it so the system learns |
+| **AFTER completing a task** | `codebase.record_learning` | Capture patterns for future |
 
 ### Full Tool Reference
 
 | Tool | Purpose |
 |------|---------|
-| `codebase:start_task` | Initialize task context, load relevant patterns |
-| `codebase:get_context` | Get architecture, constraints, patterns for task |
-| `codebase:check_patterns` | Validate code against constraints before commit |
-| `codebase:report_violation` | Report mistakes for system learning |
-| `codebase:query_learnings` | Search past learnings by keywords |
-| `codebase:get_violations_summary` | View all violations grouped by type |
-| `codebase:record_learning` | Capture new patterns/pitfalls/discoveries |
-| `codebase:ask_ai` | Query intelligence layer for guidance |
-| `codebase:validate_code` | Run 7-layer validation pipeline |
-| `codebase:log_interaction` | Track interactions for learning engine |
-| `codebase:record_feedback` | Provide feedback on validation results |
-| `codebase:get_learning_stats` | View learning engine statistics |
+| `codebase.start_task` | Unified pre-flight check (BEFORE implementing) |
+| `codebase.get_context` | Get architecture, constraints, patterns (legacy - use start_task) |
+| `codebase.check_patterns` | Validate code against constraints before commit |
+| `codebase.report_violation` | Report mistakes for system learning |
+| `codebase.query_learnings` | Search past learnings by keywords |
+| `codebase.get_violations_summary` | View all violations grouped by type |
+| `codebase.record_learning` | Capture new patterns/pitfalls/discoveries |
+| `codebase.ask_ai` | Query intelligence layer for guidance |
+| `codebase.validate_code` | Run 7-layer validation pipeline |
+| `codebase.log_interaction` | Track interactions for learning engine |
+| `codebase.record_feedback` | Provide feedback on validation results |
+| `codebase.get_learning_stats` | View learning engine statistics |
 
 ### Workflow
 
-```
+```text
 User asks to implement something
          ↓
-FIRST: Call codebase:get_context({ task: "...", files: [...], keywords: [...] })
+FIRST: Call codebase.start_task({ task: "...", files: [...], keywords: [...] })
          ↓
 Read the returned context (architecture, constraints, patterns, violations)
          ↓
 Implement following the patterns
          ↓
-BEFORE suggesting code: Call codebase:check_patterns({ code: "...", filePath: "..." })
+BEFORE suggesting code: Call codebase.check_patterns({ code: "...", filePath: "..." })
          ↓
 If violations found, fix them first
          ↓
-After task complete: Call codebase:record_learning if you learned something new
+After task complete: Call codebase.record_learning if you learned something new
 ```
 
 ### Why This Matters
@@ -65,10 +65,10 @@ The codebase tools provide:
 
 When working on SnapBack code:
 
-1. **FIRST**: `codebase:get_context` - Always start here
+1. **FIRST**: `codebase.start_task` - Always start here
 2. **THEN**: `filesystem:*` tools for reading/writing code
-3. **BEFORE COMMIT**: `codebase:check_patterns` - Validate your work
-4. **IF STUCK**: `codebase:query_learnings` - Search for relevant tips
+3. **BEFORE COMMIT**: `codebase.check_patterns` - Validate your work
+4. **IF STUCK**: `codebase.query_learnings` - Search for relevant tips
 
 ### Key Files
 

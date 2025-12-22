@@ -1,6 +1,6 @@
 import { logger } from "@snapback/infrastructure";
 import { snapbackSchema } from "@snapback/platform";
-import { and, gt } from "drizzle-orm";
+import { and, eq, gt } from "drizzle-orm";
 import { z } from "zod";
 import { getPostHog } from "@/lib/posthog-server";
 import { trackUsage } from "@/lib/usage";
@@ -91,6 +91,7 @@ export const enrichEvent = protectedProcedure.input(EnrichEventSchema).handler(a
 	// Store product events in Postgres for detailed analysis and reporting
 	// MVP Note: Product telemetry is stored in Postgres for better control and analysis
 	// while PostHog is retained for marketing/analytics purposes only
+	const db = getDb();
 	try {
 		if (db) {
 			await db.insert(snapbackSchema.telemetryEvents).values({

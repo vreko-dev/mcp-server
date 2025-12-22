@@ -20,8 +20,8 @@ const loadPolicyEngine = async () => {
 	if (!evaluate) {
 		// Fix: Use a more specific import approach to avoid TypeScript issues
 		try {
-			// Try to import the module directly
-			const policyEngineModule = await import("@snapback/policy-engine");
+			// Import from @snapback/intelligence/policy (migrated from @snapback/policy-engine)
+			const policyEngineModule = await import("@snapback/intelligence/policy");
 			evaluate = policyEngineModule.evaluate;
 		} catch (error) {
 			logger.error("Failed to load policy engine", { error });

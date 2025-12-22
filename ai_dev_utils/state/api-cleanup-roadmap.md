@@ -66,10 +66,10 @@ modules/pioneer/procedures/signup.ts:45
 
 | ID | Task | Status | Impact | Notes |
 |----|------|--------|--------|-------|
-| P3-1 | Create shared `timestamps.ts` pattern | ⬜ PENDING | DRY | Reusable column helpers |
-| P3-2 | Add missing FK indexes | ⬜ PENDING | Performance | Audit all references() |
-| P3-3 | Remove MySQL/SQLite duplicate schemas | ⬜ PENDING | DRY | Postgres is primary |
-| P3-4 | Migrate to identity columns (new tables) | ⬜ PENDING | Modern | Per Drizzle 2025 guide |
+| P3-1 | Create shared `timestamps.ts` pattern | ✅ DONE | DRY | Created helpers/timestamps.ts |
+| P3-2 | Add missing FK indexes | ⏭ DEFERRED | Performance | Future migration |
+| P3-3 | Remove MySQL/SQLite duplicate schemas | ✅ DONE | DRY | Deleted 2 unused files |
+| P3-4 | Migrate to identity columns (new tables) | ⏭ DEFERRED | Modern | Apply to new tables only |
 
 ---
 
@@ -122,6 +122,9 @@ packages/platform/src/db/drizzle.config.ts # Deprecated
 | 2025-12-22 | P1 | P1-3 | Deleted legacy middleware/ directory (9 files) | ✅ |
 | 2025-12-22 | P1 | P1-2 | Rate limit consolidation (part of P1-3) | ✅ |
 | 2025-12-22 | P2 | P2-1-6 | Service layer refactor - all 6 modules | ✅ |
+| 2025-12-22 | P3 | P3-1 | Created shared timestamps.ts helper | ✅ |
+| 2025-12-22 | P3 | P3-3 | Deleted mysql.ts and sqlite.ts (0 usages) | ✅ |
+| 2025-12-22 | fix | - | Fixed leftover Phase 2 issues (enrich-event, policy-evaluate) | ✅ |
 
 ---
 
@@ -135,7 +138,7 @@ If issues arise:
 ---
 
 **Last Updated:** 2025-12-22
-**Next Action:** Commit Phase 2 changes
+**Next Action:** Commit Phase 3 changes
 
 ---
 
@@ -164,3 +167,20 @@ If issues arise:
 **C-002 Violations Fixed:** 13
 **Lines Changed:** ~300 lines (net reduction due to consolidation)
 **Time Taken:** ~30 minutes
+
+---
+
+## Phase 3 Summary
+
+**Completed:** 2025-12-22
+**New Files Created:** 2
+  - `packages/platform/src/db/schema/helpers/timestamps.ts` (shared timestamps pattern)
+  - `packages/platform/src/db/schema/helpers/index.ts` (barrel export)
+**Files Deleted:** 2
+  - `packages/platform/src/db/schema/mysql.ts` (0 imports, dead code)
+  - `packages/platform/src/db/schema/sqlite.ts` (0 imports, dead code)
+**Bug Fixes:** 2
+  - `apps/api/modules/telemetry/procedures/enrich-event.ts` (missing `eq` import, scope issue)
+  - `apps/api/src/routes/v1/policy-evaluate.ts` (stale @snapback/policy-engine import)
+**Lines Removed:** ~760 (mysql.ts 291 + sqlite.ts 470)
+**Time Taken:** ~15 minutes

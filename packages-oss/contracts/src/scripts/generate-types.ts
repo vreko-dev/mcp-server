@@ -16,17 +16,17 @@ const __dirname = dirname(__filename);
 
 // Since we're running this as a compiled JS file, we need to adjust the import paths
 // Import our schemas from the compiled output
-import { CORE_TELEMETRY_EVENTS } from "../events/core";
+import { CORE_TELEMETRY_EVENTS } from "../events/core.js";
 
 // Import infrastructure events
-import { AnalyticsEvents } from "../events/infrastructure";
+import { AnalyticsEvents } from "../events/infrastructure.js";
 
 async function generateCoreEventTypes() {
 	const outputPath = join(__dirname, "../../generated/core-events.ts");
 
 	let content = `/**
  * Generated Core Event Types
- * 
+ *
  * This file is auto-generated from Zod schemas. Do not edit manually.
  */
 
@@ -152,7 +152,7 @@ async function generateInfrastructureEventTypes() {
 
 	let content = `/**
  * Generated Infrastructure Event Types
- * 
+ *
  * This file is auto-generated from event definitions. Do not edit manually.
  */
 

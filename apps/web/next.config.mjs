@@ -1,11 +1,5 @@
-import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { withSentryConfig } from "@sentry/nextjs";
-import { createMDX } from "fumadocs-mdx/next";
 import webpack from "webpack";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 // Add bundle analyzer (only for Webpack builds when TURBOPACK=false)
 // For Turbopack (default), use: npx next experimental-analyze
@@ -14,12 +8,6 @@ import bundleAnalyzer from "@next/bundle-analyzer";
 const withBundleAnalyzer = bundleAnalyzer({
 	enabled:
 		process.env.ANALYZE === "true" && process.env.TURBOPACK === "false",
-});
-
-// Configure Fumadocs MDX (replaces @next/mdx)
-const withFumadocsMDX = createMDX({
-	configPath: "./source.config.ts",
-	outDir: "./.source",
 });
 
 const nextConfig = {
@@ -181,9 +169,8 @@ const nextConfig = {
 	},
 };
 
-// Wrap with Fumadocs MDX and Bundle Analyzer
-const configWithFumadocs = withFumadocsMDX(nextConfig);
-const configWithAnalyzer = withBundleAnalyzer(configWithFumadocs);
+// Wrap with Bundle Analyzer
+const configWithAnalyzer = withBundleAnalyzer(nextConfig);
 
 // Sentry configuration options
 const sentryBuildOptions = {

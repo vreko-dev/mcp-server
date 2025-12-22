@@ -60,11 +60,12 @@ export const INCLUDE_PATTERNS: Record<string, string[]> = {
 
 /**
  * Standard exclude patterns
+ * IMPORTANT: Use glob patterns with double-star for nested directories
  */
 export const EXCLUDE_PATTERNS: Record<string, string[]> = {
-	default: ["node_modules", "dist", "out", "coverage"],
-	web: ["node_modules", "dist", "out", ".next"],
-	vscode: ["node_modules", "dist", "out", "*.vsix"],
+	default: ["**/node_modules/**", "**/dist/**", "**/out/**", "**/coverage/**", "**/fixtures/**/node_modules/**"],
+	web: ["**/node_modules/**", "**/dist/**", "**/out/**", "**/.next/**", "**/fixtures/**/node_modules/**"],
+	vscode: ["**/node_modules/**", "**/dist/**", "**/out/**", "**/*.vsix", "**/fixtures/**/node_modules/**"],
 };
 
 // =============================================================================

@@ -373,7 +373,96 @@ See:
 For comprehensive setup and development guides, see:
 - [Local Development Guide](./docs/local-development.md) - Complete setup instructions
 - [DNS Configuration](./docs/setup/dns-configuration.md) - Configure subdomain routing
-- [Docker Architecture](./docs/architecture/docker.md) - Understand the container setup"}, "old_text": "## Local Development
+- [Docker Architecture](./docs/architecture/docker.md) - Understand the container setup
+
+## Secret Management
+
+SnapBack uses [Infisical](https://infisical.com) for centralized secret management across all packages and applications.
+
+### Infisical Folder Structure
+
+```
+/                     (root secrets - 57 variables)
+├── /apps
+│   ├── /api          (41 secrets)
+│   ├── /cli          (16 secrets)
+│   ├── /mcp-server   (11 secrets)
+│   ├── /vscode       (17 secrets)
+│   └── /web          (21 secrets)
+└── /packages
+    ├── /auth         (39 secrets)
+    ├── /core         (61 secrets)
+    └── /platform     (9 secrets)
+```
+
+### Quick Start
+
+```bash
+# Install Infisical CLI
+brew install infisical/get-cli/infisical
+
+# Login to Infisical
+infisical login
+
+# Initialize project (links to workspace)
+infisical init
+
+# Run commands with secrets injected
+infisical run --env=dev -- pnpm dev
+
+# Export secrets to .env file
+infisical export --env=dev --path="/apps/web" > apps/web/.env.local
+```
+
+### Environment-Specific Usage
+
+| Environment | Command |
+|-------------|---------|
+| Development | `infisical run --env=dev -- <command>` |
+| Staging | `infisical run --env=staging -- <command>` |
+| Production | `infisical run --env=prod -- <command>` |
+
+### CI/CD Integration
+
+Add `INFISICAL_TOKEN` to your CI environment variables (GitHub Secrets, etc.):
+
+```yaml
+# GitHub Actions example
+- name: Run tests with secrets
+  env:
+    INFISICAL_TOKEN: ${{ secrets.INFISICAL_TOKEN }}
+  run: infisical run --env=dev -- pnpm test
+```
+
+### Shared Variables
+
+44 environment variables are shared across multiple packages. Key shared variables:
+
+| Variable | Used By |
+|----------|---------|
+| `DATABASE_URL` | api, web, auth, platform |
+| `BETTER_AUTH_SECRET` | api, web, auth |
+| `RESEND_API_KEY` | api, web, auth |
+| `STRIPE_SECRET_KEY` | api, web |
+| `NEXT_PUBLIC_API_URL` | web, cli, vscode |
+
+### Secret Rotation
+
+Recommended rotation schedule:
+- **OAuth credentials**: 90 days
+- **API keys**: 90 days
+- **Database passwords**: 180 days
+- **JWT secrets**: 180 days
+
+### Export Script
+
+Generate secret exports for migration or backup:
+
+```bash
+pnpm tsx scripts/export-env-to-secrets-manager.ts --format=infisical --output=./secrets.json
+```
+
+Supported formats: `json`, `infisical`, `doppler`, `1password`"}, "old_text": "## Local Development
 
 To set up and run the SnapBack platform locally, follow our comprehensive development guide:
 

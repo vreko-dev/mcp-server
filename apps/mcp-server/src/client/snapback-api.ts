@@ -1,17 +1,5 @@
-import {
-	type CircuitBreakerPolicy,
-	type CircuitState,
-	ConsecutiveBreaker,
-	circuitBreaker,
-	ExponentialBackoff,
-	handleAll,
-	type IPolicy,
-	retry,
-	TimeoutStrategy,
-	timeout,
-	wrap,
-} from "cockatiel";
 import ky, { HTTPError, type KyInstance, type Options } from "ky";
+import CircuitBreaker from "opossum";
 import { z } from "zod";
 
 // Define the configuration interface
@@ -108,18 +96,56 @@ const SessionResponseSchema = z.object({
 	riskLevel: z.string(),
 });
 
+// Circuit breaker state enum (matches cockatiel's CircuitState for API compatibility)
+export enum CircuitState {
+	Closed = 0,
+	Open = 1,
+	HalfOpen = 2,
+}
+
+/**
+ * Retry with exponential backoff
+ */
+async function withRetry<T>(
+	operation: () => Promise<T>,
+	options: { maxAttempts: number; initialDelayMs: number; maxDelayMs: number },
+): Promise<T> {
+	const { maxAttempts, initialDelayMs, maxDelayMs } = options;
+	let lastError: Error | undefined;
+
+	for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+		try {
+			return await operation();
+		} catch (error) {
+			lastError = error instanceof Error ? error : new Error(String(error));
+
+			if (attempt >= maxAttempts) {
+				throw lastError;
+			}
+
+			// Exponential backoff: initialDelay * 2^(attempt-1), capped at maxDelay
+			const delay = Math.min(initialDelayMs * 2 ** (attempt - 1), maxDelayMs);
+			await new Promise((resolve) => setTimeout(resolve, delay));
+		}
+	}
+
+	throw lastError ?? new Error("Retry failed");
+}
+
 export class SnapBackAPIClient {
 	private client: KyInstance;
-	private resilience: IPolicy;
-	private circuitBreakerPolicy: CircuitBreakerPolicy;
+	private circuitBreaker: CircuitBreaker<[string, RequestInit?], unknown>;
+	private timeoutMs: number;
 
 	constructor(config: SnapBackConfig) {
-		// Configure ky WITHOUT retry or timeout - cockatiel handles these
+		this.timeoutMs = config.timeout ?? 30000;
+
+		// Configure ky WITHOUT retry or timeout - we handle these ourselves
 		const kyOptions: Options = {
 			prefixUrl: config.baseUrl,
-			timeout: false, // Cockatiel handles timeout
+			timeout: this.timeoutMs, // ky handles timeout
 			retry: {
-				limit: 0, // Disable ky retry - cockatiel handles it
+				limit: 0, // Disable ky retry - we handle it
 			},
 			hooks: {
 				beforeRequest: [
@@ -138,39 +164,14 @@ export class SnapBackAPIClient {
 
 		this.client = ky.create(kyOptions);
 
-		// Configure cockatiel policies
-		const retryPolicy = retry(handleAll, {
-			maxAttempts: 3,
-			backoff: new ExponentialBackoff({
-				initialDelay: 100, // Start with 100ms
-				maxDelay: 5000, // Max 5s between retries
-				exponent: 2, // Double each time
-			}),
-		});
+		// Configure opossum circuit breaker
+		// The function to wrap - takes endpoint and options, returns promise
+		const fetchFn = async (endpoint: string, options?: RequestInit): Promise<unknown> => {
+			const url = endpoint.startsWith("/") ? endpoint.slice(1) : endpoint;
 
-		this.circuitBreakerPolicy = circuitBreaker(handleAll, {
-			halfOpenAfter: 30000, // 30s
-			breaker: new ConsecutiveBreaker(5), // Open after 5 consecutive failures
-		});
-
-		const timeoutPolicy = timeout(config.timeout ?? 30000, TimeoutStrategy.Cooperative);
-
-		// Compose policies: timeout → retry → circuitBreaker
-		this.resilience = wrap(timeoutPolicy, wrap(retryPolicy, this.circuitBreakerPolicy));
-	}
-
-	private async fetchAPI<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-		// Remove leading slash if present when using prefixUrl
-		const url = endpoint.startsWith("/") ? endpoint.slice(1) : endpoint;
-
-		// Execute with cockatiel resilience
-		return this.resilience.execute(async () => {
 			try {
-				const response = await this.client(url, {
-					...options,
-				});
-
-				return (await response.json()) as T;
+				const response = await this.client(url, { ...options });
+				return await response.json();
 			} catch (error: any) {
 				// Re-throw ky errors with consistent format
 				if (error instanceof HTTPError) {
@@ -184,14 +185,37 @@ export class SnapBackAPIClient {
 					const statusText = error.response?.statusText || "Unknown Error";
 					throw new Error(`API error: ${status} ${statusText}`);
 				}
-				// Handle mock fetch errors that don't have the expected structure
-				if (error.message?.includes("status")) {
-					// Try to extract status from message if possible
-					throw error;
-				}
 				throw error;
 			}
+		};
+
+		// Opossum circuit breaker with similar config to cockatiel
+		this.circuitBreaker = new CircuitBreaker(fetchFn, {
+			timeout: this.timeoutMs, // 30s default
+			errorThresholdPercentage: 50, // Open after 50% failures
+			resetTimeout: 30000, // 30s before trying half-open
+			volumeThreshold: 5, // Minimum 5 requests before opening (similar to ConsecutiveBreaker(5))
 		});
+
+		// Log circuit breaker state changes
+		this.circuitBreaker.on("open", () => console.warn("SnapBack API circuit breaker opened"));
+		this.circuitBreaker.on("halfOpen", () => console.warn("SnapBack API circuit breaker half-open"));
+		this.circuitBreaker.on("close", () => console.info("SnapBack API circuit breaker closed"));
+	}
+
+	private async fetchAPI<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+		// Execute with retry + circuit breaker
+		return withRetry(
+			async () => {
+				const result = await this.circuitBreaker.fire(endpoint, options);
+				return result as T;
+			},
+			{
+				maxAttempts: 3,
+				initialDelayMs: 100,
+				maxDelayMs: 5000,
+			},
+		);
 	}
 
 	async analyzeFast(request: AnalysisRequest): Promise<AnalysisResponse> {
@@ -231,7 +255,6 @@ export class SnapBackAPIClient {
 	}
 
 	async getSafetyGuidelines(): Promise<string> {
-		// Execute with cockatiel resilience through our fetchAPI method
 		return this.fetchAPI<string>("api/guidelines/safety", {
 			method: "GET",
 		});
@@ -239,11 +262,16 @@ export class SnapBackAPIClient {
 
 	/**
 	 * Get circuit breaker state for monitoring
-	 * Returns the CircuitState enum from cockatiel
+	 * Returns CircuitState enum compatible with cockatiel's API
 	 */
 	getCircuitBreakerState(): CircuitState {
-		// Access the circuit breaker policy state directly
-		return this.circuitBreakerPolicy.state;
+		if (this.circuitBreaker.opened) {
+			return CircuitState.Open;
+		}
+		if (this.circuitBreaker.halfOpen) {
+			return CircuitState.HalfOpen;
+		}
+		return CircuitState.Closed;
 	}
 
 	/**

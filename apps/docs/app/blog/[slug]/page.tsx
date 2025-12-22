@@ -1,4 +1,3 @@
-import { DocsBody, DocsPage } from "fumadocs-ui/page";
 import { notFound } from "next/navigation";
 import { blogSource } from "@/lib/source";
 import { useMDXComponents } from "../../mdx-components";
@@ -15,17 +14,17 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 	const components = useMDXComponents();
 
 	return (
-		<DocsPage toc={(page.data as any).toc} full={true}>
-			<div className="mb-8">
+		<article className="container max-w-[800px] mx-auto px-4 py-12">
+			<header className="mb-8">
 				<h1 className="text-3xl font-bold mb-2">{page.data.title}</h1>
 				{(page.data as any).date && (
 					<p className="text-sm text-neutral-500">{new Date((page.data as any).date).toLocaleDateString()}</p>
 				)}
-			</div>
-			<DocsBody>
+			</header>
+			<div className="prose prose-invert max-w-none">
 				<MDX components={components} />
-			</DocsBody>
-		</DocsPage>
+			</div>
+		</article>
 	);
 }
 

@@ -1,29 +1,28 @@
 import { loader } from "fumadocs-core/source";
-import { createMDXSource } from "fumadocs-mdx/runtime/next";
-import { blog, docs } from "../.source";
+import { blog, docs } from "../.source/server";
 
-// Official fumadocs-mdx pattern from https://fumadocs.dev/docs/mdx/next
-// Use createMDXSource() instead of toFumadocsSource() to avoid type issues
+// Fumadocs-mdx v14 pattern - use .toFumadocsSource() method
+// https://fumadocs.dev/docs/mdx/next
 //
-// Routing architecture:
-// - User visits: docs.snapback.dev/quick-start
-// - Middleware rewrites to: /docs/quick-start
-// - Next.js routes to: app/docs/[[...slug]]/page.tsx
-// - baseUrl "/" because from docs subdomain perspective, root = docs homepage
+// Routing architecture (turborepo: apps/docs):
+// - URL: docs.snapback.dev/quick-start
+// - Filesystem: apps/docs/app/[[...slug]]/page.tsx
+// - baseUrl "/" because docs subdomain root = docs homepage
 
-// Type assertion needed due to fumadocs-mdx v13.0.7 type inference issue
-// The generated .source/index.ts has @ts-nocheck, and the runtime value is correct
-// even though TypeScript infers the type as 'never'
-const docsData = docs as any;
-const blogData = blog as any;
+// Type assertion needed due to .source/server.ts having @ts-nocheck
+// which causes TypeScript to infer exports as 'never'
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const docsSource = docs as any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const blogSource_ = blog as any;
 
 export const source = loader({
 	baseUrl: "/",
-	source: createMDXSource(docsData.docs, docsData.meta),
+	source: docsSource.toFumadocsSource(),
 });
 
-// Blog source - treat as a flat collection without page tree navigation
+// Blog source at /blog
 export const blogSource = loader({
 	baseUrl: "/blog",
-	source: createMDXSource(blogData.blog || [], []),
+	source: blogSource_.toFumadocsSource(),
 });

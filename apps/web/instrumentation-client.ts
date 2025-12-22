@@ -1,2 +1,8 @@
-// Sentry client-side instrumentation disabled for frontend-only deployment
-// Error tracking should be configured in the backend (apps/api)
+/**
+ * Next.js Client-Side Instrumentation
+ *
+ * Imports Sentry client configuration for browser error tracking.
+ * This file is automatically loaded by Next.js for client-side instrumentation.
+ */
+
+import "./sentry.client.config";

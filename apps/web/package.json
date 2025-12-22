@@ -3,6 +3,7 @@
 	"version": "0.2.0",
 	"dependencies": {
 		"@ai-sdk/react": "catalog:",
+		"@sentry/nextjs": "catalog:",
 		"@arcjet/next": "catalog:",
 		"@aws-sdk/client-s3": "catalog:",
 		"@bprogress/next": "catalog:",
@@ -106,7 +107,7 @@
 	"devDependencies": {
 		"@biomejs/biome": "catalog:",
 		"@hookform/resolvers": "catalog:",
-		"@next/bundle-analyzer": "^16.0.7",
+		"@next/bundle-analyzer": "catalog:",
 		"@playwright/test": "catalog:",
 		"@shikijs/rehype": "catalog:",
 		"@snapback/testing": "workspace:*",
@@ -142,7 +143,8 @@
 	"private": true,
 	"scripts": {
 		"build": "NODE_OPTIONS='--max-old-space-size=8192' next build",
-		"analyze:bundle": "ANALYZE=true NODE_OPTIONS='--max-old-space-size=8192' next build",
+		"analyze": "npx next experimental-analyze",
+		"analyze:webpack": "ANALYZE=true NODE_OPTIONS='--max-old-space-size=8192' next build --no-turbo",
 		"dev": "next dev --turbopack",
 		"dev:subdomain": "next dev --turbopack",
 		"lint": "biome lint .",

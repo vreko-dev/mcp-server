@@ -1,21 +1,20 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { withSentryConfig } from "@sentry/nextjs";
 import { createMDX } from "fumadocs-mdx/next";
 import webpack from "webpack";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Add bundle analyzer (if available)
-let withBundleAnalyzer = (config) => config;
-try {
-	withBundleAnalyzer = require("@next/bundle-analyzer")({
-		enabled: process.env.ANALYZE === "true" || process.env.ANALYZE === true,
-	});
-} catch (_e) {
-	// Bundle analyzer not available, continue without it
-	console.warn("Bundle analyzer not available, continuing without it");
-}
+// Add bundle analyzer (only for Webpack builds when TURBOPACK=false)
+// For Turbopack (default), use: npx next experimental-analyze
+import bundleAnalyzer from "@next/bundle-analyzer";
+
+const withBundleAnalyzer = bundleAnalyzer({
+	enabled:
+		process.env.ANALYZE === "true" && process.env.TURBOPACK === "false",
+});
 
 // Configure Fumadocs MDX (replaces @next/mdx)
 const withFumadocsMDX = createMDX({
@@ -67,6 +66,7 @@ const nextConfig = {
 			: "'self' 'unsafe-inline' https://challenges.cloudflare.com https://js.stripe.com https://va.vercel-scripts.com https://www.googletagmanager.com https://us-assets.i.posthog.com";
 
 		// In development, allow HTTP connections to local subdomains
+		// Note: Sentry uses /monitoring tunnel route, so no external Sentry domain needed in CSP
 		const connectSrc = isDev
 			? "'self' http://snapback.dev:* http://*.snapback.dev:* http://localhost:* https://api.snapback.dev https://challenges.cloudflare.com https://vitals.vercel-insights.com https://i.posthog.com https://us.i.posthog.com https://us-assets.i.posthog.com https://www.google-analytics.com https://analytics.google.com"
 			: "'self' https://api.snapback.dev https://challenges.cloudflare.com https://vitals.vercel-insights.com https://i.posthog.com https://us.i.posthog.com https://us-assets.i.posthog.com https://www.google-analytics.com https://analytics.google.com";
@@ -183,7 +183,41 @@ const nextConfig = {
 
 // Wrap with Fumadocs MDX and Bundle Analyzer
 const configWithFumadocs = withFumadocsMDX(nextConfig);
+const configWithAnalyzer = withBundleAnalyzer(configWithFumadocs);
 
-// Sentry integration removed for frontend-only deployment
-// Error tracking should be configured in the backend (apps/api)
-export default withBundleAnalyzer(configWithFumadocs);
+// Sentry configuration options
+const sentryBuildOptions = {
+	// Suppress Sentry CLI logs during build
+	silent: true,
+
+	// Organization and project for source map uploads
+	org: process.env.SENTRY_ORG,
+	project: process.env.SENTRY_PROJECT,
+
+	// Upload wider set of source maps for better stack traces
+	widenClientFileUpload: true,
+
+	// Hide source maps from client bundles
+	hideSourceMaps: true,
+
+	// Disable Sentry telemetry
+	telemetry: false,
+
+	// Route Sentry requests through /monitoring to avoid ad blockers
+	tunnelRoute: "/monitoring",
+
+	// Disable automatic instrumentation of API routes (we handle this manually)
+	autoInstrumentServerFunctions: false,
+
+	// Disable automatic instrumentation of middleware
+	autoInstrumentMiddleware: false,
+
+	// Disable automatic instrumentation of app directory
+	autoInstrumentAppDirectory: false,
+};
+
+// Wrap with Sentry (only if SENTRY_DSN or NEXT_PUBLIC_SENTRY_DSN is set)
+const hasSentry = process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN;
+export default hasSentry
+	? withSentryConfig(configWithAnalyzer, sentryBuildOptions)
+	: configWithAnalyzer;

@@ -1,4 +1,3 @@
-import { createId as cuid } from "@paralleldrive/cuid2";
 import { relations } from "drizzle-orm";
 import { bigint, boolean, integer, jsonb, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 import { user } from "../postgres";
@@ -9,7 +8,7 @@ export const webhookEvents = pgTable("webhook_events", {
 
 	eventId: text("event_id")
 		.notNull()
-		.$defaultFn(() => cuid()),
+		.$defaultFn(() => nanoid()),
 	eventType: text("event_type").notNull(), // "subscription.created", "usage.exceeded"
 
 	source: text("source").notNull(), // "stripe", "github", "internal"

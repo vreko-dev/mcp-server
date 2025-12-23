@@ -1,4 +1,3 @@
-import { createId as cuid } from "@paralleldrive/cuid2";
 import { relations } from "drizzle-orm";
 import {
 	boolean,
@@ -12,6 +11,7 @@ import {
 	uniqueIndex,
 	varchar,
 } from "drizzle-orm/pg-core";
+import { nanoid } from "nanoid";
 
 // Enums
 export const purchaseTypeEnum = pgEnum("PurchaseType", ["SUBSCRIPTION", "ONE_TIME"]);
@@ -44,7 +44,7 @@ export const actionTypeEnum = pgEnum("pioneer_action_type", [
 // Tables
 export const user = pgTable("user", {
 	id: varchar("id", { length: 255 })
-		.$defaultFn(() => cuid())
+		.$defaultFn(() => nanoid())
 		.primaryKey(),
 	name: text("name").notNull(),
 	email: text("email").notNull().unique(),
@@ -71,7 +71,7 @@ export const session = pgTable(
 	"session",
 	{
 		id: varchar("id", { length: 255 })
-			.$defaultFn(() => cuid())
+			.$defaultFn(() => nanoid())
 			.primaryKey(),
 		expiresAt: timestamp("expiresAt").notNull(),
 		ipAddress: text("ipAddress"),
@@ -91,7 +91,7 @@ export const session = pgTable(
 
 export const account = pgTable("account", {
 	id: varchar("id", { length: 255 })
-		.$defaultFn(() => cuid())
+		.$defaultFn(() => nanoid())
 		.primaryKey(),
 	accountId: text("accountId").notNull(),
 	providerId: text("providerId").notNull(),
@@ -112,7 +112,7 @@ export const account = pgTable("account", {
 
 export const verification = pgTable("verification", {
 	id: varchar("id", { length: 255 })
-		.$defaultFn(() => cuid())
+		.$defaultFn(() => nanoid())
 		.primaryKey(),
 	identifier: text("identifier").notNull(),
 	value: text("value").notNull(),
@@ -123,7 +123,7 @@ export const verification = pgTable("verification", {
 
 export const passkey = pgTable("passkey", {
 	id: varchar("id", { length: 255 })
-		.$defaultFn(() => cuid())
+		.$defaultFn(() => nanoid())
 		.primaryKey(),
 	name: text("name"),
 	publicKey: text("publicKey").notNull(),
@@ -140,7 +140,7 @@ export const passkey = pgTable("passkey", {
 
 export const twoFactor = pgTable("twoFactor", {
 	id: varchar("id", { length: 255 })
-		.$defaultFn(() => cuid())
+		.$defaultFn(() => nanoid())
 		.primaryKey(),
 	secret: text("secret").notNull(),
 	backupCodes: text("backupCodes").notNull(),
@@ -153,7 +153,7 @@ export const organization = pgTable(
 	"organization",
 	{
 		id: varchar("id", { length: 255 })
-			.$defaultFn(() => cuid())
+			.$defaultFn(() => nanoid())
 			.primaryKey(),
 		name: text("name").notNull(),
 		slug: text("slug"),
@@ -170,7 +170,7 @@ export const member = pgTable(
 	"member",
 	{
 		id: varchar("id", { length: 255 })
-			.$defaultFn(() => cuid())
+			.$defaultFn(() => nanoid())
 			.primaryKey(),
 		organizationId: text("organizationId")
 			.notNull()
@@ -187,7 +187,7 @@ export const member = pgTable(
 
 export const invitation = pgTable("invitation", {
 	id: varchar("id", { length: 255 })
-		.$defaultFn(() => cuid())
+		.$defaultFn(() => nanoid())
 		.primaryKey(),
 	organizationId: text("organizationId")
 		.notNull()
@@ -203,7 +203,7 @@ export const invitation = pgTable("invitation", {
 
 export const purchase = pgTable("purchase", {
 	id: varchar("id", { length: 255 })
-		.$defaultFn(() => cuid())
+		.$defaultFn(() => nanoid())
 		.primaryKey(),
 	organizationId: text("organizationId").references(() => organization.id, {
 		onDelete: "cascade",
@@ -222,7 +222,7 @@ export const purchase = pgTable("purchase", {
 
 export const aiChat = pgTable("aiChat", {
 	id: varchar("id", { length: 255 })
-		.$defaultFn(() => cuid())
+		.$defaultFn(() => nanoid())
 		.primaryKey(),
 	organizationId: text("organizationId").references(() => organization.id, {
 		onDelete: "cascade",
@@ -241,7 +241,7 @@ export const apiKeys = pgTable(
 	{
 		id: text("id")
 			.primaryKey()
-			.$defaultFn(() => cuid()),
+			.$defaultFn(() => nanoid()),
 		userId: text("user_id")
 			.notNull()
 			.references(() => user.id, { onDelete: "cascade" }),
@@ -281,7 +281,7 @@ export const clientTokens = pgTable(
 	{
 		id: text("id")
 			.primaryKey()
-			.$defaultFn(() => cuid()),
+			.$defaultFn(() => nanoid()),
 		userId: text("user_id")
 			.notNull()
 			.references(() => user.id, { onDelete: "cascade" }),
@@ -317,7 +317,7 @@ export const apiUsage = pgTable(
 	{
 		id: text("id")
 			.primaryKey()
-			.$defaultFn(() => cuid()),
+			.$defaultFn(() => nanoid()),
 		apiKeyId: text("api_key_id")
 			.notNull()
 			.references(() => apiKeys.id, { onDelete: "cascade" }),
@@ -349,7 +349,7 @@ export const subscriptions = pgTable(
 	{
 		id: text("id")
 			.primaryKey()
-			.$defaultFn(() => cuid()),
+			.$defaultFn(() => nanoid()),
 		userId: text("user_id").references(() => user.id, {
 			onDelete: "cascade",
 		}),
@@ -385,7 +385,7 @@ export const usageLimits = pgTable(
 	{
 		id: text("id")
 			.primaryKey()
-			.$defaultFn(() => cuid()),
+			.$defaultFn(() => nanoid()),
 		subscriptionId: text("subscription_id").references(() => subscriptions.id, {
 			onDelete: "cascade",
 		}),
@@ -548,7 +548,7 @@ export const newsletterSubscribers = pgTable(
 	{
 		id: text("id")
 			.primaryKey()
-			.$defaultFn(() => cuid()),
+			.$defaultFn(() => nanoid()),
 		email: text("email").notNull().unique(),
 		source: text("source").default("website"), // website, extension, api, etc.
 		hubspotContactId: text("hubspot_contact_id"), // HubSpot contact ID for sync
@@ -577,7 +577,7 @@ export const pioneers = pgTable(
 	{
 		id: text("id")
 			.primaryKey()
-			.$defaultFn(() => cuid()),
+			.$defaultFn(() => nanoid()),
 		userId: text("user_id")
 			.notNull()
 			.references(() => user.id, { onDelete: "cascade" }),
@@ -608,7 +608,7 @@ export const pioneerActions = pgTable(
 	{
 		id: text("id")
 			.primaryKey()
-			.$defaultFn(() => cuid()),
+			.$defaultFn(() => nanoid()),
 		pioneerId: text("pioneer_id")
 			.notNull()
 			.references(() => pioneers.id, { onDelete: "cascade" }),
@@ -630,7 +630,7 @@ export const pioneerTierHistory = pgTable(
 	{
 		id: text("id")
 			.primaryKey()
-			.$defaultFn(() => cuid()),
+			.$defaultFn(() => nanoid()),
 		pioneerId: text("pioneer_id")
 			.notNull()
 			.references(() => pioneers.id, { onDelete: "cascade" }),
@@ -827,7 +827,7 @@ export const agentSuggestions = pgTable(
 	{
 		id: text("id")
 			.primaryKey()
-			.$defaultFn(() => cuid()),
+			.$defaultFn(() => nanoid()),
 		userId: text("user_id")
 			.notNull()
 			.references(() => user.id, { onDelete: "cascade" }),

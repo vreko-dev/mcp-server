@@ -168,3 +168,6 @@ INVESTIGATION_*.md
 .version-overrides.json
 apps/web/.next
 packages/sdk/dist-types/
+
+# MCP configuration with local credentials
+.mcp.json

@@ -1,5 +1,5 @@
-import { createId as cuid } from "@paralleldrive/cuid2";
 import { index, pgEnum, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { nanoid } from "nanoid";
 import { user } from "../postgres";
 
 // Lifecycle state enum
@@ -12,7 +12,7 @@ export const userLifecycleState = pgTable(
 	{
 		id: text("id")
 			.primaryKey()
-			.$defaultFn(() => cuid()),
+			.$defaultFn(() => nanoid()),
 		userId: text("user_id")
 			.notNull()
 			.references(() => user.id, { onDelete: "cascade" }),

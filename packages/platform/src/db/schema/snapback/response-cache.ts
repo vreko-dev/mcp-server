@@ -1,6 +1,6 @@
-import { createId as cuid } from "@paralleldrive/cuid2";
 import { relations } from "drizzle-orm";
 import { index, integer, jsonb, pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
+import { nanoid } from "nanoid";
 import { user } from "../postgres";
 
 export const responseCache = pgTable(
@@ -8,7 +8,7 @@ export const responseCache = pgTable(
 	{
 		id: text("id")
 			.primaryKey()
-			.$defaultFn(() => cuid()),
+			.$defaultFn(() => nanoid()),
 
 		// Cache key (hash of normalized request)
 		cacheKey: text("cache_key").notNull().unique(),

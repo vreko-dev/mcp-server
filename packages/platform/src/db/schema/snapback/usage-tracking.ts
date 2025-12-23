@@ -1,6 +1,6 @@
-import { createId as cuid } from "@paralleldrive/cuid2";
 import { relations } from "drizzle-orm";
 import { bigint, integer, jsonb, pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
+import { nanoid } from "nanoid";
 import { apiKeys, user } from "../postgres";
 
 // High-frequency API usage logs (partitioned by month)
@@ -10,7 +10,7 @@ export const apiUsageLogs = pgTable("api_usage_logs", {
 	// Request identification
 	requestId: text("request_id")
 		.notNull()
-		.$defaultFn(() => cuid()),
+		.$defaultFn(() => nanoid()),
 	apiKeyId: text("api_key_id").notNull(),
 	userId: text("user_id")
 		.notNull()
@@ -65,7 +65,7 @@ export const apiUsageLogs202510 = pgTable("api_usage_logs_2025_10", {
 	// Request identification
 	requestId: text("request_id")
 		.notNull()
-		.$defaultFn(() => cuid()),
+		.$defaultFn(() => nanoid()),
 	apiKeyId: text("api_key_id").notNull(),
 	userId: text("user_id")
 		.notNull()
@@ -108,7 +108,7 @@ export const apiUsageLogs202511 = pgTable("api_usage_logs_2025_11", {
 	// Request identification
 	requestId: text("request_id")
 		.notNull()
-		.$defaultFn(() => cuid()),
+		.$defaultFn(() => nanoid()),
 	apiKeyId: text("api_key_id").notNull(),
 	userId: text("user_id")
 		.notNull()
@@ -151,7 +151,7 @@ export const usageStatsDaily = pgTable(
 	{
 		id: text("id")
 			.primaryKey()
-			.$defaultFn(() => cuid()),
+			.$defaultFn(() => nanoid()),
 		userId: text("user_id")
 			.notNull()
 			.references(() => user.id, { onDelete: "cascade" }),

@@ -15,7 +15,7 @@
     "seo:full": "pnpm seo:archive-clutter:dry-run && pnpm seo:lint-markdown && pnpm seo:optimize-images && pnpm seo:check-links && pnpm seo:validate"
   },
   "dependencies": {
-    "gray-matter": "^4.0.3",
+    "gray-matter": "catalog:",
     "glob": "catalog:",
     "hast-util-from-html": "^2.0.3",
     "hast-util-to-text": "^4.0.2",
@@ -26,7 +26,7 @@
     "remark-gfm": "catalog:",
     "remark-parse": "^11.0.0",
     "remark-stringify": "^11.0.0",
-    "sharp": "^0.33.5",
+    "sharp": "catalog:",
     "unified": "^11.0.5",
     "zod": "catalog:"
   },

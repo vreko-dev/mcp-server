@@ -78,19 +78,24 @@ function loadCatalog() {
 	let inCatalog = false;
 
 	for (const line of lines) {
-		if (line.trim() === "catalogs:" || line.trim() === "default:") {
+		if (line.trim() === "catalogs:") {
 			inCatalog = true;
 			continue;
 		}
 
-		if (inCatalog && line.match(/^\s{4}'?(@?[\w\-/]+)'?:\s/)) {
-			const match = line.match(/'?(@?[\w\-/.]+)'?:/);
+		if (line.trim() === "default:") {
+			continue;
+		}
+
+		// Match catalog entries (with or without quotes): "package-name": version
+		if (inCatalog && line.match(/^\s{4,}["']?(@?[\w\-/@.]+)["']?:/)) {
+			const match = line.match(/["']?(@?[\w\-/@.]+)["']?:/);
 			if (match) {
 				catalogPackages.add(match[1]);
 			}
 		}
 
-		// Exit catalog section
+		// Exit catalog section when we hit top-level key (no leading spaces)
 		if (inCatalog && line.match(/^[a-z]/i) && !line.startsWith(" ")) {
 			inCatalog = false;
 		}
@@ -120,10 +125,25 @@ function validatePackageJson(filePath, catalogPackages) {
 		return { errors, warnings };
 	}
 
-	const depTypes = ["dependencies", "devDependencies", "peerDependencies", "optionalDependencies"];
+	const depTypes = [
+		"dependencies",
+		"devDependencies",
+		"peerDependencies",
+		"optionalDependencies",
+	];
 
+	// Also check pnpm.overrides
+	const depsToCheck = [];
 	for (const depType of depTypes) {
-		const deps = pkg[depType];
+		if (pkg[depType]) {
+			depsToCheck.push({ type: depType, deps: pkg[depType] });
+		}
+	}
+	if (pkg.pnpm?.overrides) {
+		depsToCheck.push({ type: "pnpm.overrides", deps: pkg.pnpm.overrides });
+	}
+
+	for (const { type: depType, deps } of depsToCheck) {
 		if (!deps) {
 			continue;
 		}
@@ -183,7 +203,16 @@ if (files.length === 0) {
 		for (const entry of entries) {
 			const fullPath = path.join(dir, entry.name);
 			if (entry.isDirectory()) {
-				if (entry.name !== "node_modules" && entry.name !== ".git" && entry.name !== "dist") {
+				// Skip non-workspace directories
+				if (
+					entry.name !== "node_modules" &&
+					entry.name !== ".git" &&
+					entry.name !== "dist" &&
+					entry.name !== ".snapback" &&
+					entry.name !== ".vscode-test" &&
+					entry.name !== ".next" &&
+					entry.name !== "build"
+				) {
 					findPackageJsonFiles(fullPath, results);
 				}
 			} else if (entry.name === "package.json") {

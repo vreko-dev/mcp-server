@@ -17,8 +17,8 @@
  * @package @snapback/platform
  */
 
-import { createId as cuid } from "@paralleldrive/cuid2";
 import { boolean, index, jsonb, pgTable, text, timestamp, varchar } from "drizzle-orm/pg-core";
+import { nanoid } from "nanoid";
 import { user } from "./postgres";
 
 /**
@@ -39,7 +39,7 @@ export const extensionLinkTokens = pgTable(
 	"extension_link_tokens",
 	{
 		id: varchar("id", { length: 255 })
-			.$defaultFn(() => cuid())
+			.$defaultFn(() => nanoid())
 			.primaryKey(),
 		tokenHash: text("token_hash").notNull(),
 		userId: varchar("user_id", { length: 255 })
@@ -75,7 +75,7 @@ export const extensionSessions = pgTable(
 	"extension_sessions",
 	{
 		id: varchar("id", { length: 255 })
-			.$defaultFn(() => cuid())
+			.$defaultFn(() => nanoid())
 			.primaryKey(),
 		userId: varchar("user_id", { length: 255 })
 			.notNull()

@@ -12,26 +12,31 @@ const redactPaths = [
 	"env.*",
 ];
 
-const pinoLogger = pino({
-	level: process.env.LOG_LEVEL || "info",
-	redact: {
-		paths: redactPaths,
-		censor: "[REDACTED]",
+// Use stderr instead of stdout to avoid polluting stdout
+// This is critical for MCP servers which use stdout for JSON-RPC communication
+const pinoLogger = pino(
+	{
+		level: process.env.LOG_LEVEL || "info",
+		redact: {
+			paths: redactPaths,
+			censor: "[REDACTED]",
+		},
+		// Only use pino-pretty in development AND when not in browser/webpack context
+		// ...(process.env.NODE_ENV === "development" && typeof window === "undefined"
+		// 	? {
+		// 			transport: {
+		// 				target: "pino-pretty",
+		// 				options: {
+		// 					colorize: true,
+		// 					translateTime: "SYS:standard",
+		// 					ignore: "pid,hostname",
+		// 				},
+		// 			},
+		// 		}
+		// 	: {}),
 	},
-	// Only use pino-pretty in development AND when not in browser/webpack context
-	// ...(process.env.NODE_ENV === "development" && typeof window === "undefined"
-	// 	? {
-	// 			transport: {
-	// 				target: "pino-pretty",
-	// 				options: {
-	// 					colorize: true,
-	// 					translateTime: "SYS:standard",
-	// 					ignore: "pid,hostname",
-	// 				},
-	// 			},
-	// 		}
-	// 	: {}),
-});
+	pino.destination({ fd: 2 }), // fd 2 = stderr
+);
 
 // Create a wrapper that matches the contracts Logger interface
 // Pino signature: logger.info(meta, message)

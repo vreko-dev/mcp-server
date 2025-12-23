@@ -10,7 +10,7 @@
 		"@types/bcrypt": "catalog:",
 		"bcrypt": "catalog:",
 		"better-auth": "catalog:",
-		"cookie": "^0.7.2",
+		"cookie": "catalog:",
 		"drizzle-orm": "catalog:"
 	},
 	"devDependencies": {

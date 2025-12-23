@@ -85,7 +85,7 @@
   "main": "dist/index.js",
   "private": true,
   "scripts": {
-    "build": "tsup && tsc --build --force && node ../../scripts/build-utils/add-js-extensions.mjs",
+    "build": "tsup && tsc --build && node ../../scripts/build-utils/add-js-extensions.mjs",
     "dev": "tsup --watch",
     "check": "biome check .",
     "format": "biome format --write .",

@@ -1,6 +1,6 @@
-import { createId as cuid } from "@paralleldrive/cuid2";
 import { relations } from "drizzle-orm";
 import { jsonb, pgEnum, pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
+import { nanoid } from "nanoid";
 import { subscriptions, user } from "../postgres";
 
 // Enums
@@ -12,7 +12,7 @@ export const teams = pgTable(
 	{
 		id: text("id")
 			.primaryKey()
-			.$defaultFn(() => cuid()),
+			.$defaultFn(() => nanoid()),
 
 		name: text("name").notNull(),
 		slug: text("slug").notNull().unique(),
@@ -51,7 +51,7 @@ export const teamMembers = pgTable(
 	{
 		id: text("id")
 			.primaryKey()
-			.$defaultFn(() => cuid()),
+			.$defaultFn(() => nanoid()),
 
 		teamId: text("team_id")
 			.notNull()

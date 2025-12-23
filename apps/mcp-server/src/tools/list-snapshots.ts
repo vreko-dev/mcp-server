@@ -9,7 +9,7 @@ export function addSnapshot(snapshot: any): void {
 	// Snapshots are automatically stored by the SnapshotManager
 	// This function serves as a placeholder for any additional
 	// metadata operations we might need to perform
-	console.log("Snapshot added to storage:", snapshot.id);
+	console.error("[SnapBack MCP] Snapshot added to storage:", snapshot.id);
 }
 
 /**

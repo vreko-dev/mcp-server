@@ -71,7 +71,7 @@
   },
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc --build",
+    "build": "tsc --build --force && node ../../scripts/build-utils/add-js-extensions.mjs",
     "type-check": "tsc --noEmit"
   },
   "type": "module",

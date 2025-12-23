@@ -21,17 +21,30 @@ import { BookIcon, HomeIcon, LogOutIcon, MoonIcon, MoreVerticalIcon, SettingsIco
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { useState } from "react";
+import { usePioneerProgress } from "@/modules/pioneer/hooks/use-pioneer-progress";
+import { getTierEmoji } from "@/modules/pioneer/lib/tiers";
 
 export function UserMenu({ showUserName }: { showUserName?: boolean }) {
 	const { user } = useSession();
+	const { data: pioneerData } = usePioneerProgress();
 	const { setTheme: setCurrentTheme, theme: currentTheme } = useTheme();
 	const [theme, setTheme] = useState<string>(currentTheme ?? "dark");
 
 	const colorModeOptions = [
 		{
+			value: "light",
+			label: "Light",
+			icon: SunIcon,
+		},
+		{
 			value: "dark",
 			label: "Dark",
 			icon: MoonIcon,
+		},
+		{
+			value: "system",
+			label: "System",
+			icon: SettingsIcon,
 		},
 	];
 
@@ -45,9 +58,8 @@ export function UserMenu({ showUserName }: { showUserName?: boolean }) {
 					},
 				},
 			});
-		} catch (error) {
-			console.error("Sign out failed:", error);
-			// Still redirect on error to ensure user is logged out client-side
+		} catch {
+			// Redirect on error to ensure user is logged out client-side
 			window.location.href = "/";
 		}
 	};
@@ -115,6 +127,20 @@ export function UserMenu({ showUserName }: { showUserName?: boolean }) {
 				</DropdownMenuSub>
 
 				<DropdownMenuSeparator />
+
+				{pioneerData && (
+					<DropdownMenuItem asChild>
+						<Link
+							href="/pioneer"
+							aria-label={`Pioneer Program: ${pioneerData.pioneer.tier} tier with ${pioneerData.pioneer.totalPoints} points`}
+						>
+							<span className="mr-2" aria-hidden="true">
+								{getTierEmoji(pioneerData.pioneer.tier)}
+							</span>
+							Pioneer ({pioneerData.pioneer.totalPoints} pts)
+						</Link>
+					</DropdownMenuItem>
+				)}
 
 				<DropdownMenuItem asChild>
 					<Link href="/app/settings/general">

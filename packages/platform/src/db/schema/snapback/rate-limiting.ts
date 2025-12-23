@@ -1,6 +1,6 @@
-import { createId as cuid } from "@paralleldrive/cuid2";
 import { relations } from "drizzle-orm";
 import { bigint, integer, jsonb, numeric, pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
+import { nanoid } from "nanoid";
 import { apiKeys, planTypeEnum, user } from "../postgres";
 
 // Rate limiting violations
@@ -47,7 +47,7 @@ export const tokenBuckets = pgTable(
 	{
 		id: text("id")
 			.primaryKey()
-			.$defaultFn(() => cuid()),
+			.$defaultFn(() => nanoid()),
 		userId: text("user_id")
 			.notNull()
 			.unique()

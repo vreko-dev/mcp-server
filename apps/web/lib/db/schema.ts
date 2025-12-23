@@ -1,6 +1,6 @@
-import { createId as cuid } from "@paralleldrive/cuid2";
 import { relations } from "drizzle-orm";
 import { index, integer, json, pgEnum, pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
+import { nanoid } from "nanoid";
 
 // Waitlist status enum
 export const waitlistStatusEnum = pgEnum("waitlist_status", ["pending", "invited", "accepted", "rejected"]);
@@ -11,7 +11,7 @@ export const waitlist = pgTable(
 	{
 		id: text("id")
 			.primaryKey()
-			.$defaultFn(() => cuid()),
+			.$defaultFn(() => nanoid()),
 		email: text("email").notNull().unique(),
 		githubUsername: text("github_username"),
 		editor: text("editor"),
@@ -57,7 +57,7 @@ export const waitlistReferrals = pgTable(
 	{
 		id: text("id")
 			.primaryKey()
-			.$defaultFn(() => cuid()),
+			.$defaultFn(() => nanoid()),
 		referrerId: text("referrer_id")
 			.notNull()
 			.references(() => waitlist.id, { onDelete: "cascade" }),
@@ -80,7 +80,7 @@ export const waitlistTasks = pgTable(
 	{
 		id: text("id")
 			.primaryKey()
-			.$defaultFn(() => cuid()),
+			.$defaultFn(() => nanoid()),
 		waitlistId: text("waitlist_id")
 			.notNull()
 			.references(() => waitlist.id, { onDelete: "cascade" }),

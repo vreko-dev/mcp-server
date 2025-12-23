@@ -14,7 +14,7 @@ export async function storeSnapshotContent(
 		// Content is already stored by SnapshotManager.create()
 		// This function provides an additional hook for storing
 		// file contents in supplementary storage if needed
-		console.log(`Storing ${files.length} file contents for snapshot ${snapshotId}`);
+		console.error(`[SnapBack MCP] Storing ${files.length} file contents for snapshot ${snapshotId}`);
 		// Additional storage operations could be added here
 	} catch (error) {
 		console.error(`Failed to store snapshot content for ${snapshotId}:`, error);

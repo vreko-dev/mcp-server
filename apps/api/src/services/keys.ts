@@ -1,5 +1,4 @@
 import { verify } from "@node-rs/argon2";
-import { createId } from "@paralleldrive/cuid2";
 import { generateApiKey, hashApiKey } from "@snapback/auth";
 
 // In-memory store for API keys

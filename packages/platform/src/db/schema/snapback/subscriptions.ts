@@ -1,6 +1,6 @@
-import { createId as cuid } from "@paralleldrive/cuid2";
 import { relations } from "drizzle-orm";
 import { boolean, integer, json, pgEnum, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { nanoid } from "nanoid";
 import { organization, usageLimits, user } from "../postgres";
 
 // Enums - matching those in postgres.ts
@@ -18,7 +18,7 @@ export const subscriptionStatusEnum = pgEnum("subscription_status", [
 export const subscriptions = pgTable("subscriptions", {
 	id: text("id")
 		.primaryKey()
-		.$defaultFn(() => cuid()),
+		.$defaultFn(() => nanoid()),
 	userId: text("user_id").references(() => user.id, {
 		onDelete: "cascade",
 	}),

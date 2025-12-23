@@ -1,6 +1,6 @@
-import { createId as cuid } from "@paralleldrive/cuid2";
 import { relations } from "drizzle-orm";
 import { boolean, integer, json, pgEnum, pgTable, real, text, timestamp } from "drizzle-orm/pg-core";
+import { nanoid } from "nanoid";
 import { apiKeys, user } from "../postgres";
 
 // Session severity enum (different from error log severity)
@@ -10,7 +10,7 @@ export const sessionSeverityEnum = pgEnum("session_severity", ["low", "medium", 
 export const extensionSessions = pgTable("extension_sessions", {
 	id: text("id")
 		.primaryKey()
-		.$defaultFn(() => cuid()),
+		.$defaultFn(() => nanoid()),
 	userId: text("user_id")
 		.notNull()
 		.references(() => user.id, { onDelete: "cascade" }),

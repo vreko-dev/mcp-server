@@ -1,3 +1,27 @@
+// Load environment variables FIRST (before any other imports that might need them)
+import "./env-loader.js";
+
+/**
+ * Quiet mode for MCP clients that treat stderr output as errors.
+ * Set MCP_QUIET=1 to suppress all startup/info logs.
+ * Error logs are always shown regardless of this setting.
+ */
+const MCP_QUIET = process.env.MCP_QUIET === "1" || process.env.MCP_QUIET === "true";
+
+// Helper for conditional logging - only logs if not in quiet mode
+export function mcpLog(message: string, ...args: unknown[]): void {
+	if (!MCP_QUIET) {
+		console.error(message, ...args);
+	}
+}
+
+// Helper for warnings - only logs if not in quiet mode
+export function mcpWarn(message: string, ...args: unknown[]): void {
+	if (!MCP_QUIET) {
+		console.warn(message, ...args);
+	}
+}
+
 if (process.env.SNAPBACK_MCP_SELFTEST === "1") {
 	const rssMB = Math.round(process.memoryUsage().rss / 1024 / 1024);
 	process.stderr.write(`SnapBack MCP Server started rssMB=${rssMB}\n`);
@@ -139,7 +163,7 @@ export async function startServer(): Promise<{
 
 	// Initialize the new engine adapter for local analysis
 	const engineAdapter = new MCPEngineAdapter();
-	console.error("[SnapBack MCP] Engine adapter initialized for local analysis");
+	mcpLog("[SnapBack MCP] Engine adapter initialized for local analysis");
 
 	// Use StorageBrokerAdapter instead of LocalStorage for single-writer discipline
 	// Use the standard workspace database path
@@ -155,20 +179,21 @@ export async function startServer(): Promise<{
 	// Initialize event bus for pub/sub with EventEmitter2
 	const eventBus = new SnapBackEventBus();
 	await eventBus.initialize();
-	console.error("[SnapBack MCP] Using EventEmitter2 event bus");
+	mcpLog("[SnapBack MCP] Using EventEmitter2 event bus");
 
 	// Initialize IPC client for request/response with Extension
 	const extensionClient = new ExtensionIPCClient();
 	try {
 		await extensionClient.connect();
-		console.error("[SnapBack MCP] Connected to Extension IPC");
+		mcpLog("[SnapBack MCP] Connected to Extension IPC");
 	} catch (err) {
-		console.error("[SnapBack MCP] Failed to connect to Extension IPC:", err);
+		// IPC connection failure is not critical - continue without it
+		mcpLog("[SnapBack MCP] Failed to connect to Extension IPC:", err);
 	}
 
 	// Initialize ConfigStore and load MCP configuration
 	const mcpConfig = await getMCPConfig();
-	console.error("[SnapBack MCP] Loaded configuration from ConfigStore", {
+	mcpLog("[SnapBack MCP] Loaded configuration from ConfigStore", {
 		performanceBudgets: mcpConfig.performanceBudgets,
 		context7Configured: !!mcpConfig.context7?.apiKey,
 		apiConfigured: !!mcpConfig.api?.apiKey,
@@ -196,37 +221,34 @@ export async function startServer(): Promise<{
 	// Wire hot-reload listener for configuration changes
 	try {
 		await onMCPConfigChange((updatedConfig) => {
-			console.error("[SnapBack MCP] Configuration updated via hot-reload");
+			mcpLog("[SnapBack MCP] Configuration updated via hot-reload");
 
 			// Update performance budgets
 			if (updatedConfig.performanceBudgets) {
 				currentPerformanceBudgets = updatedConfig.performanceBudgets;
-				console.error("[SnapBack MCP] Performance budgets updated", updatedConfig.performanceBudgets);
+				mcpLog("[SnapBack MCP] Performance budgets updated", updatedConfig.performanceBudgets);
 			}
 
 			// Update Context7 configuration if changed
 			if (updatedConfig.context7) {
-				console.error("[SnapBack MCP] Context7 configuration updated", {
+				mcpLog("[SnapBack MCP] Context7 configuration updated", {
 					apiUrl: updatedConfig.context7.apiUrl,
 					cacheTtlSearch: updatedConfig.context7.cacheTtlSearch,
 					cacheTtlDocs: updatedConfig.context7.cacheTtlDocs,
 				});
-				// Note: Context7Service would need a method to update config
-				// For now, new instances would pick up the changes
 			}
 
 			// Update API client configuration if changed
 			if (updatedConfig.api) {
-				console.error("[SnapBack MCP] API configuration updated", {
+				mcpLog("[SnapBack MCP] API configuration updated", {
 					baseUrl: updatedConfig.api.baseUrl,
 				});
-				// Note: AnalysisRouter would need a method to update API client
 			}
 		});
-		console.error("[SnapBack MCP] Hot-reload configuration watcher initialized");
+		mcpLog("[SnapBack MCP] Hot-reload configuration watcher initialized");
 	} catch (error) {
-		console.error("[SnapBack MCP] Failed to wire hot-reload listener", error);
-		// Don't crash startup - continue with current config
+		// Hot-reload failure is not critical - continue without it
+		mcpLog("[SnapBack MCP] Failed to wire hot-reload listener", error);
 	}
 
 	const server = new Server(
@@ -732,8 +754,8 @@ You can restore this snapshot using its ID.`,
 	const transport = new StdioServerTransport();
 	await server.connect(transport);
 
-	// Log to stderr to avoid corrupting JSON-RPC on stdout
-	console.error("SnapBack MCP Server started");
+	// Log startup success (respects MCP_QUIET)
+	mcpLog("SnapBack MCP Server started");
 	return { server, transport };
 }
 

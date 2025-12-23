@@ -35,7 +35,6 @@
 		"redis": "catalog:",
 		"resend": "catalog:",
 		"semver": "catalog:",
-		"uuid": "catalog:",
 		"ws": "^8.18.3",
 		"zod": "catalog:"
 	},
@@ -45,7 +44,6 @@
 	"devDependencies": {
 		"@types/node": "catalog:",
 		"@types/react": "catalog:",
-		"@types/uuid": "catalog:",
 		"better-sqlite3": "catalog:",
 		"dotenv-cli": "catalog:",
 		"drizzle-orm": "catalog:",

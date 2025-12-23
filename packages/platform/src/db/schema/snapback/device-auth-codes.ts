@@ -1,5 +1,5 @@
-import { createId as cuid } from "@paralleldrive/cuid2";
 import { index, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { nanoid } from "nanoid";
 import { user } from "../postgres";
 
 // Device auth codes table
@@ -9,7 +9,7 @@ export const deviceAuthCodes = pgTable(
 	{
 		id: text("id")
 			.primaryKey()
-			.$defaultFn(() => cuid()),
+			.$defaultFn(() => nanoid()),
 
 		// Device code credentials
 		deviceCode: text("device_code").notNull().unique(),

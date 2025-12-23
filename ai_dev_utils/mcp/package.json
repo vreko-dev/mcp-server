@@ -25,25 +25,25 @@
     "index": "tsx -e \"import { SemanticContextRetriever } from './semantic-retriever.js'; const r = new SemanticContextRetriever(); r.indexContextFiles().then(console.log).finally(() => r.close())\""
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.71.2",
-    "@modelcontextprotocol/sdk": "^1.0.0",
+    "@anthropic-ai/sdk": "catalog:",
+    "@modelcontextprotocol/sdk": "catalog:",
     "@snapback/intelligence": "workspace:*",
     "atomically": "^2.1.0",
-    "bottleneck": "^2.19.5",
-    "chokidar": "^5.0.0",
-    "p-retry": "^7.1.1",
+    "bottleneck": "catalog:",
+    "chokidar": "catalog:",
+    "p-retry": "catalog:",
     "sql.js": "^1.10.0",
-    "zod": "^3.23.8"
+    "zod": "catalog:"
   },
   "optionalDependencies": {
     "@huggingface/transformers": "^3.0.0"
   },
   "devDependencies": {
-    "@types/node": "^20.0.0",
-    "@vitest/coverage-v8": "^4.0.16",
-    "tsx": "^4.19.0",
-    "typescript": "^5.5.0",
-    "vitest": "^4.0.16"
+    "@types/node": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

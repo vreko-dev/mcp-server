@@ -1,5 +1,5 @@
-import { createId as cuid } from "@paralleldrive/cuid2";
 import { integer, json, pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
+import { nanoid } from "nanoid";
 import { apiKeys, user } from "../postgres";
 
 // Telemetry events for time-series tracking
@@ -8,7 +8,7 @@ export const telemetryEvents = pgTable(
 	{
 		id: text("id")
 			.primaryKey()
-			.$defaultFn(() => cuid()),
+			.$defaultFn(() => nanoid()),
 		userId: text("user_id").references(() => user.id, {
 			onDelete: "cascade",
 		}),
@@ -66,7 +66,7 @@ export const telemetryDailyStats = pgTable(
 	{
 		id: text("id")
 			.primaryKey()
-			.$defaultFn(() => cuid()),
+			.$defaultFn(() => nanoid()),
 		userId: text("user_id").references(() => user.id, {
 			onDelete: "cascade",
 		}),

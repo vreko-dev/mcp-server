@@ -23,13 +23,14 @@ import type { ConfigStoreV2 } from "./schemas";
 import { DEFAULT_CONFIG, validateConfig, ZERO_CONFIG_DEFAULTS } from "./schemas";
 
 /**
- * Simple logger - will be replaced with canonical logger
+ * Simple logger - uses stderr to avoid polluting stdout (important for MCP stdio transport)
+ * Note: All output must go to stderr because MCP uses stdout for JSON-RPC communication
  */
 const logger = {
-	debug: (msg: string, ctx?: any) => console.debug(`[DEBUG] ${msg}`, ctx),
-	info: (msg: string, ctx?: any) => console.log(`[INFO] ${msg}`, ctx),
-	warn: (msg: string, ctx?: any) => console.warn(`[WARN] ${msg}`, ctx),
-	error: (msg: string, ctx?: any) => console.error(`[ERROR] ${msg}`, ctx),
+	debug: (msg: string, ctx?: any) => console.error(`[DEBUG] ${msg}`, ctx ? JSON.stringify(ctx) : ""),
+	info: (msg: string, ctx?: any) => console.error(`[INFO] ${msg}`, ctx ? JSON.stringify(ctx) : ""),
+	warn: (msg: string, ctx?: any) => console.error(`[WARN] ${msg}`, ctx ? JSON.stringify(ctx) : ""),
+	error: (msg: string, ctx?: any) => console.error(`[ERROR] ${msg}`, ctx ? JSON.stringify(ctx) : ""),
 };
 
 /**
@@ -120,7 +121,7 @@ export class ConfigStore {
 				featureFlagEnabled: enabled,
 				featureFlagSource: "environment",
 			};
-			console.log(`[ConfigStore] Feature flag from environment: ${enabled}`);
+			console.error(`[ConfigStore] Feature flag from environment: ${enabled}`);
 			return enabled;
 		}
 
@@ -135,7 +136,7 @@ export class ConfigStore {
 			featureFlagEnabled: true,
 			featureFlagSource: "default",
 		};
-		console.log("[ConfigStore] Feature flag defaulting to v2 (100% rollout)");
+		console.error("[ConfigStore] Feature flag defaulting to v2 (100% rollout)");
 		return true;
 	}
 

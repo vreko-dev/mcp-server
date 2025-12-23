@@ -1,4 +1,3 @@
-import { createId as cuid } from "@paralleldrive/cuid2";
 import { describe, expect, it } from "vitest";
 
 /**
@@ -10,7 +9,7 @@ import { describe, expect, it } from "vitest";
  */
 
 describe("ID1: ID Generation Strategy", () => {
-	it("should use cuid2 for ID generation", async () => {
+	it("should use nanoid for ID generation", async () => {
 		const { auth } = await import("../src/auth.js");
 
 		const config = (auth as any).options?.advanced?.database?.generateId;

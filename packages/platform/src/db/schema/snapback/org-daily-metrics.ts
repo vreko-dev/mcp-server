@@ -1,5 +1,5 @@
-import { createId as cuid } from "@paralleldrive/cuid2";
 import { integer, jsonb, pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
+import { nanoid } from "nanoid";
 import { organization } from "../postgres";
 
 // Organization daily metrics table
@@ -9,7 +9,7 @@ export const orgDailyMetrics = pgTable(
 	{
 		id: text("id")
 			.primaryKey()
-			.$defaultFn(() => cuid()),
+			.$defaultFn(() => nanoid()),
 		organizationId: text("organization_id")
 			.notNull()
 			.references(() => organization.id, { onDelete: "cascade" }),

@@ -5,7 +5,7 @@
  * Consolidated from @snapback/events package.
  */
 import { randomUUID } from "node:crypto";
-import { EventEmitter2 } from "eventemitter2";
+import EventEmitter2 from "eventemitter2";
 
 // Define the event types
 export enum SnapBackEvent {
@@ -71,12 +71,12 @@ export interface FileUnprotectedPayload {
 	timestamp: number;
 }
 
-// Simple logger implementation
+// Simple logger implementation - uses stderr to avoid polluting stdout (important for MCP stdio transport)
 const logger = {
-	info: console.log,
-	warn: console.warn,
+	info: console.error,
+	warn: console.error,
 	error: console.error,
-	debug: console.debug,
+	debug: console.error,
 };
 
 // Simple in-memory storage for events (replaces the persistence manager)

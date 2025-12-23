@@ -1,6 +1,6 @@
-import { createId as cuid } from "@paralleldrive/cuid2";
 import { relations } from "drizzle-orm";
 import { bigint, jsonb, pgEnum, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { nanoid } from "nanoid";
 import { apiKeys, user } from "../postgres";
 
 // Enums
@@ -13,7 +13,7 @@ export const errorLogs = pgTable("error_logs", {
 	// Error identification
 	errorId: text("error_id")
 		.notNull()
-		.$defaultFn(() => cuid()),
+		.$defaultFn(() => nanoid()),
 	errorCode: text("error_code"),
 	errorType: text("error_type"), // "APIError", "ValidationError", etc.
 
@@ -50,7 +50,7 @@ export const errorLogs202510 = pgTable("error_logs_2025_10", {
 	// Error identification
 	errorId: text("error_id")
 		.notNull()
-		.$defaultFn(() => cuid()),
+		.$defaultFn(() => nanoid()),
 	errorCode: text("error_code"),
 	errorType: text("error_type"), // "APIError", "ValidationError", etc.
 

@@ -14,8 +14,8 @@
  * });
  */
 
-import { createId as cuid } from "@paralleldrive/cuid2";
 import { timestamp, varchar } from "drizzle-orm/pg-core";
+import { nanoid } from "nanoid";
 
 /**
  * Standard timestamp columns: createdAt and updatedAt
@@ -50,9 +50,9 @@ export function optionalTimestamps() {
 }
 
 /**
- * Standard CUID primary key column
+ * Standard nanoid primary key column
  *
- * Uses @paralleldrive/cuid2 for collision-resistant, sortable IDs.
+ * Uses nanoid for collision-resistant, URL-safe IDs (130 bytes, 97% smaller than alternatives).
  *
  * @example
  * export const users = pgTable("users", {
@@ -63,7 +63,7 @@ export function optionalTimestamps() {
 export function primaryKeyId() {
 	return {
 		id: varchar("id", { length: 255 })
-			.$defaultFn(() => cuid())
+			.$defaultFn(() => nanoid())
 			.primaryKey(),
 	};
 }

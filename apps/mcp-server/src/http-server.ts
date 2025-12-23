@@ -353,7 +353,7 @@ export class MCPHttpServer {
 	async listen(port = 3000, host = "localhost"): Promise<void> {
 		return new Promise((resolve) => {
 			this.server.listen(port, host, () => {
-				console.log(`MCP HTTP server listening on http://${host}:${port}`);
+				console.error(`MCP HTTP server listening on http://${host}:${port}`);
 				resolve();
 			});
 		});

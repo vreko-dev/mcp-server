@@ -9,6 +9,10 @@
  * - LangChain Context Engineering - Session state management
  */
 
+import { existsSync } from "node:fs";
+import { mkdir } from "node:fs/promises";
+import { dirname } from "node:path";
+import { readFile, writeFile } from "atomically";
 import { z } from "zod";
 import type {
 	CircuitBreaker,
@@ -63,10 +67,23 @@ export class SessionManager {
 	private sessions = new Map<string, SessionState>();
 	private limits: SessionLimits;
 	private loopDetector: LoopDetector;
+	private persistencePath?: string;
+	private autosaveEnabled: boolean;
 
-	constructor(limits: Partial<SessionLimits> = {}) {
+	constructor(limits: Partial<SessionLimits> = {}, options?: { persistencePath?: string; autosave?: boolean }) {
 		this.limits = { ...DEFAULT_SESSION_LIMITS, ...limits };
 		this.loopDetector = new LoopDetector();
+		this.persistencePath = options?.persistencePath;
+		this.autosaveEnabled = options?.autosave ?? false;
+
+		// Auto-load sessions on startup if persistence enabled
+		if (this.persistencePath) {
+			this.loadSessions().catch((error) => {
+				logger.error("Failed to load sessions on startup", {
+					error: error instanceof Error ? error.message : String(error),
+				});
+			});
+		}
 	}
 
 	/**
@@ -119,6 +136,9 @@ export class SessionManager {
 			riskReasons: [],
 			metadata: metadata ?? {},
 		});
+
+		// Autosave if enabled
+		void this.autoSave();
 	}
 
 	/**
@@ -234,6 +254,9 @@ export class SessionManager {
 		// Recalculate risk
 		this.updateRiskLevel(session);
 
+		// Autosave if enabled
+		void this.autoSave();
+
 		return true;
 	}
 
@@ -268,6 +291,9 @@ export class SessionManager {
 
 		// Recalculate risk
 		this.updateRiskLevel(session);
+
+		// Autosave if enabled
+		void this.autoSave();
 	}
 
 	/**
@@ -497,5 +523,128 @@ export class SessionManager {
 	 */
 	getActiveSessionCount(): number {
 		return this.sessions.size;
+	}
+
+	// =========================================================================
+	// PERSISTENCE (JSONL + Atomic Writes)
+	// =========================================================================
+
+	/**
+	 * Save all sessions to disk (atomic writes)
+	 * Based on web research best practices (GitHub jsonl-db, Claude Skills)
+	 */
+	async saveSessions(): Promise<void> {
+		if (!this.persistencePath) {
+			logger.warn("saveSessions called but no persistencePath configured");
+			return;
+		}
+
+		try {
+			// Ensure directory exists
+			const dir = dirname(this.persistencePath);
+			if (!existsSync(dir)) {
+				await mkdir(dir, { recursive: true });
+			}
+
+			// Convert sessions to serializable format (Maps → Objects)
+			const serializable = Array.from(this.sessions.entries()).map(([_id, session]) => ({
+				...session,
+				consecutiveModifications: Object.fromEntries(session.consecutiveModifications),
+				loopDetection: {
+					sequence: session.loopDetection.sequence,
+					dedupKeys: Array.from(session.loopDetection.dedupKeys),
+					consecutiveSameTool: Object.fromEntries(session.loopDetection.consecutiveSameTool),
+					semanticCache: Object.fromEntries(session.loopDetection.semanticCache),
+					circuitBreakers: Object.fromEntries(session.loopDetection.circuitBreakers),
+				},
+			}));
+
+			// Atomic write (temp file → rename)
+			const jsonl = serializable.map((s) => JSON.stringify(s)).join("\n");
+			await writeFile(this.persistencePath, jsonl);
+
+			logger.debug("Sessions saved", {
+				count: this.sessions.size,
+				path: this.persistencePath,
+			});
+		} catch (error) {
+			logger.error("Failed to save sessions", {
+				error: error instanceof Error ? error.message : String(error),
+				path: this.persistencePath,
+			});
+			throw error;
+		}
+	}
+
+	/**
+	 * Load sessions from disk
+	 */
+	async loadSessions(): Promise<void> {
+		if (!this.persistencePath) {
+			return;
+		}
+
+		if (!existsSync(this.persistencePath)) {
+			logger.debug("No sessions file found, starting fresh", {
+				path: this.persistencePath,
+			});
+			return;
+		}
+
+		try {
+			const content = await readFile(this.persistencePath, "utf-8");
+			const lines = content.split("\n").filter((line) => line.trim());
+
+			let loaded = 0;
+			for (const line of lines) {
+				try {
+					const data = JSON.parse(line);
+
+					// Reconstruct Maps from Objects
+					const session: SessionState = {
+						...data,
+						consecutiveModifications: new Map(Object.entries(data.consecutiveModifications || {})),
+						loopDetection: {
+							sequence: data.loopDetection.sequence || [],
+							dedupKeys: new Set(data.loopDetection.dedupKeys || []),
+							consecutiveSameTool: new Map(Object.entries(data.loopDetection.consecutiveSameTool || {})),
+							semanticCache: new Map(Object.entries(data.loopDetection.semanticCache || {})),
+							circuitBreakers: new Map(Object.entries(data.loopDetection.circuitBreakers || {})),
+						},
+					};
+
+					this.sessions.set(session.sessionId, session);
+					loaded++;
+				} catch (error) {
+					logger.warn("Failed to parse session line, skipping", {
+						error: error instanceof Error ? error.message : String(error),
+					});
+				}
+			}
+
+			logger.info("Sessions loaded", {
+				count: loaded,
+				path: this.persistencePath,
+			});
+		} catch (error) {
+			logger.error("Failed to load sessions", {
+				error: error instanceof Error ? error.message : String(error),
+				path: this.persistencePath,
+			});
+			throw error;
+		}
+	}
+
+	/**
+	 * Auto-save session after modifications (if enabled)
+	 */
+	private async autoSave(): Promise<void> {
+		if (this.autosaveEnabled && this.persistencePath) {
+			await this.saveSessions().catch((error) => {
+				logger.error("Autosave failed", {
+					error: error instanceof Error ? error.message : String(error),
+				});
+			});
+		}
 	}
 }

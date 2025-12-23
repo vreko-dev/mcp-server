@@ -2,12 +2,15 @@
  * SessionManager Tests
  *
  * 4-Path Coverage:
- * - Happy: Tool calls tracked, sessions created
+ * - Happy: Tool calls tracked, sessions created, persistence save/load
  * - Sad: Loop detected, circuit breaker trips
  * - Edge: Concurrent sessions, risk escalation
  * - Error: Invalid inputs, session not found
  */
 
+import { mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { beforeEach, describe, expect, it } from "vitest";
 import { SessionManager } from "../../src/session/SessionManager.js";
 import type { ToolCall } from "../../src/types/session.js";
@@ -336,6 +339,125 @@ describe("SessionManager", () => {
 			expect(analytics).toBeDefined();
 			expect(analytics?.totalToolCalls).toBe(1);
 			expect(manager.getSessionState("end-session")).toBeNull();
+		});
+	});
+
+	// ============================================================================
+	// PERSISTENCE (JSONL + Atomic Writes)
+	// ============================================================================
+
+	describe("Persistence", () => {
+		let tempDir: string;
+		let persistencePath: string;
+
+		beforeEach(() => {
+			// Create temp directory for each test
+			tempDir = mkdtempSync(join(tmpdir(), "session-test-"));
+			persistencePath = join(tempDir, "sessions.jsonl");
+		});
+
+		beforeEach(() => {
+			// Cleanup after each test
+			if (tempDir) {
+				try {
+					rmSync(tempDir, { recursive: true, force: true });
+				} catch {
+					// Ignore cleanup errors
+				}
+			}
+		});
+
+		it("should save and load sessions (Happy Path)", async () => {
+			const manager = new SessionManager({}, { persistencePath });
+
+			// Create session with data
+			manager.startSession("persist-1", { workspaceId: "test-workspace" });
+			manager.recordToolCall("persist-1", {
+				id: "call-1",
+				name: "test_tool",
+				args: { key: "value" },
+				timestamp: Date.now(),
+			});
+
+			// Save
+			await manager.saveSessions();
+
+			// Create new manager and load
+			const manager2 = new SessionManager({}, { persistencePath });
+			await manager2.loadSessions();
+
+			const loaded = manager2.getSessionState("persist-1");
+			expect(loaded).toBeDefined();
+			expect(loaded?.sessionId).toBe("persist-1");
+			expect(loaded?.metadata.workspaceId).toBe("test-workspace");
+			expect(loaded?.toolCalls).toHaveLength(1);
+			expect(loaded?.toolCalls[0]?.name).toBe("test_tool");
+		});
+
+		it("should handle empty sessions file (Edge Case)", async () => {
+			const manager = new SessionManager({}, { persistencePath });
+
+			// Load from non-existent file (should not throw)
+			await expect(manager.loadSessions()).resolves.not.toThrow();
+			expect(manager.getActiveSessionCount()).toBe(0);
+		});
+
+		it("should handle corrupted session data (Error Case)", async () => {
+			const manager = new SessionManager({}, { persistencePath });
+
+			manager.startSession("valid-session");
+			await manager.saveSessions();
+
+			// Manually corrupt the file
+			const { writeFileSync } = await import("node:fs");
+			writeFileSync(persistencePath, '{"invalid":"json"\n{"sessionId":"test"}');
+
+			const manager2 = new SessionManager({}, { persistencePath });
+			// Should not throw, just skip corrupted lines
+			await expect(manager2.loadSessions()).resolves.not.toThrow();
+		});
+
+		it("should preserve Maps and Sets across save/load (Edge Case)", async () => {
+			const manager = new SessionManager({}, { persistencePath });
+
+			manager.startSession("map-test");
+			manager.recordToolCall("map-test", {
+				id: "call-1",
+				name: "tool-a",
+				args: {},
+				timestamp: Date.now(),
+			});
+			manager.recordFileModification("map-test", {
+				path: "test.ts",
+				type: "update",
+				timestamp: Date.now(),
+			});
+
+			await manager.saveSessions();
+
+			const manager2 = new SessionManager({}, { persistencePath });
+			await manager2.loadSessions();
+
+			const loaded = manager2.getSessionState("map-test");
+			expect(loaded?.consecutiveModifications).toBeInstanceOf(Map);
+			expect(loaded?.loopDetection.dedupKeys).toBeInstanceOf(Set);
+			expect(loaded?.loopDetection.consecutiveSameTool).toBeInstanceOf(Map);
+		});
+
+		it("should auto-save when enabled (Happy Path)", async () => {
+			const manager = new SessionManager({}, { persistencePath, autosave: true });
+
+			manager.startSession("autosave-session");
+
+			// Give autosave time to complete
+			await new Promise((resolve) => setTimeout(resolve, 100));
+
+			const manager2 = new SessionManager({}, { persistencePath });
+			await manager2.loadSessions();
+
+			const loaded = manager2.getSessionState("autosave-session");
+			expect(loaded).toBeDefined();
+			expect(loaded?.sessionId).toBe("autosave-session");
 		});
 	});
 });

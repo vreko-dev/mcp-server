@@ -103,6 +103,22 @@ export const IntelligenceConfigSchema = z.object({
 	 * @default true
 	 */
 	enableAutoPromotion: z.boolean().optional().default(true),
+
+	/**
+	 * Session limits configuration (Phase 1)
+	 */
+	sessionLimits: z
+		.object({
+			maxToolCalls: z.number().optional(),
+			maxConsecutiveSameTool: z.number().optional(),
+			maxFileModifications: z.number().optional(),
+			maxConsecutiveSameFile: z.number().optional(),
+			sessionTimeoutMs: z.number().optional(),
+			maxTurns: z.number().optional(),
+			circuitBreakerThreshold: z.number().optional(),
+			circuitBreakerCooldownMs: z.number().optional(),
+		})
+		.optional(),
 });
 
 export type IntelligenceConfig = z.input<typeof IntelligenceConfigSchema>;

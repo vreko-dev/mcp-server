@@ -15,6 +15,7 @@
 import { ContextEngine } from "./context/ContextEngine.js";
 import { LearningEngine } from "./learning/LearningEngine.js";
 import { ViolationTracker } from "./learning/ViolationTracker.js";
+import { SessionManager } from "./session/SessionManager.js";
 import { ConfigStore } from "./storage/ConfigStore.js";
 import type { CacheableContext, IntelligenceConfig, ResolvedConfig } from "./types/config.js";
 import { IntelligenceConfigSchema } from "./types/config.js";
@@ -74,6 +75,7 @@ export class Intelligence {
 	private validationPipeline: ValidationPipeline;
 	private learningEngine: LearningEngine;
 	private violationTracker: ViolationTracker;
+	private sessionManager: SessionManager;
 	private initialized = false;
 
 	constructor(config: IntelligenceConfig) {
@@ -83,6 +85,7 @@ export class Intelligence {
 		this.validationPipeline = new ValidationPipeline();
 		this.learningEngine = new LearningEngine(this.config);
 		this.violationTracker = new ViolationTracker(this.config);
+		this.sessionManager = new SessionManager(config.sessionLimits);
 	}
 
 	/**
@@ -309,6 +312,60 @@ export class Intelligence {
 	resetLearning(workspaceId: string): void {
 		const vitals = WorkspaceVitals.tryGet(workspaceId);
 		vitals?.resetLearning();
+	}
+
+	// =========================================================================
+	// SESSION MANAGEMENT (Phase 1)
+	// =========================================================================
+
+	/**
+	 * Start a new LLM session
+	 */
+	startSession(
+		sessionId: string,
+		metadata?: {
+			workspaceId?: string;
+			userId?: string;
+			tags?: string[];
+		},
+	): void {
+		this.sessionManager.startSession(sessionId, metadata);
+	}
+
+	/**
+	 * Record a tool call in the session
+	 * Returns true if allowed, false if blocked (circuit breaker/loop)
+	 */
+	recordToolCall(sessionId: string, call: import("./types/session.js").ToolCall): boolean {
+		return this.sessionManager.recordToolCall(sessionId, call);
+	}
+
+	/**
+	 * Record a file modification
+	 */
+	recordFileModification(sessionId: string, mod: import("./types/session.js").FileModification): void {
+		this.sessionManager.recordFileModification(sessionId, mod);
+	}
+
+	/**
+	 * Detect loops in session behavior
+	 */
+	detectLoop(sessionId: string): import("./types/session.js").LoopDetectionResult {
+		return this.sessionManager.detectLoop(sessionId);
+	}
+
+	/**
+	 * Get session analytics
+	 */
+	getSessionAnalytics(sessionId: string): import("./types/session.js").SessionAnalytics | null {
+		return this.sessionManager.getAnalytics(sessionId);
+	}
+
+	/**
+	 * End a session and get analytics
+	 */
+	endSession(sessionId: string): import("./types/session.js").SessionAnalytics | null {
+		return this.sessionManager.endSession(sessionId);
 	}
 
 	// =========================================================================

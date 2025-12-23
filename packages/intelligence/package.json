@@ -45,6 +45,10 @@
     "./vitals": {
       "types": "./dist/vitals/index.d.ts",
       "default": "./dist/vitals/index.js"
+    },
+    "./composer": {
+      "types": "./dist/composer/index.d.ts",
+      "default": "./dist/composer/index.js"
     }
   },
   "typesVersions": {
@@ -55,11 +59,12 @@
       "storage": ["./dist/storage/index.d.ts"],
       "types": ["./dist/types/index.d.ts"],
       "policy": ["./dist/policy/index.d.ts"],
-      "vitals": ["./dist/vitals/index.d.ts"]
+      "vitals": ["./dist/vitals/index.d.ts"],
+      "composer": ["./dist/composer/index.d.ts"]
     }
   },
   "scripts": {
-    "build": "tsup && tsc --build tsconfig.build.json --force",
+    "build": "tsup && tsc --build tsconfig.build.json --force && node ../../scripts/build-utils/add-js-extensions.mjs",
     "check": "biome check .",
     "format": "biome format --write .",
     "lint": "biome lint .",

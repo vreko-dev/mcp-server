@@ -55,6 +55,8 @@ export interface ContextResult {
 		file: string;
 		message: string;
 		timestamp: string;
+		/** Prevention tip for avoiding this violation */
+		prevention?: string;
 	}>;
 	relevantLearnings: Array<{
 		trigger: string;
@@ -62,6 +64,13 @@ export interface ContextResult {
 		type: string;
 	}>;
 	hint: string;
+	/** Semantic search context info (when semantic search is enabled) */
+	semanticContext?: {
+		/** Number of sections included */
+		sections: number;
+		/** Compression ratio description */
+		compression: string;
+	};
 }
 
 /**

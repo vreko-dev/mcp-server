@@ -27,6 +27,21 @@
  * ```
  */
 
+export type {
+	ArtifactCandidate,
+	ArtifactKind,
+	ArtifactRef,
+	BudgetConfig,
+	ComposerConstraints,
+	ComposerOptions,
+	ComposeTrigger,
+	CompositionResult,
+	Lane,
+	RenderedArtifact,
+	SelectionExplanation,
+} from "./composer/index.js";
+// Composer (context assembly)
+export { Composer, createComposer, DEFAULT_BUDGET_CONFIG } from "./composer/index.js";
 // Sub-modules
 export { ContextEngine, SemanticRetriever } from "./context/index.js";
 // Main facade
@@ -59,6 +74,7 @@ export {
 	SecretDetector,
 	type SecretFinding,
 } from "./policy/index.js";
+export { LoopDetector, SessionManager } from "./session/index.js";
 // Storage utilities
 export {
 	appendJsonl,

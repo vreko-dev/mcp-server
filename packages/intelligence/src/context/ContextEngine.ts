@@ -226,7 +226,7 @@ export class ContextEngine {
 	private getRecentViolations(
 		keywords: string[],
 		files: string[],
-	): Array<{ type: string; file: string; message: string; timestamp: string }> {
+	): Array<{ type: string; file: string; message: string; timestamp: string; prevention?: string }> {
 		const violationsPath = path.join(this.config.rootDir, this.config.violationsFile);
 		const violations = loadJsonl<Violation>(violationsPath);
 
@@ -248,6 +248,7 @@ export class ContextEngine {
 				file: v.file,
 				message: v.whatHappened,
 				timestamp: v.timestamp,
+				prevention: v.prevention,
 			}));
 	}
 

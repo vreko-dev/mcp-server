@@ -4,6 +4,19 @@
  * Consolidated type definitions for the intelligence package.
  */
 
+// Advisory types
+export type {
+	AdvisoryConfig,
+	AdvisoryContext,
+	AdvisoryRule,
+	AdvisoryTriggerContext,
+	AdvisoryWarning,
+	FileHistory,
+	ProactiveSuggestion,
+	RelatedFile,
+	WarningSeverity,
+} from "./advisory.js";
+export { DEFAULT_ADVISORY_CONFIG } from "./advisory.js";
 // Config types
 export type {
 	CacheableContext,
@@ -24,6 +37,17 @@ export type {
 	SearchResult,
 	Section,
 } from "./context.js";
+// Fragility types
+export type {
+	CoChangePattern,
+	FileFragilityProfile,
+	FragilityAnalysis,
+	FragilityConfig,
+	FragilityLevel,
+	FragilityRecord,
+	RollbackEvent,
+} from "./fragility.js";
+export { DEFAULT_FRAGILITY_CONFIG } from "./fragility.js";
 // Learning types
 export type {
 	FeedbackInput,
@@ -41,6 +65,19 @@ export type {
 	ViolationsSummary,
 } from "./learning.js";
 export { PROMOTION_THRESHOLDS, QUERY_TYPE_KEYWORDS } from "./learning.js";
+// Session types
+export type {
+	CircuitBreaker,
+	FileModification,
+	LoopDetectionResult,
+	LoopDetectionState,
+	SessionAnalytics,
+	SessionLimits,
+	SessionRiskLevel,
+	SessionState,
+	ToolCall,
+} from "./session.js";
+export { DEFAULT_SESSION_LIMITS } from "./session.js";
 // Validation types
 export type {
 	PatternMatch,
@@ -73,7 +110,6 @@ export type {
 	CalibrationEvent,
 	CalibrationStatus,
 	PredictionContext,
-	ProactiveSuggestion,
 	RiskProfile,
 	SnapshotObservation,
 	SnapshotTiming,

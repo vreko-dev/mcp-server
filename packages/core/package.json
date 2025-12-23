@@ -64,7 +64,7 @@
   },
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsup && tsc --build tsconfig.build.json --force",
+    "build": "tsup && tsc --build tsconfig.build.json --force && node ../../scripts/build-utils/add-js-extensions.mjs",
     "check": "biome check .",
     "format": "biome format --write .",
     "lint": "biome lint .",

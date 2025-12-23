@@ -229,6 +229,21 @@ cat ai_dev_utils/state/current-task.json | jq
 | INT-005 | SessionWithUser missing role | `packages/contracts/src/auth/session.ts`, `auth-unified.ts` | ✅ FIXED (2025-12-21) |
 | INT-006 | PostHog duplicate inits | `apps/api/lib/posthog-server.ts` canonical | ✅ FIXED (2025-12-21) |
 | INT-007 | Hono context as any casts | `apps/api/src/middleware/auth.ts` | LOW_PRIORITY (7 casts) |
+| INT-008 | Node.js v22 ESM .js extensions | 10 packages + MCP server | 🔧 **IN PROGRESS** (2025-12-22) |
+| INT-009 | infrastructure registerLoggerFactory | `packages/infrastructure` → `@snapback/contracts` | ❌ **BLOCKER** (2025-12-22) |
+
+**INT-008 Details (Node.js v22 ESM):**
+- **Problem:** tsup unbundled output missing `.js` extensions → `ERR_MODULE_NOT_FOUND` on Node v22+
+- **Solution:** Post-build script `/scripts/build-utils/add-js-extensions.mjs` adds extensions
+- **Updated:** 10 packages (mcp-server, core, auth, config, engine, infrastructure, intelligence, platform, sdk, testing)
+- **Script Order:** MUST run AFTER both tsup AND tsc (tsc overwrites dist)
+- **Memory:** See `common_pitfalls_experience` → "Node.js v22 ESM requires .js extensions in tsup builds"
+
+**INT-009 Details (Infrastructure Build Blocker):**
+- **Error:** `Module '@snapback/contracts' has no exported member 'registerLoggerFactory'`
+- **Impact:** Blocks `@snapback/infrastructure` → blocks `@snapback/auth` → blocks MCP server
+- **Status:** Pre-existing issue, unrelated to Node version change
+- **Next Step:** Fix export in `packages/contracts/src/logger.ts` or infrastructure import
 
 ---
 

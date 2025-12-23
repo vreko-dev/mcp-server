@@ -41,7 +41,7 @@
 	},
 	"main": "./dist/index.js",
 	"scripts": {
-		"build": "tsup",
+		"build": "tsup && node ../../scripts/build-utils/add-js-extensions.mjs",
 		"test": "vitest run",
 		"test:coverage": "vitest run --coverage"
 	},

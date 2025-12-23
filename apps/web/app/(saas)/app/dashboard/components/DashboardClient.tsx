@@ -1,14 +1,18 @@
 "use client";
 
 import { OAuthCallbackHandler } from "@saas/auth/components/OAuthCallbackHandler";
+import Link from "next/link";
 import { memo } from "react";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { Badge } from "@/components/ui/badge";
 import type { Activity, AIDetectionStat, DashboardMetrics, SessionMetrics } from "@/lib/dashboard/metrics";
+import { PioneerProgressCard } from "@/modules/pioneer/components/PioneerProgressCard";
+import type { PioneerProgress } from "@/modules/pioneer/hooks/use-pioneer-progress";
+import { getTierEmoji } from "@/modules/pioneer/lib/tiers";
 import { ActivityFeed } from "@/modules/saas/dashboard/components/ActivityFeed";
 import { AIDetectionStats } from "@/modules/saas/dashboard/components/AIDetectionStats";
 import { DashboardHeroCard } from "@/modules/saas/dashboard/components/DashboardHeroCard";
 import { MetricsGrid } from "@/modules/saas/dashboard/components/MetricsGrid";
-import { WaitlistPositionTile } from "@/modules/saas/dashboard/components/WaitlistPositionTile";
 
 interface DashboardClientProps {
 	userName: string | null | undefined;
@@ -17,6 +21,7 @@ interface DashboardClientProps {
 	aiStats: AIDetectionStat[];
 	activity: Activity[];
 	sessionMetrics?: SessionMetrics;
+	pioneerData?: PioneerProgress | null;
 }
 
 /**
@@ -28,7 +33,7 @@ interface DashboardClientProps {
  *   * MetricsGrid: displays user metrics (checkpoints, recoveries, files)
  *   * AIDetectionStats: displays AI detection breakdown by tool
  *   * ActivityFeed: displays recent user activities
- *   * WaitlistPositionTile: displays waitlist position if applicable
+ *   * PioneerProgressCard: displays Pioneer Program tier and progress
  * - Each sub-component wrapped in ErrorBoundary for resilience
  * - Data passed as props enables server-side data fetching
  *
@@ -44,16 +49,30 @@ export const DashboardClient = memo(function DashboardClient({
 	aiStats,
 	activity,
 	sessionMetrics,
+	pioneerData,
 }: DashboardClientProps) {
 	return (
 		<div className="p-8 space-y-8">
 			{/* OAuth Callback Validation - handles errors and session validation after OAuth redirect */}
 			<OAuthCallbackHandler />
 
-			{/* Dashboard Header */}
-			<div className="mb-8">
-				<h1 className="text-3xl font-bold">Dashboard</h1>
-				<p className="text-muted-foreground mt-2">Welcome back, {userName || userEmail}</p>
+			{/* Dashboard Header with Pioneer Badge */}
+			<div className="mb-8 flex items-center justify-between">
+				<div>
+					<h1 className="text-3xl font-bold">Dashboard</h1>
+					<p className="text-muted-foreground mt-2">Welcome back, {userName || userEmail}</p>
+				</div>
+				{pioneerData && (
+					<Link
+						href="/pioneer"
+						aria-label={`View Pioneer Program status: ${pioneerData.pioneer.tier} tier with ${pioneerData.pioneer.totalPoints} points`}
+					>
+						<Badge status="info" className="text-lg px-4 py-2 hover:bg-primary/10 cursor-pointer">
+							<span aria-hidden="true">{getTierEmoji(pioneerData.pioneer.tier)}</span>{" "}
+							{pioneerData.pioneer.totalPoints} pts
+						</Badge>
+					</Link>
+				)}
 			</div>
 
 			{/* Hero Card */}
@@ -66,9 +85,9 @@ export const DashboardClient = memo(function DashboardClient({
 				/>
 			</ErrorBoundary>
 
-			{/* Waitlist Position (if user is on waitlist) */}
+			{/* Pioneer Progress Card */}
 			<ErrorBoundary>
-				<WaitlistPositionTile />
+				<PioneerProgressCard data={pioneerData} />
 			</ErrorBoundary>
 
 			{/* Metrics Grid */}

@@ -15,7 +15,7 @@ import {
 import { SnapBackEventBusEventEmitter2 as SnapBackEventBus } from "@snapback/contracts";
 import { DependencyAnalyzer, MCPClientManager, validateToolArgs } from "@snapback/core";
 import { MCPEngineAdapter } from "@snapback/engine/transports/mcp";
-import { evaluate } from "@snapback/intelligence/policy"; // Migrated from policy-engine
+import { evaluate } from "@snapback/intelligence/policy";
 import { z } from "zod";
 import { authenticate, hasToolAccess } from "./auth";
 import { ExtensionIPCClient } from "./client/extension-ipc";
@@ -25,13 +25,17 @@ import { Context7Service } from "./context7/index";
 import { MCPHttpServer } from "./http-server";
 import { handleReadResource, listResources } from "./resources/snap-resources";
 import { AnalysisRouter } from "./services/AnalysisRouter";
+import { createCustomerWorkspaceSources } from "./tools/composer-sources";
 import {
 	CheckPatternsSchema,
+	contextToolDefinitions,
 	GetContextSchema,
 	handleCheckPatterns,
 	handleGetContext,
+	handlePrepareWorkspace,
 	handleRecordLearning,
 	handleValidateCode,
+	PrepareWorkspaceSchema,
 	RecordLearningSchema,
 	ValidateCodeSchema,
 } from "./tools/context-tools";
@@ -251,6 +255,8 @@ export async function startServer(): Promise<{
 				// Include annotations if present (per MCP spec)
 				...(tool.annotations && { annotations: tool.annotations }),
 			})),
+			// Context intelligence tools (includes prepare_workspace)
+			...contextToolDefinitions,
 			// Learning tools (session management and personalized recommendations)
 			...learningToolDefinitions,
 		],
@@ -578,6 +584,22 @@ You can restore this snapshot using its ID.`,
 			}
 
 			// Intelligence context tools
+			if (name === "snapback.prepare_workspace") {
+				const parsed = PrepareWorkspaceSchema.parse(args);
+				const workspaceRoot = process.cwd();
+				const sources = createCustomerWorkspaceSources(workspaceRoot);
+				const result = await handlePrepareWorkspace(parsed, workspaceRoot, sources);
+				return {
+					content: [
+						{ type: "json", json: result },
+						{
+							type: "text",
+							text: `${result.protection.badge} Protection Score: ${result.protection.score}%\n${result.snapshot.recommended ? `${result.snapshot.badge} Snapshot recommended: ${result.snapshot.reason}` : ""}\n${result.memory.found ? `${result.memory.badge} ${result.memory.lesson}` : ""}`,
+						},
+					],
+				};
+			}
+
 			if (name === "snapback.get_context") {
 				const parsed = GetContextSchema.parse(args);
 				const workspaceRoot = process.cwd();

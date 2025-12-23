@@ -7,5 +7,5 @@ export default defineConfig({
 	sourcemap: true,
 	clean: true,
 	splitting: false,
-	bundle: false, // Don't bundle - externalize all dependencies to avoid dynamic require issues
+	bundle: false,
 });

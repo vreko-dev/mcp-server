@@ -36,7 +36,7 @@
     }
   },
   "scripts": {
-    "build": "tsup",
+    "build": "tsup && node ../../scripts/build-utils/add-js-extensions.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "type-check": "tsc --noEmit"

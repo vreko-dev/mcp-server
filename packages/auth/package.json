@@ -72,7 +72,7 @@
 	"main": "./dist/index.js",
 	"private": true,
 	"scripts": {
-		"build": "tsup && tsc --build --force",
+		"build": "tsup && tsc --build --force && node ../../scripts/build-utils/add-js-extensions.mjs",
 		"migrate": "dotenv -e ../../.env.local -- pnpm dlx @better-auth/cli@latest generate --config ./auth.ts --output ../database/prisma/schema.prisma",
 		"postbuild": "echo 'Auth package built successfully'",
 		"test": "vitest",

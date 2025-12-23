@@ -107,7 +107,7 @@
     "snapback-migrate": "./dist/bin/migrate.js"
   },
   "scripts": {
-    "build": "tsup && tsc --build --force && node ../../scripts/verify-build.js",
+    "build": "tsup && tsc --build --force && node ../../scripts/build-utils/add-js-extensions.mjs && node ../../scripts/verify-build.js",
     "dev": "tsup --watch",
     "test": "vitest run src/__tests__",
     "check": "biome check .",

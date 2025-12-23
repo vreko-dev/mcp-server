@@ -51,6 +51,25 @@ export const TIERS: TierInfo[] = [
 	},
 ];
 
+/**
+ * Get emoji for a tier - single source of truth
+ * @param tier - The tier name (lowercase)
+ * @returns The emoji string for the tier
+ */
+export function getTierEmoji(tier: Tier | string): string {
+	const tierInfo = TIERS.find((t) => t.name.toLowerCase() === tier.toLowerCase());
+	return tierInfo?.emoji ?? "🌱";
+}
+
+/**
+ * Get full tier info by tier name
+ * @param tier - The tier name (lowercase)
+ * @returns The TierInfo object or undefined
+ */
+export function getTierInfo(tier: Tier | string): TierInfo | undefined {
+	return TIERS.find((t) => t.name.toLowerCase() === tier.toLowerCase());
+}
+
 export function getTierForPoints(points: number): Tier {
 	if (points >= TIER_THRESHOLDS.guardian) return "guardian";
 	if (points >= TIER_THRESHOLDS.cultivator) return "cultivator";

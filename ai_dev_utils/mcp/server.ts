@@ -35,6 +35,14 @@ import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import { LearningEngine, SemanticRetriever, ValidationPipeline } from "@snapback/intelligence";
+import {
+	type ArtifactSource,
+	Composer,
+	type ComposeTriggerInput,
+	type CompositionResult,
+	computeWorkspaceFingerprint,
+	DEFAULT_BUDGET_CONFIG,
+} from "@snapback/intelligence/composer";
 import { writeFile, writeFileSync } from "atomically";
 import Bottleneck from "bottleneck";
 import chokidar from "chokidar";
@@ -42,6 +50,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { fileURLToPath } from "url";
 import { queryWithCachedContext } from "./prompt-cache.js";
+import { createLearningSource, createPatternSource, createRulesSource } from "./sources/artifact-sources.js";
 
 // Get directory paths
 const __filename = fileURLToPath(import.meta.url);
@@ -90,6 +99,56 @@ const apiLimiter = new Bottleneck({
 let patternWatcher: ReturnType<typeof chokidar.watch> | null = null;
 let cachedPatterns: string | null = null;
 let cachedConstraints: string | null = null;
+
+// ============================================================================
+// COMPOSER SETUP
+// ============================================================================
+
+/**
+ * Singleton Composer for deterministic context assembly.
+ * Uses lane-based prioritization: policy → rules → local → structure → retrieved → history
+ * Per ROUTER.md: Same intelligence algorithms across all consumers.
+ */
+const composerSources: ArtifactSource[] = [
+	// RulesSource → lane: "policy" (highest priority)
+	createRulesSource({
+		rootDir: AI_DEV_UTILS,
+		constraintsFile: "CONSTRAINTS.md",
+		rulesDir: "rules",
+	}),
+	// PatternSource → lane: "rules"
+	createPatternSource({
+		rootDir: AI_DEV_UTILS,
+		patternsFile: "patterns/codebase-patterns.md",
+		maxSectionTokens: 500,
+	}),
+	// LearningSource → lane: "history" (lower priority, but informed by violations)
+	createLearningSource({
+		rootDir: AI_DEV_UTILS,
+		violationsFile: "patterns/violations.jsonl",
+		learningsFile: "feedback/learnings.jsonl",
+		maxViolations: 20,
+		maxLearnings: 15,
+	}),
+];
+
+// Compute workspace fingerprint for cache keying
+const workspaceFingerprint = computeWorkspaceFingerprint(AI_DEV_UTILS);
+
+// Generate deterministic workspace secret for HMAC-based artifact IDs
+// Per code review: Use fingerprint as seed for stable artifact IDs across restarts
+const workspaceSecret = computeWorkspaceFingerprint(AI_DEV_UTILS + "-secret");
+
+// Create Composer instance
+const composer = new Composer({
+	budgetConfig: {
+		...DEFAULT_BUDGET_CONFIG,
+		totalTokens: 8000, // Conservative for MCP responses
+	},
+	sources: composerSources,
+	workspaceSecret,
+	emitDecisionLogs: true, // Enable for debugging
+});
 
 // ============================================================================
 // UTILITIES
@@ -569,40 +628,73 @@ Example: codebase.get_learning_stats({})`,
 // ============================================================================
 
 /**
- * Unified start_task handler - bundles get_context + query_learnings + violation check
+ * Unified start_task handler - uses Composer for deterministic context assembly
+ * Per ROUTER.md: Same intelligence algorithms, different data sources
  */
 async function handleStartTask(args: { task: string; files?: string[]; keywords?: string[] }): Promise<any> {
 	const { task, files = [], keywords = [] } = args;
 
-	// Step 1: Get architectural context (reuse existing handler)
-	const context = await handleGetContext({ task, files, keywords });
-
-	// Step 2: Query learnings for these keywords
-	const learnings = await handleQueryLearnings({ keywords });
-
-	// Step 3: Classify task type for checklist
+	// Step 1: Classify task type early for checklist
 	const taskType = classifyTask(task);
 
-	// Step 4: Generate validation checklist based on task type
+	// Step 2: Build compose trigger from args
+	const trigger: ComposeTriggerInput = {
+		event: "start_task",
+		workspaceFingerprint,
+		keywords: [...keywords, ...extractKeywordsFromTask(task)],
+		files,
+		commitish: "HEAD",
+	};
+
+	// Step 3: Use Composer for deterministic context assembly
+	let compositionResult: CompositionResult | null = null;
+	let composedContext: { artifacts: string[]; explanation: string; actualTokens: number } = {
+		artifacts: [],
+		explanation: "Composer not available",
+		actualTokens: 0,
+	};
+
+	try {
+		compositionResult = await composer.compose(trigger);
+
+		// Extract rendered content from composed artifacts
+		composedContext = {
+			artifacts: compositionResult.rendered.map((r) => r.content),
+			explanation: compositionResult.explanation.summary,
+			actualTokens: compositionResult.actualTokens,
+		};
+
+		console.error(
+			`[Composer] ${compositionResult.explanation.summary} (cache ${compositionResult.cacheHit ? "HIT" : "MISS"})`,
+		);
+	} catch (err) {
+		console.error(`[Composer] Error: ${err instanceof Error ? err.message : err}`);
+		// Fall back to legacy context assembly
+	}
+
+	// Step 4: Query learnings for these keywords (supplement Composer's history lane)
+	const learnings = await handleQueryLearnings({ keywords });
+
+	// Step 5: Generate validation checklist based on task type
 	const checklist = generateChecklist(taskType, files);
+
+	// Step 6: Build response - Composer provides prioritized context
+	const composedArtifactContent = composedContext.artifacts.join("\n\n---\n\n");
 
 	return {
 		task,
 		taskType,
 
-		// Bundled context
-		architecture: {
-			context: context.contextSections,
-			hardRules: context.hardRules,
-			patterns: context.patterns,
-			semantic: context.semanticContext,
+		// Composed context from Composer (deterministic, prioritized by lane)
+		composed: {
+			context: composedArtifactContent || null,
+			explanation: composedContext.explanation,
+			tokensUsed: composedContext.actualTokens,
+			cacheHit: compositionResult?.cacheHit ?? false,
 		},
 
-		// Past learnings
+		// Past learnings (supplement to Composer's history lane)
 		learnings: learnings.matches,
-
-		// What NOT to do
-		recentViolations: context.recentViolations,
 
 		// Required steps
 		checklist: checklist,
@@ -612,6 +704,64 @@ async function handleStartTask(args: { task: string; files?: string[]; keywords?
 
 		hint: `📋 Review checklist and violations before implementing. Task classified as: ${taskType}`,
 	};
+}
+
+/**
+ * Extract keywords from task description for relevance scoring
+ */
+function extractKeywordsFromTask(task: string): string[] {
+	// Remove common stop words and extract meaningful terms
+	const stopWords = new Set([
+		"the",
+		"a",
+		"an",
+		"and",
+		"or",
+		"but",
+		"in",
+		"on",
+		"at",
+		"to",
+		"for",
+		"of",
+		"is",
+		"it",
+		"this",
+		"that",
+		"with",
+		"as",
+		"by",
+		"from",
+		"be",
+		"are",
+		"was",
+		"were",
+		"been",
+		"being",
+		"have",
+		"has",
+		"had",
+		"do",
+		"does",
+		"did",
+		"will",
+		"would",
+		"could",
+		"should",
+		"may",
+		"might",
+		"must",
+		"can",
+		"need",
+		"want",
+	]);
+
+	return task
+		.toLowerCase()
+		.replace(/[^a-z0-9\s]/g, " ")
+		.split(/\s+/)
+		.filter((word) => word.length > 2 && !stopWords.has(word))
+		.slice(0, 10); // Limit to 10 keywords
 }
 
 /**

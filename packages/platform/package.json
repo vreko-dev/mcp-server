@@ -70,7 +70,7 @@
   "main": "dist/index.js",
   "private": true,
   "scripts": {
-    "build": "tsup && tsc --build",
+    "build": "tsup && tsc --build && node ../../scripts/build-utils/add-js-extensions.mjs",
     "check": "biome check .",
     "clean": "rm -rf dist .tsbuildinfo",
     "db:generate": "drizzle-kit generate",

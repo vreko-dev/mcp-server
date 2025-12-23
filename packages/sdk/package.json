@@ -74,7 +74,7 @@
   ],
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsup && tsc --emitDeclarationOnly --outDir dist-types -p tsconfig.build.json",
+    "build": "tsup && tsc --emitDeclarationOnly --outDir dist-types -p tsconfig.build.json && node ../../scripts/build-utils/add-js-extensions.mjs",
     "dev": "tsup --watch",
     "check": "biome check .",
     "format": "biome format --write .",

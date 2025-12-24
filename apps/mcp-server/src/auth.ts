@@ -33,8 +33,8 @@ export async function authenticate(apiKey: string): Promise<AuthResult> {
 	if ((process.env.MCP_DEV_MODE === "1" || !process.env.SNAPBACK_API_KEY) && (!apiKey || apiKey === "")) {
 		return {
 			valid: true,
-			tier: "free",
-			scopes: ["snapback:analyze"],
+			tier: "pro",
+			scopes: ["snapback:analyze", "snapback:snapshot", "snapback:context"],
 			userId: "dev-user",
 		};
 	}

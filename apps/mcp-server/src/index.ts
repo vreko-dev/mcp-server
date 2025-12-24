@@ -72,9 +72,17 @@ import {
 	RecordLearningSchema,
 	ValidateCodeSchema,
 } from "./tools/context-tools";
-import { CreateSnapshotSchema, createSnapshot } from "./tools/create-snapshot";
+import { CreateSnapshotSchema, createSnapshotWithAutoRetry } from "./tools/create-snapshot";
+import {
+	handleCtxBlockers,
+	handleCtxBuild,
+	handleCtxCheck,
+	handleCtxConstraint,
+	handleCtxInit,
+	handleCtxValidate,
+} from "./tools/ctx-tools";
 import { addSnapshot, listSnapshots } from "./tools/list-snapshots";
-import { restoreSnapshot, storeSnapshotContent } from "./tools/restore-snapshot";
+import { restoreSnapshot } from "./tools/restore-snapshot";
 import { createErrorResult, snapbackToolDefinitions, toolNameMigrations } from "./tools/tool-definitions-v2";
 import { validateRecommendation } from "./tools/validate-recommendation";
 import { handleAcknowledgeRisk, handleGetWorkspaceVitals } from "./tools/vitals-tools";
@@ -469,8 +477,35 @@ ${risk.session.coaching || ""}`,
 				}
 				const input = validation.data;
 
-				// Create snapshot
-				const result = await createSnapshot(input);
+				/**
+				 * Create snapshot with automatic retry and error resolution.
+				 *
+				 * The retry hook automatically diagnoses and fixes common errors:
+				 * - Working directory mismatches (auto-fix: change directory)
+				 * - Absolute vs relative path issues (auto-fix: convert paths)
+				 * - Workspace path mismatches (auto-fix: resolve from correct root)
+				 *
+				 * Configuration:
+				 * - maxRetries: 3 attempts with exponential backoff
+				 * - verbose: false (quiet mode for MCP, errors logged internally)
+				 * - autoFix: true (enables automatic error resolution)
+				 *
+				 * See: apps/mcp-server/src/utils/snapshot-retry-hook.ts
+				 * See: apps/mcp-server/docs/snapshot-retry-hook.md
+				 */
+				const result = await createSnapshotWithAutoRetry(
+					{
+						...input,
+						// Ensure defaults are applied
+						onMissingFile: input.onMissingFile ?? "error",
+						suggestAlternatives: input.suggestAlternatives ?? true,
+					},
+					{
+						maxRetries: 3,
+						verbose: false, // Quiet mode for MCP (errors logged internally)
+						autoFix: true,
+					},
+				);
 
 				if (!result.success) {
 					return {
@@ -499,11 +534,6 @@ ${risk.session.coaching || ""}`,
 
 				// Store snapshot in the list
 				addSnapshot(result.snapshot);
-
-				// If files were provided, store their content
-				if (input.files && input.files.length > 0) {
-					storeSnapshotContent(result.snapshot.id, input.files);
-				}
 
 				return {
 					content: [
@@ -673,6 +703,31 @@ You can restore this snapshot using its ID.`,
 
 			if (name === "snapback.acknowledge_risk") {
 				return await handleAcknowledgeRisk(args);
+			}
+
+			// Context system tools
+			if (name === "snapback.ctx_init") {
+				return await handleCtxInit(args);
+			}
+
+			if (name === "snapback.ctx_build") {
+				return await handleCtxBuild(args);
+			}
+
+			if (name === "snapback.ctx_validate") {
+				return await handleCtxValidate(args);
+			}
+
+			if (name === "snapback.ctx_constraint") {
+				return await handleCtxConstraint(args);
+			}
+
+			if (name === "snapback.ctx_blockers") {
+				return await handleCtxBlockers(args);
+			}
+
+			if (name === "snapback.ctx_check") {
+				return await handleCtxCheck(args);
 			}
 
 			throw new Error(`Unknown tool: ${name}`);

@@ -55,7 +55,7 @@ describe("SnapBackAPIClient", () => {
 	});
 
 	describe("analyzeFast", () => {
-		it("should call the analyze/fast endpoint with correct parameters", async () => {
+		it("should call the risk/analyze endpoint with correct parameters", async () => {
 			const mockResponse = {
 				riskLevel: "medium",
 				score: 0.75,
@@ -88,7 +88,8 @@ describe("SnapBackAPIClient", () => {
 			});
 
 			expect(result).toEqual(mockResponse);
-			expect(mockPost).toHaveBeenCalledWith("api/analyze/fast", {
+			// Updated to new endpoint: /api/risk/analyze (ORPC: riskRouter.analyze)
+			expect(mockPost).toHaveBeenCalledWith("api/risk/analyze", {
 				method: "POST",
 				body: JSON.stringify({
 					code: "function test() { return 'test'; }",
@@ -126,27 +127,21 @@ describe("SnapBackAPIClient", () => {
 	});
 
 	describe("getIterationStats", () => {
-		it("should call the session/iteration-stats endpoint with correct parameters", async () => {
-			const mockResponse = {
-				consecutiveAIEdits: 3,
-				riskLevel: "medium",
-				velocity: 5,
-				recommendation: "Consider manual review",
-			};
-
-			const mockKyResponse = {
-				ok: true,
-				json: vi.fn().mockResolvedValue(mockResponse),
-				status: 200,
-				statusText: "OK",
-			};
-
-			mockGet.mockResolvedValue(mockKyResponse);
-
+		it("should return local defaults (backend endpoint not implemented)", async () => {
+			// getIterationStats now returns local defaults instead of calling the API
+			// Backend endpoint /api/session/iteration-stats is not implemented
 			const result = await client.getIterationStats("test.js");
 
-			expect(result).toEqual(mockResponse);
-			expect(mockGet).toHaveBeenCalledWith("api/session/iteration-stats?filePath=test.js");
+			// Verify it returns sensible defaults
+			expect(result).toEqual({
+				consecutiveAIEdits: 0,
+				riskLevel: "low",
+				velocity: 0,
+				recommendation: "safe_to_continue",
+			});
+
+			// Verify NO API call was made (computed locally)
+			expect(mockGet).not.toHaveBeenCalled();
 		});
 	});
 

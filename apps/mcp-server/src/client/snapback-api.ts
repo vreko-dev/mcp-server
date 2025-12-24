@@ -76,12 +76,8 @@ const AnalysisResponseSchema = z.object({
 	),
 });
 
-const IterationStatsSchema = z.object({
-	consecutiveAIEdits: z.number(),
-	riskLevel: z.string(),
-	velocity: z.number(),
-	recommendation: z.string(),
-});
+// IterationStatsSchema removed - getIterationStats returns local defaults
+// Backend endpoint not implemented, compute locally using Intelligence package
 
 const SnapshotResponseSchema = z.object({
 	id: z.string(),
@@ -219,7 +215,8 @@ export class SnapBackAPIClient {
 	}
 
 	async analyzeFast(request: AnalysisRequest): Promise<AnalysisResponse> {
-		const response = await this.fetchAPI<AnalysisResponse>("api/analyze/fast", {
+		// Route to actual API endpoint: /api/risk/analyze (ORPC: riskRouter.analyze)
+		const response = await this.fetchAPI<AnalysisResponse>("api/risk/analyze", {
 			method: "POST",
 			body: JSON.stringify(request),
 		});
@@ -228,13 +225,23 @@ export class SnapBackAPIClient {
 		return AnalysisResponseSchema.parse(response);
 	}
 
-	async getIterationStats(filePath: string): Promise<IterationStats> {
-		const response = await this.fetchAPI<IterationStats>(
-			`api/session/iteration-stats?filePath=${encodeURIComponent(filePath)}`,
-		);
-
-		// Validate response
-		return IterationStatsSchema.parse(response);
+	/**
+	 * Get iteration stats for a file.
+	 *
+	 * NOTE: This endpoint is not implemented on the backend.
+	 * For MVP, compute locally using @snapback/intelligence package.
+	 * Returns mock data to maintain interface compatibility.
+	 *
+	 * @deprecated Backend endpoint not available - use local computation
+	 */
+	async getIterationStats(_filePath: string): Promise<IterationStats> {
+		// Return sensible defaults - compute locally using Intelligence package instead
+		return {
+			consecutiveAIEdits: 0,
+			riskLevel: "low",
+			velocity: 0,
+			recommendation: "safe_to_continue",
+		};
 	}
 
 	async createSnapshot(request: SnapshotRequest): Promise<SnapshotResponse> {

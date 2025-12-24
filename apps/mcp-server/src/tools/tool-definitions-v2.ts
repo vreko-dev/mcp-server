@@ -225,7 +225,7 @@ Returns snapshot ID for later restoration via snapback.restore_snapshot.`,
 			files: {
 				type: "array",
 				items: { type: "string" },
-				description: "Files to include in snapshot",
+				description: "Files to include in snapshot (relative to workspace root)",
 			},
 			reason: {
 				type: "string",
@@ -235,6 +235,17 @@ Returns snapshot ID for later restoration via snapback.restore_snapshot.`,
 				type: "string",
 				enum: ["manual", "mcp", "ai_assist", "session_end"],
 				description: "What triggered the snapshot",
+			},
+			onMissingFile: {
+				type: "string",
+				enum: ["error", "warn", "skip"],
+				description: "How to handle missing files: error (fail), warn (log + continue), skip (silent continue)",
+				default: "error",
+			},
+			suggestAlternatives: {
+				type: "boolean",
+				description: "Whether to suggest alternative file paths when file not found (default: true)",
+				default: true,
 			},
 		},
 		required: ["files"],
@@ -261,6 +272,15 @@ Returns snapshot ID for later restoration via snapback.restore_snapshot.`,
 		reason: {
 			type: "string",
 			description: "Recorded reason for snapshot",
+		},
+		validation: {
+			type: "object",
+			properties: {
+				requested: { type: "number", description: "Files requested" },
+				included: { type: "number", description: "Files included" },
+				skipped: { type: "number", description: "Files skipped" },
+			},
+			description: "Validation summary",
 		},
 	}),
 
@@ -1095,6 +1115,253 @@ export const validateRecommendationTool: SnapBackToolDefinition = {
 };
 
 // =============================================================================
+// CONTEXT TOOLS (Free Tier)
+// =============================================================================
+
+/**
+ * snapback.ctx_init
+ *
+ * Initialize context system in workspace
+ */
+export const ctxInitTool: SnapBackToolDefinition = {
+	name: "snapback.ctx_init",
+	description: `Initialize context system in workspace. Creates .snapback/ctx/context.json with project defaults.
+
+**When to call this tool:**
+- First time setting up SnapBack in a project
+- When user says "initialize context" or "set up snapback"
+- After cloning a project that uses SnapBack
+
+Creates context.json (editable source of truth) and .ctx (obfuscated LLM format).`,
+
+	inputSchema: {
+		type: "object",
+		properties: {
+			workspaceRoot: {
+				type: "string",
+				description: "Workspace root path (defaults to current directory)",
+			},
+			force: {
+				type: "boolean",
+				description: "Force regenerate even if context.json exists",
+				default: false,
+			},
+		},
+	},
+
+	annotations: {
+		title: "Initialize Context",
+		readOnlyHint: false,
+		destructiveHint: false,
+	},
+
+	tier: "free",
+	requiresBackend: false,
+};
+
+/**
+ * snapback.ctx_build
+ *
+ * Rebuild .ctx from context.json
+ */
+export const ctxBuildTool: SnapBackToolDefinition = {
+	name: "snapback.ctx_build",
+	description: `Rebuild .ctx from context.json. Run after modifying context.json to regenerate the obfuscated LLM-readable format.
+
+**When to call this tool:**
+- After editing .snapback/ctx/context.json
+- When ctx_validate reports stale context
+- Before committing context changes
+
+Returns the new .ctx size and hash.`,
+
+	inputSchema: {
+		type: "object",
+		properties: {
+			workspaceRoot: {
+				type: "string",
+				description: "Workspace root path (defaults to current directory)",
+			},
+		},
+	},
+
+	annotations: {
+		title: "Build Context",
+		readOnlyHint: false,
+		destructiveHint: false,
+	},
+
+	tier: "free",
+	requiresBackend: false,
+};
+
+/**
+ * snapback.ctx_validate
+ *
+ * Validate context freshness
+ */
+export const ctxValidateTool: SnapBackToolDefinition = {
+	name: "snapback.ctx_validate",
+	description: `Validate context freshness. Checks if .ctx is in sync with context.json.
+
+**When to call this tool:**
+- Before any operation that relies on context constraints
+- As part of pre-commit validation
+- When debugging context-related issues
+
+Returns validation status and hash.`,
+
+	inputSchema: {
+		type: "object",
+		properties: {
+			workspaceRoot: {
+				type: "string",
+				description: "Workspace root path (defaults to current directory)",
+			},
+		},
+	},
+
+	annotations: {
+		title: "Validate Context",
+		readOnlyHint: true,
+		destructiveHint: false,
+	},
+
+	tier: "free",
+	requiresBackend: false,
+};
+
+/**
+ * snapback.ctx_constraint
+ *
+ * Get a constraint value
+ */
+export const ctxConstraintTool: SnapBackToolDefinition = {
+	name: "snapback.ctx_constraint",
+	description: `Get a constraint value for runtime decision-making.
+
+**When to call this tool:**
+- Before checking if a value exceeds project limits
+- When you need threshold values for bundle size, performance, etc.
+- To understand project constraints
+
+Returns threshold, current value, and unit for the specified domain and name.`,
+
+	inputSchema: {
+		type: "object",
+		properties: {
+			workspaceRoot: {
+				type: "string",
+				description: "Workspace root path (defaults to current directory)",
+			},
+			domain: {
+				type: "string",
+				description: "Constraint domain (e.g., 'extension', 'web', 'bundle')",
+			},
+			name: {
+				type: "string",
+				description: "Constraint name (e.g., 'bundle', 'fcp', 'size')",
+			},
+		},
+		required: ["domain", "name"],
+	},
+
+	annotations: {
+		title: "Get Constraint",
+		readOnlyHint: true,
+		destructiveHint: false,
+	},
+
+	tier: "free",
+	requiresBackend: false,
+};
+
+/**
+ * snapback.ctx_blockers
+ *
+ * Get current project blockers
+ */
+export const ctxBlockersTool: SnapBackToolDefinition = {
+	name: "snapback.ctx_blockers",
+	description: `Get current project blockers for prioritization decisions.
+
+**When to call this tool:**
+- When planning what to work on next
+- To understand what's blocking progress
+- When user asks about project status or blockers
+
+Returns list of blocking issues with current vs target values.`,
+
+	inputSchema: {
+		type: "object",
+		properties: {
+			workspaceRoot: {
+				type: "string",
+				description: "Workspace root path (defaults to current directory)",
+			},
+		},
+	},
+
+	annotations: {
+		title: "Get Blockers",
+		readOnlyHint: true,
+		destructiveHint: false,
+	},
+
+	tier: "free",
+	requiresBackend: false,
+};
+
+/**
+ * snapback.ctx_check
+ *
+ * Check a value against a constraint
+ */
+export const ctxCheckTool: SnapBackToolDefinition = {
+	name: "snapback.ctx_check",
+	description: `Check a value against a constraint.
+
+**When to call this tool:**
+- After measuring bundle size, to check against limit
+- After performance test, to validate against targets
+- When deciding if a change is acceptable
+
+Returns pass/fail status, ratio, and severity level (ok/warning/critical).`,
+
+	inputSchema: {
+		type: "object",
+		properties: {
+			workspaceRoot: {
+				type: "string",
+				description: "Workspace root path (defaults to current directory)",
+			},
+			domain: {
+				type: "string",
+				description: "Constraint domain (e.g., 'extension', 'web')",
+			},
+			name: {
+				type: "string",
+				description: "Constraint name (e.g., 'bundle', 'fcp')",
+			},
+			value: {
+				type: "number",
+				description: "Value to check against constraint (in base units: bytes, ms)",
+			},
+		},
+		required: ["domain", "name", "value"],
+	},
+
+	annotations: {
+		title: "Check Constraint",
+		readOnlyHint: true,
+		destructiveHint: false,
+	},
+
+	tier: "free",
+	requiresBackend: false,
+};
+
+// =============================================================================
 // EXPORT ALL TOOLS
 // =============================================================================
 
@@ -1123,6 +1390,14 @@ export const snapbackToolDefinitions: SnapBackToolDefinition[] = [
 	checkPatternsTool,
 	validateCodeTool,
 	recordLearningTool,
+
+	// Context System (Free)
+	ctxInitTool,
+	ctxBuildTool,
+	ctxValidateTool,
+	ctxConstraintTool,
+	ctxBlockersTool,
+	ctxCheckTool,
 ];
 
 /**

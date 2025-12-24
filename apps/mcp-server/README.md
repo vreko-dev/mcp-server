@@ -214,6 +214,12 @@ snapback.validate_recommendation({
 
 Create a code snapshot before risky changes.
 
+**Enhanced UX Features:**
+- ✅ **Pre-flight validation**: Checks file existence before reading
+- ✅ **Fuzzy path matching**: Suggests similar filenames when file not found
+- ✅ **Flexible error modes**: Choose how to handle missing files
+- ✅ **Rich error messages**: Clear context with workspace root, resolved paths, and suggestions
+
 **Example:**
 ```javascript
 snapback.create_snapshot({
@@ -222,6 +228,79 @@ snapback.create_snapshot({
 })
 // Returns: ✅ Snapshot created: snap_xyz123
 ```
+
+**Handling Missing Files:**
+
+```javascript
+// Option 1: Fail fast (default)
+snapback.create_snapshot({
+  files: ["src/auth.ts", "missing.ts"],
+  onMissingFile: "error" // Default behavior
+})
+// Returns: ❌ Error with file status:
+//   ✅ src/auth.ts (12.5 KB)
+//   ❌ missing.ts
+//   🔍 Did you mean: src/missing-old.ts (85% match)?
+
+// Option 2: Warn and continue
+snapback.create_snapshot({
+  files: ["src/auth.ts", "missing.ts"],
+  onMissingFile: "warn" // Log warning, snapshot valid files
+})
+// Returns: ✅ Snapshot created with 1 file (1 skipped)
+
+// Option 3: Silent skip
+snapback.create_snapshot({
+  files: ["src/auth.ts", "missing.ts"],
+  onMissingFile: "skip" // Silently skip invalid files
+})
+// Returns: ✅ Snapshot created with 1 file
+```
+
+**Path Suggestions:**
+
+When a file isn't found, SnapBack automatically suggests alternatives:
+
+```javascript
+snapback.create_snapshot({
+  files: ["index.ts"], // Missing 'src/' prefix
+  suggestAlternatives: true // Default
+})
+// Returns: 🔍 Did you mean one of these?
+//   1. src/index.ts (85% match)
+//      Common pattern: files in src/ directory
+//   2. app/index.ts (75% match)
+//      Try parent directory
+```
+
+**Response Format:**
+
+```javascript
+{
+  success: true,
+  snapshot: {
+    id: "snap_abc123",
+    timestamp: 1703001234567,
+    fileCount: 2,
+    totalBytes: 25600,
+    validation: {
+      requested: 3,    // Files requested
+      included: 2,     // Files successfully included
+      skipped: 1       // Files skipped (missing/invalid)
+    }
+  }
+}
+```
+
+**Parameters:**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `files` | `string[]` | Required | File paths relative to workspace root |
+| `reason` | `string` | Optional | Reason for creating snapshot |
+| `trigger` | `"manual" \| "mcp" \| "ai_assist" \| "session_end"` | `"mcp"` | What triggered the snapshot |
+| `onMissingFile` | `"error" \| "warn" \| "skip"` | `"error"` | How to handle missing files |
+| `suggestAlternatives` | `boolean` | `true` | Whether to suggest alternative paths |
 
 ### `snapback.list_snapshots` (Pro)
 
@@ -347,6 +426,42 @@ pnpm build
 1. Restart Claude Desktop completely
 2. Check config file syntax (JSON must be valid)
 3. Look for errors in Claude's console logs
+
+### Snapshot file not found errors
+
+**Problem:** Getting "File not found" errors when creating snapshots
+
+**Solution:**
+
+1. **Use workspace-relative paths** (not absolute):
+   ```javascript
+   // ❌ Wrong
+   snapback.create_snapshot({ files: ["/Users/john/project/src/auth.ts"] })
+   
+   // ✅ Correct
+   snapback.create_snapshot({ files: ["src/auth.ts"] })
+   ```
+
+2. **Check the file actually exists**:
+   ```bash
+   ls src/auth.ts  # From workspace root
+   ```
+
+3. **Use the suggestions** provided in error messages:
+   ```
+   🔍 Did you mean one of these?
+     1. src/auth.ts (85% match)
+        Common pattern: files in src/ directory
+   ```
+
+4. **For missing files, use flexible error modes**:
+   ```javascript
+   // Continue with valid files, skip missing ones
+   snapback.create_snapshot({
+     files: ["src/auth.ts", "maybe-missing.ts"],
+     onMissingFile: "warn" // or "skip"
+   })
+   ```
 
 ## Security
 

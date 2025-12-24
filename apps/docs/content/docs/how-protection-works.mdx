@@ -1,0 +1,157 @@
+---
+title: How Protection Works
+description: Automatic, intelligent protection that works without configuration
+---
+
+# How Protection Works
+
+SnapBack uses an **AutoDecisionEngine** to automatically protect your code.
+No manual configuration needed—SnapBack figures out what to protect and when.
+
+<div className="callout alert-info my-6">
+  <strong>Git doesn't know when AI touched your code. We do.</strong><br/>
+  That's the entire value proposition. SnapBack detects AI activity and protects automatically.
+</div>
+
+## Zero Configuration Protection
+
+When you install SnapBack, it immediately starts protecting:
+
+1. **Detects AI tools** — Recognizes Cursor, Copilot, Claude Code, Windsurf
+2. **Evaluates risk** — Analyzes scope and impact of changes
+3. **Creates snapshots** — Captures state before risky changes
+4. **Enables recovery** — One click to restore if something breaks
+
+## How the AutoDecisionEngine Works
+
+### AI Activity Detection
+
+When SnapBack detects an AI tool making changes:
+
+| Signal | Action |
+|--------|--------|
+| AI edit suggestion | Prepare snapshot (preemptive) |
+| AI edit accepted | Create snapshot immediately |
+| Multiple files affected | Higher priority snapshot |
+| Critical file patterns | Always snapshot |
+
+### Risk Scoring
+
+Each potential change receives a risk score (0-100):
+
+| Score | Risk Level | Action |
+|-------|------------|--------|
+| 0-30 | Low | Background snapshot |
+| 31-70 | Medium | Standard snapshot with metadata |
+| 71-100 | High | Snapshot with full context |
+
+Risk factors include:
+- **File type** — Config files = higher risk
+- **Change scope** — Multi-file = higher risk
+- **File criticality** — Based on imports/usage patterns
+- **Historical patterns** — Files that caused restores before
+
+### Smart Clustering
+
+Related changes are grouped using DBSCAN clustering:
+- Changes within 30 seconds are grouped
+- Semantically related files clustered together
+- Restoring one file offers to restore the cluster
+
+## The Learning Loop
+
+SnapBack improves the longer you use it:
+
+| Timeframe | What's Happening |
+|-----------|------------------|
+| **Day 1** | Catches common patterns out of the box |
+| **Day 30** | Learns YOUR codebase-specific risks |
+| **Month 3** | Catches patterns before you notice them |
+
+### How Learning Works
+
+Every restore teaches SnapBack:
+- Which files are historically fragile
+- Which AI tools cause problems with which files
+- Which patterns lead to restores
+
+<div className="callout alert-info my-6">
+  <strong>Privacy note:</strong> Learning happens locally by default.
+  Pioneers who opt in can share anonymized patterns to improve detection for everyone.
+  <a href="/docs/privacy">See exactly what's shared</a>
+</div>
+
+## What Gets Protected
+
+By default, SnapBack protects:
+
+- **All source code** (`.js`, `.ts`, `.py`, `.go`, etc.)
+- **Configuration files** (`.json`, `.yaml`, `.toml`, etc.)
+- **Documentation** (`.md`, `.mdx`, `.rst`)
+
+Not protected by default:
+
+- `.git/` directory
+- `node_modules/` and dependency folders
+- Build outputs (`dist/`, `.next/`, etc.)
+- Binary files
+
+### Customizing Protection
+
+While AutoDecisionEngine handles most cases, you can customize:
+
+```json
+// .snapbackrc
+{
+  "include": ["src/**/*", "config/**/*"],
+  "exclude": ["*.test.ts", "*.spec.ts"],
+  "alwaysProtect": ["src/auth/**/*", ".env*"]
+}
+```
+
+## Viewing Protection Status
+
+### In VS Code
+
+The status bar shows current protection state:
+
+| Icon | State | Meaning |
+|------|-------|---------|
+| 🟢 | Protected | AutoDecisionEngine active |
+| 🟡 | Monitoring | Watching for AI activity |
+| 🔴 | Paused | Protection temporarily disabled |
+
+### In the Dashboard
+
+View protection metrics at [console.snapback.dev](https://console.snapback.dev):
+
+- Total snapshots created
+- AI detections by tool
+- Files protected
+- Recovery history
+
+## Legacy: Manual Protection Levels
+
+<div className="callout alert-warning my-6">
+  <strong>Deprecated:</strong> Manual protection levels (Watch, Warn, Block) are deprecated.
+  The AutoDecisionEngine provides better protection without configuration.
+</div>
+
+If you're upgrading from v1.x:
+- Your manual settings will be respected initially
+- AutoDecisionEngine will enhance them automatically
+- We recommend removing manual settings over time
+
+The legacy levels were:
+- **🟢 Watch** — Silent auto-snapshots
+- **🟡 Warn** — Confirmation before save
+- **🔴 Block** — Required note (audit trail)
+
+These still work but are no longer the recommended approach.
+
+## Next Steps
+
+- [Make your first restore](/docs/getting-started/first-restore)
+- [Understand AI detection](/docs/ai-detection)
+- [View your dashboard](/docs/analytics)
+- [Join the Pioneer Program](/docs/pioneer)

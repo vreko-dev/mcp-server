@@ -94,6 +94,31 @@ Our web dashboard uses a cookie consent banner to manage analytics preferences. 
 - **Allow** - Enable analytics collection
 - **Decline** - Disable analytics collection
 
+## What We Collect: The Complete Picture
+
+<DataCollectionTable />
+
+### Pioneer Program Telemetry
+
+Pioneers who opt into "Help Improve Detection" share:
+- Which AI tool was detected (not what it wrote)
+- File types affected (not file names or contents)
+- Whether a restore occurred (not what was restored)
+
+This data trains our detection models. **Your code never leaves your machine.**
+
+### What "Opt In" Means
+
+| Setting | Default | What's Shared |
+|---------|---------|---------------|
+| Basic analytics | Off | Feature usage, errors |
+| Detection improvement | Off | AI tool + file type + restore event |
+| Crash reports | Off | Stack traces (no code) |
+
+You control each setting independently in VS Code preferences.
+
+---
+
 ## Data We Collect
 
 ### Usage Analytics

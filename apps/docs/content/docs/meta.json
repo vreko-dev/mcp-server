@@ -4,32 +4,38 @@
 		"---Getting Started---",
 		"index",
 		"quick-start",
+		"pioneer",
 		"getting-started/first-restore",
-		"---Understanding SnapBack---",
+
+		"---Why SnapBack---",
 		"why-snapback",
+		"real-saves",
+
 		"---Core Concepts---",
-		"protection-levels",
+		"how-protection-works",
 		"sessions",
-		"sessions-implementation",
 		"ai-detection",
-		"---Capabilities---",
-		"capabilities",
-		"---Integrations---",
+
+		"---AI Tool Integrations---",
+		"integrations/cursor",
 		"integrations/copilot",
+		"integrations/claude-code",
+		"integrations/windsurf",
+
+		"---Pro Features---",
+		"capabilities/mcp-local",
+		"capabilities/mcp-backend",
 		"cli",
-		"---Analytics & Insights---",
+
+		"---Dashboard & Privacy---",
 		"analytics",
-		"analytics-faq",
-		"interpreting-data",
-		"retention-correlation",
 		"privacy",
+		"methodology",
+
 		"---Reference---",
 		"api-reference",
-		"architecture",
-		"developer-guide",
 		"performance",
 		"troubleshooting",
-		"---Help---",
 		"faq"
 	]
 }

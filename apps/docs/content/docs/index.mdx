@@ -18,6 +18,10 @@ description: Every recovery teaches SnapBack what breaks. Gets smarter over 30-9
 
 ## Undo for the AI Era
 
+<div className="callout my-6" style={{borderLeft: '4px solid var(--color-emerald-500, #10B981)'}}>
+  <strong>Git doesn't know when AI touched your code. We do.</strong>
+</div>
+
 Your AI assistant just made 50 changes across 12 files in 30 minutes. Good? Bad? Both?
 
 SnapBack lets you **restore any file to any moment in under 1 second**. No manual undoing. No guilt. Just peace of mind.
@@ -69,31 +73,34 @@ SnapBack works for solo developers, teams, and enterprises. Choose what matches 
     <p className="text-xs text-gray-500 mb-4">⚙️ Full reference docs</p>
     <p className="text-emerald-400 hover:text-emerald-300 font-medium">[API docs →](/api-reference)</p>
   </div>
+
+  <div className="card hover:shadow-lg transition-all duration-300" style={{border: '2px solid var(--color-emerald-500, #10B981)', background: 'rgba(16, 185, 129, 0.1)'}}>
+    <h3 className="text-lg font-bold mb-2">🏆 Pioneer</h3>
+    <p className="text-sm text-gray-400 mb-4">Want to shape SnapBack's future and earn Pro features for free?</p>
+    <p className="text-xs text-gray-500 mb-4">🎁 Limited time program</p>
+    <p className="text-emerald-400 hover:text-emerald-300 font-medium">[Become a Pioneer →](/docs/pioneer)</p>
+  </div>
 </div>
 
 ## How It Works: Learning Loop
 
-### Day 1: Accurate Out of the Box
+### Day 1: Catches Common Patterns
 
-You install SnapBack. It detects hardcoded secrets, phantom dependencies, test code in production, and risky patterns. 94% accuracy on the first day.
+You install SnapBack. It detects hardcoded secrets, phantom dependencies, test code in production, and risky patterns out of the box.
 
-### Day 30: Knows Your Codebase
+### Day 30: Learns YOUR Codebase
 
 Every time you restore files, SnapBack learns what patterns caused the problem. Over 30 days, it figures out YOUR specific risks:
 - "Cursor always breaks this auth module"
 - "This refactor pattern causes cascading failures"
 - "This folder has phantom dependency issues"
 
-Accuracy improves to 98%.
-
-### Month 3: Catches What Others Miss
+### Month 3: Catches Patterns Before You Notice
 
 After 90 days, SnapBack has learned what breaks in YOUR specific codebase. It catches patterns before you even think to look for them. It knows:
 - Folder-specific risks (which folders are historically fragile)
 - Pattern-specific risks (which refactoring patterns cause issues)
 - Tool-specific risks (which AI tool is reckless with which files)
-
-Accuracy reaches 99%+.
 
 ## Core Concepts
 
@@ -214,7 +221,7 @@ SnapBack uses a **canonical signage system** to ensure consistency across all in
 ## Features
 
 - **Pattern Memory** - Learns what went wrong in YOUR codebase
-- **Progressive Learning** - Gets smarter: Day 1 (94%) → Day 30 (98%) → Month 3 (99%+)
+- **Progressive Learning** - Gets smarter over time: catches common patterns → learns your risks → predicts issues
 - **Detects What Breaks** - Hardcoded secrets, phantom deps, test code in prod, risky patterns
 - **Multi-File Restore** - Undo entire features, not just individual files
 - **Per-Tool Learning** - Learns which AI tools break which parts of your code

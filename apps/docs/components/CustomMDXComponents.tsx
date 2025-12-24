@@ -1,3 +1,8 @@
+import { DataCollectionTable } from "./docs/data-collection-table";
+import { SaveCard } from "./docs/save-card";
+import { ShowFor } from "./docs/show-for";
+import { TierBadge } from "./docs/tier-badge";
+import { TierCard } from "./docs/tier-card";
 import { CopyButton, ExpandableSection, StatusBadge } from "./MicroInteractions";
 
 // Enhanced code block with copy functionality
@@ -48,13 +53,18 @@ function AlertError(props: any) {
 
 export const CustomMDXComponents = {
 	CopyButton,
+	DataCollectionTable,
 	ExpandableSection,
+	SaveCard,
+	ShowFor,
 	StatusBadge,
-	pre: PreWithCopy,
-	card: Card,
-	callout: Callout,
+	TierBadge,
+	TierCard,
 	alert: Alert,
+	alertError: AlertError,
 	alertInfo: AlertInfo,
 	alertWarning: AlertWarning,
-	alertError: AlertError,
+	callout: Callout,
+	card: Card,
+	pre: PreWithCopy,
 };

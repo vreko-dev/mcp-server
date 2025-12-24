@@ -1,5 +1,13 @@
 # Production Docker Compose Configuration
 # Includes web application, API service, PostgreSQL database, and Redis cache
+#
+# Port Assignments (4000-series for web apps to avoid local dev collisions):
+#   Web:      4000 (internal 3000)
+#   Docs:     4001 (Vercel-deployed, dev only in Docker)
+#   API:      8080
+#   MCP:      8081
+#   Postgres: 5432
+#   Redis:    6379
 
 services:
     # ===== DATABASE =====

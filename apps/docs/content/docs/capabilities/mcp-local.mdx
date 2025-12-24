@@ -109,12 +109,12 @@ Check for phantom dependencies and missing imports.
 Cursor's integration with Claude can leverage SnapBack's local MCP server:
 
 ```json
-// ~/.cursor/mcp-config.json
+// ~/.cursor/mcp.json
 {
   "mcpServers": {
     "snapback": {
-      "command": "snapback",
-      "args": ["mcp", "start"],
+      "command": "snap",
+      "args": ["mcp", "--stdio"],
       "type": "stdio"
     }
   }
@@ -143,7 +143,8 @@ Configure Cline to use SnapBack's local MCP:
 {
   "mcp.servers": {
     "snapback": {
-      "command": "snapback mcp start"
+      "command": "snap",
+      "args": ["mcp", "--stdio"]
     }
   }
 }
@@ -266,22 +267,22 @@ Local MCP integration **never** sends data externally:
 ### MCP Server Not Starting
 
 ```bash
-# Check if MCP server is running
-snapback mcp status
+# Test MCP server manually
+snap mcp --help
 
-# Start MCP server manually
-snapback mcp start
+# Run MCP server with verbose output
+snap mcp --stdio --workspace .
 
-# Check logs for errors
-snapback mcp logs
+# Rebuild CLI if command not found
+pnpm --filter @snapback/cli build
 ```
 
 ### AI Assistant Can't Connect
 
-1. Verify MCP server is running: `snapback mcp status`
-2. Check port configuration (default: 3333)
+1. Verify command works: `snap mcp --help`
+2. Check workspace is valid (has .git/, package.json, or .snapback/)
 3. Restart your AI assistant
-4. Enable debug logging: `snapback --log-level debug mcp start`
+4. Set `MCP_QUIET=1` env var to suppress logging
 
 ### Performance Issues
 
@@ -294,8 +295,8 @@ If MCP operations are slow:
 ## CLI Commands
 
 ```bash
-# Start local MCP server
-snapback mcp start
+# Start local MCP server (stdio transport)
+snap mcp --stdio
 
 # Check MCP server status
 snapback mcp status

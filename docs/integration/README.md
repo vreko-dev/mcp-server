@@ -1,27 +1,43 @@
 # MCP Server Integration Documentation
 
+> **Architecture Change (Dec 2024):** MCP server is now CLI-bundled.
+> See [`docs/mcp/CLI-FIRST-SETUP.md`](../mcp/CLI-FIRST-SETUP.md) for the current setup guide.
+
 Complete documentation of the SnapBack MCP (Model Context Protocol) server integration points for Claude Code and Cursor.
+
+## Quick Start
+
+```bash
+# New CLI-first approach
+snap mcp --stdio
+
+# Or the full alias
+snapback mcp --stdio
+```
+
+See [CLI-FIRST-SETUP.md](../mcp/CLI-FIRST-SETUP.md) for complete configuration.
 
 ## Documentation Files
 
-### 1. **MCP Server Integration** (`mcp-server-integration.md`)
+### 1. **CLI-First Setup Guide** (`../mcp/CLI-FIRST-SETUP.md`) - NEW
+**The primary setup guide covering:**
+- Installation and configuration
+- Host integration (Claude Desktop, Cursor, Cline)
+- Available tools (11 facade tools)
+- Environment variables
+- Testing and troubleshooting
+
+### 2. **MCP Server Integration** (`mcp-server-integration.md`) - LEGACY
 **Detailed technical reference covering:**
 - Complete MCP server initialization flow
 - API key authentication and authorization system
-- Tool handler implementation for `analyze_risk`
+- Tool handler implementation
 - SnapBackAPIClient implementation
 - API key passing mechanism
 - Tool input/output formats
 - Performance budgets and error handling
-- HTTP server wrapper (optional)
 
-**Best for:** Understanding the complete integration architecture and debugging specific integration points.
-
-**Key sections:**
-- Section 1: Server initialization (index.ts lines 85-766)
-- Section 2: Authentication flow (auth.ts lines 67-247)
-- Section 4: analyze_risk handler (index.ts lines 412-521)
-- Section 5: API client (snapback-api.ts lines 95-176)
+**Note:** File paths reference the archived `apps/_archive/mcp-server`.
 
 ### 2. **Quick Reference** (`MCP_QUICK_REFERENCE.md`)
 **Fast lookup guide for:**
@@ -95,30 +111,33 @@ Complete documentation of the SnapBack MCP (Model Context Protocol) server integ
 
 ## File Locations in Codebase
 
-### Core MCP Server Files
+### Current Architecture (CLI-First)
 ```
-apps/mcp-server/src/
-├── index.ts                      # Main server (startServer, tool handlers)
-├── auth.ts                       # Authentication (authenticate, hasToolAccess)
-├── http-server.ts               # HTTP wrapper (MCPHttpServer)
-├── client/
-│   └── snapback-api.ts          # API client (SnapBackAPIClient)
+packages/mcp/src/
+├── index.ts                      # Package exports
+├── server.ts                     # createServer(), runStdioMcpServer()
 ├── tools/
-│   ├── create-snapshot.ts       # Snapshot creation
-│   ├── list-snapshots.ts        # Snapshot listing
-│   └── restore-snapshot.ts      # Snapshot restoration
-├── utils/
-│   ├── sarif.ts                 # SARIF log generation
-│   └── security.ts              # Path validation, telemetry
-└── context7/
-    └── index.ts                 # Library documentation service
+│   ├── index.ts                  # Tool definitions
+│   └── facades/                  # Facade handlers
+├── transport/
+│   ├── stdio.ts                  # Stdio transport
+│   └── sse.ts                    # SSE transport (optional)
+├── middleware/
+│   ├── auth.ts                   # Authentication
+│   ├── workspace.ts              # Workspace validation
+│   └── errors.ts                 # Error handling
+└── client/
+    └── api-client.ts             # SnapBackAPIClient
+
+apps/cli/src/commands/
+└── mcp.ts                        # CLI command entry point
 ```
 
 ### Key Entry Points
-- **Server start**: `index.ts:85` - `startServer()`
-- **Tool routing**: `index.ts:387` - `CallToolRequestSchema` handler
-- **Authentication**: `auth.ts:67` - `authenticate(apiKey)`
-- **API communication**: `client/snapback-api.ts:125` - `analyzeFast()`
+- **CLI command**: `apps/cli/src/commands/mcp.ts`
+- **Server factory**: `packages/mcp/src/server.ts` - `createServer()`
+- **Tool handlers**: `packages/mcp/src/facades/handlers.ts`
+- **Workspace validation**: `packages/mcp/src/middleware/workspace.ts`
 
 ---
 
@@ -241,29 +260,26 @@ SNAPBACK_EVENT_BUS_PORT # Event bus port (auto-detected if not set)
 
 ### Unit Testing
 ```bash
-# Run MCP server tests
-pnpm -F @snapback/mcp-server test
-
-# Test specific auth logic
-pnpm -F @snapback/mcp-server test auth.test.ts
+# Run MCP package tests
+pnpm -F @snapback/mcp test
 ```
 
 ### Integration Testing
 ```bash
-# Start server and test tool calls
-export SNAPBACK_API_KEY="sb_live_test_key"
-node dist/index.js
+# Test MCP handshake via CLI
+echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1.0"}}}' | \
+  snap mcp --stdio
 
-# In another terminal, test tool listing
-echo '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' | \
-  SNAPBACK_API_KEY="sb_live_test_key" nc localhost 5000
+# Test tool listing
+echo -e '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1.0"}}}\n{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}' | \
+  snap mcp --stdio
 ```
 
-### Manual Testing with Claude Code
-1. Set `SNAPBACK_API_KEY` in VS Code extension settings
-2. Configure extension to use MCP server
-3. Trigger a code analysis request
-4. Check MCP server stderr logs for `[PERF]` and `[Error]` messages
+### Manual Testing with Claude Desktop / Cursor
+1. Configure host per [CLI-FIRST-SETUP.md](../mcp/CLI-FIRST-SETUP.md)
+2. Restart the host application
+3. Look for the MCP connection indicator
+4. Test with: "Use snapback.prepare_workspace to check the workspace"
 
 ---
 
@@ -286,6 +302,6 @@ This documentation provides three complementary views of the MCP server integrat
 
 Use them together to understand, develop, and troubleshoot the MCP server integration effectively.
 
-**Last updated**: November 17, 2025
-**Covers**: SnapBack MCP Server v0.1.1
-**Scope**: apps/mcp-server/src/* implementation
+**Last updated**: December 2024
+**Covers**: SnapBack MCP (CLI-bundled)
+**Scope**: packages/mcp/* + apps/cli/src/commands/mcp.ts

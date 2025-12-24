@@ -103,8 +103,9 @@ export class PressureGauge {
 	getState(now: number = Date.now()): PressureState {
 		const minutesSinceSnapshot = Math.max(0, (now - this.lastSnapshotTime) / 60000);
 
-		// Time-based pressure accumulation
-		const timePressure = minutesSinceSnapshot * this.config.baseRate;
+		// Time-based pressure ONLY accumulates when there are unsnapshot changes
+		// This prevents false alarms when workspace is idle
+		const timePressure = this.unsnapshotedChanges > 0 ? minutesSinceSnapshot * this.config.baseRate : 0;
 
 		// Total pressure is change-based + time-based, capped at max
 		const totalPressure = Math.min(this.config.maxPressure, this.changeBasedPressure + timePressure);

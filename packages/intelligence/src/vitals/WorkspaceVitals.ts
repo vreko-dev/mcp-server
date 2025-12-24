@@ -462,6 +462,12 @@ export class WorkspaceVitals extends EventEmitter {
 		if (vitals.trajectory === "escalating") {
 			return "Consider creating a snapshot - risk is accumulating";
 		}
+		if (vitals.pressure.value > 80) {
+			return "High pressure - create a snapshot before continuing";
+		}
+		if (vitals.pressure.value > 50) {
+			return "Moderate pressure - consider creating a snapshot soon";
+		}
 		if (vitals.temperature.level === "burning") {
 			return "Heavy AI activity detected - extra caution recommended";
 		}

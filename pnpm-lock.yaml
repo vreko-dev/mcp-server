@@ -2553,6 +2553,9 @@ importers:
       '@snapback/core':
         specifier: workspace:*
         version: link:../core
+      '@snapback/engine':
+        specifier: workspace:*
+        version: link:../engine
       '@snapback/infrastructure':
         specifier: workspace:*
         version: link:../infrastructure

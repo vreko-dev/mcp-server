@@ -1,0 +1,50 @@
+{
+	"version": "1.0.0",
+	"meta": {
+		"id": "project",
+		"type": "unknown",
+		"phase": "development",
+		"priority": "normal"
+	},
+	"constraints": {
+		"bundle": {
+			"size": { "max": 5, "unit": "MB", "key": "_bs" }
+		},
+		"performance": {
+			"startup": { "max": 1000, "unit": "ms", "key": "_ps" }
+		}
+	},
+	"blockers": [],
+	"architecture": {
+		"privacy": "standard",
+		"zeroShortcuts": false,
+		"typeStrict": false
+	},
+	"decisions": {
+		"priority": ["functionality", "performance", "maintainability"],
+		"made": {}
+	},
+	"stack": {},
+	"quality": {
+		"typescript": { "errors": 0 },
+		"coverage": { "min": 60 },
+		"perfBudgets": false,
+		"bundleValidation": false,
+		"consoleErrors": 0
+	},
+	"workflows": {
+		"feature": ["design", "implement", "test"],
+		"bugfix": ["reproduce", "fix", "verify"]
+	},
+	"protocol": {
+		"options": "2-3",
+		"references": "file:line",
+		"risks": "explicit",
+		"sizing": "S/M/L/XL"
+	},
+	"refs": {
+		"audits": ".snapback/ctx/a/",
+		"specs": ".snapback/ctx/s/",
+		"files": {}
+	}
+}

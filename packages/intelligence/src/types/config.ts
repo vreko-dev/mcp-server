@@ -119,6 +119,20 @@ export const IntelligenceConfigSchema = z.object({
 			circuitBreakerCooldownMs: z.number().optional(),
 		})
 		.optional(),
+
+	/**
+	 * Advisory system configuration (Phase 2)
+	 */
+	advisoryConfig: z
+		.object({
+			enabled: z.boolean().optional(),
+			maxWarnings: z.number().optional(),
+			maxSuggestions: z.number().optional(),
+			maxRelatedFiles: z.number().optional(),
+			includeSessionContext: z.boolean().optional(),
+			includeFileHistory: z.boolean().optional(),
+		})
+		.optional(),
 });
 
 export type IntelligenceConfig = z.input<typeof IntelligenceConfigSchema>;

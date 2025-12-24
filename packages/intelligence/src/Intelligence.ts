@@ -12,11 +12,13 @@
  * - Product use: rootDir=workspace
  */
 
+import { AdvisoryEngine } from "./advisory/AdvisoryEngine.js";
 import { ContextEngine } from "./context/ContextEngine.js";
 import { LearningEngine } from "./learning/LearningEngine.js";
 import { ViolationTracker } from "./learning/ViolationTracker.js";
 import { SessionManager } from "./session/SessionManager.js";
 import { ConfigStore } from "./storage/ConfigStore.js";
+import type { AdvisoryContext, AdvisoryTriggerContext, FileHistory } from "./types/advisory.js";
 import type { CacheableContext, IntelligenceConfig, ResolvedConfig } from "./types/config.js";
 import { IntelligenceConfigSchema } from "./types/config.js";
 import type {
@@ -76,6 +78,7 @@ export class Intelligence {
 	private learningEngine: LearningEngine;
 	private violationTracker: ViolationTracker;
 	private sessionManager: SessionManager;
+	private advisoryEngine: AdvisoryEngine;
 	private initialized = false;
 
 	constructor(config: IntelligenceConfig) {
@@ -86,6 +89,7 @@ export class Intelligence {
 		this.learningEngine = new LearningEngine(this.config);
 		this.violationTracker = new ViolationTracker(this.config);
 		this.sessionManager = new SessionManager(config.sessionLimits);
+		this.advisoryEngine = new AdvisoryEngine(config.advisoryConfig);
 	}
 
 	/**
@@ -366,6 +370,25 @@ export class Intelligence {
 	 */
 	endSession(sessionId: string): import("./types/session.js").SessionAnalytics | null {
 		return this.sessionManager.endSession(sessionId);
+	}
+
+	// =========================================================================
+	// ADVISORY CONTEXT
+	// =========================================================================
+
+	/**
+	 * Enrich context with advisory guidance
+	 * Used to add warnings/suggestions to tool responses
+	 */
+	enrichAdvisory(context: AdvisoryTriggerContext): AdvisoryContext {
+		return this.advisoryEngine.enrich(context);
+	}
+
+	/**
+	 * Get file history for a specific file
+	 */
+	getFileHistory(file: string): FileHistory {
+		return this.advisoryEngine.getFileHistory(file);
 	}
 
 	// =========================================================================

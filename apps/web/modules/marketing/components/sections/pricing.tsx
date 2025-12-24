@@ -33,7 +33,7 @@ const Pricing = () => {
 				"Cloud backup & sync",
 				"30-day cloud history",
 				"Learns from your patterns",
-				"94% accurate, improves over time",
+				"Gets smarter over time",
 				"GitHub integration",
 				"Priority support",
 			],

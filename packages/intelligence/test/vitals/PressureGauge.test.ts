@@ -114,17 +114,35 @@ describe("PressureGauge", () => {
 	});
 
 	describe("time-based pressure accumulation", () => {
-		it("should accumulate pressure over time", () => {
+		it("should NOT accumulate time pressure when there are no changes", () => {
 			const startTime = Date.now();
 			const gauge = new PressureGauge({}, startTime);
 
-			// After 10 minutes, should have accumulated time pressure
+			// After 10 minutes with NO changes, pressure should remain 0
 			const tenMinutesLater = startTime + 10 * 60 * 1000;
 			const state = gauge.getState(tenMinutesLater);
 
-			// 10 min * 5% base rate = 50% pressure
-			expect(state.value).toBe(50);
+			// No unsnapshot changes = no time pressure (idle workspace)
+			expect(state.value).toBe(0);
 			expect(state.timeSinceLastSnapshot).toBe(10);
+			expect(state.unsnapshotedChanges).toBe(0);
+		});
+
+		it("should accumulate time pressure when there ARE unsnapshot changes", () => {
+			const startTime = Date.now();
+			const gauge = new PressureGauge({}, startTime);
+
+			// Make a change first
+			gauge.recordChange("/src/file.ts");
+
+			// After 10 minutes with unsnapshot changes, time pressure should accumulate
+			const tenMinutesLater = startTime + 10 * 60 * 1000;
+			const state = gauge.getState(tenMinutesLater);
+
+			// 10 min * 5% base rate = 50% + change pressure
+			expect(state.value).toBeGreaterThanOrEqual(50);
+			expect(state.timeSinceLastSnapshot).toBe(10);
+			expect(state.unsnapshotedChanges).toBe(1);
 		});
 
 		it("should combine change and time pressure", () => {

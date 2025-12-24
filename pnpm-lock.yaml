@@ -2559,6 +2559,9 @@ importers:
       '@snapback/infrastructure':
         specifier: workspace:*
         version: link:../infrastructure
+      '@snapback/intelligence':
+        specifier: workspace:*
+        version: link:../intelligence
       '@snapback/sdk':
         specifier: workspace:*
         version: link:../sdk

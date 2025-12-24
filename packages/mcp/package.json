@@ -52,6 +52,7 @@
     "@snapback/core": "workspace:*",
     "@snapback/engine": "workspace:*",
     "@snapback/infrastructure": "workspace:*",
+    "@snapback/intelligence": "workspace:*",
     "@snapback/sdk": "workspace:*",
     "commander": "catalog:",
     "ky": "catalog:",

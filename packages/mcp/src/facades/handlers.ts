@@ -15,6 +15,7 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { createStorage } from "@snapback/engine";
+import { WorkspaceVitals } from "@snapback/intelligence/vitals";
 import type { ToolHandler, ToolResult } from "../registry.js";
 
 /**
@@ -109,23 +110,31 @@ export const handleAnalyze: ToolHandler = async (args, _context) => {
 
 /**
  * snapback.prepare_workspace - Pre-flight workspace check
+ * Uses real WorkspaceVitals from @snapback/intelligence
  */
 export const handlePrepareWorkspace: ToolHandler = async (_args, context) => {
 	const storage = createStorage(context.workspaceRoot);
 	const snapshots = storage.listSnapshots();
 
+	// Use real vitals from @snapback/intelligence
+	const vitals = WorkspaceVitals.for(context.workspaceRoot);
+	const currentVitals = vitals.current();
+	const guidance = vitals.getAgentGuidance();
+	const snapshotDecision = vitals.shouldSnapshot();
+
 	const lastSnapshot = snapshots[0];
 	const timeSinceLastSnapshot = lastSnapshot ? Math.floor((Date.now() - lastSnapshot.createdAt) / 60000) : null;
 
-	const protectionScore = lastSnapshot ? Math.max(0, 100 - (timeSinceLastSnapshot || 0) * 2) : 0;
+	// Protection score based on pressure (inverted - low pressure = high protection)
+	const protectionScore = Math.max(0, 100 - currentVitals.pressure.value);
 
 	return jsonResult({
 		vitals: {
-			pulse: { level: "resting", changesPerMinute: 0 },
-			temperature: { level: "cold", aiPercentage: 0 },
-			pressure: { value: Math.min(100, 50 + (snapshots.length > 0 ? 0 : 50)), unsnapshotedChanges: 0 },
-			oxygen: { value: 100, coveragePercentage: 100 },
-			trajectory: "stable",
+			pulse: currentVitals.pulse,
+			temperature: currentVitals.temperature,
+			pressure: currentVitals.pressure,
+			oxygen: currentVitals.oxygen,
+			trajectory: currentVitals.trajectory,
 		},
 		protectionScore,
 		lastSnapshot: lastSnapshot
@@ -138,19 +147,16 @@ export const handlePrepareWorkspace: ToolHandler = async (_args, context) => {
 			: null,
 		totalSnapshots: snapshots.length,
 		recommendation: {
-			should: protectionScore < 50,
-			reason:
-				protectionScore < 50
-					? `Protection score low (${protectionScore}%) - consider snapshot`
-					: "Workspace protected",
-			urgency: protectionScore < 30 ? "high" : protectionScore < 50 ? "medium" : "none",
+			should: snapshotDecision.should,
+			reason: snapshotDecision.reason,
+			urgency: snapshotDecision.urgency,
 		},
-		safeOperations: ["read", "analyze", "suggest"],
-		blockedOperations: [],
-		next_actions:
-			protectionScore < 50
-				? [{ tool: "snapback.snapshot_create", priority: 1, reason: "Increase protection" }]
-				: [],
+		safeOperations: guidance.safeOperations,
+		blockedOperations: guidance.blockedOperations,
+		suggestion: guidance.suggestion,
+		next_actions: snapshotDecision.should
+			? [{ tool: "snapback.snapshot_create", priority: 1, reason: snapshotDecision.reason }]
+			: [],
 	});
 };
 

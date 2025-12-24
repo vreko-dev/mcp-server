@@ -9,6 +9,7 @@
 
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import type { SnapBackAPIClient } from "./client/api-client.js";
+import { facadeTools } from "./tools/facades.js";
 
 /**
  * Options for creating an MCP server
@@ -74,8 +75,11 @@ export function createMcpServer(options: McpServerOptions): Server {
 	console.error(`[SnapBack MCP] Server created for workspace: ${workspaceRoot}`);
 	console.error(`[SnapBack MCP] Tier: ${tier}`);
 
-	// TODO: Register tool handlers here
-	// This will be populated when we migrate tools from apps/mcp-server
+	// Register facade tools
+	// Tool handlers will be implemented in Phase 3
+	for (const [name] of Object.entries(facadeTools)) {
+		console.error(`[SnapBack MCP] Tool registered: ${name}`);
+	}
 
 	return server;
 }

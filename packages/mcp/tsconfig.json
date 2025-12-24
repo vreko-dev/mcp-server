@@ -1,19 +1,13 @@
 {
-	"$schema": "https://json.schemastore.org/tsconfig",
 	"extends": "@snapback/tsconfig/package",
 	"compilerOptions": {
 		"outDir": "./dist",
 		"rootDir": "./src",
-		"lib": ["ES2022"],
+		"types": [],
+		"tsBuildInfoFile": "./dist/.tsbuildinfo",
 		"declaration": true,
 		"declarationMap": true
 	},
 	"include": ["src/**/*"],
-	"exclude": ["node_modules", "dist", "build", "**/*.test.ts", "**/*.spec.ts"],
-	"references": [
-		{ "path": "../contracts" },
-		{ "path": "../core" },
-		{ "path": "../infrastructure" },
-		{ "path": "../sdk" }
-	]
+	"exclude": ["node_modules", "dist", "dist-types", "tests"]
 }

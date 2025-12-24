@@ -12,27 +12,31 @@
   "private": true,
   "type": "module",
   "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "types": "dist-types/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
+      "types": "./dist-types/index.d.ts",
       "default": "./dist/index.js"
     },
     "./client": {
-      "types": "./dist/client/index.d.ts",
+      "types": "./dist-types/client/index.d.ts",
       "default": "./dist/client/index.js"
     },
     "./tools": {
-      "types": "./dist/tools/index.d.ts",
+      "types": "./dist-types/tools/index.d.ts",
       "default": "./dist/tools/index.js"
     },
     "./transport": {
-      "types": "./dist/transport/index.d.ts",
+      "types": "./dist-types/transport/index.d.ts",
       "default": "./dist/transport/index.js"
+    },
+    "./middleware": {
+      "types": "./dist-types/middleware/index.d.ts",
+      "default": "./dist/middleware/index.js"
     }
   },
   "scripts": {
-    "build": "tsup && tsc --build tsconfig.build.json --force && node ../../scripts/build-utils/add-js-extensions.mjs",
+    "build": "tsup && tsc --emitDeclarationOnly --outDir dist-types -p tsconfig.build.json && node ../../scripts/build-utils/add-js-extensions.mjs",
     "check": "biome check .",
     "format": "biome format --write .",
     "lint": "biome lint .",
@@ -48,6 +52,7 @@
     "@snapback/core": "workspace:*",
     "@snapback/infrastructure": "workspace:*",
     "@snapback/sdk": "workspace:*",
+    "commander": "catalog:",
     "ky": "catalog:",
     "opossum": "catalog:",
     "zod": "catalog:"

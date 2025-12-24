@@ -1111,6 +1111,9 @@ importers:
       '@snapback/intelligence':
         specifier: workspace:*
         version: link:../../packages/intelligence
+      '@snapback/mcp':
+        specifier: workspace:*
+        version: link:../../packages/mcp
       '@snapback/mcp-config':
         specifier: workspace:*
         version: link:../../packages/mcp-config
@@ -2550,18 +2553,15 @@ importers:
       '@snapback/core':
         specifier: workspace:*
         version: link:../core
-      '@snapback/engine':
-        specifier: workspace:*
-        version: link:../engine
       '@snapback/infrastructure':
         specifier: workspace:*
         version: link:../infrastructure
-      '@snapback/intelligence':
-        specifier: workspace:*
-        version: link:../intelligence
       '@snapback/sdk':
         specifier: workspace:*
         version: link:../sdk
+      commander:
+        specifier: 'catalog:'
+        version: 9.5.0
       ky:
         specifier: 'catalog:'
         version: 1.7.2

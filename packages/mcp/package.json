@@ -1,0 +1,64 @@
+{
+  "name": "@snapback/mcp",
+  "description": "MCP server library for SnapBack CLI",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "author": "SnapBack Team",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/snapback-dev.git",
+    "directory": "packages/mcp"
+  },
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./client": {
+      "types": "./dist/client/index.d.ts",
+      "default": "./dist/client/index.js"
+    },
+    "./tools": {
+      "types": "./dist/tools/index.d.ts",
+      "default": "./dist/tools/index.js"
+    },
+    "./transport": {
+      "types": "./dist/transport/index.d.ts",
+      "default": "./dist/transport/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup && tsc --build tsconfig.build.json --force && node ../../scripts/build-utils/add-js-extensions.mjs",
+    "check": "biome check .",
+    "format": "biome format --write .",
+    "lint": "biome lint .",
+    "lint:fix": "biome lint --fix .",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "catalog:",
+    "@snapback/contracts": "workspace:*",
+    "@snapback/core": "workspace:*",
+    "@snapback/infrastructure": "workspace:*",
+    "@snapback/sdk": "workspace:*",
+    "ky": "catalog:",
+    "opossum": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@snapback/tsconfig": "workspace:*",
+    "@types/node": "catalog:",
+    "@types/opossum": "catalog:",
+    "tsup": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "sideEffects": false
+}

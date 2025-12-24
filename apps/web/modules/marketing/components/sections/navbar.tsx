@@ -3,6 +3,7 @@ import { CommandPalette } from "@marketing/components/ui/command-palette";
 import { MagneticHover } from "@marketing/components/ui/magnetic-hover";
 import { useMobileOptimization } from "@marketing/hooks/use-mobile-optimization";
 import { useMobilePerformance } from "@marketing/hooks/use-mobile-performance";
+import { useSession } from "@saas/auth/hooks/use-session";
 import { Logo } from "@shared/components/Logo";
 // import { ASSETS } from "@marketing/lib/assets"
 import { X } from "lucide-react";
@@ -12,6 +13,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 const Navbar = () => {
+	const { user } = useSession();
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const [isCommandOpen, setIsCommandOpen] = useState(false);
 	const [isMounted, setIsMounted] = useState(false);
@@ -256,14 +258,14 @@ const Navbar = () => {
 									</MagneticHover>
 								))}
 
-								{/* Be a Pioneer CTA */}
+								{/* Auth-conditional CTA */}
 								<MagneticHover strength={0.3} radius={20}>
 									<Link
-										href="/pioneer"
+										href={user ? "/app" : "/pioneer"}
 										className="px-4 py-2 text-sm font-medium bg-white text-black rounded-lg hover:bg-white/90 transition-all duration-200 relative group"
-										title="Join the Pioneer program"
+										title={user ? "Go to Dashboard" : "Join the Pioneer program"}
 									>
-										Be a Pioneer
+										{user ? "Dashboard" : "Get Started"}
 										<span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-primary to-secondary scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
 									</Link>
 								</MagneticHover>
@@ -347,14 +349,14 @@ const Navbar = () => {
 								))}
 							</div>
 
-							{/* Mobile CTA - Be a Pioneer button */}
+							{/* Mobile CTA - Auth-conditional */}
 							<div className="pt-4 border-t border-white/10">
 								<Link
-									href="/pioneer"
+									href={user ? "/app" : "/pioneer"}
 									className="w-full px-4 py-3 text-sm font-medium bg-white text-black rounded-lg hover:bg-white/90 transition-all duration-200 block text-center"
 									onClick={closeMenu}
 								>
-									Be a Pioneer
+									{user ? "Dashboard" : "Get Started"}
 								</Link>
 							</div>
 						</div>

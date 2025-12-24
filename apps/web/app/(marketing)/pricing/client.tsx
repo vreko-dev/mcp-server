@@ -84,7 +84,7 @@ const pricingTiers: PricingCardData[] = [
 					category: "protection",
 				},
 				{
-					text: "Guardian AI detection (94% Day 1 accuracy, improves over time)",
+					text: "Guardian AI detection (learns your patterns over time)",
 					category: "intelligence",
 				},
 				{
@@ -124,8 +124,8 @@ const pricingTiers: PricingCardData[] = [
 			],
 		},
 		cta: {
-			text: "Start Free Trial",
-			href: "/waitlist",
+			text: "Become a Pioneer",
+			href: "/pioneer",
 			variant: "primary",
 		},
 	},
@@ -197,7 +197,7 @@ const pricingTiers: PricingCardData[] = [
 		},
 		cta: {
 			text: "Request Demo",
-			href: "/waitlist?plan=team",
+			href: "/pioneer?plan=team",
 			variant: "primary",
 		},
 	},
@@ -258,6 +258,18 @@ export default function PricingClient() {
 						<br />
 						30-day money-back guarantee on all paid plans.
 					</p>
+
+					{/* Integration Logos */}
+					<div className="flex flex-wrap items-center justify-center gap-4 mb-8 text-sm text-[#666]">
+						<span>Works with:</span>
+						<span className="text-white font-medium">Cursor</span>
+						<span className="text-white/30">•</span>
+						<span className="text-white font-medium">Copilot</span>
+						<span className="text-white/30">•</span>
+						<span className="text-white font-medium">Claude Code</span>
+						<span className="text-white/30">•</span>
+						<span className="text-white font-medium">Windsurf</span>
+					</div>
 
 					{/* Billing Toggle */}
 					<div className="flex items-center justify-center gap-4 mb-8">
@@ -324,6 +336,12 @@ export default function PricingClient() {
 							<span>No credit card for Free plan</span>
 						</div>
 					</div>
+
+					{/* Differentiator */}
+					<p className="mt-8 text-[#666] text-sm">
+						Git doesn't know when AI touched your code.{" "}
+						<span className="text-white font-medium">SnapBack does.</span>
+					</p>
 				</m.div>
 			</section>
 
@@ -443,10 +461,10 @@ export default function PricingClient() {
 							Install Free Extension
 						</a>
 						<Link
-							href="/waitlist"
+							href="/pioneer"
 							className="px-8 py-4 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-white font-medium transition-all text-lg focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-slate-900"
 						>
-							Request Access (Solo/Team)
+							Become a Pioneer
 						</Link>
 					</div>
 				</m.div>

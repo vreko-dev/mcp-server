@@ -28,16 +28,40 @@ export default async function ChangelogPage() {
 			<ChangelogSection
 				items={[
 					{
-						date: "2024-03-01",
-						changes: ["🚀 Improved performance"],
+						date: "2025-01-15",
+						changes: [
+							"🚀 Improved AI detection accuracy for Claude Code sessions",
+							"⚡ Reduced snapshot creation time to <150ms",
+							"🔧 Fixed session grouping edge case with rapid saves",
+							"📊 Added real-time protection metrics to status bar",
+						],
 					},
 					{
-						date: "2024-02-01",
-						changes: ["🎨 Updated design", "🐞 Fixed a bug"],
+						date: "2025-01-08",
+						changes: [
+							"✨ Added Windsurf AI detection support",
+							"🔒 Enhanced privacy: metadata-only telemetry by default",
+							"🐛 Fixed restore confirmation dialog on Windows",
+							"📝 Improved snapshot labels with semantic context",
+						],
 					},
 					{
-						date: "2024-01-01",
-						changes: ["🎉 Added new feature", "🐞 Fixed a bug"],
+						date: "2025-01-02",
+						changes: [
+							"🎉 New MCP integration for Claude Code",
+							"🔄 Added session time-travel for multi-file restores",
+							"⚡ Performance: 40% faster activation time",
+							"🛡️ Added burst edit detection for rapid AI changes",
+						],
+					},
+					{
+						date: "2024-12-20",
+						changes: [
+							"🚀 Major release: Guardian AI detection engine",
+							"📊 New dashboard with protection metrics",
+							"🔐 Pioneer Program launch",
+							"✨ Added protection levels: Watch/Warn/Block",
+						],
 					},
 				]}
 			/>

@@ -1,3 +1,5 @@
+import { ComparisonTable } from "@marketing/components/sections/comparison-table";
+import { MCPShowcase } from "@marketing/components/sections/mcp-showcase";
 import { Hero } from "@marketing/home/components/Hero";
 import { FinalCTA, Metrics, ProblemSection } from "@marketing/sections/launch";
 import type { Metadata } from "next";
@@ -59,8 +61,14 @@ export default function Home() {
 			{/* Proof Section (Claude Story) */}
 			<StorySection />
 
+			{/* Comparison Table - Git vs Timeline vs SnapBack */}
+			<ComparisonTable />
+
 			{/* Intelligence Story (ProblemSection reused/moved up) */}
 			<ProblemSection />
+
+			{/* MCP Showcase - Pro Feature Highlight */}
+			<MCPShowcase />
 
 			{/* Metrics Section */}
 			<Metrics />

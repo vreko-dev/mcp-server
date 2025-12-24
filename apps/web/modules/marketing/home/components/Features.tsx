@@ -23,7 +23,7 @@ const featureTabs = [
 		id: "ai-detection",
 		title: "AI Pattern Detection",
 		icon: CpuIcon,
-		subtitle: "94% Accuracy",
+		subtitle: "Learns Your Patterns",
 		description: "Detects Copilot, Cursor, and Windsurf patterns. Shows detection confidence on every change.",
 		highlights: [
 			{
@@ -33,7 +33,7 @@ const featureTabs = [
 			},
 			{
 				title: "Confidence Scoring",
-				description: "Real-time confidence percentage on every detected change with 94% accuracy.",
+				description: "Real-time confidence percentage on every detected change. Gets smarter over time.",
 				icon: ZapIcon,
 			},
 			{
@@ -182,7 +182,7 @@ export function Features() {
 				>
 					<h2 className="font-bold text-4xl lg:text-5xl">Pattern Memory. Gets Smarter.</h2>
 					<p className="mt-6 text-balance text-lg">
-						Every restore teaches SnapBack. Accuracy improves: Day 1 (94%) → Day 30 (98%) → Month 3 (99%+)
+						Every restore teaches SnapBack. Accuracy improves: Day 1 → Day 30 → Month 3 and beyond.
 					</p>
 				</motion.div>
 
@@ -262,15 +262,15 @@ export function Features() {
 									<div className="mt-6 flex items-center gap-4">
 										<div className="flex items-center gap-2">
 											<div className="size-3 rounded-full bg-snapback-green animate-pulse" />
-											<span className="text-sm text-white/80">Day 1: 94%</span>
+											<span className="text-sm text-white/80">Day 1: Common patterns</span>
 										</div>
 										<div className="flex items-center gap-2">
 											<div className="size-3 rounded-full bg-snapback-green animate-pulse" />
-											<span className="text-sm text-white/80">Day 30: 98%</span>
+											<span className="text-sm text-white/80">Day 30: Your patterns</span>
 										</div>
 										<div className="flex items-center gap-2">
 											<div className="size-3 rounded-full bg-snapback-green animate-pulse" />
-											<span className="text-sm text-white/80">Month 3: 99%+</span>
+											<span className="text-sm text-white/80">Month 3: Predictive</span>
 										</div>
 									</div>
 								</div>

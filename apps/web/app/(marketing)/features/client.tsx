@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, Brain, Clock, Shield, Zap } from "lucide-react";
+import { AlertTriangle, Brain, Clock, MessageSquare, Shield, Zap } from "lucide-react";
 import { m } from "motion/react";
 import Link from "next/link";
 
@@ -26,9 +26,9 @@ const features = [
 		title: "Learns from Outcomes",
 		subtitle: "Gets Smarter Over Time",
 		description:
-			"Every time you restore files, SnapBack learns what patterns caused problems. Day 1: detects 94% of issues. Day 30: knows YOUR codebase's specific risks. Month 3: catches patterns before you even notice them.",
+			"Every time you restore files, SnapBack learns what patterns caused problems. Day 1: catches common patterns. Day 30: knows YOUR codebase's specific risks. Month 3: catches patterns before you even notice them.",
 		benefits: [
-			"Day 1: 94% accurate out of the box",
+			"Day 1: Catches common patterns out of the box",
 			"Day 30: Learns your specific patterns",
 			"Month 3: Detects what others miss",
 			"Outcome loop: Restore → Learn → Improve",
@@ -40,7 +40,7 @@ const features = [
 	{
 		icon: Brain,
 		title: "Detects What Breaks",
-		subtitle: "94% Accurate",
+		subtitle: "Learns Your Patterns",
 		description:
 			"Catches hardcoded secrets, phantom dependencies, test code in production, and risky patterns. Every change gets a risk score. You see exactly what's dangerous and why.",
 		benefits: [
@@ -85,6 +85,23 @@ const features = [
 		color: "text-yellow-400",
 		bgGlow: "from-yellow-500/20",
 	},
+	{
+		icon: MessageSquare,
+		title: "AI Assistant Integration",
+		subtitle: "Works With Your Tools",
+		badge: "PRO",
+		description:
+			"SnapBack integrates directly with Claude Code and Cursor via MCP. Your AI checks risk before making changes. Automatic snapshots for risky operations. Your assistant becomes risk-aware.",
+		benefits: [
+			"Claude Code MCP integration",
+			"Cursor compatibility",
+			"Risk assessment before changes",
+			"Auto-snapshot on risky operations",
+		],
+		docsLink: "/docs/integrations/mcp",
+		color: "text-cyan-400",
+		bgGlow: "from-cyan-500/20",
+	},
 ];
 
 export default function FeaturesClient() {
@@ -106,8 +123,8 @@ export default function FeaturesClient() {
 						</span>
 					</h1>
 					<p className="text-xl lg:text-2xl text-gray-300 max-w-3xl mx-auto mb-8">
-						Every time you undo a mistake, SnapBack gets smarter. Day 1 catches 94% of issues. Day 30 knows
-						YOUR codebase. Month 3 prevents what you didn't even know could break.
+						Every time you undo a mistake, SnapBack gets smarter. Day 1 catches common patterns. Day 30
+						knows YOUR codebase. Month 3 prevents what you didn't even know could break.
 					</p>
 					<div className="flex flex-wrap justify-center gap-4">
 						<Link
@@ -153,6 +170,11 @@ export default function FeaturesClient() {
 								{/* Title & Subtitle */}
 								<div className="flex items-center gap-3 mb-2">
 									<h2 className="text-2xl font-bold text-white">{feature.title}</h2>
+									{(feature as any).badge && (
+										<span className="px-2 py-0.5 text-xs font-semibold bg-emerald-500/20 text-emerald-400 rounded">
+											{(feature as any).badge}
+										</span>
+									)}
 								</div>
 								<p className={`text-sm font-mono ${feature.color} mb-4`}>{feature.subtitle}</p>
 

@@ -79,7 +79,7 @@ export function Hero() {
 					{/* Subheadline - Problem to Solution */}
 					<motion.h2
 						variants={animations.fadeInUp}
-						className="text-center text-2xl md:text-3xl font-semibold tracking-tight leading-[1.2] mb-8 md:mb-10"
+						className="text-center text-2xl md:text-3xl font-semibold tracking-tight leading-[1.2] mb-4"
 					>
 						<span className="text-[#A0A0A0]">Git can't help. </span>
 						<span className="text-green-500 drop-shadow-[0_0_25px_rgba(52,211,153,0.4)]">
@@ -87,10 +87,53 @@ export function Hero() {
 						</span>
 					</motion.h2>
 
-					{/* NEW: Interactive Hero Demo - Constrained for Golden Ratio */}
+					{/* KEY DIFFERENTIATOR - Make it explicit */}
+					<motion.p
+						variants={animations.fadeInUp}
+						className="text-center text-base md:text-lg text-[#888888] mb-6"
+					>
+						Git doesn't know when AI touched your code.{" "}
+						<span className="text-white font-medium">We do.</span>
+					</motion.p>
+
+					{/* CTA Buttons - PRIMARY ACTION ABOVE THE FOLD */}
+					<motion.div variants={animations.fadeInUp} className="flex flex-col sm:flex-row gap-3 mb-6">
+						<a
+							href={heroContent.primary_cta.href}
+							className="inline-flex items-center justify-center px-8 py-3.5 bg-[#34D399] text-black hover:bg-[#34D399]/90 font-semibold text-base rounded-lg transition-all hover:scale-105 hover:-translate-y-0.5 shadow-[0_0_20px_rgba(52,211,153,0.3)]"
+						>
+							Install Free for VS Code
+						</a>
+						<a
+							href="/pioneer"
+							className="inline-flex items-center justify-center px-8 py-3.5 border border-[#34D399]/50 text-[#34D399] hover:bg-[#34D399]/10 font-semibold text-base rounded-lg transition-all"
+						>
+							Become a Pioneer
+						</a>
+					</motion.div>
+
+					{/* Integration logos - shows multi-tool support */}
 					<motion.div
 						variants={animations.fadeInUp}
-						className="w-full max-w-5xl mx-auto mb-4 md:mb-6 relative"
+						className="flex flex-wrap items-center justify-center gap-4 mb-8 text-sm text-[#666666]"
+					>
+						<span>Works with:</span>
+						<div className="flex items-center gap-3 flex-wrap justify-center">
+							<span className="text-white font-medium">Cursor</span>
+							<span className="text-white/30">•</span>
+							<span className="text-white font-medium">Copilot</span>
+							<span className="text-white/30">•</span>
+							<span className="text-white font-medium">Claude Code</span>
+							<span className="text-white/30">•</span>
+							<span className="text-white font-medium">Windsurf</span>
+						</div>
+					</motion.div>
+
+					{/* Interactive Hero Demo */}
+					<motion.div
+						id="demo"
+						variants={animations.fadeInUp}
+						className="w-full max-w-5xl mx-auto mb-4 md:mb-6 relative scroll-mt-8"
 					>
 						<HeroDemo />
 

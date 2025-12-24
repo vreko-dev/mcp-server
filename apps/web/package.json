@@ -99,7 +99,6 @@
 		"ufo": "catalog:",
 		"use-debounce": "catalog:",
 		"usehooks-ts": "catalog:",
-		"uuid": "catalog:",
 		"zod": "catalog:"
 	},
 	"devDependencies": {

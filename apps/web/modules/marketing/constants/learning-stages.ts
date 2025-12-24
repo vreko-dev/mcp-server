@@ -30,6 +30,6 @@ export const LEARNING_STAGES: LearningStage[] = [
 		label: "Predicts problems",
 		features: ["Warns before you save", "Learns from near-misses", "Zero false positives"],
 		tier: "pro",
-		highlighted: true,
+		highlighted: false,
 	},
 ];

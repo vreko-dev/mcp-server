@@ -40,14 +40,21 @@ export type {
 export type {
 	BehaviorStats,
 	CalibrationStatus,
+	PatternMatch,
 	RiskProfile,
 	SnapshotObservation,
+	SnapshotSuggestion,
+	TeamAggregation,
 	ThresholdAdjustments,
 	TrajectoryForecast,
+	UserComparison,
 	WorkspaceProfile,
-} from "./learning/index.js";
+} from "./learning/index.js"; // BehavioralMetadata re-exported below
 // Phase 4 exports - Learning & Calibration
 export {
+	PatternLookup,
+	SnapshotSuggester,
+	TeamAggregator,
 	ThresholdCalibrator,
 	TrajectoryPredictor,
 	UserBehaviorLearner,

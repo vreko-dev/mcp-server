@@ -5,11 +5,14 @@
  * Validates that .ctx is in sync with context.json
  * Used in pre-commit hook alongside config-drift-check
  *
+ * This follows the same directory structure used in user workspaces,
+ * enabling dogfooding and consistent MCP runtime behavior.
+ *
  * Usage:
  *   node tooling/scripts/context-validate.mjs
  *   node tooling/scripts/context-validate.mjs --fix  # Regenerate if stale
  *
- * @see .config-baselines/CONTEXT-GUIDE.md
+ * @see .snapback/ctx/context.json
  */
 
 import { execSync } from "node:child_process";
@@ -22,8 +25,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const ROOT = resolve(__dirname, "../..");
 
-const CONTEXT_PATH = join(ROOT, ".config-baselines", "context.json");
-const CTX_PATH = join(ROOT, ".ctx");
+const CONTEXT_PATH = join(ROOT, ".snapback", "ctx", "context.json");
+const CTX_PATH = join(ROOT, ".snapback", "ctx", ".ctx");
 
 // Parse CLI args
 const args = process.argv.slice(2);
@@ -53,13 +56,13 @@ function computeExpectedHash() {
 function validate() {
 	// Check files exist
 	if (!existsSync(CONTEXT_PATH)) {
-		console.error("Missing: .config-baselines/context.json");
+		console.error("Missing: .snapback/ctx/context.json");
 		console.error("   Run: pnpm context:init");
 		process.exit(1);
 	}
 
 	if (!existsSync(CTX_PATH)) {
-		console.error("Missing: .ctx (run: pnpm context:build)");
+		console.error("Missing: .snapback/ctx/.ctx (run: pnpm context:build)");
 
 		if (FIX_MODE) {
 			console.log("Auto-fixing...");

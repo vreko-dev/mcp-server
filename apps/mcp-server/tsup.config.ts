@@ -15,15 +15,20 @@ export default defineConfig({
 		".json": "copy",
 	},
 	onSuccess: async () => {
-		// Ensure migration-patterns.json is copied to dist
-		const srcPath = "src/services/migration-patterns.json";
-		const destPath = "dist/services/migration-patterns.json";
-		try {
-			mkdirSync(dirname(destPath), { recursive: true });
-			copyFileSync(srcPath, destPath);
-			console.log("✓ Copied migration-patterns.json to dist");
-		} catch (error) {
-			console.error("Failed to copy migration-patterns.json:", error);
+		// JSON files to copy to dist
+		const jsonFiles = [
+			{ src: "src/services/migration-patterns.json", dest: "dist/services/migration-patterns.json" },
+			{ src: "src/ctx/defaults.json", dest: "dist/ctx/defaults.json" },
+		];
+
+		for (const { src, dest } of jsonFiles) {
+			try {
+				mkdirSync(dirname(dest), { recursive: true });
+				copyFileSync(src, dest);
+				console.log(`✓ Copied ${src} to dist`);
+			} catch (error) {
+				console.error(`Failed to copy ${src}:`, error);
+			}
 		}
 	},
 });

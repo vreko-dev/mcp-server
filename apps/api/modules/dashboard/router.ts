@@ -6,7 +6,9 @@ import {
 	getMetrics,
 	getRecentActivity,
 	getSessionMetrics,
+	getSnapshotSuggestions,
 	getSubscriptionData,
+	getTeamAggregation,
 	getUserMetrics,
 	getVitalsStats,
 } from "./procedures";
@@ -23,4 +25,6 @@ export const dashboardRouter = protectedProcedure.router({
 	getVitalsStats,
 	getLearningStats,
 	getBehavioralMetadata,
+	getSnapshotSuggestions,
+	getTeamAggregation,
 });

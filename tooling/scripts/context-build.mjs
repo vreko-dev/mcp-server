@@ -2,15 +2,18 @@
 /**
  * context-build.mjs
  *
- * Generates obfuscated .ctx file from .config-baselines/context.json
+ * Generates obfuscated .ctx file from .snapback/ctx/context.json
  * Part of the unified configuration & context system.
+ *
+ * This follows the same directory structure used in user workspaces,
+ * enabling dogfooding and consistent MCP runtime behavior.
  *
  * Usage:
  *   node tooling/scripts/context-build.mjs
  *   node tooling/scripts/context-build.mjs --with-map  # Also generate .ctx.map
  *   node tooling/scripts/context-build.mjs --quiet     # Suppress output
  *
- * @see .config-baselines/CONTEXT-GUIDE.md
+ * @see .snapback/ctx/context.json
  */
 
 import { createHash } from "node:crypto";
@@ -22,9 +25,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const ROOT = resolve(__dirname, "../..");
 
-const CONTEXT_PATH = join(ROOT, ".config-baselines", "context.json");
-const CTX_PATH = join(ROOT, ".ctx");
-const CTX_MAP_PATH = join(ROOT, ".ctx.map");
+const CONTEXT_PATH = join(ROOT, ".snapback", "ctx", "context.json");
+const CTX_PATH = join(ROOT, ".snapback", "ctx", ".ctx");
+const CTX_MAP_PATH = join(ROOT, ".snapback", "ctx", ".ctx.map");
 
 // Parse CLI args
 const args = process.argv.slice(2);

@@ -727,7 +727,7 @@ importers:
     dependencies:
       '@next/mdx':
         specifier: 'catalog:'
-        version: 16.1.0(@mdx-js/loader@3.1.1(webpack@5.96.1(@swc/core@1.15.3)(esbuild@0.27.2)))(@mdx-js/react@3.1.1(@types/react@19.1.13)(react@19.1.2))
+        version: 16.1.0(@mdx-js/loader@3.1.1(webpack@5.96.1(@swc/core@1.15.3)))(@mdx-js/react@3.1.1(@types/react@19.1.13)(react@19.1.2))
       '@supabase/supabase-js':
         specifier: 'catalog:'
         version: 2.45.0
@@ -893,7 +893,7 @@ importers:
         version: 0.0.1-beta2
       webpack:
         specifier: 'catalog:'
-        version: 5.96.1(@swc/core@1.15.3)(esbuild@0.27.2)
+        version: 5.96.1(@swc/core@1.15.3)
 
   ai_dev_utils/mcp:
     dependencies:
@@ -1096,6 +1096,9 @@ importers:
       '@inquirer/prompts':
         specifier: 'catalog:'
         version: 7.9.0(@types/node@24.5.1)
+      '@modelcontextprotocol/sdk':
+        specifier: 'catalog:'
+        version: 1.0.0
       '@snapback/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
@@ -1144,6 +1147,9 @@ importers:
       ora:
         specifier: 'catalog:'
         version: 5.4.1
+      zod:
+        specifier: 'catalog:'
+        version: 3.25.76
     devDependencies:
       '@vitest/coverage-v8':
         specifier: 'catalog:'
@@ -1165,10 +1171,10 @@ importers:
     dependencies:
       '@mdx-js/loader':
         specifier: 'catalog:'
-        version: 3.1.1(webpack@5.96.1(@swc/core@1.15.3)(esbuild@0.27.2))
+        version: 3.1.1(webpack@5.96.1(@swc/core@1.15.3))
       '@next/mdx':
         specifier: 'catalog:'
-        version: 16.1.0(@mdx-js/loader@3.1.1(webpack@5.96.1(@swc/core@1.15.3)(esbuild@0.27.2)))(@mdx-js/react@3.1.1(@types/react@19.1.13)(react@19.1.2))
+        version: 16.1.0(@mdx-js/loader@3.1.1(webpack@5.96.1(@swc/core@1.15.3)))(@mdx-js/react@3.1.1(@types/react@19.1.13)(react@19.1.2))
       '@next/third-parties':
         specifier: 'catalog:'
         version: 16.1.0(next@16.1.0(@babel/core@7.28.5)(@opentelemetry/api@1.9.0)(@playwright/test@1.57.0)(react-dom@19.1.2(react@19.1.2))(react@19.1.2))(react@19.1.2)
@@ -2532,6 +2538,58 @@ importers:
       '@huggingface/transformers':
         specifier: ^3.0.0
         version: 3.8.1
+
+  packages/mcp:
+    dependencies:
+      '@modelcontextprotocol/sdk':
+        specifier: 'catalog:'
+        version: 1.0.0
+      '@snapback/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+      '@snapback/core':
+        specifier: workspace:*
+        version: link:../core
+      '@snapback/engine':
+        specifier: workspace:*
+        version: link:../engine
+      '@snapback/infrastructure':
+        specifier: workspace:*
+        version: link:../infrastructure
+      '@snapback/intelligence':
+        specifier: workspace:*
+        version: link:../intelligence
+      '@snapback/sdk':
+        specifier: workspace:*
+        version: link:../sdk
+      ky:
+        specifier: 'catalog:'
+        version: 1.7.2
+      opossum:
+        specifier: 'catalog:'
+        version: 9.0.0
+      zod:
+        specifier: 'catalog:'
+        version: 3.25.76
+    devDependencies:
+      '@snapback/tsconfig':
+        specifier: workspace:*
+        version: link:../../tooling/typescript
+      '@types/node':
+        specifier: 'catalog:'
+        version: 24.5.1
+      '@types/opossum':
+        specifier: 'catalog:'
+        version: 8.1.9
+      tsup:
+        specifier: 'catalog:'
+        version: 8.5.0(@swc/core@1.15.3)(jiti@2.6.1)(postcss@8.5.6)(tsx@4.20.5)(typescript@5.9.2)(yaml@2.8.2)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.2
+      vitest:
+        specifier: 'catalog:'
+        version: 3.2.4(@types/debug@4.1.12)(@types/node@24.5.1)(@vitest/ui@3.2.4)(happy-dom@20.0.10)(jiti@2.6.1)(jsdom@26.0.0)(lightningcss@1.30.1)(msw@2.12.4(@types/node@24.5.1)(typescript@5.9.2))(terser@5.44.1)(tsx@4.20.5)(yaml@2.8.2)
 
   packages/mcp-config:
     dependencies:
@@ -16800,6 +16858,15 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@mdx-js/loader@3.1.1(webpack@5.96.1(@swc/core@1.15.3))':
+    dependencies:
+      '@mdx-js/mdx': 3.1.1
+      source-map: 0.7.6
+    optionalDependencies:
+      webpack: 5.96.1(@swc/core@1.15.3)
+    transitivePeerDependencies:
+      - supports-color
+
   '@mdx-js/mdx@2.3.0':
     dependencies:
       '@types/estree-jsx': 1.0.5
@@ -16981,6 +17048,13 @@ snapshots:
       source-map: 0.7.6
     optionalDependencies:
       '@mdx-js/loader': 3.1.1(webpack@5.96.1(@swc/core@1.15.3)(esbuild@0.27.2))
+      '@mdx-js/react': 3.1.1(@types/react@19.1.13)(react@19.1.2)
+
+  '@next/mdx@16.1.0(@mdx-js/loader@3.1.1(webpack@5.96.1(@swc/core@1.15.3)))(@mdx-js/react@3.1.1(@types/react@19.1.13)(react@19.1.2))':
+    dependencies:
+      source-map: 0.7.6
+    optionalDependencies:
+      '@mdx-js/loader': 3.1.1(webpack@5.96.1(@swc/core@1.15.3))
       '@mdx-js/react': 3.1.1(@types/react@19.1.13)(react@19.1.2)
 
   '@next/swc-darwin-arm64@16.1.0':
@@ -27521,6 +27595,17 @@ snapshots:
       '@swc/core': 1.15.3
       esbuild: 0.27.2
 
+  terser-webpack-plugin@5.3.15(@swc/core@1.15.3)(webpack@5.96.1(@swc/core@1.15.3)):
+    dependencies:
+      '@jridgewell/trace-mapping': 0.3.31
+      jest-worker: 27.5.1
+      schema-utils: 4.3.3
+      serialize-javascript: 6.0.2
+      terser: 5.44.1
+      webpack: 5.96.1(@swc/core@1.15.3)
+    optionalDependencies:
+      '@swc/core': 1.15.3
+
   terser@5.44.1:
     dependencies:
       '@jridgewell/source-map': 0.3.11
@@ -28257,6 +28342,36 @@ snapshots:
   webpack-sources@3.3.3: {}
 
   webpack-virtual-modules@0.5.0: {}
+
+  webpack@5.96.1(@swc/core@1.15.3):
+    dependencies:
+      '@types/eslint-scope': 3.7.7
+      '@types/estree': 1.0.8
+      '@webassemblyjs/ast': 1.14.1
+      '@webassemblyjs/wasm-edit': 1.14.1
+      '@webassemblyjs/wasm-parser': 1.14.1
+      acorn: 8.15.0
+      browserslist: 4.28.1
+      chrome-trace-event: 1.0.4
+      enhanced-resolve: 5.18.3
+      es-module-lexer: 1.7.0
+      eslint-scope: 5.1.1
+      events: 3.3.0
+      glob-to-regexp: 0.4.1
+      graceful-fs: 4.2.11
+      json-parse-even-better-errors: 2.3.1
+      loader-runner: 4.3.1
+      mime-types: 2.1.35
+      neo-async: 2.6.2
+      schema-utils: 3.3.0
+      tapable: 2.3.0
+      terser-webpack-plugin: 5.3.15(@swc/core@1.15.3)(webpack@5.96.1(@swc/core@1.15.3))
+      watchpack: 2.4.4
+      webpack-sources: 3.3.3
+    transitivePeerDependencies:
+      - '@swc/core'
+      - esbuild
+      - uglify-js
 
   webpack@5.96.1(@swc/core@1.15.3)(esbuild@0.27.2):
     dependencies:

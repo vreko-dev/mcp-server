@@ -285,18 +285,37 @@ export class SnapBackAPIClient {
 	 * Generic request method for MCP operations
 	 * Used by learning tools and activity reporter
 	 *
+	 * Uses the /v1/mcp/execute endpoint which accepts tool names directly.
+	 * Converts old-style method names (mcp.startSession) to tool names (snapback.start_session).
+	 *
 	 * @param method - The API method name (e.g., 'mcp.startSession')
 	 * @param params - Optional parameters for the request
 	 * @returns The API response
 	 */
 	async request<T = unknown>(method: string, params?: Record<string, unknown>): Promise<T> {
-		// Convert method name to endpoint path
-		// e.g., 'mcp.startSession' -> 'api/mcp/startSession'
-		const endpoint = `api/${method.replace(/\./g, "/")}`;
+		// Map old-style method names to tool names for /v1/mcp/execute endpoint
+		// e.g., 'mcp.startSession' -> 'snapback.start_session'
+		const methodMap: Record<string, string> = {
+			"mcp.startSession": "snapback.start_session",
+			"mcp.getRecommendations": "snapback.get_recommendations",
+			"mcp.recordActivity": "snapback.record_activity",
+			"mcp.recordLearning": "snapback.record_learning",
+			"mcp.getSessionStats": "snapback.session_stats",
+			"mcp.endSession": "snapback.end_session",
+		};
 
-		return this.fetchAPI<T>(endpoint, {
+		const tool = methodMap[method] || method;
+
+		return this.fetchAPI<T>("v1/mcp/execute", {
 			method: "POST",
-			body: params ? JSON.stringify(params) : undefined,
+			headers: {
+				"content-type": "application/json",
+				accept: "application/json",
+			},
+			body: JSON.stringify({
+				tool,
+				args: params || {},
+			}),
 		});
 	}
 }

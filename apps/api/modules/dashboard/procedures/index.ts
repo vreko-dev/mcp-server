@@ -4,6 +4,8 @@ export { getLearningStats } from "./get-learning-stats";
 export { getMetrics } from "./get-metrics";
 export { getRecentActivity } from "./get-recent-activity";
 export { getSessionMetrics } from "./get-session-metrics";
+export { getSnapshotSuggestions } from "./get-snapshot-suggestions";
 export { getSubscriptionData } from "./get-subscription-data";
+export { getTeamAggregation } from "./get-team-aggregation";
 export { getUserMetrics } from "./get-user-metrics";
 export { getVitalsStats } from "./get-vitals-stats";

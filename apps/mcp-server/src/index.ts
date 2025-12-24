@@ -22,19 +22,8 @@ export function mcpWarn(message: string, ...args: unknown[]): void {
 	}
 }
 
-/**
- * Format JSON data for MCP response.
- * MCP protocol only supports "text", "image", and "resource" content types.
- * JSON must be serialized as text.
- */
-export function formatJsonResponse(data: unknown, additionalText?: string): { type: "text"; text: string }[] {
-	const jsonText = JSON.stringify(data, null, 2);
-	const content: { type: "text"; text: string }[] = [{ type: "text", text: jsonText }];
-	if (additionalText) {
-		content.push({ type: "text", text: additionalText });
-	}
-	return content;
-}
+// Re-export formatJsonResponse from utils for backward compatibility
+export { formatJsonResponse } from "./utils/format";
 
 if (process.env.SNAPBACK_MCP_SELFTEST === "1") {
 	const rssMB = Math.round(process.memoryUsage().rss / 1024 / 1024);
@@ -79,8 +68,20 @@ import {
 	handleCtxCheck,
 	handleCtxConstraint,
 	handleCtxInit,
+	handleCtxStatus,
 	handleCtxValidate,
 } from "./tools/ctx-tools";
+import {
+	EndSessionSchema,
+	GetRecommendationsSchema,
+	handleEndSession,
+	handleGetRecommendations,
+	handleSessionStats,
+	handleStartSession,
+	learningToolDefinitions,
+	SessionStatsSchema,
+	StartSessionSchema,
+} from "./tools/learning-tools";
 import { addSnapshot, listSnapshots } from "./tools/list-snapshots";
 import { restoreSnapshot } from "./tools/restore-snapshot";
 import { createErrorResult, snapbackToolDefinitions, toolNameMigrations } from "./tools/tool-definitions-v2";
@@ -301,6 +302,12 @@ export async function startServer(): Promise<{
 				inputSchema: tool.inputSchema,
 				// Include annotations if present (per MCP spec)
 				...(tool.annotations && { annotations: tool.annotations }),
+			})),
+			// Learning/session tools (personalization + session lifecycle)
+			...learningToolDefinitions.map((tool) => ({
+				name: tool.name,
+				description: tool.description,
+				inputSchema: tool.inputSchema,
 			})),
 		],
 	}));
@@ -728,6 +735,35 @@ You can restore this snapshot using its ID.`,
 
 			if (name === "snapback.ctx_check") {
 				return await handleCtxCheck(args);
+			}
+
+			if (name === "snapback.ctx_status") {
+				return await handleCtxStatus(args);
+			}
+
+			// Learning/session tools
+			if (name === "snapback.start_session") {
+				const parsed = StartSessionSchema.parse(args);
+				const workspaceRoot = process.cwd();
+				return await handleStartSession(parsed, apiClient, workspaceRoot);
+			}
+
+			if (name === "snapback.get_recommendations") {
+				const parsed = GetRecommendationsSchema.parse(args);
+				const workspaceRoot = process.cwd();
+				return await handleGetRecommendations(parsed, apiClient, workspaceRoot);
+			}
+
+			if (name === "snapback.session_stats") {
+				const parsed = SessionStatsSchema.parse(args);
+				const workspaceRoot = process.cwd();
+				return await handleSessionStats(parsed, apiClient, workspaceRoot);
+			}
+
+			if (name === "snapback.end_session") {
+				const parsed = EndSessionSchema.parse(args);
+				const workspaceRoot = process.cwd();
+				return await handleEndSession(parsed, apiClient, workspaceRoot);
 			}
 
 			throw new Error(`Unknown tool: ${name}`);

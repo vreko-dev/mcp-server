@@ -8,6 +8,14 @@ pre-commit:
                 - merge
                 - rebase
 
+        context-validate:
+            priority: 2
+            glob: ".snapback/ctx/context.json"
+            run: node tooling/scripts/context-validate.mjs
+            skip:
+                - merge
+                - rebase
+
         quality:
             glob: "**/*.{ts,tsx,js,jsx,json}"
             run: pnpm biome check --write --no-errors-on-unmatched {staged_files}

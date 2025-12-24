@@ -646,6 +646,7 @@ export class HybridDocService {
 			await this.storage.save({
 				id: key,
 				timestamp: Date.now(),
+				version: "1.0.0",
 				meta: {
 					cacheType: "hybrid-doc",
 					createdAt: Date.now(),

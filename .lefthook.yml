@@ -102,6 +102,14 @@ pre-commit:
 pre-push:
     parallel: false
     commands:
+        package-exports-validation:
+            run: |
+                echo '📦 Validating package exports...'
+                node tooling/scripts/validate-package-exports.mjs
+            skip:
+                - merge
+                - rebase
+
         test-suite-validation:
             glob: "**/*.test.ts"
             run: |

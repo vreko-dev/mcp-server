@@ -235,7 +235,7 @@ export async function handleStartSession(
 
 			return {
 				content: [
-					{ type: "json", json: result },
+					{ type: "text", text: JSON.stringify(result, null, 2) },
 					{
 						type: "text",
 						text: formatSessionGuidance(result.guidance?.recommendations || []),
@@ -269,7 +269,7 @@ export async function handleStartSession(
 
 	return {
 		content: [
-			{ type: "json", json: guidance },
+			{ type: "text", text: JSON.stringify(guidance, null, 2) },
 			{
 				type: "text",
 				text: formatLocalSessionStart(guidance, taskDescription),
@@ -304,7 +304,7 @@ export async function handleGetRecommendations(
 
 			return {
 				content: [
-					{ type: "json", json: result },
+					{ type: "text", text: JSON.stringify(result, null, 2) },
 					{
 						type: "text",
 						text: formatRecommendations(result.recommendations || []),
@@ -322,7 +322,10 @@ export async function handleGetRecommendations(
 
 	return {
 		content: [
-			{ type: "json", json: { recommendations, source: "local" } },
+			{
+				type: "text",
+				text: JSON.stringify({ recommendations, source: "local" }, null, 2),
+			},
 			{
 				type: "text",
 				text: formatLocalRecommendations(recommendations),
@@ -351,7 +354,7 @@ export async function handleSessionStats(
 
 			return {
 				content: [
-					{ type: "json", json: result },
+					{ type: "text", text: JSON.stringify(result, null, 2) },
 					{
 						type: "text",
 						text: formatSessionStats(result),
@@ -370,7 +373,10 @@ export async function handleSessionStats(
 	if (!session) {
 		return {
 			content: [
-				{ type: "json", json: { active: false } },
+				{
+					type: "text",
+					text: JSON.stringify({ active: false }, null, 2),
+				},
 				{
 					type: "text",
 					text: "📊 No active session. Use `snapback.start_session` to begin.",
@@ -394,7 +400,7 @@ export async function handleSessionStats(
 
 	return {
 		content: [
-			{ type: "json", json: stats },
+			{ type: "text", text: JSON.stringify(stats, null, 2) },
 			{
 				type: "text",
 				text: formatLocalSessionStats(stats),
@@ -532,7 +538,16 @@ function getSessionCoaching(snapshotCount: number, filesModified: number): strin
 export const learningToolDefinitions = [
 	{
 		name: "snapback.start_session",
-		description: `**Purpose:** Start a new development session with personalized context.
+		description: `**Purpose:** PERSONALIZATION tool - loads user preferences and past learnings for tailored recommendations.
+
+**Signal Words (when to auto-trigger):**
+- "start session", "begin work", "new session"
+- "what should I work on", "recommendations"
+- At the beginning of a conversation
+
+**Key Difference from prepare_workspace:**
+- prepare_workspace: RISK ASSESSMENT (protection score, snapshot decision support)
+- start_session: PERSONALIZATION (user preferences, past learnings)
 
 **When to Use:**
 - At the beginning of a coding session
@@ -541,7 +556,7 @@ export const learningToolDefinitions = [
 
 **Returns:**
 - Session ID for tracking
-- Personalized recommendations based on your patterns
+- Personalized recommendations based on YOUR patterns
 - User preferences for this workspace
 
 **Offline Behavior:** Falls back to local .snapback/ data`,

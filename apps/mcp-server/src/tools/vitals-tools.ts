@@ -129,54 +129,56 @@ export async function handleGetWorkspaceVitals(args: unknown): Promise<{
 		const calibration = vitals.getCalibrationProfile();
 		const behaviorStats = vitals.getBehaviorStats();
 
+		const vitalsData = {
+			vitals: {
+				pulse: current.pulse,
+				temperature: current.temperature,
+				pressure: current.pressure,
+				oxygen: current.oxygen,
+				trajectory: current.trajectory,
+			},
+			guidance: {
+				shouldSnapshot: guidance.shouldSnapshot,
+				snapshotReason: guidance.snapshotReason,
+				riskyFiles: guidance.riskyFiles,
+				safeOperations: guidance.safeOperations,
+				blockedOperations: guidance.blockedOperations,
+				suggestion: guidance.suggestion,
+			},
+			recommendation: {
+				should: snapshotDecision.should,
+				reason: snapshotDecision.reason,
+				urgency: snapshotDecision.urgency,
+			},
+			forecast: {
+				current: forecast.current,
+				in5Minutes: forecast.in5Minutes,
+				in10Minutes: forecast.in10Minutes,
+				trend: forecast.trend,
+				confidence: forecast.confidence,
+				timeToStateChange: forecast.timeToStateChange,
+			},
+			calibration: {
+				status: calibration.status,
+				observationCount: calibration.observationCount,
+				confidence: calibration.confidence,
+				riskTolerance: calibration.riskTolerance,
+			},
+			behaviorStats: {
+				riskProfile: behaviorStats.riskProfile,
+				totalObservations: behaviorStats.totalObservations,
+				alignedSnapshots: behaviorStats.alignedSnapshots,
+				earlySnapshots: behaviorStats.earlySnapshots,
+				lateSnapshots: behaviorStats.lateSnapshots,
+				missedRecommendations: behaviorStats.missedRecommendations,
+			},
+		};
+
 		return {
 			content: [
 				{
-					type: "json",
-					json: {
-						vitals: {
-							pulse: current.pulse,
-							temperature: current.temperature,
-							pressure: current.pressure,
-							oxygen: current.oxygen,
-							trajectory: current.trajectory,
-						},
-						guidance: {
-							shouldSnapshot: guidance.shouldSnapshot,
-							snapshotReason: guidance.snapshotReason,
-							riskyFiles: guidance.riskyFiles,
-							safeOperations: guidance.safeOperations,
-							blockedOperations: guidance.blockedOperations,
-							suggestion: guidance.suggestion,
-						},
-						recommendation: {
-							should: snapshotDecision.should,
-							reason: snapshotDecision.reason,
-							urgency: snapshotDecision.urgency,
-						},
-						forecast: {
-							current: forecast.current,
-							in5Minutes: forecast.in5Minutes,
-							in10Minutes: forecast.in10Minutes,
-							trend: forecast.trend,
-							confidence: forecast.confidence,
-							timeToStateChange: forecast.timeToStateChange,
-						},
-						calibration: {
-							status: calibration.status,
-							observationCount: calibration.observationCount,
-							confidence: calibration.confidence,
-							riskTolerance: calibration.riskTolerance,
-						},
-						behaviorStats: {
-							riskProfile: behaviorStats.riskProfile,
-							totalObservations: behaviorStats.totalObservations,
-							alignedSnapshots: behaviorStats.alignedSnapshots,
-							earlySnapshots: behaviorStats.earlySnapshots,
-							lateSnapshots: behaviorStats.lateSnapshots,
-							missedRecommendations: behaviorStats.missedRecommendations,
-						},
-					},
+					type: "text",
+					text: JSON.stringify(vitalsData, null, 2),
 				},
 				{
 					type: "text",
@@ -219,19 +221,21 @@ export async function handleAcknowledgeRisk(args: unknown): Promise<{
 		const vitals = WorkspaceVitals.for(workspaceId);
 		const current = vitals.current();
 
+		const ackData = {
+			acknowledged: true,
+			filesCount: parsed.files.length,
+			reason: parsed.reason,
+			currentState: {
+				trajectory: current.trajectory,
+				pressure: current.pressure.value,
+			},
+		};
+
 		return {
 			content: [
 				{
-					type: "json",
-					json: {
-						acknowledged: true,
-						filesCount: parsed.files.length,
-						reason: parsed.reason,
-						currentState: {
-							trajectory: current.trajectory,
-							pressure: current.pressure.value,
-						},
-					},
+					type: "text",
+					text: JSON.stringify(ackData, null, 2),
 				},
 				{
 					type: "text",

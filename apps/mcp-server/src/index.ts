@@ -22,6 +22,20 @@ export function mcpWarn(message: string, ...args: unknown[]): void {
 	}
 }
 
+/**
+ * Format JSON data for MCP response.
+ * MCP protocol only supports "text", "image", and "resource" content types.
+ * JSON must be serialized as text.
+ */
+export function formatJsonResponse(data: unknown, additionalText?: string): { type: "text"; text: string }[] {
+	const jsonText = JSON.stringify(data, null, 2);
+	const content: { type: "text"; text: string }[] = [{ type: "text", text: jsonText }];
+	if (additionalText) {
+		content.push({ type: "text", text: additionalText });
+	}
+	return content;
+}
+
 if (process.env.SNAPBACK_MCP_SELFTEST === "1") {
 	const rssMB = Math.round(process.memoryUsage().rss / 1024 / 1024);
 	process.stderr.write(`SnapBack MCP Server started rssMB=${rssMB}\n`);
@@ -37,7 +51,7 @@ import {
 	ReadResourceRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { SnapBackEventBusEventEmitter2 as SnapBackEventBus } from "@snapback/contracts";
-import { DependencyAnalyzer, MCPClientManager, validateToolArgs } from "@snapback/core";
+import { MCPClientManager, validateToolArgs } from "@snapback/core";
 import { MCPEngineAdapter } from "@snapback/engine/transports/mcp";
 import { evaluate } from "@snapback/intelligence/policy";
 import { z } from "zod";
@@ -45,37 +59,24 @@ import { authenticate, hasToolAccess } from "./auth";
 import { ExtensionIPCClient } from "./client/extension-ipc";
 import { SnapBackAPIClient } from "./client/snapback-api";
 import { getMCPConfig, onMCPConfigChange } from "./config";
-import { Context7Service } from "./context7/index";
 import { MCPHttpServer } from "./http-server";
 import { handleReadResource, listResources } from "./resources/snap-resources";
 import { AnalysisRouter } from "./services/AnalysisRouter";
-import { createCustomerWorkspaceSources } from "./tools/composer-sources";
 import {
 	CheckPatternsSchema,
-	contextToolDefinitions,
 	GetContextSchema,
 	handleCheckPatterns,
 	handleGetContext,
-	handlePrepareWorkspace,
 	handleRecordLearning,
 	handleValidateCode,
-	PrepareWorkspaceSchema,
 	RecordLearningSchema,
 	ValidateCodeSchema,
 } from "./tools/context-tools";
 import { CreateSnapshotSchema, createSnapshot } from "./tools/create-snapshot";
-import {
-	GetRecommendationsSchema,
-	handleGetRecommendations,
-	handleSessionStats,
-	handleStartSession,
-	learningToolDefinitions,
-	SessionStatsSchema,
-	StartSessionSchema,
-} from "./tools/learning-tools";
 import { addSnapshot, listSnapshots } from "./tools/list-snapshots";
 import { restoreSnapshot, storeSnapshotContent } from "./tools/restore-snapshot";
 import { createErrorResult, snapbackToolDefinitions, toolNameMigrations } from "./tools/tool-definitions-v2";
+import { validateRecommendation } from "./tools/validate-recommendation";
 import { handleAcknowledgeRisk, handleGetWorkspaceVitals } from "./tools/vitals-tools";
 import { ActivityReporter } from "./utils/activity-reporter";
 import { addResult, createSarifLog } from "./utils/sarif";
@@ -159,22 +160,35 @@ export async function startServer(): Promise<{
 	// guardian.addPlugin(new MockReplacementPlugin());
 	// guardian.addPlugin(new PhantomDependencyPlugin());
 
-	const dep = new DependencyAnalyzer();
-
 	// Initialize the new engine adapter for local analysis
 	const engineAdapter = new MCPEngineAdapter();
 	mcpLog("[SnapBack MCP] Engine adapter initialized for local analysis");
 
-	// Use StorageBrokerAdapter instead of LocalStorage for single-writer discipline
-	// Use the standard workspace database path
-	const sdkModule = await import("@snapback/sdk");
-	const StorageBrokerAdapter = sdkModule.StorageBrokerAdapter;
-	const storage = new StorageBrokerAdapter(`${process.cwd()}/.snapback/snapback.db`);
-	await storage.initialize();
+	// Try StorageBrokerAdapter (SQLite) first, fall back to MemoryStorage if better-sqlite3 unavailable
+	// Per docs: "MCP Server: Primary: MemoryStorage (ephemeral), Rationale: MCP sessions are short-lived"
+	let storage: import("@snapback/sdk").StorageAdapter;
+	try {
+		const sdkModule = await import("@snapback/sdk");
+		const StorageBrokerAdapter = sdkModule.StorageBrokerAdapter;
+		const sqliteStorage = new StorageBrokerAdapter(`${process.cwd()}/.snapback/snapback.db`);
+		await sqliteStorage.initialize();
+		storage = sqliteStorage;
+		mcpLog("[SnapBack MCP] Using SQLite storage (StorageBrokerAdapter)");
+	} catch (storageError) {
+		// better-sqlite3 native module likely failed to load (common in sandboxed environments)
+		// Fall back to MemoryStorage - MCP sessions are ephemeral anyway
+		mcpLog("[SnapBack MCP] SQLite storage unavailable, using MemoryStorage (ephemeral)");
+		if (!MCP_QUIET) {
+			console.error(
+				"[SnapBack MCP] Storage fallback reason:",
+				storageError instanceof Error ? storageError.message : storageError,
+			);
+		}
+		const { MemoryStorage } = await import("@snapback/sdk");
+		storage = new MemoryStorage();
+	}
 
 	const mcpManager = new MCPClientManager();
-	// Initialize Context7 service for documentation and code search
-	const context7Service = new Context7Service(storage);
 
 	// Initialize event bus for pub/sub with EventEmitter2
 	const eventBus = new SnapBackEventBus();
@@ -252,7 +266,10 @@ export async function startServer(): Promise<{
 	}
 
 	const server = new Server(
-		{ name: "snapback-mcp", version: "0.1.1" },
+		{
+			name: "snapback-mcp",
+			version: "0.1.1",
+		},
 		{
 			capabilities: {
 				tools: {},
@@ -269,7 +286,7 @@ export async function startServer(): Promise<{
 	// See: ai_dev_utils/resources/mpc_defs/mcp-tool-naming-audit.md
 	server.setRequestHandler(ListToolsRequestSchema, async () => ({
 		tools: [
-			// V2 tool definitions with proper MCP annotations
+			// V2 consolidated tool definitions (12 tools total)
 			...snapbackToolDefinitions.map((tool) => ({
 				name: tool.name,
 				description: tool.description,
@@ -277,10 +294,6 @@ export async function startServer(): Promise<{
 				// Include annotations if present (per MCP spec)
 				...(tool.annotations && { annotations: tool.annotations }),
 			})),
-			// Context intelligence tools (includes prepare_workspace)
-			...contextToolDefinitions,
-			// Learning tools (session management and personalized recommendations)
-			...learningToolDefinitions,
 		],
 	}));
 
@@ -353,8 +366,8 @@ export async function startServer(): Promise<{
 
 					return {
 						content: [
-							{ type: "json", json: risk },
-							{ type: "json", json: sarifLog },
+							{ type: "text", text: JSON.stringify(risk, null, 2) },
+							{ type: "text", text: JSON.stringify(sarifLog, null, 2) },
 							{
 								type: "text",
 								text: `Policy Decision: ${policyDecision.action.toUpperCase()}
@@ -381,16 +394,48 @@ ${risk.session.coaching || ""}`,
 				}
 			}
 
-			// V2 renamed: snapback.check_dependencies → snapback.validate_dependencies
-			if (name === "snapback.validate_dependencies") {
+			if (name === "snapback.validate_recommendation") {
 				const parsed = z
 					.object({
-						before: z.record(z.string(), z.any()),
-						after: z.record(z.string(), z.any()),
+						packageName: z.string(),
+						targetVersion: z.string(),
+						currentPackageJson: z.object({
+							dependencies: z.record(z.string()).optional(),
+							devDependencies: z.record(z.string()).optional(),
+							peerDependencies: z.record(z.string()).optional(),
+						}),
+						context: z
+							.object({
+								aiAssistant: z.string().optional(),
+								recommendationReason: z.string().optional(),
+							})
+							.optional(),
 					})
 					.parse(args);
-				const result = dep.quickAnalyze(parsed.before, parsed.after);
-				return { content: [{ type: "json", json: result }] };
+
+				try {
+					const result = await validateRecommendation(parsed, storage);
+					return {
+						content: [
+							{ type: "text", text: JSON.stringify(result, null, 2) },
+							{
+								type: "text",
+								text: result.summary,
+							},
+						],
+					};
+				} catch (error) {
+					const sanitized = sanitizeError(error, "validate_recommendation");
+					return {
+						content: [
+							{
+								type: "text",
+								text: `❌ Validation failed: ${sanitized.message} (Log ID: ${sanitized.logId})`,
+							},
+						],
+						isError: true,
+					};
+				}
 			}
 
 			if (name === "snapback.create_snapshot") {
@@ -408,7 +453,7 @@ ${risk.session.coaching || ""}`,
 
 					return {
 						content: [
-							{ type: "json", json: sarifLog },
+							{ type: "text", text: JSON.stringify(sarifLog, null, 2) },
 							{
 								type: "text",
 								text: "❌ This tool requires a Pro subscription. Upgrade at https://snapback.dev/pricing",
@@ -492,7 +537,7 @@ You can restore this snapshot using its ID.`,
 
 					return {
 						content: [
-							{ type: "json", json: sarifLog },
+							{ type: "text", text: JSON.stringify(sarifLog, null, 2) },
 							{
 								type: "text",
 								text: "❌ This tool requires a Pro subscription. Upgrade at https://snapback.dev/pricing",
@@ -515,7 +560,7 @@ You can restore this snapshot using its ID.`,
 					};
 				}
 
-				return { content: [{ type: "json", json: result.snapshots }] };
+				return { content: [{ type: "text", text: JSON.stringify(result.snapshots, null, 2) }] };
 			}
 
 			if (name === "snapback.restore_snapshot") {
@@ -533,7 +578,7 @@ You can restore this snapshot using its ID.`,
 
 					return {
 						content: [
-							{ type: "json", json: sarifLog },
+							{ type: "text", text: JSON.stringify(sarifLog, null, 2) },
 							{
 								type: "text",
 								text: "❌ This tool requires a Pro subscription. Upgrade at https://snapback.dev/pricing",
@@ -557,46 +602,13 @@ You can restore this snapshot using its ID.`,
 					};
 				}
 
-				return { content: [{ type: "json", json: result.snapshot }] };
+				return { content: [{ type: "text", text: JSON.stringify(result.snapshot, null, 2) }] };
 			}
 
 			// V2 renamed: catalog.list_tools → snapback.meta_list_tools
 			if (name === "snapback.meta_list_tools") {
 				const catalog = mcpManager.getToolCatalog();
-				return { content: [{ type: "json", json: catalog }] };
-			}
-
-			// Handle documentation tools (V2 aliases: ctx7.* → snapback.docs_*)
-			// Both old and new names work via migration layer
-			if (name === "snapback.docs_find") {
-				const parsed = z.object({ libraryName: z.string().min(1) }).parse(args);
-				const result = await trackPerformance("docs_find", () =>
-					context7Service.resolveLibraryId(parsed.libraryName),
-				);
-				return result;
-			}
-
-			if (name === "snapback.docs_fetch") {
-				const parsed = z
-					.object({
-						// Accept both old and new parameter names
-						context7CompatibleLibraryID: z.string().min(1).optional(),
-						library_id: z.string().min(1).optional(),
-						topic: z.string().optional(),
-						tokens: z.number().optional(),
-					})
-					.refine((data) => data.context7CompatibleLibraryID || data.library_id, {
-						message: "Either context7CompatibleLibraryID or library_id is required",
-					})
-					.parse(args);
-				const libraryId = parsed.library_id || parsed.context7CompatibleLibraryID || "";
-				const result = await trackPerformance("docs_fetch", () =>
-					context7Service.getLibraryDocs(libraryId, {
-						topic: parsed.topic,
-						tokens: parsed.tokens,
-					}),
-				);
-				return result;
+				return { content: [{ type: "text", text: JSON.stringify(catalog, null, 2) }] };
 			}
 
 			// Handle proxied tools from external MCP servers
@@ -606,29 +618,13 @@ You can restore this snapshot using its ID.`,
 			}
 
 			// Intelligence context tools
-			if (name === "snapback.prepare_workspace") {
-				const parsed = PrepareWorkspaceSchema.parse(args);
-				const workspaceRoot = process.cwd();
-				const sources = createCustomerWorkspaceSources(workspaceRoot);
-				const result = await handlePrepareWorkspace(parsed, workspaceRoot, sources);
-				return {
-					content: [
-						{ type: "json", json: result },
-						{
-							type: "text",
-							text: `${result.protection.badge} Protection Score: ${result.protection.score}%\n${result.snapshot.recommended ? `${result.snapshot.badge} Snapshot recommended: ${result.snapshot.reason}` : ""}\n${result.memory.found ? `${result.memory.badge} ${result.memory.lesson}` : ""}`,
-						},
-					],
-				};
-			}
-
 			if (name === "snapback.get_context") {
 				const parsed = GetContextSchema.parse(args);
 				const workspaceRoot = process.cwd();
 				const result = await handleGetContext(parsed, workspaceRoot);
 				return {
 					content: [
-						{ type: "json", json: result },
+						{ type: "text", text: JSON.stringify(result, null, 2) },
 						{ type: "text", text: result.hint },
 					],
 				};
@@ -640,7 +636,7 @@ You can restore this snapshot using its ID.`,
 				const result = await handleCheckPatterns(parsed, workspaceRoot);
 				return {
 					content: [
-						{ type: "json", json: result },
+						{ type: "text", text: JSON.stringify(result, null, 2) },
 						{ type: "text", text: result.suggestion },
 					],
 				};
@@ -652,7 +648,7 @@ You can restore this snapshot using its ID.`,
 				const result = await handleValidateCode(parsed, workspaceRoot);
 				return {
 					content: [
-						{ type: "json", json: result },
+						{ type: "text", text: JSON.stringify(result, null, 2) },
 						{ type: "text", text: result.suggestion },
 					],
 				};
@@ -664,7 +660,7 @@ You can restore this snapshot using its ID.`,
 				const result = await handleRecordLearning(parsed, workspaceRoot);
 				return {
 					content: [
-						{ type: "json", json: result },
+						{ type: "text", text: JSON.stringify(result, null, 2) },
 						{ type: "text", text: result.message },
 					],
 				};
@@ -677,22 +673,6 @@ You can restore this snapshot using its ID.`,
 
 			if (name === "snapback.acknowledge_risk") {
 				return await handleAcknowledgeRisk(args);
-			}
-
-			// Learning tools (session management and personalized recommendations)
-			if (name === "snapback.start_session") {
-				const parsed = StartSessionSchema.parse(args);
-				return await handleStartSession(parsed, apiClient, workspaceRoot);
-			}
-
-			if (name === "snapback.get_recommendations") {
-				const parsed = GetRecommendationsSchema.parse(args);
-				return await handleGetRecommendations(parsed, apiClient, workspaceRoot);
-			}
-
-			if (name === "snapback.session_stats") {
-				const parsed = SessionStatsSchema.parse(args);
-				return await handleSessionStats(parsed, apiClient, workspaceRoot);
 			}
 
 			throw new Error(`Unknown tool: ${name}`);

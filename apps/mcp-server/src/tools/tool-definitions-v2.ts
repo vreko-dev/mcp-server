@@ -91,6 +91,13 @@ export const assessRiskTool: SnapBackToolDefinition = {
 	name: "snapback.assess_risk",
 	description: `Evaluates code changes for potential issues before applying them.
 
+**Signal Words (when to auto-trigger):**
+- "is this safe", "safe to apply", "risky"
+- "before I accept", "should I accept"
+- "AI suggested", "Copilot suggested", "Claude suggested"
+- "breaking change", "major refactor"
+- User mentions: auth, security, payments, database, migrations
+
 **When to call this tool:**
 - BEFORE accepting AI-generated code from Cursor, Copilot, Claude, or Windsurf
 - When reviewing diffs with security-sensitive changes (auth, payments, config)
@@ -180,94 +187,6 @@ Returns risk assessment with severity levels and specific mitigation steps.`,
 	requiresBackend: false,
 };
 
-/**
- * snapback.validate_dependencies
- *
- * Renamed from: snapback.check_dependencies
- * Rationale: "validate" is more decisive than passive "check"
- */
-export const validateDependenciesTool: SnapBackToolDefinition = {
-	name: "snapback.validate_dependencies",
-	description: `Validates dependency changes for breaking risks and vulnerabilities.
-
-**When to call this tool:**
-- After modifying package.json dependencies
-- Before running npm/pnpm/yarn install with new packages
-- When troubleshooting "module not found" or version conflicts
-- After AI suggests adding a new dependency
-
-Returns compatibility analysis and known vulnerability warnings.`,
-
-	inputSchema: {
-		type: "object",
-		properties: {
-			before: {
-				type: "object",
-				description: "Dependencies object before changes",
-				additionalProperties: { type: "string" },
-			},
-			after: {
-				type: "object",
-				description: "Dependencies object after changes",
-				additionalProperties: { type: "string" },
-			},
-		},
-		required: ["before", "after"],
-	},
-
-	outputSchema: createOutputSchemaWithNextActions({
-		added: {
-			type: "array",
-			items: { type: "string" },
-			description: "Newly added dependencies",
-		},
-		removed: {
-			type: "array",
-			items: { type: "string" },
-			description: "Removed dependencies",
-		},
-		updated: {
-			type: "array",
-			items: {
-				type: "object",
-				properties: {
-					name: { type: "string" },
-					from: { type: "string" },
-					to: { type: "string" },
-					breaking: { type: "boolean" },
-				},
-			},
-			description: "Version changes",
-		},
-		vulnerabilities: {
-			type: "array",
-			items: {
-				type: "object",
-				properties: {
-					package: { type: "string" },
-					severity: { type: "string" },
-					advisory: { type: "string" },
-				},
-			},
-			description: "Known security vulnerabilities",
-		},
-		compatible: {
-			type: "boolean",
-			description: "Whether changes are safe to apply",
-		},
-	}),
-
-	annotations: {
-		title: "Dependency Validation",
-		readOnlyHint: true,
-		destructiveHint: false,
-		idempotentHint: true,
-	},
-
-	tier: "free",
-	requiresBackend: false,
-};
-
 // =============================================================================
 // PROTECTION TOOLS (Pro Tier)
 // =============================================================================
@@ -281,11 +200,18 @@ export const createSnapshotTool: SnapBackToolDefinition = {
 	name: "snapback.create_snapshot",
 	description: `Creates a restorable code snapshot before risky modifications.
 
+**Signal Words (when to auto-trigger):**
+- "save a snapshot", "create a backup", "checkpoint"
+- "before I start", "before this change"
+- "save my work", "create restore point"
+- After prepare_workspace returns 🟡 or 🔴 protection score
+
 **When to call this tool:**
 - Before major refactoring or breaking changes
 - Before modifying auth, security, or payment code
 - Before AI-assisted multi-file refactors
 - When the user says "save a snapshot" or "create a backup"
+- When prepare_workspace recommends it (protection score < 70%)
 
 **When NOT to call:**
 - After every single save (use workspace vitals to decide)
@@ -358,6 +284,11 @@ export const listSnapshotsTool: SnapBackToolDefinition = {
 	name: "snapback.list_snapshots",
 	description: `Lists available snapshots for restoration.
 
+**Signal Words (when to auto-trigger):**
+- "show snapshots", "list backups", "what snapshots"
+- "show restore points", "available checkpoints"
+- Before calling restore_snapshot (to choose which one)
+
 **When to call this tool:**
 - When user wants to see restore points
 - Before choosing which snapshot to restore
@@ -421,6 +352,12 @@ export const restoreSnapshotTool: SnapBackToolDefinition = {
 	name: "snapback.restore_snapshot",
 	description: `Restores code from a previously created snapshot.
 
+**Signal Words (when to auto-trigger):**
+- "undo", "revert", "roll back", "go back"
+- "restore", "broke everything", "this broke"
+- "need to undo", "that didn't work"
+- "bring back", "previous version"
+
 **When to call this tool:**
 - After AI changes broke something
 - When tests fail after modifications
@@ -479,131 +416,15 @@ Returns the restored file contents. The actual file writes happen automatically.
 
 // =============================================================================
 // DOCUMENTATION TOOLS (Free Tier)
-// Wrapper aliases for ctx7.* → snapback.docs_* for discoverability
+// Consolidated tool that combines library resolution + doc fetching
 // =============================================================================
 
 /**
- * snapback.docs_find
+ * snapback.get_library_docs
  *
- * Alias for: ctx7.resolve-library-id
- * Rationale: "snapback.docs_*" is more discoverable when user asks about "docs"
+ * Consolidated tool that replaces docs_find + docs_fetch workflow
+ * Rationale: One-step documentation lookup is simpler for LLMs than two-step process
  */
-export const docsFindTool: SnapBackToolDefinition = {
-	name: "snapback.docs_find",
-	description: `Finds the documentation ID for a library or package name.
-
-**When to call this tool:**
-- Before calling snapback.docs_fetch
-- When user asks "how do I use [library]?"
-- To verify the correct package name
-
-Powered by Context7. Returns library ID for use with docs_fetch.`,
-
-	inputSchema: {
-		type: "object",
-		properties: {
-			libraryName: {
-				type: "string",
-				description: 'Package name to find docs for (e.g., "react", "express", "zod")',
-			},
-		},
-		required: ["libraryName"],
-	},
-
-	outputSchema: createOutputSchemaWithNextActions({
-		library_id: {
-			type: "string",
-			description: "Context7-compatible library ID",
-		},
-		matches: {
-			type: "array",
-			items: {
-				type: "object",
-				properties: {
-					id: { type: "string" },
-					name: { type: "string" },
-					description: { type: "string" },
-				},
-			},
-			description: "Matching libraries if name is ambiguous",
-		},
-	}),
-
-	annotations: {
-		title: "Find Library Docs",
-		readOnlyHint: true,
-		destructiveHint: false,
-		idempotentHint: true,
-		openWorldHint: true, // External API call
-	},
-
-	tier: "free",
-	requiresBackend: false,
-};
-
-/**
- * snapback.docs_fetch
- *
- * Alias for: ctx7.get-library-docs
- */
-export const docsFetchTool: SnapBackToolDefinition = {
-	name: "snapback.docs_fetch",
-	description: `Fetches up-to-date documentation for a library.
-
-**When to call this tool:**
-- After snapback.docs_find returns a library_id
-- When user needs API examples or usage patterns
-- For understanding library configuration options
-
-Powered by Context7. Returns formatted documentation with code examples.`,
-
-	inputSchema: {
-		type: "object",
-		properties: {
-			library_id: {
-				type: "string",
-				description: "Library ID from snapback.docs_find",
-			},
-			topic: {
-				type: "string",
-				description: 'Optional topic filter (e.g., "authentication", "hooks")',
-			},
-			tokens: {
-				type: "number",
-				description: "Max tokens to return (for large docs)",
-			},
-		},
-		required: ["library_id"],
-	},
-
-	outputSchema: createOutputSchemaWithNextActions({
-		documentation: {
-			type: "string",
-			description: "Formatted documentation with code examples",
-		},
-		sections: {
-			type: "array",
-			items: { type: "string" },
-			description: "Available documentation sections",
-		},
-		version: {
-			type: "string",
-			description: "Library version these docs apply to",
-		},
-	}),
-
-	annotations: {
-		title: "Fetch Library Docs",
-		readOnlyHint: true,
-		destructiveHint: false,
-		idempotentHint: true,
-		openWorldHint: true,
-	},
-
-	tier: "free",
-	requiresBackend: false,
-};
-
 // =============================================================================
 // META TOOLS (Free Tier)
 // =============================================================================
@@ -1131,6 +952,148 @@ Storage: .snapback/learnings/learnings.jsonl`,
 	requiresBackend: false,
 };
 
+/**
+ * snapback.validate_recommendation
+ *
+ * NEW: Replaces Context7 with hybrid 3-layer validation
+ * Validates AI package recommendations using npm registry + GitHub API
+ */
+export const validateRecommendationTool: SnapBackToolDefinition = {
+	name: "snapback.validate_recommendation",
+	description: `Validates AI-suggested package installations/upgrades using hybrid 3-layer approach.
+
+**Signal Words (when to auto-trigger):**
+- "should I install", "should I add", "should I upgrade"
+- "AI suggested installing", "Copilot recommended"
+- "what about using", "try using", "switch to"
+- "npm install", "pnpm add", "yarn add"
+- User asks about a specific package/library
+
+**When to call this tool:**
+- BEFORE you recommend "npm install X" to the user
+- BEFORE installing packages recommended by other AI assistants
+- When user asks "should I use library X?"
+- To check for breaking changes in version upgrades
+- When troubleshooting dependency conflicts
+
+**Replaces Context7 with:**
+- Layer 1: npm registry API (peer dependencies, engine requirements)
+- Layer 2: GitHub API (changelog scanning, breaking changes)
+- Layer 3: Local migration guidance
+
+**Returns:**
+- Dependency cascade risks (peer deps, engine mismatches)
+- Breaking changes detected in changelogs
+- Migration guidance for major version bumps
+- Recommendation: proceed / review-required / block`,
+
+	inputSchema: {
+		type: "object",
+		properties: {
+			packageName: {
+				type: "string",
+				description: "Package name (e.g., 'react', 'lodash')",
+			},
+			targetVersion: {
+				type: "string",
+				description: "Target version to install (e.g., '18.2.0')",
+			},
+			currentPackageJson: {
+				type: "object",
+				description: "Current package.json content",
+				properties: {
+					dependencies: {
+						type: "object",
+						additionalProperties: { type: "string" },
+					},
+					devDependencies: {
+						type: "object",
+						additionalProperties: { type: "string" },
+					},
+					peerDependencies: {
+						type: "object",
+						additionalProperties: { type: "string" },
+					},
+				},
+			},
+			context: {
+				type: "object",
+				description: "Optional context about the recommendation",
+				properties: {
+					aiAssistant: { type: "string" },
+					recommendationReason: { type: "string" },
+				},
+			},
+		},
+		required: ["packageName", "targetVersion", "currentPackageJson"],
+	},
+
+	outputSchema: createOutputSchemaWithNextActions({
+		safe: {
+			type: "boolean",
+			description: "Whether installation is safe",
+		},
+		recommendation: {
+			type: "string",
+			enum: ["proceed", "review-required", "block"],
+			description: "Action recommendation",
+		},
+		summary: {
+			type: "string",
+			description: "Human-readable summary",
+		},
+		risks: {
+			type: "array",
+			items: {
+				type: "object",
+				properties: {
+					type: { type: "string" },
+					package: { type: "string" },
+					current: { type: "string" },
+					required: { type: "string" },
+					severity: { type: "string", enum: ["critical", "high", "medium", "low"] },
+					recommendation: { type: "string" },
+				},
+			},
+			description: "Dependency cascade risks detected",
+		},
+		breakingChanges: {
+			type: "array",
+			items: {
+				type: "object",
+				properties: {
+					version: { type: "string" },
+					hasBreakingChanges: { type: "boolean" },
+					changelog: { type: "string" },
+					keywords: { type: "array", items: { type: "string" } },
+				},
+			},
+			description: "Breaking changes found in releases",
+		},
+		migrationGuidance: {
+			type: "string",
+			nullable: true,
+			description: "Migration steps if breaking changes detected",
+		},
+		layersExecuted: {
+			type: "array",
+			items: { type: "string" },
+			description: "Which validation layers were executed",
+		},
+	}),
+
+	annotations: {
+		title: "Validate Package Recommendation",
+		readOnlyHint: true,
+		destructiveHint: false,
+		idempotentHint: true,
+		openWorldHint: true, // Calls external APIs
+	},
+
+	tier: "free",
+	requiresBackend: false,
+};
+
 // =============================================================================
 // EXPORT ALL TOOLS
 // =============================================================================
@@ -1141,16 +1104,12 @@ Storage: .snapback/learnings/learnings.jsonl`,
 export const snapbackToolDefinitions: SnapBackToolDefinition[] = [
 	// Analysis (Free)
 	assessRiskTool,
-	validateDependenciesTool,
+	validateRecommendationTool, // Replaces Context7 (validation + docs via migration guidance)
 
 	// Protection (Pro)
 	createSnapshotTool,
 	listSnapshotsTool,
 	restoreSnapshotTool,
-
-	// Documentation (Free) - Aliases for ctx7.*
-	docsFindTool,
-	docsFetchTool,
 
 	// Meta (Free)
 	metaListToolsTool,
@@ -1173,12 +1132,11 @@ export const snapbackToolDefinitions: SnapBackToolDefinition[] = [
 export const toolNameMigrations: Record<string, string> = {
 	// Primary renames per research
 	"snapback.analyze_risk": "snapback.assess_risk",
-	"snapback.check_dependencies": "snapback.validate_dependencies",
 	"catalog.list_tools": "snapback.meta_list_tools",
 
-	// ctx7 → snapback.docs_* aliases (keep both working)
-	"ctx7.resolve-library-id": "snapback.docs_find",
-	"ctx7.get-library-docs": "snapback.docs_fetch",
+	// ctx7 → snapback.get_library_docs (consolidated)
+	"ctx7.resolve-library-id": "snapback.get_library_docs",
+	"ctx7.get-library-docs": "snapback.get_library_docs",
 };
 
 /**
@@ -1231,7 +1189,7 @@ export function createSuccessResult<T extends Record<string, unknown>>(
 		condition?: string;
 	}> = [],
 ): {
-	content: Array<{ type: "json"; json: unknown } | { type: "text"; text: string }>;
+	content: Array<{ type: "text"; text: string }>;
 } {
 	const result = {
 		...data,
@@ -1246,6 +1204,9 @@ export function createSuccessResult<T extends Record<string, unknown>>(
 	}
 
 	return {
-		content: [{ type: "json", json: result }, ...(summary ? [{ type: "text" as const, text: summary }] : [])],
+		content: [
+			{ type: "text", text: JSON.stringify(result, null, 2) },
+			...(summary ? [{ type: "text" as const, text: summary }] : []),
+		],
 	};
 }

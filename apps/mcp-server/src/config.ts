@@ -11,6 +11,18 @@ import console from "node:console";
 import { type ConfigStoreV2, getConfigStore, type MCPSettings } from "@snapback/config/server";
 
 /**
+ * Check if running in MCP quiet mode (suppress all non-error output for MCP stdio)
+ */
+const MCP_QUIET = process.env.MCP_QUIET === "1" || process.env.MCP_QUIET === "true";
+
+/** Log to stderr only if not in quiet mode */
+function mcpConfigLog(message: string, ...args: unknown[]): void {
+	if (!MCP_QUIET) {
+		console.error(message, ...args);
+	}
+}
+
+/**
  * MCP Configuration Manager
  *
  * Singleton pattern for managing MCP configuration from ConfigStore.
@@ -46,7 +58,7 @@ export class MCPConfigManager {
 			// Load initial MCP config
 			const fullConfig = store.getConfig();
 			this.config = fullConfig.settings?.mcp || {};
-			console.error("[MCP Config] Initialized from ConfigStore");
+			mcpConfigLog("[MCP Config] Initialized from ConfigStore");
 
 			// Wire hot-reload listener
 			this.unsubscribe = store.onChange((updatedConfig: ConfigStoreV2) => {
@@ -55,22 +67,22 @@ export class MCPConfigManager {
 				// Only notify if MCP config actually changed
 				if (JSON.stringify(this.config) !== JSON.stringify(newMcpConfig)) {
 					this.config = newMcpConfig;
-					console.error("[MCP Config] Configuration changed via hot-reload");
+					mcpConfigLog("[MCP Config] Configuration changed via hot-reload");
 
 					// Notify all listeners
 					for (const listener of this.listeners) {
 						try {
 							listener(this.config);
 						} catch (error) {
-							console.error("[MCP Config] Error in listener", error);
+							console.error("[MCP Config] Error in listener", error); // Always log errors
 						}
 					}
 				}
 			});
 
-			console.error("[MCP Config] Hot-reload watcher initialized");
+			mcpConfigLog("[MCP Config] Hot-reload watcher initialized");
 		} catch (error) {
-			console.error("[MCP Config] Failed to initialize", error);
+			console.error("[MCP Config] Failed to initialize", error); // Always log errors
 			// Fallback to defaults - don't crash MCP startup
 			this.config = {
 				performanceBudgets: { analyze_risk: 200, create_snapshot: 500 },

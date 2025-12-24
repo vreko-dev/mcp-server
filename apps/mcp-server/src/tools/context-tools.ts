@@ -13,7 +13,14 @@
  * @module context-tools
  */
 
-import { LearningEngine, SemanticRetriever, ValidationPipeline } from "@snapback/intelligence";
+import {
+	type AdvisoryContext,
+	type AdvisoryTriggerContext,
+	Intelligence,
+	LearningEngine,
+	SemanticRetriever,
+	ValidationPipeline,
+} from "@snapback/intelligence";
 import {
 	type ArtifactSource,
 	Composer,
@@ -63,6 +70,7 @@ let semanticRetriever: SemanticRetriever | null = null;
 let validationPipeline: ValidationPipeline | null = null;
 let learningEngine: LearningEngine | null = null;
 let composer: Composer | null = null;
+let intelligence: Intelligence | null = null;
 
 /**
  * Get or create SemanticRetriever for customer workspace
@@ -152,6 +160,76 @@ function getComposer(workspaceRoot: string, sources: ArtifactSource[]): Composer
 	return composer;
 }
 
+/**
+ * Get or create Intelligence instance for advisory context
+ */
+function getIntelligence(workspaceRoot: string): Intelligence {
+	if (!intelligence) {
+		intelligence = new Intelligence({
+			rootDir: workspaceRoot,
+			patternsDir: ".snapback/patterns",
+			learningsDir: ".snapback/learnings",
+			constraintsFile: ".llm-context/CONSTRAINTS.md",
+			violationsFile: ".snapback/patterns/violations.jsonl",
+			embeddingsDb: ".snapback/embeddings.db",
+			contextFiles: [
+				".llm-context/ARCHITECTURE.md",
+				".llm-context/PATTERNS.md",
+				".llm-context/CONSTRAINTS.md",
+				"ARCHITECTURE.md",
+				"PATTERNS.md",
+				"CONSTRAINTS.md",
+			],
+			enableSemanticSearch: false,
+			enableLearningLoop: true,
+			enableAutoPromotion: true,
+			advisoryConfig: {
+				enabled: true,
+				maxWarnings: 5,
+				maxSuggestions: 3,
+				maxRelatedFiles: 5,
+				includeSessionContext: true,
+				includeFileHistory: true,
+			},
+		});
+	}
+	return intelligence;
+}
+
+/**
+ * Generate advisory context for tool responses
+ * Returns undefined if advisory should be omitted (no files, minimal context)
+ */
+function generateAdvisoryContext(files: string[], workspaceRoot: string): AdvisoryContext | undefined {
+	if (files.length === 0) {
+		// No files specified, omit advisory
+		return undefined;
+	}
+
+	try {
+		const intel = getIntelligence(workspaceRoot);
+
+		// Build trigger context (simplified - real implementation would track session state)
+		const triggerContext: AdvisoryTriggerContext = {
+			files,
+			session: {
+				riskLevel: "low", // Default to low, would be tracked in real session
+				toolCallCount: 1, // Simplified
+				filesModified: files.length,
+				loopsDetected: 0,
+				consecutiveFileModifications: new Map(files.map((f) => [f, 1])),
+			},
+			fragility: new Map(), // Would be populated from fragility tracker
+			recentViolations: [], // Would be populated from violation tracker
+		};
+
+		return intel.enrichAdvisory(triggerContext);
+	} catch (error) {
+		// Graceful degradation - advisory is optional
+		return undefined;
+	}
+}
+
 // ============================================================================
 // TOOL HANDLERS
 // ============================================================================
@@ -168,11 +246,15 @@ export async function handleGetContext(
 	patterns?: string;
 	constraints?: string;
 	hint: string;
+	advisory?: AdvisoryContext;
 }> {
-	const { task, keywords = [] } = args;
+	const { task, keywords = [], files = [] } = args;
 
 	// Build query from task and keywords
 	const query = [task, ...keywords].join(" ");
+
+	// Generate advisory context if files provided
+	const advisory = generateAdvisoryContext(files, workspaceRoot);
 
 	try {
 		const retriever = getSemanticRetriever(workspaceRoot);
@@ -182,6 +264,7 @@ export async function handleGetContext(
 			return {
 				task,
 				hint: "SemanticRetriever not available. Install optional deps: pnpm add sql.js @huggingface/transformers",
+				advisory,
 			};
 		}
 
@@ -193,6 +276,7 @@ export async function handleGetContext(
 			return {
 				task,
 				hint: "No indexed context found. Run indexContextFiles() to populate embeddings, or create .llm-context/ documentation.",
+				advisory,
 			};
 		}
 
@@ -205,12 +289,14 @@ export async function handleGetContext(
 				compression: `${(result.compressionRatio * 100).toFixed(0)}%`,
 			},
 			hint: `Found ${result.sectionsIncluded} relevant sections with ${(result.compressionRatio * 100).toFixed(0)}% compression. Review before implementing.`,
+			advisory,
 		};
 	} catch (error) {
 		const message = error instanceof Error ? error.message : String(error);
 		return {
 			task,
 			hint: `Context retrieval failed: ${message}. Ensure .snapback/ directory exists with embeddings.db.`,
+			advisory,
 		};
 	}
 }
@@ -220,13 +306,17 @@ export async function handleGetContext(
  */
 export async function handleCheckPatterns(
 	args: z.infer<typeof CheckPatternsSchema>,
-	_workspaceRoot: string,
+	workspaceRoot: string,
 ): Promise<{
 	valid: boolean;
 	violations: Array<{ type: string; message: string; severity: string }>;
 	suggestion: string;
+	advisory?: AdvisoryContext;
 }> {
 	const { code, filePath } = args;
+
+	// Generate advisory context for this file
+	const advisory = generateAdvisoryContext([filePath], workspaceRoot);
 
 	try {
 		const pipeline = getValidationPipeline();
@@ -249,6 +339,7 @@ export async function handleCheckPatterns(
 					: result.recommendation === "quick_review"
 						? "🟡 Minor issues found - quick review recommended"
 						: "🔴 Critical issues found - full review required",
+			advisory,
 		};
 	} catch (error) {
 		const message = error instanceof Error ? error.message : String(error);
@@ -256,6 +347,7 @@ export async function handleCheckPatterns(
 			valid: false,
 			violations: [{ type: "validation-error", message, severity: "error" }],
 			suggestion: "Validation pipeline encountered an error",
+			advisory,
 		};
 	}
 }
@@ -265,7 +357,7 @@ export async function handleCheckPatterns(
  */
 export async function handleValidateCode(
 	args: z.infer<typeof ValidateCodeSchema>,
-	_workspaceRoot: string,
+	workspaceRoot: string,
 ): Promise<{
 	confidence: string;
 	recommendation: string;
@@ -274,8 +366,12 @@ export async function handleValidateCode(
 	layers: Array<{ name: string; passed: boolean; issues: number; duration: string }>;
 	issues: Array<{ layer: string; severity: string; type: string; message: string; line?: number; fix?: string }>;
 	suggestion: string;
+	advisory?: AdvisoryContext;
 }> {
 	const { code, filePath } = args;
+
+	// Generate advisory context for this file
+	const advisory = generateAdvisoryContext([filePath], workspaceRoot);
 
 	try {
 		const pipeline = getValidationPipeline();
@@ -308,6 +404,7 @@ export async function handleValidateCode(
 					: result.recommendation === "quick_review"
 						? "🟡 Protection Score: Moderate - quick review recommended"
 						: "🔴 Protection Score: Low - full review required",
+			advisory,
 		};
 	} catch (error) {
 		const message = error instanceof Error ? error.message : String(error);
@@ -319,6 +416,7 @@ export async function handleValidateCode(
 			layers: [],
 			issues: [{ layer: "error", severity: "error", type: "validation-error", message }],
 			suggestion: "Validation pipeline encountered an error",
+			advisory,
 		};
 	}
 }
@@ -489,23 +587,35 @@ export async function handlePrepareWorkspace(
 export const contextToolDefinitions = [
 	{
 		name: "snapback.prepare_workspace",
-		description: `**Purpose:** Proactively prepare workspace with relevant context before starting work.
+		description: `**Purpose:** Risk assessment tool - returns 🟢🟡🔴 protection score to help you decide if snapshot is needed.
+
+**Signal Words (when to auto-trigger):**
+- "is it safe", "should I proceed", "risky"
+- "before I start", "check risks"
+- User mentions: major refactor, breaking change, auth, security
+- BEFORE any significant code changes
+
+**Key Difference from start_session:**
+- prepare_workspace: RISK ASSESSMENT (protection score, snapshot decision support)
+- start_session: PERSONALIZATION (user preferences, past learnings)
 
 **Brand-Compliant "Peace of Mind" UX:**
-- 🟢🟡🔴 Protection Score (0-100%): Simple risk assessment
-- 📸 Snapshot Recommendation: When to create safety checkpoint
+- **🟢 Protection Score > 70%**: Safe to proceed
+- **🟡 Protection Score 40-70%**: Moderate risk, consider snapshot
+- **🔴 Protection Score < 40%**: High risk, create snapshot first!
+- 📸 Snapshot Recommendation: Clear guidance on when to create safety checkpoint
 - 🛡️ Learning Memory: Past issues related to your task
 - Context Assembly: Patterns, rules, violations from workspace
 
 **When to Use:**
 - BEFORE starting any task (proactive context)
-- When you want to understand workspace risks
-- To check if similar work was done before
+- When uncertain if you should create a snapshot
+- To understand workspace risks before proceeding
 
 **Returns:**
-- Protection score with badge (🟢 safe, 🟡 moderate, 🔴 risky)
-- Snapshot recommendation (📸 if needed)
-- Learning memory (🛡️ lessons from past mistakes)
+- **Protection score with badge** (🟢 safe, 🟡 moderate, 🔴 risky)
+- **Snapshot recommendation** (📸 if needed, with specific reason)
+- **Learning memory** (🛡️ lessons from past mistakes)
 - Assembled context artifacts (patterns/violations/learnings)
 
 **Performance:** < 300ms`,
@@ -570,7 +680,16 @@ export const contextToolDefinitions = [
 	},
 	{
 		name: "snapback.check_patterns",
-		description: `**Purpose:** Validate code against learned patterns before committing.
+		description: `**Purpose:** LIGHTWEIGHT architectural pattern validation - quick pass/fail before commit.
+
+**Signal Words (when to auto-trigger):**
+- "ready to commit", "can I commit", "check this"
+- BEFORE git commit operations
+- "validate patterns", "check violations"
+
+**Key Difference from validate_code:**
+- check_patterns: LIGHTWEIGHT - architectural patterns only (~100ms)
+- validate_code: COMPREHENSIVE - 7-layer validation pipeline (~200ms)
 
 **Brand-Compliant Output:**
 - Returns quick pass/fail with Protection Score indicators
@@ -579,12 +698,12 @@ export const contextToolDefinitions = [
 
 **When to Use:**
 - BEFORE committing code changes
-- When you want a quick pass/fail validation
-- For CI/CD integration
+- When you want a quick architectural pattern check
+- For fast CI/CD integration
 
 **Returns:**
 - Valid/invalid status
-- List of violations with severity
+- List of pattern violations with severity
 - Suggested fixes
 
 **Performance:** < 100ms`,
@@ -606,14 +725,23 @@ export const contextToolDefinitions = [
 	},
 	{
 		name: "snapback.validate_code",
-		description: `**Purpose:** Run comprehensive 7-layer validation pipeline on code.
+		description: `**Purpose:** COMPREHENSIVE 7-layer validation pipeline - full quality/security/performance check.
+
+**Signal Words (when to auto-trigger):**
+- "full validation", "comprehensive check", "review this code"
+- "code review", "quality check"
+- BEFORE important commits or pull requests
+
+**Key Difference from check_patterns:**
+- check_patterns: LIGHTWEIGHT - architectural patterns only (~100ms)
+- validate_code: COMPREHENSIVE - 7-layer validation pipeline (~200ms)
 
 **Brand-Compliant Output:**
 - Protection Score: Overall confidence (0-100%)
 - Badge: 🟢 (>80%), 🟡 (50-80%), 🔴 (<50%)
 - Issues per layer with fix suggestions
 
-**Layers:**
+**7 Validation Layers:**
 1. Syntax (brackets, semicolons)
 2. Types (any usage, @ts-ignore)
 3. Tests (vague assertions, coverage)

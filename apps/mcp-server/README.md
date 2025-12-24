@@ -3,9 +3,9 @@
 [![npm version](https://badge.fury.io/js/@snapback%2Fmcp-server.svg)](https://www.npmjs.com/package/@snapback/mcp-server)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-> Give your AI agent access to SnapBack's pattern memory.
+> **Your AI guardrails and undo button**
 >
-> Query what's broken before, get warnings about risky patterns, and let your agent learn from 1,000+ repos' mistakes.
+> Prevents "oh no" moments in AI-assisted development through risk assessment, workspace health monitoring, and instant recovery.
 
 ## Quick Start
 
@@ -77,9 +77,100 @@ npm install -g @snapback/mcp-server
 snapback-mcp
 ```
 
+## Workflow Decision Tree
+
+Not sure which tool to use? Follow this guide:
+
+```
+User Request →
+  ├─ Involves dependencies? → snapback.validate_recommendation
+  │   (e.g., "should I install react-query?")
+  │
+  ├─ Major/risky change? → snapback.prepare_workspace
+  │   (e.g., "refactoring auth system")
+  │   └─ Protection score 🟡 or 🔴? → snapback.create_snapshot
+  │
+  ├─ Something broke? → snapback.list_snapshots → snapback.restore_snapshot
+  │   (e.g., "this broke everything", "need to undo")
+  │
+  ├─ Ready to commit? → snapback.check_patterns (quick)
+  │   OR snapback.validate_code (comprehensive)
+  │
+  └─ AI suggesting code? → snapback.assess_risk
+      (e.g., "is this safe to apply?")
+```
+
+## Quick Start Workflows
+
+### Scenario 1: "Should I install this package?"
+
+```typescript
+// User: "Should I use react-query for data fetching?"
+
+1. snapback.validate_recommendation({
+  packageName: "react-query",
+  targetVersion: "latest",
+  currentPackageJson: {...}
+})
+// Returns: ✅ Safe to install | ⚠️ Breaking changes detected | 🛑 Conflicts found
+```
+
+### Scenario 2: "Is it safe to refactor auth?"
+
+```typescript
+// User: "I'm about to refactor the authentication system"
+
+1. snapback.prepare_workspace({
+  task: "Refactor authentication system",
+  files: ["src/auth.ts", "src/middleware/auth.ts"]
+})
+// Returns: 🔴 Protection Score: 35% - High risk, create snapshot first!
+
+2. snapback.create_snapshot({
+  reason: "Pre-auth refactor",
+  files: ["src/auth.ts", "src/middleware/auth.ts"]
+})
+// Returns: ✅ Snapshot snap_abc123 created
+
+3. [Make changes...]
+
+4. snapback.check_patterns({
+  code: "...",
+  filePath: "src/auth.ts"
+})
+// Returns: ✅ No violations OR ⚠️ 2 violations found
+```
+
+### Scenario 3: "Oh no, I broke everything"
+
+```typescript
+// User: "This broke everything, I need to undo"
+
+1. snapback.list_snapshots()
+// Returns: List of available snapshots
+
+2. snapback.restore_snapshot({
+  snapshotId: "snap_abc123"
+})
+// Returns: ✅ Restored 2 files to pre-refactor state
+```
+
+### Scenario 4: "Before accepting AI suggestion"
+
+```typescript
+// AI suggests code changes
+
+1. snapback.assess_risk({
+  changes: [
+    { added: true, value: "const API_KEY = 'sk_live_...'" }
+  ]
+})
+// Returns: ⚠️ HIGH RISK: Hardcoded secret detected
+```
+
 ## Available Tools
 
-### `snapback.analyze_risk`
+### `snapback.assess_risk`
 
 Analyze code changes for potential security risks before applying them.
 
@@ -92,7 +183,7 @@ Analyze code changes for potential security risks before applying them.
 ```javascript
 // AI detects you want to add authentication
 // Before applying changes, it calls:
-snapback.analyze_risk({
+snapback.assess_risk({
   changes: [
     { added: true, value: "const API_KEY = 'sk_live_...';" }
   ]
@@ -100,17 +191,23 @@ snapback.analyze_risk({
 // Returns: ⚠️ HIGH RISK: Hardcoded secret detected
 ```
 
-### `snapback.check_dependencies`
+### `snapback.validate_recommendation`
 
-Check for dependency-related risks when package.json changes.
+Validates AI package recommendations using npm registry + GitHub API.
+
+**When to use:**
+- Before installing packages recommended by AI
+- To check for breaking changes in upgrades
+- When troubleshooting dependency conflicts
 
 **Example:**
 ```javascript
-snapback.check_dependencies({
-  before: { "lodash": "^4.17.15" },
-  after: { "lodash": "^4.17.21" }
+snapback.validate_recommendation({
+  packageName: "react",
+  targetVersion: "18.2.0",
+  currentPackageJson: { dependencies: { "react": "17.0.2" } }
 })
-// Returns: ℹ️ Security update available
+// Returns: ⚠️ Breaking changes detected, migration required
 ```
 
 ### `snapback.create_snapshot` (Pro)
@@ -134,11 +231,6 @@ List all available snapshots.
 
 Restore code from a previous snapshot.
 
-### Context7 Tools
-
-- `ctx7.resolve-library-id`: Find library documentation
-- `ctx7.get-library-docs`: Fetch library docs and examples
-
 ## Configuration
 
 ### Environment Variables
@@ -149,9 +241,6 @@ SNAPBACK_API_KEY=sk_...
 
 # Optional: Custom API URL
 SNAPBACK_API_URL=https://api.snapback.dev
-
-# Optional: Context7 API key for enhanced docs
-CONTEXT7_API_KEY=...
 
 # Optional: Log level
 LOG_LEVEL=info
@@ -168,9 +257,8 @@ npx @snapback/mcp-server
 
 **What works offline:**
 - Risk analysis (basic)
-- Dependency checking
+- Dependency validation (npm registry + GitHub API)
 - Secret detection
-- Context7 library search (cached)
 
 **What requires API key:**
 - Advanced ML risk analysis

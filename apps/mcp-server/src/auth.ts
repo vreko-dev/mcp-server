@@ -28,6 +28,17 @@ export interface AuthResult {
 export async function authenticate(apiKey: string): Promise<AuthResult> {
 	const now = Date.now();
 
+	// Development bypass: Allow MCP_DEV_MODE=1 for local development without API key
+	// Or automatically enable dev mode if no API key configured (sandbox/Qoder environments)
+	if ((process.env.MCP_DEV_MODE === "1" || !process.env.SNAPBACK_API_KEY) && (!apiKey || apiKey === "")) {
+		return {
+			valid: true,
+			tier: "free",
+			scopes: ["snapback:analyze"],
+			userId: "dev-user",
+		};
+	}
+
 	// Check cache first
 	const cached = authCache.get(apiKey);
 	if (cached && now - cached.timestamp < 60 * 1000) {

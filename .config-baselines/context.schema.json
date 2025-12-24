@@ -1,0 +1,84 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"title": "SnapBack Context Schema",
+	"description": "Source of truth for AI context and project constraints",
+	"type": "object",
+	"required": ["version", "meta", "constraints"],
+	"properties": {
+		"$schema": { "type": "string" },
+		"version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+		"generated": { "type": ["string", "null"], "format": "date-time" },
+		"meta": {
+			"type": "object",
+			"required": ["id", "type", "phase", "priority"],
+			"properties": {
+				"id": { "type": "string" },
+				"type": { "type": "string", "enum": ["code-protection", "library", "application", "cli", "unknown"] },
+				"phase": { "type": "string", "enum": ["sprint", "development", "production", "maintenance"] },
+				"priority": { "type": "string" }
+			}
+		},
+		"constraints": {
+			"type": "object",
+			"additionalProperties": {
+				"type": "object",
+				"additionalProperties": {
+					"type": "object",
+					"required": ["max", "unit", "key"],
+					"properties": {
+						"max": { "type": "number" },
+						"unit": { "type": "string" },
+						"key": { "type": "string", "pattern": "^_[a-z]{2}$" },
+						"current": { "type": "number" }
+					}
+				}
+			}
+		},
+		"blockers": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"required": ["key", "label", "current", "target"],
+				"properties": {
+					"key": { "type": "string" },
+					"label": { "type": "string" },
+					"current": { "type": ["number", "string"] },
+					"target": { "type": ["number", "string"] }
+				}
+			}
+		},
+		"architecture": {
+			"type": "object",
+			"properties": {
+				"privacy": { "type": "string" },
+				"zeroShortcuts": { "type": "boolean" },
+				"typeStrict": { "type": "boolean" }
+			}
+		},
+		"decisions": {
+			"type": "object",
+			"properties": {
+				"priority": { "type": "array", "items": { "type": "string" } },
+				"made": { "type": "object" }
+			}
+		},
+		"stack": { "type": "object" },
+		"quality": { "type": "object" },
+		"workflows": {
+			"type": "object",
+			"additionalProperties": {
+				"type": "array",
+				"items": { "type": "string" }
+			}
+		},
+		"protocol": { "type": "object" },
+		"refs": {
+			"type": "object",
+			"properties": {
+				"audits": { "type": "string" },
+				"specs": { "type": "string" },
+				"files": { "type": "object" }
+			}
+		}
+	}
+}

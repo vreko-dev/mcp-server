@@ -1,0 +1,142 @@
+{
+	"phase": "S5",
+	"title": "Database Schema Analysis",
+	"timestamp": "2025-11-07T00:00:00.000Z",
+	"executiveSummary": "The SnapBack database schema is well-structured with a focus on privacy-first design principles. It uses PostgreSQL with Drizzle ORM and includes tables for user management, API key tracking, code snapshots, telemetry, security events, and analytics. The schema implements proper foreign key relationships with CASCADE deletes for data integrity and includes partitioned tables for time-series data.",
+	"schemaOverview": {
+		"databaseType": "PostgreSQL",
+		"orm": "Drizzle ORM",
+		"migrationTool": "Drizzle Kit",
+		"schemaStructure": {
+			"coreTables": 25,
+			"snapbackTables": 30,
+			"partitionedTables": 6,
+			"enums": 8,
+			"materializedViews": 4
+		}
+	},
+	"keyFeatures": [
+		"Privacy-first design with metadata-only storage by default",
+		"Foreign key constraints with CASCADE deletes for data integrity",
+		"Partitioned tables for time-series data (error logs, feature usage, API usage)",
+		"Comprehensive telemetry and analytics tracking",
+		"Security event monitoring and rate limiting",
+		"Team and subscription management",
+		"Snapshot and file metadata storage with optional cloud backup"
+	],
+	"coreComponents": {
+		"userManagement": {
+			"description": "User authentication and profile management based on Better Auth",
+			"tables": ["user", "session", "account", "verification", "passkey", "twoFactor", "userProfiles"],
+			"relations": "Users have sessions, accounts, passkeys, and two-factor authentication records"
+		},
+		"organizationManagement": {
+			"description": "Team and organization structure with membership management",
+			"tables": ["organization", "member", "invitation", "teams", "teamMembers"],
+			"relations": "Organizations have members and invitations, with team structures"
+		},
+		"subscriptionBilling": {
+			"description": "Subscription and billing management with usage tracking",
+			"tables": ["subscriptions", "usageLimits", "purchase"],
+			"relations": "Subscriptions are linked to users or organizations with usage limits"
+		},
+		"apiKeySystem": {
+			"description": "API key management with permissions and usage tracking",
+			"tables": ["apiKeys", "apiKeyMetadata", "apiKeyUsage", "clientTokens"],
+			"relations": "API keys are linked to users and organizations with usage tracking"
+		},
+		"codeSnapshots": {
+			"description": "Privacy-first code snapshot storage with metadata",
+			"tables": ["snapshots", "snapshotFiles"],
+			"relations": "Snapshots contain multiple files with metadata, linked to users and API keys",
+			"privacyPrinciple": "Store only metadata by default, file content requires explicit user opt-in"
+		},
+		"telemetryAnalytics": {
+			"description": "Comprehensive telemetry and analytics tracking",
+			"tables": [
+				"telemetryEvents",
+				"telemetryDailyStats",
+				"telemetryIdempotencyKeys",
+				"featureUsage",
+				"orgDailyMetrics",
+				"usageStatsDaily"
+			],
+			"relations": "Time-series data with daily aggregations for performance",
+			"partitioning": "Feature usage and API usage logs are partitioned by month"
+		},
+		"securityMonitoring": {
+			"description": "Security event monitoring and violation tracking",
+			"tables": ["securityEvents", "ruleViolations", "bypassEvents", "rateLimitViolations", "tokenBuckets"],
+			"relations": "Security events track violations, bypasses, and rate limiting"
+		},
+		"errorLogging": {
+			"description": "Error logging with severity levels and partitioning",
+			"tables": ["errorLogs", "errorLogs202510"],
+			"relations": "Error logs are partitioned by month for performance",
+			"partitioning": "Monthly partitioning for error logs"
+		}
+	},
+	"privacySecurityFeatures": {
+		"dataEncryption": "Server-side KMS encryption with Row Level Security (RLS) for snapshots",
+		"privacyByDefault": "Metadata-only storage for snapshots unless user explicitly opts in to cloud backup",
+		"dataRetention": "Configurable retention policies with retention_config table",
+		"accessControl": "API key permissions system with granular controls",
+		"rateLimiting": "Token bucket algorithm implementation for rate limiting"
+	},
+	"performanceOptimizations": {
+		"indexing": "Comprehensive indexing strategy with unique and composite indexes",
+		"partitioning": "Monthly partitioning for time-series data tables",
+		"caching": "Response cache table for API responses",
+		"materializedViews": "Planned materialized views for analytics performance"
+	},
+	"schemaQuality": {
+		"normalization": "Well-normalized schema with proper foreign key relationships",
+		"constraints": "Comprehensive use of constraints for data integrity",
+		"documentation": "Good inline documentation explaining privacy principles and design decisions",
+		"naming": "Consistent naming conventions following snake_case for columns"
+	},
+	"findings": [
+		{
+			"type": "strength",
+			"description": "Strong privacy-first design principles with clear documentation",
+			"details": "The schema implements privacy-by-default with metadata-only storage and explicit opt-in for sensitive data"
+		},
+		{
+			"type": "strength",
+			"description": "Comprehensive foreign key relationships with CASCADE deletes",
+			"details": "Proper data integrity with CASCADE deletes ensuring related data is cleaned up appropriately"
+		},
+		{
+			"type": "strength",
+			"description": "Partitioned tables for time-series data performance",
+			"details": "Monthly partitioning for error logs, feature usage, and API usage logs improves query performance"
+		},
+		{
+			"type": "strength",
+			"description": "Comprehensive telemetry and analytics tracking",
+			"details": "Rich telemetry data with daily aggregations and idempotency support"
+		},
+		{
+			"type": "consideration",
+			"description": "Some tables may benefit from additional indexes for specific query patterns",
+			"details": "Depending on query patterns, additional composite indexes might improve performance"
+		}
+	],
+	"recommendations": [
+		{
+			"priority": "medium",
+			"description": "Implement additional composite indexes based on common query patterns",
+			"details": "Analyze query logs to identify frequently used WHERE clauses and create appropriate composite indexes"
+		},
+		{
+			"priority": "low",
+			"description": "Consider adding audit trails for sensitive operations",
+			"details": "Implement audit logging for changes to user permissions, API keys, and subscription changes"
+		},
+		{
+			"priority": "medium",
+			"description": "Add monitoring for constraint violations",
+			"details": "Implement alerts for foreign key constraint violations and other data integrity issues"
+		}
+	]
+}

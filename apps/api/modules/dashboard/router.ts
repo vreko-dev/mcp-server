@@ -1,6 +1,8 @@
 import { protectedProcedure } from "../../orpc/procedures";
 import {
 	getAIDetectionStats,
+	getBehavioralMetadata,
+	getLearningStats,
 	getMetrics,
 	getRecentActivity,
 	getSessionMetrics,
@@ -19,4 +21,6 @@ export const dashboardRouter = protectedProcedure.router({
 	getSessionMetrics,
 	getOrgMetrics,
 	getVitalsStats,
+	getLearningStats,
+	getBehavioralMetadata,
 });

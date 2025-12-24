@@ -1,4 +1,6 @@
 export { getAIDetectionStats } from "./get-ai-detection-stats";
+export { getBehavioralMetadata } from "./get-behavioral-metadata";
+export { getLearningStats } from "./get-learning-stats";
 export { getMetrics } from "./get-metrics";
 export { getRecentActivity } from "./get-recent-activity";
 export { getSessionMetrics } from "./get-session-metrics";

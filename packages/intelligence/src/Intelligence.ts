@@ -319,6 +319,57 @@ export class Intelligence {
 	}
 
 	// =========================================================================
+	// VITALS PHASE 2: Behavioral Metadata
+	// =========================================================================
+
+	/**
+	 * Record a file edit event
+	 * @param workspaceId Workspace identifier
+	 * @param linesAdded Number of lines added
+	 * @param linesDeleted Number of lines deleted
+	 */
+	recordEdit(workspaceId: string, linesAdded: number, linesDeleted: number): void {
+		const vitals = WorkspaceVitals.tryGet(workspaceId);
+		vitals?.recordEdit(linesAdded, linesDeleted);
+	}
+
+	/**
+	 * Record a file save event
+	 */
+	recordFileSave(workspaceId: string): void {
+		const vitals = WorkspaceVitals.tryGet(workspaceId);
+		vitals?.recordFileSave();
+	}
+
+	/**
+	 * Record a test execution result
+	 * @param workspaceId Workspace identifier
+	 * @param passed Whether the test passed
+	 */
+	recordTestResult(workspaceId: string, passed: boolean): void {
+		const vitals = WorkspaceVitals.tryGet(workspaceId);
+		vitals?.recordTest(passed);
+	}
+
+	/**
+	 * Record an AI suggestion event
+	 * @param workspaceId Workspace identifier
+	 * @param accepted Whether the user accepted the suggestion
+	 */
+	recordAISuggestionResponse(workspaceId: string, accepted: boolean): void {
+		const vitals = WorkspaceVitals.tryGet(workspaceId);
+		vitals?.recordAISuggestion(accepted);
+	}
+
+	/**
+	 * Get current behavioral metadata for a workspace
+	 */
+	getBehavioralMetadata(workspaceId: string): ReturnType<WorkspaceVitals["getBehavioralMetadata"]> | null {
+		const vitals = WorkspaceVitals.tryGet(workspaceId);
+		return vitals?.getBehavioralMetadata() ?? null;
+	}
+
+	// =========================================================================
 	// SESSION MANAGEMENT (Phase 1)
 	// =========================================================================
 

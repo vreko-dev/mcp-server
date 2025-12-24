@@ -48,6 +48,30 @@ export interface VitalsSnapshot {
 		staleSnapshots: number;
 	};
 	trajectory: Trajectory;
+	/** Optional behavioral metadata (Phase 2 enhancement) */
+	behavior?: BehavioralMetadata;
+}
+
+/** Behavioral metadata for dev workflow analytics */
+export interface BehavioralMetadata {
+	/** Session duration since last snapshot (ms) */
+	sessionDuration: number;
+	/** AI suggestion acceptance rate (0-1) */
+	aiAcceptanceRate: number;
+	/** Code churn rate (lines changed/deleted per minute) */
+	churnRate: number;
+	/** Test pass rate during this session (0-1) */
+	testPassRate: number;
+	/** Number of file saves in this session */
+	fileSaveCount: number;
+	/** Number of AI suggestions shown */
+	aiSuggestionsShown: number;
+	/** Number of AI suggestions accepted */
+	aiSuggestionsAccepted: number;
+	/** Number of AI suggestions rejected */
+	aiSuggestionsRejected: number;
+	/** Average time between edits (ms) */
+	avgTimeBetweenEdits: number;
 }
 
 // =============================================================================

@@ -29,6 +29,7 @@ import type {
 	VitalsSnapshot,
 } from "../types/vitals.js";
 import type { ThresholdAdjustments, TrajectoryForecast } from "../types/vitals-learning.js";
+import { BehaviorTracker } from "./BehaviorTracker.js";
 import { ThresholdCalibrator } from "./learning/ThresholdCalibrator.js";
 import { TrajectoryPredictor } from "./learning/TrajectoryPredictor.js";
 import { UserBehaviorLearner } from "./learning/UserBehaviorLearner.js";
@@ -68,6 +69,9 @@ export class WorkspaceVitals extends EventEmitter {
 	private readonly calibrator: ThresholdCalibrator;
 	private readonly predictor: TrajectoryPredictor;
 
+	// Phase 2: Behavioral metadata tracking
+	private readonly behaviorTracker: BehaviorTracker;
+
 	private constructor(workspaceId: string, config: Partial<VitalsConfig> = {}, initialTime: number = Date.now()) {
 		super();
 		this.workspaceId = workspaceId;
@@ -87,6 +91,9 @@ export class WorkspaceVitals extends EventEmitter {
 		this.learner = new UserBehaviorLearner(workspaceId);
 		this.calibrator = new ThresholdCalibrator(workspaceId, this.learner);
 		this.predictor = new TrajectoryPredictor(workspaceId);
+
+		// Initialize behavior tracking
+		this.behaviorTracker = new BehaviorTracker(initialTime);
 	}
 
 	/**
@@ -149,6 +156,7 @@ export class WorkspaceVitals extends EventEmitter {
 	onSnapshot(event: SnapshotEvent, now: number = Date.now()): void {
 		this.pressure.recordSnapshot(now);
 		this.oxygen.recordSnapshot(event.filePath, now);
+		this.behaviorTracker.recordSnapshot(now);
 		this.checkAndEmit(now);
 	}
 
@@ -182,6 +190,8 @@ export class WorkspaceVitals extends EventEmitter {
 			pressure: pressureData,
 			oxygen: oxygenData,
 			trajectory: this.calculateTrajectory(pulseData, tempData, pressureData, oxygenData),
+			// Include behavioral metadata
+			behavior: this.behaviorTracker.getMetadata(now),
 		};
 
 		// Record history (bounded FIFO)
@@ -369,6 +379,46 @@ export class WorkspaceVitals extends EventEmitter {
 	resetLearning(): void {
 		this.calibrator.reset();
 		this.predictor.reset();
+	}
+
+	// =========================================================================
+	// PHASE 2: BEHAVIORAL METADATA TRACKING
+	// =========================================================================
+
+	/**
+	 * Record a file edit event for behavioral analytics.
+	 */
+	recordEdit(linesAdded: number, linesDeleted: number, timestamp: number = Date.now()): void {
+		this.behaviorTracker.recordEdit(linesAdded, linesDeleted, timestamp);
+	}
+
+	/**
+	 * Record a file save event.
+	 */
+	recordFileSave(): void {
+		this.behaviorTracker.recordFileSave();
+	}
+
+	/**
+	 * Record a test execution result.
+	 */
+	recordTest(passed: boolean, timestamp: number = Date.now()): void {
+		this.behaviorTracker.recordTest(passed, timestamp);
+	}
+
+	/**
+	 * Record an AI suggestion event.
+	 * @param accepted Whether the user accepted the AI suggestion
+	 */
+	recordAISuggestion(accepted: boolean, timestamp: number = Date.now()): void {
+		this.behaviorTracker.recordAISuggestion(accepted, timestamp);
+	}
+
+	/**
+	 * Get current behavioral metadata.
+	 */
+	getBehavioralMetadata(now: number = Date.now()) {
+		return this.behaviorTracker.getMetadata(now);
 	}
 
 	// =========================================================================

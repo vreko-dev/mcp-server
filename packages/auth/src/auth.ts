@@ -18,6 +18,7 @@ import {
 } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 import { parse as parseCookies } from "cookie";
+import { nanoid } from "nanoid";
 import { trackEvent } from "./lib/audit";
 import { ac, admin as adminRole, member as memberRole, owner as ownerRole } from "./lib/organization-permissions";
 import { invitationOnlyPlugin } from "./plugins/invitation-only/index";
@@ -48,7 +49,10 @@ export let redisAvailable = false;
 
 async function initializeRedis() {
 	if (!env.REDIS_URL) {
-		logger.warn("REDIS_URL not configured - rate limiting will use database fallback");
+		// Only log warning if not in MCP quiet mode
+		if (process.env.MCP_QUIET !== "1") {
+			logger.warn("REDIS_URL not configured - rate limiting will use database fallback");
+		}
 		return;
 	}
 
@@ -142,14 +146,24 @@ export const auth = betterAuth({
 		// - resetFailedAttempts() called on successful login
 	},
 	socialProviders: {
-		github: {
-			clientId: env.GITHUB_CLIENT_ID ?? "",
-			clientSecret: env.GITHUB_CLIENT_SECRET ?? "",
-		},
-		google: {
-			clientId: env.GOOGLE_CLIENT_ID ?? "",
-			clientSecret: env.GOOGLE_CLIENT_SECRET ?? "",
-		},
+		// Only include social providers if credentials are configured
+		// This prevents Better Auth from logging warnings that corrupt MCP stdio
+		...(env.GITHUB_CLIENT_ID && env.GITHUB_CLIENT_SECRET
+			? {
+					github: {
+						clientId: env.GITHUB_CLIENT_ID,
+						clientSecret: env.GITHUB_CLIENT_SECRET,
+					},
+				}
+			: {}),
+		...(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET
+			? {
+					google: {
+						clientId: env.GOOGLE_CLIENT_ID,
+						clientSecret: env.GOOGLE_CLIENT_SECRET,
+					},
+				}
+			: {}),
 	},
 	database: drizzleAdapter(db as any, {
 		provider: "pg",
@@ -218,9 +232,9 @@ export const auth = betterAuth({
 			checkOrigin: true,
 		},
 
-		// ✅ OPTIMIZATION: Explicit ID generation using cuid2
+		// ✅ OPTIMIZATION: Explicit ID generation using nanoid
 		database: {
-			generateId: () => cuid(),
+			generateId: () => nanoid(),
 			defaultFindManyLimit: 100, // Prevent unbounded queries
 			experimentalJoins: false, // Disable experimental features in production
 		},

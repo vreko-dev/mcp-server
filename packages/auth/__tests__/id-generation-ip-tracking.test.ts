@@ -1,4 +1,7 @@
+import { nanoid } from "nanoid";
 import { describe, expect, it } from "vitest";
+
+nanoid;
 
 /**
  * ID Generation and IP Tracking Tests - TDD Red Phase
@@ -23,7 +26,7 @@ describe("ID1: ID Generation Strategy", () => {
 
 		const ids = new Set();
 		for (let i = 0; i < 1000; i++) {
-			ids.add(cuid());
+			ids.add(nanoid());
 		}
 
 		// All IDs should be unique
@@ -33,7 +36,7 @@ describe("ID1: ID Generation Strategy", () => {
 	it("CRITICAL: should generate IDs matching schema format", () => {
 		// Critical path: IDs must match VARCHAR(255) schema
 
-		const id = cuid();
+		const id = nanoid();
 
 		expect(typeof id).toBe("string");
 		expect(id.length).toBeGreaterThan(0);
@@ -43,7 +46,7 @@ describe("ID1: ID Generation Strategy", () => {
 	it("should generate URL-safe IDs", () => {
 		// IDs should be URL-safe (no special characters)
 
-		const id = cuid();
+		const id = nanoid();
 		const urlSafeRegex = /^[a-z0-9]+$/i;
 
 		expect(urlSafeRegex.test(id)).toBe(true);
@@ -54,9 +57,9 @@ describe("ID2: Consistent ID Format", () => {
 	it("CRITICAL: all auth tables should use same ID format", async () => {
 		// Critical path: Consistency across user, session, account tables
 
-		const userId = cuid();
-		const sessionId = cuid();
-		const accountId = cuid();
+		const userId = nanoid();
+		const sessionId = nanoid();
+		const accountId = nanoid();
 
 		// All should have similar characteristics
 		expect(typeof userId).toBe(typeof sessionId);
@@ -66,8 +69,8 @@ describe("ID2: Consistent ID Format", () => {
 	it("should not use auto-increment IDs", () => {
 		// Better Auth default is random IDs, not serial
 
-		const id1 = cuid();
-		const id2 = cuid();
+		const id1 = nanoid();
+		const id2 = nanoid();
 
 		// Should not be sequential numbers
 		expect(Number.isNaN(Number(id1))).toBe(true);
@@ -210,7 +213,7 @@ describe("PERFORMANCE: ID Generation Performance", () => {
 
 		const start = performance.now();
 		for (let i = 0; i < 1000; i++) {
-			cuid();
+			nanoid();
 		}
 		const end = performance.now();
 
@@ -224,7 +227,7 @@ describe("PERFORMANCE: ID Generation Performance", () => {
 		// Performance: Support 1000+ IDs/sec
 
 		const start = performance.now();
-		const ids = Array.from({ length: 10000 }, () => cuid());
+		const ids = Array.from({ length: 10000 }, () => nanoid());
 		const end = performance.now();
 
 		const idsPerSecond = (10000 / (end - start)) * 1000;

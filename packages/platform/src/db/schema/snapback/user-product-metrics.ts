@@ -1,4 +1,5 @@
 import { index, integer, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { nanoid } from "nanoid";
 import { user } from "../postgres";
 
 // User product metrics table

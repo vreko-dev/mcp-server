@@ -15,17 +15,21 @@
 
 import type { SignalOutput } from "../types.js";
 
-// Threat patterns extracted from threat-detection.ts + mock-replacement.ts
+// Threat patterns extracted from threat-detection.ts + mock-replacement.ts + V1 Guardian plugins
 /** Exported for direct testing and reuse */
 export const THREAT_PATTERNS = {
 	critical: [
 		{ pattern: /rm\s+-rf/i, description: "rm -rf", severity: 1.0 },
 		{ pattern: /DROP\s+TABLE/i, description: "DROP TABLE", severity: 1.0 },
 		{ pattern: /eval\s*\(/i, description: "eval() usage", severity: 1.0 },
+		{ pattern: /\bnew\s+Function\s*\(/i, description: "Function constructor usage", severity: 1.0 },
+		{ pattern: /\bFunction\s*\(/i, description: "Function constructor usage", severity: 1.0 },
 		// Secret patterns (from SecretDetectionPlugin)
 		{ pattern: /AKIA[A-Z0-9]{16}/g, description: "AWS access key", severity: 1.0 },
 		{ pattern: /ghp_[a-zA-Z0-9]{36}/g, description: "GitHub token", severity: 1.0 },
 		{ pattern: /sk-[a-zA-Z0-9]{32,}/g, description: "OpenAI API key", severity: 1.0 },
+		// JWT tokens (from AdvancedSecretsPlugin)
+		{ pattern: /eyJ[A-Za-z0-9-_]*\.[A-Za-z0-9-_]*\.[A-Za-z0-9-_]*/g, description: "JWT token", severity: 1.0 },
 	],
 	high: [
 		{ pattern: /password\s*[:=]\s*['"]/i, description: "hardcoded password", severity: 0.8 },
@@ -35,6 +39,10 @@ export const THREAT_PATTERNS = {
 		{ pattern: /\bjest\.mock\b/g, description: "jest.mock() in production", severity: 0.8 },
 		{ pattern: /\bvi\.mock\b/g, description: "vi.mock() in production", severity: 0.8 },
 		{ pattern: /\bsinon\.(stub|mock|spy)\b/g, description: "sinon mock in production", severity: 0.7 },
+		// Dangerous Node.js APIs (from DangerousAPIPlugin)
+		{ pattern: /\bchild_process\.(exec|execSync)\s*\(/g, description: "child_process.exec() usage", severity: 0.8 },
+		{ pattern: /\bvm\.runInThisContext\s*\(/g, description: "vm.runInThisContext() usage", severity: 0.8 },
+		{ pattern: /\bvm\.runInNewContext\s*\(/g, description: "vm.runInNewContext() usage", severity: 0.8 },
 	],
 	medium: [
 		{ pattern: /exec\s*\(/i, description: "exec() usage", severity: 0.5 },
@@ -42,6 +50,12 @@ export const THREAT_PATTERNS = {
 		// Testing library imports in production
 		{ pattern: /from\s+["']@testing-library/g, description: "testing-library import", severity: 0.5 },
 		{ pattern: /from\s+["']vitest["']/g, description: "vitest import in production", severity: 0.5 },
+		// child_process.spawn is less dangerous but still notable
+		{ pattern: /\bchild_process\.spawn\s*\(/g, description: "child_process.spawn() usage", severity: 0.5 },
+		// .env hygiene issues (from EnvHygienePlugin)
+		{ pattern: /^\s*DEBUG\s*=\s*(true|1|on)/im, description: ".env: debug mode enabled", severity: 0.5 },
+		{ pattern: /^\s*SSL\s*=\s*(false|0|off)/im, description: ".env: SSL disabled", severity: 0.5 },
+		{ pattern: /^\s*NODE_ENV\s*=\s*development/im, description: ".env: development environment", severity: 0.5 },
 	],
 };
 

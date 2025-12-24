@@ -11,7 +11,8 @@
 		"bcrypt": "catalog:",
 		"better-auth": "catalog:",
 		"cookie": "catalog:",
-		"drizzle-orm": "catalog:"
+		"drizzle-orm": "catalog:",
+		"nanoid": "catalog:"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "catalog:",

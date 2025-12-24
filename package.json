@@ -1,7 +1,6 @@
 {
   "dependencies": {
     "@next/mdx": "catalog:",
-    "@paralleldrive/cuid2": "catalog:",
     "@supabase/supabase-js": "catalog:",
     "@vercel/analytics": "catalog:",
     "highlight.js": "^11.11.1",

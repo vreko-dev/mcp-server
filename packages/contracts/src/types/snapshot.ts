@@ -18,10 +18,15 @@ import { RiskScoreSchema } from "../schemas";
  *   protected: true,
  *   sessionId: "clx1a2b3c4d5e6f7g8h9" // Optional link to session
  * }
+ *
+ * Version Compatibility:
+ * - version: Snapshot format version (default: "1.0")
+ * - Compatible versions: ["1.0"]
  */
 export const SnapshotSchema = z.object({
 	id: z.string(),
 	timestamp: z.number(),
+	version: z.string().default("1.0"),
 	meta: z.record(z.string(), z.any()).optional(),
 	files: z.array(z.string()).optional(),
 	fileContents: z.record(z.string(), z.string()).optional(),
@@ -106,12 +111,66 @@ export const SnapshotFiltersSchema = z.object({
 export type SnapshotFilters = z.infer<typeof SnapshotFiltersSchema>;
 
 /**
- * Snapshot restore result
+ * File diff for restore preview
+ */
+export const FileDiffSchema = z.object({
+	path: z.string(),
+	operation: z.enum(["create", "modify", "delete"]),
+	linesAdded: z.number(),
+	linesRemoved: z.number(),
+	preview: z.string(),
+	currentChecksum: z.string().optional(),
+	snapshotChecksum: z.string().optional(),
+});
+export type FileDiff = z.infer<typeof FileDiffSchema>;
+
+/**
+ * Diff preview for restore operations
+ */
+export const DiffPreviewSchema = z.object({
+	totalFiles: z.number(),
+	filesCreated: z.number(),
+	filesModified: z.number(),
+	filesDeleted: z.number(),
+	totalLinesAdded: z.number(),
+	totalLinesRemoved: z.number(),
+	diffs: z.array(FileDiffSchema),
+});
+export type DiffPreview = z.infer<typeof DiffPreviewSchema>;
+
+/**
+ * Conflict report for restore operations
+ */
+export const ConflictReportSchema = z.object({
+	path: z.string(),
+	reason: z.string(),
+	currentChecksum: z.string(),
+	snapshotChecksum: z.string(),
+});
+export type ConflictReport = z.infer<typeof ConflictReportSchema>;
+
+/**
+ * Snapshot restore result (enhanced with diff previews and conflicts)
  */
 export const SnapshotRestoreResultSchema = z.object({
 	success: z.boolean(),
 	restoredFiles: z.array(z.string()),
 	errors: z.array(z.string()).optional(),
+	diffPreview: DiffPreviewSchema.optional(),
+	conflicts: z.array(ConflictReportSchema).optional(),
+	verification: z
+		.object({
+			allVerified: z.boolean(),
+			results: z.array(
+				z.object({
+					path: z.string(),
+					verified: z.boolean(),
+					checksum: z.string(),
+					expected: z.string(),
+				}),
+			),
+		})
+		.optional(),
 });
 export type SnapshotRestoreResult = z.infer<typeof SnapshotRestoreResultSchema>;
 
@@ -246,6 +305,7 @@ export async function createSnapshotStorage(basePath: string): Promise<SnapshotS
 				const snapshot: Snapshot = {
 					id: `snap-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
 					timestamp: Date.now(),
+					version: "1.0",
 					meta: {
 						...data,
 						protected: data.protected || false,

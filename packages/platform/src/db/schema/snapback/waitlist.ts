@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import { index, integer, json, pgEnum, pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
+import { nanoid } from "nanoid";
 
 // Waitlist status enum
 export const waitlistStatusEnum = pgEnum("waitlist_status", ["pending", "invited", "accepted", "rejected"]);

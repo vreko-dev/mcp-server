@@ -56,12 +56,9 @@
 			"inputs": ["apps/vscode/package.base.json", "apps/vscode/package-contributes/**"]
 		},
 		"build": {
-			"dependsOn": [
-				"build:package",
-				"^generate",
-				"^build"
-			],
+			"dependsOn": ["build:package", "^generate", "^build"],
 			"outputs": ["dist/**", "*.tsbuildinfo", ".next/**", "!.next/cache/**", "out/**"],
+			"outputLogs": "hash-only",
 			"inputs": [
 				"$TURBO_DEFAULT$",
 				"apps/web/.env.local",

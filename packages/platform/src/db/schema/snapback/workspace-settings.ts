@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import { jsonb, pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
+import { nanoid } from "nanoid";
 import { user } from "../postgres";
 
 export const workspaceSettings = pgTable(

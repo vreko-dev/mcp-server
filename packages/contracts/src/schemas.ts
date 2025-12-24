@@ -37,6 +37,7 @@ export type RiskScore = z.infer<typeof RiskScoreSchema>;
 export const SnapshotSchema = z.object({
 	id: z.string(),
 	timestamp: z.number(),
+	version: z.string().default("1.0"),
 	meta: z.record(z.string(), z.any()).optional(),
 	files: z.array(z.string()).optional(),
 	fileContents: z.record(z.string(), z.string()).optional(),

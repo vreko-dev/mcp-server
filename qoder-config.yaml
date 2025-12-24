@@ -100,6 +100,27 @@ mcp:
               - name: "record_learning"
                 call_after: ["task_completion"]
                 description: "Record new patterns"
+        - name: snapback
+          command: "node"
+          args:
+              - "--env-file=/Users/user1/WebstormProjects/SnapBack-Site/apps/mcp-server/.env.local"
+              - "/Users/user1/WebstormProjects/SnapBack-Site/apps/mcp-server/dist/index.js"
+          env:
+              MCP_QUIET: "1"
+              MCP_DEV_MODE: "1"
+          priority: 2
+          use_when:
+              - "risk_assessment"
+              - "snapshot_management"
+              - "code_analysis"
+              - "dependency_validation"
+          tools:
+              - name: "assess_risk"
+                description: "Analyze code for security risks"
+              - name: "create_snapshot"
+                description: "Create a code snapshot"
+              - name: "validate_dependencies"
+                description: "Check dependency security"
         - name: context7
           url: "mcp://context7"
           priority: 2
@@ -133,13 +154,6 @@ mcp:
               - "dependency_analysis"
               - "documentation_search"
           max_steps: 12
-        - name: snapback-internal
-          command: "npx"
-          args:
-              - "-y"
-              - "tsx"
-              - "/Users/user1/WebstormProjects/SnapBack-Site/ai_dev_utils/mcp/server.ts"
-          priority: 4
 
 policies:
     incremental_tests: true

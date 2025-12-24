@@ -118,7 +118,10 @@ export type {
 
 // Export snapshot types that don't conflict
 export type {
+	ConflictReport,
 	CreateSnapshotOptions,
+	DiffPreview,
+	FileDiff,
 	FileInput,
 	SnapshotFilters,
 	SnapshotRestoreResult,

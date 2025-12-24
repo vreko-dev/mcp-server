@@ -1,5 +1,11 @@
 import pino from "pino";
 
+/**
+ * Check if running in MCP quiet mode (suppress all non-error output for MCP stdio)
+ * When MCP_QUIET=1, only fatal errors are logged to avoid corrupting MCP protocol
+ */
+const MCP_QUIET = process.env.MCP_QUIET === "1" || process.env.MCP_QUIET === "true";
+
 // Define redaction paths for sensitive data
 const redactPaths = [
 	"user.email",
@@ -16,7 +22,8 @@ const redactPaths = [
 // This is critical for MCP servers which use stdout for JSON-RPC communication
 const pinoLogger = pino(
 	{
-		level: process.env.LOG_LEVEL || "info",
+		// When MCP_QUIET=1, set level to 'silent' to suppress all output
+		level: MCP_QUIET ? "silent" : process.env.LOG_LEVEL || "info",
 		redact: {
 			paths: redactPaths,
 			censor: "[REDACTED]",

@@ -71,12 +71,16 @@ export interface FileUnprotectedPayload {
 	timestamp: number;
 }
 
+// Check if running in MCP quiet mode (suppress all non-error output for MCP stdio)
+const MCP_QUIET = process.env.MCP_QUIET === "1" || process.env.MCP_QUIET === "true";
+
 // Simple logger implementation - uses stderr to avoid polluting stdout (important for MCP stdio transport)
+// When MCP_QUIET=1, only errors are logged to avoid corrupting MCP protocol
 const logger = {
-	info: console.error,
-	warn: console.error,
+	info: MCP_QUIET ? () => {} : console.error,
+	warn: MCP_QUIET ? () => {} : console.error,
 	error: console.error,
-	debug: console.error,
+	debug: MCP_QUIET ? () => {} : console.error,
 };
 
 // Simple in-memory storage for events (replaces the persistence manager)

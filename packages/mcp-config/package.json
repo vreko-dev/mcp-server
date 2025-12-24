@@ -1,0 +1,43 @@
+{
+  "name": "@snapback/mcp-config",
+  "description": "AI client detection and MCP configuration for SnapBack",
+  "version": "1.0.0",
+  "license": "Apache-2.0",
+  "author": "SnapBack Team",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/snapback-dev.git",
+    "directory": "packages/mcp-config"
+  },
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check": "biome check .",
+    "format": "biome format --write .",
+    "lint": "biome lint .",
+    "lint:fix": "biome lint --fix .",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@snapback/vitest-config": "workspace:*",
+    "@types/node": "catalog:",
+    "tsup": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

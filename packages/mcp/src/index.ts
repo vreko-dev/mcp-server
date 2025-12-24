@@ -21,8 +21,27 @@
 // Client exports
 export { type ApiClientConfig, SnapBackAPIClient } from "./client/api-client.js";
 export { MCP_ROUTES, type McpRouteKey } from "./client/routes.js";
+// Facade handlers
+export { facadeHandlers } from "./facades/handlers.js";
+// Migration utilities
+export {
+	FACADE_TO_LEGACY,
+	isLegacyTool,
+	resolveFacadeName,
+	TOOL_MIGRATIONS,
+} from "./migrations.js";
+// Registry and tool types
+export {
+	FACADE_TOOLS,
+	listFacadeTools,
+	type SnapBackTool,
+	type ToolContext,
+	type ToolHandler,
+	type ToolResult,
+	tools,
+} from "./registry.js";
 // Main server exports
 export { createMcpServer, type McpServerOptions } from "./server.js";
-// Tool types
-export type { SnapBackToolDefinition, ToolHandler } from "./tools/types.js";
+
+// Transport
 export { runStdioMcpServer } from "./transport/stdio.js";

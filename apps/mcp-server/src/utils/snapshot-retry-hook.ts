@@ -135,6 +135,11 @@ export async function createSnapshotWithRetry(
 				...(suggestAlternatives !== undefined && { suggestAlternatives }),
 			});
 
+			// Check for explicit success=false (validation failures return without throwing)
+			if (result && result.success === false) {
+				throw new Error(result.error || "Snapshot creation failed");
+			}
+
 			// Success!
 			if (cfg.verbose && attempt > 1) {
 				console.error(`[SnapBack Retry] ✅ Succeeded on attempt ${attempt}`);

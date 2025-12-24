@@ -15,7 +15,6 @@
 
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
-import { createId } from "@paralleldrive/cuid2";
 import type {
 	ChangeOp,
 	EOLType,
@@ -25,6 +24,7 @@ import type {
 	SessionTrigger,
 } from "@snapback-oss/contracts/session";
 import { minimatch } from "minimatch";
+import { nanoid } from "nanoid";
 import { AiSessionTracker } from "../ai/AiSessionTracker";
 import { SimpleChangeTracker } from "../ai/SimpleChangeTracker";
 import { CursorDetector } from "../core/detection/CursorDetector";
@@ -235,7 +235,7 @@ export class SessionManager {
 		}
 
 		// Generate session ID
-		const sessionId = createId();
+		const sessionId = nanoid();
 		const startedAt = Date.now();
 
 		// Initialize active session state

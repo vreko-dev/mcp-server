@@ -2,7 +2,9 @@ import { existsSync } from "node:fs";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import type {
+	ConflictReport,
 	CreateSnapshotOptions,
+	FileDiff,
 	FileInput,
 	Snapshot,
 	SnapshotFilters,
@@ -11,6 +13,7 @@ import type {
 import type { StorageAdapter } from "../storage/StorageAdapter";
 import { generateSnapshotId } from "../utils/id-generation";
 import { validatePath } from "../utils/security";
+import { DiffCalculator } from "./DiffCalculator";
 import { SnapshotDeduplication } from "./SnapshotDeduplication";
 import { SnapshotNaming } from "./SnapshotNaming";
 
@@ -20,9 +23,20 @@ export interface SnapshotManagerOptions {
 	autoProtect?: boolean;
 }
 
+export interface RestoreOptions {
+	dryRun?: boolean;
+	onProgress?: (progress: number) => void;
+	conflictResolution?: "overwrite" | "skip" | "merge";
+	files?: string[];
+}
+
 export class SnapshotManager {
+	private static readonly CURRENT_SNAPSHOT_VERSION = "1.0";
+	private static readonly COMPATIBLE_VERSIONS = ["1.0"];
+
 	private deduplication: SnapshotDeduplication;
 	private naming: SnapshotNaming;
+	private diffCalculator: DiffCalculator;
 
 	constructor(
 		private storage: StorageAdapter,
@@ -30,6 +44,22 @@ export class SnapshotManager {
 	) {
 		this.deduplication = new SnapshotDeduplication();
 		this.naming = new SnapshotNaming();
+		this.diffCalculator = new DiffCalculator();
+	}
+
+	/**
+	 * Validate snapshot version compatibility
+	 * @throws Error if snapshot version is incompatible
+	 */
+	private validateSnapshotVersion(snapshot: Snapshot): void {
+		const version = snapshot.version || "1.0"; // Default for legacy snapshots
+
+		if (!SnapshotManager.COMPATIBLE_VERSIONS.includes(version)) {
+			throw new Error(
+				`Incompatible snapshot version: ${version}. ` +
+					`Supported versions: ${SnapshotManager.COMPATIBLE_VERSIONS.join(", ")}`,
+			);
+		}
 	}
 
 	async create(files: FileInput[], options?: CreateSnapshotOptions): Promise<Snapshot> {
@@ -73,6 +103,7 @@ export class SnapshotManager {
 		const snapshot: Snapshot = {
 			id: generateSnapshotId(),
 			timestamp: Date.now(),
+			version: SnapshotManager.CURRENT_SNAPSHOT_VERSION,
 			meta: {
 				name,
 				protected: options?.protected || this.options.autoProtect || false,
@@ -128,21 +159,21 @@ export class SnapshotManager {
 	}
 
 	/**
-	 * Restore snapshot to target directory with atomic guarantees
+	 * Restore snapshot to target directory with atomic guarantees,
+	 * conflict detection, and diff preview support
 	 * @param id Snapshot ID to restore
 	 * @param targetPath Target directory path (optional, for actual file system restore)
 	 * @param options Restore options
-	 * @returns Restore result with list of restored files and any errors
+	 * @returns Restore result with diff preview, conflicts, and verification
 	 */
-	async restore(
-		id: string,
-		targetPath?: string,
-		options?: { dryRun?: boolean; onProgress?: (progress: number) => void },
-	): Promise<SnapshotRestoreResult> {
+	async restore(id: string, targetPath?: string, options?: RestoreOptions): Promise<SnapshotRestoreResult> {
 		const snapshot = await this.storage.get(id);
 		if (!snapshot) {
 			throw new Error(`Snapshot ${id} not found`);
 		}
+
+		// Validate snapshot version compatibility
+		this.validateSnapshotVersion(snapshot);
 
 		// If no target path provided, return snapshot metadata only (metadata restore)
 		if (!targetPath) {
@@ -153,35 +184,117 @@ export class SnapshotManager {
 			};
 		}
 
-		// Dry run mode - just validate without writing files
-		if (options?.dryRun) {
-			const errors: string[] = [];
-			const fileContents = snapshot.fileContents || {};
+		// Filter files if specific files requested
+		const filesToRestore = options?.files || snapshot.files || [];
+		const fileContents = snapshot.fileContents || {};
 
-			for (const filePath of snapshot.files || []) {
-				if (!fileContents[filePath]) {
-					errors.push(`Missing content for file: ${filePath}`);
-				}
+		// Validate all files have content
+		const errors: string[] = [];
+		for (const filePath of filesToRestore) {
+			if (!fileContents[filePath]) {
+				errors.push(`Missing content for file: ${filePath}`);
 			}
+		}
 
+		if (errors.length > 0) {
 			return {
-				success: errors.length === 0,
-				restoredFiles: snapshot.files || [],
+				success: false,
+				restoredFiles: [],
 				errors,
 			};
 		}
 
+		// Generate diff preview and detect conflicts
+		const diffs: FileDiff[] = [];
+		const conflicts: ConflictReport[] = [];
+
+		for (const filePath of filesToRestore) {
+			const fullPath = path.join(targetPath, filePath);
+			const snapshotContent = fileContents[filePath]!;
+
+			// Read current file if it exists
+			let currentContent: string | null = null;
+			try {
+				if (existsSync(fullPath)) {
+					currentContent = await fs.readFile(fullPath, "utf-8");
+				}
+			} catch (error) {
+				// File doesn't exist or can't be read - will be created
+			}
+
+			// Calculate diff
+			const diff = this.diffCalculator.calculateFileDiff(filePath, currentContent, snapshotContent);
+			diffs.push(diff);
+
+			// Detect conflicts (file modified since snapshot)
+			if (currentContent && diff.currentChecksum !== diff.snapshotChecksum) {
+				conflicts.push({
+					path: filePath,
+					reason: "File modified since snapshot creation",
+					currentChecksum: diff.currentChecksum!,
+					snapshotChecksum: diff.snapshotChecksum!,
+				});
+			}
+		}
+
+		// Generate diff preview summary
+		const diffPreview = this.diffCalculator.generateDiffPreview(diffs);
+
+		// Dry run mode - return preview without modifying files
+		if (options?.dryRun) {
+			return {
+				success: true,
+				restoredFiles: filesToRestore,
+				errors: [],
+				diffPreview,
+				conflicts: conflicts.length > 0 ? conflicts : undefined,
+			};
+		}
+
+		// Handle conflicts based on resolution strategy
+		if (conflicts.length > 0) {
+			const resolution = options?.conflictResolution || "overwrite";
+
+			if (resolution === "skip") {
+				// Skip all conflicted files
+				const safeFiles = filesToRestore.filter((f) => !conflicts.find((c) => c.path === f));
+
+				if (safeFiles.length === 0) {
+					return {
+						success: false,
+						restoredFiles: [],
+						errors: ["All files have conflicts and skip resolution selected"],
+						diffPreview,
+						conflicts,
+					};
+				}
+
+				// Restore only non-conflicted files
+				const result = await this.restoreAtomic(snapshot, targetPath, { ...options, files: safeFiles });
+				result.diffPreview = diffPreview;
+				result.conflicts = conflicts;
+				return result;
+			}
+
+			// "overwrite" - proceed with restore despite conflicts
+			// "merge" - not yet implemented, fallback to overwrite
+		}
+
 		// Perform actual atomic file system restore
-		return await this.restoreAtomic(snapshot, targetPath, options);
+		const result = await this.restoreAtomic(snapshot, targetPath, options);
+		result.diffPreview = diffPreview;
+		result.conflicts = conflicts.length > 0 ? conflicts : undefined;
+
+		return result;
 	}
 
 	/**
-	 * Atomic restore implementation with staging and rollback
+	 * Atomic restore implementation with staging, rollback, and verification
 	 */
 	private async restoreAtomic(
 		snapshot: Snapshot,
 		targetPath: string,
-		options?: { onProgress?: (progress: number) => void },
+		options?: RestoreOptions,
 	): Promise<SnapshotRestoreResult> {
 		const errors: string[] = [];
 		const restoredFiles: string[] = [];
@@ -191,7 +304,8 @@ export class SnapshotManager {
 
 		try {
 			const fileContents = snapshot.fileContents || {};
-			const files = snapshot.files || [];
+			// Use filtered files if provided, otherwise all snapshot files
+			const files = options?.files || snapshot.files || [];
 			const totalFiles = files.length;
 
 			// Step 1: Create staging directory
@@ -240,10 +354,40 @@ export class SnapshotManager {
 			await fs.rename(stagingDir, targetPath);
 
 			if (options?.onProgress) {
+				options.onProgress(95);
+			}
+
+			// Step 5: Post-restore verification with checksums
+			const verificationResults: Array<{
+				path: string;
+				verified: boolean;
+				checksum: string;
+				expected: string;
+			}> = [];
+
+			for (const filePath of files) {
+				const fullPath = path.join(targetPath, filePath);
+				const restoredContent = await fs.readFile(fullPath, "utf-8");
+				const restoredChecksum = this.diffCalculator.calculateChecksum(restoredContent);
+				const expectedChecksum = this.diffCalculator.calculateChecksum(fileContents[filePath]!);
+
+				verificationResults.push({
+					path: filePath,
+					verified: restoredChecksum === expectedChecksum,
+					checksum: restoredChecksum,
+					expected: expectedChecksum,
+				});
+
+				if (restoredChecksum !== expectedChecksum) {
+					throw new Error(`Verification failed for ${filePath}: checksum mismatch`);
+				}
+			}
+
+			if (options?.onProgress) {
 				options.onProgress(100);
 			}
 
-			// Step 5: Clean up backup on success
+			// Step 6: Clean up backup on success
 			if (existsSync(backupDir)) {
 				await fs.rm(backupDir, { recursive: true, force: true });
 			}
@@ -252,6 +396,10 @@ export class SnapshotManager {
 				success: true,
 				restoredFiles,
 				errors: [],
+				verification: {
+					allVerified: verificationResults.every((r) => r.verified),
+					results: verificationResults,
+				},
 			};
 		} catch (error) {
 			// Rollback: restore from backup if it exists

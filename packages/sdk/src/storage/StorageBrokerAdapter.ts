@@ -74,6 +74,7 @@ export class StorageBrokerAdapter implements StorageAdapter {
 			return {
 				id: result.id,
 				timestamp: result.timestamp,
+				version: "1.0",
 				meta: metadata,
 				files: Array.from(result.files.keys()),
 				fileContents,
@@ -107,6 +108,7 @@ export class StorageBrokerAdapter implements StorageAdapter {
 				result.push({
 					id: snapshot.id,
 					timestamp: snapshot.timestamp,
+					version: "1.0",
 					meta: metadata,
 					files: [], // We don't load files in list view for performance
 					fileContents: {},

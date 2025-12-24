@@ -17,6 +17,7 @@
     "@snapback/infrastructure": "workspace:*",
     "ky": "catalog:",
     "minimatch": "catalog:",
+    "nanoid": "catalog:",
     "p-retry": "catalog:",
     "quick-lru": "catalog:",
     "zod": "catalog:"

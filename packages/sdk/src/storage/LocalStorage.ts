@@ -363,6 +363,7 @@ export class LocalStorage implements StorageAdapter {
 			return {
 				id: row.id,
 				timestamp: row.timestamp,
+				version: row.version || "1.0", // Default for legacy snapshots
 				meta: JSON.parse(row.metadata || "{}"),
 				files: JSON.parse(row.files || "[]"),
 				fileContents: JSON.parse(row.file_contents || "{}"),

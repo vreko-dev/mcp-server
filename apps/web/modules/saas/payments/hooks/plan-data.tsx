@@ -24,7 +24,7 @@ export function usePlanData() {
 				"Everything in Free",
 				"Cloud checkpoint backup",
 				"Priority support",
-				"Advanced AI detection (94% accuracy)",
+				"Advanced AI detection (learns your patterns)",
 				"Custom rules engine",
 				"Free snapback cap 🧢",
 			],

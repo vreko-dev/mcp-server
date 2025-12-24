@@ -71,6 +71,8 @@ mcp:
               - "-y"
               - "tsx"
               - "/Users/user1/WebstormProjects/SnapBack-Site/ai_dev_utils/mcp/server.ts"
+          env:
+              MCP_DEV_MODE: "1"
           priority: 1
           mandatory_before:
               - "search_replace"

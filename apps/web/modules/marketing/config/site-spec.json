@@ -23,7 +23,7 @@
 							"content": {
 								"eyebrow": "Intelligent Snapshots",
 								"headline": "SnapBack Learns.\nYou Experiment.",
-								"subheadline": "Every time you undo a mistake, SnapBack learns what patterns caused it. Day 1: 94% accurate. Day 30: knows YOUR codebase. Month 3: catches what you didn't know to look for.",
+								"subheadline": "Every time you undo a mistake, SnapBack learns what patterns caused it. Day 1: catches common patterns. Day 30: knows YOUR codebase. Month 3: catches what you didn't know to look for.",
 								"founder_story": "Local-first snapshots, cloud-optional learning. Metadata only—your code stays on your machine. Works offline, no account required.",
 								"primary_cta": {
 									"label": "Install for VS Code",
@@ -49,17 +49,17 @@
 								"body": "Copilot, Claude, Cursor—they move fast. Great ideas. But some refactors break your specific patterns. SnapBack watches what goes wrong and learns what to flag next time. Your codebase is unique. SnapBack's intelligent snapshots becomes unique too.",
 								"timeline_items": [
 									{
-										"title": "Day 1: 94% accurate out of the box",
+										"title": "Day 1: Catches common patterns out of the box",
 										"description": "Install SnapBack. It detects hardcoded secrets, phantom dependencies, test code in production, and risky patterns right away.",
 										"screenshot": "/images/git-vs-snapback.webp"
 									},
 									{
 										"title": "Day 30: Learns YOUR specific risks",
-										"description": "Every time you restore, SnapBack learns. 'Cursor always breaks this auth module.' 'This refactor pattern cascades.' 'This folder has phantom dependency issues.' Accuracy climbs to 98%."
+										"description": "Every time you restore, SnapBack learns. 'Cursor always breaks this auth module.' 'This refactor pattern cascades.' 'This folder has phantom dependency issues.' Accuracy improves with your usage."
 									},
 									{
 										"title": "Month 3: Catches patterns before you do",
-										"description": "After 90 days, intelligent snapshots knows what breaks in YOUR codebase. Flags issues before you'd even think to look. Accuracy reaches 99%+."
+										"description": "After 90 days, intelligent snapshots knows what breaks in YOUR codebase. Flags issues before you'd even think to look. Becomes predictive for your patterns."
 									}
 								],
 								"closing": "That's intelligent snapshots. It's not magic—it's outcome learning. Every undo teaches it something."

@@ -171,3 +171,6 @@ packages/sdk/dist-types/
 
 # MCP configuration with local credentials
 .mcp.json
+
+# AI context map (human reference only)
+.ctx.map

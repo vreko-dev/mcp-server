@@ -16,8 +16,7 @@
  */
 
 import type { ProtectionLevel } from "@snapback/contracts";
-import { THRESHOLDS } from "../config/Thresholds";
-import type { ProtectionManager } from "./ProtectionManager";
+import { type ProtectionManager, THRESHOLDS } from "@snapback-oss/sdk";
 
 /**
  * Context for evaluating protection decisions

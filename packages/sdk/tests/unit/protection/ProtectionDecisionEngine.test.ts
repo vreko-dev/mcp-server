@@ -13,15 +13,14 @@
  */
 
 import type { ProtectionConfig } from "@snapback/contracts";
+import { ProtectionManager, THRESHOLDS } from "@snapback-oss/sdk";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { THRESHOLDS } from "../../../src/config/Thresholds";
 import {
 	DefaultRiskAnalyzer,
 	type EvaluationContext,
 	type IRiskAnalyzer,
 	ProtectionDecisionEngine,
 } from "../../../src/protection/ProtectionDecisionEngine";
-import { ProtectionManager } from "../../../src/protection/ProtectionManager";
 
 // Factory for creating mock ProtectionManager
 function createMockProtectionManager(overrides?: Partial<ProtectionConfig>): ProtectionManager {

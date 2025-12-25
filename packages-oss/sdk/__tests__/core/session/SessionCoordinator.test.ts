@@ -159,6 +159,9 @@ describe("SessionCoordinator", () => {
 			timers: mockTimers,
 			logger: mockLogger,
 			eventEmitter: mockEventEmitter,
+			// Override minSessionDuration to 0 for fast tests
+			// This allows instant finalization without waiting 5 seconds
+			config: { minSessionDuration: 0 },
 		});
 	});
 

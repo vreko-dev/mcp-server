@@ -10,8 +10,8 @@
  * @module facades/response-utils
  */
 
-import { createHash } from "node:crypto";
 import { existsSync, readdirSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
+import { hashContent } from "@snapback-oss/sdk";
 
 // ============================================================================
 // Types
@@ -303,19 +303,19 @@ function randomChoice<T>(arr: T[]): T {
 
 /**
  * Compute hash for a file's content (truncated for display)
- * @deprecated Use computeBlobId for snapshot comparisons
+ * @deprecated Use hashContent from @snapback-oss/sdk for full hash
  */
 export function hashFileContent(content: string): string {
-	return createHash("sha256").update(content).digest("hex").slice(0, 16);
+	return hashContent(content).slice(0, 16);
 }
 
 /**
  * Compute full SHA-256 blob ID (matches storage.ts format)
- * This is the same algorithm used by the engine's storeBlob function.
+ * Re-exported from @snapback-oss/sdk/utils/hash for convenience.
+ *
+ * @see {@link hashContent} from @snapback-oss/sdk
  */
-export function computeBlobId(content: string): string {
-	return createHash("sha256").update(content).digest("hex");
-}
+export const computeBlobId = hashContent;
 
 /**
  * Get file hashes for comparison (using full blobId format)

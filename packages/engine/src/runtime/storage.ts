@@ -21,11 +21,11 @@
  * CURRENT: Scaffolding with TODO markers
  */
 
-import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, unlinkSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { gunzipSync, gzipSync } from "node:zlib";
 import { generateSnapshotId } from "@snapback/contracts/id-generator";
+import { sha256 } from "@snapback-oss/sdk";
 import { eventBus } from "./events.js";
 
 // =============================================================================
@@ -393,8 +393,8 @@ export class Storage {
 	 * REFERENCE: packages/sdk/src/storage/BlobStore.ts
 	 */
 	private async storeBlob(content: string): Promise<string> {
-		// Calculate content hash
-		const hash = createHash("sha256").update(content).digest("hex");
+		// Calculate content hash using consolidated hash utility
+		const hash = sha256(content);
 
 		// Determine blob path (sharded by first 2 chars)
 		const blobDir = join(this.blobsDir, hash.slice(0, 2));

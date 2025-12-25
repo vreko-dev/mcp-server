@@ -255,7 +255,7 @@ export class SnapbackClient {
 
 		// Check cache first
 		if (!options?.forceRefresh && this.cache.has(cacheKey)) {
-			return this.cache.get(cacheKey);
+			return this.cache.get(cacheKey) as AnalyticsResponse;
 		}
 
 		try {
@@ -282,7 +282,7 @@ export class SnapbackClient {
 			// Return cached data if available, even if stale
 			if (this.cache.has(cacheKey)) {
 				logger.warn("API unavailable, using stale cached analytics");
-				return this.cache.get(cacheKey);
+				return this.cache.get(cacheKey) as AnalyticsResponse;
 			}
 
 			throw new Error(`Failed to fetch analytics: ${(error as Error).message}`);

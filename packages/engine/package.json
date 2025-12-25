@@ -43,6 +43,7 @@
   },
   "dependencies": {
     "@snapback/contracts": "workspace:*",
+    "@snapback-oss/sdk": "workspace:*",
     "esprima": "catalog:",
     "zod": "catalog:"
   },

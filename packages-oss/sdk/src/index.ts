@@ -157,6 +157,13 @@ export {
 	toError as toSnapBackError,
 	ValidationError,
 } from "./errors";
+// File system utilities (consolidated)
+export {
+	type AtomicWriteOptions,
+	atomicWriteFile,
+	atomicWriteFileSync,
+	DEFAULT_MAX_SIZE,
+} from "./fs/atomic";
 // Helper exports
 export { analyze, evaluatePolicy, ingestTelemetry } from "./helpers";
 export * from "./privacy/hasher";
@@ -167,7 +174,6 @@ export { ProtectionManager } from "./protection/ProtectionManager";
 export { Snapback } from "./Snapback";
 // Session Layer exports (new SessionManager)
 export * from "./session/index";
-
 // Snapshot retry hook with auto-fix
 export {
 	applyAutomaticFix,
@@ -199,6 +205,8 @@ export type { SDKConfig } from "./types";
 export type { ExperienceMetrics } from "./types/experience";
 // Utility exports
 export { toError } from "./utils/errorHelpers";
+// Hash utilities (consolidated)
+export { getBlobPath, hashContent, hashFilePath, hashWorkspaceId, sha256 } from "./utils/hash";
 export {
 	generateAuditId,
 	generateCheckpointId,
@@ -217,6 +225,8 @@ export {
 export { areEqual, getDepth, isWithin, normalize } from "./utils/PathNormalizer";
 // Result pattern utilities
 export {
+	all,
+	allOrErrors,
 	andThen,
 	err,
 	fromPromise,
@@ -231,7 +241,10 @@ export {
 	sequence,
 	tap,
 	tapErr,
+	toPromise,
 	tryAll,
+	tryCatch,
+	tryCatchAsync,
 	unwrap,
 	unwrapOr,
 	unwrapOrElse,

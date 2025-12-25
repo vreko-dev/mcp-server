@@ -1,15 +1,11 @@
-import crypto from "node:crypto";
-
 /**
- * Hash file path with SHA-256
+ * Privacy Hash Utilities
+ *
+ * Re-exports consolidated hash functions from @snapback-oss/sdk/utils/hash
+ * Maintained for backward compatibility.
+ *
+ * @deprecated Import directly from "@snapback-oss/sdk" or "@snapback-oss/sdk/utils/hash"
+ * This file will be removed in a future version.
  */
-export function hashFilePath(filePath: string): string {
-	return crypto.createHash("sha256").update(filePath).digest("hex");
-}
 
-/**
- * Hash workspace ID for anonymization
- */
-export function hashWorkspaceId(workspaceId: string): string {
-	return crypto.createHash("sha256").update(workspaceId).digest("hex");
-}
+export { hashFilePath, hashWorkspaceId, sha256 } from "../utils/hash";

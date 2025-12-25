@@ -1,9 +1,11 @@
 /**
- * Hash file path with SHA-256
+ * Privacy Hash Utilities
+ *
+ * Re-exports consolidated hash functions from @snapback-oss/sdk/utils/hash
+ * Maintained for backward compatibility.
+ *
+ * @deprecated Import directly from "@snapback-oss/sdk" or "@snapback-oss/sdk/utils/hash"
+ * This file will be removed in a future version.
  */
-export declare function hashFilePath(filePath: string): string;
-/**
- * Hash workspace ID for anonymization
- */
-export declare function hashWorkspaceId(workspaceId: string): string;
+export { hashFilePath, hashWorkspaceId, sha256 } from "../utils/hash";
 //# sourceMappingURL=hasher.d.ts.map

@@ -7,9 +7,8 @@
  * @module validation
  */
 
-import { randomBytes } from "node:crypto";
-import { renameSync, unlinkSync, writeFileSync } from "node:fs";
 import { isAbsolute, normalize, relative, resolve } from "node:path";
+import { atomicWriteFileSync as atomicWriteSyncOSS } from "@snapback-oss/sdk";
 import { z } from "zod";
 
 // ============================================================================
@@ -88,6 +87,9 @@ export const MAX_CONTEXT_FILE_SIZE = 10 * 1024 * 1024;
  * Atomically writes a file using temp file + rename pattern.
  * Prevents partial writes on crash and ensures file integrity.
  *
+ * @deprecated Use atomicWriteFileSync from "@snapback-oss/sdk" directly.
+ * This wrapper will be removed after migration is complete.
+ *
  * @param filePath - The target file path
  * @param content - Content to write
  * @param options - Write options
@@ -100,41 +102,8 @@ export function atomicWriteFileSync(
 ): { success: true } | { success: false; error: string } {
 	const { encoding = "utf8", maxSize = MAX_CONTEXT_FILE_SIZE } = options;
 
-	// P1: Size limit check
-	const contentSize = Buffer.byteLength(content, encoding);
-	if (contentSize > maxSize) {
-		return {
-			success: false,
-			error: `Content size (${contentSize} bytes) exceeds maximum allowed (${maxSize} bytes)`,
-		};
-	}
-
-	// Generate temp file path in same directory (ensures same filesystem for atomic rename)
-	const tempSuffix = randomBytes(8).toString("hex");
-	const tempPath = `${filePath}.${tempSuffix}.tmp`;
-
-	try {
-		// Step 1: Write to temp file
-		writeFileSync(tempPath, content, { encoding });
-
-		// Step 2: Atomic rename (same filesystem = atomic on POSIX)
-		try {
-			renameSync(tempPath, filePath);
-		} catch (renameError) {
-			// Cleanup temp file on rename failure
-			try {
-				unlinkSync(tempPath);
-			} catch {
-				// Ignore cleanup errors
-			}
-			throw renameError;
-		}
-
-		return { success: true };
-	} catch (error) {
-		const message = error instanceof Error ? error.message : String(error);
-		return { success: false, error: `Atomic write failed: ${message}` };
-	}
+	// Re-export from consolidated OSS SDK implementation
+	return atomicWriteSyncOSS(filePath, content, { encoding, maxSize });
 }
 
 /**

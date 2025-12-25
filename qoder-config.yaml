@@ -25,8 +25,8 @@ context_pinning:
         - "apps/web/next.config.mjs"
         - "packages/core/src/index.ts"
         - "packages/sdk/src/index.ts"
-        - "apps/mcp-server/src/index.ts"
-        - "apps/mcp-server/src/context7/Context7Service.ts"
+        - "apps/cli/package.json"
+        - "apps/cli/src/index.ts"
     remember_reports:
         - "reports/explore/**/*"
         - "reports/review/**/*"
@@ -37,7 +37,7 @@ context_pinning:
         - "apps/web/.qoder/rules/*.md"
         - "apps/vscode/.qoder/rules/*.md"
         - "apps/api/.qoder/rules/*.md"
-        - "apps/mcp-server/.qoder/rules/*.md"
+        - "apps/cli/.qoder/rules/*.md"
 
 windsurf:
     allow_gitignore_access: true
@@ -105,8 +105,12 @@ mcp:
         - name: snapback
           command: "node"
           args:
-              - "--env-file=/Users/user1/WebstormProjects/SnapBack-Site/apps/mcp-server/.env.local"
-              - "/Users/user1/WebstormProjects/SnapBack-Site/apps/mcp-server/dist/index.js"
+              - "--env-file=/Users/user1/WebstormProjects/SnapBack-Site/apps/cli/.env.local"
+              - "/Users/user1/WebstormProjects/SnapBack-Site/apps/cli/dist/index.js"
+              - "mcp"
+              - "--stdio"
+              - "--workspace"
+              - "/Users/user1/WebstormProjects/SnapBack-Site"
           env:
               MCP_QUIET: "1"
               MCP_DEV_MODE: "1"
@@ -298,13 +302,17 @@ monorepo:
           depends_on: ["packages/platform", "packages/auth", "packages/sdk"]
         - source: "packages/sdk"
           depends_on: ["packages/core", "packages/contracts"]
-        - source: "apps/mcp-server"
+        - source: "apps/cli"
           depends_on:
               [
                   "packages/core",
                   "packages/sdk",
                   "packages/contracts",
                   "packages/events",
+                  "packages/mcp",
+                  "packages/mcp-config",
+                  "packages/engine",
+                  "packages/intelligence",
               ]
 
 # Context7 specific enhancements for better DX

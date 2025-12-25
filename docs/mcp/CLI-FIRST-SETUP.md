@@ -8,8 +8,11 @@
 ### 1. Install the CLI
 
 ```bash
-# From npm (when published)
+# Global install from npm (when published)
 npm install -g @snapback/cli
+
+# Or use npx (no install required)
+npx @snapback/cli mcp --stdio
 
 # Or from source
 cd /path/to/SnapBack-Site
@@ -59,6 +62,21 @@ or `%APPDATA%\Claude\claude_desktop_config.json` (Windows)
 }
 ```
 
+**Using npx (no global install):**
+```json
+{
+  "mcpServers": {
+    "snapback": {
+      "command": "npx",
+      "args": ["-y", "@snapback/cli", "mcp", "--stdio"],
+      "env": {
+        "SNAPBACK_API_KEY": "your-api-key-here"
+      }
+    }
+  }
+}
+```
+
 ### Cursor
 
 Edit: `~/.cursor/mcp.json`
@@ -77,6 +95,21 @@ Edit: `~/.cursor/mcp.json`
 }
 ```
 
+**Using npx:**
+```json
+{
+  "mcpServers": {
+    "snapback": {
+      "command": "npx",
+      "args": ["-y", "@snapback/cli", "mcp", "--stdio"],
+      "env": {
+        "SNAPBACK_API_KEY": "your-api-key-here"
+      }
+    }
+  }
+}
+```
+
 ### Cline / Claude Dev
 
 ```json
@@ -85,6 +118,18 @@ Edit: `~/.cursor/mcp.json`
     "snapback": {
       "command": "snap",
       "args": ["mcp", "--stdio"]
+    }
+  }
+}
+```
+
+**Using npx:**
+```json
+{
+  "mcp.servers": {
+    "snapback": {
+      "command": "npx",
+      "args": ["-y", "@snapback/cli", "mcp", "--stdio"]
     }
   }
 }

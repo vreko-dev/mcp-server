@@ -1,26 +1,25 @@
 /**
  * Centralized ID Generation
  *
- * Single Source of Truth for all ID generation in the SnapBack platform.
- * SDK owns ID formats - consumers (VSCode, API, etc.) import from SDK.
- *
- * ID Format: <prefix>-<timestamp>-<random>
- * - Sortable by timestamp (embedded in ID)
- * - Filesystem-safe (no special characters)
- * - Parseable for analytics/debugging
+ * RE-EXPORTS FROM @snapback/contracts - Single Source of Truth
+ * SDK provides typed wrappers for convenience.
  *
  * @module id-generation
  */
 
 import { randomBytes } from "node:crypto";
 import type { SessionId, SnapshotId } from "@snapback/contracts";
+import {
+	generateId as contractsGenerateId,
+	generateSnapshotId as contractsGenerateSnapshotId,
+} from "@snapback/contracts/id-generator";
 
 /**
  * ID prefixes for different entity types
  */
 export const ID_PREFIX = {
 	SESSION: "sess",
-	SNAPSHOT: "snap",
+	SNAPSHOT: "snapshot", // Aligned with contracts
 	AUDIT: "audit",
 	CHECKPOINT: "cp",
 } as const;
@@ -29,9 +28,7 @@ export type IdPrefix = (typeof ID_PREFIX)[keyof typeof ID_PREFIX];
 
 /**
  * Generate a cryptographically random alphanumeric suffix
- *
- * @param length - Length of the random suffix (default: 6)
- * @returns Lowercase alphanumeric string
+ * @internal Used by session/audit/checkpoint IDs
  */
 function randomSuffix(length = 6): string {
 	const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -44,27 +41,29 @@ function randomSuffix(length = 6): string {
 }
 
 /**
- * Generate a session ID with unified format
- *
+ * Generate a session ID
  * Format: sess-<timestamp>-<random>
- * Example: sess-1733657123456-a1b2c3
- *
- * @returns Session ID (branded type)
  */
 export function generateSessionId(): SessionId {
 	return `${ID_PREFIX.SESSION}-${Date.now()}-${randomSuffix()}` as SessionId;
 }
 
 /**
- * Generate a snapshot ID with unified format
+ * Generate a snapshot ID - delegates to @snapback/contracts
+ * Format: snapshot-<slug>-<timestamp>-<random> (with description)
+ *         snapshot-<timestamp>-<random> (without)
  *
- * Format: snap-<timestamp>-<random>
- * Example: snap-1733657123456-x9y8z7
- *
- * @returns Snapshot ID (branded type)
+ * @param description - Optional human-readable description
  */
-export function generateSnapshotId(): SnapshotId {
-	return `${ID_PREFIX.SNAPSHOT}-${Date.now()}-${randomSuffix()}` as SnapshotId;
+export function generateSnapshotId(description?: string): SnapshotId {
+	return contractsGenerateSnapshotId(description) as SnapshotId;
+}
+
+/**
+ * General purpose ID generation - delegates to @snapback/contracts
+ */
+export function generateId(prefix?: string): string {
+	return contractsGenerateId(prefix);
 }
 
 /**

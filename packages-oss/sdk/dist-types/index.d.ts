@@ -37,6 +37,7 @@ export { CorruptedDataError, StorageConnectionError, StorageError, StorageFullEr
 export type { SDKConfig } from "./types";
 export type { ExperienceMetrics } from "./types/experience";
 export { toError } from "./utils/errorHelpers";
+export { generateAuditId, generateCheckpointId, generateId, generateSessionId, generateSnapshotId, ID_PREFIX, type IdPrefix, isValidId, parseIdPrefix, parseIdTimestamp, randomId, type SnapshotId, } from "./utils/id-generation";
 export { areEqual, getDepth, isWithin, normalize } from "./utils/PathNormalizer";
 export { calculateBackoff, type RetryOptions, RetryPresets, withRetry } from "./utils/retry";
 //# sourceMappingURL=index.d.ts.map

@@ -11,10 +11,25 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { createStorage } from "@snapback/engine";
 import { WorkspaceVitals } from "@snapback/intelligence/vitals";
+import { applyAutomaticFix, diagnoseSnapshotFailure, formatDiagnosis, type SnapshotDiagnosis } from "@snapback-oss/sdk";
 import { CommonErrors } from "../errors.js";
-import type { ToolHandler, ToolResult } from "../registry.js";
+import type { ToolContext, ToolHandler, ToolResult } from "../registry.js";
 import { atomicWriteFileSync, validateFilePaths } from "../validation.js";
 import { getIntelligence } from "./intelligence.js";
+import {
+	buildSmartActions,
+	type CleanupResult,
+	type CoachingContext,
+	cleanupArchivedSessions,
+	cleanupStaleLearnings,
+	compressResponse,
+	findMatchingSnapshot,
+	formatBytes,
+	generateCoachingHint,
+	getArchitectureVersion,
+	getFileHashes,
+	getResponseConfig,
+} from "./response-utils.js";
 
 /**
  * Helper to create a tool result
@@ -27,10 +42,33 @@ function result(text: string, isError = false): ToolResult {
 }
 
 /**
- * Helper to create JSON result
+ * Helper to create JSON result with optional compression and coaching
  */
-function jsonResult(data: unknown): ToolResult {
-	return result(JSON.stringify(data, null, 2));
+function jsonResult(
+	data: unknown,
+	options?: {
+		context?: ToolContext;
+		coaching?: CoachingContext;
+		compress?: boolean;
+	},
+): ToolResult {
+	let finalData = data as Record<string, unknown>;
+
+	// Add coaching hint if context provided
+	if (options?.coaching) {
+		const hint = generateCoachingHint(options.coaching);
+		if (hint) {
+			finalData = { ...finalData, _hint: hint };
+		}
+	}
+
+	// Compress if requested or if context tier requires it
+	if (options?.compress !== false && options?.context) {
+		const config = getResponseConfig(options.context.tier || "local");
+		finalData = compressResponse(finalData, config);
+	}
+
+	return result(JSON.stringify(finalData, null, 2));
 }
 
 /**
@@ -164,7 +202,7 @@ export const handlePrepareWorkspace: ToolHandler = async (_args, context) => {
 };
 
 /**
- * snapshot_create - Create snapshot
+ * snapshot_create - Create snapshot with auto-retry, diagnosis, and duplicate detection
  */
 export const handleSnapshotCreate: ToolHandler = async (args, context) => {
 	const { files, reason, trigger } = args as {
@@ -185,37 +223,131 @@ export const handleSnapshotCreate: ToolHandler = async (args, context) => {
 
 	const storage = createStorage(context.workspaceRoot);
 
-	try {
-		// Read file contents using sanitized paths
-		const fileContents = pathValidation.sanitizedPaths.map((fullPath, idx) => {
-			if (!existsSync(fullPath)) {
-				throw new Error(`File not found: ${files[idx]}`);
-			}
-			return {
-				path: files[idx],
-				content: readFileSync(fullPath, "utf8"),
-			};
-		});
+	// Enhancement #1: Duplicate snapshot prevention (fixed)
+	// Check if ALL requested files are unchanged in ANY recent snapshot
+	// Uses blobId comparison directly - no expensive restore() needed
+	const snapshots = storage.listSnapshots();
 
-		// Create snapshot using engine
-		const snapshot = await storage.createSnapshot(fileContents, {
-			description: reason,
-			trigger: (trigger as "manual" | "auto" | "ai-detection") || "manual",
-		});
+	if (snapshots.length > 0) {
+		const currentHashes = getFileHashes(files, context.workspaceRoot);
 
-		return jsonResult({
-			status: "success",
-			snapshotId: snapshot.id,
-			fileCount: snapshot.files.length,
-			totalSize: snapshot.totalSize,
-			createdAt: new Date(snapshot.createdAt).toISOString(),
-			message: `Snapshot created with ${snapshot.files.length} file(s)`,
-			next_actions: [{ tool: "snapshot_list", priority: 2, reason: "Verify snapshot" }],
-		});
-	} catch (error) {
-		const message = error instanceof Error ? error.message : String(error);
-		return result(`Snapshot creation failed: ${message}`, true);
+		// Check against recent snapshots (not just the most recent)
+		// This handles: subset requests, different file orderings, recent snapshots
+		const match = findMatchingSnapshot(currentHashes, snapshots, 5);
+
+		if (match.matched && match.snapshotId && match.createdAt) {
+			const minutesAgo = Math.floor((Date.now() - match.createdAt) / 60000);
+			return jsonResult(
+				{
+					status: "skipped",
+					reason: "Files unchanged since last snapshot",
+					lastSnapshotId: match.snapshotId,
+					lastSnapshotTime: new Date(match.createdAt).toISOString(),
+					minutesAgo,
+					fileCount: files.length,
+					message: `Skipped: files match snapshot from ${minutesAgo} minute(s) ago`,
+					_hint: "No changes detected. Your previous snapshot already covers these files.",
+					next_actions: buildSmartActions(
+						[{ tool: "prepare_workspace", reason: "Check workspace state", priority: 2 }],
+						{ hasUnsavedChanges: false },
+					),
+				},
+				{ context, coaching: { lastAction: "snapshot_skipped" } },
+			);
+		}
 	}
+
+	const maxRetries = 3;
+	let lastError: Error | null = null;
+	let diagnosis: SnapshotDiagnosis | null = null;
+
+	// Retry loop with auto-fix
+	for (let attempt = 0; attempt <= maxRetries; attempt++) {
+		try {
+			// Read file contents using sanitized paths
+			const fileContents = pathValidation.sanitizedPaths.map((fullPath, idx) => {
+				if (!existsSync(fullPath)) {
+					throw new Error(`File not found: ${files[idx]}`);
+				}
+				return {
+					path: files[idx],
+					content: readFileSync(fullPath, "utf8"),
+				};
+			});
+
+			// Create snapshot using engine
+			const snapshot = await storage.createSnapshot(fileContents, {
+				description: reason,
+				trigger: (trigger as "manual" | "auto" | "ai-detection") || "manual",
+			});
+
+			return jsonResult(
+				{
+					status: "success",
+					snapshotId: snapshot.id,
+					fileCount: snapshot.files.length,
+					totalSize: snapshot.totalSize,
+					createdAt: new Date(snapshot.createdAt).toISOString(),
+					message: `Snapshot created with ${snapshot.files.length} file(s)`,
+					attempts: attempt + 1,
+					autoFixed: attempt > 0,
+					next_actions: buildSmartActions(
+						[{ tool: "snapshot_list", reason: "Verify snapshot", priority: 2 }],
+						{ hasUnsavedChanges: false, lastSnapshotMinutes: 0 },
+					),
+				},
+				{ context, coaching: { lastAction: "snapshot_create", taskPhase: "working" } },
+			);
+		} catch (error) {
+			lastError = error instanceof Error ? error : new Error(String(error));
+
+			// Diagnose the failure
+			diagnosis = diagnoseSnapshotFailure(lastError, files, context.workspaceRoot);
+
+			// If we can auto-fix and haven't exhausted retries, try fixing
+			if (diagnosis.canAutoFix && attempt < maxRetries) {
+				const fixed = await applyAutomaticFix(diagnosis, {
+					workspaceRoot: context.workspaceRoot,
+					files,
+				});
+
+				if (fixed) {
+					// Auto-fix succeeded, retry
+					continue;
+				}
+			}
+
+			// Can't auto-fix or exhausted retries - return error with diagnosis
+			break;
+		}
+	}
+
+	// All retries failed - return detailed diagnosis
+	if (lastError && diagnosis) {
+		const formattedDiagnosis = formatDiagnosis(diagnosis);
+
+		return errorJsonResult({
+			status: "error",
+			error: "E106_SNAPSHOT_CREATION_FAILED",
+			message: lastError.message,
+			diagnosis: {
+				type: diagnosis.type,
+				message: diagnosis.message,
+				cause: diagnosis.cause,
+				suggestedFix: diagnosis.suggestedFix,
+				userAction: diagnosis.userAction,
+				confidence: diagnosis.confidence,
+				affectedFiles: diagnosis.affectedFiles,
+			},
+			formatted: formattedDiagnosis,
+			next_actions: diagnosis.canAutoFix
+				? [{ tool: "snapshot_create", priority: 1, reason: "Retry with manual fix" }]
+				: [],
+		});
+	}
+
+	// Fallback error (should never reach here)
+	return result(`Snapshot creation failed: ${lastError?.message || "Unknown error"}`, true);
 };
 
 /**
@@ -1439,8 +1571,124 @@ export const handleMeta: ToolHandler = async (_args, _context) => {
 			{ name: "report_violation", status: "implemented", description: "Report violations with auto-promotion" },
 			{ name: "get_learnings", status: "implemented", description: "Query past learnings by keywords" },
 			{ name: "meta", status: "implemented", description: "Tool metadata" },
+			{ name: "cleanup", status: "implemented", description: "Reclaim space by removing stale data" },
 		],
 	});
+};
+
+/**
+ * cleanup - Reclaim space by removing stale data
+ *
+ * Cleans up:
+ * - Old snapshots beyond retention policy
+ * - Stale learnings (age or architecture mismatch)
+ * - Archived sessions
+ * - Orphaned blobs (not referenced by any snapshot)
+ */
+export const handleCleanup: ToolHandler = async (args, context) => {
+	const {
+		target = "all",
+		dryRun = true,
+		maxAge,
+		keepCount,
+	} = args as {
+		target?: "snapshots" | "learnings" | "sessions" | "blobs" | "all";
+		dryRun?: boolean;
+		maxAge?: number;
+		keepCount?: number;
+	};
+
+	const storage = createStorage(context.workspaceRoot);
+	const learningsPath = join(context.workspaceRoot, ".snapback", "learnings", "learnings.jsonl");
+	const sessionArchiveDir = join(context.workspaceRoot, ".snapback", "session", "archive");
+
+	const results: CleanupResult = {
+		snapshots: { found: 0, stale: 0, deleted: 0 },
+		learnings: { found: 0, stale: 0, deleted: 0 },
+		sessions: { found: 0, stale: 0, deleted: 0 },
+		blobs: { found: 0, stale: 0, deleted: 0, orphaned: 0 },
+		totalBytesReclaimed: 0,
+	};
+
+	// Clean snapshots
+	if (target === "snapshots" || target === "all") {
+		const snapshotResult = storage.pruneSnapshots(maxAge || 30, keepCount || 10, dryRun);
+		results.snapshots = {
+			found: snapshotResult.totalSnapshots,
+			stale: snapshotResult.staleSnapshots,
+			deleted: snapshotResult.deletedSnapshots,
+		};
+	}
+
+	// Clean learnings
+	if (target === "learnings" || target === "all") {
+		const archVersion = getArchitectureVersion(context.workspaceRoot);
+		results.learnings = cleanupStaleLearnings(learningsPath, {
+			maxAgeDays: maxAge || 90,
+			archVersion,
+			dryRun,
+		});
+	}
+
+	// Clean sessions
+	if (target === "sessions" || target === "all") {
+		results.sessions = cleanupArchivedSessions(sessionArchiveDir, {
+			maxAgeDays: maxAge || 30,
+			dryRun,
+		});
+	}
+
+	// Clean blobs (must run after snapshots to know what's orphaned)
+	if (target === "blobs" || target === "all") {
+		const blobResult = storage.garbageCollectBlobs(dryRun);
+		results.blobs = {
+			found: blobResult.totalBlobs,
+			stale: blobResult.orphanedBlobs,
+			deleted: blobResult.deletedBlobs,
+			orphaned: blobResult.orphanedBlobs,
+			bytesReclaimed: blobResult.bytesReclaimed,
+		};
+		results.totalBytesReclaimed += blobResult.bytesReclaimed;
+	}
+
+	const totalStale =
+		results.snapshots.stale + results.learnings.stale + results.sessions.stale + results.blobs.orphaned;
+	const totalDeleted =
+		results.snapshots.deleted + results.learnings.deleted + results.sessions.deleted + results.blobs.deleted;
+
+	return jsonResult(
+		{
+			status: "success",
+			dryRun,
+			target,
+			results,
+			summary: {
+				totalStale,
+				totalDeleted,
+				bytesReclaimed: results.totalBytesReclaimed,
+				bytesReclaimedFormatted: formatBytes(results.totalBytesReclaimed),
+			},
+			message: dryRun
+				? `Would remove ${totalStale} stale item(s) and reclaim ${formatBytes(results.totalBytesReclaimed)}`
+				: `Removed ${totalDeleted} item(s) and reclaimed ${formatBytes(results.totalBytesReclaimed)}`,
+			_hint: dryRun
+				? "This was a dry run. Call with dryRun: false to execute cleanup."
+				: "Cleanup complete. Run prepare_workspace to verify workspace health.",
+			next_actions: dryRun
+				? totalStale > 0
+					? [
+							{
+								tool: "cleanup",
+								priority: 1,
+								reason: "Execute cleanup",
+								args: { target, dryRun: false },
+							},
+						]
+					: []
+				: [{ tool: "prepare_workspace", priority: 2, reason: "Verify workspace health" }],
+		},
+		{ context },
+	);
 };
 
 /**
@@ -1462,4 +1710,5 @@ export const facadeHandlers: Record<string, ToolHandler> = {
 	report_violation: handleReportViolation,
 	get_learnings: handleGetLearnings,
 	meta: handleMeta,
+	cleanup: handleCleanup,
 };

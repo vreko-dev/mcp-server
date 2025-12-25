@@ -54,6 +54,7 @@
     "@snapback/infrastructure": "workspace:*",
     "@snapback/intelligence": "workspace:*",
     "@snapback/sdk": "workspace:*",
+    "@snapback-oss/sdk": "workspace:*",
     "commander": "catalog:",
     "ky": "catalog:",
     "opossum": "catalog:",

@@ -470,6 +470,55 @@ Returns catalog of available tools with their descriptions.`,
 		annotations: { title: "Tool Metadata", readOnlyHint: true, idempotentHint: true },
 		tier: "free",
 	},
+	{
+		name: "cleanup",
+		description: `🧹 **RECLAIM SPACE** - Remove stale data and orphaned files.
+
+Cleans up old snapshots, stale learnings, archived sessions, and orphaned blobs.
+**Always runs dry-run first** to preview what would be deleted.
+
+**Targets:**
+- snapshots: Old snapshots beyond retention (default: 30 days, keep min 10)
+- learnings: Stale/deprecated learnings (default: 90 days or architecture mismatch)
+- sessions: Archived sessions older than retention
+- blobs: Orphaned content blobs (no snapshot references them)
+- all: Run all cleanup targets
+
+**When to use:**
+- Disk space is low
+- After major architecture changes (stale learnings)
+- Periodic maintenance (monthly recommended)
+- Before starting fresh on a project
+
+⚠️ DESTRUCTIVE: Archives data before deletion but cannot be undone.
+💡 Tip: Always review dry-run output before executing.`,
+		inputSchema: {
+			type: "object",
+			properties: {
+				target: {
+					type: "string",
+					enum: ["snapshots", "learnings", "sessions", "blobs", "all"],
+					default: "all",
+					description: "What to clean up",
+				},
+				dryRun: {
+					type: "boolean",
+					default: true,
+					description: "Preview only (default: true). Set false to execute.",
+				},
+				maxAge: {
+					type: "number",
+					description: "Days to retain (default varies by target: snapshots=30, learnings=90)",
+				},
+				keepCount: {
+					type: "number",
+					description: "Minimum items to keep regardless of age (default: 10 for snapshots)",
+				},
+			},
+		},
+		annotations: { title: "Cleanup", readOnlyHint: false, destructiveHint: true, idempotentHint: false },
+		tier: "free",
+	},
 ];
 
 /**

@@ -22,7 +22,7 @@
  */
 
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readdirSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, unlinkSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { gunzipSync, gzipSync } from "node:zlib";
 import { generateSnapshotId } from "@snapback/contracts/id-generator";
@@ -251,7 +251,7 @@ export class Storage {
 	/**
 	 * Delete a snapshot (manifest only, blobs are orphaned)
 	 *
-	 * TODO: Implement blob garbage collection
+	 * Note: Use garbageCollectBlobs() after deleting snapshots to reclaim space.
 	 */
 	deleteSnapshot(snapshotId: string): boolean {
 		const manifestPath = join(this.snapshotsDir, `${snapshotId}.json`);
@@ -262,6 +262,125 @@ export class Storage {
 
 		unlinkSync(manifestPath);
 		return true;
+	}
+
+	/**
+	 * Garbage collect orphaned blobs.
+	 *
+	 * Scans all blobs and removes those not referenced by any snapshot.
+	 * Returns statistics about the cleanup operation.
+	 *
+	 * @param dryRun - If true, only report what would be deleted without actually deleting
+	 */
+	garbageCollectBlobs(dryRun = true): {
+		totalBlobs: number;
+		orphanedBlobs: number;
+		deletedBlobs: number;
+		bytesReclaimed: number;
+		orphanedPaths: string[];
+	} {
+		const snapshots = this.listSnapshots();
+
+		// Collect all referenced blob IDs from active snapshots
+		const referencedBlobs = new Set<string>();
+		for (const snap of snapshots) {
+			for (const file of snap.files) {
+				referencedBlobs.add(file.blobId);
+			}
+		}
+
+		// Scan blobs directory for all blobs
+		const allBlobs: Array<{ hash: string; path: string; size: number }> = [];
+		if (existsSync(this.blobsDir)) {
+			const shards = readdirSync(this.blobsDir).filter((f) => f.length === 2);
+			for (const shard of shards) {
+				const shardPath = join(this.blobsDir, shard);
+				try {
+					const blobs = readdirSync(shardPath);
+					for (const blobHash of blobs) {
+						const blobPath = join(shardPath, blobHash);
+						try {
+							const stats = statSync(blobPath);
+							if (stats.isFile()) {
+								allBlobs.push({ hash: blobHash, path: blobPath, size: stats.size });
+							}
+						} catch {
+							// Skip if stat fails
+						}
+					}
+				} catch {
+					// Skip if readdir fails
+				}
+			}
+		}
+
+		// Find orphaned blobs (not referenced by any snapshot)
+		const orphaned = allBlobs.filter((b) => !referencedBlobs.has(b.hash));
+		const orphanedPaths = orphaned.map((b) => b.path);
+		let bytesReclaimed = orphaned.reduce((sum, b) => sum + b.size, 0);
+		let deletedBlobs = 0;
+
+		// Delete orphaned blobs if not dry run
+		if (!dryRun) {
+			for (const blob of orphaned) {
+				try {
+					unlinkSync(blob.path);
+					deletedBlobs++;
+				} catch {
+					// Reduce reclaimed bytes if delete fails
+					bytesReclaimed -= blob.size;
+				}
+			}
+		}
+
+		return {
+			totalBlobs: allBlobs.length,
+			orphanedBlobs: orphaned.length,
+			deletedBlobs: dryRun ? 0 : deletedBlobs,
+			bytesReclaimed: dryRun ? bytesReclaimed : bytesReclaimed,
+			orphanedPaths: dryRun ? orphanedPaths : [],
+		};
+	}
+
+	/**
+	 * Prune old snapshots based on retention policy.
+	 *
+	 * @param maxAgeDays - Delete snapshots older than this many days
+	 * @param keepCount - Always keep at least this many snapshots (regardless of age)
+	 * @param dryRun - If true, only report what would be deleted
+	 */
+	pruneSnapshots(
+		maxAgeDays = 30,
+		keepCount = 10,
+		dryRun = true,
+	): {
+		totalSnapshots: number;
+		staleSnapshots: number;
+		deletedSnapshots: number;
+		deletedIds: string[];
+	} {
+		const snapshots = this.listSnapshots(); // Already sorted by createdAt desc
+		const cutoff = Date.now() - maxAgeDays * 24 * 60 * 60 * 1000;
+
+		// Keep at least keepCount snapshots, then apply age filter
+		const candidates = snapshots.slice(keepCount);
+		const stale = candidates.filter((s) => s.createdAt < cutoff);
+		const deletedIds: string[] = [];
+
+		if (!dryRun) {
+			for (const snap of stale) {
+				if (this.deleteSnapshot(snap.id)) {
+					deletedIds.push(snap.id);
+				}
+			}
+		}
+
+		return {
+			totalSnapshots: snapshots.length,
+			staleSnapshots: stale.length,
+			deletedSnapshots: dryRun ? 0 : deletedIds.length,
+			deletedIds: dryRun ? stale.map((s) => s.id) : deletedIds,
+		};
 	}
 
 	// ===========================================================================

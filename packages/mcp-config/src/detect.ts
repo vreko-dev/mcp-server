@@ -19,8 +19,9 @@ import type { AIClientConfig, AIClientFormat, DetectionResult, MCPConfig } from 
 
 /**
  * Platform-specific config path resolvers for each AI client
+ * Note: User preference is project-level configs where supported
  */
-const CLIENT_CONFIGS: Record<string, (home: string) => string[]> = {
+const CLIENT_CONFIGS: Record<string, (home: string, cwd?: string) => string[]> = {
 	claude: (home) => {
 		switch (platform()) {
 			case "darwin":
@@ -31,9 +32,17 @@ const CLIENT_CONFIGS: Record<string, (home: string) => string[]> = {
 				return [join(home, ".config/Claude/claude_desktop_config.json")];
 		}
 	},
-	cursor: (home) => [join(home, ".cursor/mcp.json")],
+	// Project-level first (user preference), then global fallback
+	cursor: (_home, cwd) => [...(cwd ? [join(cwd, ".cursor/mcp.json")] : []), join(_home, ".cursor/mcp.json")],
 	windsurf: (home) => [join(home, ".codeium/windsurf/mcp_config.json")],
 	continue: (home) => [join(home, ".continue/config.json")],
+	// New clients
+	vscode: (_home, cwd) => [...(cwd ? [join(cwd, ".vscode/mcp.json")] : [])],
+	zed: (home) => [join(home, ".config/zed/settings.json")],
+	cline: (home) => [join(home, ".cline/mcp.json")],
+	gemini: (home) => [join(home, ".gemini/settings.json")],
+	aider: (home) => [join(home, ".aider/mcp.yaml")],
+	"roo-code": (home) => [join(home, ".roo-code/mcp.json")],
 };
 
 /**
@@ -44,6 +53,12 @@ const CLIENT_DISPLAY_NAMES: Record<string, string> = {
 	cursor: "Cursor",
 	windsurf: "Windsurf",
 	continue: "Continue",
+	vscode: "VS Code",
+	zed: "Zed",
+	cline: "Cline",
+	gemini: "Gemini/Antigravity",
+	aider: "Aider",
+	"roo-code": "Roo Code",
 };
 
 // =============================================================================
@@ -53,6 +68,8 @@ const CLIENT_DISPLAY_NAMES: Record<string, string> = {
 /**
  * Detect all AI clients and their configuration status
  *
+ * @param options - Detection options
+ * @param options.cwd - Current working directory for project-level configs
  * @returns Detection result with all clients, detected clients, and clients needing setup
  *
  * @example
@@ -65,24 +82,35 @@ const CLIENT_DISPLAY_NAMES: Record<string, string> = {
  * }
  * ```
  */
-export function detectAIClients(): DetectionResult {
+export function detectAIClients(options: { cwd?: string } = {}): DetectionResult {
 	const home = homedir();
+	const cwd = options.cwd || process.cwd();
 	const clients: AIClientConfig[] = [];
+	const seenPaths = new Set<string>();
 
 	for (const [name, getPaths] of Object.entries(CLIENT_CONFIGS)) {
-		const paths = getPaths(home);
+		const paths = getPaths(home, cwd);
 
 		for (const configPath of paths) {
+			// Avoid duplicate entries for same path
+			if (seenPaths.has(configPath)) continue;
+			seenPaths.add(configPath);
+
 			const exists = existsSync(configPath);
 			let hasSnapback = false;
 
 			if (exists) {
 				try {
 					const content = readFileSync(configPath, "utf-8");
-					const parsed = JSON.parse(content) as unknown;
-					hasSnapback = checkForSnapback(parsed, name as AIClientFormat);
+					// Handle YAML for aider
+					if (configPath.endsWith(".yaml") || configPath.endsWith(".yml")) {
+						hasSnapback = content.includes("snapback");
+					} else {
+						const parsed = JSON.parse(content) as unknown;
+						hasSnapback = checkForSnapback(parsed, name as AIClientFormat);
+					}
 				} catch {
-					// Invalid JSON or read error - treat as no snapback
+					// Invalid JSON/YAML or read error - treat as no snapback
 				}
 			}
 
@@ -140,7 +168,24 @@ function checkForSnapback(config: unknown, format: AIClientFormat): boolean {
 		case "claude":
 		case "cursor":
 		case "windsurf":
+		case "vscode":
+		case "cline":
+		case "roo-code":
 			// These use mcpServers.snapback format
+			if (
+				"mcpServers" in configObj &&
+				typeof configObj.mcpServers === "object" &&
+				configObj.mcpServers !== null
+			) {
+				const servers = configObj.mcpServers as Record<string, unknown>;
+				return "snapback" in servers;
+			}
+			return false;
+
+		case "gemini":
+		case "zed":
+			// These embed mcpServers inside a settings object
+			// Check both top-level and nested mcpServers
 			if (
 				"mcpServers" in configObj &&
 				typeof configObj.mcpServers === "object" &&
@@ -171,6 +216,10 @@ function checkForSnapback(config: unknown, format: AIClientFormat): boolean {
 					);
 				}
 			}
+			return false;
+
+		case "aider":
+			// Aider uses YAML - handled separately in detectAIClients
 			return false;
 
 		default:

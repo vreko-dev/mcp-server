@@ -4,13 +4,11 @@
  * Central registry for all MCP tools.
  * - Lists facades as primary tools
  * - Routes calls to appropriate handlers
- * - Supports legacy tool names via migration map
  *
  * @module registry
  */
 
 import type { Tool as MCPTool } from "@modelcontextprotocol/sdk/types.js";
-import { isLegacyTool, resolveFacadeName, warnLegacyUsage } from "./migrations.js";
 
 /**
  * Extended tool definition with annotations
@@ -57,7 +55,7 @@ export interface ToolResult {
  */
 export const FACADE_TOOLS: SnapBackTool[] = [
 	{
-		name: "snapback.analyze",
+		name: "analyze",
 		description: `Analyze code changes for risks or validate package recommendations.
 
 **Operations:**
@@ -81,32 +79,40 @@ Returns risk assessment with severity levels and mitigation steps.`,
 			},
 			required: ["type"],
 		},
-		annotations: { title: "Analyze", readOnlyHint: true },
+		annotations: { title: "Analyze", readOnlyHint: true, idempotentHint: true },
 		tier: "free",
 	},
 	{
-		name: "snapback.prepare_workspace",
-		description: `Pre-flight workspace check before making changes.
+		name: "prepare_workspace",
+		description: `🛡️ **PRE-FLIGHT CHECK** - Assess workspace before risky modifications.
 
-Combines workspace vitals + context status + snapshot recommendations.
-Call this BEFORE any risky modification.
+Combines vitals + context status + recommendations in one call.
+Ideal for multi-file refactors or unfamiliar code areas.
 
-Returns:
+**When to use:**
+- Before major refactoring (3+ files)
+- Before touching auth/security/payment code
+- When protection score is unknown
+- Starting work in unfamiliar codebase areas
+
+**Returns:**
 - Protection score (0-100%)
-- Snapshot recommendation
-- Safe/risky operations
-- Coaching suggestions`,
+- Snapshot recommendation with reasoning
+- List of safe vs risky operations
+- Personalized coaching suggestions
+
+💡 Tip: If score < 50%, consider snapshot_create first.`,
 		inputSchema: {
 			type: "object",
 			properties: {
 				workspaceId: { type: "string", description: "Workspace path (defaults to current)" },
 			},
 		},
-		annotations: { title: "Prepare Workspace", readOnlyHint: true },
+		annotations: { title: "Prepare Workspace", readOnlyHint: true, idempotentHint: true },
 		tier: "free",
 	},
 	{
-		name: "snapback.snapshot_create",
+		name: "snapshot_create",
 		description: `Create a restorable code snapshot before risky modifications.
 
 **When to use:**
@@ -125,11 +131,11 @@ Returns snapshot ID for later restoration.`,
 			},
 			required: ["files"],
 		},
-		annotations: { title: "Create Snapshot", destructiveHint: false },
+		annotations: { title: "Create Snapshot", destructiveHint: false, idempotentHint: false },
 		tier: "pro",
 	},
 	{
-		name: "snapback.snapshot_list",
+		name: "snapshot_list",
 		description: `List available snapshots for restoration.
 
 **When to use:**
@@ -143,11 +149,11 @@ Returns snapshot ID for later restoration.`,
 				since: { type: "string", format: "date-time", description: "Only show after this time" },
 			},
 		},
-		annotations: { title: "List Snapshots", readOnlyHint: true },
+		annotations: { title: "List Snapshots", readOnlyHint: true, idempotentHint: true },
 		tier: "pro",
 	},
 	{
-		name: "snapback.snapshot_restore",
+		name: "snapshot_restore",
 		description: `Restore code from a previously created snapshot.
 
 **When to use:**
@@ -165,21 +171,24 @@ Returns snapshot ID for later restoration.`,
 			},
 			required: ["snapshotId"],
 		},
-		annotations: { title: "Restore Snapshot", destructiveHint: true },
+		annotations: { title: "Restore Snapshot", destructiveHint: true, idempotentHint: false },
 		tier: "pro",
 	},
 	{
-		name: "snapback.validate",
-		description: `Validate code against codebase patterns and best practices.
+		name: "validate",
+		description: `🔍 **CODE VALIDATION** - Quick or comprehensive code quality check.
 
 **Operations:**
-- mode: "quick" - Fast pattern check
-- mode: "comprehensive" - Full validation pipeline (7 layers)
+- mode: "quick" - Fast pattern check (~100ms)
+- mode: "comprehensive" - Full 7-layer pipeline (~2s)
 
 **When to use:**
-- Before committing code changes
-- After implementing a feature
-- To catch architectural violations early`,
+- Quick: During iterative development for fast feedback
+- Comprehensive: Before committing or after major changes
+- Quick: When modifying a single file
+- Comprehensive: When changes span multiple modules
+
+💡 Tip: Use 'quick' during development, 'comprehensive' before commit.`,
 		inputSchema: {
 			type: "object",
 			properties: {
@@ -189,11 +198,11 @@ Returns snapshot ID for later restoration.`,
 			},
 			required: ["code", "filePath"],
 		},
-		annotations: { title: "Validate Code", readOnlyHint: true },
+		annotations: { title: "Validate Code", readOnlyHint: true, idempotentHint: true },
 		tier: "free",
 	},
 	{
-		name: "snapback.context",
+		name: "context",
 		description: `Manage project context (init, build, validate, status, constraints).
 
 **Operations:**
@@ -217,11 +226,11 @@ Returns snapshot ID for later restoration.`,
 			},
 			required: ["op"],
 		},
-		annotations: { title: "Context Management", readOnlyHint: false },
+		annotations: { title: "Context Management", readOnlyHint: false, idempotentHint: false },
 		tier: "free",
 	},
 	{
-		name: "snapback.session",
+		name: "session",
 		description: `Manage coding session lifecycle.
 
 **Operations:**
@@ -245,19 +254,30 @@ Note: CLI owns session state, MCP provides read-only stats and next_actions hint
 			},
 			required: ["op"],
 		},
-		annotations: { title: "Session Management", readOnlyHint: false },
+		annotations: { title: "Session Management", readOnlyHint: false, idempotentHint: false },
 		tier: "free",
 	},
 	{
-		name: "snapback.learn",
-		description: `Record learnings from development sessions.
+		name: "learn",
+		description: `💡 **CAPTURE KNOWLEDGE** - Record patterns, pitfalls, and workflows.
+
+Stores learnings locally for personalized recommendations.
+Builds your codebase-specific knowledge base over time.
 
 **When to use:**
-- After discovering a useful pattern
-- When encountering a pitfall to avoid
-- To capture workflow improvements
+- After solving a tricky problem
+- When discovering an undocumented pattern
+- After fixing a bug with a non-obvious cause
+- When a workflow optimization works well
 
-Learnings are stored locally and used for personalized recommendations.`,
+**Learning types:**
+- pattern: "When X, do Y"
+- pitfall: "Never do X because Y"
+- efficiency: "X is faster than Y"
+- discovery: "X is possible using Y"
+- workflow: "To achieve X, follow steps Y"
+
+💡 Tip: Good learnings have clear triggers and actions.`,
 		inputSchema: {
 			type: "object",
 			properties: {
@@ -268,11 +288,11 @@ Learnings are stored locally and used for personalized recommendations.`,
 			},
 			required: ["type", "trigger", "action"],
 		},
-		annotations: { title: "Record Learning", readOnlyHint: false },
+		annotations: { title: "Record Learning", readOnlyHint: false, idempotentHint: false },
 		tier: "free",
 	},
 	{
-		name: "snapback.acknowledge_risk",
+		name: "acknowledge_risk",
 		description: `Acknowledge current risk state and proceed with changes.
 
 **When to use:**
@@ -287,11 +307,159 @@ Learnings are stored locally and used for personalized recommendations.`,
 			},
 			required: ["files", "reason"],
 		},
-		annotations: { title: "Acknowledge Risk", readOnlyHint: false },
+		annotations: { title: "Acknowledge Risk", readOnlyHint: false, idempotentHint: false },
 		tier: "free",
 	},
 	{
-		name: "snapback.meta",
+		name: "get_context",
+		description: `🚀 **CALL THIS FIRST** - Essential entry point for any development task.
+
+Gathers workspace context, patterns, constraints, and relevant learnings.
+Unlike snapshot_create, this is a READ-ONLY intelligence gathering tool.
+
+**When to use:**
+- Starting ANY new task (refactoring, feature, bug fix)
+- Before making multi-file changes
+- When unsure about project patterns or constraints
+- After switching to a different area of the codebase
+
+**Returns:**
+- Project patterns and architectural constraints
+- Recent learnings relevant to your task keywords
+- Current workspace health and vitals
+- Active violations to avoid repeating
+
+💡 Tip: Pair with check_patterns before committing.`,
+		inputSchema: {
+			type: "object",
+			properties: {
+				task: { type: "string", description: "Brief description of what you're about to do" },
+				files: {
+					type: "array",
+					items: { type: "string" },
+					description: "Files you plan to modify (optional)",
+				},
+				keywords: {
+					type: "array",
+					items: { type: "string" },
+					description: "Keywords for learning retrieval (optional)",
+				},
+			},
+			required: ["task"],
+		},
+		annotations: { title: "Get Context", readOnlyHint: true, idempotentHint: true },
+		tier: "free",
+	},
+	{
+		name: "check_patterns",
+		description: `✅ **PRE-COMMIT VALIDATION** - Catch violations before they become problems.
+
+Runs 7-layer validation pipeline against codebase patterns.
+This is your quality gate before any commit.
+
+**When to use:**
+- Before committing ANY code changes
+- After implementing a feature or fix
+- When modifying shared utilities or core modules
+- Before opening a PR
+
+**7-Layer Pipeline:**
+1. Syntax - Parse errors
+2. Types - TypeScript errors
+3. Tests - Test coverage
+4. Architecture - Layer boundary violations
+5. Security - Known vulnerability patterns
+6. Dependencies - Circular import detection
+7. Performance - Known bottleneck patterns
+
+💡 Tip: Use with get_context for comprehensive coverage.`,
+		inputSchema: {
+			type: "object",
+			properties: {
+				code: { type: "string", description: "Code to validate" },
+				filePath: { type: "string", description: "Target file path" },
+			},
+			required: ["code", "filePath"],
+		},
+		annotations: { title: "Check Patterns", readOnlyHint: true, idempotentHint: true },
+		tier: "free",
+	},
+	{
+		name: "report_violation",
+		description: `⚠️ **LEARNING FROM MISTAKES** - Record violations for pattern promotion.
+
+Tracks mistakes to prevent recurrence. Auto-promotes frequent violations.
+- 3 occurrences → promoted to pattern
+- 5 occurrences → marked for automation
+
+**When to use:**
+- After catching an architectural boundary violation
+- When tests reveal a repeated mistake pattern
+- After debugging a recurring issue
+- When check_patterns finds a new violation type
+
+**Required fields:**
+- type: e.g., 'layer-boundary-violation', 'vague-assertion'
+- whatHappened: The actual mistake
+- whyItHappened: Root cause analysis
+- prevention: How to avoid next time
+
+💡 Tip: The "why" matters most for learning.`,
+		inputSchema: {
+			type: "object",
+			properties: {
+				type: {
+					type: "string",
+					description: "Violation type (e.g., 'layer-boundary-violation', 'vague-assertion')",
+				},
+				file: { type: "string", description: "File where violation occurred" },
+				whatHappened: { type: "string", description: "What went wrong" },
+				whyItHappened: { type: "string", description: "Why this happened (reflection required)" },
+				prevention: { type: "string", description: "What would have prevented this" },
+			},
+			required: ["type", "file", "whatHappened", "whyItHappened", "prevention"],
+		},
+		annotations: { title: "Report Violation", readOnlyHint: false, idempotentHint: false },
+		tier: "free",
+	},
+	{
+		name: "get_learnings",
+		description: `📚 **KNOWLEDGE RETRIEVAL** - Learn from past successes and mistakes.
+
+Searches your learning database by keywords.
+Avoid reinventing solutions or repeating past mistakes.
+
+**When to use:**
+- Before implementing something you may have done before
+- When encountering an unfamiliar error pattern
+- After multiple violations in the same area
+- Looking for established workflow patterns
+
+**Learning types:**
+- pattern: Proven solutions and approaches
+- pitfall: Mistakes to avoid
+- efficiency: Workflow optimizations
+- discovery: Useful findings
+- workflow: Step-by-step processes
+
+💡 Tip: Broad keywords work better than specific queries.`,
+		inputSchema: {
+			type: "object",
+			properties: {
+				keywords: {
+					type: "array",
+					items: { type: "string" },
+					description: "Keywords to search for in learnings",
+				},
+				limit: { type: "number", description: "Max results to return (default: 10)" },
+			},
+			required: ["keywords"],
+		},
+		annotations: { title: "Get Learnings", readOnlyHint: true, idempotentHint: true },
+		tier: "free",
+	},
+	{
+		name: "meta",
 		description: `Get tool metadata and capabilities.
 
 Returns catalog of available tools with their descriptions.`,
@@ -299,7 +467,7 @@ Returns catalog of available tools with their descriptions.`,
 			type: "object",
 			properties: {},
 		},
-		annotations: { title: "Tool Metadata", readOnlyHint: true },
+		annotations: { title: "Tool Metadata", readOnlyHint: true, idempotentHint: true },
 		tier: "free",
 	},
 ];
@@ -318,15 +486,9 @@ export function registerHandler(toolName: string, handler: ToolHandler): void {
 }
 
 /**
- * Get handler for a tool (resolves legacy names)
+ * Get handler for a tool
  */
 export function getHandler(toolName: string): ToolHandler | undefined {
-	// Check if it's a legacy name
-	if (isLegacyTool(toolName)) {
-		warnLegacyUsage(toolName);
-		const facadeName = resolveFacadeName(toolName);
-		return handlerRegistry.get(facadeName);
-	}
 	return handlerRegistry.get(toolName);
 }
 

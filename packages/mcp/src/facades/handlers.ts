@@ -4,11 +4,6 @@
  * Thin wrapper layer that implements the 11 consolidated facade tools.
  * Each facade routes to legacy handlers based on the 'op' or 'type' parameter.
  *
- * This is the B+ strategy:
- * - Facades are the public API (clean catalog for LLMs)
- * - Uses @snapback/engine for snapshot operations
- * - Migration map provides backward compatibility
- *
  * @module facades
  */
 
@@ -16,7 +11,10 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { createStorage } from "@snapback/engine";
 import { WorkspaceVitals } from "@snapback/intelligence/vitals";
+import { CommonErrors } from "../errors.js";
 import type { ToolHandler, ToolResult } from "../registry.js";
+import { atomicWriteFileSync, validateFilePaths } from "../validation.js";
+import { getIntelligence } from "./intelligence.js";
 
 /**
  * Helper to create a tool result
@@ -36,7 +34,14 @@ function jsonResult(data: unknown): ToolResult {
 }
 
 /**
- * snapback.analyze - Risk and package analysis
+ * Helper to create JSON error result (sets isError: true)
+ */
+function errorJsonResult(data: unknown): ToolResult {
+	return result(JSON.stringify(data, null, 2), true);
+}
+
+/**
+ * analyze - Risk and package analysis
  */
 export const handleAnalyze: ToolHandler = async (args, _context) => {
 	const { type } = args as { type?: "risk" | "package" };
@@ -79,10 +84,8 @@ export const handleAnalyze: ToolHandler = async (args, _context) => {
 			riskFactors,
 			recommendation: severity === "high" ? "Create snapshot before proceeding" : "Proceed with caution",
 			next_actions: [
-				severity === "high"
-					? { tool: "snapback.snapshot_create", priority: 1, reason: "High risk detected" }
-					: null,
-				{ tool: "snapback.validate", priority: 2, reason: "Validate changes before commit" },
+				severity === "high" ? { tool: "snapshot_create", priority: 1, reason: "High risk detected" } : null,
+				{ tool: "validate", priority: 2, reason: "Validate changes before commit" },
 			].filter(Boolean),
 		});
 	}
@@ -91,7 +94,7 @@ export const handleAnalyze: ToolHandler = async (args, _context) => {
 		const { packageName, targetVersion } = args as { packageName?: string; targetVersion?: string };
 
 		if (!packageName) {
-			return result("Missing required parameter: packageName", true);
+			return errorJsonResult(CommonErrors.missingParam("packageName"));
 		}
 
 		return jsonResult({
@@ -101,15 +104,15 @@ export const handleAnalyze: ToolHandler = async (args, _context) => {
 			recommendation: "proceed",
 			warnings: [],
 			message: "Package validation - check npm registry for peer dependencies",
-			next_actions: [{ tool: "snapback.snapshot_create", priority: 1, reason: "Before package changes" }],
+			next_actions: [{ tool: "snapshot_create", priority: 1, reason: "Before package changes" }],
 		});
 	}
 
-	return result("Missing required parameter: type (risk | package)", true);
+	return errorJsonResult(CommonErrors.missingParam("type (risk | package)"));
 };
 
 /**
- * snapback.prepare_workspace - Pre-flight workspace check
+ * prepare_workspace - Pre-flight workspace check
  * Uses real WorkspaceVitals from @snapback/intelligence
  */
 export const handlePrepareWorkspace: ToolHandler = async (_args, context) => {
@@ -155,13 +158,13 @@ export const handlePrepareWorkspace: ToolHandler = async (_args, context) => {
 		blockedOperations: guidance.blockedOperations,
 		suggestion: guidance.suggestion,
 		next_actions: snapshotDecision.should
-			? [{ tool: "snapback.snapshot_create", priority: 1, reason: snapshotDecision.reason }]
+			? [{ tool: "snapshot_create", priority: 1, reason: snapshotDecision.reason }]
 			: [],
 	});
 };
 
 /**
- * snapback.snapshot_create - Create snapshot
+ * snapshot_create - Create snapshot
  */
 export const handleSnapshotCreate: ToolHandler = async (args, context) => {
 	const { files, reason, trigger } = args as {
@@ -171,20 +174,25 @@ export const handleSnapshotCreate: ToolHandler = async (args, context) => {
 	};
 
 	if (!files || files.length === 0) {
-		return result("Missing required parameter: files", true);
+		return errorJsonResult(CommonErrors.missingParam("files"));
+	}
+
+	// P0-004: Validate file paths for traversal attacks
+	const pathValidation = validateFilePaths(files, context.workspaceRoot);
+	if (!pathValidation.valid) {
+		return errorJsonResult(CommonErrors.pathTraversalBlocked(pathValidation.invalidPath, pathValidation.error));
 	}
 
 	const storage = createStorage(context.workspaceRoot);
 
 	try {
-		// Read file contents
-		const fileContents = files.map((filePath) => {
-			const fullPath = join(context.workspaceRoot, filePath);
+		// Read file contents using sanitized paths
+		const fileContents = pathValidation.sanitizedPaths.map((fullPath, idx) => {
 			if (!existsSync(fullPath)) {
-				throw new Error(`File not found: ${filePath}`);
+				throw new Error(`File not found: ${files[idx]}`);
 			}
 			return {
-				path: filePath,
+				path: files[idx],
 				content: readFileSync(fullPath, "utf8"),
 			};
 		});
@@ -202,7 +210,7 @@ export const handleSnapshotCreate: ToolHandler = async (args, context) => {
 			totalSize: snapshot.totalSize,
 			createdAt: new Date(snapshot.createdAt).toISOString(),
 			message: `Snapshot created with ${snapshot.files.length} file(s)`,
-			next_actions: [{ tool: "snapback.snapshot_list", priority: 2, reason: "Verify snapshot" }],
+			next_actions: [{ tool: "snapshot_list", priority: 2, reason: "Verify snapshot" }],
 		});
 	} catch (error) {
 		const message = error instanceof Error ? error.message : String(error);
@@ -211,7 +219,7 @@ export const handleSnapshotCreate: ToolHandler = async (args, context) => {
 };
 
 /**
- * snapback.snapshot_list - List snapshots
+ * snapshot_list - List snapshots
  */
 export const handleSnapshotList: ToolHandler = async (args, context) => {
 	const { limit = 20, since } = args as { limit?: number; since?: string };
@@ -244,18 +252,18 @@ export const handleSnapshotList: ToolHandler = async (args, context) => {
 			snapshots.length > 0
 				? [
 						{
-							tool: "snapback.snapshot_restore",
+							tool: "snapshot_restore",
 							priority: 2,
 							reason: "Restore if needed",
 							args: { snapshotId: snapshots[0].id },
 						},
 					]
-				: [{ tool: "snapback.snapshot_create", priority: 1, reason: "No snapshots yet" }],
+				: [{ tool: "snapshot_create", priority: 1, reason: "No snapshots yet" }],
 	});
 };
 
 /**
- * snapback.snapshot_restore - Restore snapshot
+ * snapshot_restore - Restore snapshot
  */
 export const handleSnapshotRestore: ToolHandler = async (args, context) => {
 	const {
@@ -269,7 +277,15 @@ export const handleSnapshotRestore: ToolHandler = async (args, context) => {
 	};
 
 	if (!snapshotId) {
-		return result("Missing required parameter: snapshotId", true);
+		return errorJsonResult(CommonErrors.missingParam("snapshotId"));
+	}
+
+	// P0-004: Validate filter file paths if provided
+	if (filterFiles && filterFiles.length > 0) {
+		const pathValidation = validateFilePaths(filterFiles, context.workspaceRoot);
+		if (!pathValidation.valid) {
+			return errorJsonResult(CommonErrors.pathTraversalBlocked(pathValidation.invalidPath, pathValidation.error));
+		}
 	}
 
 	const storage = createStorage(context.workspaceRoot);
@@ -278,7 +294,7 @@ export const handleSnapshotRestore: ToolHandler = async (args, context) => {
 		// Get snapshot to validate it exists
 		const snapshot = storage.getSnapshot(snapshotId);
 		if (!snapshot) {
-			return result(`Snapshot not found: ${snapshotId}`, true);
+			return errorJsonResult(CommonErrors.snapshotNotFound(snapshotId));
 		}
 
 		// Restore files from snapshot
@@ -299,6 +315,27 @@ export const handleSnapshotRestore: ToolHandler = async (args, context) => {
 			});
 		}
 
+		// P0-005: Create backup snapshot BEFORE overwriting files
+		const existingFiles: { path: string; content: string }[] = [];
+		for (const file of filesToRestore) {
+			const fullPath = join(context.workspaceRoot, file.path);
+			if (existsSync(fullPath)) {
+				existingFiles.push({
+					path: file.path,
+					content: readFileSync(fullPath, "utf8"),
+				});
+			}
+		}
+
+		let backupSnapshotId: string | null = null;
+		if (existingFiles.length > 0) {
+			const backupSnapshot = await storage.createSnapshot(existingFiles, {
+				description: `Auto-backup before restore from ${snapshotId}`,
+				trigger: "auto",
+			});
+			backupSnapshotId = backupSnapshot.id;
+		}
+
 		// Actually write files
 		for (const file of filesToRestore) {
 			const fullPath = join(context.workspaceRoot, file.path);
@@ -312,9 +349,10 @@ export const handleSnapshotRestore: ToolHandler = async (args, context) => {
 		return jsonResult({
 			status: "success",
 			snapshotId,
+			backupSnapshotId,
 			restoredFiles: filesToRestore.map((f) => f.path),
-			message: `Restored ${filesToRestore.length} file(s) from snapshot`,
-			next_actions: [{ tool: "snapback.prepare_workspace", priority: 1, reason: "Verify workspace state" }],
+			message: `Restored ${filesToRestore.length} file(s) from snapshot${backupSnapshotId ? ` (backup: ${backupSnapshotId})` : ""}`,
+			next_actions: [{ tool: "prepare_workspace", priority: 1, reason: "Verify workspace state" }],
 		});
 	} catch (error) {
 		const message = error instanceof Error ? error.message : String(error);
@@ -323,146 +361,740 @@ export const handleSnapshotRestore: ToolHandler = async (args, context) => {
 };
 
 /**
- * snapback.validate - Code validation
+ * validate - Code validation
+ * Supports "quick" (fast pattern checks) and "comprehensive" (full 7-layer pipeline)
+ * Uses Intelligence facade for comprehensive validation
  */
-export const handleValidate: ToolHandler = async (args, _context) => {
-	const { mode, code, filePath } = args as {
+export const handleValidate: ToolHandler = async (args, context) => {
+	const {
+		mode = "quick",
+		code,
+		filePath,
+	} = args as {
 		mode?: "quick" | "comprehensive";
 		code?: string;
 		filePath?: string;
 	};
 
 	if (!code || !filePath) {
-		return result("Missing required parameters: code, filePath", true);
+		return errorJsonResult(CommonErrors.missingParam("code, filePath"));
 	}
 
-	// Basic pattern checking
-	const violations: Array<{ rule: string; severity: string; line?: number; message: string }> = [];
+	// Comprehensive mode: use full 7-layer ValidationPipeline from Intelligence
+	if (mode === "comprehensive") {
+		try {
+			const intel = getIntelligence(context.workspaceRoot);
+			const validation = await intel.checkPatterns(code, filePath);
 
-	// Check for common issues
-	if (code.includes("console.log")) {
-		violations.push({
-			rule: "no-console",
-			severity: "warning",
-			message: "console.log found - consider removing for production",
-		});
-	}
-	if (code.includes("any")) {
-		violations.push({
-			rule: "no-any",
-			severity: "warning",
-			message: "TypeScript 'any' type found - consider more specific type",
-		});
-	}
-	if (code.includes("TODO") || code.includes("FIXME")) {
-		violations.push({
-			rule: "no-todo",
-			severity: "info",
-			message: "TODO/FIXME comment found",
-		});
+			return jsonResult({
+				status: "success",
+				mode: "comprehensive",
+				filePath,
+				passed: validation.overall.passed,
+				confidence: validation.overall.confidence,
+				totalIssues: validation.overall.totalIssues,
+				recommendation: validation.recommendation,
+				layers: validation.layers.map((l) => ({
+					name: l.layer,
+					passed: l.passed,
+					issueCount: l.issues.length,
+					issues: l.issues.map((i) => ({
+						severity: i.severity,
+						type: i.type,
+						message: i.message,
+						line: i.line,
+						fix: i.fix,
+					})),
+					duration: l.duration,
+				})),
+				focusPoints: validation.focusPoints,
+				message: validation.overall.passed
+					? "All validation layers passed"
+					: `Found ${validation.overall.totalIssues} issue(s) across ${validation.layers.filter((l) => !l.passed).length} layer(s)`,
+				next_actions: validation.overall.passed
+					? []
+					: [
+							{
+								tool: "validate",
+								priority: 1,
+								reason: "Re-validate after fixes",
+								args: { mode: "comprehensive" },
+							},
+						],
+			});
+		} catch (error) {
+			const message = error instanceof Error ? error.message : String(error);
+			return result(`Comprehensive validation failed: ${message}`, true);
+		}
 	}
 
-	const confidence = violations.length === 0 ? 100 : Math.max(50, 100 - violations.length * 10);
+	// Quick mode: fast pattern checks without full pipeline
+	const violations: Array<{
+		rule: string;
+		severity: "critical" | "warning" | "info";
+		line?: number;
+		message: string;
+	}> = [];
+
+	// Check for common issues with line detection
+	const lines = code.split("\n");
+	lines.forEach((line, idx) => {
+		const lineNum = idx + 1;
+		if (line.includes("console.log")) {
+			violations.push({
+				rule: "no-console",
+				severity: "warning",
+				line: lineNum,
+				message: "console.log found - consider removing for production",
+			});
+		}
+		if (/:\s*any\b/.test(line) || /as\s+any\b/.test(line)) {
+			violations.push({
+				rule: "no-explicit-any",
+				severity: "warning",
+				line: lineNum,
+				message: "Explicit 'any' type found - consider more specific type",
+			});
+		}
+		if (/\/\/\s*(TODO|FIXME|HACK|XXX)\b/i.test(line)) {
+			violations.push({
+				rule: "no-todo-comments",
+				severity: "info",
+				line: lineNum,
+				message: "TODO/FIXME comment found - consider addressing before commit",
+			});
+		}
+		if (/debugger\b/.test(line)) {
+			violations.push({
+				rule: "no-debugger",
+				severity: "critical",
+				line: lineNum,
+				message: "debugger statement found - must remove before production",
+			});
+		}
+	});
+
+	// Check file-level patterns
+	if (filePath.includes("auth") || filePath.includes("security")) {
+		if (code.includes("eval(") || code.includes("Function(")) {
+			violations.push({
+				rule: "no-eval-in-security",
+				severity: "critical",
+				message: "eval/Function in security-sensitive file - potential code injection risk",
+			});
+		}
+	}
+
+	const criticalCount = violations.filter((v) => v.severity === "critical").length;
+	const warningCount = violations.filter((v) => v.severity === "warning").length;
+	const confidence =
+		criticalCount > 0
+			? 30
+			: warningCount > 2
+				? 60
+				: violations.length === 0
+					? 100
+					: Math.max(70, 100 - warningCount * 10);
+
+	const recommendation = confidence >= 95 ? "auto_merge" : confidence >= 70 ? "quick_review" : "full_review";
 
 	return jsonResult({
 		status: "success",
-		mode: mode || "quick",
+		mode: "quick",
 		filePath,
+		passed: criticalCount === 0,
 		confidence,
+		totalIssues: violations.length,
 		violations,
-		recommendation: confidence > 80 ? "auto_merge" : confidence > 60 ? "quick_review" : "full_review",
-		message: violations.length === 0 ? "No violations found" : `Found ${violations.length} violation(s)`,
+		recommendation,
+		message:
+			violations.length === 0
+				? "No violations found"
+				: `Found ${violations.length} issue(s): ${criticalCount} critical, ${warningCount} warnings`,
+		hint:
+			criticalCount > 0
+				? "Fix critical issues before committing"
+				: warningCount > 2
+					? "Consider running comprehensive validation"
+					: null,
+		next_actions:
+			criticalCount > 0 || warningCount > 2
+				? [
+						{
+							tool: "validate",
+							priority: 1,
+							reason: "Run comprehensive validation",
+							args: { mode: "comprehensive" },
+						},
+					]
+				: [],
 	});
 };
 
 /**
- * snapback.context - Context management
+ * context - Context management
+ * P1-004: Full implementation of all context operations
  */
 export const handleContext: ToolHandler = async (args, context) => {
-	const { op } = args as { op?: string };
+	const { op, domain, name, value } = args as {
+		op?: string;
+		domain?: string;
+		name?: string;
+		value?: number;
+	};
 
 	if (!op) {
-		return result("Missing required parameter: op", true);
+		return errorJsonResult(CommonErrors.missingParam("op"));
 	}
 
-	const ctxPath = join(context.workspaceRoot, ".snapback", "ctx", "context.json");
+	const ctxDir = join(context.workspaceRoot, ".snapback", "ctx");
+	const ctxPath = join(ctxDir, "context.json");
+	const ctxFilePath = join(context.workspaceRoot, ".ctx");
 
 	switch (op) {
 		case "status": {
 			const exists = existsSync(ctxPath);
-			return jsonResult({
-				op: "status",
-				initialized: exists,
-				path: ctxPath,
-				message: exists ? "Context initialized" : "Context not initialized - run op: init",
-			});
-		}
-		case "init": {
-			// TODO: Implement full context initialization
-			return jsonResult({
-				op: "init",
-				status: "stub",
-				message: "Context initialization will be fully implemented",
-				next_actions: [
-					{ tool: "snapback.context", priority: 1, reason: "Check status", args: { op: "status" } },
-				],
-			});
-		}
-		default:
-			return jsonResult({
-				op,
-				status: "stub",
-				message: `Context operation '${op}' will be implemented in next iteration`,
-			});
-	}
-};
-
-/**
- * snapback.session - Session management
- */
-export const handleSession: ToolHandler = async (args, context) => {
-	const { op } = args as { op?: string };
-
-	if (!op) {
-		return result("Missing required parameter: op", true);
-	}
-
-	const sessionPath = join(context.workspaceRoot, ".snapback", "session", "current.json");
-
-	switch (op) {
-		case "stats": {
-			// Read session file if exists
-			if (existsSync(sessionPath)) {
+			const ctxFileExists = existsSync(ctxFilePath);
+			let contextData: Record<string, unknown> | null = null;
+			if (exists) {
 				try {
-					const session = JSON.parse(readFileSync(sessionPath, "utf8"));
-					return jsonResult({
-						op: "stats",
-						session,
-						message: "Session active",
-					});
+					contextData = JSON.parse(readFileSync(ctxPath, "utf8"));
 				} catch {
 					// Ignore parse errors
 				}
 			}
 			return jsonResult({
-				op: "stats",
-				session: null,
-				message: "No active session - CLI owns session state",
-				hint: "Use 'snap session start' to begin a session",
+				op: "status",
+				initialized: exists,
+				path: ctxPath,
+				ctxFileExists,
+				projectPhase: contextData?.project_phase || "unknown",
+				priority: contextData?.priority || "unknown",
+				message: exists ? "Context initialized" : "Context not initialized - run op: init",
 			});
+		}
+		case "init": {
+			// Create context directory if needed
+			if (!existsSync(ctxDir)) {
+				await import("node:fs").then((fs) => fs.mkdirSync(ctxDir, { recursive: true }));
+			}
+
+			// Default context structure
+			const defaultContext = {
+				project_phase: "development",
+				priority: "stability",
+				constraints: {
+					extension: {
+						bundle: { max: 150, unit: "KB", description: "Max extension bundle size" },
+					},
+					web: {
+						fcp: { max: 1500, unit: "ms", description: "First Contentful Paint" },
+						lcp: { max: 2500, unit: "ms", description: "Largest Contentful Paint" },
+					},
+				},
+				blockers: [],
+				created_at: new Date().toISOString(),
+				updated_at: new Date().toISOString(),
+			};
+
+			// P0-002: Use atomic write for crash safety
+			const writeResult = atomicWriteFileSync(ctxPath, JSON.stringify(defaultContext, null, 2));
+			if (!writeResult.success) {
+				return jsonResult({
+					op: "init",
+					status: "error",
+					error: "E404_CONTEXT_OPERATION_FAILED",
+					message: writeResult.error,
+				});
+			}
+
+			return jsonResult({
+				op: "init",
+				status: "success",
+				path: ctxPath,
+				message: "Context initialized with default configuration",
+				next_actions: [
+					{ tool: "context", priority: 1, reason: "Check status", args: { op: "status" } },
+					{ tool: "context", priority: 2, reason: "Build .ctx file", args: { op: "build" } },
+				],
+			});
+		}
+		case "build": {
+			// Build .ctx file from context.json
+			if (!existsSync(ctxPath)) {
+				return jsonResult({
+					op: "build",
+					status: "error",
+					error: "E204_CONTEXT_NOT_INITIALIZED",
+					message: "Context not initialized - run op: init first",
+				});
+			}
+
+			try {
+				const contextData = JSON.parse(readFileSync(ctxPath, "utf8"));
+				// Build minified .ctx for LLM consumption
+				const ctxContent = JSON.stringify(contextData);
+
+				// P0-002: Use atomic write for crash safety
+				const writeResult = atomicWriteFileSync(ctxFilePath, ctxContent);
+				if (!writeResult.success) {
+					return jsonResult({
+						op: "build",
+						status: "error",
+						error: "E404_CONTEXT_OPERATION_FAILED",
+						message: writeResult.error,
+					});
+				}
+
+				return jsonResult({
+					op: "build",
+					status: "success",
+					path: ctxFilePath,
+					size: ctxContent.length,
+					message: ".ctx file built successfully",
+				});
+			} catch (error) {
+				const msg = error instanceof Error ? error.message : String(error);
+				return jsonResult({
+					op: "build",
+					status: "error",
+					error: "E404_CONTEXT_OPERATION_FAILED",
+					message: `Failed to build .ctx: ${msg}`,
+				});
+			}
+		}
+		case "validate": {
+			if (!existsSync(ctxPath)) {
+				return jsonResult({
+					op: "validate",
+					valid: false,
+					reason: "Context not initialized",
+				});
+			}
+
+			const ctxFileExists = existsSync(ctxFilePath);
+			if (!ctxFileExists) {
+				return jsonResult({
+					op: "validate",
+					valid: false,
+					reason: ".ctx file missing - run op: build",
+					next_actions: [{ tool: "context", priority: 1, reason: "Build .ctx", args: { op: "build" } }],
+				});
+			}
+
+			// Check if .ctx is in sync with context.json
+			const contextJson = readFileSync(ctxPath, "utf8");
+			const ctxFile = readFileSync(ctxFilePath, "utf8");
+			const isSync = JSON.stringify(JSON.parse(contextJson)) === ctxFile;
+
+			return jsonResult({
+				op: "validate",
+				valid: isSync,
+				reason: isSync ? "Context is in sync" : "Context is stale - run op: build",
+				next_actions: isSync
+					? []
+					: [{ tool: "context", priority: 1, reason: "Rebuild", args: { op: "build" } }],
+			});
+		}
+		case "constraint": {
+			if (!domain || !name) {
+				return errorJsonResult(CommonErrors.missingParam("domain, name"));
+			}
+
+			if (!existsSync(ctxPath)) {
+				return jsonResult({
+					op: "constraint",
+					status: "error",
+					error: "E204_CONTEXT_NOT_INITIALIZED",
+					message: "Context not initialized",
+				});
+			}
+
+			try {
+				const contextData = JSON.parse(readFileSync(ctxPath, "utf8"));
+				const constraint = contextData?.constraints?.[domain]?.[name];
+
+				if (!constraint) {
+					return jsonResult({
+						op: "constraint",
+						domain,
+						name,
+						found: false,
+						message: `Constraint ${domain}.${name} not found`,
+					});
+				}
+
+				return jsonResult({
+					op: "constraint",
+					domain,
+					name,
+					found: true,
+					threshold: constraint.max,
+					unit: constraint.unit,
+					description: constraint.description,
+				});
+			} catch (error) {
+				const msg = error instanceof Error ? error.message : String(error);
+				return jsonResult({
+					op: "constraint",
+					status: "error",
+					error: "E404_CONTEXT_OPERATION_FAILED",
+					message: `Failed to read constraint: ${msg}`,
+				});
+			}
+		}
+		case "check": {
+			if (!domain || !name || value === undefined) {
+				return errorJsonResult(CommonErrors.missingParam("domain, name, value"));
+			}
+
+			if (!existsSync(ctxPath)) {
+				return jsonResult({
+					op: "check",
+					status: "error",
+					error: "E204_CONTEXT_NOT_INITIALIZED",
+					message: "Context not initialized",
+				});
+			}
+
+			try {
+				const contextData = JSON.parse(readFileSync(ctxPath, "utf8"));
+				const constraint = contextData?.constraints?.[domain]?.[name];
+
+				if (!constraint) {
+					return jsonResult({
+						op: "check",
+						domain,
+						name,
+						value,
+						passes: true, // No constraint = passes
+						message: `No constraint defined for ${domain}.${name}`,
+					});
+				}
+
+				const passes = value <= constraint.max;
+				return jsonResult({
+					op: "check",
+					domain,
+					name,
+					value,
+					threshold: constraint.max,
+					unit: constraint.unit,
+					passes,
+					message: passes
+						? `Value ${value}${constraint.unit} is within constraint (max: ${constraint.max}${constraint.unit})`
+						: `Value ${value}${constraint.unit} exceeds constraint (max: ${constraint.max}${constraint.unit})`,
+				});
+			} catch (error) {
+				const msg = error instanceof Error ? error.message : String(error);
+				return jsonResult({
+					op: "check",
+					status: "error",
+					error: "E404_CONTEXT_OPERATION_FAILED",
+					message: `Failed to check constraint: ${msg}`,
+				});
+			}
+		}
+		case "blockers": {
+			if (!existsSync(ctxPath)) {
+				return jsonResult({
+					op: "blockers",
+					blockers: [],
+					message: "Context not initialized",
+				});
+			}
+
+			try {
+				const contextData = JSON.parse(readFileSync(ctxPath, "utf8"));
+				const blockers = contextData?.blockers || [];
+
+				return jsonResult({
+					op: "blockers",
+					blockers,
+					count: blockers.length,
+					message: blockers.length > 0 ? `${blockers.length} blocker(s) found` : "No blockers",
+				});
+			} catch (error) {
+				const msg = error instanceof Error ? error.message : String(error);
+				return jsonResult({
+					op: "blockers",
+					status: "error",
+					error: "E404_CONTEXT_OPERATION_FAILED",
+					message: `Failed to read blockers: ${msg}`,
+				});
+			}
 		}
 		default:
 			return jsonResult({
 				op,
-				status: "cli_owned",
-				message: "CLI owns session state, MCP provides read-only stats",
-				hint: `Use 'snap session ${op}' for full functionality`,
+				status: "error",
+				error: "E103_INVALID_PARAM_VALUE",
+				message: `Unknown context operation: ${op}`,
+				validOps: ["init", "build", "validate", "status", "constraint", "check", "blockers"],
 			});
 	}
 };
 
 /**
- * snapback.learn - Record learnings
+ * session - Session management
+ * P1-005: Full implementation of session operations
+ */
+export const handleSession: ToolHandler = async (args, context) => {
+	const { op, taskDescription, files, acceptLearnings } = args as {
+		op?: string;
+		taskDescription?: string;
+		files?: string[];
+		acceptLearnings?: number[];
+	};
+
+	if (!op) {
+		return errorJsonResult(CommonErrors.missingParam("op"));
+	}
+
+	const sessionDir = join(context.workspaceRoot, ".snapback", "session");
+	const sessionPath = join(sessionDir, "current.json");
+	const learningsPath = join(context.workspaceRoot, ".snapback", "learnings", "learnings.jsonl");
+
+	switch (op) {
+		case "start": {
+			// Create session directory if needed
+			if (!existsSync(sessionDir)) {
+				await import("node:fs").then((fs) => fs.mkdirSync(sessionDir, { recursive: true }));
+			}
+
+			// Check for existing session
+			if (existsSync(sessionPath)) {
+				try {
+					const existingSession = JSON.parse(readFileSync(sessionPath, "utf8"));
+					return jsonResult({
+						op: "start",
+						status: "already_active",
+						session: existingSession,
+						message: "Session already active - end current session first",
+						next_actions: [
+							{ tool: "session", priority: 1, reason: "End current session", args: { op: "end" } },
+						],
+					});
+				} catch {
+					// Continue to create new session if parse fails
+				}
+			}
+
+			// Create new session
+			const sessionId = `sess_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+			const session = {
+				id: sessionId,
+				startedAt: new Date().toISOString(),
+				taskDescription: taskDescription || "MCP session",
+				plannedFiles: files || [],
+				snapshotCount: 0,
+				modifiedFiles: [],
+				tier: context.tier,
+			};
+
+			// P0-002: Use atomic write for crash safety
+			const writeResult = atomicWriteFileSync(sessionPath, JSON.stringify(session, null, 2));
+			if (!writeResult.success) {
+				return jsonResult({
+					op: "start",
+					status: "error",
+					error: "E405_SESSION_OPERATION_FAILED",
+					message: writeResult.error,
+				});
+			}
+
+			// Get recommendations based on planned files
+			const recommendations: string[] = [];
+			if (files && files.length > 0) {
+				const hasAuthFiles = files.some((f) => f.includes("auth") || f.includes("security"));
+				const hasConfigFiles = files.some((f) => f.includes("config") || f.includes(".env"));
+				if (hasAuthFiles) {
+					recommendations.push("Create snapshot before modifying auth-related files");
+				}
+				if (hasConfigFiles) {
+					recommendations.push("Verify config changes with prepare_workspace after edits");
+				}
+				if (files.length > 5) {
+					recommendations.push("Consider breaking this into smaller focused sessions");
+				}
+			}
+
+			return jsonResult({
+				op: "start",
+				status: "success",
+				session,
+				recommendations,
+				message: "Session started",
+				next_actions: [
+					{ tool: "prepare_workspace", priority: 1, reason: "Check workspace state before starting" },
+				],
+			});
+		}
+		case "stats": {
+			if (existsSync(sessionPath)) {
+				try {
+					const session = JSON.parse(readFileSync(sessionPath, "utf8"));
+					const startTime = new Date(session.startedAt).getTime();
+					const duration = Math.floor((Date.now() - startTime) / 60000); // minutes
+
+					return jsonResult({
+						op: "stats",
+						session: {
+							...session,
+							durationMinutes: duration,
+						},
+						message: "Session active",
+					});
+				} catch {
+					// Fallthrough to no session
+				}
+			}
+			return jsonResult({
+				op: "stats",
+				session: null,
+				message: "No active session",
+				hint: "Use op: start to begin a session",
+			});
+		}
+		case "recommendations": {
+			if (!existsSync(sessionPath)) {
+				return jsonResult({
+					op: "recommendations",
+					recommendations: ["Start a session to get personalized recommendations"],
+					message: "No active session",
+				});
+			}
+
+			try {
+				const session = JSON.parse(readFileSync(sessionPath, "utf8"));
+				const recommendations: string[] = [];
+
+				// Time-based recommendations
+				const startTime = new Date(session.startedAt).getTime();
+				const duration = (Date.now() - startTime) / 60000;
+				if (duration > 60) {
+					recommendations.push("Session running for over an hour - consider taking a break");
+				}
+				if (session.snapshotCount === 0 && duration > 15) {
+					recommendations.push("No snapshots created yet - consider creating a checkpoint");
+				}
+
+				// Load learnings for personalized recommendations
+				if (existsSync(learningsPath)) {
+					try {
+						const learnings = readFileSync(learningsPath, "utf8")
+							.split("\n")
+							.filter(Boolean)
+							.map((line) => JSON.parse(line));
+						const recentLearnings = learnings.slice(-3);
+						for (const learning of recentLearnings) {
+							recommendations.push(`Remember: ${learning.action}`);
+						}
+					} catch {
+						// Ignore learning parse errors
+					}
+				}
+
+				return jsonResult({
+					op: "recommendations",
+					sessionId: session.id,
+					recommendations: recommendations.length > 0 ? recommendations : ["All clear! Keep coding."],
+					message: `${recommendations.length} recommendation(s)`,
+				});
+			} catch (error) {
+				const msg = error instanceof Error ? error.message : String(error);
+				return jsonResult({
+					op: "recommendations",
+					status: "error",
+					error: "E405_SESSION_OPERATION_FAILED",
+					message: `Failed to get recommendations: ${msg}`,
+				});
+			}
+		}
+		case "end": {
+			if (!existsSync(sessionPath)) {
+				return jsonResult({
+					op: "end",
+					status: "no_session",
+					message: "No active session to end",
+				});
+			}
+
+			try {
+				const session = JSON.parse(readFileSync(sessionPath, "utf8"));
+				const startTime = new Date(session.startedAt).getTime();
+				const duration = Math.floor((Date.now() - startTime) / 60000);
+
+				// Archive session
+				const archiveDir = join(sessionDir, "archive");
+				if (!existsSync(archiveDir)) {
+					await import("node:fs").then((fs) => fs.mkdirSync(archiveDir, { recursive: true }));
+				}
+
+				const archivedSession = {
+					...session,
+					endedAt: new Date().toISOString(),
+					durationMinutes: duration,
+				};
+
+				const archivePath = join(archiveDir, `${session.id}.json`);
+				// P0-002: Use atomic write for crash safety
+				const archiveWriteResult = atomicWriteFileSync(archivePath, JSON.stringify(archivedSession, null, 2));
+				if (!archiveWriteResult.success) {
+					return jsonResult({
+						op: "end",
+						status: "error",
+						error: "E405_SESSION_OPERATION_FAILED",
+						message: archiveWriteResult.error,
+					});
+				}
+
+				// Remove current session
+				await import("node:fs").then((fs) => fs.unlinkSync(sessionPath));
+
+				// Suggest learnings to accept
+				const suggestedLearnings = [
+					{ index: 0, suggestion: "What patterns did you discover?" },
+					{ index: 1, suggestion: "Any pitfalls to avoid next time?" },
+				];
+
+				return jsonResult({
+					op: "end",
+					status: "success",
+					summary: {
+						sessionId: session.id,
+						durationMinutes: duration,
+						snapshotCount: session.snapshotCount,
+						modifiedFiles: session.modifiedFiles?.length || 0,
+					},
+					archivePath,
+					suggestedLearnings: acceptLearnings ? [] : suggestedLearnings,
+					message: `Session ended after ${duration} minutes`,
+					next_actions: [{ tool: "learn", priority: 1, reason: "Record learnings from this session" }],
+				});
+			} catch (error) {
+				const msg = error instanceof Error ? error.message : String(error);
+				return jsonResult({
+					op: "end",
+					status: "error",
+					error: "E405_SESSION_OPERATION_FAILED",
+					message: `Failed to end session: ${msg}`,
+				});
+			}
+		}
+		default:
+			return jsonResult({
+				op,
+				status: "error",
+				error: "E103_INVALID_PARAM_VALUE",
+				message: `Unknown session operation: ${op}`,
+				validOps: ["start", "stats", "recommendations", "end"],
+			});
+	}
+};
+
+/**
+ * learn - Record learnings
  */
 export const handleLearn: ToolHandler = async (args, context) => {
 	const { type, trigger, action, source } = args as {
@@ -473,7 +1105,7 @@ export const handleLearn: ToolHandler = async (args, context) => {
 	};
 
 	if (!type || !trigger || !action) {
-		return result("Missing required parameters: type, trigger, action", true);
+		return errorJsonResult(CommonErrors.missingParam("type, trigger, action"));
 	}
 
 	const learningsPath = join(context.workspaceRoot, ".snapback", "learnings", "learnings.jsonl");
@@ -510,13 +1142,13 @@ export const handleLearn: ToolHandler = async (args, context) => {
 };
 
 /**
- * snapback.acknowledge_risk - Acknowledge risk
+ * acknowledge_risk - Acknowledge risk
  */
 export const handleAcknowledgeRisk: ToolHandler = async (args, context) => {
 	const { files, reason } = args as { files?: string[]; reason?: string };
 
 	if (!files || !reason) {
-		return result("Missing required parameters: files, reason", true);
+		return errorJsonResult(CommonErrors.missingParam("files, reason"));
 	}
 
 	const acknowledgment = {
@@ -549,7 +1181,7 @@ export const handleAcknowledgeRisk: ToolHandler = async (args, context) => {
 		message: "Risk acknowledged - proceed with changes",
 		next_actions: [
 			{
-				tool: "snapback.snapshot_create",
+				tool: "snapshot_create",
 				priority: 1,
 				reason: "Create safety snapshot",
 				args: { files, reason: `Pre-risk: ${reason}` },
@@ -559,36 +1191,255 @@ export const handleAcknowledgeRisk: ToolHandler = async (args, context) => {
 };
 
 /**
- * snapback.meta - Tool metadata
+ * get_context - Get workspace context and learnings for a task
+ * Uses Intelligence facade for semantic retrieval
+ */
+export const handleGetContext: ToolHandler = async (args, context) => {
+	const { task, files, keywords } = args as {
+		task?: string;
+		files?: string[];
+		keywords?: string[];
+	};
+
+	if (!task) {
+		return errorJsonResult(CommonErrors.missingParam("task"));
+	}
+
+	try {
+		const intel = getIntelligence(context.workspaceRoot);
+
+		// Get context from Intelligence
+		const ctx = await intel.getContext({
+			task,
+			files: files || [],
+			keywords: keywords || [],
+		});
+
+		// Get violations summary
+		const violations = intel.getViolationsSummary();
+
+		// Get vitals snapshot
+		const vitals = intel.getVitalsSnapshot(context.workspaceRoot);
+
+		return jsonResult({
+			workspace: {
+				root: context.workspaceRoot,
+				tier: context.tier,
+			},
+			context: {
+				patterns: ctx.patterns,
+				hardRules: ctx.hardRules,
+				contextSections: ctx.contextSections,
+				hint: ctx.hint,
+			},
+			relevantLearnings: ctx.relevantLearnings.slice(0, 10).map((l) => ({
+				type: l.type,
+				trigger: l.trigger,
+				action: l.action,
+			})),
+			recentViolations: ctx.recentViolations.slice(0, 5).map((v) => ({
+				type: v.type,
+				file: v.file,
+				message: v.message,
+				prevention: v.prevention,
+			})),
+			violationsSummary: {
+				total: violations.total,
+				readyForPromotion: violations.readyForPromotion,
+				readyForAutomation: violations.readyForAutomation,
+			},
+			vitals: vitals
+				? {
+						pulse: vitals.pulse.level,
+						pressure: vitals.pressure.value,
+						trajectory: vitals.trajectory,
+					}
+				: null,
+			next_actions: [{ tool: "check_patterns", priority: 2, reason: "Validate code before commit" }],
+		});
+	} catch (error) {
+		const message = error instanceof Error ? error.message : String(error);
+		return result(`Failed to get context: ${message}`, true);
+	}
+};
+
+/**
+ * check_patterns - Validate code against patterns using 7-layer ValidationPipeline
+ * Uses Intelligence facade for full validation
+ */
+export const handleCheckPatterns: ToolHandler = async (args, context) => {
+	const { code, filePath } = args as {
+		code?: string;
+		filePath?: string;
+	};
+
+	if (!code || !filePath) {
+		return errorJsonResult(CommonErrors.missingParam("code, filePath"));
+	}
+
+	try {
+		const intel = getIntelligence(context.workspaceRoot);
+
+		// Run full 7-layer validation
+		const validation = await intel.checkPatterns(code, filePath);
+
+		return jsonResult({
+			passed: validation.overall.passed,
+			confidence: validation.overall.confidence,
+			totalIssues: validation.overall.totalIssues,
+			recommendation: validation.recommendation,
+			layers: validation.layers.map((l) => ({
+				name: l.layer,
+				passed: l.passed,
+				issueCount: l.issues.length,
+				issues: l.issues.map((i) => ({
+					severity: i.severity,
+					type: i.type,
+					message: i.message,
+					line: i.line,
+					fix: i.fix,
+				})),
+				duration: l.duration,
+			})),
+			focusPoints: validation.focusPoints,
+			next_actions: validation.overall.passed
+				? []
+				: [{ tool: "check_patterns", priority: 1, reason: "Re-validate after fixes" }],
+		});
+	} catch (error) {
+		const message = error instanceof Error ? error.message : String(error);
+		return result(`Failed to check patterns: ${message}`, true);
+	}
+};
+
+/**
+ * report_violation - Report a constraint/pattern violation for learning
+ * Uses Intelligence facade for violation tracking with auto-promotion
+ */
+export const handleReportViolation: ToolHandler = async (args, context) => {
+	const { type, file, whatHappened, whyItHappened, prevention } = args as {
+		type?: string;
+		file?: string;
+		whatHappened?: string;
+		whyItHappened?: string;
+		prevention?: string;
+	};
+
+	if (!type || !file || !whatHappened || !whyItHappened || !prevention) {
+		return errorJsonResult(CommonErrors.missingParam("type, file, whatHappened, whyItHappened, prevention"));
+	}
+
+	try {
+		const intel = getIntelligence(context.workspaceRoot);
+
+		// Report violation to Intelligence
+		const status = await intel.reportViolation({
+			type,
+			file,
+			message: whatHappened,
+			reason: whyItHappened,
+			prevention,
+		});
+
+		return jsonResult({
+			recorded: true,
+			violationId: status.id,
+			type,
+			file,
+			occurrences: status.count,
+			promoted: status.shouldPromote,
+			promotedTo: status.shouldPromote ? "pattern" : null,
+			automation: status.shouldAutomate ? "pending" : null,
+			message: status.shouldPromote
+				? `Violation promoted to pattern after ${status.count} occurrences`
+				: `Violation recorded (${status.count}/3 for promotion)`,
+			next_actions: status.shouldPromote
+				? [{ tool: "get_context", priority: 2, reason: "New pattern available in context" }]
+				: [],
+		});
+	} catch (error) {
+		const message = error instanceof Error ? error.message : String(error);
+		return result(`Failed to report violation: ${message}`, true);
+	}
+};
+
+/**
+ * get_learnings - Query past learnings by keywords
+ * Uses Intelligence facade for learning retrieval
+ */
+export const handleGetLearnings: ToolHandler = async (args, context) => {
+	const { keywords, limit = 10 } = args as {
+		keywords?: string[];
+		limit?: number;
+	};
+
+	if (!keywords || keywords.length === 0) {
+		return errorJsonResult(CommonErrors.missingParam("keywords"));
+	}
+
+	try {
+		const intel = getIntelligence(context.workspaceRoot);
+
+		// Query learnings from Intelligence
+		const learnings = intel.queryLearnings(keywords);
+		const limited = learnings.slice(0, Math.min(limit, 50));
+
+		return jsonResult({
+			query: keywords,
+			count: limited.length,
+			totalMatches: learnings.length,
+			learnings: limited.map((l) => ({
+				id: l.id,
+				type: l.type,
+				trigger: l.trigger,
+				action: l.action,
+				source: l.source,
+				timestamp: l.timestamp,
+			})),
+			message:
+				limited.length > 0
+					? `Found ${limited.length} learning(s) matching keywords`
+					: "No learnings found for these keywords",
+			next_actions: limited.length === 0 ? [{ tool: "learn", priority: 2, reason: "Record a new learning" }] : [],
+		});
+	} catch (error) {
+		const message = error instanceof Error ? error.message : String(error);
+		return result(`Failed to get learnings: ${message}`, true);
+	}
+};
+
+/**
+ * meta - Tool metadata
  */
 export const handleMeta: ToolHandler = async (_args, _context) => {
 	return jsonResult({
 		version: "0.1.0",
 		status: "operational",
 		tools: [
-			{ name: "snapback.analyze", status: "implemented", description: "Risk and package analysis" },
-			{ name: "snapback.prepare_workspace", status: "implemented", description: "Pre-flight workspace check" },
-			{ name: "snapback.snapshot_create", status: "implemented", description: "Create file snapshot" },
-			{ name: "snapback.snapshot_list", status: "implemented", description: "List snapshots" },
-			{ name: "snapback.snapshot_restore", status: "implemented", description: "Restore from snapshot" },
-			{ name: "snapback.validate", status: "implemented", description: "Code validation" },
-			{ name: "snapback.context", status: "partial", description: "Context management" },
-			{ name: "snapback.session", status: "partial", description: "Session management (CLI-owned)" },
-			{ name: "snapback.learn", status: "implemented", description: "Record learnings" },
-			{ name: "snapback.acknowledge_risk", status: "implemented", description: "Acknowledge risk" },
-			{ name: "snapback.meta", status: "implemented", description: "Tool metadata" },
+			{ name: "analyze", status: "implemented", description: "Risk and package analysis" },
+			{ name: "prepare_workspace", status: "implemented", description: "Pre-flight workspace check" },
+			{ name: "snapshot_create", status: "implemented", description: "Create file snapshot" },
+			{ name: "snapshot_list", status: "implemented", description: "List snapshots" },
+			{ name: "snapshot_restore", status: "implemented", description: "Restore from snapshot" },
+			{ name: "validate", status: "implemented", description: "Code validation" },
+			{ name: "context", status: "implemented", description: "Context management" },
+			{ name: "session", status: "implemented", description: "Session management" },
+			{ name: "learn", status: "implemented", description: "Record learnings" },
+			{ name: "acknowledge_risk", status: "implemented", description: "Acknowledge risk" },
+			{
+				name: "get_context",
+				status: "implemented",
+				description: "Get workspace context and learnings for a task",
+			},
+			{
+				name: "check_patterns",
+				status: "implemented",
+				description: "Validate code against 7-layer ValidationPipeline",
+			},
+			{ name: "report_violation", status: "implemented", description: "Report violations with auto-promotion" },
+			{ name: "get_learnings", status: "implemented", description: "Query past learnings by keywords" },
+			{ name: "meta", status: "implemented", description: "Tool metadata" },
 		],
-		legacy_mapping: {
-			"snapback.assess_risk": "snapback.analyze (type: risk)",
-			"snapback.validate_recommendation": "snapback.analyze (type: package)",
-			"snapback.check_patterns": "snapback.validate (mode: quick)",
-			"snapback.validate_code": "snapback.validate (mode: comprehensive)",
-			"snapback.ctx_*": "snapback.context (op: *)",
-			"snapback.get_workspace_vitals": "snapback.prepare_workspace",
-			"snapback.create_snapshot": "snapback.snapshot_create",
-			"snapback.list_snapshots": "snapback.snapshot_list",
-			"snapback.restore_snapshot": "snapback.snapshot_restore",
-		},
 	});
 };
 
@@ -596,15 +1447,19 @@ export const handleMeta: ToolHandler = async (_args, _context) => {
  * Map facade names to handlers
  */
 export const facadeHandlers: Record<string, ToolHandler> = {
-	"snapback.analyze": handleAnalyze,
-	"snapback.prepare_workspace": handlePrepareWorkspace,
-	"snapback.snapshot_create": handleSnapshotCreate,
-	"snapback.snapshot_list": handleSnapshotList,
-	"snapback.snapshot_restore": handleSnapshotRestore,
-	"snapback.validate": handleValidate,
-	"snapback.context": handleContext,
-	"snapback.session": handleSession,
-	"snapback.learn": handleLearn,
-	"snapback.acknowledge_risk": handleAcknowledgeRisk,
-	"snapback.meta": handleMeta,
+	analyze: handleAnalyze,
+	prepare_workspace: handlePrepareWorkspace,
+	snapshot_create: handleSnapshotCreate,
+	snapshot_list: handleSnapshotList,
+	snapshot_restore: handleSnapshotRestore,
+	validate: handleValidate,
+	context: handleContext,
+	session: handleSession,
+	learn: handleLearn,
+	acknowledge_risk: handleAcknowledgeRisk,
+	get_context: handleGetContext,
+	check_patterns: handleCheckPatterns,
+	report_violation: handleReportViolation,
+	get_learnings: handleGetLearnings,
+	meta: handleMeta,
 };

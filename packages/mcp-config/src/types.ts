@@ -9,7 +9,17 @@
 /**
  * Supported AI client config formats
  */
-export type AIClientFormat = "claude" | "cursor" | "windsurf" | "continue";
+export type AIClientFormat =
+	| "claude"
+	| "cursor"
+	| "windsurf"
+	| "continue"
+	| "vscode"
+	| "zed"
+	| "cline"
+	| "gemini"
+	| "aider"
+	| "roo-code";
 
 /**
  * Configuration for a detected AI client
@@ -80,6 +90,12 @@ export interface SnapbackConfigOptions {
 	customCommand?: string;
 	/** Additional environment variables */
 	additionalEnv?: Record<string, string>;
+	/** Workspace root path (auto-inferred if not provided) */
+	workspaceRoot?: string;
+	/** Use local development mode (direct node execution) */
+	useLocalDev?: boolean;
+	/** Path to local CLI dist (for development) */
+	localCliPath?: string;
 }
 
 /**

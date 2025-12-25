@@ -21,15 +21,39 @@
 // Client exports
 export { type ApiClientConfig, SnapBackAPIClient } from "./client/api-client.js";
 export { MCP_ROUTES, type McpRouteKey } from "./client/routes.js";
+// Error utilities
+export {
+	CommonErrors,
+	createRequestContext,
+	type ErrorCode,
+	ErrorCodes,
+	type LogEntry,
+	type LogLevel,
+	log,
+	logError,
+	logSuccess,
+	type RequestContext,
+} from "./errors.js";
 // Facade handlers
 export { facadeHandlers } from "./facades/handlers.js";
-// Migration utilities
+// Intelligence facade (singleton per workspace)
 export {
-	FACADE_TO_LEGACY,
-	isLegacyTool,
-	resolveFacadeName,
-	TOOL_MIGRATIONS,
-} from "./migrations.js";
+	disposeAllIntelligence,
+	disposeIntelligence,
+	getActiveInstanceCount,
+	getIntelligence,
+	initializeIntelligence,
+} from "./facades/intelligence.js";
+// Session health wrapper
+export {
+	type EnhancedToolResult,
+	getRecommendedAction,
+	getSessionHealth,
+	isRiskyState,
+	type SessionHealth,
+	sessionAwareResult,
+	wrapWithSessionHealth,
+} from "./facades/session-health.js";
 // Registry and tool types
 export {
 	FACADE_TOOLS,

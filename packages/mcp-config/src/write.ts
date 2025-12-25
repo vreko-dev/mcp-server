@@ -39,10 +39,25 @@ import type {
  *
  * // Using binary instead of npx
  * const binaryConfig = getSnapbackMCPConfig({ useBinary: true });
+ *
+ * // Local development mode (with inferred workspace)
+ * const devConfig = getSnapbackMCPConfig({
+ *   useLocalDev: true,
+ *   localCliPath: '/path/to/apps/cli/dist/index.js',
+ *   workspaceRoot: '/path/to/project'
+ * });
  * ```
  */
 export function getSnapbackMCPConfig(options: SnapbackConfigOptions = {}): MCPServerConfig {
-	const { apiKey, useBinary = false, customCommand, additionalEnv } = options;
+	const {
+		apiKey,
+		useBinary = false,
+		customCommand,
+		additionalEnv,
+		workspaceRoot,
+		useLocalDev = false,
+		localCliPath,
+	} = options;
 
 	// Build environment variables
 	const env: Record<string, string> = { ...additionalEnv };
@@ -59,18 +74,42 @@ export function getSnapbackMCPConfig(options: SnapbackConfigOptions = {}): MCPSe
 		};
 	}
 
-	if (useBinary) {
+	// Determine tier based on API key presence
+	const tier = apiKey ? "pro" : "free";
+
+	// Local development mode - direct node execution with workspace
+	if (useLocalDev && localCliPath) {
+		const args = [localCliPath, "mcp", "--stdio", "--tier", tier];
+		if (workspaceRoot) {
+			args.push("--workspace", workspaceRoot);
+		}
 		return {
-			command: "snapback-mcp",
-			args: [],
+			command: "node",
+			args,
+			...(Object.keys(env).length > 0 && { env }),
+		};
+	}
+
+	if (useBinary) {
+		const args = ["mcp", "--stdio", "--tier", tier];
+		if (workspaceRoot) {
+			args.push("--workspace", workspaceRoot);
+		}
+		return {
+			command: "snapback",
+			args,
 			...(Object.keys(env).length > 0 && { env }),
 		};
 	}
 
 	// Default: use npx for auto-updates
+	const args = ["-y", "@snapback/cli", "mcp", "--stdio", "--tier", tier];
+	if (workspaceRoot) {
+		args.push("--workspace", workspaceRoot);
+	}
 	return {
 		command: "npx",
-		args: ["-y", "@snapback/mcp-server"],
+		args,
 		...(Object.keys(env).length > 0 && { env }),
 	};
 }
@@ -206,6 +245,11 @@ function mergeConfig(
 		case "claude":
 		case "cursor":
 		case "windsurf":
+		case "vscode":
+		case "cline":
+		case "roo-code":
+		case "gemini":
+		case "zed":
 			// Standard mcpServers format
 			return {
 				...existing,
@@ -239,6 +283,11 @@ function mergeConfig(
 			};
 		}
 
+		case "aider":
+			// Aider uses YAML - handled separately (this shouldn't be called)
+			// For now, return existing config unchanged
+			return existing;
+
 		default:
 			// Fallback to standard format
 			return {
@@ -266,6 +315,11 @@ export function validateConfig(client: AIClientConfig): boolean {
 			case "claude":
 			case "cursor":
 			case "windsurf":
+			case "vscode":
+			case "cline":
+			case "roo-code":
+			case "gemini":
+			case "zed":
 				return Boolean(config.mcpServers?.snapback?.command);
 
 			case "continue": {
@@ -277,6 +331,10 @@ export function validateConfig(client: AIClientConfig): boolean {
 					| undefined;
 				return Boolean(srvs?.some((s) => s.name === "snapback" && s.command));
 			}
+
+			case "aider":
+				// YAML validation would need a YAML parser
+				return false;
 
 			default:
 				return false;

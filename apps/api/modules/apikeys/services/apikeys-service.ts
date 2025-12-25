@@ -25,7 +25,7 @@ export interface ApiKeyCreationInput {
 	hashedKey: string;
 	keyPreview: string;
 	signingSecret: string;
-	permissions: Record<string, unknown>;
+	permissions: string[]; // Scope-based permissions array (e.g., ["code:analyze", "snapshots:read"])
 }
 
 export interface CreatedApiKey {
@@ -75,34 +75,19 @@ export function getKeyLimit(plan: string): number {
 
 /**
  * Get permissions based on subscription plan
+ * Returns a text[] array of permission scopes (matches DB schema)
  */
-export function getPermissionsForPlan(plan: string): Record<string, unknown> {
+export function getPermissionsForPlan(plan: string): string[] {
+	const basePermissions = ["code:analyze", "code:refactor", "code:search", "snapshots:read", "snapshots:write"];
+
 	switch (plan) {
 		case "enterprise":
 		case "team":
-			return {
-				maxSnapshots: undefined,
-				cloudBackup: true,
-				advancedDetection: true,
-				customRules: true,
-				teamSharing: true,
-			};
+			return [...basePermissions, "snapshots:cloud", "team:share", "custom:rules"];
 		case "pro":
-			return {
-				maxSnapshots: undefined,
-				cloudBackup: true,
-				advancedDetection: true,
-				customRules: true,
-				teamSharing: false,
-			};
+			return [...basePermissions, "snapshots:cloud", "custom:rules"];
 		default:
-			return {
-				maxSnapshots: 100,
-				cloudBackup: false,
-				advancedDetection: false,
-				customRules: false,
-				teamSharing: false,
-			};
+			return basePermissions;
 	}
 }
 
@@ -119,7 +104,7 @@ export async function createApiKeyRecord(input: ApiKeyCreationInput): Promise<Cr
 		throw new Error("Database not available");
 	}
 
-	const subInfo = await getUserSubscriptionInfo(input.userId);
+	const _subInfo = await getUserSubscriptionInfo(input.userId); // Reserved for future quota checks
 
 	// Insert API key
 	const [newKey] = await db

@@ -44,7 +44,7 @@ export const createApiKey = protectedProcedure
 		// Generate new key
 		const rawKey = generateApiKey();
 		const hashedKey = await hashApiKey(rawKey);
-		const keyPreview = `${rawKey.slice(0, 8)}...`;
+		const keyPreview = `${rawKey.slice(0, 12)}...`; // Standardized 12 chars for better UX
 
 		// Create key via service layer per C-002
 		const newKey = await createApiKeyRecord({

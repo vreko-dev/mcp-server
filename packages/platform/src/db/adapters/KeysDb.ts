@@ -2,12 +2,23 @@ import { and, eq, gte } from "drizzle-orm";
 import type { PgDatabase } from "drizzle-orm/pg-core";
 import { apiKeys, apiKeyUsage } from "../schema/snapback/index";
 
+// Simple hash function for internal keys (not user-facing)
+async function hashKey(key: string): Promise<string> {
+	const encoder = new TextEncoder();
+	const data = encoder.encode(key);
+	const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+	const hashArray = Array.from(new Uint8Array(hashBuffer));
+	return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
 export interface ApiKey {
 	id: string;
 	userId: string;
 	name?: string;
+	keyPreview: string; // First 12 chars for display
 	permissions: string[];
 	revoked: boolean;
+	revokedAt?: Date;
 	lastUsedAt?: Date;
 	createdAt: Date;
 	expiresAt?: Date;
@@ -27,26 +38,38 @@ export class KeysDb {
 
 	/**
 	 * Create a new API key
+	 * Returns the raw key (only time it's visible to user)
 	 */
-	async createKey(userId: string, name?: string, permissions: string[] = [], expiresAt?: Date): Promise<string> {
-		const id = this.generateApiKey();
+	async createKey(
+		userId: string,
+		name?: string,
+		permissions: string[] = [],
+		expiresAt?: Date,
+	): Promise<{ id: string; rawKey: string; keyPreview: string }> {
+		const rawKey = this.generateApiKey();
+		const hashedKey = await hashKey(rawKey);
+		const keyPreview = `${rawKey.slice(0, 12)}...`; // Standardized 12 chars
+		const id = crypto.randomUUID();
 
 		await this.db.insert(apiKeys).values({
 			id,
 			userId,
 			name: name || "",
+			key: hashedKey,
+			keyPreview,
 			permissions: permissions,
 			createdAt: new Date(),
 			expiresAt,
 		});
 
-		return id;
+		return { id, rawKey, keyPreview };
 	}
 
 	/**
 	 * Rotate an API key (create new, revoke old)
+	 * Returns the new raw key (only time it's visible to user)
 	 */
-	async rotateKey(oldKeyId: string): Promise<string> {
+	async rotateKey(oldKeyId: string): Promise<{ id: string; rawKey: string; keyPreview: string }> {
 		// Get the old key details
 		const oldKeys = await this.db.select().from(apiKeys).where(eq(apiKeys.id, oldKeyId)).limit(1);
 
@@ -60,28 +83,33 @@ export class KeysDb {
 		}
 
 		// Create new key with same properties
-		const newKeyId = this.generateApiKey();
+		const rawKey = this.generateApiKey();
+		const hashedKey = await hashKey(rawKey);
+		const keyPreview = `${rawKey.slice(0, 12)}...`; // Standardized 12 chars
+		const newKeyId = crypto.randomUUID();
 
 		await this.db.insert(apiKeys).values({
 			id: newKeyId,
 			userId: oldKey.userId,
 			name: oldKey.name,
+			key: hashedKey,
+			keyPreview,
 			permissions: oldKey.permissions,
 			createdAt: new Date(),
 			expiresAt: oldKey.expiresAt,
 		});
 
 		// Revoke the old key
-		await this.db.update(apiKeys).set({ revoked: true }).where(eq(apiKeys.id, oldKeyId));
+		await this.db.update(apiKeys).set({ revoked: true, revokedAt: new Date() }).where(eq(apiKeys.id, oldKeyId));
 
-		return newKeyId;
+		return { id: newKeyId, rawKey, keyPreview };
 	}
 
 	/**
 	 * Revoke an API key
 	 */
 	async revokeKey(keyId: string): Promise<void> {
-		await this.db.update(apiKeys).set({ revoked: true }).where(eq(apiKeys.id, keyId));
+		await this.db.update(apiKeys).set({ revoked: true, revokedAt: new Date() }).where(eq(apiKeys.id, keyId));
 	}
 
 	/**
@@ -162,8 +190,10 @@ export class KeysDb {
 			id: row.id,
 			userId: row.userId,
 			name: row.name || undefined,
+			keyPreview: row.keyPreview,
 			permissions: row.permissions || [],
 			revoked: row.revoked,
+			revokedAt: row.revokedAt || undefined,
 			lastUsedAt: row.lastUsedAt || undefined,
 			createdAt: row.createdAt,
 			expiresAt: row.expiresAt || undefined,

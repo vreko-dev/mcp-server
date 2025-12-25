@@ -3,7 +3,6 @@
 	"files": [],
 	"references": [
 		{ "path": "./apps/cli" },
-		{ "path": "./apps/mcp-server" },
 		{ "path": "./apps/vscode" },
 		{ "path": "./apps/web" },
 		{ "path": "./config" },

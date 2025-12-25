@@ -11,6 +11,11 @@
 	"globalEnv": ["DATABASE_URL", "REDIS_URL", "BETTER_AUTH_URL"],
 	"globalPassThroughEnv": ["NODE_OPTIONS", "CI", "VERCEL", "DOCKER_BUILDKIT", "COMPOSE_DOCKER_CLI_BUILD"],
 	"tasks": {
+		"//#postbuild": {
+			"dependsOn": ["build"],
+			"cache": false,
+			"outputs": []
+		},
 		"validate:catalog": {
 			"cache": false,
 			"inputs": ["pnpm-workspace.yaml", "**/package.json"],

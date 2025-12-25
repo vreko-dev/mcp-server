@@ -146,7 +146,6 @@ images_to_check=(
   "snapback-redis"
   "snapback-api"
   "snapback-web"
-  "snapback-mcp"
 )
 
 log_step "Checking built images..."
@@ -215,13 +214,10 @@ else
 fi
 
 # Check API
-check_service "API" "3001" "http://localhost:3001/api/health" || log_error "API health check failed"
+check_service "API" "8080" "http://localhost:8080/api/health" || log_error "API health check failed"
 
 # Check Web
-check_service "Web" "3000" "http://localhost:3000/api/health" || log_error "Web health check failed"
-
-# Check MCP
-check_service "MCP" "3002" "http://localhost:3002/health" || log_error "MCP health check failed (optional)"
+check_service "Web" "4000" "http://localhost:4000/api/health" || log_error "Web health check failed"
 
 # ============================================================================
 # STEP 7: DATABASE MIGRATION VERIFICATION
@@ -255,13 +251,13 @@ else
   log_error "NEXT_PUBLIC_SITE_URL not properly configured: $NEXT_PUBLIC_SITE_URL"
 fi
 
-if [[ "$BETTER_AUTH_URL" == *"api:3001"* ]] || [[ "$BETTER_AUTH_URL" == *"localhost:3001"* ]]; then
+if [[ "$BETTER_AUTH_URL" == *"api:8080"* ]] || [[ "$BETTER_AUTH_URL" == *"localhost:8080"* ]] || [[ "$BETTER_AUTH_URL" == *"api.snapback.dev:8080"* ]]; then
   log_success "BETTER_AUTH_URL is properly configured: $BETTER_AUTH_URL"
 else
   log_error "BETTER_AUTH_URL not properly configured: $BETTER_AUTH_URL"
 fi
 
-if [[ "$NEXT_PUBLIC_SITE_URL" != *"api:3001"* ]]; then
+if [[ "$NEXT_PUBLIC_SITE_URL" != *"api:8080"* ]]; then
   log_success "NEXT_PUBLIC_SITE_URL does NOT contain internal service name"
 else
   log_error "NEXT_PUBLIC_SITE_URL incorrectly uses internal service name"
@@ -271,9 +267,9 @@ fi
 # STEP 9: LOGS INSPECTION
 # ============================================================================
 
-log_section "STEP 9: Service Logs (Last 20 lines per service)"
+log_section "STEP 9: Service Logs (Last 5 lines per service)"
 
-for service in api web mcp-server postgres redis; do
+for service in api web postgres redis; do
   echo -e "\n${BLUE}--- $service logs ---${NC}"
   docker-compose --env-file "$ENV_FILE" logs --tail=5 "$service" 2>/dev/null || true
 done
@@ -289,16 +285,15 @@ echo -e "${GREEN}✓ Local Docker Deployment Validation Complete${NC}"
 echo -e "${GREEN}════════════════════════════════════════════════════${NC}\n"
 
 echo "Services running:"
-echo -e "  ${GREEN}✓${NC} Web App:       http://localhost:3000"
-echo -e "  ${GREEN}✓${NC} API Service:   http://localhost:3001/api/health"
-echo -e "  ${GREEN}✓${NC} MCP Server:    http://localhost:3002/health"
+echo -e "  ${GREEN}✓${NC} Web App:       http://localhost:4000"
+echo -e "  ${GREEN}✓${NC} API Service:   http://localhost:8080/api/health"
 echo -e "  ${GREEN}✓${NC} PostgreSQL:    localhost:5432"
 echo -e "  ${GREEN}✓${NC} Redis:         localhost:6379\n"
 
 echo "Next steps:"
-echo "  1. Visit http://localhost:3000 in your browser"
+echo "  1. Visit http://localhost:4000 in your browser"
 echo "  2. Test OAuth login with Google (uses credentials from .env.docker)"
-echo "  3. Check API docs at http://localhost:3001/api/docs"
+echo "  3. Check API health at http://localhost:8080/api/health"
 echo "  4. Monitor logs: docker-compose --env-file .env.docker logs -f api\n"
 
 echo "To stop services:"

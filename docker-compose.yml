@@ -5,9 +5,11 @@
 #   Web:      4000 (internal 3000)
 #   Docs:     4001 (Vercel-deployed, dev only in Docker)
 #   API:      8080
-#   MCP:      8081
 #   Postgres: 5432
 #   Redis:    6379
+#
+# Note: MCP server is now a library in packages/mcp, used by the CLI.
+# It's no longer a standalone deployable service.
 
 services:
     # ===== DATABASE =====
@@ -111,14 +113,14 @@ services:
         restart: unless-stopped
         environment:
             NODE_ENV: production
-            PORT: 3001
+            PORT: 8080
             # Database
             DATABASE_URL: postgresql://${POSTGRES_USER:-snapback}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-snapback}
             # Redis (if used)
             REDIS_URL: redis://redis:6379
             # Auth secrets
             BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
-            BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://api:3001}
+            BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://api:8080}
             # External services (pass through from host env)
             GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
             GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
@@ -136,7 +138,7 @@ services:
             STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
             STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
         ports:
-            - "${API_PORT:-3001}:3001"
+            - "${API_PORT:-8080}:8080"
         networks:
             - app-network
         depends_on:
@@ -154,7 +156,7 @@ services:
                     "--no-verbose",
                     "--tries=1",
                     "--spider",
-                    "http://localhost:3001/api/health",
+                    "http://localhost:8080/api/health",
                 ]
             interval: 30s
             timeout: 10s
@@ -190,9 +192,9 @@ services:
             REDIS_URL: redis://redis:6379
             # Auth secrets
             BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
-            BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://api:3001}
+            BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://api:8080}
             # API service URL
-            NEXT_PUBLIC_API_URL: http://api:3001
+            NEXT_PUBLIC_API_URL: http://api:8080
             # External services (pass through from host env)
             GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
             GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
@@ -210,7 +212,7 @@ services:
             STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
             STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
         ports:
-            - "${WEB_PORT:-3000}:3000"
+            - "${WEB_PORT:-4000}:3000"
         networks:
             - app-network
         depends_on:
@@ -234,44 +236,6 @@ services:
             timeout: 10s
             retries: 3
             start_period: 40s
-        security_opt:
-            - no-new-privileges:true
-        tmpfs:
-            - /tmp:noexec,nosuid,size=100m
-        deploy:
-            resources:
-                limits:
-                    memory: 512M
-                    cpus: "0.5"
-                reservations:
-                    memory: 256M
-                    cpus: "0.25"
-
-    # ===== MCP SERVER (Model Context Protocol) =====
-    mcp-server:
-        build:
-            context: .
-            dockerfile: apps/mcp-server/Dockerfile
-        container_name: snapback-mcp
-        restart: unless-stopped
-        environment:
-            NODE_ENV: production
-            PORT: 3002
-            # Database
-            DATABASE_URL: postgresql://${POSTGRES_USER:-snapback}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-snapback}
-            # Auth
-            BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
-            BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://api:3001}
-            NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
-        ports:
-            - "${MCP_PORT:-3002}:3002"
-        networks:
-            - app-network
-        depends_on:
-            postgres:
-                condition: service_healthy
-            api:
-                condition: service_healthy
         security_opt:
             - no-new-privileges:true
         tmpfs:

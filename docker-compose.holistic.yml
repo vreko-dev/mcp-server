@@ -7,19 +7,21 @@
 #   docker-compose -f docker-compose.holistic.yml logs -f
 #   docker-compose -f docker-compose.holistic.yml exec api bash
 #
-# Access Points:
-#   🌐 Web UI:      http://snapback.dev:3000
-#   🎛️  Console:     http://console.snapback.dev:3000
-#   📚 Docs:        http://docs.snapback.dev:3000
-#   🔌 API:         http://api.snapback.dev:8080
-#   🤖 MCP:         http://mcp.snapback.dev:8081
-#   📱 CLI:         Via docker-compose exec cli
+# Access Points (4000-series for web apps to avoid local dev collisions):
+#   🌐 Web UI:      http://snapback.dev:4000 (or localhost:4000)
+#   🎛️  Console:     http://console.snapback.dev:4000
+#   📚 Docs:        http://docs.snapback.dev:4001 (or localhost:4001)
+#   🔌 API:         http://api.snapback.dev:8080 (or localhost:8080)
+#   📱 CLI:         Via docker-compose exec cli (port 8082)
 #   🗄️  Postgres:    localhost:5432
 #   📦 Redis:       localhost:6379
 #   📧 Mailhog:     http://localhost:8025
 #   📊 Prometheus:  http://localhost:9090
-#   📈 Grafana:     http://localhost:3002
+#   📈 Grafana:     http://localhost:4002
 #   🔍 Jaeger:      http://localhost:16686
+#
+# Note: MCP server is now a library in packages/mcp, used by the CLI.
+# It's no longer a standalone deployable service.
 
 services:
   # ===== DATABASE =====
@@ -161,62 +163,6 @@ services:
       retries: 3
       start_period: 30s
 
-  # ===== MCP SERVER =====
-  mcp:
-    build:
-      context: .
-      dockerfile: apps/mcp-server/Dockerfile.dev
-    container_name: snapback-mcp
-    env_file:
-      - .env.docker
-      - .env.docker.local
-    environment:
-      NODE_ENV: development
-      PORT: 8081
-      API_URL: http://api:8080
-      MCP_PUBLIC_URL: http://mcp.snapback.dev:8081
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
-      BETTER_AUTH_URL: http://api.snapback.dev:8080
-      LOG_LEVEL: debug
-      # Sentry error tracking (non-production)
-      SENTRY_DSN: ${SENTRY_DSN:-}
-      DISABLE_SENTRY: ${DISABLE_SENTRY:-false}
-      # Monitoring & Tracing
-      JAEGER_AGENT_HOST: jaeger
-      JAEGER_AGENT_PORT: 6831
-      JAEGER_SAMPLER_TYPE: const
-      JAEGER_SAMPLER_PARAM: 1
-    ports:
-      - "8081:8081" # MCP service
-      - "9231:9231" # Node debugger
-    volumes:
-      - ./apps/mcp-server/src:/app/apps/mcp-server/src:cached
-      - ./packages:/app/packages:cached
-      - /app/node_modules
-      - /app/apps/mcp-server/node_modules
-    depends_on:
-      postgres:
-        condition: service_healthy
-      api:
-        condition: service_healthy
-    networks:
-      - snapback
-    restart: unless-stopped
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "wget",
-          "--no-verbose",
-          "--tries=1",
-          "--spider",
-          "http://localhost:8081/health",
-        ]
-      interval: 15s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
-
   # ===== WEB APPLICATION (Next.js) =====
   web:
     build:
@@ -236,8 +182,8 @@ services:
       # Client-side URLs
       NEXT_PUBLIC_API_URL: http://api.snapback.dev:8080
       NEXT_PUBLIC_MCP_URL: http://mcp.snapback.dev:8081
-      NEXT_PUBLIC_APP_URL: http://console.snapback.dev:3000
-      NEXT_PUBLIC_SITE_URL: http://snapback.dev:3000
+      NEXT_PUBLIC_APP_URL: http://console.snapback.dev:4000
+      NEXT_PUBLIC_SITE_URL: http://snapback.dev:4000
       NEXT_PUBLIC_ROOT_DOMAIN: snapback.dev
 
       # Server-side URLs (Docker network)
@@ -249,7 +195,7 @@ services:
       BETTER_AUTH_URL: http://api.snapback.dev:8080
       COOKIE_DOMAIN: .snapback.dev
     ports:
-      - "3000:3000" # Web app
+      - "4000:3000" # Web app (external 4000, internal 3000)
       - "9229:9229" # Node debugger
     volumes:
       - ./apps/web:/app/apps/web:cached
@@ -293,10 +239,10 @@ services:
       NEXT_TELEMETRY_DISABLED: 1
       CHOKIDAR_USEPOLLING: "true"
       WATCHPACK_POLLING: "true"
-      NEXT_PUBLIC_SITE_URL: http://snapback.dev:3000
+      NEXT_PUBLIC_SITE_URL: http://snapback.dev:4000
       NEXT_PUBLIC_ROOT_DOMAIN: snapback.dev
     ports:
-      - "3001:3000" # Docs app
+      - "4001:3000" # Docs app (external 4001, internal 3000)
       - "9232:9229" # Node debugger
     volumes:
       - ./apps/docs:/app/apps/docs:cached
@@ -375,7 +321,6 @@ services:
       - web
       - api
       - docs
-      - mcp
     networks:
       - snapback
     restart: unless-stopped
@@ -409,7 +354,7 @@ services:
     image: grafana/grafana-enterprise:latest
     container_name: snapback-grafana
     ports:
-      - "3002:3000"
+      - "4002:3000" # Grafana (external 4002, internal 3000)
     volumes:
       - grafana-data:/var/lib/grafana
     environment:

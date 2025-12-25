@@ -1,6 +1,7 @@
 import { SecretDetector } from "@snapback/intelligence/policy";
 import { analysisEvents, apiKeys, ruleViolations, userSafetyProfiles } from "@snapback/platform";
 import { eq } from "drizzle-orm";
+import { nanoid } from "nanoid";
 import { getDb } from "./database";
 
 // Types for secret detection
@@ -52,7 +53,7 @@ export class SecretDetectionService {
 	 * Detect secrets in code changes using advanced algorithms
 	 */
 	async detectSecrets(request: SecretDetectionRequest): Promise<SecretDetectionResult> {
-		const detectionId = cuid();
+		const detectionId = nanoid();
 		const startTime = Date.now();
 		const db = getDb();
 
@@ -99,7 +100,7 @@ export class SecretDetectionService {
 				// Convert policy-engine findings to API format
 				for (const finding of detectionResult.findings) {
 					const apiFinding: SecretFinding = {
-						id: cuid(),
+						id: nanoid(),
 						type: finding.type,
 						severity: this.mapSeverity(finding.severity),
 						message: `Potential ${finding.type} found`,
@@ -366,7 +367,7 @@ export class SecretDetectionService {
 		} else {
 			// Create new profile
 			await db.insert(userSafetyProfiles).values({
-				id: cuid(),
+				id: nanoid(),
 				userId,
 				totalAnalyses: 1,
 				averageRiskScore: riskScore,

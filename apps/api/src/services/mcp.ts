@@ -61,6 +61,11 @@ export async function startMcpSession(
 			description: string;
 			confidence: number;
 		}>;
+		next_actions: Array<{
+			tool: string;
+			reason: string;
+			priority: "high" | "medium" | "low";
+		}>;
 	};
 }> {
 	// Validate input (C-016)
@@ -88,12 +93,57 @@ export async function startMcpSession(
 	// Get recommendations based on user's cross-workspace learnings
 	const recommendations = await queryUserRecommendations(userId, workspaceId);
 
+	// Build session start next_actions - recommend key tools for starting work
+	const next_actions = buildSessionStartActions(taskDescription);
+
 	return {
 		sessionId,
 		guidance: {
 			recommendations,
+			next_actions,
 		},
 	};
+}
+
+/**
+ * Build recommended next actions for session start
+ *
+ * Provides tool-based guidance to ensure LLMs discover the full tool suite.
+ * Always recommends get_context first for new tasks, plus other useful tools.
+ */
+function buildSessionStartActions(taskDescription?: string): Array<{
+	tool: string;
+	reason: string;
+	priority: "high" | "medium" | "low";
+}> {
+	const actions: Array<{ tool: string; reason: string; priority: "high" | "medium" | "low" }> = [];
+
+	// Always recommend get_context first for new sessions
+	actions.push({
+		tool: "get_context",
+		reason: taskDescription
+			? `Gather patterns and learnings relevant to: ${taskDescription.slice(0, 50)}${taskDescription.length > 50 ? "..." : ""}`
+			: "Gather workspace patterns, constraints, and recent learnings before starting",
+		priority: "high",
+	});
+
+	// Recommend prepare_workspace for safety assessment
+	actions.push({
+		tool: "prepare_workspace",
+		reason: "Run pre-flight check to assess protection score and get coaching suggestions",
+		priority: "medium",
+	});
+
+	// Recommend get_learnings if task involves common patterns
+	if (taskDescription) {
+		actions.push({
+			tool: "get_learnings",
+			reason: "Search for past learnings that may inform your approach",
+			priority: "low",
+		});
+	}
+
+	return actions;
 }
 
 /**

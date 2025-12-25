@@ -6,15 +6,19 @@
 		},
 		"snapback": {
 			"command": "node",
-			"args": ["/Users/user1/WebstormProjects/SnapBack-Site/apps/mcp-server/dist/index.js"],
+			"args": [
+				"/Users/user1/WebstormProjects/SnapBack-Site/apps/cli/dist/index.js",
+				"mcp",
+				"--stdio",
+				"--workspace",
+				"/Users/user1/WebstormProjects/SnapBack-Site"
+			],
 			"env": {
-				"MCP_QUIET": "1",
+				"SNAPBACK_TIER": "pro",
+				"NODE_ENV": "development",
 				"DATABASE_URL": "postgresql://postgres.gjnopifuehuuuhubqajj:Samynn2017!!@aws-0-us-east-1.pooler.supabase.com:5432/postgres",
 				"BETTER_AUTH_SECRET": "mcp-server-local-dev-secret-32-chars-min",
-				"BETTER_AUTH_URL": "http://localhost:3001",
-				"NODE_ENV": "development",
-				"REDIS_URL": "https://clever-skink-32705.upstash.io",
-				"REDIS_TOKEN": "AX_BAAIncDI0OGI0MTEyYjQ1NzQ0ODA3YWJkYzY3N2E5YmM5MDE4MHAyMzI3MDU"
+				"BETTER_AUTH_URL": "http://localhost:3001"
 			}
 		}
 	}

@@ -1,9 +1,6 @@
 /**
- * Session Module - Session-based change tracking exports
+ * Session subpath re-export
+ *
+ * Re-exports all session functionality from OSS SDK for backward compatibility.
  */
-
-export * from "./SessionDeduplication";
-export * from "./SessionManager";
-export * from "./SessionRecovery";
-export * from "./SessionRollback";
-export * from "./sessionAnalytics";
+export * from "@snapback-oss/sdk/session";

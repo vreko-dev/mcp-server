@@ -53,14 +53,30 @@
   },
   "typesVersions": {
     "*": {
-      "context": ["./dist/context/index.d.ts"],
-      "validation": ["./dist/validation/index.d.ts"],
-      "learning": ["./dist/learning/index.d.ts"],
-      "storage": ["./dist/storage/index.d.ts"],
-      "types": ["./dist/types/index.d.ts"],
-      "policy": ["./dist/policy/index.d.ts"],
-      "vitals": ["./dist/vitals/index.d.ts"],
-      "composer": ["./dist/composer/index.d.ts"]
+      "context": [
+        "./dist/context/index.d.ts"
+      ],
+      "validation": [
+        "./dist/validation/index.d.ts"
+      ],
+      "learning": [
+        "./dist/learning/index.d.ts"
+      ],
+      "storage": [
+        "./dist/storage/index.d.ts"
+      ],
+      "types": [
+        "./dist/types/index.d.ts"
+      ],
+      "policy": [
+        "./dist/policy/index.d.ts"
+      ],
+      "vitals": [
+        "./dist/vitals/index.d.ts"
+      ],
+      "composer": [
+        "./dist/composer/index.d.ts"
+      ]
     }
   },
   "scripts": {
@@ -77,6 +93,7 @@
   "dependencies": {
     "@snapback/contracts": "workspace:*",
     "atomically": "^2.0.0",
+    "fast-glob": "catalog:",
     "zod": "catalog:"
   },
   "optionalDependencies": {

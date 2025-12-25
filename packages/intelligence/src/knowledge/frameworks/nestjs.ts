@@ -18,7 +18,6 @@ export const nestjsConfig: FrameworkConfig = {
 		{ type: "dependency", pattern: "@nestjs/common", weight: 0.9 },
 		{ type: "file", pattern: "nest-cli.json", weight: 0.95 },
 		{ type: "file", pattern: "src/main.ts", weight: 0.5 },
-		{ type: "content-match", pattern: "@Module", weight: 0.85 },
 	],
 
 	expectedPatterns: [

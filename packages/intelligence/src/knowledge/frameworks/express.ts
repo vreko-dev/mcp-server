@@ -15,8 +15,6 @@ export const expressConfig: FrameworkConfig = {
 
 	indicators: [
 		{ type: "dependency", pattern: "express", weight: 0.95 },
-		{ type: "content-match", pattern: "express\\(\\)", weight: 0.9 },
-		{ type: "content-match", pattern: "app\\.listen", weight: 0.7 },
 		{ type: "file", pattern: "app.{js,ts}", weight: 0.5 },
 	],
 

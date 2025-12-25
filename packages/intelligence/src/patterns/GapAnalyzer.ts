@@ -179,7 +179,13 @@ export class GapAnalyzer {
 				id: p.id,
 				name: p.name,
 				category: p.category,
-				locations: p.locations,
+				locations: p.locations.map((loc) => ({
+					file: loc.file,
+					line: loc.line ?? 0,
+					column: loc.column,
+					snippet: loc.snippet ?? "",
+					confidence: 1.0,
+				})),
 				strength: p.strength,
 				isPositive: true, // Assume positive unless we know otherwise
 			})),

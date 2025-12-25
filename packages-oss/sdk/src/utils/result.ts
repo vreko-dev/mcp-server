@@ -395,3 +395,157 @@ export function match<T, E, R>(
 	}
 	return handlers.err(result.error);
 }
+
+// =============================================================================
+// PROMISE CONVERSION
+// =============================================================================
+
+/**
+ * Convert a Result to a Promise
+ *
+ * @param result - Result to convert
+ * @returns Promise that resolves with value or rejects with error
+ *
+ * @example
+ * ```typescript
+ * const result = ok(42);
+ * const value = await toPromise(result); // 42
+ *
+ * const failed = err(new Error('fail'));
+ * await toPromise(failed); // Rejects with Error('fail')
+ * ```
+ */
+export function toPromise<T, E>(result: Result<T, E>): Promise<T> {
+	if (isOk(result)) {
+		return Promise.resolve(result.value);
+	}
+	if (result.error instanceof Error) {
+		return Promise.reject(result.error);
+	}
+	return Promise.reject(new Error(String(result.error)));
+}
+
+// =============================================================================
+// ADDITIONAL COMBINATORS
+// =============================================================================
+
+/**
+ * Combine multiple Results into a single Result of array (fail-fast)
+ * Alias for sequence() with a more common name
+ *
+ * @param results - Array of Results
+ * @returns Result containing array of values, or first error
+ *
+ * @example
+ * ```typescript
+ * const results = [ok(1), ok(2), ok(3)];
+ * const combined = all(results);
+ * // { success: true, value: [1, 2, 3] }
+ *
+ * const withError = [ok(1), err('fail'), ok(3)];
+ * const failed = all(withError);
+ * // { success: false, error: 'fail' }
+ * ```
+ */
+export function all<T, E>(results: Result<T, E>[]): Result<T[], E> {
+	return sequence(results);
+}
+
+/**
+ * Combine multiple Results, collecting all errors instead of fail-fast
+ *
+ * @param results - Array of Results to combine
+ * @returns Result with all values or array of all errors
+ *
+ * @example
+ * ```typescript
+ * const results = [ok(1), err('error1'), ok(3), err('error2')];
+ * const combined = allOrErrors(results);
+ * // { success: false, error: ['error1', 'error2'] }
+ *
+ * const allOk = [ok(1), ok(2), ok(3)];
+ * const success = allOrErrors(allOk);
+ * // { success: true, value: [1, 2, 3] }
+ * ```
+ */
+export function allOrErrors<T, E>(results: Result<T, E>[]): Result<T[], E[]> {
+	const values: T[] = [];
+	const errors: E[] = [];
+
+	for (const result of results) {
+		if (isOk(result)) {
+			values.push(result.value);
+		} else {
+			errors.push(result.error);
+		}
+	}
+
+	if (errors.length > 0) {
+		return err(errors);
+	}
+	return ok(values);
+}
+
+// =============================================================================
+// TRY-CATCH WRAPPERS
+// =============================================================================
+
+/**
+ * Wrap a synchronous function to return a Result instead of throwing
+ *
+ * @param fn - Function to wrap
+ * @returns New function that returns Result
+ *
+ * @example
+ * ```typescript
+ * const safeParseInt = tryCatch((str: string) => {
+ *   const num = parseInt(str, 10);
+ *   if (isNaN(num)) throw new Error('Not a number');
+ *   return num;
+ * });
+ *
+ * const result = safeParseInt('42'); // { success: true, value: 42 }
+ * const failed = safeParseInt('abc'); // { success: false, error: Error }
+ * ```
+ */
+export function tryCatch<T, Args extends unknown[]>(fn: (...args: Args) => T): (...args: Args) => Result<T, Error> {
+	return (...args: Args): Result<T, Error> => {
+		try {
+			return ok(fn(...args));
+		} catch (error) {
+			return err(toError(error));
+		}
+	};
+}
+
+/**
+ * Wrap an asynchronous function to return a Result instead of throwing
+ *
+ * @param fn - Async function to wrap
+ * @returns New async function that returns Result
+ *
+ * @example
+ * ```typescript
+ * const safeFetch = tryCatchAsync(async (url: string) => {
+ *   const response = await fetch(url);
+ *   return await response.json();
+ * });
+ *
+ * const result = await safeFetch('https://api.example.com/data');
+ * if (isOk(result)) {
+ *   console.log(result.value);
+ * }
+ * ```
+ */
+export function tryCatchAsync<T, Args extends unknown[]>(
+	fn: (...args: Args) => Promise<T>,
+): (...args: Args) => Promise<Result<T, Error>> {
+	return async (...args: Args): Promise<Result<T, Error>> => {
+		try {
+			const value = await fn(...args);
+			return ok(value);
+		} catch (error) {
+			return err(toError(error));
+		}
+	};
+}

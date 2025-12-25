@@ -99,9 +99,9 @@ export class SnapshotManager {
 		// Generate name
 		const name = options?.description || this.naming.generateName(files, this.options.namingStrategy);
 
-		// Create snapshot with unified ID format
+		// Create snapshot with unified ID format (includes description in ID for readability)
 		const snapshot: Snapshot = {
-			id: generateSnapshotId(),
+			id: generateSnapshotId(options?.description),
 			timestamp: Date.now(),
 			version: SnapshotManager.CURRENT_SNAPSHOT_VERSION,
 			meta: {

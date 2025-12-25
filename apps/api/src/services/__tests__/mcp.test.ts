@@ -148,6 +148,13 @@ describe("MCP Service", () => {
 							confidence: expect.any(Number),
 						}),
 					]),
+					next_actions: expect.arrayContaining([
+						expect.objectContaining({
+							tool: expect.any(String),
+							reason: expect.any(String),
+							priority: expect.stringMatching(/^(high|medium|low)$/),
+						}),
+					]),
 				},
 			});
 		});

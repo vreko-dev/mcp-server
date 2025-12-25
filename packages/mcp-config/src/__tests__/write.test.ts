@@ -21,7 +21,7 @@ describe("getSnapbackMCPConfig", () => {
 		const config = getSnapbackMCPConfig({});
 
 		expect(config.command).toBe("npx");
-		expect(config.args).toEqual(["-y", "@snapback/mcp-server"]);
+		expect(config.args).toEqual(["-y", "@snapback/cli", "mcp", "--stdio", "--tier", "free"]);
 		expect(config.env).toBeUndefined();
 	});
 
@@ -34,8 +34,8 @@ describe("getSnapbackMCPConfig", () => {
 	it("should use binary when useBinary is true", () => {
 		const config = getSnapbackMCPConfig({ useBinary: true });
 
-		expect(config.command).toBe("snapback-mcp");
-		expect(config.args).toEqual([]);
+		expect(config.command).toBe("snapback");
+		expect(config.args).toEqual(["mcp", "--stdio", "--tier", "free"]);
 	});
 
 	it("should use custom command when provided", () => {
@@ -56,6 +56,55 @@ describe("getSnapbackMCPConfig", () => {
 			CUSTOM_VAR: "value",
 			SNAPBACK_API_KEY: "sk_test",
 		});
+	});
+
+	// =========================================================================
+	// NEW TESTS: Coverage for localDev, workspaceRoot, and tier options
+	// =========================================================================
+
+	it("should use pro tier when API key is provided", () => {
+		const config = getSnapbackMCPConfig({ apiKey: "sk_test_123" });
+
+		expect(config.args).toContain("--tier");
+		expect(config.args).toContain("pro");
+	});
+
+	it("should use local dev mode with node command", () => {
+		const config = getSnapbackMCPConfig({
+			useLocalDev: true,
+			localCliPath: "/path/to/cli/dist/index.js",
+			workspaceRoot: "/path/to/workspace",
+		});
+
+		expect(config.command).toBe("node");
+		expect(config.args).toContain("/path/to/cli/dist/index.js");
+		expect(config.args).toContain("--workspace");
+		expect(config.args).toContain("/path/to/workspace");
+	});
+
+	it("should include workspace root in npx args when provided", () => {
+		const config = getSnapbackMCPConfig({ workspaceRoot: "/my/workspace" });
+
+		expect(config.args).toContain("--workspace");
+		expect(config.args).toContain("/my/workspace");
+	});
+
+	it("should include workspace root in binary args when useBinary", () => {
+		const config = getSnapbackMCPConfig({
+			useBinary: true,
+			workspaceRoot: "/my/workspace",
+		});
+
+		expect(config.command).toBe("snapback");
+		expect(config.args).toContain("--workspace");
+		expect(config.args).toContain("/my/workspace");
+	});
+
+	it("should not include localDev config without localCliPath", () => {
+		const config = getSnapbackMCPConfig({ useLocalDev: true });
+
+		// Should fall back to npx since no localCliPath provided
+		expect(config.command).toBe("npx");
 	});
 });
 
@@ -151,6 +200,69 @@ describe("writeClientConfig", () => {
 		const writtenContent = JSON.parse(vi.mocked(writeFileSync).mock.calls[1][1] as string);
 		expect(writtenContent.experimental.modelContextProtocolServers).toBeDefined();
 		expect(writtenContent.experimental.modelContextProtocolServers[0].name).toBe("snapback");
+	});
+
+	// =========================================================================
+	// NEW TESTS: Coverage for new client formats
+	// =========================================================================
+
+	it("should handle Gemini format using standard mcpServers", () => {
+		const geminiClient: AIClientConfig = {
+			...mockClient,
+			name: "gemini",
+			format: "gemini",
+			configPath: "/Users/test/.gemini/settings.json",
+		};
+
+		vi.mocked(existsSync).mockReturnValue(true);
+		vi.mocked(readFileSync).mockReturnValue(JSON.stringify({ someOtherSetting: true }));
+
+		writeClientConfig(geminiClient, { command: "npx", args: [] });
+
+		const writtenContent = JSON.parse(vi.mocked(writeFileSync).mock.calls[1][1] as string);
+		expect(writtenContent.mcpServers.snapback).toBeDefined();
+		expect(writtenContent.someOtherSetting).toBe(true); // Preserves existing settings
+	});
+
+	it("should handle VS Code project-level config format", () => {
+		const vscodeClient: AIClientConfig = {
+			...mockClient,
+			name: "vscode",
+			format: "vscode",
+			configPath: "/project/.vscode/mcp.json",
+		};
+
+		vi.mocked(existsSync).mockReturnValue(false);
+
+		writeClientConfig(vscodeClient, { command: "npx", args: ["-y", "@snapback/cli", "mcp"] });
+
+		const writtenContent = JSON.parse(vi.mocked(writeFileSync).mock.calls[0][1] as string);
+		expect(writtenContent.mcpServers.snapback).toBeDefined();
+		expect(writtenContent.mcpServers.snapback.command).toBe("npx");
+	});
+
+	it("should handle Zed settings format", () => {
+		const zedClient: AIClientConfig = {
+			...mockClient,
+			name: "zed",
+			format: "zed",
+			configPath: "/Users/test/.config/zed/settings.json",
+		};
+
+		vi.mocked(existsSync).mockReturnValue(true);
+		vi.mocked(readFileSync).mockReturnValue(
+			JSON.stringify({
+				theme: "dark",
+				mcpServers: { other: { command: "other" } },
+			}),
+		);
+
+		writeClientConfig(zedClient, { command: "npx", args: [] });
+
+		const writtenContent = JSON.parse(vi.mocked(writeFileSync).mock.calls[1][1] as string);
+		expect(writtenContent.theme).toBe("dark"); // Preserves existing settings
+		expect(writtenContent.mcpServers.snapback).toBeDefined();
+		expect(writtenContent.mcpServers.other).toBeDefined(); // Preserves existing servers
 	});
 });
 

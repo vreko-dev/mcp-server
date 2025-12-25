@@ -9,7 +9,7 @@
 
 import { access, constants, readFile, stat } from "node:fs/promises";
 import { extname, join } from "node:path";
-import { glob } from "fast-glob";
+import fastGlob from "fast-glob";
 import { detectPrimaryFramework, type FrameworkDetectionContext, getFramework } from "../knowledge/registry.js";
 import type {
 	DetectedFramework,
@@ -188,7 +188,7 @@ export class WorkspaceProfiler {
 	private async getFilePaths(): Promise<string[]> {
 		const ignorePatterns = this.config.skipDirectories.map((dir) => `**/${dir}/**`);
 
-		const files = await glob("**/*", {
+		const files = await fastGlob("**/*", {
 			cwd: this.config.workspaceRoot,
 			ignore: ignorePatterns,
 			onlyFiles: true,
@@ -412,7 +412,7 @@ export class WorkspaceProfiler {
 		const fullContextPath = join(this.config.workspaceRoot, contextPath);
 
 		try {
-			const files = await glob("**/*.md", {
+			const files = await fastGlob("**/*.md", {
 				cwd: fullContextPath,
 				onlyFiles: true,
 			});

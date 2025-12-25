@@ -8,7 +8,7 @@
 
 import { readFile, stat } from "node:fs/promises";
 import { join, relative } from "node:path";
-import { glob } from "fast-glob";
+import fastGlob from "fast-glob";
 import { createBuiltInMatchers } from "./matchers/index.js";
 import type {
 	DetectionError,
@@ -236,7 +236,7 @@ export class PatternDetector {
 	private async getFilesToScan(): Promise<string[]> {
 		const patterns = this.config.include.map((p) => join(this.config.workspaceRoot, p));
 
-		const files = await glob(patterns, {
+		const files = await fastGlob(patterns, {
 			ignore: this.config.exclude,
 			absolute: true,
 			onlyFiles: true,

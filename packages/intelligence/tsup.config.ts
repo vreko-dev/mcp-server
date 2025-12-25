@@ -20,6 +20,13 @@ export default defineConfig({
 	outDir: "dist",
 	splitting: false,
 	treeshake: true,
-	// Externalize optional deps - they're dynamically imported
-	external: ["sql.js", "@huggingface/transformers", "onnxruntime-common", "onnxruntime-node", "onnxruntime-web"],
+	// Externalize optional deps and packages with CommonJS internals
+	external: [
+		"sql.js",
+		"@huggingface/transformers",
+		"onnxruntime-common",
+		"onnxruntime-node",
+		"onnxruntime-web",
+		"fast-glob",
+	],
 });

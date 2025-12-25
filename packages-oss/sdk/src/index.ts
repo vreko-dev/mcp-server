@@ -125,6 +125,38 @@ export type {
 	SessionManifest,
 } from "./core/session/types";
 export { EncryptionService } from "./encryption/EncryptionService";
+// Error hierarchy exports
+export {
+	ApiError,
+	AuthenticationError,
+	AuthorizationError,
+	ensureSnapBackError,
+	InputValidationError,
+	isApiError,
+	isRetryableError,
+	isSnapBackError,
+	isSnapshotError,
+	isStorageError,
+	isValidationError,
+	MissingContentError,
+	PathValidationError,
+	RateLimitError,
+	SnapBackError,
+	SnapshotCreationError,
+	SnapshotDuplicateError,
+	SnapshotError,
+	SnapshotNotFoundError,
+	SnapshotProtectedError,
+	SnapshotRestoreError,
+	SnapshotVerificationError,
+	SnapshotVersionError,
+	StorageError as SnapBackStorageError,
+	StorageFullError as SnapBackStorageFullError,
+	StorageIOError,
+	StorageLockError as SnapBackStorageLockError,
+	toError as toSnapBackError,
+	ValidationError,
+} from "./errors";
 // Helper exports
 export { analyze, evaluatePolicy, ingestTelemetry } from "./helpers";
 export * from "./privacy/hasher";
@@ -135,6 +167,20 @@ export { ProtectionManager } from "./protection/ProtectionManager";
 export { Snapback } from "./Snapback";
 // Session Layer exports (new SessionManager)
 export * from "./session/index";
+
+// Snapshot retry hook with auto-fix
+export {
+	applyAutomaticFix,
+	createSnapshotWithRetry,
+	createSnapshotWithRetrySafe,
+	type DiagnosisType,
+	diagnoseSnapshotFailure,
+	formatDiagnosis,
+	type RetryConfig,
+	type SnapshotDiagnosis,
+	type SnapshotParams,
+	type SnapshotRetryResult,
+} from "./snapshot/retry-hook";
 export { SnapshotManager } from "./snapshot/SnapshotManager";
 export { LocalStorage } from "./storage/LocalStorage";
 export { MemoryStorage } from "./storage/MemoryStorage";
@@ -169,4 +215,25 @@ export {
 	// Note: SessionId type is exported from ./core/session/types
 } from "./utils/id-generation";
 export { areEqual, getDepth, isWithin, normalize } from "./utils/PathNormalizer";
+// Result pattern utilities
+export {
+	andThen,
+	err,
+	fromPromise,
+	fromPromiseWith,
+	isErr,
+	isOk,
+	map,
+	mapErr,
+	match,
+	ok,
+	type Result,
+	sequence,
+	tap,
+	tapErr,
+	tryAll,
+	unwrap,
+	unwrapOr,
+	unwrapOrElse,
+} from "./utils/result";
 export { calculateBackoff, type RetryOptions, RetryPresets, withRetry } from "./utils/retry";

@@ -49,6 +49,7 @@
     }
   },
   "publishConfig": {
+    "access": "restricted",
     "exports": {
       ".": {
         "types": "./dist-types/storage/index.d.ts",

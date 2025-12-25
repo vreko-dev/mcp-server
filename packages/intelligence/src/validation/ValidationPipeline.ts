@@ -7,11 +7,56 @@
  * Performance:
  * - Without pipeline: 24 min (manual review)
  * - With pipeline: <1 sec (automated)
+ *
+ * @module ValidationPipeline
  */
 
 import type { Issue, ValidationLayer } from "../types/config.js";
 import type { PipelineResult, ReviewRecommendation, ValidationResult } from "../types/validation.js";
 import { CONFIDENCE_THRESHOLDS, ISSUE_THRESHOLDS } from "../types/validation.js";
+
+// =============================================================================
+// RESULT TYPE (inline to avoid circular deps)
+// =============================================================================
+
+type Result<T, E = Error> = { success: true; value: T } | { success: false; error: E };
+
+function ok<T>(value: T): Result<T, never> {
+	return { success: true, value };
+}
+
+function err<E>(error: E): Result<never, E> {
+	return { success: false, error };
+}
+
+// =============================================================================
+// VALIDATION ERRORS
+// =============================================================================
+
+/** Base validation error */
+export class ValidationError extends Error {
+	constructor(
+		message: string,
+		public readonly code: string,
+		public readonly layer?: string,
+		public readonly issues?: Issue[],
+	) {
+		super(message);
+		this.name = "ValidationError";
+	}
+}
+
+/** Critical issues found - requires immediate attention */
+export class CriticalValidationError extends ValidationError {
+	constructor(
+		message: string,
+		public readonly criticalIssues: Issue[],
+	) {
+		super(message, "CRITICAL_ISSUES", undefined, criticalIssues);
+		this.name = "CriticalValidationError";
+	}
+}
+
 import {
 	ArchitectureLayer,
 	DependencyLayer,
@@ -91,6 +136,139 @@ export class ValidationPipeline {
 	async quickCheck(code: string, filePath: string): Promise<boolean> {
 		const result = await this.validate(code, filePath);
 		return result.overall.passed;
+	}
+
+	/**
+	 * Result-based validation - returns Result<PipelineResult, CriticalValidationError>
+	 *
+	 * This is the recommended API for new code. Use validateSafe() when you want
+	 * to handle validation failures without exceptions.
+	 *
+	 * @example
+	 * ```typescript
+	 * const result = await pipeline.validateSafe(code, filePath);
+	 * if (!result.success) {
+	 *   console.error('Critical issues:', result.error.criticalIssues);
+	 *   return;
+	 * }
+	 * console.log('Confidence:', result.value.overall.confidence);
+	 * ```
+	 */
+	async validateSafe(
+		code: string,
+		filePath: string,
+		options?: { failFast?: boolean },
+	): Promise<Result<PipelineResult, CriticalValidationError>> {
+		const result = await this.validate(code, filePath);
+
+		// If failFast is enabled and there are critical issues, return error
+		if (options?.failFast) {
+			const criticalIssues = ValidationPipeline.getIssuesBySeverity(result, "critical");
+			if (criticalIssues.length > 0) {
+				return err(
+					new CriticalValidationError(
+						`Validation failed: ${criticalIssues.length} critical issues`,
+						criticalIssues,
+					),
+				);
+			}
+		}
+
+		// Return success with the pipeline result
+		return ok(result);
+	}
+
+	/**
+	 * Validate with fail-fast on critical issues
+	 *
+	 * Runs layers in sequence and stops immediately when a critical issue is found.
+	 * Use this for pre-commit hooks where early failure is desired.
+	 */
+	async validateFailFast(code: string, filePath: string): Promise<Result<PipelineResult, CriticalValidationError>> {
+		const layerResults: Array<{
+			layer: string;
+			passed: boolean;
+			issues: Issue[];
+			duration: number;
+		}> = [];
+
+		// Run layers sequentially for fail-fast behavior
+		for (const layer of this.layers) {
+			const start = Date.now();
+			const result = await layer.validate(code, filePath);
+			const layerResult = {
+				layer: layer.name,
+				passed: result.issues.length === 0,
+				issues: result.issues,
+				duration: Date.now() - start,
+			};
+			layerResults.push(layerResult);
+
+			// Fail fast on critical issues
+			const criticalIssues = result.issues.filter((i) => i.severity === "critical");
+			if (criticalIssues.length > 0) {
+				return err(
+					new CriticalValidationError(
+						`Validation failed in ${layer.name}: ${criticalIssues.length} critical issues`,
+						criticalIssues,
+					),
+				);
+			}
+		}
+
+		// All layers passed - calculate full result
+		const totalIssues = layerResults.reduce((sum, r) => sum + r.issues.length, 0);
+		const confidence = this.calculateConfidence(totalIssues, 0);
+		const recommendation = this.getRecommendation(confidence, []);
+
+		return ok({
+			overall: {
+				passed: true,
+				confidence,
+				totalIssues,
+			},
+			layers: layerResults,
+			recommendation,
+			focusPoints: [],
+		});
+	}
+
+	/**
+	 * Validate multiple files with aggregated results
+	 */
+	async validateFiles(
+		files: Array<{ path: string; content: string }>,
+	): Promise<Result<PipelineResult[], CriticalValidationError>> {
+		const results: PipelineResult[] = [];
+		const allCriticalIssues: Issue[] = [];
+
+		for (const file of files) {
+			const result = await this.validate(file.content, file.path);
+			results.push(result);
+
+			// Collect critical issues
+			const criticalIssues = ValidationPipeline.getIssuesBySeverity(result, "critical");
+			if (criticalIssues.length > 0) {
+				allCriticalIssues.push(
+					...criticalIssues.map((issue) => ({
+						...issue,
+						message: `[${file.path}] ${issue.message}`,
+					})),
+				);
+			}
+		}
+
+		// Return error if any critical issues found
+		if (allCriticalIssues.length > 0) {
+			return err(
+				new CriticalValidationError(
+					`Validation failed: ${allCriticalIssues.length} critical issues across ${files.length} files`,
+					allCriticalIssues,
+				),
+			);
+		}
+
+		return ok(results);
 	}
 
 	/**

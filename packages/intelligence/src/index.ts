@@ -156,14 +156,21 @@ export {
 } from "./storage/index.js";
 // All types
 export * from "./types/index.js";
+export type {
+	PipelineResult,
+	ReviewRecommendation,
+	ValidationResult,
+} from "./validation/index.js";
 // Validation layers (for customization)
 export {
 	ArchitectureLayer,
+	CriticalValidationError,
 	DependencyLayer,
 	PerformanceLayer,
 	SecurityLayer,
 	SyntaxLayer,
 	TestLayer,
 	TypeLayer,
+	ValidationError,
 	ValidationPipeline,
 } from "./validation/index.js";

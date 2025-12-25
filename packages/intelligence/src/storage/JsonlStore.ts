@@ -20,7 +20,7 @@ export function loadJsonl<T>(filepath: string): T[] {
 	try {
 		return fs
 			.readFileSync(filepath, "utf-8")
-			.split("\n")
+			.split(/\r?\n/) // Cross-platform: handles both \n (Unix) and \r\n (Windows)
 			.filter((line) => line.trim())
 			.map((line) => JSON.parse(line) as T);
 	} catch (e) {

@@ -44,9 +44,79 @@ export type {
 export { Composer, createComposer, DEFAULT_BUDGET_CONFIG } from "./composer/index.js";
 // Sub-modules
 export { ContextEngine, SemanticRetriever } from "./context/index.js";
+export type { WorkspaceProfilerConfig } from "./fingerprint/index.js";
+// Workspace fingerprinting
+export { WorkspaceProfiler } from "./fingerprint/index.js";
 // Main facade
 export { Intelligence } from "./Intelligence.js";
+export type {
+	ContextFileConfig,
+	DetectedFramework,
+	DetectedLanguage,
+	DetectedPattern,
+	ExistingContext,
+	ExistingContextFile,
+	ExpectedPattern,
+	FrameworkCategory,
+	FrameworkConfig,
+	FrameworkId,
+	FrameworkIndicator,
+	OnboardingRecommendation,
+	PackageManagerInfo,
+	PatternCategory,
+	PatternDetection,
+	PatternGap,
+	PatternLocation,
+	ProjectStructure,
+	RecommendedAction,
+	RecommendedStructure,
+	RiskZone,
+	WorkspaceProfile,
+} from "./knowledge/index.js";
+// Knowledge base
+export {
+	astroConfig,
+	detectFrameworks,
+	detectPrimaryFramework,
+	expressConfig,
+	type FrameworkDetectionContext,
+	getAllFrameworks,
+	getFramework,
+	getFrameworksByCategory,
+	isValidFramework,
+	nestjsConfig,
+	nextjsConfig,
+	reactViteConfig,
+} from "./knowledge/index.js";
 export { LearningEngine, ViolationTracker } from "./learning/index.js";
+export type {
+	AstNode,
+	AstVisitor,
+	DetectionError,
+	DetectionStrategy,
+	DetectionStrategyConfig,
+	FoundPattern,
+	GapAnalysisResult,
+	GapAnalysisSummary,
+	GapAnalyzerConfig,
+	MissingPattern,
+	PatternDetectionResult,
+	PatternDetectorConfig,
+	PatternMatch,
+	PatternMatchContext,
+	PatternMatcher,
+	PatternMatchFunction,
+} from "./patterns/index.js";
+// Pattern detection
+export {
+	createBuiltInMatchers,
+	errorHandlingMatchers,
+	GapAnalyzer,
+	PatternDetector,
+	performanceMatchers,
+	securityMatchers,
+	testingMatchers,
+} from "./patterns/index.js";
 // Policy module (migrated from @snapback/policy-engine)
 export {
 	type DetectionEvent,

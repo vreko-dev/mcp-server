@@ -548,7 +548,7 @@ export class BurstDetector {
     const result = await orchestrator.runSignal('burst', { files: changes });
     return this.adaptEngineResult(result);
   }
-  
+
   private adaptEngineResult(engineResult: SignalOutput): BurstResult {
     // 10-20 LOC of result adaptation
   }
@@ -628,13 +628,13 @@ Replace business logic with engine delegation:
   handler: async (params) => {
     // Validate MCP protocol input (10 LOC)
     const validatedParams = validateMCPInput(params);
-    
+
     // Delegate to engine (1 LOC)
     const result = await orchestrator.runSignal('risk-score', {
       files: validatedParams.changes,
       workspace: validatedParams.workspace,
     });
-    
+
     // Adapt engine output to MCP protocol (10 LOC)
     return adaptToMCPResponse(result);
   }
@@ -884,14 +884,14 @@ describe('Engine Replacement Verification', () => {
         { path: 'src/auth.ts', content: '...', lineCount: 100 }
       ]
     };
-    
+
     // Legacy implementation
     const legacyAnalyzer = new RiskAnalyzer();
     const legacyResult = await legacyAnalyzer.analyzeFileChanges(testInput.files);
-    
+
     // Engine implementation
     const engineResult = await orchestrator.runSignal('risk-score', testInput);
-    
+
     // Verify equivalence (allow 5% variance)
     expect(Math.abs(legacyResult.score - engineResult.value)).toBeLessThan(0.5);
     expect(legacyResult.factors.length).toBeGreaterThan(0);

@@ -153,7 +153,7 @@ export async function createApiKey(params: CreateApiKeyParams): Promise<ApiKey &
 			userId,
 			name,
 			key: keyHash,
-			keyPreview: key.substring(0, 8),
+			keyPreview: key.substring(0, 12), // Standardized 12 chars for better UX
 			permissions: permissions,
 			expiresAt,
 			createdAt: new Date(),
@@ -235,8 +235,8 @@ export async function validateApiKey(
 		};
 	}
 
-	// Extract key prefix for efficient lookup (first 8 characters)
-	const keyPrefix = apiKey.substring(0, 8);
+	// Extract key prefix for efficient lookup (first 12 characters)
+	const keyPrefix = apiKey.substring(0, 12);
 
 	// Find candidate keys in database with matching prefix
 	// Limit to 10 candidates to prevent abuse

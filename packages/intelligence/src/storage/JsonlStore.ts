@@ -7,6 +7,7 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { generateId as contractsGenerateId } from "@snapback/contracts/id-generator";
 import { writeFile } from "atomically";
 
 /**
@@ -119,8 +120,9 @@ export function countInJsonl<T>(filepath: string, predicate?: (item: T) => boole
 }
 
 /**
- * Generate a unique ID
+ * Generate a unique ID - delegates to @snapback/contracts
+ * Re-exported for backwards compatibility
  */
 export function generateId(prefix = "ID"): string {
-	return `${prefix}-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+	return contractsGenerateId(prefix);
 }

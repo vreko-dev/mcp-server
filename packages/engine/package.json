@@ -42,6 +42,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@snapback/contracts": "workspace:*",
     "esprima": "catalog:",
     "zod": "catalog:"
   },

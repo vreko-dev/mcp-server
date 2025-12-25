@@ -25,6 +25,7 @@ import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readdirSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { gunzipSync, gzipSync } from "node:zlib";
+import { generateSnapshotId } from "@snapback/contracts/id-generator";
 import { eventBus } from "./events.js";
 
 // =============================================================================
@@ -131,7 +132,8 @@ export class Storage {
 			trigger?: "manual" | "auto" | "ai-detection";
 		} = {},
 	): Promise<SnapshotManifest> {
-		const id = this.generateSnapshotId();
+		// Use canonical ID generator from contracts - includes description in ID for readability
+		const id = generateSnapshotId(options.description);
 		const manifestFiles: SnapshotManifest["files"] = [];
 		let totalSize = 0;
 
@@ -320,13 +322,10 @@ export class Storage {
 
 	/**
 	 * Generate unique snapshot ID
-	 *
-	 * REFERENCE: packages/contracts/src/snapshot.ts generateSnapshotId()
+	 * @deprecated Use @snapback/contracts/id-generator directly
 	 */
-	private generateSnapshotId(): string {
-		const timestamp = Date.now().toString(36);
-		const random = Math.random().toString(36).slice(2, 8);
-		return `snap_${timestamp}_${random}`;
+	private generateSnapshotId(description?: string): string {
+		return generateSnapshotId(description);
 	}
 
 	/**

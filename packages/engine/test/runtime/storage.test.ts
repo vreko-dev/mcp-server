@@ -48,7 +48,7 @@ describe("Storage", () => {
 
 			const manifest = await storage.createSnapshot(files);
 
-			expect(manifest.id).toMatch(/^snap_/);
+			expect(manifest.id).toMatch(/^snapshot-/);
 			expect(manifest.files).toHaveLength(1);
 			expect(manifest.files[0].path).toBe("test.ts");
 			expect(manifest.files[0].blobId).toMatch(/^[a-f0-9]{64}$/); // SHA-256
@@ -178,7 +178,7 @@ describe("Storage", () => {
 		});
 
 		it("returns null for non-existent snapshot", () => {
-			const result = storage.getSnapshot("snap_nonexistent");
+			const result = storage.getSnapshot("snapshot-nonexistent");
 
 			expect(result).toBeNull();
 		});
@@ -253,7 +253,7 @@ describe("Storage", () => {
 		});
 
 		it("returns false for non-existent snapshot", () => {
-			const deleted = storage.deleteSnapshot("snap_nonexistent");
+			const deleted = storage.deleteSnapshot("snapshot-nonexistent");
 
 			expect(deleted).toBe(false);
 		});
@@ -287,7 +287,9 @@ describe("Storage", () => {
 		});
 
 		it("throws error for non-existent snapshot", async () => {
-			await expect(storage.restore("snap_nonexistent")).rejects.toThrow("Snapshot not found: snap_nonexistent");
+			await expect(storage.restore("snapshot-nonexistent")).rejects.toThrow(
+				"Snapshot not found: snapshot-nonexistent",
+			);
 		});
 
 		it("emits snapshot.restored event", async () => {
@@ -448,11 +450,12 @@ describe("Storage", () => {
 			expect(ids.size).toBe(10); // All unique
 		});
 
-		it("uses correct ID format (snap_<timestamp>_<random>)", async () => {
+		it("uses correct ID format (snapshot-<timestamp>-<random>)", async () => {
 			const files = [{ path: "test.ts", content: "content" }];
 			const snapshot = await storage.createSnapshot(files);
 
-			expect(snapshot.id).toMatch(/^snap_[a-z0-9]+_[a-z0-9]{6}$/);
+			// Format: snapshot-<timestamp>-<nanoid(9)>
+			expect(snapshot.id).toMatch(/^snapshot-\d+-[A-Za-z0-9_-]{9}$/);
 		});
 	});
 

@@ -6,8 +6,12 @@ export interface CacheConfig {
 	maxSize?: number;
 }
 
-export class LRUCache {
-	private cache: QuickLRU<string, { value: any; expiry: number }>;
+/**
+ * Generic LRU cache with TTL support
+ * @template T - The type of values stored in the cache
+ */
+export class LRUCache<T = unknown> {
+	private cache: QuickLRU<string, { value: T; expiry: number }>;
 	private config: CacheConfig;
 
 	constructor(config: CacheConfig) {
@@ -23,8 +27,9 @@ export class LRUCache {
 
 	/**
 	 * Get a value from the cache
+	 * @returns The cached value or null if not found/expired
 	 */
-	get(key: string): any {
+	get(key: string): T | null {
 		if (!this.config.enabled) {
 			return null;
 		}
@@ -46,8 +51,11 @@ export class LRUCache {
 
 	/**
 	 * Set a value in the cache
+	 * @param key - Cache key
+	 * @param value - Value to cache
+	 * @param ttlSeconds - Time to live in seconds (default: 300)
 	 */
-	set(key: string, value: any, ttlSeconds = 300): void {
+	set(key: string, value: T, ttlSeconds = 300): void {
 		if (!this.config.enabled) {
 			return;
 		}

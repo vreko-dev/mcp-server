@@ -1,5 +1,6 @@
 export * from "@snapback/contracts";
 export * from "./ai-detection";
+export * from "./analysis/index.js";
 export * from "./circuit-breaker";
 export * from "./dependency-analyzer";
 // V1 Guardian exports removed - use @snapback/engine instead

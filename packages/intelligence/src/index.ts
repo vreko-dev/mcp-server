@@ -42,8 +42,13 @@ export type {
 } from "./composer/index.js";
 // Composer (context assembly)
 export { Composer, createComposer, DEFAULT_BUDGET_CONFIG } from "./composer/index.js";
+export type { ReviewRecommendation as ConfidenceReviewRecommendation } from "./confidence/index.js";
+// Confidence calculation (new)
+export { ConfidenceCalculator } from "./confidence/index.js";
 // Sub-modules
 export { ContextEngine, SemanticRetriever } from "./context/index.js";
+// Domain bundles (new)
+export { apiPatterns, authPatterns, daemonPatterns } from "./domain/index.js";
 export type { WorkspaceProfilerConfig } from "./fingerprint/index.js";
 // Workspace fingerprinting
 export { WorkspaceProfiler } from "./fingerprint/index.js";

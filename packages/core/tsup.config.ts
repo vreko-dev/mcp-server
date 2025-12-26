@@ -3,6 +3,7 @@ import { defineConfig } from "tsup";
 export default defineConfig({
 	entry: {
 		index: "src/index.ts",
+		"analysis/index": "src/analysis/index.ts",
 		"mcp-federation": "src/mcp-federation.ts",
 		"mcp-fallbacks": "src/mcp-fallbacks.ts",
 		"risk-analyzer": "src/risk-analyzer.ts",

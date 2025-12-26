@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "test": "playwright test"
+    "test:e2e": "playwright test",
+    "test": "echo 'E2E tests require a running server. Run with: pnpm test:e2e'"
   },
   "devDependencies": {
     "@snapback/playwright-config": "workspace:*",

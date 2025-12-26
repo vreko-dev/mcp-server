@@ -104,6 +104,7 @@ export default defineConfig({
 			"packages-oss/events",
 			"packages-oss/infrastructure",
 			"apps/*",
+			"tests", // Standalone infrastructure tests
 		],
 
 		// Force fresh module resolution and isolation

@@ -43,35 +43,46 @@ windsurf:
     allow_gitignore_access: true
 
 mcp:
-    # PRIORITY 1: Codebase Architecture Tools (MANDATORY FIRST)
+    # PRIORITY 1: SnapBack MCP for code protection and pair programming
     priority_order:
-        - "codebase" # ALWAYS check patterns/learnings before implementation
-        - "context7" # Then fetch external docs if needed
-        - "sequential-thinking" # Use for complex analysis
-        - "snapback-internal" # Internal utilities
+        - "snapback" # Code protection, patterns, learnings, and pair programming
+        - "context7" # External library documentation
+        - "sequential-thinking" # Complex multi-step analysis
 
     workflow:
         before_implementation:
             required: true
-            tools: ["codebase.get_context"]
-            description: "MUST call before any code changes to get patterns/constraints"
+            tools: ["snapback.begin_task"]
+            description: "Start task with context, patterns, and optional snapshot"
+        during_development:
+            required: false
+            tools: ["snapback.quick_check"]
+            description: "Fast validation during iterative development"
         before_commit:
             required: true
-            tools: ["codebase.check_patterns"]
-            description: "MUST validate code against learned patterns before completion"
+            tools: ["snapback.review_work"]
+            description: "Pre-commit validation with pattern checking"
+        after_completion:
+            required: true
+            tools: ["snapback.complete_task"]
+            description: "Finalize task with learnings and summary"
         on_violation:
             required: true
-            tools: ["codebase.report_violation"]
-            description: "MUST report violations for learning"
+            tools: ["snapback.report_violation"]
+            description: "Report violations for learning"
 
     servers:
-        - name: codebase
-          command: "npx"
+        - name: snapback
+          command: "node"
           args:
-              - "-y"
-              - "tsx"
-              - "/Users/user1/WebstormProjects/SnapBack-Site/ai_dev_utils/mcp/server.ts"
+              - "--env-file=/Users/user1/WebstormProjects/SnapBack-Site/apps/cli/.env.local"
+              - "/Users/user1/WebstormProjects/SnapBack-Site/apps/cli/dist/index.js"
+              - "mcp"
+              - "--stdio"
+              - "--workspace"
+              - "/Users/user1/WebstormProjects/SnapBack-Site"
           env:
+              MCP_QUIET: "1"
               MCP_DEV_MODE: "1"
           priority: 1
           mandatory_before:
@@ -86,47 +97,73 @@ mcp:
               - "context_gathering"
               - "architecture_decision"
               - "implementation_start"
+              - "risk_assessment"
+              - "snapshot_management"
+              - "code_analysis"
           tools:
+              # Pair Programmer Composite Tools (recommended for most workflows)
+              - name: "begin_task"
+                call_before: ["implementation", "modification"]
+                description: "🚀 Start any task - combines get_context + snapshot + learnings"
+              - name: "quick_check"
+                call_during: ["development", "iteration"]
+                description: "⚡ Fast TypeScript + lint + test validation"
+              - name: "review_work"
+                call_before: ["commit", "completion"]
+                description: "📝 Pre-commit validation with pattern checking"
+              - name: "complete_task"
+                call_after: ["task_completion"]
+                description: "✅ Finalize with learnings and summary"
+              - name: "what_changed"
+                call_when: ["review", "summary"]
+                description: "📊 See file changes since task start"
+              # Context & Pattern Tools
               - name: "get_context"
                 call_before: ["implementation", "modification"]
                 description: "Get architectural patterns and constraints"
               - name: "check_patterns"
                 call_before: ["commit", "completion"]
                 description: "Validate against codebase patterns"
+              - name: "prepare_workspace"
+                call_before: ["major_refactor", "risky_changes"]
+                description: "🛡️ Pre-flight workspace assessment"
+              # Learning Tools
               - name: "report_violation"
                 call_after: ["pattern_check_fail"]
-                description: "Learn from mistakes"
-              - name: "query_learnings"
+                description: "Report violations for learning"
+              - name: "get_learnings"
                 call_when: ["similar_problem", "uncertainty"]
-                description: "Search past learnings"
-              - name: "record_learning"
-                call_after: ["task_completion"]
-                description: "Record new patterns"
-        - name: snapback
-          command: "node"
-          args:
-              - "--env-file=/Users/user1/WebstormProjects/SnapBack-Site/apps/cli/.env.local"
-              - "/Users/user1/WebstormProjects/SnapBack-Site/apps/cli/dist/index.js"
-              - "mcp"
-              - "--stdio"
-              - "--workspace"
-              - "/Users/user1/WebstormProjects/SnapBack-Site"
-          env:
-              MCP_QUIET: "1"
-              MCP_DEV_MODE: "1"
-          priority: 2
-          use_when:
-              - "risk_assessment"
-              - "snapshot_management"
-              - "code_analysis"
-              - "dependency_validation"
-          tools:
-              - name: "assess_risk"
-                description: "Analyze code for security risks"
-              - name: "create_snapshot"
-                description: "Create a code snapshot"
-              - name: "validate_dependencies"
-                description: "Check dependency security"
+                description: "Search past learnings by keywords"
+              - name: "learn"
+                call_after: ["task_completion", "discovery"]
+                description: "Record new patterns or pitfalls"
+              # Snapshot Tools
+              - name: "snapshot_create"
+                call_before: ["risky_changes"]
+                description: "Create protection checkpoint"
+              - name: "snapshot_list"
+                call_when: ["review", "restore_needed"]
+                description: "List available snapshots"
+              - name: "snapshot_restore"
+                call_when: ["rollback_needed"]
+                description: "Restore from snapshot"
+              # Analysis Tools
+              - name: "analyze"
+                call_when: ["risk_assessment", "package_validation"]
+                description: "Risk analysis or package validation"
+              - name: "validate"
+                call_before: ["commit"]
+                description: "Quick or comprehensive code validation"
+              # Session & Context Management
+              - name: "session"
+                call_when: ["session_management"]
+                description: "Session lifecycle (start/end/stats)"
+              - name: "context"
+                call_when: ["context_management"]
+                description: "Context operations (init/build/validate/status)"
+              - name: "get_pairing_protocol"
+                call_when: ["guidance_needed"]
+                description: "🤝 Get AI agent guidance for optimal tool usage"
         - name: context7
           url: "mcp://context7"
           priority: 2

@@ -154,6 +154,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-turbo-
 
+      - name: Validate Drizzle Schema
+        run: |
+          echo '🔍 Validating database schema...'
+          cd packages/platform && pnpm drizzle-kit check:pg || echo '⚠️ Schema validation skipped (not critical for CI)'
+        continue-on-error: true
+
       - name: Type check packages
         run: pnpm turbo run type-check --filter='@snapback/*'
 

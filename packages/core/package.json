@@ -16,6 +16,9 @@
     "@snapback/contracts": "workspace:*",
     "@snapback/infrastructure": "workspace:*",
     "@snapback/platform": "workspace:*",
+    "@babel/parser": "^7.28.5",
+    "@babel/traverse": "^7.28.5",
+    "@types/babel__traverse": "^7.20.5",
     "@types/esprima": "catalog:",
     "@typescript-eslint/parser": "catalog:",
     "bottleneck": "catalog:",
@@ -40,9 +43,12 @@
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@babel/types": "^7.28.5",
     "@snapback/tsconfig": "workspace:*",
+    "@types/fs-extra": "^11.0.4",
     "@types/node": "catalog:",
     "@types/opossum": "catalog:",
+    "fs-extra": "^11.3.3",
     "pino-pretty": "catalog:",
     "tsup": "catalog:",
     "typescript": "catalog:",
@@ -52,6 +58,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./analysis": {
+      "types": "./dist/analysis/index.d.ts",
+      "default": "./dist/analysis/index.js"
     },
     "./mcp": {
       "types": "./dist/mcp-federation.d.ts",

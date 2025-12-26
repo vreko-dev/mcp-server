@@ -49,6 +49,14 @@
     "./composer": {
       "types": "./dist/composer/index.d.ts",
       "default": "./dist/composer/index.js"
+    },
+    "./confidence": {
+      "types": "./dist/confidence/index.d.ts",
+      "default": "./dist/confidence/index.js"
+    },
+    "./domain": {
+      "types": "./dist/domain/index.d.ts",
+      "default": "./dist/domain/index.js"
     }
   },
   "typesVersions": {
@@ -76,6 +84,12 @@
       ],
       "composer": [
         "./dist/composer/index.d.ts"
+      ],
+      "confidence": [
+        "./dist/confidence/index.d.ts"
+      ],
+      "domain": [
+        "./dist/domain/index.d.ts"
       ]
     }
   },
@@ -92,6 +106,7 @@
   },
   "dependencies": {
     "@snapback/contracts": "workspace:*",
+    "@snapback/core": "workspace:*",
     "atomically": "^2.0.0",
     "fast-glob": "catalog:",
     "zod": "catalog:"

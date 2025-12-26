@@ -43,6 +43,6 @@ export { toError } from "./utils/errorHelpers";
 export { getBlobPath, hashContent, hashFilePath, hashWorkspaceId, sha256 } from "./utils/hash";
 export { generateAuditId, generateCheckpointId, generateId, generateSessionId, generateSnapshotId, ID_PREFIX, type IdPrefix, isValidId, parseIdPrefix, parseIdTimestamp, randomId, type SnapshotId, } from "./utils/id-generation";
 export { areEqual, getDepth, isWithin, normalize } from "./utils/PathNormalizer";
-export { andThen, err, fromPromise, fromPromiseWith, isErr, isOk, map, mapErr, match, ok, type Result, sequence, tap, tapErr, tryAll, unwrap, unwrapOr, unwrapOrElse, } from "./utils/result";
+export { all, allOrErrors, andThen, err, fromPromise, fromPromiseWith, isErr, isOk, map, mapErr, match, ok, type Result, sequence, tap, tapErr, toPromise, tryAll, tryCatch, tryCatchAsync, unwrap, unwrapOr, unwrapOrElse, } from "./utils/result";
 export { calculateBackoff, type RetryOptions, RetryPresets, withRetry } from "./utils/retry";
 //# sourceMappingURL=index.d.ts.map

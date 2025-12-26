@@ -25,15 +25,107 @@ import {
 const app = new Hono();
 
 /**
- * Get authenticated user ID from request headers
+ * Authentication result with user ID and optional tier information
+ */
+interface AuthResult {
+	userId: string;
+	tier?: "free" | "pro" | "admin";
+	scopes?: string[];
+	authType: "session" | "apiKey";
+}
+
+/**
+ * Get authenticated user ID from request headers.
+ * Supports both session tokens (cookies) and API keys (Bearer token).
+ *
+ * FIX 5: Unified auth that supports both session and API key authentication.
+ * This enables MCP tool calls from CLI and external integrations.
+ */
+async function getAuthenticatedUser(headers: Headers): Promise<AuthResult | null> {
+	// First, try session-based authentication (browser cookies)
+	try {
+		const sessionResult = await auth.api.getSession({ headers });
+		if (sessionResult?.user?.id) {
+			return {
+				userId: sessionResult.user.id,
+				authType: "session",
+			};
+		}
+	} catch {
+		// Session auth failed, try API key
+	}
+
+	// Second, try API key authentication (Bearer token)
+	const authHeader = headers.get("authorization");
+	if (authHeader?.startsWith("Bearer ")) {
+		const apiKey = authHeader.substring(7); // Remove "Bearer " prefix
+
+		// Skip if it looks like a JWT (has dots) rather than an API key
+		if (apiKey.includes(".")) {
+			return null;
+		}
+
+		// Validate API key format (sk_live_* or sk_test_*)
+		if (apiKey.startsWith("sk_live_") || apiKey.startsWith("sk_test_")) {
+			try {
+				const verified = await auth.api.verifyApiKey({ key: apiKey });
+				if (verified?.isValid && verified?.userId) {
+					// Determine tier from metadata
+					let tier: "free" | "pro" | "admin" = "free";
+					if (verified.metadata?.tier === "admin") {
+						tier = "admin";
+					} else if (verified.metadata?.tier === "pro" || verified.metadata?.plan === "pro") {
+						tier = "pro";
+					}
+
+					return {
+						userId: verified.userId,
+						tier,
+						scopes: Object.keys(verified.permissions || {}),
+						authType: "apiKey",
+					};
+				}
+			} catch {
+				// API key verification failed
+			}
+		}
+	}
+
+	// Also check X-API-Key header (alternative header for API keys)
+	const xApiKey = headers.get("x-api-key");
+	if (xApiKey && (xApiKey.startsWith("sk_live_") || xApiKey.startsWith("sk_test_"))) {
+		try {
+			const verified = await auth.api.verifyApiKey({ key: xApiKey });
+			if (verified?.isValid && verified?.userId) {
+				let tier: "free" | "pro" | "admin" = "free";
+				if (verified.metadata?.tier === "admin") {
+					tier = "admin";
+				} else if (verified.metadata?.tier === "pro" || verified.metadata?.plan === "pro") {
+					tier = "pro";
+				}
+
+				return {
+					userId: verified.userId,
+					tier,
+					scopes: Object.keys(verified.permissions || {}),
+					authType: "apiKey",
+				};
+			}
+		} catch {
+			// API key verification failed
+		}
+	}
+
+	return null;
+}
+
+/**
+ * Legacy function for backward compatibility
+ * @deprecated Use getAuthenticatedUser() instead
  */
 async function getAuthenticatedUserId(headers: Headers): Promise<string | null> {
-	try {
-		const authResult = await auth.api.getSession({ headers });
-		return authResult?.user?.id ?? null;
-	} catch {
-		return null;
-	}
+	const result = await getAuthenticatedUser(headers);
+	return result?.userId ?? null;
 }
 
 // Schema definitions

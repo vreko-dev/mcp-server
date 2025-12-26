@@ -1,5 +1,6 @@
 import { analysisEvents, apiKeys, ruleViolations, userSafetyProfiles } from "@snapback/platform";
 import { eq } from "drizzle-orm";
+import { nanoid as cuid } from "nanoid";
 import { getDb } from "./database";
 
 // Types for our analysis

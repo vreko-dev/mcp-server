@@ -33,6 +33,24 @@ interface RiskAssessment {
 	recommendations: string[];
 }
 
+interface SkippedTestInfo {
+	file: string;
+	type: "describe" | "it" | "test";
+	name?: string;
+	line: number;
+}
+
+interface StaticAnalysisOutput {
+	/** Skipped tests found in planned files */
+	skippedTests: SkippedTestInfo[];
+	/** Whether analysis completed successfully */
+	success: boolean;
+	/** Analysis duration in ms */
+	duration: number;
+	/** Errors encountered */
+	errors: string[];
+}
+
 interface BeginTaskOutput {
 	taskId: string;
 	snapshot: {
@@ -68,6 +86,8 @@ interface BeginTaskOutput {
 		priority: number;
 		reason: string;
 	}>;
+	/** Static analysis results for planned files */
+	staticAnalysis?: StaticAnalysisOutput;
 }
 
 // =============================================================================
@@ -279,8 +299,18 @@ function getConstraints(workspaceRoot: string): Array<{
 function generateNextActions(
 	risk: RiskAssessment,
 	_learnings: Array<{ type: string }>,
+	staticAnalysis?: StaticAnalysisOutput,
 ): Array<{ tool: string; priority: number; reason: string }> {
 	const actions: Array<{ tool: string; priority: number; reason: string }> = [];
+
+	// If skipped tests found, suggest enabling them first
+	if (staticAnalysis?.skippedTests && staticAnalysis.skippedTests.length > 0) {
+		actions.push({
+			tool: "enable_skipped_tests",
+			priority: 1,
+			reason: `${staticAnalysis.skippedTests.length} skipped test(s) may be ready to enable`,
+		});
+	}
 
 	// Always suggest quick_check after implementation
 	actions.push({
@@ -306,6 +336,75 @@ function generateNextActions(
 	});
 
 	return actions;
+}
+
+/**
+ * Run static analysis on planned files
+ * Uses dynamic import to avoid build-time coupling with @snapback/core
+ */
+async function runStaticAnalysis(files: string[], workspaceRoot: string): Promise<StaticAnalysisOutput> {
+	const startTime = Date.now();
+	const result: StaticAnalysisOutput = {
+		skippedTests: [],
+		success: true,
+		duration: 0,
+		errors: [],
+	};
+
+	// Only analyze test files
+	const testFiles = files.filter((f) => f.includes(".test.") || f.includes(".spec.") || f.includes("__tests__"));
+
+	if (testFiles.length === 0) {
+		result.duration = Date.now() - startTime;
+		return result;
+	}
+
+	try {
+		// Build file map with contents
+		const fileMap = new Map<string, string>();
+		for (const filePath of testFiles) {
+			const fullPath = filePath.startsWith("/") ? filePath : join(workspaceRoot, filePath);
+			if (existsSync(fullPath)) {
+				try {
+					const content = readFileSync(fullPath, "utf8");
+					fileMap.set(filePath, content);
+				} catch {
+					// Skip files that can't be read
+				}
+			}
+		}
+
+		if (fileMap.size === 0) {
+			result.duration = Date.now() - startTime;
+			return result;
+		}
+
+		// Dynamic import to avoid build-time coupling
+		const { analyzeSkippedTests } = await import("@snapback/core/analysis");
+		const analysisResults = analyzeSkippedTests(fileMap);
+
+		for (const analysisResult of analysisResults) {
+			if (!analysisResult.parsed && analysisResult.error) {
+				result.errors.push(`Parse error in ${analysisResult.file}: ${analysisResult.error}`);
+			}
+			for (const skipped of analysisResult.skipped) {
+				result.skippedTests.push({
+					file: skipped.file,
+					type: skipped.type,
+					name: skipped.name,
+					line: skipped.line,
+				});
+			}
+		}
+	} catch (error) {
+		// Static analysis is optional - don't fail the task
+		result.errors.push(`Static analysis unavailable: ${error instanceof Error ? error.message : String(error)}`);
+	}
+
+	result.duration = Date.now() - startTime;
+	result.success = result.errors.length === 0;
+
+	return result;
 }
 
 // =============================================================================
@@ -426,13 +525,19 @@ export const handleBeginTask: ToolHandler = async (args, context): Promise<ToolR
 	// 6. Get constraints
 	const constraints = getConstraints(workspaceRoot);
 
-	// 7. Drain pending observations from extension
+	// 7. Run static analysis on planned files (skipped tests, etc.)
+	let staticAnalysis: StaticAnalysisOutput | undefined;
+	if (files && files.length > 0) {
+		staticAnalysis = await runStaticAnalysis(files, workspaceRoot);
+	}
+
+	// 8. Drain pending observations from extension
 	const observations = drainPendingObservations(workspaceRoot).map((o) => ({
 		type: o.type,
 		message: o.message,
 	}));
 
-	// 8. Start task tracking
+	// 9. Start task tracking
 	const currentTask = startTask(workspaceRoot, {
 		description: task,
 		plannedFiles: files || [],
@@ -444,10 +549,10 @@ export const handleBeginTask: ToolHandler = async (args, context): Promise<ToolR
 	const state = getSessionState(workspaceRoot);
 	state.riskAreasTouched = riskAssessment.riskAreas;
 
-	// 9. Generate next actions
-	const nextActions = generateNextActions(riskAssessment, learnings);
+	// 10. Generate next actions (informed by static analysis)
+	const nextActions = generateNextActions(riskAssessment, learnings, staticAnalysis);
 
-	// 10. Build response
+	// 11. Build response
 	const output: BeginTaskOutput = {
 		taskId: currentTask.id,
 		snapshot,
@@ -457,18 +562,28 @@ export const handleBeginTask: ToolHandler = async (args, context): Promise<ToolR
 		observations,
 		riskAssessment,
 		nextActions,
+		staticAnalysis,
 	};
+
+	// Generate hint based on most useful information
+	const skippedCount = staticAnalysis?.skippedTests?.length ?? 0;
+	let hint: string;
+	if (skippedCount > 0) {
+		hint = `⚠️ ${skippedCount} skipped test(s) found - may need enabling`;
+	} else if (snapshot.created) {
+		hint = `Safety snapshot created: ${snapshot.id}`;
+	} else if (learnings.length > 0) {
+		hint = `${learnings.length} relevant learning(s) found`;
+	} else {
+		hint = "Ready to start coding!";
+	}
 
 	return result(
 		JSON.stringify(
 			{
 				...output,
 				message: `Task started: ${task}`,
-				_hint: snapshot.created
-					? `Safety snapshot created: ${snapshot.id}`
-					: learnings.length > 0
-						? `${learnings.length} relevant learning(s) found`
-						: "Ready to start coding!",
+				_hint: hint,
 			},
 			null,
 			2,

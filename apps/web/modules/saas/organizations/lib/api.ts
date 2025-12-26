@@ -1,5 +1,5 @@
 import { orpcClient } from "@shared/lib/orpc-client";
-// Note: OrganizationMetadata type is available from @snapback/auth if needed
+import { authClient } from "@snapback/auth/client";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const organizationListQueryKey = ["user", "organizations"] as const;
@@ -7,9 +7,7 @@ export const useOrganizationListQuery = () => {
 	return useQuery({
 		queryKey: organizationListQueryKey,
 		queryFn: async () => {
-			// TODO: Replace with actual auth client when backend is ready
-			// const { data, error } = await authClient.organization.list();
-			const { data, error } = { data: null, error: null };
+			const { data, error } = await authClient.organization.list();
 
 			if (error) {
 				throw new Error("Failed to fetch organizations");
@@ -30,9 +28,9 @@ export const useActiveOrganizationQuery = (
 	return useQuery({
 		queryKey: activeOrganizationQueryKey(slug),
 		queryFn: async () => {
-			// TODO: Replace with actual auth client when backend is ready
-			// const { data, error } = await authClient.organization.getFullOrganization({ query: { organizationSlug: slug } });
-			const { data, error } = { data: null, error: null };
+			const { data, error } = await authClient.organization.getFullOrganization({
+				query: { organizationSlug: slug },
+			});
 
 			if (error) {
 				throw new Error("Failed to fetch active organization");
@@ -49,9 +47,9 @@ export const useFullOrganizationQuery = (id: string) => {
 	return useQuery({
 		queryKey: fullOrganizationQueryKey(id),
 		queryFn: async () => {
-			// TODO: Replace with actual auth client when backend is ready
-			// const { data, error } = await authClient.organization.getFullOrganization({ query: { organizationId: id } });
-			const { data, error } = { data: null, error: null };
+			const { data, error } = await authClient.organization.getFullOrganization({
+				query: { organizationId: id },
+			});
 
 			if (error) {
 				throw new Error("Failed to fetch full organization");
@@ -62,61 +60,63 @@ export const useFullOrganizationQuery = (id: string) => {
 	});
 };
 
-/*
- * Create organization
+/**
+ * Create organization mutation
  */
 export const createOrganizationMutationKey = ["create-organization"] as const;
 export const useCreateOrganizationMutation = () => {
 	return useMutation({
 		mutationKey: createOrganizationMutationKey,
-		mutationFn: async ({ name, metadata: _metadata }: { name: string; metadata?: any }) => {
-			const { slug: _slug } = await orpcClient.organizations.generateSlug({
+		mutationFn: async ({ name, metadata }: { name: string; metadata?: Record<string, unknown> }) => {
+			const { slug } = await orpcClient.organizations.generateSlug({
 				name,
 			});
 
-			// TODO: Replace with actual auth client when backend is ready
-			// const { error, data } = await authClient.organization.create({ name, slug, metadata });
-			const { error, data }: { error: null; data: null } = {
-				error: null,
-				data: null,
-			};
+			const { error, data } = await authClient.organization.create({
+				name,
+				slug,
+				metadata,
+			});
 
 			if (error) {
 				throw error;
 			}
 
-			return data as unknown as { slug: string; id: string };
+			return data as { slug: string; id: string };
 		},
 	});
 };
 
-/*
- * Update organization
+/**
+ * Update organization mutation
  */
 export const updateOrganizationMutationKey = ["update-organization"] as const;
 export const useUpdateOrganizationMutation = () => {
 	return useMutation({
 		mutationKey: updateOrganizationMutationKey,
 		mutationFn: async ({
-			id: _id,
+			id,
 			name,
-			metadata: _metadata,
+			metadata,
 			updateSlug,
 		}: {
 			id: string;
 			name: string;
-			metadata?: any;
+			metadata?: Record<string, unknown>;
 			updateSlug?: boolean;
 		}) => {
+			let slug: string | undefined;
 			if (updateSlug) {
-				await orpcClient.organizations.generateSlug({
+				const result = await orpcClient.organizations.generateSlug({
 					name,
 				});
+				slug = result.slug;
 			}
 
-			// TODO: Replace with actual auth client when backend is ready
-			// const { error, data } = await authClient.organization.update({ organizationId: id, data: { name, slug, metadata } });
-			const { error, data } = { error: null, data: null };
+			const { error, data } = await authClient.organization.update({
+				organizationId: id,
+				data: { name, slug, metadata },
+			});
 
 			if (error) {
 				throw error;

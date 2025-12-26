@@ -13,9 +13,17 @@
  * - Integration with ORPC API client
  */
 
-import type { DashboardMetrics, DashboardMetricsResponse } from "@snapback/contracts";
-import { isDashboardMetrics, isDashboardMetricsError } from "@snapback/contracts";
+import type { DashboardMetrics, DashboardMetricsError, DashboardMetricsResponse } from "@snapback/contracts";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
+// Type guards defined inline to avoid import resolution issues
+function isDashboardMetrics(response: DashboardMetricsResponse): response is DashboardMetrics {
+	return !("error" in response) || (response as DashboardMetricsError).error !== true;
+}
+
+function isDashboardMetricsError(response: DashboardMetricsResponse): response is DashboardMetricsError {
+	return "error" in response && (response as DashboardMetricsError).error === true;
+}
 
 /**
  * Mock ORPC client

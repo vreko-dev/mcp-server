@@ -7,13 +7,13 @@
  * These tests verify that the feature flag correctly controls
  * which ConfigStore version is loaded.
  *
- * RED PHASE: These tests will FAIL until implementation is complete.
+ * Implementation complete - tests now enabled.
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ConfigStore } from "../store";
 
-describe("Feature Flag Integration - RED PHASE", () => {
+describe("Feature Flag Integration", () => {
 	beforeEach(() => {
 		// Reset singleton before each test
 		ConfigStore.reset();
@@ -102,17 +102,18 @@ describe("Feature Flag Integration - RED PHASE", () => {
 			expect(config.version).toBe(2);
 		});
 
-		it("❌ should log feature flag evaluation", async () => {
-			const logSpy = vi.spyOn(console, "log");
+		it("should log feature flag evaluation to stderr (MCP-compatible)", async () => {
+			// ConfigStore logs to stderr (not stdout) to avoid corrupting MCP JSON-RPC
+			const errorSpy = vi.spyOn(console, "error");
 			process.env.FEATURE_CONFIG_V2 = "true";
 
 			const store = ConfigStore.getInstance();
 			await store.initialize();
 
-			// Should log feature flag status for debugging
-			expect(logSpy).toHaveBeenCalledWith(expect.stringContaining("Feature flag"));
+			// Should log feature flag status for debugging via stderr
+			expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining("Feature flag"));
 
-			logSpy.mockRestore();
+			errorSpy.mockRestore();
 		});
 	});
 

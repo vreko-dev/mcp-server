@@ -19,14 +19,7 @@ describe("RiskAnalyzer", () => {
 
 	beforeEach(() => {
 		vi.clearAllMocks();
-		// Enable fake timers for temporal velocity tests
-		vi.useFakeTimers();
 		riskAnalyzer = new RiskAnalyzer();
-	});
-
-	// Restore real timers after each test
-	afterEach(() => {
-		vi.useRealTimers();
 	});
 
 	describe("analyzeFileChanges", () => {
@@ -318,15 +311,26 @@ describe("RiskAnalyzer", () => {
 	});
 
 	describe("analyzeTemporalVelocity", () => {
+		let localRiskAnalyzer: RiskAnalyzer;
+
+		beforeEach(() => {
+			vi.useFakeTimers();
+			localRiskAnalyzer = new RiskAnalyzer();
+		});
+
+		afterEach(() => {
+			vi.useRealTimers();
+		});
+
 		it("should calculate temporal velocity based on change history", () => {
 			// @ts-expect-error - Accessing private method for testing
-			const velocity1 = riskAnalyzer.analyzeTemporalVelocity(5);
+			const velocity1 = localRiskAnalyzer.analyzeTemporalVelocity(5);
 
 			// Wait a bit to simulate time passing
 			vi.advanceTimersByTime(1000);
 
 			// @ts-expect-error - Accessing private method for testing
-			const velocity2 = riskAnalyzer.analyzeTemporalVelocity(5);
+			const velocity2 = localRiskAnalyzer.analyzeTemporalVelocity(5);
 
 			// Should be low with just a few changes in a short time period
 			// The implementation might return higher values depending on the calculation
@@ -341,12 +345,12 @@ describe("RiskAnalyzer", () => {
 			// Simulate many rapid changes
 			for (let i = 0; i < 20; i++) {
 				// @ts-expect-error - Accessing private method for testing
-				riskAnalyzer.analyzeTemporalVelocity(15);
+				localRiskAnalyzer.analyzeTemporalVelocity(15);
 				vi.advanceTimersByTime(1000); // 1 second between changes
 			}
 
 			// @ts-expect-error - Accessing private method for testing
-			const velocity = riskAnalyzer.analyzeTemporalVelocity(15);
+			const velocity = localRiskAnalyzer.analyzeTemporalVelocity(15);
 
 			// Should detect high velocity with many rapid changes
 			expect(velocity).toBeGreaterThan(0.7);
@@ -400,15 +404,26 @@ describe("RiskAnalyzer", () => {
 	});
 
 	describe("shouldCreateSnapshot", () => {
-		it("should respect rate limiting for snapshot creation", () => {
-			// @ts-expect-error - Accessing private method for testing
-			const shouldCreate1 = riskAnalyzer.shouldCreateSnapshot(0.8);
+		let localRiskAnalyzer: RiskAnalyzer;
 
-			// Simulate time passing
+		beforeEach(() => {
+			vi.useFakeTimers();
+			// Create fresh instance after fake timers are enabled
+			localRiskAnalyzer = new RiskAnalyzer();
+		});
+
+		afterEach(() => {
+			vi.useRealTimers();
+		});
+
+		it("should respect rate limiting for snapshot creation", () => {
+			// Use risk score > 5.0 (on 0-10 scale) to trigger snapshot
+			const shouldCreate1 = localRiskAnalyzer.shouldCreateSnapshot(8.0);
+
+			// Simulate time passing (less than cooldown)
 			vi.advanceTimersByTime(1000);
 
-			// @ts-expect-error - Accessing private method for testing
-			const shouldCreate2 = riskAnalyzer.shouldCreateSnapshot(0.8);
+			const shouldCreate2 = localRiskAnalyzer.shouldCreateSnapshot(8.0);
 
 			expect(shouldCreate1).toBe(true);
 			// Second one should be false due to rate limiting
@@ -416,14 +431,13 @@ describe("RiskAnalyzer", () => {
 		});
 
 		it("should allow snapshot creation after rate limit cooldown", () => {
-			// @ts-expect-error - Accessing private method for testing
-			const shouldCreate1 = riskAnalyzer.shouldCreateSnapshot(0.8);
+			// Use risk score > 5.0 (on 0-10 scale) to trigger snapshot
+			const shouldCreate1 = localRiskAnalyzer.shouldCreateSnapshot(8.0);
 
 			// Advance time by 10 seconds (beyond our 5-second cooldown)
 			vi.advanceTimersByTime(10000);
 
-			// @ts-expect-error - Accessing private method for testing
-			const shouldCreate2 = riskAnalyzer.shouldCreateSnapshot(0.8);
+			const shouldCreate2 = localRiskAnalyzer.shouldCreateSnapshot(8.0);
 
 			expect(shouldCreate1).toBe(true);
 			expect(shouldCreate2).toBe(true);

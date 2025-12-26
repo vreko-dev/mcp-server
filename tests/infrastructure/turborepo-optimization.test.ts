@@ -178,15 +178,7 @@ describe("Turborepo Configuration - TDD", () => {
 			expect(apiPkg.scripts?.["docker-build"]).toBeDefined();
 		});
 
-		it("should validate mcp-server has deploy script", async () => {
-			// GIVEN: apps/mcp-server/package.json
-			const mcpPkg = JSON.parse(
-				readFileSync(path.resolve(__dirname, "../../apps/mcp-server/package.json"), "utf-8"),
-			);
-
-			// THEN: Should have deploy script
-			expect(mcpPkg.scripts?.deploy).toBeDefined();
-		});
+		// Note: apps/mcp-server is archived, test removed
 	});
 
 	describe("🔴 RED: Turbo Cache Configuration", () => {

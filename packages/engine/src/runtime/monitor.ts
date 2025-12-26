@@ -162,7 +162,6 @@ export class SessionMonitor {
 
 		// Emit session ended event
 		if (this.baseline) {
-			const _health = this.getHealth();
 			eventBus.emit("session.ended", {
 				sessionId: this.sessionId,
 				duration: Date.now() - this.baseline.timestamp,

@@ -93,7 +93,6 @@ async function handlePackageJson(filePath: string, repoContext: RepoContext): Pr
 	const affectedFiles: string[] = [];
 	if (workspace) {
 		// Get entry points for this workspace
-		const workspacePath = join(repoContext.rootPath, workspace.path);
 		const patterns = [`${workspace.path}/src/index.{ts,tsx,js,jsx}`, `${workspace.path}/index.{ts,tsx,js,jsx}`];
 
 		for (const pattern of patterns) {

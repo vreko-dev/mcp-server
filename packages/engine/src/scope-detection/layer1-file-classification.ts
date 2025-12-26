@@ -153,7 +153,6 @@ function isEnvConfig(filename: string): boolean {
 
 function isWorkspaceConfig(filePath: string, repoContext: RepoContext): boolean {
 	const filename = basename(filePath);
-	const dir = dirname(filePath);
 
 	// package.json or tsconfig.json in workspace (not root)
 	if (filename === "package.json" || filename === "tsconfig.json") {

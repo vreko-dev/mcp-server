@@ -78,7 +78,7 @@ export class DecisionEngine {
 	 * Evaluate signals and determine action
 	 */
 	evaluate(input: DecisionInput): Decision {
-		const { signals, protectionLevel, rateLimitRemaining } = input;
+		const { protectionLevel, rateLimitRemaining } = input;
 
 		// Rate limit check (highest priority)
 		if (rateLimitRemaining <= 0) {

@@ -50,7 +50,6 @@ export async function detectRepoType(workspaceRoot: string): Promise<RepoContext
 // =============================================================================
 
 async function analyzeTurborepo(root: string): Promise<RepoContext> {
-	const turboConfig = await readJsonFile(join(root, "turbo.json"));
 	const workspaceGlobs = await getWorkspaceGlobs(root);
 	const workspaces: WorkspaceInfo[] = [];
 
@@ -363,7 +362,7 @@ async function readJsonFile(path: string): Promise<any> {
 	try {
 		const content = await readFile(path, "utf-8");
 		return JSON.parse(content);
-	} catch (error) {
+	} catch {
 		return {};
 	}
 }

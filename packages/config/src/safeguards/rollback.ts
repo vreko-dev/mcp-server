@@ -24,9 +24,12 @@ export interface RollbackHealthMetrics {
  * Automatic rollback manager
  */
 export class AutomaticRollbackManager {
-	private readonly errorRateThreshold = 0.01; // 1%
-	private readonly loadTimeThreshold = 500; // 500ms p99
-	private readonly migrationFailureThreshold = 0.001; // 0.1%
+	// @ts-expect-error Reserved for future health metrics implementation (TODO: lines 64-65)
+	private readonly _errorRateThreshold = 0.01; // 1%
+	// @ts-expect-error Reserved for future health metrics implementation (TODO: lines 64-65)
+	private readonly _loadTimeThreshold = 500; // 500ms p99
+	// @ts-expect-error Reserved for future health metrics implementation (TODO: lines 64-65)
+	private readonly _migrationFailureThreshold = 0.001; // 0.1%
 	private readonly checkInterval = 60000; // Check every 60 seconds
 
 	private monitoringInterval?: ReturnType<typeof setInterval>;

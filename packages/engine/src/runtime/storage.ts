@@ -443,6 +443,7 @@ export class Storage {
 	 * Generate unique snapshot ID
 	 * @deprecated Use @snapback/contracts/id-generator directly
 	 */
+	// @ts-expect-error Deprecated method kept for backward compatibility during migration
 	private generateSnapshotId(description?: string): string {
 		return generateSnapshotId(description);
 	}

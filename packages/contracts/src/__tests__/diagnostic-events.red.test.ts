@@ -226,7 +226,6 @@ describe("Diagnostic Telemetry Events - RED Test", () => {
 			];
 
 			originalEvents.forEach((event) => {
-				const _key = event.toUpperCase();
 				// At minimum, the events should be identifiable in some way
 				expect(event).toBeTruthy();
 			});

@@ -25,7 +25,16 @@ export interface ApiKeyCreationInput {
 	hashedKey: string;
 	keyPreview: string;
 	signingSecret: string;
-	permissions: string[]; // Scope-based permissions array (e.g., ["code:analyze", "snapshots:read"])
+	permissions: ApiKeyPermissions; // Object-based permissions matching DB schema
+}
+
+/** API Key permissions matching Drizzle schema */
+export interface ApiKeyPermissions {
+	maxSnapshots?: number;
+	cloudBackup?: boolean;
+	advancedDetection?: boolean;
+	customRules?: boolean;
+	teamSharing?: boolean;
 }
 
 export interface CreatedApiKey {
@@ -74,21 +83,47 @@ export function getKeyLimit(plan: string): number {
 }
 
 /**
- * Get permissions based on subscription plan
- * Returns a text[] array of permission scopes (matches DB schema)
+ * Get permissions object based on subscription plan
+ * Returns an object matching the Drizzle schema JSON type
  */
-export function getPermissionsForPlan(plan: string): string[] {
-	const basePermissions = ["code:analyze", "code:refactor", "code:search", "snapshots:read", "snapshots:write"];
+export function getPermissionsForPlan(plan: string): ApiKeyPermissions {
+	const basePermissions: ApiKeyPermissions = {};
 
 	switch (plan) {
 		case "enterprise":
 		case "team":
-			return [...basePermissions, "snapshots:cloud", "team:share", "custom:rules"];
+			return {
+				...basePermissions,
+				cloudBackup: true,
+				advancedDetection: true,
+				customRules: true,
+				teamSharing: true,
+			};
 		case "pro":
-			return [...basePermissions, "snapshots:cloud", "custom:rules"];
+			return {
+				...basePermissions,
+				cloudBackup: true,
+				advancedDetection: true,
+				customRules: true,
+			};
 		default:
 			return basePermissions;
 	}
+}
+
+/**
+ * Get permission scopes as strings for authorization checks
+ * Converts object permissions to scope strings
+ */
+export function getPermissionScopes(permissions: ApiKeyPermissions): string[] {
+	const scopes: string[] = ["code:analyze", "code:refactor", "code:search", "snapshots:read", "snapshots:write"];
+
+	if (permissions.cloudBackup) scopes.push("snapshots:cloud", "snapshots:backup");
+	if (permissions.advancedDetection) scopes.push("detection:advanced");
+	if (permissions.customRules) scopes.push("rules:custom", "custom:rules");
+	if (permissions.teamSharing) scopes.push("team:share");
+
+	return scopes;
 }
 
 // ============================================================================

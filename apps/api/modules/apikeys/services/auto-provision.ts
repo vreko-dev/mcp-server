@@ -94,8 +94,9 @@ export async function getExistingKey(userId: string): Promise<AutoProvisionResul
 
 /**
  * Get user's subscription plan
+ * @deprecated Function no longer used in provisioning flow
  */
-async function getUserPlan(userId: string): Promise<string> {
+async function _getUserPlan(userId: string): Promise<string> {
 	const db = getDb();
 	if (!db) return "free";
 
@@ -109,20 +110,33 @@ async function getUserPlan(userId: string): Promise<string> {
 }
 
 /**
- * Get permissions based on subscription plan
- * Returns a text[] array of permission scopes (matches DB schema)
+ * Get permissions object based on subscription plan
+ * Returns object matching Drizzle schema JSON type
  */
-function getPermissionsForPlan(plan: string): string[] {
-	const basePermissions = [...AUTO_KEY_SCOPES];
-
+function getPermissionsForPlan(plan: string): {
+	maxSnapshots?: number;
+	cloudBackup?: boolean;
+	advancedDetection?: boolean;
+	customRules?: boolean;
+	teamSharing?: boolean;
+} {
 	switch (plan) {
 		case "enterprise":
 		case "team":
-			return [...basePermissions, "snapshots:cloud", "team:share"];
+			return {
+				cloudBackup: true,
+				advancedDetection: true,
+				customRules: true,
+				teamSharing: true,
+			};
 		case "pro":
-			return [...basePermissions, "snapshots:cloud"];
+			return {
+				cloudBackup: true,
+				advancedDetection: true,
+				customRules: true,
+			};
 		default:
-			return basePermissions;
+			return {};
 	}
 }
 

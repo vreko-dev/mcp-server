@@ -120,30 +120,36 @@ export function apiKeyScopeMiddleware(requiredScopes: string[] = []): Middleware
 				});
 			}
 
-			// Extract permissions from JSON field
-			// Schema: { maxSnapshots?: number; cloudBackup?: boolean; advancedDetection?: boolean; customRules?: boolean; teamSharing?: boolean }
-			const keyPermissions = ((keyRecord.permissions as string[]) || []) as unknown as Record<
-				string,
-				boolean | number
-			>;
+			// Get permissions from database (already stored as scope strings)
+			// Schema: text[] array with values like ["snapshots:read", "snapshots:write", "snapshots:cloud"]
+			const dbPermissions = (keyRecord.permissions as string[]) || [];
 
-			// Convert feature permissions to scope strings for backward compatibility
-			// TODO: Eventually migrate to feature-based authorization entirely
+			// Map legacy feature names to scope strings for backward compatibility
+			// This handles any mixed-format data during migration period
 			const keyScopes: string[] = [];
-			if (keyPermissions.cloudBackup) {
-				keyScopes.push("snapshots:backup");
+
+			// Add all string-based permissions directly
+			for (const perm of dbPermissions) {
+				if (typeof perm === "string") {
+					// Map legacy names to current scope format
+					if (perm === "cloudBackup" || perm === "snapshots:cloud") {
+						keyScopes.push("snapshots:backup", "snapshots:cloud");
+					} else if (perm === "advancedDetection" || perm === "detection:advanced") {
+						keyScopes.push("detection:advanced");
+					} else if (perm === "customRules" || perm === "custom:rules") {
+						keyScopes.push("rules:custom", "custom:rules");
+					} else if (perm === "teamSharing" || perm === "team:share") {
+						keyScopes.push("team:share");
+					} else {
+						// Pass through standard scope strings as-is
+						keyScopes.push(perm);
+					}
+				}
 			}
-			if (keyPermissions.advancedDetection) {
-				keyScopes.push("detection:advanced");
-			}
-			if (keyPermissions.customRules) {
-				keyScopes.push("rules:custom");
-			}
-			if (keyPermissions.teamSharing) {
-				keyScopes.push("team:share");
-			}
+
 			// All keys have basic snapshot operations
-			keyScopes.push("snapshots:read", "snapshots:write");
+			if (!keyScopes.includes("snapshots:read")) keyScopes.push("snapshots:read");
+			if (!keyScopes.includes("snapshots:write")) keyScopes.push("snapshots:write");
 
 			// Validate each required scope
 			for (const requiredScope of requiredScopes) {

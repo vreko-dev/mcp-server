@@ -1,5 +1,6 @@
 import { verify } from "@node-rs/argon2";
 import { generateApiKey, hashApiKey } from "@snapback/auth";
+import { nanoid as createId } from "nanoid";
 
 // In-memory store for API keys
 interface ApiKey {

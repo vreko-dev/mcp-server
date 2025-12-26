@@ -83,12 +83,13 @@ function cleanupTestWorkspace() {
 // ============================================================================
 
 describe("facadeHandlers registry", () => {
-	it("should have 15 handlers registered", () => {
-		expect(Object.keys(facadeHandlers)).toHaveLength(15);
+	it("should have 22 handlers registered", () => {
+		expect(Object.keys(facadeHandlers)).toHaveLength(22);
 	});
 
 	it("should have all expected tool names", () => {
 		const expectedTools = [
+			// Core tools (15)
 			"analyze",
 			"prepare_workspace",
 			"snapshot_create",
@@ -104,12 +105,20 @@ describe("facadeHandlers registry", () => {
 			"report_violation",
 			"get_learnings",
 			"meta",
+			"cleanup",
+			// Pair programmer composite tools (6)
+			"begin_task",
+			"quick_check",
+			"what_changed",
+			"review_work",
+			"complete_task",
+			"get_pairing_protocol",
 		];
 		expect(Object.keys(facadeHandlers).sort()).toEqual(expectedTools.sort());
 	});
 
 	it("should have function handlers for each tool", () => {
-		for (const [name, handler] of Object.entries(facadeHandlers)) {
+		for (const [_name, handler] of Object.entries(facadeHandlers)) {
 			expect(typeof handler).toBe("function");
 		}
 	});
@@ -202,7 +211,7 @@ describe("handleMeta", () => {
 		expect(data.version).toBeDefined();
 		expect(data.status).toBe("operational");
 		expect(data.tools).toBeInstanceOf(Array);
-		expect(data.tools.length).toBe(15);
+		expect(data.tools.length).toBe(16);
 	});
 
 	it("should include all tool names in catalog", async () => {

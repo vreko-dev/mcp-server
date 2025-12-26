@@ -97,13 +97,14 @@ describe("MCP Tool Integration", () => {
 
 	describe("Tool Registry", () => {
 		// Test ID: MCP-INT-001-001
-		it("should have all 15 facade tools registered", () => {
-			expect(FACADE_TOOLS).toHaveLength(15);
+		it("should have all 22 facade tools registered", () => {
+			expect(FACADE_TOOLS).toHaveLength(22);
 		});
 
 		// Test ID: MCP-INT-001-002
 		it("should have all expected tool names", () => {
 			const expectedTools = [
+				// Core tools (16)
 				"analyze",
 				"prepare_workspace",
 				"snapshot_create",
@@ -119,6 +120,14 @@ describe("MCP Tool Integration", () => {
 				"report_violation",
 				"get_learnings",
 				"meta",
+				"cleanup",
+				// Pair programmer composite tools (6)
+				"begin_task",
+				"quick_check",
+				"what_changed",
+				"review_work",
+				"complete_task",
+				"get_pairing_protocol",
 			];
 
 			const toolNames = FACADE_TOOLS.map((t) => t.name);
@@ -173,7 +182,7 @@ describe("MCP Tool Integration", () => {
 			const data = JSON.parse(result.content[0].text);
 			expect(data).toHaveProperty("tools");
 			expect(Array.isArray(data.tools)).toBe(true);
-			expect(data.tools.length).toBe(15);
+			expect(data.tools.length).toBe(16);
 
 			// Verify first tool structure (no tier field in meta response)
 			const firstTool = data.tools[0];
@@ -280,7 +289,7 @@ describe("MCP Tool Integration", () => {
 			// Verify response structure (tier field not included in output)
 			const data = JSON.parse(metaResult.content[0].text);
 			expect(data).toHaveProperty("tools");
-			expect(data.tools.length).toBe(15);
+			expect(data.tools.length).toBe(16);
 		});
 	});
 
@@ -304,7 +313,7 @@ describe("MCP Tool Integration", () => {
 			// All should have same structure
 			for (const data of parsed) {
 				expect(data).toHaveProperty("tools");
-				expect(data.tools.length).toBe(15);
+				expect(data.tools.length).toBe(16);
 			}
 		});
 
@@ -332,34 +341,34 @@ describe("MCP Tool Integration", () => {
 	describe("Schema Validation", () => {
 		// Test ID: MCP-INT-001-017
 		it("should validate analyze schema correctly", () => {
-			const validInput = { type: "risk", changes: [] };
-			const invalidInput = { type: "invalid", changes: [] };
+			const _validInput = { type: "risk", changes: [] };
+			const _invalidInput = { type: "invalid", changes: [] };
 
 			const tool = FACADE_TOOLS.find((t) => t.name === "analyze");
 			expect(tool).toBeDefined();
 
 			// Note: validateInput expects schema from validation.ts, not tool.inputSchema
 			// This test verifies the schema structure exists
-			expect(tool!.inputSchema).toHaveProperty("type", "object");
-			expect(tool!.inputSchema).toHaveProperty("properties");
+			expect(tool?.inputSchema).toHaveProperty("type", "object");
+			expect(tool?.inputSchema).toHaveProperty("properties");
 		});
 
 		// Test ID: MCP-INT-001-018
 		it("should validate snapshot_create schema", () => {
 			const tool = FACADE_TOOLS.find((t) => t.name === "snapshot_create");
 			expect(tool).toBeDefined();
-			expect(tool!.inputSchema).toHaveProperty("type", "object");
-			expect(tool!.inputSchema.properties).toHaveProperty("files");
-			expect(tool!.inputSchema.required).toContain("files");
+			expect(tool?.inputSchema).toHaveProperty("type", "object");
+			expect(tool?.inputSchema.properties).toHaveProperty("files");
+			expect(tool?.inputSchema.required).toContain("files");
 		});
 
 		// Test ID: MCP-INT-001-019
 		it("should validate get_context schema", () => {
 			const tool = FACADE_TOOLS.find((t) => t.name === "get_context");
 			expect(tool).toBeDefined();
-			expect(tool!.inputSchema).toHaveProperty("type", "object");
-			expect(tool!.inputSchema.properties).toHaveProperty("task");
-			expect(tool!.inputSchema.required).toContain("task");
+			expect(tool?.inputSchema).toHaveProperty("type", "object");
+			expect(tool?.inputSchema.properties).toHaveProperty("task");
+			expect(tool?.inputSchema.required).toContain("task");
 		});
 	});
 });

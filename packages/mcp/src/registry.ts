@@ -212,13 +212,15 @@ Returns snapshot ID for later restoration.`,
 - op: "status" - Quick health check
 - op: "constraint" - Get a constraint value
 - op: "check" - Check value against constraint
-- op: "blockers" - Get current project blockers`,
+- op: "blockers" - Get current project blockers
+- op: "reset" - Reset/cleanup stale context (Quick Fix)
+- op: "scan" - Scan for real-time blockers (Best Fix)`,
 		inputSchema: {
 			type: "object",
 			properties: {
 				op: {
 					type: "string",
-					enum: ["init", "build", "validate", "status", "constraint", "check", "blockers"],
+					enum: ["init", "build", "validate", "status", "constraint", "check", "blockers", "reset", "scan"],
 				},
 				domain: { type: "string", description: "For constraint/check: domain name" },
 				name: { type: "string", description: "For constraint/check: constraint name" },
@@ -517,6 +519,288 @@ Cleans up old snapshots, stale learnings, archived sessions, and orphaned blobs.
 			},
 		},
 		annotations: { title: "Cleanup", readOnlyHint: false, destructiveHint: true, idempotentHint: false },
+		tier: "free",
+	},
+
+	// ==========================================================================
+	// PAIR PROGRAMMER COMPOSITE TOOLS
+	// These reduce 5+ tool calls to 1-2 for common workflows
+	// ==========================================================================
+
+	{
+		name: "begin_task",
+		description: `🚀 **START ANY TASK** - Single entry point for development tasks.
+
+Combines: get_context + snapshot_create + get_learnings + session.start
+Reduces 5+ tool calls to 1 when starting any development work.
+
+**What it does:**
+- Auto-assesses risk of planned files
+- Creates snapshot if risk warrants it (with deduplication)
+- Retrieves relevant learnings for your task
+- Loads project patterns and constraints
+- Starts task tracking for change detection
+
+**When to use:**
+- Starting ANY new task (feature, bug fix, refactor)
+- Before making multi-file changes
+- When you want intelligent safety decisions
+
+**Returns:**
+- Task ID for tracking
+- Snapshot status (created/reused/skipped)
+- Relevant learnings and patterns
+- Risk assessment and recommendations
+- Suggested next_actions
+
+💡 Tip: Provide file paths for better snapshot decisions.`,
+		inputSchema: {
+			type: "object",
+			properties: {
+				task: { type: "string", description: "Brief description of what you're about to do" },
+				files: {
+					type: "array",
+					items: { type: "string" },
+					description: "Files you plan to modify (improves snapshot decisions)",
+				},
+				keywords: {
+					type: "array",
+					items: { type: "string" },
+					description: "Keywords for learning retrieval (auto-extracted if not provided)",
+				},
+				skipSnapshot: {
+					type: "boolean",
+					default: false,
+					description: "Skip snapshot creation (default: auto-decides based on risk)",
+				},
+			},
+			required: ["task"],
+		},
+		annotations: { title: "Begin Task", readOnlyHint: false, idempotentHint: false },
+		tier: "free",
+	},
+	{
+		name: "quick_check",
+		description: `⚡ **FAST VALIDATION** - Parallel TypeScript, tests, and lint check.
+
+Runs all validation in parallel for ~60% faster feedback.
+
+**What it checks:**
+- TypeScript compilation (noEmit)
+- Related test file discovery/execution
+- Biome lint validation
+
+**When to use:**
+- After making changes, before committing
+- During iterative development
+- To quickly verify code quality
+
+**Options:**
+- file/files: Specify files to check
+- runTests: Actually run tests (not just discover)
+- skipTypeScript/skipTests/skipLint: Skip specific checks
+
+💡 Tip: Uses current task files if no files specified.`,
+		inputSchema: {
+			type: "object",
+			properties: {
+				file: { type: "string", description: "Single file to validate" },
+				files: {
+					type: "array",
+					items: { type: "string" },
+					description: "Multiple files to validate",
+				},
+				runTests: {
+					type: "boolean",
+					default: false,
+					description: "Run tests (not just discover them)",
+				},
+				skipTypeScript: { type: "boolean", default: false, description: "Skip TypeScript check" },
+				skipTests: { type: "boolean", default: false, description: "Skip test discovery" },
+				skipLint: { type: "boolean", default: false, description: "Skip lint check" },
+			},
+		},
+		annotations: { title: "Quick Check", readOnlyHint: true, idempotentHint: true },
+		tier: "free",
+	},
+	{
+		name: "what_changed",
+		description: `📊 **CHANGE TRACKING** - See what changed since task start.
+
+Tracks file modifications with AI attribution from the extension.
+
+**What it shows:**
+- Files created/modified/deleted
+- Lines changed per file
+- AI-attributed changes (from extension)
+- Risk assessment based on changes
+
+**When to use:**
+- Before committing to review changes
+- To understand scope of modifications
+- To verify AI vs human changes
+
+**Options:**
+- includeDiff: Include actual file diffs
+- filterFiles: Only show specific files
+- includeAIAttribution: Show AI attribution data
+
+💡 Tip: Combines session tracking with git status.`,
+		inputSchema: {
+			type: "object",
+			properties: {
+				includeDiff: {
+					type: "boolean",
+					default: false,
+					description: "Include full diffs (default: summary only)",
+				},
+				filterFiles: {
+					type: "array",
+					items: { type: "string" },
+					description: "Only show changes to these files",
+				},
+				includeAIAttribution: {
+					type: "boolean",
+					default: true,
+					description: "Include AI attribution info",
+				},
+			},
+		},
+		annotations: { title: "What Changed", readOnlyHint: true, idempotentHint: true },
+		tier: "free",
+	},
+	{
+		name: "review_work",
+		description: `📝 **PRE-COMMIT REVIEW** - Comprehensive review before committing.
+
+Combines pattern validation, change summary, and learning suggestions.
+
+**What it does:**
+- Runs 7-layer validation on changed files
+- Summarizes all modifications
+- Suggests commit message
+- Proposes learnings to capture
+- Determines if ready to commit
+
+**When to use:**
+- Before committing any changes
+- Before opening a PR
+- After completing a feature/fix
+
+**Returns:**
+- readyToCommit: boolean
+- validation issues (if any)
+- suggestedCommitMessage
+- suggestedLearnings
+
+💡 Tip: Use complete_task to accept learnings and finalize.`,
+		inputSchema: {
+			type: "object",
+			properties: {
+				skipPatterns: {
+					type: "boolean",
+					default: false,
+					description: "Skip pattern validation",
+				},
+				includeCommitMessage: {
+					type: "boolean",
+					default: true,
+					description: "Generate suggested commit message",
+				},
+				files: {
+					type: "array",
+					items: { type: "string" },
+					description: "Specific files to review (default: all changed)",
+				},
+			},
+		},
+		annotations: { title: "Review Work", readOnlyHint: true, idempotentHint: true },
+		tier: "free",
+	},
+	{
+		name: "complete_task",
+		description: `✅ **FINISH TASK** - Gracefully end the current task.
+
+Finalizes task with summary, optional snapshot, and learning capture.
+
+**What it does:**
+- Generates task summary (files, lines, duration)
+- Creates final snapshot (optional)
+- Captures accepted learnings
+- Updates session statistics
+- Clears task tracking state
+
+**When to use:**
+- After committing changes
+- When abandoning a task
+- When blocked and switching tasks
+
+**Options:**
+- outcome: completed/abandoned/blocked
+- createSnapshot: Create final safety snapshot
+- acceptLearnings: Indices of suggested learnings to accept
+- customLearning: Add a custom learning
+
+💡 Tip: Use after review_work to capture suggested learnings.`,
+		inputSchema: {
+			type: "object",
+			properties: {
+				outcome: {
+					type: "string",
+					enum: ["completed", "abandoned", "blocked"],
+					default: "completed",
+					description: "Outcome of the task",
+				},
+				createSnapshot: {
+					type: "boolean",
+					default: true,
+					description: "Create final snapshot (default: true for completed)",
+				},
+				acceptLearnings: {
+					type: "array",
+					items: { type: "number" },
+					description: "Indices of suggested learnings to accept",
+				},
+				customLearning: {
+					type: "object",
+					properties: {
+						type: { type: "string", enum: ["pattern", "pitfall", "efficiency", "discovery", "workflow"] },
+						trigger: { type: "string" },
+						action: { type: "string" },
+					},
+					description: "Custom learning to add",
+				},
+				notes: { type: "string", description: "Notes about task completion" },
+			},
+		},
+		annotations: { title: "Complete Task", readOnlyHint: false, idempotentHint: false },
+		tier: "free",
+	},
+	{
+		name: "get_pairing_protocol",
+		description: `🤝 **PAIRING PROTOCOL** - Get AI agent guidance for SnapBack tools.
+
+Returns context-aware protocol for optimal tool usage.
+Designed for injection into system prompts.
+
+**Returns:**
+- Current task status (if any)
+- Recent observations
+- Risk areas in scope
+- Session statistics
+- Dynamic recommendations
+- Quick reference table
+- Full protocol text for system prompts
+
+**When to use:**
+- At session start to understand context
+- When unsure which tool to use
+- To get system prompt injection text`,
+		inputSchema: {
+			type: "object",
+			properties: {},
+		},
+		annotations: { title: "Get Pairing Protocol", readOnlyHint: true, idempotentHint: true },
 		tier: "free",
 	},
 ];

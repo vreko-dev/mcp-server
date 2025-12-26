@@ -18,6 +18,20 @@
  * @module @snapback/mcp
  */
 
+// Bridge (extension communication)
+export {
+	BridgeReceiver,
+	type BridgeReceiverConfig,
+	type BridgeReceiverStatus,
+	createPatternObservation,
+	createProgressObservation,
+	createRiskObservation,
+	createSuggestionObservation,
+	createWarningObservation,
+	getBridgeReceiver,
+	startBridgeReceiver,
+	stopBridgeReceiver,
+} from "./bridge/index.js";
 // Client exports
 export { type ApiClientConfig, SnapBackAPIClient } from "./client/api-client.js";
 export { MCP_ROUTES, type McpRouteKey } from "./client/routes.js";
@@ -66,6 +80,24 @@ export {
 } from "./registry.js";
 // Main server exports
 export { createMcpServer, type McpServerOptions } from "./server.js";
-
+// Session state
+export {
+	type CurrentTask,
+	drainPendingObservations,
+	endTask,
+	extractKeywords,
+	type FileChange,
+	formatDuration,
+	generateTaskId,
+	getCurrentTask,
+	getSessionState,
+	type MCPSessionState,
+	type Observation,
+	pushObservation,
+	type RiskArea,
+	recordFileChange,
+	startTask,
+	updateSessionState,
+} from "./session/state.js";
 // Transport
 export { runStdioMcpServer } from "./transport/stdio.js";

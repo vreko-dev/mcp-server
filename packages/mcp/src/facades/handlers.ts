@@ -15,7 +15,12 @@ import { applyAutomaticFix, diagnoseSnapshotFailure, formatDiagnosis, type Snaps
 import { CommonErrors } from "../errors.js";
 import type { ToolContext, ToolHandler, ToolResult } from "../registry.js";
 import { atomicWriteFileSync, validateFilePaths } from "../validation.js";
+// Import composite tool handlers (pair programmer)
+import { handleBeginTask } from "./begin-task.js";
+import { handleCompleteTask } from "./complete-task.js";
 import { getIntelligence } from "./intelligence.js";
+import { generatePairingProtocol, getContextSummary } from "./pairing-protocol.js";
+import { handleQuickCheck } from "./quick-check.js";
 import {
 	buildSmartActions,
 	type CleanupResult,
@@ -30,6 +35,8 @@ import {
 	getFileHashes,
 	getResponseConfig,
 } from "./response-utils.js";
+import { handleReviewWork } from "./review-work.js";
+import { handleWhatChanged } from "./what-changed.js";
 
 /**
  * Helper to create a tool result
@@ -725,6 +732,8 @@ export const handleContext: ToolHandler = async (args, context) => {
 					},
 				},
 				blockers: [],
+				lastScanned: new Date().toISOString(),
+				staleAfterDays: 7,
 				created_at: new Date().toISOString(),
 				updated_at: new Date().toISOString(),
 			};
@@ -939,13 +948,45 @@ export const handleContext: ToolHandler = async (args, context) => {
 			try {
 				const contextData = JSON.parse(readFileSync(ctxPath, "utf8"));
 				const blockers = contextData?.blockers || [];
+				const lastScanned = contextData?.lastScanned;
+				const staleAfterDays = contextData?.staleAfterDays || 7;
 
-				return jsonResult({
+				// Check staleness
+				let isStale = false;
+				let daysSinceScanned: number | null = null;
+				let stalenessWarning: string | null = null;
+
+				if (lastScanned) {
+					const scanTime = new Date(lastScanned).getTime();
+					daysSinceScanned = Math.floor((Date.now() - scanTime) / (1000 * 60 * 60 * 24));
+					isStale = daysSinceScanned > staleAfterDays;
+
+					if (isStale) {
+						stalenessWarning = `Data is ${daysSinceScanned} days stale - consider refreshing`;
+					}
+				} else {
+					// No lastScanned field means old format or never scanned
+					stalenessWarning = "No scan timestamp found - data may be stale";
+				}
+
+				const result: Record<string, unknown> = {
 					op: "blockers",
 					blockers,
 					count: blockers.length,
 					message: blockers.length > 0 ? `${blockers.length} blocker(s) found` : "No blockers",
-				});
+					lastScanned,
+					daysSinceScanned,
+					isStale,
+				};
+
+				if (stalenessWarning) {
+					result.warning = stalenessWarning;
+					result.next_actions = [
+						{ tool: "context", priority: 1, reason: "Refresh stale data", args: { op: "scan" } },
+					];
+				}
+
+				return jsonResult(result);
 			} catch (error) {
 				const msg = error instanceof Error ? error.message : String(error);
 				return jsonResult({
@@ -956,13 +997,177 @@ export const handleContext: ToolHandler = async (args, context) => {
 				});
 			}
 		}
+		case "reset": {
+			// Quick Fix: Reset/cleanup stale context
+			if (!existsSync(ctxPath)) {
+				return jsonResult({
+					op: "reset",
+					status: "success",
+					message: "No context to reset",
+				});
+			}
+
+			try {
+				// Remove stale context file
+				await import("node:fs").then((fs) => fs.unlinkSync(ctxPath));
+
+				// Also remove .ctx file if exists
+				if (existsSync(ctxFilePath)) {
+					await import("node:fs").then((fs) => fs.unlinkSync(ctxFilePath));
+				}
+
+				return jsonResult({
+					op: "reset",
+					status: "success",
+					message: "Context reset successfully - run op: init to recreate",
+					next_actions: [{ tool: "context", priority: 1, reason: "Recreate context", args: { op: "init" } }],
+				});
+			} catch (error) {
+				const msg = error instanceof Error ? error.message : String(error);
+				return jsonResult({
+					op: "reset",
+					status: "error",
+					error: "E404_CONTEXT_OPERATION_FAILED",
+					message: `Failed to reset context: ${msg}`,
+				});
+			}
+		}
+		case "scan": {
+			// Best Fix: Real-time scanning of blockers
+			if (!existsSync(ctxPath)) {
+				return jsonResult({
+					op: "scan",
+					status: "error",
+					error: "E204_CONTEXT_NOT_INITIALIZED",
+					message: "Context not initialized - run op: init first",
+					next_actions: [
+						{ tool: "context", priority: 1, reason: "Initialize context", args: { op: "init" } },
+					],
+				});
+			}
+
+			try {
+				// Read existing context
+				const contextData = JSON.parse(readFileSync(ctxPath, "utf8"));
+				const newBlockers: Array<{
+					key: string;
+					label: string;
+					current: number | string;
+					target: number | string;
+				}> = [];
+
+				// Scan for TypeScript errors
+				try {
+					const { execSync } = await import("node:child_process");
+					const tscOutput = execSync("npx tsc --noEmit --pretty false 2>&1 || true", {
+						cwd: context.workspaceRoot,
+						encoding: "utf8",
+						timeout: 30000,
+					});
+
+					// Count TypeScript errors
+					const errorMatches = tscOutput.match(/error TS\d+:/g);
+					const tsErrorCount = errorMatches ? errorMatches.length : 0;
+
+					if (tsErrorCount > 0) {
+						newBlockers.push({
+							key: "_ts",
+							label: "typescript-errors",
+							current: tsErrorCount,
+							target: 0,
+						});
+					}
+				} catch (tsError) {
+					// TypeScript check failed - non-blocking
+					console.error("TypeScript scan failed:", tsError);
+				}
+
+				// Scan for bundle size (if extension exists)
+				const extensionDistPath = join(context.workspaceRoot, "apps", "vscode", "dist");
+				if (existsSync(extensionDistPath)) {
+					try {
+						const { readdirSync, statSync } = await import("node:fs");
+						let totalSize = 0;
+
+						const calculateDirSize = (dir: string): void => {
+							const files = readdirSync(dir);
+							for (const file of files) {
+								const filePath = join(dir, file);
+								const stats = statSync(filePath);
+								if (stats.isDirectory()) {
+									calculateDirSize(filePath);
+								} else {
+									totalSize += stats.size;
+								}
+							}
+						};
+
+						calculateDirSize(extensionDistPath);
+						const sizeInMB = (totalSize / (1024 * 1024)).toFixed(2);
+						const maxSizeMB = contextData.constraints?.extension?.bundle?.max || 150 / 1024; // Convert KB to MB if needed
+
+						if (Number.parseFloat(sizeInMB) > maxSizeMB) {
+							newBlockers.push({
+								key: "_eb",
+								label: "bundle-size",
+								current: `${sizeInMB}MB`,
+								target: `${maxSizeMB}MB`,
+							});
+						}
+					} catch (bundleError) {
+						// Bundle scan failed - non-blocking
+						console.error("Bundle size scan failed:", bundleError);
+					}
+				}
+
+				// Update context with new blockers and scan timestamp
+				contextData.blockers = newBlockers;
+				contextData.lastScanned = new Date().toISOString();
+				contextData.updated_at = new Date().toISOString();
+
+				// Write updated context
+				const writeResult = atomicWriteFileSync(ctxPath, JSON.stringify(contextData, null, 2));
+				if (!writeResult.success) {
+					return jsonResult({
+						op: "scan",
+						status: "error",
+						error: "E404_CONTEXT_OPERATION_FAILED",
+						message: writeResult.error,
+					});
+				}
+
+				return jsonResult({
+					op: "scan",
+					status: "success",
+					scannedAt: contextData.lastScanned,
+					blockers: newBlockers,
+					blockersFound: newBlockers.length,
+					message:
+						newBlockers.length > 0
+							? `Found ${newBlockers.length} blocker(s) - ${newBlockers.map((b) => b.label).join(", ")}`
+							: "No blockers detected",
+					next_actions:
+						newBlockers.length > 0
+							? [{ tool: "context", priority: 2, reason: "Review blockers", args: { op: "blockers" } }]
+							: [],
+				});
+			} catch (error) {
+				const msg = error instanceof Error ? error.message : String(error);
+				return jsonResult({
+					op: "scan",
+					status: "error",
+					error: "E404_CONTEXT_OPERATION_FAILED",
+					message: `Scan failed: ${msg}`,
+				});
+			}
+		}
 		default:
 			return jsonResult({
 				op,
 				status: "error",
 				error: "E103_INVALID_PARAM_VALUE",
 				message: `Unknown context operation: ${op}`,
-				validOps: ["init", "build", "validate", "status", "constraint", "check", "blockers"],
+				validOps: ["init", "build", "validate", "status", "constraint", "check", "blockers", "reset", "scan"],
 			});
 	}
 };
@@ -1692,6 +1897,30 @@ export const handleCleanup: ToolHandler = async (args, context) => {
 };
 
 /**
+ * get_pairing_protocol - Get pairing protocol for AI agent system prompts
+ */
+export const handleGetPairingProtocol: ToolHandler = async (_args, context) => {
+	const protocol = generatePairingProtocol(context.workspaceRoot);
+	const contextSummary = getContextSummary(context.workspaceRoot);
+
+	return jsonResult({
+		status: "success",
+		version: protocol.version,
+		currentTask: protocol.currentTask,
+		recentObservations: protocol.recentObservations,
+		riskAreas: protocol.riskAreas,
+		sessionStats: protocol.sessionStats,
+		recommendations: protocol.recommendations,
+		quickReference: protocol.quickReference,
+		protocolText: protocol.protocolText,
+		contextSummary,
+		message: contextSummary.hasActiveTask
+			? `Active task: ${protocol.currentTask?.description}`
+			: "No active task - call begin_task to start",
+	});
+};
+
+/**
  * Map facade names to handlers
  */
 export const facadeHandlers: Record<string, ToolHandler> = {
@@ -1711,4 +1940,11 @@ export const facadeHandlers: Record<string, ToolHandler> = {
 	get_learnings: handleGetLearnings,
 	meta: handleMeta,
 	cleanup: handleCleanup,
+	// Pair programmer composite tools
+	begin_task: handleBeginTask,
+	quick_check: handleQuickCheck,
+	what_changed: handleWhatChanged,
+	review_work: handleReviewWork,
+	complete_task: handleCompleteTask,
+	get_pairing_protocol: handleGetPairingProtocol,
 };

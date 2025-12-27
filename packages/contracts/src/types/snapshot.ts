@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { RiskScoreSchema } from "../schemas";
+import { RiskScoreSchema } from "../schemas.js";
 
 /**
  * Base Snapshot interface

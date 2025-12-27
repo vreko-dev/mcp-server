@@ -13,6 +13,8 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { ToolHandler, ToolResult } from "../registry.js";
+import { createErrorCacheService } from "../services/error-cache-service.js";
+import { createGitContextService } from "../services/git-context-service.js";
 import { createSnapshotService } from "../services/snapshot-service.js";
 import {
 	drainPendingObservations,
@@ -21,6 +23,7 @@ import {
 	type RiskArea,
 	startTask,
 } from "../session/state.js";
+import type { ErrorContext, GitContext } from "../types/context.js";
 import { getIntelligence } from "./intelligence.js";
 
 // =============================================================================
@@ -88,6 +91,10 @@ interface BeginTaskOutput {
 	}>;
 	/** Static analysis results for planned files */
 	staticAnalysis?: StaticAnalysisOutput;
+	/** Last known errors for planned files (P0 context enhancement) */
+	lastKnownErrors?: ErrorContext;
+	/** Git change context (P0 context enhancement) */
+	gitContext?: GitContext;
 }
 
 // =============================================================================
@@ -531,13 +538,53 @@ export const handleBeginTask: ToolHandler = async (args, context): Promise<ToolR
 		staticAnalysis = await runStaticAnalysis(files, workspaceRoot);
 	}
 
-	// 8. Drain pending observations from extension
+	// 8. Get error context for planned files (P0 context enhancement)
+	let lastKnownErrors: ErrorContext | undefined;
+	if (files && files.length > 0) {
+		try {
+			const errorCacheService = createErrorCacheService(workspaceRoot);
+			const cachedErrors = errorCacheService.getErrorsForFiles(files);
+
+			if (cachedErrors.length > 0) {
+				// Group errors by source type
+				lastKnownErrors = {
+					typescript: cachedErrors
+						.filter((e) => e.source === "typescript")
+						.map((e) => ({ ...e, age: e.age })),
+					tests: cachedErrors.filter((e) => e.source === "test").map((e) => ({ ...e, age: e.age })),
+					lintErrors: cachedErrors.filter((e) => e.source === "lint").map((e) => ({ ...e, age: e.age })),
+				};
+			}
+		} catch {
+			// Error cache is optional - continue without it
+		}
+	}
+
+	// 9. Get git context for planned files (P0 context enhancement)
+	let gitContext: GitContext | undefined;
+	try {
+		const gitContextService = createGitContextService(workspaceRoot);
+		gitContext = await gitContextService.getContext(files || []);
+
+		// Only include if there's meaningful content
+		if (
+			!gitContext.branch.current &&
+			gitContext.uncommittedChanges.length === 0 &&
+			gitContext.recentCommits.length === 0
+		) {
+			gitContext = undefined;
+		}
+	} catch {
+		// Git context is optional - continue without it
+	}
+
+	// 10. Drain pending observations from extension
 	const observations = drainPendingObservations(workspaceRoot).map((o) => ({
 		type: o.type,
 		message: o.message,
 	}));
 
-	// 9. Start task tracking
+	// 11. Start task tracking
 	const currentTask = startTask(workspaceRoot, {
 		description: task,
 		plannedFiles: files || [],
@@ -549,10 +596,10 @@ export const handleBeginTask: ToolHandler = async (args, context): Promise<ToolR
 	const state = getSessionState(workspaceRoot);
 	state.riskAreasTouched = riskAssessment.riskAreas;
 
-	// 10. Generate next actions (informed by static analysis)
+	// 12. Generate next actions (informed by static analysis and errors)
 	const nextActions = generateNextActions(riskAssessment, learnings, staticAnalysis);
 
-	// 11. Build response
+	// 13. Build response with enhanced context
 	const output: BeginTaskOutput = {
 		taskId: currentTask.id,
 		snapshot,
@@ -563,13 +610,25 @@ export const handleBeginTask: ToolHandler = async (args, context): Promise<ToolR
 		riskAssessment,
 		nextActions,
 		staticAnalysis,
+		lastKnownErrors,
+		gitContext,
 	};
 
 	// Generate hint based on most useful information
 	const skippedCount = staticAnalysis?.skippedTests?.length ?? 0;
+	const knownErrorCount =
+		(lastKnownErrors?.typescript?.length ?? 0) +
+		(lastKnownErrors?.tests?.length ?? 0) +
+		(lastKnownErrors?.lintErrors?.length ?? 0);
+	const uncommittedCount = gitContext?.uncommittedChanges?.length ?? 0;
+
 	let hint: string;
-	if (skippedCount > 0) {
+	if (knownErrorCount > 0) {
+		hint = `⚠️ ${knownErrorCount} known error(s) in planned files - check lastKnownErrors`;
+	} else if (skippedCount > 0) {
 		hint = `⚠️ ${skippedCount} skipped test(s) found - may need enabling`;
+	} else if (uncommittedCount > 0) {
+		hint = `📝 ${uncommittedCount} uncommitted change(s) in working tree`;
 	} else if (snapshot.created) {
 		hint = `Safety snapshot created: ${snapshot.id}`;
 	} else if (learnings.length > 0) {

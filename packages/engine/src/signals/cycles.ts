@@ -171,7 +171,10 @@ export function analyzeCycles(cycles: string[][]): CyclesResult {
 // MAIN EXECUTION
 // =============================================================================
 
-async function main() {
+/**
+ * Main CLI entry point for standalone cycles signal execution
+ */
+export async function mainCycles() {
 	try {
 		const input = await readInput();
 		const workspace = input.workspace || process.env.SNAPBACK_WORKSPACE || process.cwd();
@@ -205,9 +208,3 @@ async function main() {
 	}
 }
 
-// Only run main() when executed directly (CLI mode), not when imported
-if (typeof require !== "undefined" && require.main === module) {
-	main();
-} else if (typeof import.meta !== "undefined" && (import.meta as any).url === `file://${process.argv[1]}`) {
-	main();
-}

@@ -179,7 +179,10 @@ export function calculateComplexityAggregate(files: FileChange[]): ComplexityRes
 // MAIN EXECUTION
 // =============================================================================
 
-async function main() {
+/**
+ * Main CLI entry point for standalone complexity signal execution
+ */
+export async function mainComplexity() {
 	try {
 		const input = await readInput();
 
@@ -236,9 +239,3 @@ async function main() {
 	}
 }
 
-// Only run main() when executed directly (CLI mode), not when imported
-if (typeof require !== "undefined" && require.main === module) {
-	main();
-} else if (typeof import.meta !== "undefined" && (import.meta as any).url === `file://${process.argv[1]}`) {
-	main();
-}

@@ -78,7 +78,10 @@ async function readInput(): Promise<{ files: FileInput[] }> {
 	});
 }
 
-async function main(): Promise<void> {
+/**
+ * Main CLI entry point for standalone velocity signal execution
+ */
+export async function mainVelocity(): Promise<void> {
 	try {
 		const input = await readInput();
 		const detector = new BurstDetector({ threshold: 30, windowMs: 100 });
@@ -120,9 +123,3 @@ async function main(): Promise<void> {
 	}
 }
 
-// Only run main() when executed directly (CLI mode), not when imported
-if (typeof require !== "undefined" && require.main === module) {
-	main();
-} else if (typeof import.meta !== "undefined" && (import.meta as any).url === `file://${process.argv[1]}`) {
-	main();
-}

@@ -95,7 +95,10 @@ export function detectThreats(content: string): Array<{ description: string; sev
 	return threats;
 }
 
-async function main(): Promise<void> {
+/**
+ * Main CLI entry point for standalone threats signal execution
+ */
+export async function mainThreats(): Promise<void> {
 	try {
 		const input = await readInput();
 		let totalScore = 0;
@@ -138,9 +141,3 @@ async function main(): Promise<void> {
 	}
 }
 
-// Only run main() when executed directly (CLI mode), not when imported
-if (typeof require !== "undefined" && require.main === module) {
-	main();
-} else if (typeof import.meta !== "undefined" && (import.meta as any).url === `file://${process.argv[1]}`) {
-	main();
-}

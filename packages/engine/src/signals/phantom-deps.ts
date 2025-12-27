@@ -241,7 +241,10 @@ export function detectPhantomDeps(imports: string[], declaredDeps: Set<string>):
 	return { phantoms, typosquats };
 }
 
-async function main(): Promise<void> {
+/**
+ * Main CLI entry point for standalone phantom-deps signal execution
+ */
+export async function mainPhantomDeps(): Promise<void> {
 	try {
 		const input = await readInput();
 		const workspace = input.workspace || process.cwd();
@@ -311,9 +314,3 @@ async function main(): Promise<void> {
 	}
 }
 
-// Only run main() when executed directly (CLI mode), not when imported
-if (typeof require !== "undefined" && require.main === module) {
-	main();
-} else if (typeof import.meta !== "undefined" && (import.meta as any).url === `file://${process.argv[1]}`) {
-	main();
-}

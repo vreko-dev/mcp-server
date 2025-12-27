@@ -14,7 +14,9 @@ import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
 import { basename, dirname, join, relative } from "node:path";
 import type { ToolHandler, ToolResult } from "../registry.js";
+import { createErrorCacheService } from "../services/error-cache-service.js";
 import { getCurrentTask, pushObservation } from "../session/state.js";
+import type { CachedError } from "../types/context.js";
 
 // =============================================================================
 // TYPES
@@ -428,6 +430,89 @@ export const handleQuickCheck: ToolHandler = async (args, context): Promise<Tool
 			message: summary,
 			timestamp: Date.now(),
 		});
+	}
+
+	// Cache errors for future begin_task calls (P0 context enhancement)
+	try {
+		const errorCacheService = createErrorCacheService(workspaceRoot);
+		const errorsToCache: CachedError[] = [];
+		const now = Date.now();
+
+		// Cache TypeScript errors
+		if (typescript.errors && typescript.errors.length > 0) {
+			for (const errorMsg of typescript.errors) {
+				// Parse error format: "file.ts(line,col): error TS1234: message"
+				const match = errorMsg.match(/^(.+?)\((\d+),(\d+)\):\s*error\s+(TS\d+):\s*(.+)$/);
+				if (match) {
+					errorsToCache.push({
+						file: match[1],
+						line: Number.parseInt(match[2], 10),
+						column: Number.parseInt(match[3], 10),
+						code: match[4],
+						message: match[5],
+						severity: "error",
+						timestamp: now,
+						source: "typescript",
+					});
+				} else {
+					// Fallback for non-standard format
+					errorsToCache.push({
+						file: files[0] || "unknown",
+						line: 0,
+						message: errorMsg,
+						severity: "error",
+						timestamp: now,
+						source: "typescript",
+					});
+				}
+			}
+		}
+
+		// Cache lint errors
+		if (lint.errors && lint.errors.length > 0) {
+			for (const errorMsg of lint.errors) {
+				// Parse format: "file.ts: message" or just message
+				const match = errorMsg.match(/^(.+?):\s*(.+)$/);
+				if (match) {
+					errorsToCache.push({
+						file: match[1],
+						line: 0,
+						message: match[2],
+						severity: "error",
+						timestamp: now,
+						source: "lint",
+					});
+				}
+			}
+		}
+
+		// Cache test failures
+		const testResult = tests as QuickCheckOutput["tests"];
+		if (testResult.errors && testResult.errors.length > 0) {
+			for (const errorMsg of testResult.errors) {
+				errorsToCache.push({
+					file: files[0] || "unknown",
+					line: 0,
+					message: errorMsg,
+					severity: "error",
+					timestamp: now,
+					source: "test",
+				});
+			}
+		}
+
+		if (errorsToCache.length > 0) {
+			errorCacheService.cacheErrors(errorsToCache);
+		}
+
+		// Clear errors for files that passed all checks
+		if (allPassed) {
+			for (const file of files) {
+				errorCacheService.clearForFile(file);
+			}
+		}
+	} catch {
+		// Error caching is optional - don't fail quick_check
 	}
 
 	// Build next actions

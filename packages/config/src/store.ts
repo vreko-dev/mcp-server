@@ -24,8 +24,9 @@ import { DEFAULT_CONFIG, validateConfig, ZERO_CONFIG_DEFAULTS } from "./schemas"
 
 /**
  * Check if running in MCP quiet mode (suppress all non-error output for MCP stdio)
+ * Note: Check at call time, not module load time, for VS Code extension compatibility.
  */
-const MCP_QUIET = process.env.MCP_QUIET === "1" || process.env.MCP_QUIET === "true";
+const isMCPQuiet = () => process.env.MCP_QUIET === "1" || process.env.MCP_QUIET === "true";
 
 /**
  * Simple logger - uses stderr to avoid polluting stdout (important for MCP stdio transport)
@@ -33,9 +34,9 @@ const MCP_QUIET = process.env.MCP_QUIET === "1" || process.env.MCP_QUIET === "tr
  * When MCP_QUIET=1, only errors are logged to avoid corrupting MCP protocol
  */
 const logger = {
-	debug: (msg: string, ctx?: any) => !MCP_QUIET && console.error(`[DEBUG] ${msg}`, ctx ? JSON.stringify(ctx) : ""),
-	info: (msg: string, ctx?: any) => !MCP_QUIET && console.error(`[INFO] ${msg}`, ctx ? JSON.stringify(ctx) : ""),
-	warn: (msg: string, ctx?: any) => !MCP_QUIET && console.error(`[WARN] ${msg}`, ctx ? JSON.stringify(ctx) : ""),
+	debug: (msg: string, ctx?: any) => !isMCPQuiet() && console.error(`[DEBUG] ${msg}`, ctx ? JSON.stringify(ctx) : ""),
+	info: (msg: string, ctx?: any) => !isMCPQuiet() && console.error(`[INFO] ${msg}`, ctx ? JSON.stringify(ctx) : ""),
+	warn: (msg: string, ctx?: any) => !isMCPQuiet() && console.error(`[WARN] ${msg}`, ctx ? JSON.stringify(ctx) : ""),
 	error: (msg: string, ctx?: any) => console.error(`[ERROR] ${msg}`, ctx ? JSON.stringify(ctx) : ""),
 };
 
@@ -127,7 +128,7 @@ export class ConfigStore {
 				featureFlagEnabled: enabled,
 				featureFlagSource: "environment",
 			};
-			if (!MCP_QUIET) {
+			if (!isMCPQuiet()) {
 				console.error(`[ConfigStore] Feature flag from environment: ${enabled}`);
 			}
 			return enabled;
@@ -144,7 +145,7 @@ export class ConfigStore {
 			featureFlagEnabled: true,
 			featureFlagSource: "default",
 		};
-		if (!MCP_QUIET) {
+		if (!isMCPQuiet()) {
 			console.error("[ConfigStore] Feature flag defaulting to v2 (100% rollout)");
 		}
 		return true;

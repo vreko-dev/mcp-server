@@ -138,4 +138,9 @@ async function main(): Promise<void> {
 	}
 }
 
-main();
+// Only run main() when executed directly (CLI mode), not when imported
+if (typeof require !== "undefined" && require.main === module) {
+	main();
+} else if (typeof import.meta !== "undefined" && (import.meta as any).url === `file://${process.argv[1]}`) {
+	main();
+}

@@ -100,6 +100,8 @@ export * from "./tiers";
 // Note: telemetry re-exports from events, so not exported here to avoid conflicts
 
 export * from "./session";
+// Session subdirectory (file modification tracking)
+export * from "./session/index";
 export * from "./types/branded";
 export * from "./types/config";
 export * from "./types/protection";

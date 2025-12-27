@@ -9,7 +9,6 @@
 		],
 		"paths": {
 			"@/*": ["./"],
-			"@/orpc/*": ["../apps/api/orpc/*"],
 			"@/modules/*": ["./modules/*"],
 			"@/components/*": ["./components/*"],
 			"@/lib/*": ["./lib/*"],
@@ -21,7 +20,6 @@
 			"@saas/*": ["./modules/saas/*"],
 			"@ui/*": ["./modules/ui/*"],
 			"@shared/*": ["./modules/shared/*"],
-			"@legacy-config": ["../../packages/config/src"],
 			".source": ["./.source"],
 			".source/*": ["./.source/*"]
 		}

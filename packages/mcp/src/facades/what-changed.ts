@@ -11,7 +11,8 @@
 import { execSync } from "node:child_process";
 import { relative } from "node:path";
 import type { ToolHandler, ToolResult } from "../registry.js";
-import { formatDuration, getBaselineFileSet, getCurrentTask, getSessionState } from "../session/state.js";
+import { formatDuration, getBaselineFileSet, getCurrentTask } from "../session/state.js";
+import { getIntelligence } from "./intelligence.js";
 
 // =============================================================================
 // TYPES
@@ -102,7 +103,9 @@ function getGitChanges(workspaceRoot: string): Map<string, "A" | "M" | "D"> {
 		});
 
 		for (const line of result.split("\n")) {
-			if (!line.trim()) continue;
+			if (!line.trim()) {
+				continue;
+			}
 
 			const status = line.substring(0, 2);
 			const file = line.substring(3).trim();
@@ -200,7 +203,6 @@ export const handleWhatChanged: ToolHandler = async (args, context): Promise<Too
 	const { includeDiff = false, filterFiles, includeAIAttribution = true } = args as WhatChangedInput;
 
 	const workspaceRoot = context.workspaceRoot;
-	const state = getSessionState(workspaceRoot);
 	const task = getCurrentTask(workspaceRoot);
 
 	// If no active task, return clear message instead of random git changes
@@ -237,19 +239,21 @@ export const handleWhatChanged: ToolHandler = async (args, context): Promise<Too
 	// Get baseline file set (files that were modified BEFORE task started)
 	const baselineFiles = getBaselineFileSet(workspaceRoot);
 
-	// Get changes from session state (populated by extension) and git
-	const sessionChanges = state.changesSinceTaskStart;
+	// Get changes from Intelligence's shared session (cross-surface: Extension, MCP, CLI)
+	// This replaces the MCP-only state.changesSinceTaskStart
+	const intel = getIntelligence(workspaceRoot);
+	const intelligenceChanges = intel.getFileModifications(task.id, task.startedAt);
 	const gitChanges = getGitChanges(workspaceRoot);
 
-	// Merge session and git changes
+	// Merge Intelligence and git changes
 	const changeMap = new Map<string, ChangeSummary>();
 
-	// Add session-tracked changes (these are always task-scoped)
-	for (const change of sessionChanges) {
-		const relativePath = relative(workspaceRoot, change.file);
+	// Add Intelligence-tracked changes (shared across all surfaces)
+	for (const change of intelligenceChanges) {
+		const relativePath = change.path.startsWith(workspaceRoot) ? relative(workspaceRoot, change.path) : change.path;
 		changeMap.set(relativePath, {
 			file: relativePath,
-			type: change.type,
+			type: change.type === "create" ? "created" : change.type === "delete" ? "deleted" : "modified",
 			linesChanged: change.linesChanged,
 			aiAttributed: change.aiAttributed,
 			timestamp: change.timestamp,
@@ -312,7 +316,7 @@ export const handleWhatChanged: ToolHandler = async (args, context): Promise<Too
 				if (diff) {
 					diffs.push({
 						file: change.file,
-						diff: diff.length > 2000 ? diff.slice(0, 2000) + "\n...(truncated)" : diff,
+						diff: diff.length > 2000 ? `${diff.slice(0, 2000)}\n...(truncated)` : diff,
 					});
 				}
 			}

@@ -473,6 +473,25 @@ export class SessionManager {
 	}
 
 	/**
+	 * Get file modifications for a session
+	 * @param sessionId - Session to query
+	 * @param since - Optional timestamp filter (return modifications >= since)
+	 * @returns File modifications array (empty if session not found)
+	 */
+	getFileModifications(sessionId: string, since?: number): FileModification[] {
+		const session = this.getSession(sessionId);
+		if (!session) {
+			return [];
+		}
+
+		if (since !== undefined && since > 0) {
+			return session.fileModifications.filter((m) => m.timestamp >= since);
+		}
+
+		return [...session.fileModifications];
+	}
+
+	/**
 	 * Prune stale sessions (older than timeout)
 	 */
 	pruneStale(): number {

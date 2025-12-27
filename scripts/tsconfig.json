@@ -1,12 +1,7 @@
 {
 	"extends": "../tsconfig.base.json",
 	"compilerOptions": {
-		"ignoreDeprecations": "6.0",
-		"baseUrl": ".",
-		"types": ["node"],
-		"paths": {
-			"@snapback/*": ["../packages/*"]
-		}
+		"composite": false
 	},
 	"include": ["**/*.ts", "types/**/*.d.ts"],
 	"exclude": ["node_modules", "dist"]

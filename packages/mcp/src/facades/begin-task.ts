@@ -596,6 +596,18 @@ export const handleBeginTask: ToolHandler = async (args, context): Promise<ToolR
 	const state = getSessionState(workspaceRoot);
 	state.riskAreasTouched = riskAssessment.riskAreas;
 
+	// 11b. Start Intelligence session with same task ID for cross-surface coordination
+	// This enables Extension, MCP, and CLI to share file modification tracking
+	try {
+		const intel = getIntelligence(workspaceRoot);
+		intel.startSession(currentTask.id, {
+			workspaceId: workspaceRoot,
+			tags: keywords,
+		});
+	} catch {
+		// Intelligence session start is best-effort, don't fail the task
+	}
+
 	// 12. Generate next actions (informed by static analysis and errors)
 	const nextActions = generateNextActions(riskAssessment, learnings, staticAnalysis);
 

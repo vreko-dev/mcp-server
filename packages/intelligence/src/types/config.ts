@@ -121,6 +121,25 @@ export const IntelligenceConfigSchema = z.object({
 		.optional(),
 
 	/**
+	 * Session persistence configuration
+	 * Enables cross-surface session sharing (Extension, MCP, CLI)
+	 */
+	sessionPersistence: z
+		.object({
+			/**
+			 * Path for session persistence (JSONL format)
+			 * @default '.snapback/session/sessions.jsonl'
+			 */
+			path: z.string().optional(),
+			/**
+			 * Enable autosave on session changes
+			 * @default true
+			 */
+			autosave: z.boolean().optional().default(true),
+		})
+		.optional(),
+
+	/**
 	 * Advisory system configuration (Phase 2)
 	 */
 	advisoryConfig: z

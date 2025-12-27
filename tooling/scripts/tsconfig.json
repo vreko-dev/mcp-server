@@ -3,9 +3,6 @@
 	"compilerOptions": {
 		"ignoreDeprecations": "5.0",
 		"jsx": "preserve",
-		"paths": {
-			"@snapback/*": ["../../packages/*"]
-		},
 		"composite": false,
 		"skipLibCheck": true
 	},

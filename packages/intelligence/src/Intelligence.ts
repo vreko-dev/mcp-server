@@ -12,6 +12,10 @@
  * - Product use: rootDir=workspace
  */
 
+import {
+	type FileModification as ContractsFileModification,
+	fromIntelligenceFileModification,
+} from "@snapback/contracts";
 import { AdvisoryEngine } from "./advisory/AdvisoryEngine.js";
 import { ContextEngine } from "./context/ContextEngine.js";
 import { LearningEngine } from "./learning/LearningEngine.js";
@@ -88,7 +92,10 @@ export class Intelligence {
 		this.validationPipeline = new ValidationPipeline();
 		this.learningEngine = new LearningEngine(this.config);
 		this.violationTracker = new ViolationTracker(this.config);
-		this.sessionManager = new SessionManager(config.sessionLimits);
+		this.sessionManager = new SessionManager(config.sessionLimits, {
+			persistencePath: config.sessionPersistence?.path,
+			autosave: config.sessionPersistence?.autosave ?? true,
+		});
 		this.advisoryEngine = new AdvisoryEngine(config.advisoryConfig);
 	}
 
@@ -421,6 +428,17 @@ export class Intelligence {
 	 */
 	endSession(sessionId: string): import("./types/session.js").SessionAnalytics | null {
 		return this.sessionManager.endSession(sessionId);
+	}
+
+	/**
+	 * Get file modifications for a session
+	 * Returns canonical FileModification type from @snapback/contracts
+	 * @param sessionId - Session to query
+	 * @param since - Optional timestamp filter (return modifications >= since)
+	 */
+	getFileModifications(sessionId: string, since?: number): ContractsFileModification[] {
+		const mods = this.sessionManager.getFileModifications(sessionId, since);
+		return mods.map((mod) => fromIntelligenceFileModification(mod, "extension"));
 	}
 
 	// =========================================================================

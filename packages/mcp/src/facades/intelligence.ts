@@ -18,6 +18,9 @@ const instances = new Map<string, Intelligence>();
 /**
  * Get or create an Intelligence instance for a workspace
  *
+ * Intelligence is the shared session store across all surfaces (Extension, MCP, CLI).
+ * All surfaces use the same workspace-keyed persistence path for session coordination.
+ *
  * @param workspaceRoot - Absolute path to workspace root
  * @returns Intelligence instance configured for the workspace
  *
@@ -38,10 +41,20 @@ export function getIntelligence(workspaceRoot: string): Intelligence {
 			patternsDir: ".snapback/patterns",
 			learningsDir: ".snapback/learnings",
 			constraintsFile: ".snapback/constraints.json",
+			// Session persistence for cross-surface coordination
+			// All surfaces (Extension, MCP, CLI) share this same path
+			sessionPersistence: {
+				path: `${workspaceRoot}/.snapback/session/sessions.jsonl`,
+				autosave: true,
+			},
 		});
 		instances.set(workspaceRoot, intel);
 	}
-	return instances.get(workspaceRoot)!;
+	const instance = instances.get(workspaceRoot);
+	if (!instance) {
+		throw new Error(`Failed to get Intelligence instance for ${workspaceRoot}`);
+	}
+	return instance;
 }
 
 /**

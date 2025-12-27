@@ -246,5 +246,57 @@
     "**/.snapback/**",
     "**/dist/**",
     "**/build/**"
-  ]
+  ],
+  "validation": {
+    "crossEnvironmentChecks": {
+      "enabled": true,
+      "bannedAPIs": [
+        {
+          "pattern": "import\\.meta",
+          "message": "import.meta is ESM-only - breaks CJS bundling. Use explicit exports instead.",
+          "severity": "error"
+        },
+        {
+          "pattern": "require\\.main\\s*===\\s*module",
+          "message": "require.main is CJS-only - breaks ESM bundling. Use explicit exports instead.",
+          "severity": "error"
+        },
+        {
+          "pattern": "__dirname",
+          "message": "__dirname is Node-only - breaks browser/worker bundling. Use explicit paths.",
+          "severity": "warning"
+        },
+        {
+          "pattern": "__filename",
+          "message": "__filename is Node-only - breaks browser/worker bundling. Use explicit paths.",
+          "severity": "warning"
+        },
+        {
+          "pattern": "process\\.browser",
+          "message": "process.browser is webpack-specific - use build-time branching via package.json exports.",
+          "severity": "warning"
+        }
+      ],
+      "scope": [
+        "packages/*/src/**/*.ts",
+        "packages-oss/*/src/**/*.ts"
+      ],
+      "exclude": [
+        "**/*.test.ts",
+        "**/*.spec.ts",
+        "**/cli/**",
+        "**/scripts/**",
+        "apps/*/src/**"
+      ]
+    },
+    "buildWarnings": {
+      "enabled": true,
+      "assertZeroWarnings": true,
+      "dependentBuilds": [
+        "apps/vscode",
+        "apps/web"
+      ],
+      "allowedWarnings": []
+    }
+  }
 }

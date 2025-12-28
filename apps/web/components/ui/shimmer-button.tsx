@@ -1,3 +1,9 @@
+/**
+ * Legacy ShimmerButton - Purple conic gradient spinner
+ *
+ * @deprecated Use @marketing/components/ui/shimmer-button for new code
+ * Currently only used in Pioneer page for specific design aesthetic
+ */
 import type React from "react";
 import { cn } from "@/lib/utils";
 

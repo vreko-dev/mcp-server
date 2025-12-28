@@ -1,4 +1,5 @@
 "use client";
+import NumberTicker from "@ui/components/motion/magic/number-ticker";
 import { m, useInView } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 
@@ -58,38 +59,8 @@ export function StatsSection() {
 }
 
 const StatCard = ({ stat, index, isMounted }: { stat: any; index: number; isMounted: boolean }) => {
-	const [count, setCount] = useState(0);
 	const ref = useRef(null);
 	const isInView = useInView(ref, { once: true });
-
-	useEffect(() => {
-		if (isInView) {
-			const timer = setInterval(() => {
-				setCount((prev) => {
-					const increment = Math.ceil(stat.value / 100);
-					const next = prev + increment;
-					if (next >= stat.value) {
-						clearInterval(timer);
-						return stat.value;
-					}
-					return next;
-				});
-			}, 30);
-
-			return () => clearInterval(timer);
-		}
-		return () => {}; // Return empty cleanup function if not in view
-	}, [isInView, stat.value]);
-
-	const formatNumber = (num: number) => {
-		if (num >= 1000000) {
-			return `${(num / 1000000).toFixed(1)}M`;
-		}
-		if (num >= 1000) {
-			return `${(num / 1000).toFixed(0)}K`;
-		}
-		return num.toString();
-	};
 
 	return (
 		<m.div
@@ -101,7 +72,7 @@ const StatCard = ({ stat, index, isMounted }: { stat: any; index: number; isMoun
 		>
 			<div className={`text-4xl md:text-5xl font-black mb-2 ${stat.color}`}>
 				{stat.prefix}
-				{formatNumber(count)}
+				{isInView ? <NumberTicker value={stat.value} className="inline" /> : "0"}
 				{stat.suffix}
 			</div>
 			<div className="text-muted-foreground text-lg">{stat.label}</div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { siteSpec } from "@marketing/config/site-config";
-import NumberTicker from "@ui/components/magic/number-ticker";
+import NumberTicker from "@ui/components/motion/magic/number-ticker";
 import { useReducedMotion } from "@ui/hooks/use-reduced-motion";
 import { m } from "motion/react";
 

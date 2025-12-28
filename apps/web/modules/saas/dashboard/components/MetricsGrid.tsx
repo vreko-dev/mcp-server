@@ -1,9 +1,9 @@
 "use client";
 
 import { AnalyticsEvents } from "@analytics";
+import { BentoGrid, BentoGridItem } from "@marketing/components/ui/bento-grid";
 import { useQueryClient } from "@tanstack/react-query";
-import { BentoGrid, BentoGridItem } from "@ui/components/aceternity/bento-grid";
-import NumberTicker from "@ui/components/magic/number-ticker";
+import NumberTicker from "@ui/components/motion/magic/number-ticker";
 import { Activity, Camera, FileCheck, HelpCircle, Sparkles } from "lucide-react";
 import Link from "next/link";
 import posthog from "posthog-js";

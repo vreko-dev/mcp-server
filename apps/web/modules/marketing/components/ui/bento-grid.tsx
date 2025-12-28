@@ -5,25 +5,25 @@ import { useReducedMotion } from "@ui/lib/motion";
 import { motion } from "motion/react";
 import type React from "react";
 
-export const BentoGrid = ({ className, children }: { className?: string; children?: React.ReactNode }) => {
-	return <div className={cn("grid grid-cols-1 md:grid-cols-3 gap-4 max-w-7xl mx-auto", className)}>{children}</div>;
-};
+export interface BentoGridProps {
+	className?: string;
+	children?: React.ReactNode;
+}
 
-export const BentoGridItem = ({
-	className,
-	title,
-	description,
-	icon,
-	header,
-	...rest
-}: {
+export interface BentoGridItemProps {
 	className?: string;
 	title?: string | React.ReactNode;
 	description?: string | React.ReactNode;
 	icon?: React.ReactNode;
 	header?: React.ReactNode;
 	[key: string]: any;
-}) => {
+}
+
+export const BentoGrid = ({ className, children }: BentoGridProps) => {
+	return <div className={cn("grid grid-cols-1 md:grid-cols-3 gap-4 max-w-7xl mx-auto", className)}>{children}</div>;
+};
+
+export const BentoGridItem = ({ className, title, description, icon, header, ...rest }: BentoGridItemProps) => {
 	const reducedMotion = useReducedMotion();
 
 	return (

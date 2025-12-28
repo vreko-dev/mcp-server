@@ -5,13 +5,13 @@
  * All components respect `prefers-reduced-motion` for accessibility.
  */
 
+// Grid & Layout - Re-export from canonical location
+export type { BentoGridItemProps, BentoGridProps } from "@marketing/components/ui/bento-grid";
+export { BentoGrid, BentoGridItem } from "@marketing/components/ui/bento-grid";
 // 3D Effects
 export { Card3D } from "./3d-card";
 // Visual Effects
 export { BackgroundBeams } from "./background-beams";
-export type { BentoGridItemProps, BentoGridProps } from "./bento-grid";
-// Grid & Layout
-export { BentoGrid, BentoGridItem } from "./bento-grid";
 export { HeroHighlight } from "./hero-highlight";
 export { ParallaxScroll } from "./parallax-scroll";
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { BentoGridItem } from "@marketing/components/ui/bento-grid";
-import NumberTicker from "@ui/components/magic/number-ticker";
+import NumberTicker from "@ui/components/motion/magic/number-ticker";
 import { m } from "motion/react";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";

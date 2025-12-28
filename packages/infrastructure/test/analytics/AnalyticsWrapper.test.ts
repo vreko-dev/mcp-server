@@ -3,7 +3,11 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { AnalyticsWrapper, type SafeEventProperties } from "../../src/analytics/AnalyticsWrapper";
+import {
+	type AccountabilityEffectData,
+	AnalyticsWrapper,
+	type SafeEventProperties,
+} from "../../src/analytics/AnalyticsWrapper";
 
 interface MockPostHog {
 	capture: ReturnType<typeof vi.fn>;
@@ -391,6 +395,230 @@ describe("AnalyticsWrapper", () => {
 				distinctId: "user-123",
 				event: "test_event",
 				properties: { count: 1 },
+			});
+		});
+	});
+
+	// ============================================================================
+	// trackAccountability Tests (Phase 5 - Session Feedback Implementation)
+	// ============================================================================
+
+	describe("trackAccountability", () => {
+		const validAccountabilityData: AccountabilityEffectData = {
+			session_id: "task_12345",
+			session_duration_ms: 3600000,
+			perceived_help: "significantly",
+			actual_changes: {
+				files_modified: 5,
+				lines_added: 150,
+				lines_removed: 30,
+				snapshots_used: 2,
+			},
+			prevented_issues: {
+				rollbacks_avoided: 1,
+				pattern_violations_caught: 3,
+				skipped_tests_flagged: 2,
+			},
+			tier: "solo",
+		};
+
+		describe("Happy Path", () => {
+			it("should track accountability event with valid data", () => {
+				const wrapper = new AnalyticsWrapper({
+					posthog: mockPostHog,
+					tier: "solo",
+					consent: true,
+				});
+
+				wrapper.trackAccountability(validAccountabilityData);
+
+				expect(mockPostHog.capture).toHaveBeenCalledWith({
+					distinctId: "anonymous",
+					event: "session:feedback_submitted",
+					properties: expect.objectContaining({
+						session_id: "task_12345",
+						perceived_help: "significantly",
+					}),
+				});
+			});
+
+			it("should include all accountability properties in event", () => {
+				const wrapper = new AnalyticsWrapper({
+					posthog: mockPostHog,
+					tier: "solo",
+					consent: true,
+				});
+
+				wrapper.trackAccountability(validAccountabilityData);
+
+				expect(mockPostHog.capture).toHaveBeenCalledWith({
+					distinctId: "anonymous",
+					event: "session:feedback_submitted",
+					properties: expect.objectContaining({
+						session_id: "task_12345",
+						session_duration_ms: 3600000,
+						perceived_help: "significantly",
+						files_modified: 5,
+						lines_added: 150,
+						lines_removed: 30,
+						snapshots_used: 2,
+						rollbacks_avoided: 1,
+						pattern_violations_caught: 3,
+						skipped_tests_flagged: 2,
+						tier: "solo",
+					}),
+				});
+			});
+
+			it("should use provided distinctId for accountability events", () => {
+				const wrapper = new AnalyticsWrapper({
+					posthog: mockPostHog,
+					tier: "solo",
+					consent: true,
+				});
+
+				wrapper.trackAccountability(validAccountabilityData, "user-456");
+
+				expect(mockPostHog.capture).toHaveBeenCalledWith({
+					distinctId: "user-456",
+					event: "session:feedback_submitted",
+					properties: expect.any(Object),
+				});
+			});
+		});
+
+		describe("Sad Path", () => {
+			it("should not track accountability for free tier", () => {
+				const wrapper = new AnalyticsWrapper({
+					posthog: mockPostHog,
+					tier: "free",
+					consent: true,
+				});
+
+				wrapper.trackAccountability(validAccountabilityData);
+
+				expect(mockPostHog.capture).not.toHaveBeenCalled();
+			});
+
+			it("should not track accountability without consent", () => {
+				const wrapper = new AnalyticsWrapper({
+					posthog: mockPostHog,
+					tier: "solo",
+					consent: false,
+				});
+
+				wrapper.trackAccountability(validAccountabilityData);
+
+				expect(mockPostHog.capture).not.toHaveBeenCalled();
+			});
+		});
+
+		describe("Edge Cases", () => {
+			it("should handle all perceived_help values", () => {
+				const wrapper = new AnalyticsWrapper({
+					posthog: mockPostHog,
+					tier: "solo",
+					consent: true,
+				});
+
+				const values = ["significantly", "somewhat", "not_really", "blocked"] as const;
+
+				for (const value of values) {
+					mockPostHog.capture.mockClear();
+					wrapper.trackAccountability({
+						...validAccountabilityData,
+						perceived_help: value,
+					});
+
+					expect(mockPostHog.capture).toHaveBeenCalledWith({
+						distinctId: "anonymous",
+						event: "session:feedback_submitted",
+						properties: expect.objectContaining({
+							perceived_help: value,
+						}),
+					});
+				}
+			});
+
+			it("should handle zero values in actual_changes", () => {
+				const wrapper = new AnalyticsWrapper({
+					posthog: mockPostHog,
+					tier: "solo",
+					consent: true,
+				});
+
+				wrapper.trackAccountability({
+					...validAccountabilityData,
+					actual_changes: {
+						files_modified: 0,
+						lines_added: 0,
+						lines_removed: 0,
+						snapshots_used: 0,
+					},
+				});
+
+				expect(mockPostHog.capture).toHaveBeenCalledWith({
+					distinctId: "anonymous",
+					event: "session:feedback_submitted",
+					properties: expect.objectContaining({
+						files_modified: 0,
+						lines_added: 0,
+						lines_removed: 0,
+						snapshots_used: 0,
+					}),
+				});
+			});
+
+			it("should work with enterprise tier", () => {
+				const wrapper = new AnalyticsWrapper({
+					posthog: mockPostHog,
+					tier: "enterprise",
+					consent: true,
+				});
+
+				wrapper.trackAccountability({
+					...validAccountabilityData,
+					tier: "enterprise",
+				});
+
+				expect(mockPostHog.capture).toHaveBeenCalledWith({
+					distinctId: "anonymous",
+					event: "session:feedback_submitted",
+					properties: expect.objectContaining({
+						tier: "enterprise",
+					}),
+				});
+			});
+		});
+
+		describe("Error Handling", () => {
+			it("should handle PostHog capture errors gracefully", () => {
+				const errorPostHog = {
+					...mockPostHog,
+					capture: vi.fn().mockImplementation(() => {
+						throw new Error("PostHog capture failed");
+					}),
+				};
+
+				const wrapper = new AnalyticsWrapper({
+					posthog: errorPostHog,
+					tier: "solo",
+					consent: true,
+				});
+
+				// Should not throw
+				expect(() => wrapper.trackAccountability(validAccountabilityData)).not.toThrow();
+			});
+
+			it("should handle missing PostHog client gracefully", () => {
+				const wrapper = new AnalyticsWrapper({
+					tier: "solo",
+					consent: true,
+					// No posthog client
+				});
+
+				// Should not throw
+				expect(() => wrapper.trackAccountability(validAccountabilityData)).not.toThrow();
 			});
 		});
 	});

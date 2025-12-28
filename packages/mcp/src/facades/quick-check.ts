@@ -15,6 +15,7 @@ import { existsSync } from "node:fs";
 import { basename, dirname, join, relative } from "node:path";
 import type { ToolHandler, ToolResult } from "../registry.js";
 import { createErrorCacheService } from "../services/error-cache-service.js";
+import { getErrorPatternRegistry } from "../services/error-pattern-registry.js";
 import { getCurrentTask, pushObservation } from "../session/state.js";
 import type { CachedError } from "../types/context.js";
 
@@ -44,6 +45,14 @@ interface CheckResult {
 	warnings?: string[];
 }
 
+interface ErrorSolution {
+	category: string;
+	description: string;
+	solutions: string[];
+	autoFixable: boolean;
+	count: number;
+}
+
 interface QuickCheckOutput {
 	overall: "pass" | "fail" | "warn";
 	typescript: CheckResult;
@@ -55,6 +64,8 @@ interface QuickCheckOutput {
 	};
 	lint: CheckResult;
 	summary: string;
+	/** Matched error patterns with solutions */
+	solutions?: ErrorSolution[];
 	nextActions: Array<{
 		tool: string;
 		priority: number;
@@ -515,6 +526,24 @@ export const handleQuickCheck: ToolHandler = async (args, context): Promise<Tool
 		// Error caching is optional - don't fail quick_check
 	}
 
+	// Match errors against patterns for solution hints
+	const solutions: ErrorSolution[] = [];
+	if (!allPassed) {
+		const registry = getErrorPatternRegistry();
+		const allErrors: string[] = [...(typescript.errors || []), ...(lint.errors || []), ...(tests.errors || [])];
+
+		const matches = registry.matchMultiple(allErrors);
+		for (const match of matches) {
+			solutions.push({
+				category: match.pattern.category,
+				description: match.pattern.description,
+				solutions: match.pattern.solutions,
+				autoFixable: match.pattern.autoFixable,
+				count: match.count,
+			});
+		}
+	}
+
 	// Build next actions
 	const nextActions: Array<{ tool: string; priority: number; reason: string }> = [];
 
@@ -548,6 +577,7 @@ export const handleQuickCheck: ToolHandler = async (args, context): Promise<Tool
 		tests: tests as QuickCheckOutput["tests"],
 		lint,
 		summary,
+		solutions: solutions.length > 0 ? solutions : undefined,
 		nextActions,
 	};
 

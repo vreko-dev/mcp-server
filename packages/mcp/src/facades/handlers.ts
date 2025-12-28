@@ -10,7 +10,8 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { createStorage } from "@snapback/engine";
-import { WorkspaceVitals } from "@snapback/intelligence/vitals";
+import { SnapshotSuggester, WorkspaceVitals } from "@snapback/intelligence/vitals";
+import { DiffCalculator } from "@snapback/sdk";
 import { applyAutomaticFix, diagnoseSnapshotFailure, formatDiagnosis, type SnapshotDiagnosis } from "@snapback-oss/sdk";
 import { CommonErrors } from "../errors.js";
 import type { ToolContext, ToolHandler, ToolResult } from "../registry.js";
@@ -1701,13 +1702,59 @@ export const handleReportViolation: ToolHandler = async (args, context) => {
 };
 
 /**
- * get_learnings - Query past learnings by keywords
+ * Calculate package relevance score for a learning
+ * @param learningPackages - Packages associated with the learning
+ * @param queryPackages - Packages to match against
+ * @returns Score from 0-100 based on package overlap
+ */
+function calculatePackageScore(learningPackages: string[] | undefined, queryPackages: string[]): number {
+	if (!learningPackages || learningPackages.length === 0 || queryPackages.length === 0) {
+		return 0;
+	}
+
+	let matches = 0;
+	for (const queryPkg of queryPackages) {
+		const queryLower = queryPkg.toLowerCase();
+		for (const learningPkg of learningPackages) {
+			const learningLower = learningPkg.toLowerCase();
+			// Exact match or partial match (e.g., "vscode" matches "@snapback/vscode")
+			if (
+				learningLower === queryLower ||
+				learningLower.includes(queryLower) ||
+				queryLower.includes(learningLower)
+			) {
+				matches++;
+				break; // Count each query package once
+			}
+		}
+	}
+
+	// Score based on percentage of query packages matched, plus bonus for multiple learning packages matched
+	const matchRatio = matches / queryPackages.length;
+	return Math.round(matchRatio * 100);
+}
+
+/**
+ * get_learnings - Query past learnings by keywords with package-aware retrieval
  * Uses Intelligence facade for learning retrieval
+ *
+ * Supports package-aware filtering and boosting:
+ * - packages: Array of package names to match against
+ * - packageMode: "boost" (default) or "filter"
+ *   - boost: All learnings returned, sorted by package relevance
+ *   - filter: Only learnings matching packages are returned
  */
 export const handleGetLearnings: ToolHandler = async (args, context) => {
-	const { keywords, limit = 10 } = args as {
+	const {
+		keywords,
+		limit = 10,
+		packages,
+		packageMode = "boost",
+	} = args as {
 		keywords?: string[];
 		limit?: number;
+		packages?: string[];
+		packageMode?: "boost" | "filter";
 	};
 
 	if (!keywords || keywords.length === 0) {
@@ -1719,26 +1766,65 @@ export const handleGetLearnings: ToolHandler = async (args, context) => {
 
 		// Query learnings from Intelligence
 		const learnings = intel.queryLearnings(keywords);
-		const limited = learnings.slice(0, Math.min(limit, 50));
 
-		return jsonResult({
+		// Determine if we should apply package scoring
+		const shouldScorePackages = packages && packages.length > 0;
+		const effectiveMode = packageMode === "filter" ? "filter" : "boost";
+
+		// Calculate package scores and optionally filter
+		type LearningWithScore = (typeof learnings)[number] & { packageScore?: number };
+		let scoredLearnings: LearningWithScore[] = learnings.map((l) => {
+			// Cast to access packages field that may exist on the stored learning
+			const learningWithPkgs = l as typeof l & { packages?: string[] };
+			const score = shouldScorePackages ? calculatePackageScore(learningWithPkgs.packages, packages) : undefined;
+			return { ...l, packages: learningWithPkgs.packages, packageScore: score };
+		});
+
+		// Apply filter mode if specified
+		if (shouldScorePackages && effectiveMode === "filter") {
+			scoredLearnings = scoredLearnings.filter((l) => (l.packageScore ?? 0) > 0);
+		}
+
+		// Sort by package score (highest first) when packages are specified
+		if (shouldScorePackages) {
+			scoredLearnings.sort((a, b) => (b.packageScore ?? 0) - (a.packageScore ?? 0));
+		}
+
+		const limited = scoredLearnings.slice(0, Math.min(limit, 50));
+
+		// Build the response
+		const response: Record<string, unknown> = {
 			query: keywords,
 			count: limited.length,
-			totalMatches: learnings.length,
-			learnings: limited.map((l) => ({
-				id: l.id,
-				type: l.type,
-				trigger: l.trigger,
-				action: l.action,
-				source: l.source,
-				timestamp: l.timestamp,
-			})),
+			totalMatches: scoredLearnings.length,
+			learnings: limited.map((l) => {
+				const base: Record<string, unknown> = {
+					id: l.id,
+					type: l.type,
+					trigger: l.trigger,
+					action: l.action,
+					source: l.source,
+					timestamp: l.timestamp,
+				};
+				// Only include packageScore when packages were specified
+				if (shouldScorePackages) {
+					base.packageScore = l.packageScore ?? 0;
+				}
+				return base;
+			}),
 			message:
 				limited.length > 0
 					? `Found ${limited.length} learning(s) matching keywords`
 					: "No learnings found for these keywords",
 			next_actions: limited.length === 0 ? [{ tool: "learn", priority: 2, reason: "Record a new learning" }] : [],
-		});
+		};
+
+		// Include packageContext when packages were specified
+		if (shouldScorePackages) {
+			response.packageContext = packages;
+		}
+
+		return jsonResult(response);
 	} catch (error) {
 		const message = error instanceof Error ? error.message : String(error);
 		return result(`Failed to get learnings: ${message}`, true);
@@ -1746,38 +1832,115 @@ export const handleGetLearnings: ToolHandler = async (args, context) => {
 };
 
 /**
- * meta - Tool metadata
+ * Tool definition for hierarchy
+ */
+interface ToolDefinition {
+	name: string;
+	status: "implemented" | "planned" | "deprecated";
+	description: string;
+}
+
+/**
+ * Tool hierarchy by category
+ */
+const TOOL_HIERARCHY: Record<string, ToolDefinition[]> = {
+	entry_points: [
+		{ name: "begin_task", status: "implemented", description: "Start any task with context and optional snapshot" },
+		{ name: "get_context", status: "implemented", description: "Get workspace context and learnings for a task" },
+		{
+			name: "prepare_workspace",
+			status: "implemented",
+			description: "Pre-flight workspace check before risky ops",
+		},
+	],
+	protection: [
+		{ name: "snapshot_create", status: "implemented", description: "Create file snapshot" },
+		{ name: "snapshot_list", status: "implemented", description: "List available snapshots" },
+		{ name: "snapshot_restore", status: "implemented", description: "Restore from snapshot" },
+		{ name: "suggest_snapshot", status: "implemented", description: "Get proactive snapshot recommendations" },
+		{ name: "compare_snapshots", status: "implemented", description: "Compare snapshots or snapshot to current" },
+		{ name: "acknowledge_risk", status: "implemented", description: "Acknowledge risk state before proceeding" },
+	],
+	validation: [
+		{ name: "check_patterns", status: "implemented", description: "Validate code against 7-layer pipeline" },
+		{ name: "validate", status: "implemented", description: "Quick or comprehensive code validation" },
+		{ name: "quick_check", status: "implemented", description: "Fast parallel TypeScript, tests, lint check" },
+	],
+	knowledge: [
+		{ name: "learn", status: "implemented", description: "Record learnings from sessions" },
+		{ name: "get_learnings", status: "implemented", description: "Query past learnings with package awareness" },
+		{ name: "report_violation", status: "implemented", description: "Report violations with auto-promotion" },
+	],
+	discovery: [
+		{ name: "lookup_exports", status: "implemented", description: "Find valid import paths for packages" },
+		{ name: "analyze", status: "implemented", description: "Risk and package analysis" },
+	],
+	lifecycle: [
+		{ name: "complete_task", status: "implemented", description: "Finish task with summary and learnings" },
+		{ name: "review_work", status: "implemented", description: "Pre-commit review of changes" },
+		{ name: "what_changed", status: "implemented", description: "See changes since task start" },
+	],
+	session: [
+		{ name: "session", status: "implemented", description: "Session lifecycle management" },
+		{ name: "context", status: "implemented", description: "Context management (init, build, validate)" },
+	],
+	maintenance: [
+		{ name: "cleanup", status: "implemented", description: "Reclaim space by removing stale data" },
+		{ name: "meta", status: "implemented", description: "Tool metadata and hierarchy" },
+	],
+};
+
+/**
+ * Recommended workflows
+ */
+const WORKFLOWS = [
+	{
+		name: "start_development",
+		description: "Begin a development task safely",
+		steps: ["begin_task", "implement changes", "quick_check", "check_patterns", "complete_task"],
+	},
+	{
+		name: "recovery",
+		description: "Recover from broken changes",
+		steps: ["snapshot_list", "compare_snapshots", "snapshot_restore"],
+	},
+	{
+		name: "learning_loop",
+		description: "Capture and retrieve knowledge",
+		steps: ["get_learnings", "work", "learn", "report_violation (if needed)"],
+	},
+];
+
+/**
+ * meta - Tool metadata with hierarchy
  */
 export const handleMeta: ToolHandler = async (_args, _context) => {
+	// Flatten hierarchy into tools list for backward compatibility
+	const tools: ToolDefinition[] = [];
+	for (const category of Object.values(TOOL_HIERARCHY)) {
+		for (const tool of category) {
+			// Avoid duplicates (a tool might appear in multiple categories conceptually)
+			if (!tools.some((t) => t.name === tool.name)) {
+				tools.push(tool);
+			}
+		}
+	}
+
 	return jsonResult({
 		version: "0.1.0",
 		status: "operational",
-		tools: [
-			{ name: "analyze", status: "implemented", description: "Risk and package analysis" },
-			{ name: "prepare_workspace", status: "implemented", description: "Pre-flight workspace check" },
-			{ name: "snapshot_create", status: "implemented", description: "Create file snapshot" },
-			{ name: "snapshot_list", status: "implemented", description: "List snapshots" },
-			{ name: "snapshot_restore", status: "implemented", description: "Restore from snapshot" },
-			{ name: "validate", status: "implemented", description: "Code validation" },
-			{ name: "context", status: "implemented", description: "Context management" },
-			{ name: "session", status: "implemented", description: "Session management" },
-			{ name: "learn", status: "implemented", description: "Record learnings" },
-			{ name: "acknowledge_risk", status: "implemented", description: "Acknowledge risk" },
-			{
-				name: "get_context",
-				status: "implemented",
-				description: "Get workspace context and learnings for a task",
-			},
-			{
-				name: "check_patterns",
-				status: "implemented",
-				description: "Validate code against 7-layer ValidationPipeline",
-			},
-			{ name: "report_violation", status: "implemented", description: "Report violations with auto-promotion" },
-			{ name: "get_learnings", status: "implemented", description: "Query past learnings by keywords" },
-			{ name: "meta", status: "implemented", description: "Tool metadata" },
-			{ name: "cleanup", status: "implemented", description: "Reclaim space by removing stale data" },
-		],
+		// Flat list for backward compatibility
+		tools,
+		// New hierarchical organization
+		hierarchy: TOOL_HIERARCHY,
+		// Workflow recommendations
+		workflows: WORKFLOWS,
+		// Summary statistics
+		summary: {
+			totalTools: tools.length,
+			categories: Object.keys(TOOL_HIERARCHY).length,
+			implementedCount: tools.filter((t) => t.status === "implemented").length,
+		},
 	});
 };
 
@@ -1921,6 +2084,479 @@ export const handleGetPairingProtocol: ToolHandler = async (_args, context) => {
 };
 
 /**
+ * suggest_snapshot - Proactive snapshot suggestion using SnapshotSuggester
+ * @see Archaeological Feedback Synthesis - P0: Proactive Snapshot Suggestion
+ */
+export const handleSuggestSnapshot: ToolHandler = async (args, context) => {
+	const { files } = args as { files?: string[] };
+
+	try {
+		// Get current vitals
+		const vitals = WorkspaceVitals.for(context.workspaceRoot);
+		const currentVitals = vitals.current();
+
+		// Use SnapshotSuggester for proactive recommendation
+		const suggester = new SnapshotSuggester();
+		// Pass null for forecast - SnapshotSuggester handles this gracefully
+		const suggestion = suggester.suggestSnapshot(currentVitals, null);
+
+		// Enhance with file-specific context if provided
+		let criticalFilesTouched = suggestion.metrics.criticalFilesTouched;
+		if (files && files.length > 0) {
+			const sensitivePatterns = ["auth", "payment", "config", "security", "database", ".env"];
+			const sensitiveTouched = files.filter((f) => sensitivePatterns.some((p) => f.toLowerCase().includes(p)));
+			criticalFilesTouched = Math.max(criticalFilesTouched, sensitiveTouched.length);
+		}
+
+		// Build actionable response
+		const nextActions =
+			suggestion.recommendation === "now"
+				? [{ tool: "snapshot_create", priority: 1, reason: suggestion.reason, args: { files } }]
+				: suggestion.recommendation === "soon"
+					? [{ tool: "snapshot_create", priority: 2, reason: suggestion.reason, args: { files } }]
+					: [];
+
+		return jsonResult({
+			status: "success",
+			urgency: suggestion.urgency,
+			recommendation: suggestion.recommendation,
+			reason: suggestion.reason,
+			metrics: {
+				pressureRate: suggestion.metrics.pressureRate,
+				aiActivityBurst: suggestion.metrics.aiActivityBurst,
+				criticalFilesTouched,
+				trajectoryConfidence: suggestion.metrics.trajectoryConfidence,
+			},
+			vitals: {
+				pulse: currentVitals.pulse,
+				temperature: currentVitals.temperature,
+				pressure: currentVitals.pressure,
+				trajectory: currentVitals.trajectory,
+			},
+			message:
+				suggestion.recommendation === "now"
+					? `⚠️ Snapshot recommended NOW: ${suggestion.reason}`
+					: suggestion.recommendation === "soon"
+						? `🕔 Snapshot recommended soon: ${suggestion.reason}`
+						: `✅ Continue working: ${suggestion.reason}`,
+			next_actions: nextActions,
+		});
+	} catch (error) {
+		const message = error instanceof Error ? error.message : String(error);
+		return result(`Snapshot suggestion failed: ${message}`, true);
+	}
+};
+
+/**
+ * compare_snapshots - Compare two snapshots or snapshot to current state
+ * @see Archaeological Feedback Synthesis - P1: Snapshot Comparison Tool
+ */
+export const handleCompareSnapshots: ToolHandler = async (args, context) => {
+	const {
+		snapshotId,
+		targetId,
+		files: filterFiles,
+	} = args as {
+		snapshotId?: string;
+		targetId?: string;
+		files?: string[];
+	};
+
+	if (!snapshotId) {
+		return errorJsonResult(CommonErrors.missingParam("snapshotId"));
+	}
+
+	try {
+		const storage = createStorage(context.workspaceRoot);
+		const diffCalculator = new DiffCalculator();
+
+		// Get source snapshot
+		const sourceSnapshot = storage.getSnapshot(snapshotId);
+		if (!sourceSnapshot) {
+			return errorJsonResult(CommonErrors.snapshotNotFound(snapshotId));
+		}
+
+		// Restore source snapshot content
+		const sourceFiles = await storage.restore(snapshotId);
+		const sourceFileMap = new Map(sourceFiles.map((f) => [f.path, f.content]));
+
+		// Get target content (another snapshot or current filesystem)
+		let targetFileMap: Map<string, string>;
+		let targetLabel: string;
+
+		if (targetId) {
+			// Compare to another snapshot
+			const targetSnapshot = storage.getSnapshot(targetId);
+			if (!targetSnapshot) {
+				return errorJsonResult(CommonErrors.snapshotNotFound(targetId));
+			}
+			const targetFiles = await storage.restore(targetId);
+			targetFileMap = new Map(targetFiles.map((f) => [f.path, f.content]));
+			targetLabel = `snapshot ${targetId}`;
+		} else {
+			// Compare to current filesystem
+			targetFileMap = new Map();
+			for (const [path] of sourceFileMap) {
+				const fullPath = join(context.workspaceRoot, path);
+				if (existsSync(fullPath)) {
+					targetFileMap.set(path, readFileSync(fullPath, "utf8"));
+				}
+			}
+			targetLabel = "current filesystem";
+		}
+
+		// Determine files to compare
+		const allPaths = new Set([...sourceFileMap.keys(), ...targetFileMap.keys()]);
+		let pathsToCompare = Array.from(allPaths);
+
+		if (filterFiles && filterFiles.length > 0) {
+			pathsToCompare = pathsToCompare.filter((p) => filterFiles.includes(p));
+		}
+
+		// Calculate diffs
+		const diffs = pathsToCompare.map((path) => {
+			const sourceContent = sourceFileMap.get(path) ?? null;
+			const targetContent = targetFileMap.get(path) ?? null;
+			return diffCalculator.calculateFileDiff(path, sourceContent, targetContent);
+		});
+
+		const preview = diffCalculator.generateDiffPreview(diffs);
+
+		return jsonResult({
+			status: "success",
+			sourceSnapshot: snapshotId,
+			target: targetId ?? "current",
+			stats: {
+				totalFiles: preview.totalFiles,
+				filesCreated: preview.filesCreated,
+				filesModified: preview.filesModified,
+				filesDeleted: preview.filesDeleted,
+				linesAdded: preview.totalLinesAdded,
+				linesRemoved: preview.totalLinesRemoved,
+			},
+			files: diffs.map((d) => ({
+				path: d.path,
+				operation: d.operation,
+				linesAdded: d.linesAdded,
+				linesRemoved: d.linesRemoved,
+				preview: d.preview,
+			})),
+			message: `Compared snapshot ${snapshotId} to ${targetLabel}: ${preview.filesModified} modified, +${preview.totalLinesAdded}/-${preview.totalLinesRemoved} lines`,
+			next_actions:
+				preview.filesModified > 0
+					? [
+							{
+								tool: "snapshot_restore",
+								priority: 2,
+								reason: "Restore if changes unwanted",
+								args: { snapshotId },
+							},
+						]
+					: [],
+		});
+	} catch (error) {
+		const message = error instanceof Error ? error.message : String(error);
+		return result(`Snapshot comparison failed: ${message}`, true);
+	}
+};
+
+// =============================================================================
+// LOOKUP EXPORTS HANDLER
+// =============================================================================
+
+interface ExportMatch {
+	/** Full import path */
+	path: string;
+	/** List of exports from this path */
+	exports: string[];
+	/** Whether this path has TypeScript types */
+	hasTypes: boolean;
+	/** Description of the export if available */
+	description?: string;
+}
+
+/**
+ * lookup_exports - Resolve valid import paths for a package
+ *
+ * Helps AI agents find correct import paths by:
+ * 1. Looking up package.json exports map
+ * 2. Scanning source files for actual exports
+ * 3. Filtering based on partial path query
+ *
+ * @param query - Partial import path (e.g., "@snapback/core/an")
+ * @returns List of matching export paths with their exports
+ */
+export const handleLookupExports: ToolHandler = async (args, context) => {
+	const input = args as { query?: string };
+	const query = input.query;
+
+	if (!query) {
+		return result(
+			JSON.stringify({
+				error: "E102_MISSING_PARAM",
+				message: "Required parameter 'query' is missing",
+			}),
+			true,
+		);
+	}
+
+	const workspaceRoot = context.workspaceRoot;
+	const matches: ExportMatch[] = [];
+
+	try {
+		// Parse the query to extract package name
+		const { packageName } = parseImportPath(query);
+
+		// Find the package location
+		const packageDir = findPackageDir(workspaceRoot, packageName);
+
+		if (!packageDir) {
+			return jsonResult({
+				status: "success",
+				query,
+				matches: [],
+				message: `Package not found: ${packageName}`,
+			});
+		}
+
+		// Read package.json exports
+		const packageJsonPath = join(packageDir, "package.json");
+		if (!existsSync(packageJsonPath)) {
+			return jsonResult({
+				status: "success",
+				query,
+				matches: [],
+				message: `No package.json found in ${packageDir}`,
+			});
+		}
+
+		const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf8"));
+		const exportsMap = packageJson.exports || { ".": packageJson.main || "./index.js" };
+
+		// Normalize exports to always be an object
+		const normalizedExports: Record<string, string> =
+			typeof exportsMap === "string" ? { ".": exportsMap } : exportsMap;
+
+		// Filter exports based on subpath query
+		for (const [exportPath, exportTarget] of Object.entries(normalizedExports)) {
+			// Skip conditional exports (objects with "import", "require" keys)
+			if (typeof exportTarget !== "string") {
+				continue;
+			}
+
+			const fullPath = exportPath === "." ? packageName : `${packageName}${exportPath.slice(1)}`;
+
+			// Check if this export matches the query
+			if (fullPath.startsWith(query) || query === packageName) {
+				// Try to extract actual exports from source file
+				const exports = extractExportsFromFile(packageDir, exportTarget);
+
+				matches.push({
+					path: fullPath,
+					exports,
+					hasTypes: exports.some((e) => e.startsWith("type ")),
+					description: getExportDescription(exportPath),
+				});
+			}
+		}
+
+		// Sort matches by relevance (exact match first, then alphabetically)
+		matches.sort((a, b) => {
+			if (a.path === query) {
+				return -1;
+			}
+			if (b.path === query) {
+				return 1;
+			}
+			return a.path.localeCompare(b.path);
+		});
+
+		return jsonResult({
+			status: "success",
+			query,
+			packageName,
+			packageDir,
+			matches,
+			message:
+				matches.length > 0
+					? `Found ${matches.length} export path(s) matching "${query}"`
+					: `No exports found matching "${query}"`,
+		});
+	} catch (error) {
+		const message = error instanceof Error ? error.message : String(error);
+		return jsonResult({
+			status: "success",
+			query,
+			matches: [],
+			message: `Error looking up exports: ${message}`,
+		});
+	}
+};
+
+/**
+ * Parse an import path into package name and subpath
+ */
+function parseImportPath(path: string): { packageName: string; subpath: string } {
+	// Handle scoped packages (@org/pkg)
+	if (path.startsWith("@")) {
+		const parts = path.split("/");
+		if (parts.length >= 2) {
+			return {
+				packageName: `${parts[0]}/${parts[1]}`,
+				subpath: parts.slice(2).join("/"),
+			};
+		}
+		return { packageName: path, subpath: "" };
+	}
+
+	// Handle regular packages
+	const parts = path.split("/");
+	return {
+		packageName: parts[0],
+		subpath: parts.slice(1).join("/"),
+	};
+}
+
+/**
+ * Find the package directory (node_modules or local packages)
+ */
+function findPackageDir(workspaceRoot: string, packageName: string): string | null {
+	// Check node_modules first
+	const nodeModulesPath = join(workspaceRoot, "node_modules", ...packageName.split("/"));
+	if (existsSync(nodeModulesPath)) {
+		return nodeModulesPath;
+	}
+
+	// Check local packages directory (for monorepos)
+	const localPackagesPath = join(workspaceRoot, "packages");
+	if (existsSync(localPackagesPath)) {
+		// For @snapback/core, look in packages/core
+		const localName = packageName.startsWith("@") ? packageName.split("/")[1] : packageName;
+		const localPath = join(localPackagesPath, localName);
+		if (existsSync(localPath)) {
+			return localPath;
+		}
+	}
+
+	return null;
+}
+
+/**
+ * Extract exports from a source file
+ */
+function extractExportsFromFile(packageDir: string, exportTarget: string): string[] {
+	const exports: string[] = [];
+
+	// Resolve the target path
+	let targetPath = join(packageDir, exportTarget);
+
+	// Try with different extensions
+	const extensions = ["", ".ts", ".tsx", ".js", ".jsx", ".mjs"];
+	let resolvedPath: string | null = null;
+
+	for (const ext of extensions) {
+		const tryPath = targetPath + ext;
+		if (existsSync(tryPath)) {
+			resolvedPath = tryPath;
+			break;
+		}
+		// Also try index file
+		const indexPath = join(targetPath, `index${ext}`);
+		if (existsSync(indexPath)) {
+			resolvedPath = indexPath;
+			break;
+		}
+	}
+
+	// Also check src directory for source files
+	if (!resolvedPath) {
+		const srcTarget = exportTarget.replace("./dist/", "./src/").replace(".js", ".ts");
+		targetPath = join(packageDir, srcTarget);
+		for (const ext of extensions) {
+			const tryPath = targetPath + ext;
+			if (existsSync(tryPath)) {
+				resolvedPath = tryPath;
+				break;
+			}
+			const indexPath = join(targetPath, `index${ext}`);
+			if (existsSync(indexPath)) {
+				resolvedPath = indexPath;
+				break;
+			}
+		}
+	}
+
+	if (!resolvedPath) {
+		return exports;
+	}
+
+	try {
+		const content = readFileSync(resolvedPath, "utf8");
+
+		// Simple regex-based export extraction
+		// Match: export { name } from
+		// Match: export const name
+		// Match: export function name
+		// Match: export class name
+		// Match: export type name
+		// Match: export interface name
+
+		const exportPatterns = [
+			/export\s+\{\s*([^}]+)\s*\}/g, // export { foo, bar }
+			/export\s+(?:const|let|var)\s+(\w+)/g, // export const foo
+			/export\s+function\s+(\w+)/g, // export function foo
+			/export\s+class\s+(\w+)/g, // export class Foo
+			/export\s+type\s+(\w+)/g, // export type Foo
+			/export\s+interface\s+(\w+)/g, // export interface Foo
+		];
+
+		for (const pattern of exportPatterns) {
+			let match: RegExpExecArray | null;
+			while ((match = pattern.exec(content)) !== null) {
+				const captured = match[1];
+				// Handle destructured exports like { foo, bar as baz }
+				const names = captured.split(",").map((n) =>
+					n
+						.trim()
+						.split(/\s+as\s+/)[0]
+						.trim(),
+				);
+				for (const name of names) {
+					if (name && !exports.includes(name)) {
+						// Check if it's a type export
+						if (pattern.source.includes("type") || pattern.source.includes("interface")) {
+							exports.push(`type ${name}`);
+						} else {
+							exports.push(name);
+						}
+					}
+				}
+			}
+		}
+	} catch {
+		// Ignore read errors
+	}
+
+	return exports;
+}
+
+/**
+ * Get a description for an export path
+ */
+function getExportDescription(exportPath: string): string {
+	const pathDescriptions: Record<string, string> = {
+		".": "Main entry point",
+		"./analysis": "Code analysis utilities",
+		"./signals": "Signal/event system",
+		"./types": "TypeScript type definitions",
+		"./utils": "Utility functions",
+		"./core": "Core functionality",
+	};
+
+	return pathDescriptions[exportPath] || "";
+}
+
+/**
  * Map facade names to handlers
  */
 export const facadeHandlers: Record<string, ToolHandler> = {
@@ -1947,4 +2583,8 @@ export const facadeHandlers: Record<string, ToolHandler> = {
 	review_work: handleReviewWork,
 	complete_task: handleCompleteTask,
 	get_pairing_protocol: handleGetPairingProtocol,
+	// Archaeological feedback enhancements (P0/P1)
+	suggest_snapshot: handleSuggestSnapshot,
+	compare_snapshots: handleCompareSnapshots,
+	lookup_exports: handleLookupExports,
 };

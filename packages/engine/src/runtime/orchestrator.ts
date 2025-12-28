@@ -16,14 +16,9 @@
  */
 
 import { type ChildProcess, spawn } from "node:child_process";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { dirname, join, resolve } from "node:path";
 import type { FileChange, OrchestratorResult, SessionHealth, SignalOutput, ValidatorOutput } from "../types";
 import { eventBus } from "./events";
-
-// ESM compatibility: Define __dirname
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 // =============================================================================
 // CONFIGURATION
@@ -32,8 +27,55 @@ const __dirname = dirname(__filename);
 /** Default timeout for script execution (30 seconds) */
 const DEFAULT_TIMEOUT = 30_000;
 
-/** Path to scripts directory (relative to this file) */
-const SCRIPTS_DIR = join(__dirname, "..");
+/**
+ * Cached scripts directory - lazily evaluated to avoid import.meta.url at module load.
+ * This prevents issues when bundled for CJS environments (VS Code extension).
+ */
+let _scriptsDir: string | null = null;
+
+/**
+ * Get the scripts directory path (lazy evaluation).
+ *
+ * Uses multiple fallback strategies to find the engine package:
+ * 1. ESM: import.meta.url (only evaluated when actually called)
+ * 2. CJS: require.resolve for package location
+ * 3. Fallback: process.cwd() with standard monorepo structure
+ *
+ * This avoids the bundler warning "'import.meta is not available with cjs output format'"
+ * by only evaluating import.meta when this function is actually called at runtime.
+ */
+function getScriptsDir(): string {
+	if (_scriptsDir) return _scriptsDir;
+
+	// Strategy 1: Try ESM import.meta (wrapped in try-catch for CJS environments)
+	try {
+		if (typeof import.meta?.url === "string") {
+			// Dynamic require to avoid bundler issues - fileURLToPath is sync
+			// eslint-disable-next-line @typescript-eslint/no-require-imports
+			const { fileURLToPath } = require("node:url") as typeof import("node:url");
+			const __filename = fileURLToPath(import.meta.url);
+			const __dirname = dirname(__filename);
+			_scriptsDir = join(__dirname, "..");
+			return _scriptsDir;
+		}
+	} catch {
+		// import.meta not available (CJS or bundled environment)
+	}
+
+	// Strategy 2: Try require.resolve (works in Node.js CJS)
+	try {
+		// eslint-disable-next-line @typescript-eslint/no-require-imports
+		const pkgPath = require.resolve("@snapback/engine/package.json");
+		_scriptsDir = join(dirname(pkgPath), "dist");
+		return _scriptsDir;
+	} catch {
+		// Package not found via require.resolve
+	}
+
+	// Strategy 3: Fallback to process.cwd() with standard monorepo structure
+	_scriptsDir = resolve(process.cwd(), "packages/engine/dist");
+	return _scriptsDir;
+}
 
 /** Signal scripts to run (in parallel) */
 const SIGNAL_SCRIPTS = [
@@ -74,7 +116,7 @@ const VALIDATOR_SCRIPTS = [
  * - Non-zero exit code = failure
  */
 async function runScript<T>(scriptPath: string, input: unknown, timeout: number = DEFAULT_TIMEOUT): Promise<T> {
-	const fullPath = join(SCRIPTS_DIR, scriptPath);
+	const fullPath = join(getScriptsDir(), scriptPath);
 	const startTime = Date.now();
 
 	return new Promise((resolve, reject) => {

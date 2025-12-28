@@ -27,6 +27,16 @@
  * ```
  */
 
+// Advisory system
+export {
+	AdvisoryEngine,
+	ConsecutiveModificationRule,
+	FragileFileRule,
+	GenericSuggestionsRule,
+	LoopDetectionRule,
+	SkippedTestRule,
+	ViolationHistoryRule,
+} from "./advisory/index.js";
 export type {
 	ArtifactCandidate,
 	ArtifactKind,

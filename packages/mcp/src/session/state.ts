@@ -9,8 +9,16 @@
  */
 
 import { execSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+import { log, type RequestContext } from "../errors.js";
+
+// Create a module-level request context for logging
+const moduleCtx: RequestContext = {
+	requestId: "session-state",
+	tool: "session/state",
+	startTime: Date.now(),
+};
 
 // =============================================================================
 // TYPES
@@ -47,6 +55,11 @@ export interface GitFileStatus {
 }
 
 /**
+ * Task intent types - matches begin-task.ts
+ */
+export type TaskIntent = "implement" | "debug" | "refactor" | "review" | "explore";
+
+/**
  * Current task being worked on
  */
 export interface CurrentTask {
@@ -56,6 +69,8 @@ export interface CurrentTask {
 	plannedFiles: string[];
 	snapshotId?: string;
 	keywords: string[];
+	/** Inferred intent from task description */
+	intent?: TaskIntent;
 	/** Git state when task started - used to filter what_changed/review_work */
 	gitBaseline?: GitFileStatus[];
 }
@@ -83,6 +98,9 @@ export interface MCPSessionState {
 
 	/** Risk areas touched */
 	riskAreasTouched: RiskArea[];
+
+	/** Files that have been validated with check_patterns */
+	validatedFiles: string[];
 
 	/** Session statistics */
 	stats: {
@@ -120,6 +138,7 @@ function createDefaultState(): MCPSessionState {
 		pendingObservations: [],
 		surfacedLearnings: [],
 		riskAreasTouched: [],
+		validatedFiles: [],
 		stats: {
 			tasksCompleted: 0,
 			snapshotsCreated: 0,
@@ -356,8 +375,12 @@ function saveStateToDisk(workspaceRoot: string, state: MCPSessionState): void {
 		}
 
 		writeFileSync(filePath, JSON.stringify(state, null, 2), "utf8");
-	} catch {
-		// Ignore write errors (non-critical)
+	} catch (error) {
+		// Log at debug level - write errors are non-critical but useful for debugging
+		log("debug", moduleCtx, "Failed to persist session state to disk", {
+			filePath,
+			error: error instanceof Error ? error.message : String(error),
+		});
 	}
 }
 
@@ -372,8 +395,12 @@ function loadStateFromDisk(workspaceRoot: string): MCPSessionState | null {
 			const content = readFileSync(filePath, "utf8");
 			return JSON.parse(content) as MCPSessionState;
 		}
-	} catch {
-		// Ignore read errors
+	} catch (error) {
+		// Log at debug level - read errors may indicate corrupted state file
+		log("debug", moduleCtx, "Failed to load session state from disk", {
+			filePath,
+			error: error instanceof Error ? error.message : String(error),
+		});
 	}
 
 	return null;
@@ -387,10 +414,14 @@ function clearStateFromDisk(workspaceRoot: string): void {
 
 	try {
 		if (existsSync(filePath)) {
-			require("node:fs").unlinkSync(filePath);
+			unlinkSync(filePath);
 		}
-	} catch {
-		// Ignore delete errors
+	} catch (error) {
+		// Log at debug level - delete errors are non-critical
+		log("debug", moduleCtx, "Failed to clear session state file", {
+			filePath,
+			error: error instanceof Error ? error.message : String(error),
+		});
 	}
 }
 
@@ -430,8 +461,12 @@ export function captureGitBaseline(workspaceRoot: string): GitFileStatus[] {
 
 			baseline.push({ file, status, timestamp: now });
 		}
-	} catch {
-		// Git not available or not a git repo - return empty baseline
+	} catch (error) {
+		// Git not available or not a git repo - log at debug level and return empty baseline
+		log("debug", moduleCtx, "Git baseline capture failed (not a git repo or git unavailable)", {
+			workspaceRoot,
+			error: error instanceof Error ? error.message : String(error),
+		});
 	}
 
 	return baseline;

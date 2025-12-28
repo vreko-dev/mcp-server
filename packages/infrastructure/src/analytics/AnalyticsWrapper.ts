@@ -18,6 +18,45 @@ import type { PostHog } from "posthog-node";
 import { logger } from "../logging/logger";
 
 /**
+ * Event name constant following PostHog category:object_action convention
+ * Matches schema in @snapback/contracts/events/accountability
+ */
+const SESSION_FEEDBACK_EVENT = "session:feedback_submitted" as const;
+
+/**
+ * Perceived help values matching @snapback/contracts/events/accountability
+ */
+export type PerceivedHelp = "significantly" | "somewhat" | "not_really" | "blocked";
+
+/**
+ * Accountability effect data for session feedback tracking
+ * Matches schema in @snapback/contracts/events/accountability
+ */
+export interface AccountabilityEffectData {
+	/** Session identifier */
+	session_id: string;
+	/** Session duration in milliseconds */
+	session_duration_ms: number;
+	/** User's perception of how much SnapBack helped */
+	perceived_help: PerceivedHelp;
+	/** Actual changes made during the session */
+	actual_changes: {
+		files_modified: number;
+		lines_added: number;
+		lines_removed: number;
+		snapshots_used: number;
+	};
+	/** Issues prevented by SnapBack */
+	prevented_issues: {
+		rollbacks_avoided: number;
+		pattern_violations_caught: number;
+		skipped_tests_flagged: number;
+	};
+	/** User's subscription tier */
+	tier: string;
+}
+
+/**
  * Privacy-filtered event properties
  */
 export interface SafeEventProperties {
@@ -288,6 +327,75 @@ export class AnalyticsWrapper {
 			} catch (error) {
 				logger.error("[Analytics] Failed to identify user", error as Error);
 			}
+		}
+	}
+
+	/**
+	 * Track accountability effect event
+	 * Used for session feedback to measure perception vs reality of SnapBack's value
+	 */
+	trackAccountability(data: AccountabilityEffectData, distinctId?: string): void {
+		// Free tier: local-only (no transmission)
+		if (this.tier === "free") {
+			if (this.debug) {
+				logger.info("[Analytics] Free tier - accountability event not transmitted", {
+					session_id: data.session_id,
+				});
+			}
+			return;
+		}
+
+		// Solo+ tier: require explicit consent
+		if (!this.consent) {
+			if (this.debug) {
+				logger.info("[Analytics] No consent - accountability event not transmitted", {
+					session_id: data.session_id,
+				});
+			}
+			return;
+		}
+
+		// Flatten the nested structure for PostHog properties
+		const properties: Record<string, unknown> = {
+			session_id: data.session_id,
+			session_duration_ms: data.session_duration_ms,
+			perceived_help: data.perceived_help,
+			// Flatten actual_changes
+			files_modified: data.actual_changes.files_modified,
+			lines_added: data.actual_changes.lines_added,
+			lines_removed: data.actual_changes.lines_removed,
+			snapshots_used: data.actual_changes.snapshots_used,
+			// Flatten prevented_issues
+			rollbacks_avoided: data.prevented_issues.rollbacks_avoided,
+			pattern_violations_caught: data.prevented_issues.pattern_violations_caught,
+			skipped_tests_flagged: data.prevented_issues.skipped_tests_flagged,
+			// Tier
+			tier: data.tier,
+		};
+
+		// Transmit to PostHog
+		if (this.posthog) {
+			try {
+				this.posthog.capture({
+					distinctId: distinctId ?? "anonymous",
+					event: SESSION_FEEDBACK_EVENT,
+					properties,
+				});
+
+				if (this.debug) {
+					logger.info("[Analytics] Accountability event tracked", {
+						session_id: data.session_id,
+						perceived_help: data.perceived_help,
+					});
+				}
+			} catch (error) {
+				logger.error("[Analytics] Failed to track accountability event", error as Error);
+			}
+		} else if (this.debug) {
+			logger.info("[Analytics] No PostHog client - accountability event logged only", {
+				session_id: data.session_id,
+				properties,
+			});
 		}
 	}
 

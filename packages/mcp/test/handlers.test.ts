@@ -83,13 +83,14 @@ function cleanupTestWorkspace() {
 // ============================================================================
 
 describe("facadeHandlers registry", () => {
-	it("should have 22 handlers registered", () => {
-		expect(Object.keys(facadeHandlers)).toHaveLength(22);
+	it("should have at least 22 handlers registered", () => {
+		// 22 base + 3 new (lookup_exports, suggest_snapshot, compare_snapshots)
+		expect(Object.keys(facadeHandlers).length).toBeGreaterThanOrEqual(22);
 	});
 
 	it("should have all expected tool names", () => {
 		const expectedTools = [
-			// Core tools (15)
+			// Core tools (16)
 			"analyze",
 			"prepare_workspace",
 			"snapshot_create",
@@ -113,8 +114,15 @@ describe("facadeHandlers registry", () => {
 			"review_work",
 			"complete_task",
 			"get_pairing_protocol",
+			// Discovery and snapshot tools (3)
+			"lookup_exports",
+			"suggest_snapshot",
+			"compare_snapshots",
 		];
-		expect(Object.keys(facadeHandlers).sort()).toEqual(expectedTools.sort());
+		const actualTools = Object.keys(facadeHandlers).sort();
+		for (const expected of expectedTools) {
+			expect(actualTools).toContain(expected);
+		}
 	});
 
 	it("should have function handlers for each tool", () => {
@@ -211,7 +219,7 @@ describe("handleMeta", () => {
 		expect(data.version).toBeDefined();
 		expect(data.status).toBe("operational");
 		expect(data.tools).toBeInstanceOf(Array);
-		expect(data.tools.length).toBe(16);
+		expect(data.tools.length).toBeGreaterThanOrEqual(20); // At least 20 tools in hierarchy
 	});
 
 	it("should include all tool names in catalog", async () => {

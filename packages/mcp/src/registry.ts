@@ -433,7 +433,7 @@ Tracks mistakes to prevent recurrence. Auto-promotes frequent violations.
 		name: "get_learnings",
 		description: `📚 **KNOWLEDGE RETRIEVAL** - Learn from past successes and mistakes.
 
-Searches your learning database by keywords.
+Searches your learning database by keywords with optional package-aware ranking.
 Avoid reinventing solutions or repeating past mistakes.
 
 **When to use:**
@@ -449,6 +449,10 @@ Avoid reinventing solutions or repeating past mistakes.
 - discovery: Useful findings
 - workflow: Step-by-step processes
 
+**Package-aware retrieval:**
+- packages: Specify package context to boost/filter relevant learnings
+- packageMode: "boost" (default) ranks matching learnings higher, "filter" only shows matches
+
 💡 Tip: Broad keywords work better than specific queries.`,
 		inputSchema: {
 			type: "object",
@@ -459,6 +463,16 @@ Avoid reinventing solutions or repeating past mistakes.
 					description: "Keywords to search for in learnings",
 				},
 				limit: { type: "number", description: "Max results to return (default: 10)" },
+				packages: {
+					type: "array",
+					items: { type: "string" },
+					description: "Package names for context-aware retrieval (e.g., ['@snapback/mcp'])",
+				},
+				packageMode: {
+					type: "string",
+					enum: ["boost", "filter"],
+					description: "How to apply package context: 'boost' (default) or 'filter'",
+				},
 			},
 			required: ["keywords"],
 		},
@@ -570,6 +584,11 @@ Reduces 5+ tool calls to 1 when starting any development work.
 			type: "object",
 			properties: {
 				task: { type: "string", description: "Brief description of what you're about to do" },
+				intent: {
+					type: "string",
+					enum: ["implement", "debug", "refactor", "review", "explore"],
+					description: "Task intent for context loading (auto-inferred from task if not provided)",
+				},
 				files: {
 					type: "array",
 					items: { type: "string" },
@@ -585,10 +604,127 @@ Reduces 5+ tool calls to 1 when starting any development work.
 					default: false,
 					description: "Skip snapshot creation (default: auto-decides based on risk)",
 				},
+				compact: {
+					type: "boolean",
+					default: true,
+					description:
+						"Minimal output (~100 tokens). Defaults to TRUE for token efficiency. Set false for full debug output (~1300 tokens).",
+				},
 			},
 			required: ["task"],
 		},
 		annotations: { title: "Begin Task", readOnlyHint: false, idempotentHint: false },
+		tier: "free",
+	},
+	{
+		name: "suggest_snapshot",
+		description: `💡 **PROACTIVE SNAPSHOT SUGGESTION** - Get intelligent snapshot recommendations.
+
+Analyzes current workspace vitals and activity patterns to proactively suggest
+when a snapshot should be created BEFORE risk materializes.
+
+**When to use:**
+- Periodically during development to check if protection is advisable
+- After AI activity spikes or rapid file modifications
+- When touching critical files (auth, payment, config)
+- When uncertain about current protection level
+
+**Recommendations:**
+- "now": Create snapshot immediately (high urgency)
+- "soon": Create snapshot within next few changes (moderate urgency)
+- "monitor": Continue working, situation is stable
+
+**Returns:**
+- urgency: 0-100 score
+- recommendation: "now" | "soon" | "monitor"
+- reason: Human-readable explanation
+- metrics: Supporting data (pressureRate, aiActivityBurst, criticalFilesTouched)
+
+💡 Tip: Call before major operations for proactive protection.`,
+		inputSchema: {
+			type: "object",
+			properties: {
+				files: {
+					type: "array",
+					items: { type: "string" },
+					description: "Files currently being modified (optional, enhances suggestion)",
+				},
+			},
+		},
+		annotations: { title: "Suggest Snapshot", readOnlyHint: true, idempotentHint: true },
+		tier: "free",
+	},
+	{
+		name: "compare_snapshots",
+		description: `🔍 **SNAPSHOT COMPARISON** - Compare two snapshots or snapshot to current state.
+
+Provides detailed diff between snapshots to understand what changed.
+
+**When to use:**
+- Before restoring to see what would change
+- To understand evolution between checkpoints
+- For audit trails of AI-assisted changes
+- To review what protection actually saved
+
+**Returns:**
+- files: Array of file diffs with line-by-line changes
+- stats: Summary (filesChanged, linesAdded, linesRemoved)
+- aiAttribution: Which changes were AI-generated (if tracked)
+
+💡 Tip: Use without targetId to compare snapshot to current filesystem.`,
+		inputSchema: {
+			type: "object",
+			properties: {
+				snapshotId: {
+					type: "string",
+					description: "Source snapshot ID to compare from",
+				},
+				targetId: {
+					type: "string",
+					description: "Target snapshot ID to compare to (omit to compare to current state)",
+				},
+				files: {
+					type: "array",
+					items: { type: "string" },
+					description: "Filter to specific files (optional)",
+				},
+			},
+			required: ["snapshotId"],
+		},
+		annotations: { title: "Compare Snapshots", readOnlyHint: true, idempotentHint: true },
+		tier: "pro",
+	},
+	{
+		name: "lookup_exports",
+		description: `🔍 **IMPORT PATH RESOLVER** - Find valid import paths for packages.
+
+Helps AI agents find correct import paths by analyzing package.json exports maps and source files.
+
+**When to use:**
+- Unsure about correct import path for a package
+- Need to find available subpath exports (e.g., "@snapback/core/analysis")
+- Want to see what's exported from a path
+- Resolving import autocomplete for monorepo packages
+
+**Input:**
+- query: Partial import path (e.g., "@snapback/core/an")
+
+**Returns:**
+- matches: Array of matching export paths with their exports
+- Each match includes: path, exports list, hasTypes flag
+
+💡 Tip: Use partial paths for fuzzy matching. Supports scoped packages and local packages.`,
+		inputSchema: {
+			type: "object",
+			properties: {
+				query: {
+					type: "string",
+					description: "Partial or full import path to look up (e.g., '@snapback/core', '@snapback/core/an')",
+				},
+			},
+			required: ["query"],
+		},
+		annotations: { title: "Lookup Exports", readOnlyHint: true, idempotentHint: true },
 		tier: "free",
 	},
 	{

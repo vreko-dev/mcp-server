@@ -32,6 +32,8 @@ export {
 	TELEMETRY_EVENTS as LEGACY_TELEMETRY_EVENTS,
 	validateTelemetryEvent as validateLegacyTelemetryEvent,
 } from "../telemetry/events";
+// Export accountability events
+export * from "./accountability";
 // Export core events (new v1 schema)
 export * from "./core";
 // Export infrastructure events

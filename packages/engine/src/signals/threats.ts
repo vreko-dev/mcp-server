@@ -140,4 +140,3 @@ export async function mainThreats(): Promise<void> {
 		process.exit(1);
 	}
 }
-

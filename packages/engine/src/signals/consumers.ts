@@ -112,4 +112,3 @@ export async function mainConsumers(): Promise<void> {
 		process.exit(1);
 	}
 }
-

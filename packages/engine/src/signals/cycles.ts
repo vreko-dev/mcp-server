@@ -207,4 +207,3 @@ export async function mainCycles() {
 		process.exit(1);
 	}
 }
-

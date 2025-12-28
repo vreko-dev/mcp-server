@@ -122,4 +122,3 @@ export async function mainVelocity(): Promise<void> {
 		process.exit(1);
 	}
 }
-

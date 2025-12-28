@@ -238,4 +238,3 @@ export async function mainComplexity() {
 		process.exit(1);
 	}
 }
-

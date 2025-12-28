@@ -313,4 +313,3 @@ export async function mainPhantomDeps(): Promise<void> {
 		process.exit(1);
 	}
 }
-

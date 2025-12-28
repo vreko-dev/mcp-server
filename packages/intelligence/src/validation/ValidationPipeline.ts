@@ -1,8 +1,13 @@
 /**
  * Validation Pipeline
  *
- * Runs 7 validation layers in parallel for fast code validation.
+ * Runs 7+ validation layers in parallel for fast code validation.
  * Returns confidence score and review recommendation.
+ *
+ * Enhanced mode adds:
+ * - BiomeLayer: Real Biome linter integration
+ * - TypeScriptCompilerLayer: Real tsc type checking
+ * - DynamicConfidenceCalculator: Weighted confidence scoring
  *
  * Performance:
  * - Without pipeline: 24 min (manual review)
@@ -14,6 +19,7 @@
 import type { Issue, ValidationLayer } from "../types/config.js";
 import type { PipelineResult, ReviewRecommendation, ValidationResult } from "../types/validation.js";
 import { CONFIDENCE_THRESHOLDS, ISSUE_THRESHOLDS } from "../types/validation.js";
+import { DynamicConfidenceCalculator } from "./DynamicConfidenceCalculator.js";
 
 // =============================================================================
 // RESULT TYPE (inline to avoid circular deps)
@@ -27,6 +33,36 @@ function ok<T>(value: T): Result<T, never> {
 
 function err<E>(error: E): Result<never, E> {
 	return { success: false, error };
+}
+
+// =============================================================================
+// PIPELINE OPTIONS
+// =============================================================================
+
+export interface PipelineOptions {
+	/**
+	 * Enable enhanced mode with BiomeLayer and TypeScriptCompilerLayer.
+	 * Requires workspaceRoot when enabled.
+	 * @default false
+	 */
+	enhanced?: boolean;
+
+	/**
+	 * Workspace root for enhanced layers (Biome, TypeScript).
+	 * Required when enhanced mode is enabled.
+	 */
+	workspaceRoot?: string;
+
+	/**
+	 * Use dynamic confidence scoring instead of hardcoded thresholds.
+	 * @default false (for backward compatibility)
+	 */
+	useDynamicConfidence?: boolean;
+
+	/**
+	 * Custom validation layers to add
+	 */
+	customLayers?: ValidationLayer[];
 }
 
 // =============================================================================
@@ -59,12 +95,14 @@ export class CriticalValidationError extends ValidationError {
 
 import {
 	ArchitectureLayer,
+	BiomeLayer,
 	DependencyLayer,
 	PerformanceLayer,
 	SecurityLayer,
 	SyntaxLayer,
 	TestLayer,
 	TypeLayer,
+	TypeScriptCompilerLayer,
 } from "./layers/index.js";
 
 /**
@@ -72,11 +110,39 @@ import {
  *
  * Runs all validation layers in parallel and aggregates results
  * with confidence-based review routing.
+ *
+ * @example Basic usage (backward compatible)
+ * ```typescript
+ * const pipeline = new ValidationPipeline();
+ * const result = await pipeline.validate(code, filePath);
+ * ```
+ *
+ * @example Enhanced mode with real tooling
+ * ```typescript
+ * const pipeline = new ValidationPipeline({
+ *   enhanced: true,
+ *   workspaceRoot: '/path/to/project',
+ *   useDynamicConfidence: true,
+ * });
+ * const result = await pipeline.validate(code, filePath);
+ * ```
  */
 export class ValidationPipeline {
 	private layers: ValidationLayer[] = [];
+	private confidenceCalculator: DynamicConfidenceCalculator | null = null;
+	private useDynamicConfidence: boolean;
 
-	constructor(customLayers?: ValidationLayer[]) {
+	constructor(options?: ValidationLayer[] | PipelineOptions) {
+		// Handle backward compatibility: array of layers or options object
+		const opts: PipelineOptions = Array.isArray(options) ? { customLayers: options } : options || {};
+
+		this.useDynamicConfidence = opts.useDynamicConfidence ?? false;
+
+		// Initialize confidence calculator if using dynamic mode
+		if (this.useDynamicConfidence) {
+			this.confidenceCalculator = new DynamicConfidenceCalculator();
+		}
+
 		// Register default validation layers
 		this.layers = [
 			new SyntaxLayer(),
@@ -88,9 +154,15 @@ export class ValidationPipeline {
 			new PerformanceLayer(),
 		];
 
+		// Add enhanced layers if enabled
+		if (opts.enhanced && opts.workspaceRoot) {
+			this.layers.push(new BiomeLayer(opts.workspaceRoot));
+			this.layers.push(new TypeScriptCompilerLayer(opts.workspaceRoot));
+		}
+
 		// Add custom layers if provided
-		if (customLayers) {
-			this.layers.push(...customLayers);
+		if (opts.customLayers) {
+			this.layers.push(...opts.customLayers);
 		}
 	}
 
@@ -115,7 +187,8 @@ export class ValidationPipeline {
 		// Calculate totals
 		const totalIssues = layerResults.reduce((sum, r) => sum + r.issues.length, 0);
 		const criticalIssues = layerResults.flatMap((r) => r.issues).filter((i) => i.severity === "critical");
-		const confidence = this.calculateConfidence(totalIssues, criticalIssues.length);
+		// Pass layerResults for dynamic confidence calculation
+		const confidence = this.calculateConfidence(totalIssues, criticalIssues.length, layerResults);
 		const recommendation = this.getRecommendation(confidence, criticalIssues);
 
 		return {
@@ -218,7 +291,7 @@ export class ValidationPipeline {
 
 		// All layers passed - calculate full result
 		const totalIssues = layerResults.reduce((sum, r) => sum + r.issues.length, 0);
-		const confidence = this.calculateConfidence(totalIssues, 0);
+		const confidence = this.calculateConfidence(totalIssues, 0, layerResults);
 		const recommendation = this.getRecommendation(confidence, []);
 
 		return ok({
@@ -274,14 +347,20 @@ export class ValidationPipeline {
 	/**
 	 * Calculate confidence score based on issues
 	 *
-	 * Confidence thresholds:
-	 * - 0 critical issues, 0 total → 95%
-	 * - 0 critical issues, ≤2 total → 70%
-	 * - 0 critical issues, ≤5 total → 50%
-	 * - Any critical issues → 10%
-	 * - Else → 20%
+	 * When useDynamicConfidence is enabled, uses weighted scoring per layer.
+	 * Otherwise falls back to hardcoded thresholds for backward compatibility.
 	 */
-	private calculateConfidence(totalIssues: number, criticalIssues: number): number {
+	private calculateConfidence(
+		totalIssues: number,
+		criticalIssues: number,
+		layerResults?: ValidationResult[],
+	): number {
+		// Use dynamic calculator if available and layer results provided
+		if (this.confidenceCalculator && layerResults) {
+			return this.confidenceCalculator.calculate(layerResults);
+		}
+
+		// Fallback: hardcoded thresholds (backward compatible)
 		if (criticalIssues > 0) {
 			return 0.1;
 		}

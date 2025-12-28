@@ -93,6 +93,13 @@ export const IntelligenceConfigSchema = z.object({
 	enableSemanticSearch: z.boolean().optional().default(false),
 
 	/**
+	 * Enable enhanced validation layers (Biome + TypeScript compiler + dynamic confidence)
+	 * Requires pnpm build to have completed successfully
+	 * @default false
+	 */
+	enhancedValidation: z.boolean().optional().default(false),
+
+	/**
 	 * Enable learning loop (violation tracking, feedback)
 	 * @default true
 	 */

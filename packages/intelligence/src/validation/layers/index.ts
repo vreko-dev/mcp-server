@@ -3,6 +3,8 @@
  *
  * Individual validation layers that run in parallel.
  * Each layer checks for a specific category of issues.
+ *
+ * Enhanced layers (BiomeLayer, TypeScriptCompilerLayer) are exported at bottom.
  */
 
 import type { Issue, ValidationLayer } from "../../types/config.js";
@@ -385,3 +387,10 @@ export class PerformanceLayer implements ValidationLayer {
 		return { issues };
 	}
 }
+
+// =============================================================================
+// Enhanced Layers - External tool integration
+// =============================================================================
+
+export { BiomeLayer } from "./BiomeLayer.js";
+export { TypeScriptCompilerLayer } from "./TypeScriptCompilerLayer.js";

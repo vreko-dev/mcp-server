@@ -89,7 +89,14 @@ export class Intelligence {
 		this.config = this.resolveConfig(config);
 		this.configStore = new ConfigStore(this.config);
 		this.contextEngine = new ContextEngine(this.config, this.configStore);
-		this.validationPipeline = new ValidationPipeline();
+
+		// Initialize ValidationPipeline with enhanced mode if requested
+		this.validationPipeline = new ValidationPipeline({
+			enhanced: config.enhancedValidation ?? false,
+			useDynamicConfidence: config.enhancedValidation ?? false,
+			workspaceRoot: config.rootDir,
+		});
+
 		this.learningEngine = new LearningEngine(this.config);
 		this.violationTracker = new ViolationTracker(this.config);
 		this.sessionManager = new SessionManager(config.sessionLimits, {

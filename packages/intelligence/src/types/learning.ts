@@ -155,6 +155,19 @@ export const PROMOTION_THRESHOLDS = {
 } as const;
 
 /**
+ * Learning tier classification for tiered storage architecture
+ * - hot: Always loaded (~10-15 entries, critical patterns)
+ * - warm: Loaded based on intent/domain match (~20-30 per domain)
+ * - cold: Query-only, never auto-loaded (archived learnings)
+ */
+export type LearningTier = "hot" | "warm" | "cold";
+
+/**
+ * Learning priority for tier promotion
+ */
+export type LearningPriority = "critical" | "high" | "medium" | "low";
+
+/**
  * Recorded learning from a session
  */
 export interface Learning {
@@ -168,6 +181,26 @@ export interface Learning {
 	related?: string[];
 	source: string;
 	timestamp: string;
+
+	// Tiering metadata (optional for backward compatibility)
+	/** Tier classification for loading strategy */
+	tier?: LearningTier;
+	/** Domain category (e.g., 'testing', 'vscode', 'architecture') */
+	domain?: string;
+	/** Priority for tier promotion decisions */
+	priority?: LearningPriority;
+	/** Keywords for improved matching */
+	keywords?: string[];
+
+	// Usage tracking for auto-promotion/demotion
+	/** Times this learning was surfaced to LLM */
+	accessCount?: number;
+	/** Last time this learning was accessed */
+	lastAccessed?: string;
+	/** Relevance score (0-1, decreases over time) */
+	relevanceScore?: number;
+	/** Date when learning was applied/marked complete */
+	appliedDate?: string;
 }
 
 /**

@@ -71,9 +71,15 @@ export function getTierInfo(tier: Tier | string): TierInfo | undefined {
 }
 
 export function getTierForPoints(points: number): Tier {
-	if (points >= TIER_THRESHOLDS.guardian) return "guardian";
-	if (points >= TIER_THRESHOLDS.cultivator) return "cultivator";
-	if (points >= TIER_THRESHOLDS.grower) return "grower";
+	if (points >= TIER_THRESHOLDS.guardian) {
+		return "guardian";
+	}
+	if (points >= TIER_THRESHOLDS.cultivator) {
+		return "cultivator";
+	}
+	if (points >= TIER_THRESHOLDS.grower) {
+		return "grower";
+	}
 	return "seedling";
 }
 

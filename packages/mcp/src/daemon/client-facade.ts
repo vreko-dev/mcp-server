@@ -186,7 +186,7 @@ class DaemonConnection {
 				timeout,
 			});
 
-			this.socket!.write(JSON.stringify(request) + "\n");
+			this.socket?.write(`${JSON.stringify(request)}\n`);
 		});
 	}
 
@@ -201,7 +201,9 @@ class DaemonConnection {
 		this.buffer = lines.pop() || ""; // Keep incomplete line in buffer
 
 		for (const line of lines) {
-			if (!line.trim()) continue;
+			if (!line.trim()) {
+				continue;
+			}
 
 			try {
 				const response: JsonRpcResponse = JSON.parse(line);
@@ -290,7 +292,7 @@ export function isDaemonAvailable(_workspaceRoot: string): boolean {
 		}
 		// Optionally verify PID is running
 		const pid = Number.parseInt(readFileSync(pidPath, "utf8").trim(), 10);
-		if (isNaN(pid)) {
+		if (Number.isNaN(pid)) {
 			return false;
 		}
 		// Check if process exists (doesn't kill it)

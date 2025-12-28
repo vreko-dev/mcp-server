@@ -27,7 +27,7 @@ export function useLeaderboard(limit = 10, offset = 0) {
 	try {
 		const { user: sessionUser } = useSession();
 		user = sessionUser;
-	} catch (error) {
+	} catch (_error) {
 		// SessionProvider not available - likely during static generation
 		// Default to undefined which is safe (API will return public leaderboard)
 		user = undefined;

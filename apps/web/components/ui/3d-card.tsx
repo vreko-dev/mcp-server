@@ -21,7 +21,9 @@ export const CardContainer = ({
 	const [isMouseEntered, setIsMouseEntered] = useState(false);
 
 	const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-		if (!containerRef.current) return;
+		if (!containerRef.current) {
+			return;
+		}
 		const { left, top, width, height } = containerRef.current.getBoundingClientRect();
 		const x = (e.clientX - left - width / 2) / 25;
 		const y = (e.clientY - top - height / 2) / 25;
@@ -30,11 +32,15 @@ export const CardContainer = ({
 
 	const handleMouseEnter = (_e: React.MouseEvent<HTMLDivElement>) => {
 		setIsMouseEntered(true);
-		if (!containerRef.current) return;
+		if (!containerRef.current) {
+			return;
+		}
 	};
 
 	const handleMouseLeave = (_e: React.MouseEvent<HTMLDivElement>) => {
-		if (!containerRef.current) return;
+		if (!containerRef.current) {
+			return;
+		}
 		setIsMouseEntered(false);
 		containerRef.current.style.transform = "rotateY(0deg) rotateX(0deg)";
 	};
@@ -109,7 +115,9 @@ export const CardItem = ({
 	}, [isMouseEntered]);
 
 	const handleAnimations = () => {
-		if (!ref.current) return;
+		if (!ref.current) {
+			return;
+		}
 		if (isMouseEntered) {
 			ref.current.style.transform = `translateX(${translateX}px) translateY(${translateY}px) translateZ(${translateZ}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) rotateZ(${rotateZ}deg)`;
 		} else {

@@ -48,7 +48,9 @@ export interface OrganizationWithMembers extends Organization {
  * Type guard to check if user is organization owner
  */
 export function isOrganizationOwner(organization: Organization | null, user: { id: string } | null): boolean {
-	if (!organization || !user) return false;
+	if (!organization || !user) {
+		return false;
+	}
 
 	// Check if organization has members list
 	if ("members" in organization && Array.isArray((organization as OrganizationWithMembers).members)) {
@@ -63,7 +65,9 @@ export function isOrganizationOwner(organization: Organization | null, user: { i
  * Type guard to check if user is organization admin (owner or admin role)
  */
 export function isOrganizationAdmin(organization: Organization | null, user: { id: string } | null): boolean {
-	if (!organization || !user) return false;
+	if (!organization || !user) {
+		return false;
+	}
 
 	// Check if organization has members list
 	if ("members" in organization && Array.isArray((organization as OrganizationWithMembers).members)) {
@@ -78,7 +82,9 @@ export function isOrganizationAdmin(organization: Organization | null, user: { i
  * Type guard to check if user is organization member
  */
 export function isOrganizationMember(organization: Organization | null, user: { id: string } | null): boolean {
-	if (!organization || !user) return false;
+	if (!organization || !user) {
+		return false;
+	}
 
 	// Check if organization has members list
 	if ("members" in organization && Array.isArray((organization as OrganizationWithMembers).members)) {

@@ -16,7 +16,9 @@ export function Particles({ className, quantity = 50, color = "#FFF" }: Particle
 		setMounted(true);
 	}, []);
 
-	if (!mounted) return null;
+	if (!mounted) {
+		return null;
+	}
 
 	return (
 		<div className={cn("absolute inset-0 overflow-hidden pointer-events-none", className)}>
@@ -26,11 +28,11 @@ export function Particles({ className, quantity = 50, color = "#FFF" }: Particle
 					className="absolute rounded-full opacity-20 animate-pulse"
 					style={{
 						backgroundColor: color,
-						width: Math.random() * 4 + 1 + "px",
-						height: Math.random() * 4 + 1 + "px",
-						top: Math.random() * 100 + "%",
-						left: Math.random() * 100 + "%",
-						animationDuration: Math.random() * 5 + 2 + "s",
+						width: `${Math.random() * 4 + 1}px`,
+						height: `${Math.random() * 4 + 1}px`,
+						top: `${Math.random() * 100}%`,
+						left: `${Math.random() * 100}%`,
+						animationDuration: `${Math.random() * 5 + 2}s`,
 					}}
 				/>
 			))}

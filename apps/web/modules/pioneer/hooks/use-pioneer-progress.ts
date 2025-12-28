@@ -26,7 +26,7 @@ export function usePioneerProgress() {
 	try {
 		const { user: sessionUser } = useSession();
 		user = sessionUser;
-	} catch (error) {
+	} catch (_error) {
 		// SessionProvider not available - likely during static generation
 		// Default to undefined which is safe (API will return public data)
 		user = undefined;
@@ -35,7 +35,9 @@ export function usePioneerProgress() {
 	const { data, isLoading, error } = useQuery({
 		queryKey: ["pioneer", "me", user?.id],
 		queryFn: async (): Promise<PioneerProgress | null> => {
-			if (!user?.id) return null;
+			if (!user?.id) {
+				return null;
+			}
 
 			const response = await orpcClient.pioneer.me();
 

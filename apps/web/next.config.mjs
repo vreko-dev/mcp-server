@@ -1,13 +1,11 @@
-import { withSentryConfig } from "@sentry/nextjs";
-import webpack from "webpack";
-
 // Add bundle analyzer (only for Webpack builds when TURBOPACK=false)
 // For Turbopack (default), use: npx next experimental-analyze
 import bundleAnalyzer from "@next/bundle-analyzer";
+import { withSentryConfig } from "@sentry/nextjs";
+import webpack from "webpack";
 
 const withBundleAnalyzer = bundleAnalyzer({
-	enabled:
-		process.env.ANALYZE === "true" && process.env.TURBOPACK === "false",
+	enabled: process.env.ANALYZE === "true" && process.env.TURBOPACK === "false",
 });
 
 const nextConfig = {
@@ -21,11 +19,7 @@ const nextConfig = {
 			},
 		],
 	},
-	transpilePackages: [
-		"@snapback/contracts",
-		"@snapback/sdk",
-		"@snapback/events",
-	],
+	transpilePackages: ["@snapback/contracts", "@snapback/sdk", "@snapback/events"],
 	serverExternalPackages: ["@snapback/infrastructure"],
 	experimental: {
 		// Next.js 16: Enable Turbopack filesystem caching for faster dev rebuilds
@@ -154,7 +148,7 @@ const nextConfig = {
 			new webpack.IgnorePlugin({
 				resourceRegExp: /^piscina$/,
 				contextRegExp: /./,
-			})
+			}),
 		);
 
 		// Suppress client-side warnings for server-only packages
@@ -205,6 +199,4 @@ const sentryBuildOptions = {
 
 // Wrap with Sentry (only if SENTRY_DSN or NEXT_PUBLIC_SENTRY_DSN is set)
 const hasSentry = process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN;
-export default hasSentry
-	? withSentryConfig(configWithAnalyzer, sentryBuildOptions)
-	: configWithAnalyzer;
+export default hasSentry ? withSentryConfig(configWithAnalyzer, sentryBuildOptions) : configWithAnalyzer;

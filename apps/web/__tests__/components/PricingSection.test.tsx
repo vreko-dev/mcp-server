@@ -1,3 +1,11 @@
+/**
+ * Tests for the deprecated PricingSection component
+ * @deprecated This tests the deprecated home/components/PricingSection.tsx
+ *
+ * For the active pricing implementation, see:
+ * - apps/web/app/(marketing)/pricing/client.tsx
+ * - @marketing/components/ui/pricing-card.tsx
+ */
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
@@ -54,51 +62,44 @@ describe("PricingSection", () => {
 	it("should render all pricing plans and descriptions", () => {
 		render(<PricingSection />);
 
-		// Check if the section title parts are rendered
-		expect(screen.getByText("Simple,")).toBeInTheDocument();
-		expect(screen.getByText("transparent pricing")).toBeInTheDocument();
+		// Check if the section title is rendered (using partial text match)
+		expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent(/Simple.*Transparent.*Pricing/i);
 
-		// Check if all pricing plans are rendered
+		// Check if all pricing plans are rendered (matching actual component content)
 		expect(screen.getByText("Starter")).toBeInTheDocument();
-		expect(screen.getByText("Professional")).toBeInTheDocument();
+		expect(screen.getByText("Pro")).toBeInTheDocument();
 		expect(screen.getByText("Enterprise")).toBeInTheDocument();
 
-		// Check if pricing plan descriptions are rendered
-		expect(
-			screen.getByText("Perfect for individuals and small teams"),
-		).toBeInTheDocument();
-		expect(
-			screen.getByText("For growing teams with advanced needs"),
-		).toBeInTheDocument();
-		expect(
-			screen.getByText("For large organizations with complex requirements"),
-		).toBeInTheDocument();
+		// Check if pricing plan descriptions are rendered (matching actual component)
+		expect(screen.getByText("Perfect for individual developers")).toBeInTheDocument();
+		expect(screen.getByText("For professional developers and teams")).toBeInTheDocument();
+		expect(screen.getByText("For organizations with advanced needs")).toBeInTheDocument();
 	});
 
 	it("should render CTAs with correct text", () => {
 		render(<PricingSection />);
 
-		// Check if CTAs have correct text (since they're not actually links in the component)
+		// Check if CTAs have correct text (matching actual component)
+		expect(screen.getByText("Get Started Free")).toBeInTheDocument();
 		expect(screen.getByText("Start Free Trial")).toBeInTheDocument();
-		expect(screen.getByText("Get Started")).toBeInTheDocument();
 		expect(screen.getByText("Contact Sales")).toBeInTheDocument();
 	});
 
 	it("should render statistics", () => {
 		render(<PricingSection />);
 
-		// Check if statistics are rendered
+		// Check if statistics are rendered (matching actual component stats)
+		expect(screen.getByText("10k+")).toBeInTheDocument();
+		expect(screen.getByText("Developers Protected")).toBeInTheDocument();
+
 		expect(screen.getByText("99.9%")).toBeInTheDocument();
 		expect(screen.getByText("Uptime")).toBeInTheDocument();
 
+		expect(screen.getByText("500k+")).toBeInTheDocument();
+		expect(screen.getByText("Checkpoints Created")).toBeInTheDocument();
+
 		expect(screen.getByText("24/7")).toBeInTheDocument();
 		expect(screen.getByText("Support")).toBeInTheDocument();
-
-		expect(screen.getByText("GDPR")).toBeInTheDocument();
-		expect(screen.getByText("Compliant")).toBeInTheDocument();
-
-		expect(screen.getByText("90+")).toBeInTheDocument();
-		expect(screen.getByText("Integrations")).toBeInTheDocument();
 	});
 
 	// Keep this test skipped for now

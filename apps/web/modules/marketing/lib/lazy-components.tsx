@@ -32,6 +32,13 @@ export const LazyFooter = dynamic(() => import("@marketing/components/sections/f
 	),
 });
 
+/**
+ * @deprecated Use the PricingCard component directly from @marketing/components/ui/pricing-card
+ * or use the pricing page at apps/web/app/(marketing)/pricing/client.tsx
+ *
+ * This lazy export loads the deprecated pricing-section.tsx component.
+ * Kept for backward compatibility with any existing usage.
+ */
 export const LazyPricingSection = dynamic(
 	() =>
 		import("@marketing/components/sections/pricing-section").then((mod) => ({

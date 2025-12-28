@@ -1,5 +1,16 @@
 "use client";
 
+/**
+ * @deprecated This component is a bridge/transition implementation.
+ * Use the active implementation at: apps/web/app/(marketing)/pricing/client.tsx
+ * Which uses the same PricingCard component but with better data structure.
+ *
+ * This file uses useContent() which has incompatible data format.
+ * The active version defines PricingCardData[] directly with proper typing.
+ *
+ * If you need content-driven pricing, update useContent() to match PricingCardData interface.
+ */
+
 import { PricingCard } from "@marketing/components/ui/pricing-card";
 import { PricingToggle } from "@marketing/components/ui/pricing-toggle";
 import { SnapEntrance } from "@marketing/components/ui/snap-motion";

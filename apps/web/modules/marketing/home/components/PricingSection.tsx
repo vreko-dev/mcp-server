@@ -1,5 +1,14 @@
 "use client";
 
+/**
+ * @deprecated This component is an earlier iteration.
+ * Use the active implementation at: apps/web/app/(marketing)/pricing/client.tsx
+ * Which uses the modular PricingCard component from: @marketing/components/ui/pricing-card
+ *
+ * This file is kept for reference and backward compatibility with existing tests.
+ * See: apps/web/__tests__/components/PricingSection.test.tsx
+ */
+
 import { Card3D } from "@marketing/components/ui/3d-card";
 import { Button } from "@ui/components/button";
 import {

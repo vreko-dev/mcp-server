@@ -1,31 +1,10 @@
 "use client";
 
 import type { Transition, Variants } from "motion/react";
-import { useEffect, useState } from "react";
 
-// Hook: Detect reduced motion preference (SSR-safe)
-export const useReducedMotion = (): boolean => {
-	const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-
-	useEffect(() => {
-		// Only run in browser
-		if (typeof window === "undefined") {
-			return;
-		}
-
-		const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-		setPrefersReducedMotion(mediaQuery.matches);
-
-		const handleChange = (event: MediaQueryListEvent) => {
-			setPrefersReducedMotion(event.matches);
-		};
-
-		mediaQuery.addEventListener("change", handleChange);
-		return () => mediaQuery.removeEventListener("change", handleChange);
-	}, []);
-
-	return prefersReducedMotion;
-};
+// CONSOLIDATED: Import from canonical source instead of duplicating
+// See: modules/ui/hooks/use-reduced-motion.ts for the single implementation
+export { useReducedMotion } from "@ui/hooks/use-reduced-motion";
 
 // Motion variants factory (use within components with useReducedMotion hook)
 export const createMotionVariants = (

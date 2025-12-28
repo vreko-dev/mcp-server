@@ -1,5 +1,18 @@
 "use client";
 
+/**
+ * @deprecated This component is an earlier iteration with embedded logic.
+ * Use the active implementation at: apps/web/app/(marketing)/pricing/client.tsx
+ * Which uses the modular PricingCard component from: @marketing/components/ui/pricing-card
+ *
+ * This file is kept for reference and backward compatibility.
+ * Key differences:
+ * - Active version uses typed PricingCardData interface
+ * - Active version has better accessibility (aria-labels, focus states)
+ * - Active version integrates with PostHog analytics properly
+ * - Active version uses modular, composable components
+ */
+
 import { ProtectiveHover, SnapButton, SnapEntrance, SnapStagger } from "@marketing/components/ui/snap-motion";
 import { type PricingTier, type Stat, useContent } from "@marketing/hooks/use-content";
 import { marketingAnalytics } from "@marketing/lib/track-event";

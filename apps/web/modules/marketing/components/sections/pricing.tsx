@@ -1,5 +1,14 @@
 "use client";
 
+/**
+ * @deprecated This component is an earlier iteration with hardcoded data.
+ * Use the active implementation at: apps/web/app/(marketing)/pricing/client.tsx
+ * Which uses the modular PricingCard component from: @marketing/components/ui/pricing-card
+ *
+ * This file is kept for reference - it has good accessibility patterns (fieldset, aria-labels)
+ * that should be incorporated into the active implementation if not already present.
+ */
+
 import { Check, Star } from "lucide-react";
 import { m } from "motion/react";
 import { useState } from "react";

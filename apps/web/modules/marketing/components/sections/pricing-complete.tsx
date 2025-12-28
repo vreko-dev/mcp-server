@@ -1,4 +1,17 @@
 "use client";
+
+/**
+ * @deprecated This component is an earlier iteration with hardcoded data.
+ * Use the active implementation at: apps/web/app/(marketing)/pricing/client.tsx
+ * Which uses the modular PricingCard component from: @marketing/components/ui/pricing-card
+ *
+ * This file is kept for reference and backward compatibility.
+ * Key differences:
+ * - Active version uses typed PricingCardData interface
+ * - Active version supports dynamic data via props
+ * - Active version has feature categorization (protection, intelligence, collaboration, compliance)
+ */
+
 import { cn } from "@marketing/lib/utils";
 import { m } from "motion/react";
 

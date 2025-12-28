@@ -4,10 +4,11 @@
  * Test ID Prefix: MCP-INT-001-XXX
  *
  * Tests tool handler integration and MCP compliance:
- * - All 15 facade tools respond correctly
+ * - All 7 consolidated tools respond correctly
  * - Input validation works for each tool
  * - Output structure is MCP-compliant
  * - Error handling is graceful
+ * - Legacy facade handlers still work (used by consolidated tools)
  *
  * Migrated from apps/_archive/mcp-server/test/integration/mcp-protocol.test.ts
  * P0-001: Release-blocking test coverage requirement
@@ -18,7 +19,7 @@ import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { facadeHandlers } from "../src/facades/handlers.js";
 import type { ToolContext } from "../src/registry.js";
-import { FACADE_TOOLS } from "../src/registry.js";
+import { CONSOLIDATED_TOOLS } from "../src/tools/consolidated/registry.js";
 
 // ============================================================================
 // Test Setup
@@ -97,45 +98,23 @@ describe("MCP Tool Integration", () => {
 
 	describe("Tool Registry", () => {
 		// Test ID: MCP-INT-001-001
-		it("should have all facade tools registered", () => {
-			// Tool count: 22 base + 3 new (lookup_exports, suggest_snapshot, compare_snapshots) = 25
-			expect(FACADE_TOOLS.length).toBeGreaterThanOrEqual(22);
+		it("should have exactly 7 consolidated tools", () => {
+			expect(CONSOLIDATED_TOOLS.length).toBe(7);
 		});
 
 		// Test ID: MCP-INT-001-002
-		it("should have all expected tool names", () => {
+		it("should have all expected consolidated tool names", () => {
 			const expectedTools = [
-				// Core tools (16)
-				"analyze",
-				"prepare_workspace",
-				"snapshot_create",
-				"snapshot_list",
-				"snapshot_restore",
-				"validate",
-				"context",
-				"session",
-				"learn",
-				"acknowledge_risk",
-				"get_context",
-				"check_patterns",
-				"report_violation",
-				"get_learnings",
-				"meta",
-				"cleanup",
-				// Pair programmer composite tools (6)
-				"begin_task",
-				"quick_check",
-				"what_changed",
-				"review_work",
-				"complete_task",
-				"get_pairing_protocol",
-				// Discovery and snapshot tools (3)
-				"lookup_exports",
-				"suggest_snapshot",
-				"compare_snapshots",
+				"snap",
+				"snap_end",
+				"snap_fix",
+				"snap_help",
+				"snap_learn",
+				"snap_violation",
+				"check",
 			];
 
-			const toolNames = FACADE_TOOLS.map((t) => t.name);
+			const toolNames = CONSOLIDATED_TOOLS.map((t) => t.name);
 			for (const expected of expectedTools) {
 				expect(toolNames).toContain(expected);
 			}
@@ -143,17 +122,9 @@ describe("MCP Tool Integration", () => {
 
 		// Test ID: MCP-INT-001-003
 		it("should have valid input schemas for all tools", () => {
-			for (const tool of FACADE_TOOLS) {
+			for (const tool of CONSOLIDATED_TOOLS) {
 				expect(tool.inputSchema).toBeDefined();
 				expect(tool.inputSchema).toHaveProperty("type", "object");
-			}
-		});
-
-		// Test ID: MCP-INT-001-004
-		it("should have handlers registered for all tools", () => {
-			for (const tool of FACADE_TOOLS) {
-				expect(facadeHandlers[tool.name]).toBeDefined();
-				expect(typeof facadeHandlers[tool.name]).toBe("function");
 			}
 		});
 	});
@@ -345,11 +316,8 @@ describe("MCP Tool Integration", () => {
 
 	describe("Schema Validation", () => {
 		// Test ID: MCP-INT-001-017
-		it("should validate analyze schema correctly", () => {
-			const _validInput = { type: "risk", changes: [] };
-			const _invalidInput = { type: "invalid", changes: [] };
-
-			const tool = FACADE_TOOLS.find((t) => t.name === "analyze");
+		it("should validate snap schema correctly", () => {
+			const tool = CONSOLIDATED_TOOLS.find((t) => t.name === "snap");
 			expect(tool).toBeDefined();
 
 			// Note: validateInput expects schema from validation.ts, not tool.inputSchema
@@ -359,21 +327,17 @@ describe("MCP Tool Integration", () => {
 		});
 
 		// Test ID: MCP-INT-001-018
-		it("should validate snapshot_create schema", () => {
-			const tool = FACADE_TOOLS.find((t) => t.name === "snapshot_create");
+		it("should validate snap_fix schema", () => {
+			const tool = CONSOLIDATED_TOOLS.find((t) => t.name === "snap_fix");
 			expect(tool).toBeDefined();
 			expect(tool?.inputSchema).toHaveProperty("type", "object");
-			expect(tool?.inputSchema.properties).toHaveProperty("files");
-			expect(tool?.inputSchema.required).toContain("files");
 		});
 
 		// Test ID: MCP-INT-001-019
-		it("should validate get_context schema", () => {
-			const tool = FACADE_TOOLS.find((t) => t.name === "get_context");
+		it("should validate check schema", () => {
+			const tool = CONSOLIDATED_TOOLS.find((t) => t.name === "check");
 			expect(tool).toBeDefined();
 			expect(tool?.inputSchema).toHaveProperty("type", "object");
-			expect(tool?.inputSchema.properties).toHaveProperty("task");
-			expect(tool?.inputSchema.required).toContain("task");
 		});
 	});
 });

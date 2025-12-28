@@ -18,6 +18,34 @@
  * @module @snapback/mcp
  */
 
+// Analyze before apply (threat detection for code changes)
+export {
+	type AnalysisResult,
+	analyzeBeforeApply,
+	type DiffChange,
+	formatAnalysisResult,
+} from "./analyze_before_apply.js";
+// Branding system (voice, messaging, and wire format helpers)
+export {
+	BRAND_PREFIX,
+	buildCheckResponse,
+	buildEndResponse,
+	buildErrorResponse,
+	buildLearnResponse,
+	buildListResponse,
+	buildRestoreResponse,
+	buildStartResponse,
+	buildViolationResponse,
+	compress,
+	formatMessage,
+	formatToolResult,
+	formatWire,
+	getRelativeTime,
+	getRelativeTimeHuman,
+	messages,
+	WIRE_PREFIX,
+	type WireResponse,
+} from "./branding/index.js";
 // Bridge (extension communication)
 export {
 	BridgeReceiver,

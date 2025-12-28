@@ -11,9 +11,14 @@ import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import type { SnapBackAPIClient } from "./client/api-client.js";
 import { CommonErrors, createRequestContext, log, logError, logSuccess } from "./errors.js";
-import { facadeHandlers } from "./facades/handlers.js";
 import { getIntelligence } from "./facades/intelligence.js";
-import { FACADE_TOOLS, getHandler, registerHandler, type ToolContext, type ToolResult } from "./registry.js";
+import { getHandler, registerHandler, type ToolContext, type ToolResult } from "./registry.js";
+import {
+	CONSOLIDATED_HANDLERS,
+	CONSOLIDATED_TOOLS,
+	getMigrationGuidance,
+	isConsolidatedTool,
+} from "./tools/consolidated/registry.js";
 import { getToolSchema, validateInput } from "./validation.js";
 
 /**
@@ -151,20 +156,18 @@ export function createMcpServer(options: McpServerOptions): Server {
 		userId: options.auth?.userId,
 	};
 
-	// Register all facade handlers
-	for (const [name, handler] of Object.entries(facadeHandlers)) {
+	// Register consolidated handlers (7 tools)
+	for (const [name, handler] of Object.entries(CONSOLIDATED_HANDLERS)) {
 		registerHandler(name, handler);
 	}
-
-	// Log server creation
 	console.error(`[SnapBack MCP] Server created for workspace: ${workspaceRoot}`);
 	console.error(`[SnapBack MCP] Tier: ${tier}`);
-	console.error(`[SnapBack MCP] ${FACADE_TOOLS.length} facade tools registered`);
+	console.error(`[SnapBack MCP] ${CONSOLIDATED_TOOLS.length} consolidated tools registered`);
 
-	// Handle ListTools - return only facades (clean catalog)
+	// Handle ListTools - return consolidated tools
 	server.setRequestHandler(ListToolsRequestSchema, async () => {
 		// Filter by tier if needed
-		const availableTools = FACADE_TOOLS.filter((tool) => {
+		const availableTools = CONSOLIDATED_TOOLS.filter((tool) => {
 			if (tool.tier === "pro" && tier === "free") {
 				return false;
 			}
@@ -189,8 +192,30 @@ export function createMcpServer(options: McpServerOptions): Server {
 		const reqCtx = createRequestContext(name, { userId: context.userId, tier: context.tier });
 		log("info", reqCtx, "Tool call started", { args: Object.keys(args || {}) });
 
+		// Check for legacy tool usage and provide migration guidance
+		if (!isConsolidatedTool(name)) {
+			const guidance = getMigrationGuidance(name);
+			if (guidance) {
+				log("warn", reqCtx, "Legacy tool called", { guidance });
+				return {
+					content: [
+						{
+							type: "text" as const,
+							text: JSON.stringify({
+								error: "E601_DEPRECATED_TOOL",
+								message: `Tool '${name}' is deprecated. ${guidance}`,
+								migration: guidance,
+								availableTools: CONSOLIDATED_TOOLS.map((t) => t.name),
+							}),
+						},
+					],
+					isError: true,
+				};
+			}
+		}
+
 		// P0-002: Tier gating BEFORE handler execution
-		const toolDef = FACADE_TOOLS.find((t) => t.name === name);
+		const toolDef = CONSOLIDATED_TOOLS.find((t) => t.name === name);
 		if (toolDef?.tier === "pro" && tier === "free") {
 			logError(reqCtx, "E301_TIER_GATE_BLOCKED", "Tool requires pro tier");
 			return {

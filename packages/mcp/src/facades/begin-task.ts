@@ -17,6 +17,7 @@ import type { ToolHandler, ToolResult } from "../registry.js";
 import { createErrorCacheService } from "../services/error-cache-service.js";
 import { createGitContextService } from "../services/git-context-service.js";
 import { createSnapshotService } from "../services/snapshot-service.js";
+import { TieredLearningService } from "../services/tiered-learning-service.js";
 import {
 	drainPendingObservations,
 	extractKeywords,
@@ -527,60 +528,8 @@ function shouldAutoSnapshot(risk: RiskAssessment, files?: string[]): boolean {
 	return false;
 }
 
-/**
- * Get learnings from JSONL file
- */
-function getLearningsFromFile(
-	workspaceRoot: string,
-	keywords: string[],
-): Array<{ type: string; trigger: string; action: string; source?: string; score: number }> {
-	const learningsPath = join(workspaceRoot, ".snapback", "learnings", "learnings.jsonl");
-
-	if (!existsSync(learningsPath)) {
-		return [];
-	}
-
-	try {
-		const content = readFileSync(learningsPath, "utf8");
-		const lines = content.split("\n").filter(Boolean);
-		const learnings: Array<{
-			type: string;
-			trigger: string;
-			action: string;
-			source?: string;
-		}> = [];
-
-		for (const line of lines) {
-			try {
-				learnings.push(JSON.parse(line));
-			} catch {
-				// Skip invalid lines
-			}
-		}
-
-		// Score learnings by keyword relevance
-		const scored = learnings.map((learning) => {
-			let score = 0;
-			const searchText = `${learning.trigger} ${learning.action}`.toLowerCase();
-
-			for (const keyword of keywords) {
-				if (searchText.includes(keyword.toLowerCase())) {
-					score += 1;
-				}
-			}
-
-			return { ...learning, score };
-		});
-
-		// Filter and sort by score
-		return scored
-			.filter((l) => l.score > 0)
-			.sort((a, b) => b.score - a.score)
-			.slice(0, 5);
-	} catch {
-		return [];
-	}
-}
+// NOTE: getLearningsFromFile removed - replaced by TieredLearningService
+// which implements intent-based loading from hot/warm tiers for 97% token reduction
 
 /**
  * Get context constraints from .snapback/ctx/context.json
@@ -1128,10 +1077,20 @@ export const handleBeginTask: ToolHandler = async (args, context): Promise<ToolR
 		}
 	}
 
-	// 4. Get relevant learnings
-	const learnings = getLearningsFromFile(workspaceRoot, keywords).map((l) => ({
-		...l,
-		relevanceScore: l.score / keywords.length,
+	// 4. Get relevant learnings using tiered storage (P0 token efficiency)
+	// Loads hot tier (always) + warm tier (based on intent) - never auto-loads cold tier
+	const tieredLearningService = new TieredLearningService(workspaceRoot);
+	const tieredLearnings = await tieredLearningService.loadTieredLearnings({
+		intent,
+		keywords,
+		maxLearnings: 10,
+	});
+	const learnings = tieredLearnings.map((l) => ({
+		type: l.type,
+		trigger: Array.isArray(l.trigger) ? l.trigger.join(", ") : l.trigger,
+		action: l.action,
+		source: l.source,
+		relevanceScore: l.score / (keywords.length || 1),
 	}));
 
 	// 5. Get patterns from Intelligence (if available)

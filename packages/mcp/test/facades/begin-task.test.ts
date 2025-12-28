@@ -48,6 +48,14 @@ function cleanupTestWorkspace() {
 	}
 }
 
+/**
+ * Helper to call handleBeginTask with compact: false for JSON output
+ * Tests need JSON output to validate structure, so we disable compact mode
+ */
+async function beginTaskForTest(args: Record<string, unknown>, ctx: ToolContext) {
+	return handleBeginTask({ ...args, compact: false }, ctx);
+}
+
 // ============================================================================
 // proactive_guidance Tests
 // ============================================================================
@@ -69,7 +77,7 @@ describe("begin_task proactive_guidance", () => {
 
 	describe("Happy Path", () => {
 		it("should return proactive_guidance field in output", async () => {
-			const result = await handleBeginTask(
+			const result = await beginTaskForTest(
 				{
 					task: "Fix authentication bug",
 					files: ["src/auth.ts"],
@@ -102,7 +110,7 @@ describe("auth", () => {
 				"utf8",
 			);
 
-			const result = await handleBeginTask(
+			const result = await beginTaskForTest(
 				{
 					task: "Update authentication tests",
 					files: ["auth.test.ts"],
@@ -135,7 +143,7 @@ describe.skip("utils", () => {
 				"utf8",
 			);
 
-			const result = await handleBeginTask(
+			const result = await beginTaskForTest(
 				{
 					task: "Review utility tests",
 					files: ["utils.test.ts"],
@@ -158,7 +166,7 @@ describe.skip("utils", () => {
 
 	describe("Sad Path", () => {
 		it("should return empty suggestions when no test files provided", async () => {
-			const result = await handleBeginTask(
+			const result = await beginTaskForTest(
 				{
 					task: "Update config file",
 					files: ["config.ts"],
@@ -187,7 +195,7 @@ describe("clean", () => {
 				"utf8",
 			);
 
-			const result = await handleBeginTask(
+			const result = await beginTaskForTest(
 				{
 					task: "Review clean tests",
 					files: ["clean.test.ts"],
@@ -220,7 +228,7 @@ describe("clean", () => {
 			writeFileSync(testFile1, `it.skip("auth test", () => {});`, "utf8");
 			writeFileSync(testFile2, `it.skip("api test", () => {});`, "utf8");
 
-			const result = await handleBeginTask(
+			const result = await beginTaskForTest(
 				{
 					task: "Review all tests",
 					files: ["auth.test.ts", "api.test.ts"],
@@ -235,7 +243,7 @@ describe("clean", () => {
 		});
 
 		it("should include proactive_guidance summary", async () => {
-			const result = await handleBeginTask(
+			const result = await beginTaskForTest(
 				{
 					task: "Simple task",
 					files: ["file.ts"],
@@ -266,7 +274,7 @@ describe("many skipped", () => {
 				"utf8",
 			);
 
-			const result = await handleBeginTask(
+			const result = await beginTaskForTest(
 				{
 					task: "Review skipped tests",
 					files: ["many-skipped.test.ts"],
@@ -291,7 +299,7 @@ describe("many skipped", () => {
 	describe("Error Handling", () => {
 		it("should still return result when advisory engine fails", async () => {
 			// Even with a non-existent file, begin_task should succeed
-			const result = await handleBeginTask(
+			const result = await beginTaskForTest(
 				{
 					task: "Handle error case",
 					files: ["nonexistent.test.ts"],
@@ -310,7 +318,7 @@ describe("many skipped", () => {
 			const testFilePath = join(TEST_WORKSPACE, "malformed.test.ts");
 			writeFileSync(testFilePath, "this is {{ not valid javascript syntax", "utf8");
 
-			const result = await handleBeginTask(
+			const result = await beginTaskForTest(
 				{
 					task: "Handle malformed file",
 					files: ["malformed.test.ts"],
@@ -362,7 +370,7 @@ describe("begin_task stale context warning", () => {
 			writeFileSync(join(ctxDir, "context.json"), JSON.stringify(staleContext, null, 2));
 
 			// Act
-			const result = await handleBeginTask(
+			const result = await beginTaskForTest(
 				{
 					task: "Fix authentication bug",
 					files: ["src/auth.ts"],
@@ -401,7 +409,7 @@ describe("begin_task stale context warning", () => {
 			writeFileSync(join(ctxDir, "context.json"), JSON.stringify(staleContext, null, 2));
 
 			// Act
-			const result = await handleBeginTask(
+			const result = await beginTaskForTest(
 				{
 					task: "Implement new feature",
 					files: ["src/feature.ts"],
@@ -449,7 +457,7 @@ describe("begin_task stale context warning", () => {
 			writeFileSync(join(ctxDir, "context.json"), JSON.stringify(freshContext, null, 2));
 
 			// Act
-			const result = await handleBeginTask(
+			const result = await beginTaskForTest(
 				{
 					task: "Simple task",
 					files: ["src/utils.ts"],
@@ -471,7 +479,7 @@ describe("begin_task stale context warning", () => {
 			// (setupTestWorkspace creates .snapback but not ctx/context.json)
 
 			// Act
-			const result = await handleBeginTask(
+			const result = await beginTaskForTest(
 				{
 					task: "New project task",
 					files: ["src/new.ts"],
@@ -512,7 +520,7 @@ describe("begin_task stale context warning", () => {
 			writeFileSync(join(ctxDir, "context.json"), JSON.stringify(edgeContext, null, 2));
 
 			// Act
-			const result = await handleBeginTask(
+			const result = await beginTaskForTest(
 				{
 					task: "Edge case task",
 					files: ["src/edge.ts"],
@@ -542,7 +550,7 @@ describe("begin_task stale context warning", () => {
 			writeFileSync(join(ctxDir, "context.json"), JSON.stringify(customContext, null, 2));
 
 			// Act
-			const result = await handleBeginTask(
+			const result = await beginTaskForTest(
 				{
 					task: "Custom threshold task",
 					files: ["src/custom.ts"],
@@ -575,7 +583,7 @@ describe("begin_task stale context warning", () => {
 			writeFileSync(join(ctxDir, "context.json"), JSON.stringify(staleContext, null, 2));
 
 			// Act
-			const result = await handleBeginTask(
+			const result = await beginTaskForTest(
 				{
 					task: "Detailed warning task",
 					files: ["src/detail.ts"],
@@ -616,7 +624,7 @@ describe("begin_task stale context warning", () => {
 			writeFileSync(join(ctxDir, "context.json"), JSON.stringify(staleContext, null, 2));
 
 			// Act
-			const result = await handleBeginTask(
+			const result = await beginTaskForTest(
 				{
 					task: "Resilient task",
 					files: ["src/resilient.ts"],
@@ -643,7 +651,7 @@ describe("begin_task stale context warning", () => {
 			writeFileSync(join(ctxDir, "context.json"), JSON.stringify(incompleteContext, null, 2));
 
 			// Act
-			const result = await handleBeginTask(
+			const result = await beginTaskForTest(
 				{
 					task: "Missing field task",
 					files: ["src/missing.ts"],

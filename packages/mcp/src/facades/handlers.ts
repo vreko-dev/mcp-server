@@ -1448,7 +1448,13 @@ export const handleLearn: ToolHandler = async (args, context) => {
 
 	const learningsPath = join(context.workspaceRoot, ".snapback", "learnings", "learnings.jsonl");
 
+	// Generate unique learning ID: learn_{timestamp}_{random}
+	const timestamp = Date.now().toString(36);
+	const random = Math.random().toString(36).substring(2, 6);
+	const id = `learn_${timestamp}${random}`;
+
 	const learning = {
+		id,
 		type,
 		trigger,
 		action,
@@ -1468,6 +1474,7 @@ export const handleLearn: ToolHandler = async (args, context) => {
 		await import("node:fs").then((fs) => fs.appendFileSync(learningsPath, line));
 
 		return jsonResult({
+			id,
 			status: "success",
 			learning,
 			message: "Learning recorded",
@@ -1736,9 +1743,11 @@ function calculatePackageScore(learningPackages: string[] | undefined, queryPack
 
 /**
  * get_learnings - Query past learnings by keywords with package-aware retrieval
- * Uses Intelligence facade for learning retrieval
+ * Uses TieredLearningService for efficient token usage
  *
- * Supports package-aware filtering and boosting:
+ * Supports:
+ * - intent: Task intent for domain file selection (implement, debug, refactor, review, explore)
+ * - includeCold: Whether to also search cold tier (default: true for explicit queries)
  * - packages: Array of package names to match against
  * - packageMode: "boost" (default) or "filter"
  *   - boost: All learnings returned, sorted by package relevance
@@ -1748,11 +1757,15 @@ export const handleGetLearnings: ToolHandler = async (args, context) => {
 	const {
 		keywords,
 		limit = 10,
+		intent = "implement",
+		includeCold = true,
 		packages,
 		packageMode = "boost",
 	} = args as {
 		keywords?: string[];
 		limit?: number;
+		intent?: "implement" | "debug" | "refactor" | "review" | "explore";
+		includeCold?: boolean;
 		packages?: string[];
 		packageMode?: "boost" | "filter";
 	};
@@ -1762,10 +1775,38 @@ export const handleGetLearnings: ToolHandler = async (args, context) => {
 	}
 
 	try {
-		const intel = getIntelligence(context.workspaceRoot);
+		// Use TieredLearningService for efficient loading (P0 token efficiency)
+		const { TieredLearningService } = await import("../services/tiered-learning-service.js");
+		const tieredService = new TieredLearningService(context.workspaceRoot);
 
-		// Query learnings from Intelligence
-		const learnings = intel.queryLearnings(keywords);
+		// Load hot + warm tier based on intent
+		const tieredLearnings = await tieredService.loadTieredLearnings({
+			intent,
+			keywords,
+			maxLearnings: limit * 2, // Get more initially for filtering
+		});
+
+		// Optionally also query cold tier for explicit searches
+		let coldLearnings: typeof tieredLearnings = [];
+		if (includeCold) {
+			coldLearnings = await tieredService.queryColdTier(keywords, limit);
+		}
+
+		// Combine and deduplicate
+		const seen = new Set(tieredLearnings.map((l) => l.id));
+		const allLearnings = [...tieredLearnings, ...coldLearnings.filter((l) => !seen.has(l.id))];
+
+		// Convert to expected format, preserving packages for scoring
+		const learnings = allLearnings.map((l) => ({
+			id: l.id,
+			type: l.type,
+			trigger: Array.isArray(l.trigger) ? l.trigger.join(", ") : l.trigger,
+			action: l.action,
+			source: l.source,
+			timestamp: l.timestamp,
+			loadedFrom: l.loadedFrom,
+			packages: (l as unknown as { packages?: string[] }).packages, // Preserve packages for scoring
+		}));
 
 		// Determine if we should apply package scoring
 		const shouldScorePackages = packages && packages.length > 0;

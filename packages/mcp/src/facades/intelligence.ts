@@ -37,6 +37,8 @@ export function getIntelligence(workspaceRoot: string): Intelligence {
 			// Free tier defaults - semantic search disabled
 			enableSemanticSearch: false,
 			enableLearningLoop: true,
+			// Enable enhanced validation (Biome + TypeScript + dynamic confidence)
+			enhancedValidation: true,
 			// Storage paths relative to workspace
 			patternsDir: ".snapback/patterns",
 			learningsDir: ".snapback/learnings",

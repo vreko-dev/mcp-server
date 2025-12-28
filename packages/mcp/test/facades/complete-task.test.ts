@@ -51,12 +51,14 @@ function cleanupTestWorkspace() {
 
 /**
  * Helper to start a task before completing it
+ * Note: compact: false is required to get JSON output for parsing
  */
 async function startTask(ctx: ToolContext): Promise<string> {
 	const result = await handleBeginTask(
 		{
 			task: "Test task for completion",
 			files: ["src/test.ts"],
+			compact: false, // Required for JSON output
 		},
 		ctx,
 	);

@@ -1,0 +1,46 @@
+{
+	"name": "@snapback/ui",
+	"version": "0.1.0",
+	"description": "Shared UI components for SnapBack web and VS Code extension",
+	"type": "module",
+	"main": "./dist/index.js",
+	"module": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		},
+		"./vitals": {
+			"types": "./dist/vitals/index.d.ts",
+			"import": "./dist/vitals/index.js"
+		},
+		"./motion": {
+			"types": "./dist/motion/index.d.ts",
+			"import": "./dist/motion/index.js"
+		}
+	},
+	"scripts": {
+		"build": "tsup",
+		"dev": "tsup --watch",
+		"type-check": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@snapback/contracts": "workspace:*",
+		"clsx": "catalog:",
+		"motion": "catalog:",
+		"react": "catalog:",
+		"react-dom": "catalog:",
+		"tailwind-merge": "catalog:"
+	},
+	"devDependencies": {
+		"@types/react": "catalog:",
+		"@types/react-dom": "catalog:",
+		"tsup": "catalog:",
+		"typescript": "catalog:"
+	},
+	"peerDependencies": {
+		"react": "^18.0.0",
+		"react-dom": "^18.0.0"
+	}
+}

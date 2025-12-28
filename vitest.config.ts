@@ -19,6 +19,7 @@ export default defineConfig({
 			"@snapback/events": path.resolve(__dirname, "packages/events/src"),
 			"@snapback/auth": path.resolve(__dirname, "packages/auth/src"),
 			"@snapback/engine": path.resolve(__dirname, "packages/engine/src"),
+			"@snapback/mcp": path.resolve(__dirname, "packages/mcp/src"),
 		},
 	},
 	test: {

@@ -1,5 +1,5 @@
+import { analyzeBeforeApply, formatAnalysisResult } from "@snapback/mcp";
 import { describe, expect, it } from "vitest";
-import { analyzeBeforeApply, formatAnalysisResult } from "../../packages/core/src/mcp/analyze_before_apply";
 
 describe("MCP Interception", () => {
 	it("mcp-001: should allow low-risk changes to be applied automatically", async () => {

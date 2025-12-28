@@ -99,6 +99,13 @@ pre-commit:
                 - merge
                 - rebase
 
+        mcp-tool-names:
+            glob: "packages/mcp/src/tools/consolidated/*.ts"
+            run: node tooling/scripts/validate-mcp-tool-names.mjs
+            skip:
+                - merge
+                - rebase
+
 pre-push:
     parallel: false
     commands:

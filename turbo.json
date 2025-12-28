@@ -278,6 +278,11 @@
 			"dependsOn": ["^build"],
 			"inputs": ["$TURBO_DEFAULT$", "tsup.config.ts", "package.json"],
 			"cache": true
+		},
+		"@snapback/vscode-webview#build": {
+			"outputs": ["../dist/webview/**"],
+			"dependsOn": ["^build"],
+			"cache": true
 		}
 	},
 	"remoteCache": {

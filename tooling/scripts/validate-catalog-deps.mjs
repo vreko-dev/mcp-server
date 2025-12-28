@@ -134,14 +134,14 @@ function validatePackageJson(filePath, catalogPackages) {
 		return { errors, warnings };
 	}
 
+	// Check dependencies (but NOT peerDependencies - those should use semver ranges)
 	const depTypes = [
 		"dependencies",
 		"devDependencies",
-		"peerDependencies",
 		"optionalDependencies",
 	];
 
-	// Also check pnpm.overrides
+	// Also check pnpm.overrides (but forbid catalog: there)
 	const depsToCheck = [];
 	for (const depType of depTypes) {
 		if (pkg[depType]) {
@@ -150,6 +150,19 @@ function validatePackageJson(filePath, catalogPackages) {
 	}
 	if (pkg.pnpm?.overrides) {
 		depsToCheck.push({ type: "pnpm.overrides", deps: pkg.pnpm.overrides });
+	}
+
+	// Separately check peerDependencies for forbidden packages only (no catalog enforcement)
+	if (pkg.peerDependencies) {
+		for (const [pkgName] of Object.entries(pkg.peerDependencies)) {
+			if (FORBIDDEN_PACKAGES.has(pkgName)) {
+				errors.push(
+					`🚫 FORBIDDEN: ${pkgName} in peerDependencies\n` +
+						`   Reason: ${FORBIDDEN_PACKAGES.get(pkgName)}\n` +
+						`   File: ${filePath}`
+				);
+			}
+		}
 	}
 
 	for (const { type: depType, deps } of depsToCheck) {

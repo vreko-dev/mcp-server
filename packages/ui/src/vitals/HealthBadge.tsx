@@ -1,30 +1,10 @@
 "use client";
 
+import { type HealthStatus, vitalsTokens } from "../tokens/vitals";
 import { cn } from "../utils/cn";
 import { AnimatedScore } from "./AnimatedScore";
 
-type Status = "healthy" | "elevated" | "critical";
-
-const statusConfig = {
-	healthy: {
-		bg: "bg-emerald-500/10",
-		text: "text-emerald-400",
-		glow: "shadow-[0_0_15px_rgba(52,211,153,0.3)]",
-		label: "stable",
-	},
-	elevated: {
-		bg: "bg-amber-500/10",
-		text: "text-amber-400",
-		glow: "shadow-[0_0_15px_rgba(251,191,36,0.3)]",
-		label: "elevated",
-	},
-	critical: {
-		bg: "bg-red-500/10",
-		text: "text-red-400",
-		glow: "shadow-[0_0_15px_rgba(239,68,68,0.4)]",
-		label: "critical",
-	},
-};
+type Status = HealthStatus;
 
 export interface HealthBadgeProps {
 	score: number;
@@ -36,7 +16,7 @@ export interface HealthBadgeProps {
  * Shows workspace health status with color-coded indicators
  */
 export function HealthBadge({ score, status = "healthy" }: HealthBadgeProps) {
-	const config = statusConfig[status];
+	const config = vitalsTokens.health[status];
 
 	return (
 		<div

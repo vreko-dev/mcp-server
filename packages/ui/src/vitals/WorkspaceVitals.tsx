@@ -1,5 +1,6 @@
 "use client";
 
+import { vitalsTokens } from "../tokens/vitals";
 import { cn } from "../utils/cn";
 import { HealthBadge } from "./HealthBadge";
 import { TerminalVitals } from "./TerminalVitals";
@@ -69,9 +70,9 @@ export function WorkspaceVitals({ vitals, guidance, showInitPrompt = false }: Wo
 					className={cn(
 						"p-3 rounded-lg border",
 						status === "healthy"
-							? "bg-emerald-500/5 border-emerald-500/20"
+							? `${vitalsTokens.health.healthy.bg.replace("/10", "/5")} ${vitalsTokens.health.healthy.text.replace("text-", "border-").replace("-400", "-500/20")}`
 							: status === "elevated"
-								? "bg-amber-500/5 border-amber-500/20"
+								? `${vitalsTokens.health.elevated.bg.replace("/10", "/5")} ${vitalsTokens.health.elevated.text.replace("text-", "border-").replace("-400", "-500/20")}`
 								: "bg-red-500/5 border-red-500/20",
 					)}
 				>
@@ -79,9 +80,9 @@ export function WorkspaceVitals({ vitals, guidance, showInitPrompt = false }: Wo
 						className={cn(
 							"text-sm",
 							status === "healthy"
-								? "text-emerald-400"
+								? vitalsTokens.health.healthy.text
 								: status === "elevated"
-									? "text-amber-400"
+									? vitalsTokens.health.elevated.text
 									: "text-red-400",
 						)}
 					>
@@ -94,12 +95,23 @@ export function WorkspaceVitals({ vitals, guidance, showInitPrompt = false }: Wo
 			{showInitPrompt && (
 				<div
 					data-testid="init-prompt"
-					className="p-4 rounded-lg bg-zinc-900/50 border border-zinc-800 text-center"
+					className={cn(
+						"p-4 rounded-lg border text-center",
+						vitalsTokens.neutral.background.surface,
+						vitalsTokens.neutral.border.default,
+					)}
 				>
-					<p className="text-sm text-zinc-400 mb-2">Initialize SnapBack to start tracking</p>
+					<p className={cn("text-sm mb-2", vitalsTokens.neutral.muted.text)}>
+						Initialize SnapBack to start tracking
+					</p>
 					<button
 						type="button"
-						className="px-4 py-2 bg-emerald-500/20 text-emerald-400 rounded-lg hover:bg-emerald-500/30 transition-colors text-sm font-medium"
+						className={cn(
+							"px-4 py-2 rounded-lg transition-colors text-sm font-medium",
+							vitalsTokens.health.healthy.bg.replace("/10", "/20"),
+							vitalsTokens.health.healthy.text,
+							"hover:bg-emerald-500/30",
+						)}
 					>
 						Initialize Workspace
 					</button>

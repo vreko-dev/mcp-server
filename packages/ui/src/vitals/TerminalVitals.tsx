@@ -1,5 +1,6 @@
 "use client";
 
+import { vitalsTokens } from "../tokens/vitals";
 import { cn } from "../utils/cn";
 
 interface VitalsData {
@@ -17,10 +18,10 @@ export interface TerminalVitalsProps {
 type LineStatus = "dim" | "active" | "good" | "warn";
 
 const statusColors = {
-	dim: "text-zinc-600",
-	active: "text-zinc-300",
-	good: "text-emerald-400",
-	warn: "text-amber-400",
+	dim: vitalsTokens.terminal.dim,
+	active: vitalsTokens.terminal.active,
+	good: vitalsTokens.terminal.good,
+	warn: vitalsTokens.terminal.warn,
 };
 
 interface LineProps {
@@ -33,8 +34,8 @@ interface LineProps {
 function Line({ label, value, status, showCheck }: LineProps) {
 	return (
 		<div className="flex items-center gap-2">
-			<span className="text-zinc-600">├─</span>
-			<span className="text-zinc-500 w-20">{label}:</span>
+			<span className={vitalsTokens.neutral.dim.text}>├─</span>
+			<span className={cn(vitalsTokens.neutral.muted.text, "w-20")}>{label}:</span>
 			<span className={statusColors[status]}>
 				{value}
 				{showCheck && " ✓"}
@@ -71,16 +72,24 @@ export function TerminalVitals({ vitals }: TerminalVitalsProps) {
 			className="font-mono text-sm"
 		>
 			{/* Header */}
-			<div className="flex items-center justify-between border-b border-zinc-800 pb-2 mb-4">
+			<div
+				className={cn(
+					"flex items-center justify-between pb-2 mb-4",
+					vitalsTokens.neutral.border.default,
+					"border-b",
+				)}
+			>
 				<div className="flex items-center gap-2">
-					<span className="text-zinc-500">$</span>
+					<span className={vitalsTokens.terminal.prompt}>$</span>
 					<span className="text-zinc-300">snapback status</span>
 				</div>
 				<div
 					data-testid="terminal-score"
 					className={cn(
 						"px-2 py-0.5 rounded text-xs font-bold",
-						isHealthy ? "bg-emerald-500/20 text-emerald-400" : "bg-amber-500/20 text-amber-400",
+						isHealthy
+							? `${vitalsTokens.health.healthy.bg.replace("/10", "/20")} ${vitalsTokens.health.healthy.text}`
+							: `${vitalsTokens.health.elevated.bg.replace("/10", "/20")} ${vitalsTokens.health.elevated.text}`,
 					)}
 				>
 					{vitals.score}

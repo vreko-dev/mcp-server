@@ -12,6 +12,7 @@
 
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { beginTaskViaDaemon } from "../daemon/client-facade.js";
 import type { ToolHandler, ToolResult } from "../registry.js";
 import { createErrorCacheService } from "../services/error-cache-service.js";
 import { createGitContextService } from "../services/git-context-service.js";
@@ -432,6 +433,10 @@ function result(text: string, isError = false): ToolResult {
  * begin_task - Start any development task
  *
  * Combines: get_context + snapshot_create + get_learnings + session.start
+ *
+ * DAEMON-FIRST ARCHITECTURE:
+ * 1. Try to delegate to daemon for cross-surface coordination (Extension, MCP, CLI)
+ * 2. If daemon unavailable, fall back to local Intelligence
  */
 export const handleBeginTask: ToolHandler = async (args, context): Promise<ToolResult> => {
 	const input = args as Record<string, unknown>;
@@ -454,6 +459,102 @@ export const handleBeginTask: ToolHandler = async (args, context): Promise<ToolR
 
 	// 1. Extract keywords from task description if not provided
 	const keywords = providedKeywords ?? extractKeywords(task);
+
+	// =========================================================================
+	// DAEMON-FIRST: Try delegating to daemon for cross-surface coordination
+	// =========================================================================
+	const daemonResult = await beginTaskViaDaemon(workspaceRoot, task, files, keywords);
+
+	if (daemonResult) {
+		// Daemon is available - use its response directly
+		// This ensures Extension, MCP, and CLI all share the same session state
+
+		// Still need to start local tracking for MCP-specific state
+		startTask(workspaceRoot, {
+			description: task,
+			plannedFiles: files || [],
+			snapshotId: daemonResult.snapshot.id,
+			keywords,
+		});
+
+		// Drain any pending observations from extension
+		const observations = drainPendingObservations(workspaceRoot).map((o) => ({
+			type: o.type,
+			message: o.message,
+		}));
+
+		// Get local-only context enhancements (error cache, git context)
+		let lastKnownErrors: ErrorContext | undefined;
+		if (files && files.length > 0) {
+			try {
+				const errorCacheService = createErrorCacheService(workspaceRoot);
+				const cachedErrors = errorCacheService.getErrorsForFiles(files);
+				if (cachedErrors.length > 0) {
+					lastKnownErrors = {
+						typescript: cachedErrors
+							.filter((e) => e.source === "typescript")
+							.map((e) => ({ ...e, age: e.age })),
+						tests: cachedErrors.filter((e) => e.source === "test").map((e) => ({ ...e, age: e.age })),
+						lintErrors: cachedErrors.filter((e) => e.source === "lint").map((e) => ({ ...e, age: e.age })),
+					};
+				}
+			} catch {
+				// Error cache is optional
+			}
+		}
+
+		let gitContext: GitContext | undefined;
+		try {
+			const gitContextService = createGitContextService(workspaceRoot);
+			gitContext = await gitContextService.getContext(files || []);
+			if (
+				!gitContext.branch.current &&
+				gitContext.uncommittedChanges.length === 0 &&
+				gitContext.recentCommits.length === 0
+			) {
+				gitContext = undefined;
+			}
+		} catch {
+			// Git context is optional
+		}
+
+		// Build enhanced output with daemon data + local context
+		const output: BeginTaskOutput = {
+			taskId: daemonResult.taskId,
+			snapshot: daemonResult.snapshot,
+			patterns: daemonResult.patterns as BeginTaskOutput["patterns"],
+			constraints: daemonResult.constraints as BeginTaskOutput["constraints"],
+			learnings: daemonResult.learnings as BeginTaskOutput["learnings"],
+			observations,
+			riskAssessment: daemonResult.riskAssessment as BeginTaskOutput["riskAssessment"],
+			nextActions: daemonResult.nextActions as BeginTaskOutput["nextActions"],
+			lastKnownErrors,
+			gitContext,
+		};
+
+		const hint = daemonResult.snapshot.created
+			? `Safety snapshot created via daemon: ${daemonResult.snapshot.id}`
+			: daemonResult.learnings.length > 0
+				? `${daemonResult.learnings.length} relevant learning(s) found`
+				: "Ready to start coding! (daemon-coordinated)";
+
+		return result(
+			JSON.stringify(
+				{
+					...output,
+					message: `Task started: ${task}`,
+					_hint: hint,
+					_source: "daemon", // Indicate response came from daemon
+				},
+				null,
+				2,
+			),
+		);
+	}
+
+	// =========================================================================
+	// FALLBACK: Daemon unavailable, use local Intelligence
+	// =========================================================================
 
 	// 2. Assess risk of planned files
 	const riskAssessment = files

@@ -10,6 +10,7 @@
 
 import { execSync } from "node:child_process";
 import { relative } from "node:path";
+import { getSessionChangesViaDaemon } from "../daemon/client-facade.js";
 import type { ToolHandler, ToolResult } from "../registry.js";
 import { formatDuration, getBaselineFileSet, getCurrentTask } from "../session/state.js";
 import { getIntelligence } from "./intelligence.js";
@@ -198,6 +199,10 @@ function result(text: string, isError = false): ToolResult {
  *
  * IMPORTANT: Only shows changes made AFTER the current task started.
  * Uses git baseline captured at task start to filter out pre-existing changes.
+ *
+ * DAEMON-FIRST ARCHITECTURE:
+ * 1. Try to get changes from daemon for cross-surface coordination
+ * 2. If daemon unavailable, fall back to local Intelligence + git
  */
 export const handleWhatChanged: ToolHandler = async (args, context): Promise<ToolResult> => {
 	const { includeDiff = false, filterFiles, includeAIAttribution = true } = args as WhatChangedInput;
@@ -235,6 +240,104 @@ export const handleWhatChanged: ToolHandler = async (args, context): Promise<Too
 			),
 		);
 	}
+
+	// =========================================================================
+	// DAEMON-FIRST: Try getting changes from daemon
+	// =========================================================================
+	const daemonChanges = await getSessionChangesViaDaemon(workspaceRoot, {
+		includeDiff,
+		filterFiles,
+		includeAIAttribution,
+	});
+
+	if (daemonChanges) {
+		// Daemon is available - use its response
+		// This includes changes from Extension, CLI, and MCP across all surfaces
+
+		const duration = formatDuration(Date.now() - task.startedAt);
+
+		// Convert daemon response to our output format
+		const changes: ChangeSummary[] = daemonChanges.files.map((f) => ({
+			file: f.path,
+			type: f.status,
+			linesChanged: f.linesChanged,
+			aiAttributed: f.aiAttributed ?? false,
+			timestamp: Date.now(), // Daemon doesn't track timestamps per-file
+		}));
+
+		// Get diffs if requested (still need to fetch locally)
+		let diffs: Array<{ file: string; diff: string }> | undefined;
+		if (includeDiff) {
+			diffs = [];
+			for (const change of changes.slice(0, 10)) {
+				if (change.type !== "deleted") {
+					const diff = getFileDiff(change.file, workspaceRoot);
+					if (diff) {
+						diffs.push({
+							file: change.file,
+							diff: diff.length > 2000 ? `${diff.slice(0, 2000)}\n...(truncated)` : diff,
+						});
+					}
+				}
+			}
+		}
+
+		// Risk assessment from daemon
+		const riskAssessment = assessChangeRisk(changes);
+
+		// Build next actions
+		const nextActions: Array<{ tool: string; priority: number; reason: string }> = [];
+		if (daemonChanges.totalLinesChanged > 0) {
+			nextActions.push({ tool: "quick_check", priority: 1, reason: "Validate changes before proceeding" });
+		}
+		if (riskAssessment.level === "high") {
+			nextActions.push({
+				tool: "snapshot_create",
+				priority: 1,
+				reason: "Create safety snapshot for high-risk changes",
+			});
+		}
+		if (changes.length > 0) {
+			nextActions.push({ tool: "review_work", priority: 2, reason: "Review changes before committing" });
+		}
+
+		const output: WhatChangedOutput = {
+			taskId: task.id,
+			taskDescription: task.description,
+			duration,
+			changes: includeAIAttribution ? changes : changes.map((c) => ({ ...c, aiAttributed: false })),
+			stats: {
+				totalFiles: daemonChanges.files.length,
+				totalLines: daemonChanges.totalLinesChanged,
+				aiAttributedFiles: changes.filter((c) => c.aiAttributed).length,
+				aiAttributedLines: changes.filter((c) => c.aiAttributed).reduce((sum, c) => sum + c.linesChanged, 0),
+			},
+			diffs,
+			riskAssessment,
+			nextActions,
+		};
+
+		return result(
+			JSON.stringify(
+				{
+					...output,
+					_hint:
+						daemonChanges.files.length === 0
+							? "No changes detected yet. Start making modifications!"
+							: riskAssessment.level === "high"
+								? "High-risk changes detected. Consider creating a snapshot."
+								: `${daemonChanges.files.length} file(s) changed, ${daemonChanges.totalLinesChanged} line(s) modified`,
+					_source: "daemon",
+				},
+				null,
+				2,
+			),
+		);
+	}
+
+	// =========================================================================
+	// FALLBACK: Daemon unavailable, use local Intelligence + git
+	// =========================================================================
 
 	// Get baseline file set (files that were modified BEFORE task started)
 	const baselineFiles = getBaselineFileSet(workspaceRoot);

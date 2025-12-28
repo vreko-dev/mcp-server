@@ -318,6 +318,7 @@ Builds your codebase-specific knowledge base over time.
 
 Gathers workspace context, patterns, constraints, and relevant learnings.
 Unlike snapshot_create, this is a READ-ONLY intelligence gathering tool.
+Coordinates with Extension/CLI to provide unified project understanding.
 
 **When to use:**
 - Starting ANY new task (refactoring, feature, bug fix)
@@ -325,13 +326,17 @@ Unlike snapshot_create, this is a READ-ONLY intelligence gathering tool.
 - When unsure about project patterns or constraints
 - After switching to a different area of the codebase
 
+**Trigger keywords:** context, understand, patterns, constraints, what should I know
+
 **Returns:**
 - Project patterns and architectural constraints
 - Recent learnings relevant to your task keywords
 - Current workspace health and vitals
 - Active violations to avoid repeating
+- Cross-surface session state when Extension active
 
-💡 Tip: Pair with check_patterns before committing.`,
+💡 Tip: Pair with check_patterns before committing.
+💡 Consider using begin_task instead for full task lifecycle support.`,
 		inputSchema: {
 			type: "object",
 			properties: {
@@ -531,6 +536,9 @@ Cleans up old snapshots, stale learnings, archived sessions, and orphaned blobs.
 		name: "begin_task",
 		description: `🚀 **START ANY TASK** - Single entry point for development tasks.
 
+**CALL THIS FIRST** before any coding work. This is the unified entry point
+that coordinates state across VS Code extension, CLI, and MCP.
+
 Combines: get_context + snapshot_create + get_learnings + session.start
 Reduces 5+ tool calls to 1 when starting any development work.
 
@@ -539,19 +547,23 @@ Reduces 5+ tool calls to 1 when starting any development work.
 - Creates snapshot if risk warrants it (with deduplication)
 - Retrieves relevant learnings for your task
 - Loads project patterns and constraints
-- Starts task tracking for change detection
+- Starts unified session tracking (shared with Extension/CLI)
 
 **When to use:**
 - Starting ANY new task (feature, bug fix, refactor)
 - Before making multi-file changes
 - When you want intelligent safety decisions
+- After switching to a new area of the codebase
+
+**Trigger keywords:** implement, add, create, fix, refactor, update, modify
 
 **Returns:**
-- Task ID for tracking
+- Task ID for tracking (shared across Extension/CLI/MCP)
 - Snapshot status (created/reused/skipped)
 - Relevant learnings and patterns
 - Risk assessment and recommendations
 - Suggested next_actions
+- _source: "daemon" when coordinated with Extension
 
 💡 Tip: Provide file paths for better snapshot decisions.`,
 		inputSchema: {
@@ -627,25 +639,30 @@ Runs all validation in parallel for ~60% faster feedback.
 		name: "what_changed",
 		description: `📊 **CHANGE TRACKING** - See what changed since task start.
 
-Tracks file modifications with AI attribution from the extension.
+Unified change tracking across Extension, CLI, and MCP.
+When Extension is active, shows AI-attributed changes with precise line counts.
 
 **What it shows:**
 - Files created/modified/deleted
 - Lines changed per file
-- AI-attributed changes (from extension)
+- AI-attributed changes (from Extension integration)
 - Risk assessment based on changes
+- Unified view of changes from all editing surfaces
 
 **When to use:**
 - Before committing to review changes
 - To understand scope of modifications
 - To verify AI vs human changes
+- To get a unified view across Extension/CLI edits
+
+**Trigger keywords:** changes, diff, modified, what did I change, review
 
 **Options:**
 - includeDiff: Include actual file diffs
 - filterFiles: Only show specific files
 - includeAIAttribution: Show AI attribution data
 
-💡 Tip: Combines session tracking with git status.`,
+💡 Tip: Shows "_source: daemon" when Extension is actively tracking.`,
 		inputSchema: {
 			type: "object",
 			properties: {
@@ -722,18 +739,22 @@ Combines pattern validation, change summary, and learning suggestions.
 		description: `✅ **FINISH TASK** - Gracefully end the current task.
 
 Finalizes task with summary, optional snapshot, and learning capture.
+Coordinates task completion across Extension, CLI, and MCP.
 
 **What it does:**
 - Generates task summary (files, lines, duration)
 - Creates final snapshot (optional)
-- Captures accepted learnings
-- Updates session statistics
-- Clears task tracking state
+- Captures accepted learnings for future sessions
+- Updates session statistics (shared with Extension)
+- Clears task tracking state across all surfaces
 
 **When to use:**
 - After committing changes
 - When abandoning a task
 - When blocked and switching tasks
+- Before starting a new unrelated task
+
+**Trigger keywords:** done, finish, complete, commit, end task
 
 **Options:**
 - outcome: completed/abandoned/blocked
@@ -741,7 +762,8 @@ Finalizes task with summary, optional snapshot, and learning capture.
 - acceptLearnings: Indices of suggested learnings to accept
 - customLearning: Add a custom learning
 
-💡 Tip: Use after review_work to capture suggested learnings.`,
+💡 Tip: Use after review_work to capture suggested learnings.
+💡 Learnings persist across sessions for personalized recommendations.`,
 		inputSchema: {
 			type: "object",
 			properties: {

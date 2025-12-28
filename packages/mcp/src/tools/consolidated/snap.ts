@@ -43,6 +43,12 @@ export interface SnapParams {
 	thorough?: boolean;
 	/** Intent: implement, debug, refactor, review, explore */
 	i?: "implement" | "debug" | "refactor" | "review" | "explore";
+	/** Goal for task completion validation */
+	goal?: {
+		metric: "bundle" | "performance" | "coverage";
+		target: number;
+		unit: string;
+	};
 }
 
 /**
@@ -161,6 +167,7 @@ async function handleStart(params: SnapParams, context: ToolContext): Promise<To
 		keywords: params.k || [],
 		intent: params.i || "implement",
 		compact: true, // Always compact for consolidated tool
+		goal: params.goal, // Pass through goal for tracking
 	};
 
 	const result = await handleBeginTask(beginArgs, context);
@@ -262,6 +269,7 @@ async function handleCheckMode(params: SnapParams, context: ToolContext): Promis
 
 /**
  * Handle context mode - get workspace context without starting task
+ * Enhanced to include bundle size measurement when available
  */
 async function handleContext(params: SnapParams, context: ToolContext): Promise<ToolResult> {
 	// Use begin_task with lightweight context-only mode
@@ -292,10 +300,67 @@ async function handleContext(params: SnapParams, context: ToolContext): Promise<
 			learnings: data.learnings?.map((l: { action: string }) => l.action) || [],
 		});
 
-		return { content: [{ type: "text", text: wire }] };
+		// Try to measure bundle size if in extension/bundle context
+		const bundleInfo = await measureBundleSize(context.workspaceRoot);
+		const bundleMsg = bundleInfo ? `\nBundle: ${bundleInfo.sizeKB}KB (${bundleInfo.status})` : "";
+
+		return { content: [{ type: "text", text: wire + bundleMsg }] };
 	} catch {
 		return result;
 	}
+}
+
+/**
+ * Measure bundle size if esbuild metafile or dist directory exists
+ */
+async function measureBundleSize(workspaceRoot: string): Promise<{ sizeKB: number; status: string } | null> {
+	const { existsSync, readdirSync, statSync } = await import("node:fs");
+	const { join } = await import("node:path");
+
+	// Check common dist output paths
+	const distPaths = ["dist/extension.js", "dist/main.js", "dist/index.js", "dist/bundle.js"];
+
+	for (const distPath of distPaths) {
+		const fullPath = join(workspaceRoot, distPath);
+		if (existsSync(fullPath)) {
+			const stats = statSync(fullPath);
+			const sizeKB = Math.round((stats.size / 1024) * 100) / 100;
+
+			// Check against common limits
+			let status = "ok";
+			if (sizeKB > 2000) status = "over 2MB";
+			else if (sizeKB > 1000) status = "over 1MB";
+
+			return { sizeKB, status };
+		}
+	}
+
+	// Fallback: sum all files in dist/
+	const distDir = join(workspaceRoot, "dist");
+	if (existsSync(distDir)) {
+		try {
+			const files = readdirSync(distDir, { withFileTypes: true });
+			let totalBytes = 0;
+			for (const file of files) {
+				if (file.isFile() && file.name.endsWith(".js")) {
+					const filePath = join(distDir, file.name);
+					const stats = statSync(filePath);
+					totalBytes += stats.size;
+				}
+			}
+			if (totalBytes > 0) {
+				const sizeKB = Math.round((totalBytes / 1024) * 100) / 100;
+				let status = "ok";
+				if (sizeKB > 2000) status = "over 2MB";
+				else if (sizeKB > 1000) status = "over 1MB";
+				return { sizeKB, status };
+			}
+		} catch {
+			// Ignore errors
+		}
+	}
+
+	return null;
 }
 
 // =============================================================================
@@ -380,6 +445,25 @@ export const snapTool: SnapBackTool = {
 				type: "string",
 				enum: ["implement", "debug", "refactor", "review", "explore"],
 				description: "Intent for context loading",
+			},
+			goal: {
+				type: "object",
+				properties: {
+					metric: {
+						type: "string",
+						enum: ["bundle", "performance", "coverage"],
+						description: "Metric to track",
+					},
+					target: {
+						type: "number",
+						description: "Target value",
+					},
+					unit: {
+						type: "string",
+						description: "Unit (KB, ms, %)",
+					},
+				},
+				description: "Goal for task completion (mode:s)",
 			},
 		},
 		required: ["m"],

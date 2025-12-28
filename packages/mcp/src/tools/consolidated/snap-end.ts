@@ -223,6 +223,21 @@ function formatImprovements(improvements: ImprovementOpportunity[]): string {
 export const handleSnapEnd: ToolHandler = async (args, context) => {
 	const params = args as unknown as SnapEndParams;
 
+	// Check if task has a goal that needs validation
+	const goalCheck = await checkTaskGoal(context.workspaceRoot);
+	if (goalCheck && !goalCheck.met) {
+		// Goal not met - return warning but don't block completion
+		return {
+			content: [
+				{
+					type: "text",
+					text: `🧢|🔴|GOAL_NOT_MET|${goalCheck.metric}|${goalCheck.current}${goalCheck.unit}|target:${goalCheck.target}${goalCheck.unit}\n\n⚠️ Goal not achieved: ${goalCheck.metric} is ${goalCheck.current}${goalCheck.unit}, target was ${goalCheck.target}${goalCheck.unit}. Task marked incomplete.`,
+				},
+			],
+			isError: false, // Warning, not error
+		};
+	}
+
 	// Convert quick learnings to customLearning format if provided
 	const customLearnings = (params.l || []).map((learning) => ({
 		type: "pattern" as const,
@@ -290,6 +305,51 @@ export const handleSnapEnd: ToolHandler = async (args, context) => {
 		return result;
 	}
 };
+
+/**
+ * Check if task goal was met (if goal was set)
+ */
+async function checkTaskGoal(
+	workspaceRoot: string,
+): Promise<{ met: boolean; metric: string; current: number; target: number; unit: string } | null> {
+	const { existsSync, readFileSync } = await import("node:fs");
+	const { join } = await import("node:path");
+
+	// Check if task has a goal stored in session state
+	const sessionPath = join(workspaceRoot, ".snapback", "session", "state.json");
+	if (!existsSync(sessionPath)) return null;
+
+	try {
+		const sessionData = JSON.parse(readFileSync(sessionPath, "utf-8"));
+		const goal = sessionData.currentTask?.goal;
+		if (!goal) return null;
+
+		const { metric, target, unit } = goal;
+		let current = 0;
+
+		// Measure current value based on metric
+		if (metric === "bundle") {
+			// Measure bundle size
+			const distPaths = ["dist/extension.js", "dist/main.js", "dist/index.js", "dist/bundle.js"];
+
+			for (const distPath of distPaths) {
+				const fullPath = join(workspaceRoot, distPath);
+				if (existsSync(fullPath)) {
+					const { statSync } = await import("node:fs");
+					const stats = statSync(fullPath);
+					current = Math.round(stats.size / 1024); // KB
+					break;
+				}
+			}
+		}
+		// Add other metric types (performance, coverage) as needed
+
+		const met = current <= target;
+		return { met, metric, current, target, unit };
+	} catch {
+		return null;
+	}
+}
 
 // =============================================================================
 // Tool Definition

@@ -5,8 +5,14 @@
  * Each layer checks for a specific category of issues.
  *
  * Enhanced layers (BiomeLayer, TypeScriptCompilerLayer) are exported at bottom.
+ *
+ * SecurityLayer++: Integrated SecretDetector + unsafe function patterns
+ * PerformanceLayer++: O(n²), memory leaks, ReDoS detection
+ *
+ * @see https://docs.github.com/en/code-security/secret-scanning/introduction/supported-secret-scanning-patterns
  */
 
+import { SecretDetector, type SecretFinding } from "../../policy/detectors/SecretDetector.js";
 import type { Issue, ValidationLayer } from "../../types/config.js";
 
 /**
@@ -18,6 +24,20 @@ function findLine(code: string, search: string): number {
 	}
 	const lines = code.split("\n");
 	return lines.findIndex((l) => l.includes(search)) + 1;
+}
+
+/**
+ * Check if file is a test file (for false positive prevention)
+ */
+function isTestFile(filePath: string): boolean {
+	if (!filePath) return false;
+	return (
+		filePath.includes(".test.") ||
+		filePath.includes(".spec.") ||
+		filePath.includes("__tests__") ||
+		filePath.includes("/test/") ||
+		filePath.includes("/tests/")
+	);
 }
 
 /**
@@ -235,13 +255,105 @@ export class ArchitectureLayer implements ValidationLayer {
 }
 
 /**
- * Layer 5: Security Validation
- * Checks for security issues per C-006
+ * Layer 5: Security Validation (Enhanced SecurityLayer++)
+ *
+ * Checks for security issues per C-006 with enhanced detection:
+ * - SecretDetector integration (AWS, GitHub, Stripe, JWT, DB strings, private keys)
+ * - Unsafe function detection (eval, exec, innerHTML, dangerouslySetInnerHTML)
+ * - Privacy-first telemetry enforcement
+ *
+ * @see https://docs.github.com/en/code-security/secret-scanning/introduction/supported-secret-scanning-patterns
  */
 export class SecurityLayer implements ValidationLayer {
 	name = "security";
+	private secretDetector = new SecretDetector();
 
-	async validate(code: string, _filePath: string): Promise<{ issues: Issue[] }> {
+	// Additional secret patterns not in SecretDetector
+	private static readonly ADDITIONAL_SECRET_PATTERNS = [
+		// GitHub Fine-Grained Token (github_pat_) - format: github_pat_{chars}_{rest}
+		{
+			name: "GitHub Fine-Grained Token",
+			pattern: /github_pat_[A-Za-z0-9]+_[A-Za-z0-9_]{20,}/g,
+			severity: "critical" as const,
+		},
+		// JWT tokens
+		{
+			name: "JWT Token",
+			pattern: /eyJ[A-Za-z0-9-_=]+\.eyJ[A-Za-z0-9-_=]+\.[A-Za-z0-9-_.+/=]*/g,
+			severity: "critical" as const,
+		},
+		// Database connection strings
+		{
+			name: "PostgreSQL Connection String",
+			pattern: /postgres(?:ql)?:\/\/[^:]+:[^@]+@[^/]+/gi,
+			severity: "critical" as const,
+		},
+		{
+			name: "MongoDB Connection String",
+			pattern: /mongodb(?:\+srv)?:\/\/[^:]+:[^@]+@[^/]+/gi,
+			severity: "critical" as const,
+		},
+		// EC Private Key (in addition to RSA)
+		{
+			name: "EC Private Key",
+			pattern: /-----BEGIN EC PRIVATE KEY-----/g,
+			severity: "critical" as const,
+		},
+		// Stripe restricted key
+		{
+			name: "Stripe Restricted Key",
+			pattern: /rk_(?:live|test)_[a-zA-Z0-9]{24}/g,
+			severity: "critical" as const,
+		},
+	];
+
+	// Unsafe function patterns
+	private static readonly UNSAFE_FUNCTION_PATTERNS = [
+		{
+			pattern: /child_process\.exec\s*\(/,
+			type: "COMMAND_INJECTION",
+			severity: "critical" as const,
+			message: "child_process.exec() enables shell command injection",
+			fix: "Use execFile() or spawn() with arguments array instead",
+		},
+		{
+			pattern: /\bexec\s*\(\s*`/,
+			type: "COMMAND_INJECTION",
+			severity: "critical" as const,
+			message: "exec() with template literal enables command injection",
+			fix: "Use execFile() with arguments array",
+		},
+		{
+			pattern: /\.innerHTML\s*=/,
+			type: "XSS_RISK",
+			severity: "warning" as const,
+			message: "innerHTML assignment enables XSS attacks",
+			fix: "Use textContent, createTextNode(), or sanitize with DOMPurify",
+		},
+		{
+			pattern: /dangerouslySetInnerHTML/,
+			type: "XSS_RISK",
+			severity: "warning" as const,
+			message: "dangerouslySetInnerHTML is a React XSS vector",
+			fix: "Sanitize content with DOMPurify before rendering",
+		},
+		{
+			pattern: /spawn\s*\(\s*['"](?:sh|bash|cmd)['"]/,
+			type: "SHELL_INJECTION",
+			severity: "critical" as const,
+			message: "Shell spawning enables command injection",
+			fix: "Use direct program spawn: spawn('program', [args])",
+		},
+		{
+			pattern: /spawn\s*\([^)]+,\s*\[[^\]]*\]\s*,\s*\{[^}]*shell\s*:\s*true/,
+			type: "SHELL_INJECTION",
+			severity: "critical" as const,
+			message: "spawn with shell:true enables command injection",
+			fix: "Remove shell:true option and use arguments array",
+		},
+	];
+
+	async validate(code: string, filePath: string): Promise<{ issues: Issue[] }> {
 		const issues: Issue[] = [];
 
 		// Defensive null check
@@ -249,27 +361,77 @@ export class SecurityLayer implements ValidationLayer {
 			return { issues };
 		}
 
-		// Check for hardcoded secrets
-		const secretPatterns = [
-			/api[_-]?key\s*[:=]\s*["'][^"']+["']/i,
-			/secret\s*[:=]\s*["'][^"']+["']/i,
-			/password\s*[:=]\s*["'][^"']+["']/i,
-			/token\s*[:=]\s*["'][a-zA-Z0-9_-]{20,}["']/i,
-		];
+		// 1. Run SecretDetector integration (skips test files automatically)
+		this.checkSecrets(code, filePath, issues);
 
-		for (const pattern of secretPatterns) {
-			if (pattern.test(code)) {
-				issues.push({
-					severity: "critical",
-					type: "HARDCODED_SECRET",
-					message: "Possible hardcoded secret detected",
-					fix: "Use environment variables for secrets",
-				});
-				break;
-			}
+		// 2. Check unsafe functions (applies to all files)
+		this.checkUnsafeFunctions(code, filePath, issues);
+
+		// 3. C-006: Privacy-First Telemetry
+		this.checkPrivacyViolations(code, issues);
+
+		// 4. Check for eval usage (existing)
+		this.checkEvalUsage(code, issues);
+
+		return { issues };
+	}
+
+	/**
+	 * Integrate SecretDetector + additional patterns
+	 */
+	private checkSecrets(code: string, filePath: string, issues: Issue[]): void {
+		// SecretDetector already skips test files
+		const secretResult = this.secretDetector.detect(code, filePath);
+
+		// Convert SecretDetector findings to Issue format
+		for (const finding of secretResult.findings) {
+			issues.push(this.adaptSecretFinding(finding));
 		}
 
-		// C-006: Privacy-First Telemetry
+		// Skip additional pattern checks for test files
+		if (isTestFile(filePath)) {
+			return;
+		}
+
+		// Check additional patterns not in SecretDetector
+		for (const pattern of SecurityLayer.ADDITIONAL_SECRET_PATTERNS) {
+			const matches = code.matchAll(pattern.pattern);
+			for (const match of matches) {
+				issues.push({
+					severity: pattern.severity,
+					type: `SECRET_${pattern.name.toUpperCase().replace(/\s+/g, "_")}`,
+					message: `${pattern.name} detected: ${match[0].substring(0, 20)}...`,
+					line: this.findLineForMatch(code, match.index || 0),
+					fix: "Use environment variables for secrets",
+				});
+			}
+		}
+	}
+
+	/**
+	 * Check for unsafe function calls
+	 */
+	private checkUnsafeFunctions(code: string, _filePath: string, issues: Issue[]): void {
+		for (const unsafe of SecurityLayer.UNSAFE_FUNCTION_PATTERNS) {
+			if (unsafe.pattern.test(code)) {
+				// Reset lastIndex for global patterns
+				unsafe.pattern.lastIndex = 0;
+				const match = unsafe.pattern.exec(code);
+				issues.push({
+					severity: unsafe.severity,
+					type: unsafe.type,
+					message: unsafe.message,
+					line: match ? this.findLineForMatch(code, match.index) : undefined,
+					fix: unsafe.fix,
+				});
+			}
+		}
+	}
+
+	/**
+	 * C-006: Privacy-First Telemetry
+	 */
+	private checkPrivacyViolations(code: string, issues: Issue[]): void {
 		if (code.includes("posthog") && (code.includes("fileContent") || code.includes("sourceCode"))) {
 			issues.push({
 				severity: "critical",
@@ -278,8 +440,12 @@ export class SecurityLayer implements ValidationLayer {
 				fix: "Only send metadata: file paths, timestamps, counts, hashes",
 			});
 		}
+	}
 
-		// Check for eval usage
+	/**
+	 * Check for eval usage
+	 */
+	private checkEvalUsage(code: string, issues: Issue[]): void {
 		if (code.includes("eval(") || code.includes("new Function(")) {
 			issues.push({
 				severity: "critical",
@@ -289,8 +455,27 @@ export class SecurityLayer implements ValidationLayer {
 				fix: "Avoid eval - use safer alternatives",
 			});
 		}
+	}
 
-		return { issues };
+	/**
+	 * Convert SecretDetector finding to Issue format
+	 */
+	private adaptSecretFinding(finding: SecretFinding): Issue {
+		return {
+			severity: finding.severity === "critical" || finding.severity === "high" ? "critical" : "warning",
+			type: `SECRET_${finding.type.toUpperCase().replace(/[\s-]+/g, "_")}`,
+			message: `${finding.type}: ${finding.snippet}...`,
+			line: finding.line,
+			fix: "Use environment variables for secrets",
+		};
+	}
+
+	/**
+	 * Find line number for a match index
+	 */
+	private findLineForMatch(code: string, index: number): number {
+		const beforeMatch = code.substring(0, index);
+		return (beforeMatch.match(/\n/g) || []).length + 1;
 	}
 }
 
@@ -328,11 +513,26 @@ export class DependencyLayer implements ValidationLayer {
 }
 
 /**
- * Layer 7: Performance Validation
- * Checks for performance issues per C-007
+ * Layer 7: Performance Validation (Enhanced PerformanceLayer++)
+ *
+ * Checks for performance issues per C-007 with enhanced detection:
+ * - O(n²) nested loop detection
+ * - Memory leak patterns (addEventListener without cleanup)
+ * - ReDoS vulnerability detection
+ * - N+1 query patterns
  */
 export class PerformanceLayer implements ValidationLayer {
 	name = "performance";
+
+	// ReDoS patterns - regex with nested quantifiers
+	private static readonly REDOS_PATTERNS = [
+		// (a+)+ pattern - catastrophic backtracking
+		/\/[^/]*\([^)]*[+*]\)[^/]*[+*][^/]*\//,
+		// Nested groups with quantifiers
+		/\/[^/]*\(\?:[^)]*[+*]\)[^/]*[+*][^/]*\//,
+		// Multiple adjacent quantifiers on groups
+		/\/[^/]*\([^)]+\)[+*]{2,}[^/]*\//,
+	];
 
 	async validate(code: string, filePath: string): Promise<{ issues: Issue[] }> {
 		const issues: Issue[] = [];
@@ -343,6 +543,33 @@ export class PerformanceLayer implements ValidationLayer {
 		}
 
 		// C-007: Console.log in Production
+		this.checkConsoleLog(code, filePath, issues);
+
+		// Check for synchronous file operations
+		this.checkSyncFileIO(code, filePath, issues);
+
+		// Check for await in loops (potential N+1)
+		this.checkAwaitInLoop(code, issues);
+
+		// NEW: Check for O(n²) nested loops
+		this.checkNestedLoops(code, issues);
+
+		// NEW: Check for memory leaks (addEventListener without cleanup)
+		this.checkMemoryLeaks(code, issues);
+
+		// NEW: Check for ReDoS vulnerabilities
+		this.checkReDoS(code, issues);
+
+		// NEW: Check for shell injection via spawn
+		this.checkSpawnShellOption(code, issues);
+
+		return { issues };
+	}
+
+	/**
+	 * C-007: Console.log in Production
+	 */
+	private checkConsoleLog(code: string, filePath: string, issues: Issue[]): void {
 		if (
 			!filePath.includes(".test.") &&
 			!filePath.includes("/test/") &&
@@ -357,8 +584,12 @@ export class PerformanceLayer implements ValidationLayer {
 				fix: "Use logger from @snapback/core",
 			});
 		}
+	}
 
-		// Check for synchronous file operations
+	/**
+	 * Check for synchronous file operations
+	 */
+	private checkSyncFileIO(code: string, filePath: string, issues: Issue[]): void {
 		if (code.includes("fs.readFileSync") || code.includes("fs.writeFileSync")) {
 			if (!filePath.includes("scripts/") && !filePath.includes(".test.")) {
 				issues.push({
@@ -370,8 +601,12 @@ export class PerformanceLayer implements ValidationLayer {
 				});
 			}
 		}
+	}
 
-		// Check for await in loops (potential N+1)
+	/**
+	 * Check for await in loops (potential N+1)
+	 */
+	private checkAwaitInLoop(code: string, issues: Issue[]): void {
 		if (code.includes("for") && code.includes("await ")) {
 			const forAwaitPattern = /for\s*\([^)]+\)\s*\{[^}]*await\s+/s;
 			if (forAwaitPattern.test(code)) {
@@ -383,8 +618,97 @@ export class PerformanceLayer implements ValidationLayer {
 				});
 			}
 		}
+	}
 
-		return { issues };
+	/**
+	 * Check for O(n²) nested loops
+	 */
+	private checkNestedLoops(code: string, issues: Issue[]): void {
+		// Pattern 1: for inside for
+		const nestedForPattern = /for\s*\([^)]*\)\s*\{[^{}]*for\s*\([^)]*\)\s*\{/s;
+		if (nestedForPattern.test(code)) {
+			issues.push({
+				severity: "warning",
+				type: "O_N2_ALGORITHM",
+				message: "Nested for loops detected - potential O(n²) complexity",
+				fix: "Consider using Map/Set for O(1) lookups or merge algorithm",
+			});
+		}
+
+		// Pattern 2: forEach inside for/forEach
+		const forWithForEachPattern = /for\s*\([^)]*\)\s*\{[^{}]*\.forEach\s*\(/s;
+		if (forWithForEachPattern.test(code)) {
+			issues.push({
+				severity: "warning",
+				type: "O_N2_ALGORITHM",
+				message: "forEach inside for loop - potential O(n²) complexity",
+				fix: "Consider using Map/Set for O(1) lookups",
+			});
+		}
+
+		// Pattern 3: Nested forEach
+		const nestedForEachPattern = /\.forEach\s*\([^)]*\)\s*\{[^{}]*\.forEach\s*\(/s;
+		if (nestedForEachPattern.test(code)) {
+			issues.push({
+				severity: "warning",
+				type: "O_N2_ALGORITHM",
+				message: "Nested forEach detected - potential O(n²) complexity",
+				fix: "Consider using Map/Set for O(1) lookups",
+			});
+		}
+	}
+
+	/**
+	 * Check for memory leaks - addEventListener without cleanup
+	 */
+	private checkMemoryLeaks(code: string, issues: Issue[]): void {
+		// Check if addEventListener is used
+		if (code.includes("addEventListener")) {
+			// Check if removeEventListener is also present
+			if (!code.includes("removeEventListener")) {
+				issues.push({
+					severity: "warning",
+					type: "MEMORY_LEAK",
+					message: "addEventListener without corresponding removeEventListener - potential memory leak",
+					line: findLine(code, "addEventListener"),
+					fix: "Add cleanup: useEffect(() => { ...; return () => element.removeEventListener(...) })",
+				});
+			}
+		}
+	}
+
+	/**
+	 * Check for ReDoS vulnerabilities
+	 */
+	private checkReDoS(code: string, issues: Issue[]): void {
+		for (const pattern of PerformanceLayer.REDOS_PATTERNS) {
+			if (pattern.test(code)) {
+				issues.push({
+					severity: "critical",
+					type: "REDOS",
+					message: "Regex with nested quantifiers - ReDoS vulnerability (catastrophic backtracking)",
+					fix: "Simplify regex or use safe-regex library to validate patterns",
+				});
+				break; // One ReDoS warning is enough
+			}
+		}
+	}
+
+	/**
+	 * Check for spawn with shell option
+	 */
+	private checkSpawnShellOption(code: string, issues: Issue[]): void {
+		// spawn with shell: true
+		const spawnShellPattern = /spawn\s*\([^)]+,\s*\[[^\]]*\]\s*,\s*\{[^}]*shell\s*:\s*true/;
+		if (spawnShellPattern.test(code)) {
+			issues.push({
+				severity: "warning",
+				type: "SPAWN_SHELL",
+				message: "spawn with shell:true may cause performance issues and security risks",
+				line: findLine(code, "shell: true"),
+				fix: "Remove shell:true and use arguments array directly",
+			});
+		}
 	}
 }
 

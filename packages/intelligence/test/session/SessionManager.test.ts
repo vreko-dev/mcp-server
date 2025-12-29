@@ -11,7 +11,7 @@
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { SessionManager } from "../../src/session/SessionManager.js";
 import type { ToolCall } from "../../src/types/session.js";
 
@@ -458,6 +458,82 @@ describe("SessionManager", () => {
 			const loaded = manager2.getSessionState("autosave-session");
 			expect(loaded).toBeDefined();
 			expect(loaded?.sessionId).toBe("autosave-session");
+		});
+	});
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// BUG FIX: Async Initialization Race Condition
+	// Constructor calls loadSessions() fire-and-forget, creating a race where
+	// startSession() could be called before load completes, causing data loss.
+	// ═══════════════════════════════════════════════════════════════════════════
+	describe("Async Initialization Race Condition Fix", () => {
+		let tempDir: string;
+		let persistencePath: string;
+
+		beforeEach(() => {
+			tempDir = mkdtempSync(join(tmpdir(), "session-race-test-"));
+			persistencePath = join(tempDir, "sessions.jsonl");
+		});
+
+		afterEach(() => {
+			if (tempDir) {
+				try {
+					rmSync(tempDir, { recursive: true, force: true });
+				} catch {
+					// Ignore cleanup errors
+				}
+			}
+		});
+
+		it("should block operations until initialization completes", async () => {
+			// RED: This test exposes the race condition
+			// Create a manager with persistence - loadSessions() starts in constructor
+			const manager = new SessionManager({}, { persistencePath });
+
+			// BUG: Currently startSession() can be called while loadSessions() is running
+			// This could cause data inconsistency or lost sessions
+
+			// The manager should expose initialization state
+			expect(manager.isInitialized()).toBe(false);
+
+			// Wait for initialization
+			await manager.waitForInitialization();
+
+			expect(manager.isInitialized()).toBe(true);
+		});
+
+		it("should queue operations called before initialization completes", async () => {
+			// RED: Operations called during init should be queued, not lost
+			// First, create some existing sessions
+			const setupManager = new SessionManager({}, { persistencePath });
+			setupManager.startSession("existing-session");
+			await setupManager.saveSessions();
+
+			// Create new manager - loadSessions() starts async
+			const manager = new SessionManager({}, { persistencePath });
+
+			// Immediately try to start a new session (before load completes)
+			// BUG: This could conflict with loading "existing-session"
+			manager.startSession("new-session");
+
+			// Wait for initialization
+			await manager.waitForInitialization();
+
+			// Both sessions should exist
+			expect(manager.getSessionState("existing-session")).toBeDefined();
+			expect(manager.getSessionState("new-session")).toBeDefined();
+		});
+
+		it("should throw descriptive error if operation called before init with strict mode", async () => {
+			// RED: In strict mode, operations before init should throw
+			const manager = new SessionManager({}, { persistencePath, strictInit: true });
+
+			// Should throw because initialization hasn't completed
+			expect(() => manager.startSession("test")).toThrow(/not initialized/i);
+
+			// After waiting, should work
+			await manager.waitForInitialization();
+			expect(() => manager.startSession("test2")).not.toThrow();
 		});
 	});
 });

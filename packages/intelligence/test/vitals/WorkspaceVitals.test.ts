@@ -316,9 +316,9 @@ describe("WorkspaceVitals", () => {
 			const now = Date.now();
 			const vitals = WorkspaceVitals.create({}, now);
 
-			// Generate 150 snapshots
+			// Generate 150 snapshots using explicit recording
 			for (let i = 0; i < 150; i++) {
-				vitals.current(now + i * 1000);
+				vitals.recordHistorySnapshot(now + i * 1000);
 			}
 
 			const history = vitals.getHistory();
@@ -382,6 +382,67 @@ describe("WorkspaceVitals", () => {
 			const snapshot = vitals.current(now);
 			// Only the human change counts
 			expect(snapshot.temperature.aiPercentage).toBe(0);
+		});
+	});
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// BUG FIX: current() has side effect - mutates history on every call
+	// The current() method should be a pure getter, not mutate state.
+	// ═══════════════════════════════════════════════════════════════════════════
+	describe("current() Side Effect Bug Fix", () => {
+		it("should NOT add history entries when current() is called (pure getter)", () => {
+			// current() should be a pure getter with no side effects
+			const now = Date.now();
+			const vitals = WorkspaceVitals.create({}, now);
+
+			// Call current() 10 times with the same timestamp
+			for (let i = 0; i < 10; i++) {
+				vitals.current(now);
+			}
+
+			const history = vitals.getHistory();
+			// current() is now a pure getter - should NOT add to history
+			expect(history.length).toBe(0);
+		});
+
+		it("should NOT pollute history when current() is called without state changes", () => {
+			// RED: This test exposes the bug where current() pollutes history
+			const now = Date.now();
+			const vitals = WorkspaceVitals.create({}, now);
+
+			// Make one file change
+			vitals.onFileChange({ path: "/src/file.ts" }, now);
+
+			// Get initial history length
+			const initialSnapshot = vitals.current(now);
+			const initialHistoryLength = vitals.getHistory().length;
+
+			// Call current() 50 more times without any state changes
+			for (let i = 0; i < 50; i++) {
+				vitals.current(now + 100); // Different timestamps but no changes
+			}
+
+			const finalHistoryLength = vitals.getHistory().length;
+
+			// BUG: History should only grow on actual state changes, not on reads
+			// Currently: finalHistoryLength would be initialHistoryLength + 50
+			// Expected: finalHistoryLength should equal initialHistoryLength
+			expect(finalHistoryLength).toBe(initialHistoryLength);
+		});
+
+		it("should provide a separate method for recording history snapshots", () => {
+			// RED: There should be an explicit recordSnapshot() method for history
+			const now = Date.now();
+			const vitals = WorkspaceVitals.create({}, now);
+
+			// current() should be read-only
+			vitals.current(now);
+			vitals.current(now);
+			expect(vitals.getHistory().length).toBe(0); // No implicit history recording
+
+			// Explicit recording should add to history
+			vitals.recordHistorySnapshot(now);
+			expect(vitals.getHistory().length).toBe(1);
 		});
 	});
 });

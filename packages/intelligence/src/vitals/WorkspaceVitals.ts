@@ -177,6 +177,8 @@ export class WorkspaceVitals extends EventEmitter {
 
 	/**
 	 * Get current vitals snapshot.
+	 * NOTE: This is a pure getter - does NOT mutate history.
+	 * Use recordHistorySnapshot() for explicit history recording.
 	 */
 	current(now: number = Date.now()): VitalsSnapshot {
 		const pulseData = this.pulse.getLevel(now);
@@ -195,13 +197,22 @@ export class WorkspaceVitals extends EventEmitter {
 			behavior: this.behaviorTracker.getMetadata(now),
 		};
 
+		return snapshot;
+	}
+
+	/**
+	 * Explicitly record a history snapshot.
+	 * Call this on meaningful state changes (e.g., after onFileChange, onSnapshot).
+	 * History is bounded FIFO with maxHistory limit.
+	 */
+	recordHistorySnapshot(now: number = Date.now()): void {
+		const snapshot = this.current(now);
+
 		// Record history (bounded FIFO)
 		this.history.push(snapshot);
 		if (this.history.length > this.maxHistory) {
 			this.history.shift();
 		}
-
-		return snapshot;
 	}
 
 	/**

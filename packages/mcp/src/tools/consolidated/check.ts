@@ -11,8 +11,9 @@
  */
 
 import { spawn } from "node:child_process";
-import { existsSync, statSync } from "node:fs";
+import { existsSync, readFileSync, statSync } from "node:fs";
 import { basename, join } from "node:path";
+import { createChangeImpactAnalyzer, type PerformanceImpact } from "@snapback/core";
 import { INTERNAL_SEPARATOR, messages, WIRE_PREFIX } from "../../branding/index.js";
 import { handleCheckPatterns, handleValidate } from "../../facades/handlers.js";
 import { handleQuickCheck } from "../../facades/quick-check.js";
@@ -210,6 +211,7 @@ async function handleBuildCheck(context: { workspaceRoot: string }): Promise<Too
 
 /**
  * Handle impact analysis mode
+ * Uses ChangeImpactAnalyzer for comprehensive impact prediction
  */
 async function handleImpactAnalysis(files: string[], context: { workspaceRoot: string }): Promise<ToolResult> {
 	if (files.length === 0) {
@@ -228,65 +230,95 @@ async function handleImpactAnalysis(files: string[], context: { workspaceRoot: s
 		};
 	}
 
-	// Calculate total size of files
-	let totalBytes = 0;
-	let lineCount = 0;
-	const analyzedFiles: Array<{ file: string; sizeKB: number; lines: number }> = [];
+	try {
+		// Create analyzer and read file contents
+		const analyzer = createChangeImpactAnalyzer(context.workspaceRoot);
+		const contents = new Map<string, string>();
 
-	for (const file of files) {
-		const fullPath = join(context.workspaceRoot, file);
-		if (existsSync(fullPath)) {
-			const stats = statSync(fullPath);
-			const sizeKB = Math.round((stats.size / 1024) * 100) / 100;
-			totalBytes += stats.size;
+		// Gather file contents and size info
+		let totalBytes = 0;
+		const analyzedFiles: Array<{ file: string; sizeKB: number }> = [];
 
-			// Rough line count estimation (assuming ~50 bytes per line)
-			const estimatedLines = Math.round(stats.size / 50);
-			lineCount += estimatedLines;
+		for (const file of files) {
+			const fullPath = join(context.workspaceRoot, file);
+			if (existsSync(fullPath)) {
+				const stats = statSync(fullPath);
+				const sizeKB = Math.round((stats.size / 1024) * 100) / 100;
+				totalBytes += stats.size;
 
-			analyzedFiles.push({
-				file: basename(file),
-				sizeKB,
-				lines: estimatedLines,
-			});
+				try {
+					const content = readFileSync(fullPath, "utf-8");
+					contents.set(fullPath, content);
+					analyzedFiles.push({ file: basename(file), sizeKB });
+				} catch {
+					// Skip unreadable files
+				}
+			}
 		}
+
+		// Run full impact analysis
+		const absolutePaths = files.map((f) => join(context.workspaceRoot, f)).filter((f) => contents.has(f));
+		const impact = await analyzer.getFullImpact(absolutePaths, contents);
+
+		const totalKB = Math.round((totalBytes / 1024) * 100) / 100;
+
+		// Determine severity based on impact score
+		const passed = impact.impactScore < 0.5;
+		const warnings: string[] = [];
+		const errors: string[] = [];
+
+		if (impact.breakingChanges.length > 0) {
+			errors.push(`${impact.breakingChanges.length} breaking change(s) detected`);
+		}
+		if (impact.affectedTests.length > 10) {
+			warnings.push(`${impact.affectedTests.length} tests potentially affected`);
+		}
+		if (impact.performanceImpacts.some((p: PerformanceImpact) => p.risk === "high")) {
+			warnings.push("High-risk performance changes detected");
+		}
+
+		return {
+			content: [
+				{
+					type: "text",
+					text: JSON.stringify({
+						passed,
+						analysis: {
+							filesAnalyzed: impact.filesAnalyzed,
+							totalKB,
+							impactScore: Math.round(impact.impactScore * 100) / 100,
+							affectedTests: impact.affectedTests.length,
+							breakingChanges: impact.breakingChanges.length,
+							performanceImpacts: impact.performanceImpacts.filter(
+								(p: PerformanceImpact) => p.risk !== "low",
+							).length,
+							dependentFiles: impact.dependentFiles.length,
+							recommendations: impact.recommendations.slice(0, 3),
+						},
+						message: `Impact: ${Math.round(impact.impactScore * 100)}% risk | ${impact.affectedTests.length} tests | ${impact.breakingChanges.length} breaking`,
+						warnings,
+						errors,
+					}),
+				},
+			],
+			isError: !passed,
+		};
+	} catch (error) {
+		return {
+			content: [
+				{
+					type: "text",
+					text: JSON.stringify({
+						passed: false,
+						errors: [error instanceof Error ? error.message : String(error)],
+						warnings: [],
+						message: "Impact analysis failed",
+					}),
+				},
+			],
+			isError: true,
+		};
 	}
-
-	const totalKB = Math.round((totalBytes / 1024) * 100) / 100;
-
-	// Provide ROI assessment
-	let roiLevel: "low" | "medium" | "high" = "low";
-	let recommendation = "Reconsider - low impact";
-
-	if (totalKB > 50) {
-		roiLevel = "high";
-		recommendation = "High ROI - proceed with removal";
-	} else if (totalKB > 20) {
-		roiLevel = "medium";
-		recommendation = "Medium ROI - consider removal";
-	}
-
-	return {
-		content: [
-			{
-				type: "text",
-				text: JSON.stringify({
-					passed: true,
-					analysis: {
-						filesAnalyzed: analyzedFiles.length,
-						totalKB,
-						lineCount,
-						files: analyzedFiles,
-						roiLevel,
-						recommendation,
-					},
-					message: `Impact: ${totalKB}KB across ${analyzedFiles.length} file(s) - ${roiLevel.toUpperCase()} ROI`,
-					warnings: [],
-					errors: [],
-				}),
-			},
-		],
-	};
 }
 
 /**
@@ -316,7 +348,9 @@ async function handleCircularCheck(targetDirs: string[], context: { workspaceRoo
 		const affectedPackages: string[] = [];
 
 		for (const dir of dirsToCheck) {
-			if (!existsSync(dir)) continue;
+			if (!existsSync(dir)) {
+				continue;
+			}
 
 			try {
 				const result = await madge(dir, {

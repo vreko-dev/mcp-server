@@ -11,7 +11,17 @@
 export { SyntaxAnalyzer } from "./ast/SyntaxAnalyzer.js";
 // Completeness Analyzers
 export { CompletenessAnalyzer } from "./completeness/CompletenessAnalyzer.js";
-
+// Impact Analysis
+export {
+	type BreakingChange,
+	ChangeImpactAnalyzer,
+	type ChangeImpactResult,
+	type ChangeType,
+	createChangeImpactAnalyzer,
+	type ImpactedItem,
+	type ImpactLevel,
+	type PerformanceImpact,
+} from "./impact/index.js";
 // Security Analyzers
 export { SecurityAnalyzer } from "./security/SecurityAnalyzer.js";
 // Static Analysis (for AI agent assistance)

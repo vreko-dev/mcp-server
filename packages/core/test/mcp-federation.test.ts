@@ -1,45 +1,55 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ServiceFederation } from "../src/mcp-federation";
 
 describe("ServiceFederation", () => {
-	it("should create an instance of ServiceFederation", () => {
-		const federation = new ServiceFederation();
-		expect(federation).toBeInstanceOf(ServiceFederation);
+	let federation: ServiceFederation;
+
+	beforeEach(() => {
+		federation = new ServiceFederation();
 	});
 
-	it("should discover capabilities and return partner service information", () => {
-		const federation = new ServiceFederation();
+	it("should register and discover service capabilities", () => {
+		federation.registerService("docs", { name: "Context7", type: "docs" });
 		const capabilities = federation.discoverCapabilities();
-
-		// Should return an object with potential service capabilities
-		expect(capabilities).toBeTypeOf("object");
-
-		// Initially should return empty capabilities
-		expect(Object.keys(capabilities)).toHaveLength(0);
+		expect(capabilities.docs).toBeDefined();
+		expect(capabilities.docs?.name).toBe("Context7");
 	});
 
-	it("should allow registering partner service capabilities", () => {
-		const federation = new ServiceFederation();
+	it("should execute service function with fallback", async () => {
+		federation.registerService("docs", { name: "Context7", type: "docs" });
 
-		// Register a mock docs service
-		federation.registerService("docs", {
-			name: "context7",
-			type: "docs",
-		});
+		const serviceFunction = vi.fn().mockResolvedValue("Service result");
+		const fallbackFunction = vi.fn().mockReturnValue("Fallback result");
 
-		const capabilities = federation.discoverCapabilities();
-
-		// Should now have docs capability
-		expect(capabilities).toHaveProperty("docs");
-		expect(capabilities.docs).toEqual({
-			name: "context7",
-			type: "docs",
-		});
+		const result = await federation.executeWithFallback("docs", serviceFunction, fallbackFunction);
+		expect(serviceFunction).toHaveBeenCalled();
+		expect(fallbackFunction).not.toHaveBeenCalled();
+		expect(result).toBe("Service result");
 	});
 
-	it("should allow registering multiple partner service capabilities", () => {
-		const federation = new ServiceFederation();
+	it("should use fallback when service is not available", async () => {
+		const serviceFunction = vi.fn().mockResolvedValue("Service result");
+		const fallbackFunction = vi.fn().mockReturnValue("Fallback result");
 
+		const result = await federation.executeWithFallback("docs", serviceFunction, fallbackFunction);
+		expect(serviceFunction).not.toHaveBeenCalled();
+		expect(fallbackFunction).toHaveBeenCalled();
+		expect(result).toBe("Fallback result");
+	});
+
+	it("should use fallback when service function fails", async () => {
+		federation.registerService("docs", { name: "Context7", type: "docs" });
+
+		const serviceFunction = vi.fn().mockRejectedValue(new Error("Service error"));
+		const fallbackFunction = vi.fn().mockReturnValue("Fallback result");
+
+		const result = await federation.executeWithFallback("docs", serviceFunction, fallbackFunction);
+		expect(serviceFunction).toHaveBeenCalled();
+		expect(fallbackFunction).toHaveBeenCalled();
+		expect(result).toBe("Fallback result");
+	});
+
+	it("should register multiple services", () => {
 		// Register multiple services
 		federation.registerService("docs", {
 			name: "context7",
@@ -97,15 +107,15 @@ describe("ServiceFederation", () => {
 			type: "docs",
 		});
 
-		// Try to execute a function with fallback
-		const result = await federation.executeWithFallback(
-			"docs",
-			() => Promise.resolve("Service result"),
-			() => "Fallback result",
-		);
+		const serviceFunction = vi.fn().mockResolvedValue("Successful Context7 result");
+		const fallbackFunction = vi.fn().mockReturnValue("Fallback result");
+
+		const result = await federation.executeWithFallback("docs", serviceFunction, fallbackFunction);
 
 		// Should return service result since docs service is registered
-		expect(result).toBe("Service result");
+		expect(result).toBe("Successful Context7 result");
+		expect(serviceFunction).toHaveBeenCalled();
+		expect(fallbackFunction).not.toHaveBeenCalled();
 	});
 
 	it("should fallback when service is available but fails", async () => {
@@ -120,7 +130,7 @@ describe("ServiceFederation", () => {
 		// Try to execute a function with fallback that throws an error
 		const result = await federation.executeWithFallback(
 			"docs",
-			() => Promise.reject(new Error("Service error")),
+			() => Promise.reject(new Error("MCP error")),
 			() => "Fallback result",
 		);
 
@@ -210,7 +220,6 @@ describe("ServiceFederation", () => {
 			"test-key",
 			() => {
 				callCount++;
-				// This function should not be called due to caching
 				return Promise.resolve(`Service result ${callCount}`);
 			},
 			() => "Fallback result",

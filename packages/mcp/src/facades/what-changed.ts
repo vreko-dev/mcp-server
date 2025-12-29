@@ -12,6 +12,7 @@ import { execSync } from "node:child_process";
 import { relative } from "node:path";
 import { getSessionChangesViaDaemon } from "../daemon/client-facade.js";
 import type { ToolHandler, ToolResult } from "../registry.js";
+import { getSessionFileTracker } from "../services/session-file-tracker.js";
 import { formatDuration, getBaselineFileSet, getCurrentTask } from "../session/state.js";
 import { getIntelligence } from "./intelligence.js";
 
@@ -336,7 +337,7 @@ export const handleWhatChanged: ToolHandler = async (args, context): Promise<Too
 	}
 
 	// =========================================================================
-	// FALLBACK: Daemon unavailable, use local Intelligence + git
+	// FALLBACK: Daemon unavailable, use local Intelligence + git + SessionFileTracker
 	// =========================================================================
 
 	// Get baseline file set (files that were modified BEFORE task started)
@@ -348,10 +349,26 @@ export const handleWhatChanged: ToolHandler = async (args, context): Promise<Too
 	const intelligenceChanges = intel.getFileModifications(task.id, task.startedAt);
 	const gitChanges = getGitChanges(workspaceRoot);
 
+	// Also get changes from SessionFileTracker (MCP-only mode fallback)
+	const sessionTracker = getSessionFileTracker(workspaceRoot);
+	const sessionChanges = sessionTracker.getChangedFiles();
+
 	// Merge Intelligence and git changes
 	const changeMap = new Map<string, ChangeSummary>();
 
-	// Add Intelligence-tracked changes (shared across all surfaces)
+	// Add SessionFileTracker changes (MCP-only mode tracking)
+	for (const change of sessionChanges) {
+		const relativePath = change.file.startsWith(workspaceRoot) ? relative(workspaceRoot, change.file) : change.file;
+		changeMap.set(relativePath, {
+			file: relativePath,
+			type: change.type,
+			linesChanged: change.linesChanged,
+			aiAttributed: change.aiAttributed,
+			timestamp: change.timestamp,
+		});
+	}
+
+	// Add Intelligence-tracked changes (shared across all surfaces) - these take priority
 	for (const change of intelligenceChanges) {
 		const relativePath = change.path.startsWith(workspaceRoot) ? relative(workspaceRoot, change.path) : change.path;
 		changeMap.set(relativePath, {

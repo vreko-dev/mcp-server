@@ -1,3 +1,16 @@
+// Auth exports
+export {
+	type AuthResult,
+	createDeviceAuthClient,
+	DeviceAuthClient,
+	type DeviceAuthCallbacks,
+	type DeviceAuthClientConfig,
+	type DeviceAuthError,
+	type DeviceAuthErrorResponse,
+	type DeviceCodeResponse,
+	type FlowState,
+	type TokenResponse,
+} from "./auth/DeviceAuthClient";
 // Analysis exports
 export {
 	createChangeSummary,
@@ -188,6 +201,38 @@ export {
 	type SnapshotRetryResult,
 } from "./snapshot/retry-hook";
 export { SnapshotManager } from "./snapshot/SnapshotManager";
+// Snapshot naming strategy (multi-tier intelligent naming)
+export {
+	type FileChange as SnapshotFileChange,
+	type SnapshotInfo,
+	SnapshotNamingStrategy,
+	type SnapshotNamingStrategyOptions,
+} from "./snapshot/SnapshotNamingStrategy";
+// File conflict resolution (atomic writes, permission checks, rename detection)
+export {
+	type ConflictResult,
+	FileConflictResolver,
+	type FileConflictResolverOptions,
+	type IFileSearchProvider,
+	type RestoreMetadata,
+} from "./snapshot/FileConflictResolver";
+// Snapshot icon classification (visual icons based on operation type)
+export {
+	type IconResult,
+	type SnapshotMetadata,
+	SnapshotIconStrategy,
+} from "./snapshot/SnapshotIconStrategy";
+// Snapshot deletion service (safe deletion with auto-cleanup)
+export {
+	type AutoCleanupConfig,
+	type DeletableSnapshot,
+	type DeletionOptions,
+	type DeletionResult,
+	type IConfirmationService,
+	type ISnapshotManagerForDeletion,
+	SnapshotDeletionService,
+	type SnapshotDeletionServiceOptions,
+} from "./snapshot/SnapshotDeletionService";
 export { LocalStorage } from "./storage/LocalStorage";
 export { MemoryStorage } from "./storage/MemoryStorage";
 export type { StorageAdapter } from "./storage/StorageAdapter";

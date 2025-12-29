@@ -1,3 +1,4 @@
+export { type AuthResult, createDeviceAuthClient, DeviceAuthClient, type DeviceAuthCallbacks, type DeviceAuthClientConfig, type DeviceAuthError, type DeviceAuthErrorResponse, type DeviceCodeResponse, type FlowState, type TokenResponse, } from "./auth/DeviceAuthClient";
 export { createChangeSummary, type FileChange, FileChangeAnalyzer, type FileChangeType, type IFileSystemProvider as IFileSystemProviderAnalysis, } from "./analysis/FileChangeAnalyzer";
 export { type AnalysisResult, DEFAULT_RISK_THRESHOLDS, RiskAnalyzer, type RiskFactor, type RiskSeverity, } from "./analysis/RiskAnalyzer";
 export * from "./cache/lru-cache";
@@ -31,6 +32,10 @@ export { Snapback } from "./Snapback";
 export * from "./session/index";
 export { applyAutomaticFix, createSnapshotWithRetry, createSnapshotWithRetrySafe, type DiagnosisType, diagnoseSnapshotFailure, formatDiagnosis, type RetryConfig, type SnapshotDiagnosis, type SnapshotParams, type SnapshotRetryResult, } from "./snapshot/retry-hook";
 export { SnapshotManager } from "./snapshot/SnapshotManager";
+export { type FileChange as SnapshotFileChange, type SnapshotInfo, SnapshotNamingStrategy, type SnapshotNamingStrategyOptions, } from "./snapshot/SnapshotNamingStrategy";
+export { type ConflictResult, FileConflictResolver, type FileConflictResolverOptions, type IFileSearchProvider, type RestoreMetadata, } from "./snapshot/FileConflictResolver";
+export { type IconResult, type SnapshotMetadata, SnapshotIconStrategy, } from "./snapshot/SnapshotIconStrategy";
+export { type AutoCleanupConfig, type DeletableSnapshot, type DeletionOptions, type DeletionResult, type IConfirmationService, type ISnapshotManagerForDeletion, SnapshotDeletionService, type SnapshotDeletionServiceOptions, } from "./snapshot/SnapshotDeletionService";
 export { LocalStorage } from "./storage/LocalStorage";
 export { MemoryStorage } from "./storage/MemoryStorage";
 export type { StorageAdapter } from "./storage/StorageAdapter";

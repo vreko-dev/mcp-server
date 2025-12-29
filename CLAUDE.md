@@ -12,12 +12,12 @@ Web: FCP <1.8s mobile, LCP <2.5s, JS <500KB initial
 Architecture: privacy-first (metadata-only), zero shortcuts, type-safe e2e
 ```
 
-## Current Blockers
+## Current Status (Updated 2025-12-29)
 
-- TypeScript: 32+ errors blocking builds
-- Bundle: 11MB → need <2MB
-- Analytics: 7 providers → PostHog only
-- Events: 127 across 3 systems → consolidate
+- ✅ TypeScript: 0 errors (all 25 packages pass)
+- ⚠️ Bundle: 4.4MB VSIX → need <2MB (56% reduction needed)
+- ✅ Analytics: PostHog only (consolidation complete)
+- ✅ Events: Consolidated to v1 schema (packages/contracts/src/telemetry/events.v1.ts)
 
 ## Decision Hierarchy
 

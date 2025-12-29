@@ -1,8 +1,10 @@
 # Phase S2: Extension Audit
 
+**Last Updated**: 2025-12-29
+
 ## Extension Information
 - **Name**: snapback-vscode
-- **Version**: 1.2.5
+- **Version**: 1.4.3
 - **Display Name**: SnapBack - Code Safety Net
 - **Publisher**: MarcelleLabs
 
@@ -26,9 +28,10 @@ The extension activates under three conditions:
   - better-sqlite3 (Native module that should not be bundled)
 
 ## Bundle Size
-- **Limit**: 1MB
+- **Target**: <2MB (per performance budgets)
+- **Current**: 4.4MB VSIX (18MB dist/)
+- **Status**: ⚠️ Over budget - 56% reduction needed
 - **Check Script**: scripts/check-bundle-size.js
-- **Estimated Size**: TBD - Would need to build and check actual size
 
 ## Telemetry Implementation
 - **Implementation**: VSCodeTelemetry class

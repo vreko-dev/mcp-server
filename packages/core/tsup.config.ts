@@ -6,9 +6,7 @@ export default defineConfig({
 		"analysis/index": "src/analysis/index.ts",
 		"mcp-federation": "src/mcp-federation.ts",
 		"mcp-fallbacks": "src/mcp-fallbacks.ts",
-		"risk-analyzer": "src/risk-analyzer.ts",
-		guardian: "src/guardian.ts",
-		detection: "src/detection/index.ts",
+		// Deprecated V1 entries removed - use @snapback/engine instead
 	},
 	format: ["esm"],
 	dts: false, // Disabled - parsing error in utils/logger.ts

@@ -11,6 +11,15 @@
  * @module analysis/static
  */
 
+// Circular Dependency Detection
+export {
+	type CircularOptions,
+	type CircularResult,
+	detectCircular,
+	detectCircularInMonorepo,
+	formatCycles,
+	summarizeCircular,
+} from "./CircularDetector.js";
 // Orphan Detection
 export {
 	checkFilesForOrphanStatus,

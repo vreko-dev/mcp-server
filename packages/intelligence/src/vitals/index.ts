@@ -37,6 +37,16 @@ export type {
 	VitalsFileChangeEvent,
 	VitalsSnapshot,
 } from "../types/vitals.js";
+// Documentation Freshness Detection
+export {
+	DEFAULT_DOC_FRESHNESS_CONFIG,
+	type DocFreshnessConfig,
+	type DocFreshnessResult,
+	DocFreshnessSensor,
+	type DocFreshnessState,
+	formatStaleDocs,
+	type StaleDoc,
+} from "./DocFreshnessSensor.js";
 export type {
 	BehaviorStats,
 	CalibrationStatus,

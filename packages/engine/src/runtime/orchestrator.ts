@@ -205,10 +205,44 @@ async function runScript<T>(scriptPath: string, input: unknown, timeout: number 
  *     // Block the change, return errors to agent
  *   }
  */
+/**
+ * Signal weights for weighted risk aggregation
+ * Higher weight = more impact on final risk score
+ */
+const SIGNAL_WEIGHTS: Record<string, number> = {
+	"risk-score": 1.0, // Primary risk indicator - use directly
+	cycles: 2.5, // Circular dependencies are severe
+	complexity: 1.5, // Complexity impacts maintainability
+	threats: 2.0, // Security threats are critical
+	"phantom-deps": 1.8, // Missing deps cause runtime errors
+	velocity: 0.5, // Velocity is informational
+	consumers: 0.3, // Consumer count is informational
+};
+
+/**
+ * Hash a string to a consistent short identifier
+ */
+function hashString(str: string): string {
+	let hash = 0;
+	for (let i = 0; i < str.length; i++) {
+		const char = str.charCodeAt(i);
+		hash = (hash << 5) - hash + char;
+		hash = hash & hash; // Convert to 32bit integer
+	}
+	return Math.abs(hash).toString(36).slice(0, 8);
+}
+
 export class Orchestrator {
 	private sessionHealth: SessionHealth;
+	private sessionId: string;
+	private previousScore: number;
+	private workspaceRoot: string;
 
-	constructor() {
+	constructor(workspaceRoot?: string) {
+		this.workspaceRoot = workspaceRoot || process.cwd();
+		this.sessionId = `session_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+		this.previousScore = 100;
+
 		// Initialize with healthy baseline
 		this.sessionHealth = {
 			score: 100,
@@ -345,24 +379,40 @@ export class Orchestrator {
 	}
 
 	/**
-	 * Calculate aggregated risk score from signals
+	 * Calculate aggregated risk score from signals using weighted aggregation
 	 *
-	 * TODO: Extract the scoring formula from packages/core/src/risk-analyzer.ts
-	 *
-	 * Reference: Line 151 of risk-analyzer.ts
-	 *   Math.min(10, totalRiskScore / (filteredFileChanges.length + 1))
+	 * Algorithm (from risk-analyzer.ts):
+	 * 1. If direct risk-score signal exists, use it as base
+	 * 2. Apply weighted contributions from other signals
+	 * 3. Normalize to 0-10 scale
 	 */
 	private calculateRiskScore(signals: SignalOutput[]): number {
-		// Find the risk-score signal
+		// Find the risk-score signal as base
 		const riskSignal = signals.find((s) => s.signal === "risk-score");
-		if (riskSignal) {
-			return riskSignal.value;
+		let baseScore = riskSignal?.value ?? 0;
+
+		// Apply weighted aggregation from other signals
+		let weightedSum = 0;
+		let totalWeight = 0;
+
+		for (const signal of signals) {
+			// Skip risk-score as it's our base
+			if (signal.signal === "risk-score") continue;
+
+			const weight = SIGNAL_WEIGHTS[signal.signal] ?? 1.0;
+			weightedSum += signal.value * weight;
+			totalWeight += weight;
 		}
 
-		// Fallback: aggregate other signals
-		// TODO: Implement weighted aggregation
-		const sum = signals.reduce((acc, s) => acc + s.value, 0);
-		return Math.min(10, sum / (signals.length + 1));
+		// Combine base score with weighted contributions
+		if (totalWeight > 0) {
+			const weightedContribution = weightedSum / totalWeight;
+			// Base score contributes 60%, weighted signals contribute 40%
+			baseScore = baseScore * 0.6 + weightedContribution * 0.4;
+		}
+
+		// Normalize to 0-10 scale, rounding to 1 decimal
+		return Math.round(Math.min(10, Math.max(0, baseScore)) * 10) / 10;
 	}
 
 	/**
@@ -440,13 +490,19 @@ export class Orchestrator {
 		// Generate coaching message based on score
 		this.sessionHealth.coaching = this.generateCoaching();
 
-		// Emit health change event if significant
-		eventBus.emit("session.health_changed", {
-			sessionId: "current", // TODO: Implement proper session IDs
-			previousScore: 100, // TODO: Track previous score
-			currentScore: this.sessionHealth.score,
-			trigger: "analysis",
-		});
+		// Emit health change event if score changed significantly (>5 points)
+		const scoreDelta = Math.abs(this.sessionHealth.score - this.previousScore);
+		if (scoreDelta >= 5) {
+			eventBus.emit("session.health_changed", {
+				sessionId: this.sessionId,
+				previousScore: this.previousScore,
+				currentScore: this.sessionHealth.score,
+				trigger: "analysis",
+			});
+		}
+
+		// Update previous score for next comparison
+		this.previousScore = this.sessionHealth.score;
 	}
 
 	/**
@@ -485,6 +541,10 @@ export class Orchestrator {
 	 * Reset session health (for new session)
 	 */
 	resetSession(): void {
+		// Generate new session ID
+		this.sessionId = `session_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+		this.previousScore = 100;
+
 		this.sessionHealth = {
 			score: 100,
 			warnings: [],
@@ -495,9 +555,16 @@ export class Orchestrator {
 		};
 
 		eventBus.emit("session.started", {
-			sessionId: `session_${Date.now()}`,
-			workspaceHash: "TODO", // TODO: Hash workspace path
+			sessionId: this.sessionId,
+			workspaceHash: hashString(this.workspaceRoot),
 		});
+	}
+
+	/**
+	 * Get current session ID
+	 */
+	getSessionId(): string {
+		return this.sessionId;
 	}
 }
 

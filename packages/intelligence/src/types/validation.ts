@@ -4,6 +4,7 @@
  * Types for the 7-layer validation pipeline.
  */
 
+import type { ValidationSeverity } from "@snapback/contracts";
 import type { Issue } from "./config.js";
 
 /**
@@ -59,7 +60,7 @@ export interface PatternMatch {
 	pattern: string;
 	file: string;
 	line?: number;
-	severity: "critical" | "warning" | "info";
+	severity: ValidationSeverity;
 }
 
 // Re-export Issue for convenience

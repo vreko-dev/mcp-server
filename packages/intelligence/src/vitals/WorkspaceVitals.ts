@@ -30,6 +30,7 @@ import type {
 } from "../types/vitals.js";
 import type { ThresholdAdjustments, TrajectoryForecast } from "../types/vitals-learning.js";
 import { BehaviorTracker } from "./BehaviorTracker.js";
+import { OXYGEN_THRESHOLDS, PRESSURE_THRESHOLDS, TRAJECTORY_THRESHOLDS } from "./constants.js";
 import { ThresholdCalibrator } from "./learning/ThresholdCalibrator.js";
 import { TrajectoryPredictor } from "./learning/TrajectoryPredictor.js";
 import { UserBehaviorLearner } from "./learning/UserBehaviorLearner.js";
@@ -216,6 +217,7 @@ export class WorkspaceVitals extends EventEmitter {
 
 	/**
 	 * Determine if a snapshot should be created.
+	 * Uses centralized thresholds from constants.ts
 	 */
 	shouldSnapshot(now: number = Date.now()): SnapshotDecision {
 		const vitals = this.current(now);
@@ -228,7 +230,7 @@ export class WorkspaceVitals extends EventEmitter {
 			};
 		}
 
-		if (vitals.pressure.value > 80) {
+		if (vitals.pressure.value >= PRESSURE_THRESHOLDS.critical) {
 			return {
 				should: true,
 				reason: `High pressure (${vitals.pressure.value}%) - ${vitals.pressure.unsnapshotedChanges} unsaved changes`,
@@ -236,7 +238,7 @@ export class WorkspaceVitals extends EventEmitter {
 			};
 		}
 
-		if (vitals.pressure.criticalFilesTouched.length > 0 && vitals.oxygen.value < 50) {
+		if (vitals.pressure.criticalFilesTouched.length > 0 && vitals.oxygen.value < OXYGEN_THRESHOLDS.low) {
 			return {
 				should: true,
 				reason: `Critical files modified without snapshot: ${vitals.pressure.criticalFilesTouched.join(", ")}`,
@@ -244,7 +246,7 @@ export class WorkspaceVitals extends EventEmitter {
 			};
 		}
 
-		if (vitals.temperature.level === "burning" && vitals.oxygen.value < 60) {
+		if (vitals.temperature.level === "burning" && vitals.oxygen.value < OXYGEN_THRESHOLDS.moderate) {
 			return {
 				should: true,
 				reason: "Heavy AI activity with low snapshot coverage",
@@ -252,7 +254,7 @@ export class WorkspaceVitals extends EventEmitter {
 			};
 		}
 
-		if (vitals.pressure.value > 50) {
+		if (vitals.pressure.value >= PRESSURE_THRESHOLDS.moderate) {
 			return {
 				should: false,
 				reason: "Consider snapshotting soon",
@@ -432,12 +434,20 @@ export class WorkspaceVitals extends EventEmitter {
 		oxygen: VitalsSnapshot["oxygen"],
 	): Trajectory {
 		// Critical: High pressure + Burning temp + Low oxygen
-		if (pressure.value > 80 && temp.level === "burning" && oxygen.value < 50) {
+		if (
+			pressure.value >= TRAJECTORY_THRESHOLDS.criticalPressure &&
+			temp.level === "burning" &&
+			oxygen.value < TRAJECTORY_THRESHOLDS.criticalOxygen
+		) {
 			return "critical";
 		}
 
 		// Escalating: Rising pressure or heat without coverage
-		if ((pressure.value > 60 && oxygen.value < 70) || (temp.level === "hot" && pulse.level === "racing")) {
+		if (
+			(pressure.value >= TRAJECTORY_THRESHOLDS.escalatingPressure &&
+				oxygen.value < TRAJECTORY_THRESHOLDS.escalatingOxygen) ||
+			(temp.level === "hot" && pulse.level === "racing")
+		) {
 			return "escalating";
 		}
 
@@ -447,7 +457,10 @@ export class WorkspaceVitals extends EventEmitter {
 			const latestPressure = recentHistory[recentHistory.length - 1]?.pressure.value ?? 0;
 			const earliestPressure = recentHistory[0]?.pressure.value ?? 0;
 			const pressureTrend = latestPressure - earliestPressure;
-			if (pressureTrend < -10 && oxygen.value > 70) {
+			if (
+				pressureTrend < -TRAJECTORY_THRESHOLDS.recoveringPressureDrop &&
+				oxygen.value >= TRAJECTORY_THRESHOLDS.recoveringOxygen
+			) {
 				return "recovering";
 			}
 		}
@@ -462,16 +475,16 @@ export class WorkspaceVitals extends EventEmitter {
 		if (vitals.trajectory === "escalating") {
 			return "Consider creating a snapshot - risk is accumulating";
 		}
-		if (vitals.pressure.value > 80) {
+		if (vitals.pressure.value >= PRESSURE_THRESHOLDS.critical) {
 			return "High pressure - create a snapshot before continuing";
 		}
-		if (vitals.pressure.value > 50) {
+		if (vitals.pressure.value >= PRESSURE_THRESHOLDS.moderate) {
 			return "Moderate pressure - consider creating a snapshot soon";
 		}
 		if (vitals.temperature.level === "burning") {
 			return "Heavy AI activity detected - extra caution recommended";
 		}
-		if (vitals.oxygen.value < 50) {
+		if (vitals.oxygen.value < OXYGEN_THRESHOLDS.low) {
 			return "Low snapshot coverage - protect your work";
 		}
 		return "Proceed normally";

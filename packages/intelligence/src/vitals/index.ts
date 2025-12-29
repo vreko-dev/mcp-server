@@ -37,6 +37,26 @@ export type {
 	VitalsFileChangeEvent,
 	VitalsSnapshot,
 } from "../types/vitals.js";
+// Centralized thresholds - SINGLE SOURCE OF TRUTH
+export {
+	calculateUrgencyScore,
+	getOxygenLevel,
+	getPressureLevel,
+	getUrgencyLevel,
+	OXYGEN_THRESHOLDS,
+	type OxygenThresholdLevel,
+	PRESSURE_THRESHOLDS,
+	type PressureThresholdLevel,
+	PULSE_THRESHOLDS,
+	type PulseThresholdLevel,
+	shouldRecommendSnapshot,
+	TEMPERATURE_THRESHOLDS,
+	type TemperatureThresholdLevel,
+	TIME_THRESHOLDS,
+	TRAJECTORY_THRESHOLDS,
+	URGENCY_THRESHOLDS,
+	type UrgencyThresholdLevel,
+} from "./constants.js";
 // Documentation Freshness Detection
 export {
 	DEFAULT_DOC_FRESHNESS_CONFIG,

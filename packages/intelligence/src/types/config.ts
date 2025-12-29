@@ -5,7 +5,14 @@
  * Same algorithms, different data sources based on config.
  */
 
+import type { ValidationIssue } from "@snapback/contracts";
 import { z } from "zod";
+
+/**
+ * Issue detected during validation
+ * Re-exported from contracts for backward compatibility
+ */
+export type Issue = ValidationIssue;
 
 /**
  * Validation layer interface for extensibility
@@ -13,17 +20,6 @@ import { z } from "zod";
 export interface ValidationLayer {
 	name: string;
 	validate(code: string, filePath: string): Promise<{ issues: Issue[] }>;
-}
-
-/**
- * Issue detected during validation
- */
-export interface Issue {
-	severity: "critical" | "warning" | "info";
-	type: string;
-	message: string;
-	line?: number;
-	fix?: string;
 }
 
 /**

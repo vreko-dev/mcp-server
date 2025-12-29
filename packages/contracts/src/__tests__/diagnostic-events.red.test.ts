@@ -165,9 +165,9 @@ describe("Diagnostic Telemetry Events - RED Test", () => {
 			const eventNames = Object.values(EXPECTED_DIAGNOSTIC_EVENTS);
 			expect(eventNames).toHaveLength(6);
 
-			// All should follow dot.notation
+			// All should follow dot.notation (allow multiple segments like auth.provider.selected)
 			eventNames.forEach((name) => {
-				expect(name).toMatch(/^[a-z_]+\.[a-z_]+$/);
+				expect(name).toMatch(/^[a-z]+(\.[a-z]+)+$/);
 				expect(name).not.toContain(" ");
 				expect(name).not.toContain("_-");
 			});

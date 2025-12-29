@@ -9,7 +9,7 @@ export default defineProject(
 	mergeConfigs(nodeConfig, {
 		test: {
 			name: "@snapback/contracts",
-			include: ["test/**/*.test.ts"],
+			include: ["test/**/*.test.ts", "src/**/*.test.ts", "src/**/__tests__/*.test.ts"],
 		},
 	}),
 );

@@ -27,7 +27,7 @@ describe("AccountabilityEffectSchema", () => {
 	describe("Happy Path", () => {
 		it("should validate a complete accountability effect event", () => {
 			const event: AccountabilityEffectEvent = {
-				event: "accountability_effect",
+				event: "session:feedback_submitted",
 				event_version: "1.0.0",
 				timestamp: Date.now(),
 				properties: {
@@ -58,7 +58,7 @@ describe("AccountabilityEffectSchema", () => {
 
 			for (const perceived_help of helpValues) {
 				const event = {
-					event: "accountability_effect" as const,
+					event: "session:feedback_submitted" as const,
 					event_version: "1.0.0",
 					timestamp: Date.now(),
 					properties: {
@@ -89,7 +89,7 @@ describe("AccountabilityEffectSchema", () => {
 
 			for (const tier of tiers) {
 				const event = {
-					event: "accountability_effect" as const,
+					event: "session:feedback_submitted" as const,
 					event_version: "1.0.0",
 					timestamp: Date.now(),
 					properties: {
@@ -117,7 +117,7 @@ describe("AccountabilityEffectSchema", () => {
 
 		it("should auto-apply defaults for event_version and timestamp", () => {
 			const event = {
-				event: "accountability_effect" as const,
+				event: "session:feedback_submitted" as const,
 				properties: {
 					session_id: "sess_test",
 					session_duration_ms: 1000,
@@ -151,7 +151,7 @@ describe("AccountabilityEffectSchema", () => {
 	describe("Sad Path", () => {
 		it("should reject invalid perceived_help values", () => {
 			const invalidEvent = {
-				event: "accountability_effect" as const,
+				event: "session:feedback_submitted" as const,
 				event_version: "1.0.0",
 				timestamp: Date.now(),
 				properties: {
@@ -179,7 +179,7 @@ describe("AccountabilityEffectSchema", () => {
 
 		it("should reject invalid tier values", () => {
 			const invalidEvent = {
-				event: "accountability_effect" as const,
+				event: "session:feedback_submitted" as const,
 				event_version: "1.0.0",
 				timestamp: Date.now(),
 				properties: {
@@ -213,7 +213,7 @@ describe("AccountabilityEffectSchema", () => {
 	describe("Edge Cases", () => {
 		it("should accept zero values for all counts", () => {
 			const event = {
-				event: "accountability_effect" as const,
+				event: "session:feedback_submitted" as const,
 				event_version: "1.0.0",
 				timestamp: Date.now(),
 				properties: {
@@ -240,7 +240,7 @@ describe("AccountabilityEffectSchema", () => {
 
 		it("should accept large values for counts", () => {
 			const event = {
-				event: "accountability_effect" as const,
+				event: "session:feedback_submitted" as const,
 				event_version: "1.0.0",
 				timestamp: Date.now(),
 				properties: {
@@ -267,7 +267,7 @@ describe("AccountabilityEffectSchema", () => {
 
 		it("should reject negative values for counts", () => {
 			const invalidEvent = {
-				event: "accountability_effect" as const,
+				event: "session:feedback_submitted" as const,
 				event_version: "1.0.0",
 				timestamp: Date.now(),
 				properties: {
@@ -300,7 +300,7 @@ describe("AccountabilityEffectSchema", () => {
 	describe("Error Handling", () => {
 		it("should reject events with missing properties", () => {
 			const invalidEvent = {
-				event: "accountability_effect" as const,
+				event: "session:feedback_submitted" as const,
 				event_version: "1.0.0",
 				timestamp: Date.now(),
 				// Missing properties
@@ -311,7 +311,7 @@ describe("AccountabilityEffectSchema", () => {
 
 		it("should reject events with missing session_id", () => {
 			const invalidEvent = {
-				event: "accountability_effect" as const,
+				event: "session:feedback_submitted" as const,
 				event_version: "1.0.0",
 				timestamp: Date.now(),
 				properties: {
@@ -370,7 +370,7 @@ describe("AccountabilityEffectSchema", () => {
 
 	describe("Event Constants", () => {
 		it("should export correct event name constant", () => {
-			expect(ACCOUNTABILITY_EVENTS.ACCOUNTABILITY_EFFECT).toBe("accountability_effect");
+			expect(ACCOUNTABILITY_EVENTS.SESSION_FEEDBACK_SUBMITTED).toBe("session:feedback_submitted");
 		});
 	});
 });

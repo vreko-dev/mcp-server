@@ -20,6 +20,7 @@
 import { INTERNAL_SEPARATOR, messages, WIRE_PREFIX } from "../../branding/index.js";
 import { handleCompleteTask } from "../../facades/complete-task.js";
 import type { SnapBackTool, ToolHandler } from "../../registry.js";
+import { createTieredLearningService, HOT_TIER_PROMOTION_THRESHOLD } from "../../services/tiered-learning-service.js";
 
 /** Compress string for wire format */
 const compressStr = (s: string, max: number): string => {
@@ -39,6 +40,18 @@ export interface SnapEndParams {
 	ok?: 0 | 1;
 	/** Quick learnings as strings */
 	l?: string[];
+	/**
+	 * Agent-reported efficiency metrics
+	 * The LLM knows what it did - trust its assessment
+	 */
+	efficiency?: {
+		/** Agent's estimate of tokens saved, e.g. "~12K" or "15000" */
+		saved?: string;
+		/** What mistakes SnapBack helped prevent, e.g. "2 - wrong layer, missed pattern" */
+		prevented?: string;
+		/** What loaded context helped most, e.g. "auth patterns, layer constraints" */
+		helped?: string;
+	};
 	/** Full exit survey */
 	survey?: {
 		tech?: { pat?: string[]; pit?: string[]; hlp?: string[]; nhlp?: string[] };
@@ -54,23 +67,16 @@ export interface SnapEndParams {
 
 /**
  * Session efficiency metrics for user-facing stats
+ * Simplified: Trust agent-reported values instead of calculating
  */
 interface EfficiencyMetrics {
-	/** Estimated tokens saved by using 🧢 SnapBack */
-	tokensSaved: number;
-	/** Token savings percentage */
-	savingsPercent: number;
-	/** Mistakes/issues prevented */
-	mistakesPrevented: number;
-	/** Examples of what was prevented */
-	preventedExamples: string[];
-	/** Tool calls made */
-	toolCallsMade: number;
-	/** Estimated tool calls without 🧢 SnapBack */
-	estimatedWithout: number;
-	/** Learnings applied from history */
-	learningsApplied: number;
-	/** New learnings captured */
+	/** Agent-reported tokens saved (e.g. "~12K") */
+	saved: string;
+	/** Agent-reported mistakes prevented (e.g. "2 - wrong layer") */
+	prevented: string;
+	/** What context helped most */
+	helped: string;
+	/** New learnings captured this session */
 	newLearnings: number;
 }
 
@@ -87,52 +93,19 @@ interface ImprovementOpportunity {
 }
 
 // =============================================================================
-// Efficiency Calculation
+// Efficiency Metrics (Agent-Reported)
 // =============================================================================
 
 /**
- * Calculate session efficiency metrics
- * These provide immediate positive reinforcement for using 🧢 SnapBack
+ * Extract efficiency metrics from agent-reported values
+ * Trust the LLM - it knows what it did and what helped
  */
-function calculateEfficiencyMetrics(data: Record<string, unknown>, learningsCount: number): EfficiencyMetrics {
-	// Base token estimates (from research: ~100 tokens wire vs ~1300 traditional)
-	const TOKENS_PER_TRADITIONAL_CALL = 1300;
-	const TOKENS_PER_SNAP_CALL = 100;
-
-	// Estimate tool calls from session data
-	const toolCallsMade = (data.toolCalls as number) || 5; // Default estimate
-	const estimatedWithout = Math.ceil(toolCallsMade * 2.5); // Would need ~2.5x more without context
-
-	// Calculate token savings
-	const tokensWithSnap = toolCallsMade * TOKENS_PER_SNAP_CALL;
-	const tokensWithout = estimatedWithout * TOKENS_PER_TRADITIONAL_CALL;
-	const tokensSaved = tokensWithout - tokensWithSnap;
-	const savingsPercent = Math.round((1 - tokensWithSnap / tokensWithout) * 100);
-
-	// Mistakes prevented (from protection status and risk analysis)
-	const protectedFiles = (data.protectedFiles as string[]) || [];
-	const risksAnalyzed = (data.risksAnalyzed as number) || 0;
-	const mistakesPrevented = protectedFiles.length > 0 ? 1 : 0 + (risksAnalyzed > 0 ? 1 : 0);
-
-	const preventedExamples: string[] = [];
-	if (protectedFiles.length > 0) {
-		preventedExamples.push(`Protected ${protectedFiles.length} critical files`);
-	}
-	if (risksAnalyzed > 0) {
-		preventedExamples.push(`Analyzed ${risksAnalyzed} risk scenarios`);
-	}
-
-	// Learnings
-	const learningsApplied = (data.learningsApplied as number) || 0;
-
+function getEfficiencyMetrics(params: SnapEndParams, learningsCount: number): EfficiencyMetrics {
+	const eff = params.efficiency || {};
 	return {
-		tokensSaved,
-		savingsPercent,
-		mistakesPrevented,
-		preventedExamples,
-		toolCallsMade,
-		estimatedWithout,
-		learningsApplied,
+		saved: eff.saved || "not reported",
+		prevented: eff.prevented || "none reported",
+		helped: eff.helped || "general context",
 		newLearnings: learningsCount,
 	};
 }
@@ -178,31 +151,41 @@ function identifyImprovements(data: Record<string, unknown>, params: SnapEndPara
 
 /**
  * Format efficiency stats for user display
+ * Uses agent-reported values - no magic number calculations
  */
 function formatUserStats(metrics: EfficiencyMetrics): string {
 	const parts: string[] = [];
 
-	// Token savings (the headline number)
-	parts.push(`💰 ~${metrics.tokensSaved.toLocaleString()} tokens saved (${metrics.savingsPercent}%)`);
-
-	// Mistakes prevented
-	if (metrics.mistakesPrevented > 0) {
-		parts.push(`🛡️ ${metrics.mistakesPrevented} ${metrics.mistakesPrevented === 1 ? "issue" : "issues"} prevented`);
+	// Token savings (agent-reported)
+	if (metrics.saved !== "not reported") {
+		parts.push(`💰 ${metrics.saved} tokens saved`);
 	}
 
-	// Learnings
-	if (metrics.learningsApplied > 0 || metrics.newLearnings > 0) {
-		parts.push(`📚 ${metrics.learningsApplied} applied, ${metrics.newLearnings} captured`);
+	// Mistakes prevented (agent-reported)
+	if (metrics.prevented !== "none reported") {
+		parts.push(`🛡️ ${metrics.prevented}`);
 	}
 
-	return parts.join(" | ");
+	// What helped
+	if (metrics.helped !== "general context") {
+		parts.push(`📚 Helped: ${metrics.helped}`);
+	}
+
+	// New learnings
+	if (metrics.newLearnings > 0) {
+		parts.push(`✨ ${metrics.newLearnings} new learnings`);
+	}
+
+	return parts.length > 0 ? parts.join(" | ") : "Session completed";
 }
 
 /**
  * Format improvements for agent consumption (internal)
  */
 function formatImprovements(improvements: ImprovementOpportunity[]): string {
-	if (improvements.length === 0) return "";
+	if (improvements.length === 0) {
+		return "";
+	}
 
 	const lines = improvements.map((i) => `[${i.priority.toUpperCase()}] ${i.suggestion} (when: ${i.trigger})`);
 	return `\n[IMPROVE] ${lines.join(" | ")}`;
@@ -245,6 +228,34 @@ export const handleSnapEnd: ToolHandler = async (args, context) => {
 		action: learning,
 	}));
 
+	// P1-3: Track learnings as applied for auto-promotion
+	// This enables the 3x → hot tier promotion system
+	const learningService = createTieredLearningService(context.workspaceRoot);
+	let promotionResult: { promoted: number; totalHot: number } | undefined;
+
+	if (customLearnings.length > 0) {
+		// Generate IDs for the learnings we're capturing
+		for (const learning of customLearnings) {
+			const learningId = `snap-end-${learning.action.slice(0, 30).replace(/\s+/g, "-").toLowerCase()}`;
+			learningService.trackApplied(learningId);
+		}
+
+		// Check if we should trigger auto-regeneration
+		// (when a learning hits the threshold, regenerate hot tier)
+		const stats = learningService.getUsageStats();
+		const hasReachedThreshold = Object.values(stats).some(
+			(s) => s.appliedCount >= HOT_TIER_PROMOTION_THRESHOLD.minAccessCount,
+		);
+
+		if (hasReachedThreshold) {
+			try {
+				promotionResult = await learningService.regenerateHotTier();
+			} catch {
+				// Best effort - don't fail snap_end if promotion fails
+			}
+		}
+	}
+
 	// Map to complete_task parameters
 	const completeArgs: Record<string, unknown> = {
 		outcome: params.outcome || (params.ok === 0 ? "abandoned" : "completed"),
@@ -264,8 +275,8 @@ export const handleSnapEnd: ToolHandler = async (args, context) => {
 		const content = result.content[0]?.text || "";
 		const data = JSON.parse(content) as Record<string, unknown>;
 
-		// Calculate efficiency metrics for user
-		const metrics = calculateEfficiencyMetrics(data, customLearnings.length);
+		// Get efficiency metrics from agent-reported values
+		const metrics = getEfficiencyMetrics(params, customLearnings.length);
 
 		// Identify improvements for agent learning
 		const improvements = identifyImprovements(data, params);
@@ -292,13 +303,19 @@ export const handleSnapEnd: ToolHandler = async (args, context) => {
 		const userStats = formatUserStats(metrics);
 		const improvementNotes = formatImprovements(improvements);
 
+		// Add promotion info if any learnings were promoted
+		const promotionInfo =
+			promotionResult && promotionResult.promoted > 0
+				? ` | 🔥 ${promotionResult.promoted} learning(s) promoted to hot tier`
+				: "";
+
 		// Add human-readable branded message
 		const humanMessage = success
 			? messages.session.complete(1, (data.filesModified as number) || 0)
 			: messages.error.generic(params.outcome === "blocked" ? "task blocked" : "task incomplete");
 
 		// Combined output: wire format (agent-only) + separator + human-readable content
-		const fullResponse = `${wireFormat}${improvementNotes}${INTERNAL_SEPARATOR}${humanMessage}\n${userStats}`;
+		const fullResponse = `${wireFormat}${improvementNotes}${INTERNAL_SEPARATOR}${humanMessage}\n${userStats}${promotionInfo}`;
 
 		return { content: [{ type: "text", text: fullResponse }] };
 	} catch {
@@ -317,12 +334,16 @@ async function checkTaskGoal(
 
 	// Check if task has a goal stored in session state
 	const sessionPath = join(workspaceRoot, ".snapback", "session", "state.json");
-	if (!existsSync(sessionPath)) return null;
+	if (!existsSync(sessionPath)) {
+		return null;
+	}
 
 	try {
 		const sessionData = JSON.parse(readFileSync(sessionPath, "utf-8"));
 		const goal = sessionData.currentTask?.goal;
-		if (!goal) return null;
+		if (!goal) {
+			return null;
+		}
 
 		const { metric, target, unit } = goal;
 		let current = 0;
@@ -383,6 +404,24 @@ export const snapEndTool: SnapBackTool = {
 				type: "array",
 				items: { type: "string" },
 				description: "Quick learnings",
+			},
+			efficiency: {
+				type: "object",
+				description: "Your assessment of session efficiency",
+				properties: {
+					saved: {
+						type: "string",
+						description: "Tokens saved estimate (e.g. '~15K')",
+					},
+					prevented: {
+						type: "string",
+						description: "Mistakes prevented (e.g. '2 - wrong layer')",
+					},
+					helped: {
+						type: "string",
+						description: "What context helped most",
+					},
+				},
 			},
 			outcome: {
 				type: "string",

@@ -14,9 +14,11 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { beginTaskViaDaemon } from "../daemon/client-facade.js";
 import type { ToolHandler, ToolResult } from "../registry.js";
+import { type DependencyContext, getDependencyGraphService } from "../services/dependency-graph-service.js";
 import { createErrorCacheService } from "../services/error-cache-service.js";
 import { createGitContextService } from "../services/git-context-service.js";
 import { createSnapshotService } from "../services/snapshot-service.js";
+import { getTestCoverageService, type TestCoverageContext } from "../services/test-coverage-service.js";
 import { TieredLearningService } from "../services/tiered-learning-service.js";
 import {
 	drainPendingObservations,
@@ -266,6 +268,10 @@ interface BeginTaskOutput {
 	lastKnownErrors?: ErrorContext;
 	/** Git change context (P0 context enhancement) */
 	gitContext?: GitContext;
+	/** Dependency context for planned files (P1 context enhancement) */
+	dependencyContext?: DependencyContext;
+	/** Test coverage context for planned files (P1 context enhancement) */
+	testCoverage?: TestCoverageContext;
 	/** Proactive guidance from AdvisoryEngine */
 	proactive_guidance?: ProactiveGuidance;
 	/** Warnings about stale context that was auto-rebuilt */
@@ -974,6 +980,40 @@ export const handleBeginTask: ToolHandler = async (args, context): Promise<ToolR
 			staticAnalysis = await runStaticAnalysis(files, workspaceRoot);
 		}
 
+		// Get dependency context for planned files (P1 context enhancement)
+		// NOTE: Daemon doesn't provide this, so we run it locally
+		let dependencyContext: DependencyContext | undefined;
+		if (files && files.length > 0) {
+			try {
+				const depGraphService = getDependencyGraphService(workspaceRoot);
+				dependencyContext = await depGraphService.getContextForFiles(files);
+				if (
+					Object.keys(dependencyContext.planned).length === 0 &&
+					dependencyContext.circular.length === 0 &&
+					dependencyContext.suggestions.length === 0
+				) {
+					dependencyContext = undefined;
+				}
+			} catch {
+				// Dependency graph is optional - madge might not be available
+			}
+		}
+
+		// Get test coverage context for planned files (P1 context enhancement)
+		// NOTE: Daemon doesn't provide this, so we run it locally
+		let testCoverage: TestCoverageContext | undefined;
+		if (files && files.length > 0) {
+			try {
+				const coverageService = getTestCoverageService(workspaceRoot);
+				testCoverage = coverageService.getContextForFiles(files);
+				if (testCoverage.summary.filesWithTests === 0 && testCoverage.summary.averageCoverage === 0) {
+					testCoverage = undefined;
+				}
+			} catch {
+				// Coverage context is optional
+			}
+		}
+
 		// Generate proactive guidance from AdvisoryEngine
 		// NOTE: Daemon doesn't provide this, so we run it locally
 		const proactive_guidance = await generateProactiveGuidance(files || [], workspaceRoot);
@@ -993,6 +1033,8 @@ export const handleBeginTask: ToolHandler = async (args, context): Promise<ToolR
 			staticAnalysis,
 			lastKnownErrors,
 			gitContext,
+			dependencyContext,
+			testCoverage,
 			proactive_guidance,
 			contextWarnings: contextWarnings.length > 0 ? contextWarnings : undefined,
 		};
@@ -1085,6 +1127,13 @@ export const handleBeginTask: ToolHandler = async (args, context): Promise<ToolR
 		keywords,
 		maxLearnings: 10,
 	});
+
+	// Track learning access for hot tier auto-promotion
+	const learningIds = tieredLearnings.map((l) => l.id).filter((id): id is string => !!id);
+	if (learningIds.length > 0) {
+		tieredLearningService.trackAccess(learningIds);
+	}
+
 	const learnings = tieredLearnings.map((l) => ({
 		type: l.type,
 		trigger: Array.isArray(l.trigger) ? l.trigger.join(", ") : l.trigger,
@@ -1160,6 +1209,44 @@ export const handleBeginTask: ToolHandler = async (args, context): Promise<ToolR
 		// Git context is optional - continue without it
 	}
 
+	// 9b. Get dependency context for planned files (P1 context enhancement)
+	// Provides import/export relationships and circular dependency detection
+	let dependencyContext: DependencyContext | undefined;
+	if (files && files.length > 0) {
+		try {
+			const depGraphService = getDependencyGraphService(workspaceRoot);
+			dependencyContext = await depGraphService.getContextForFiles(files);
+
+			// Only include if there's meaningful content
+			if (
+				Object.keys(dependencyContext.planned).length === 0 &&
+				dependencyContext.circular.length === 0 &&
+				dependencyContext.suggestions.length === 0
+			) {
+				dependencyContext = undefined;
+			}
+		} catch {
+			// Dependency graph is optional - madge might not be available
+		}
+	}
+
+	// 9c. Get test coverage context for planned files (P1 context enhancement)
+	// Provides coverage info and test file mappings
+	let testCoverage: TestCoverageContext | undefined;
+	if (files && files.length > 0) {
+		try {
+			const coverageService = getTestCoverageService(workspaceRoot);
+			testCoverage = coverageService.getContextForFiles(files);
+
+			// Only include if there's meaningful content
+			if (testCoverage.summary.filesWithTests === 0 && testCoverage.summary.averageCoverage === 0) {
+				testCoverage = undefined;
+			}
+		} catch {
+			// Coverage context is optional
+		}
+	}
+
 	// 10. Drain pending observations from extension
 	const observations = drainPendingObservations(workspaceRoot).map((o) => ({
 		type: o.type,
@@ -1212,6 +1299,8 @@ export const handleBeginTask: ToolHandler = async (args, context): Promise<ToolR
 		staticAnalysis,
 		lastKnownErrors,
 		gitContext,
+		dependencyContext,
+		testCoverage,
 		proactive_guidance,
 		contextWarnings: contextWarnings.length > 0 ? contextWarnings : undefined,
 	};

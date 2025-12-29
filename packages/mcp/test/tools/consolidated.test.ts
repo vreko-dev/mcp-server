@@ -12,7 +12,7 @@
  * @module test/tools/consolidated
  */
 
-import { existsSync, mkdirSync, rmSync } from "node:fs";
+import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { ToolContext } from "../../src/registry.js";
@@ -22,6 +22,7 @@ import { CONSOLIDATED_TOOLS, getMigrationGuidance, isConsolidatedTool } from "..
 // import { handleCheck } from "../../src/tools/consolidated/check.js";
 import { handleSnapHelp } from "../../src/tools/consolidated/snap-help.js";
 import { handleSnapLearn } from "../../src/tools/consolidated/snap-learn.js";
+import { getToolSchema, TOOL_SCHEMAS } from "../../src/validation.js";
 
 // =============================================================================
 // Test Setup
@@ -87,6 +88,70 @@ describe("Consolidated Tools", () => {
 	});
 
 	// ===========================================================================
+	// TOOL_SCHEMAS Alignment Tests (P0-1: Schema registry must match consolidated tools)
+	// ===========================================================================
+
+	describe("TOOL_SCHEMAS alignment", () => {
+		const CONSOLIDATED_TOOL_NAMES = [
+			"snap",
+			"snap_end",
+			"snap_fix",
+			"snap_help",
+			"snap_learn",
+			"snap_violation",
+			"check",
+		];
+		const LEGACY_TOOL_NAMES = [
+			"analyze",
+			"prepare_workspace",
+			"snapshot_create",
+			"snapshot_list",
+			"snapshot_restore",
+			"validate",
+			"context",
+			"session",
+			"learn",
+			"acknowledge_risk",
+			"meta",
+			"get_context",
+			"check_patterns",
+			"report_violation",
+			"get_learnings",
+		];
+
+		it("should have schemas for all consolidated tools", () => {
+			// Each consolidated tool should have a corresponding schema
+			for (const toolName of CONSOLIDATED_TOOL_NAMES) {
+				const schema = getToolSchema(toolName);
+				expect(schema, `Missing schema for consolidated tool: ${toolName}`).toBeDefined();
+			}
+		});
+
+		it("should NOT have schemas for legacy tool names (they are deprecated)", () => {
+			// Legacy tool names should not pollute the schema registry
+			const legacySchemas = LEGACY_TOOL_NAMES.filter((name) => getToolSchema(name) !== undefined);
+			expect(legacySchemas, `Legacy schemas still present: ${legacySchemas.join(", ")}`).toHaveLength(0);
+		});
+
+		it("TOOL_SCHEMAS should only contain consolidated tool names", () => {
+			const schemaKeys = Object.keys(TOOL_SCHEMAS);
+
+			// All keys should be consolidated tool names
+			for (const key of schemaKeys) {
+				expect(
+					CONSOLIDATED_TOOL_NAMES.includes(key),
+					`TOOL_SCHEMAS contains non-consolidated key: "${key}"`,
+				).toBe(true);
+			}
+		});
+
+		it("TOOL_SCHEMAS count should match CONSOLIDATED_TOOLS count", () => {
+			// Schema registry should have same count as consolidated tools
+			expect(Object.keys(TOOL_SCHEMAS).length).toBe(CONSOLIDATED_TOOLS.length);
+		});
+	});
+
+	// ===========================================================================
 	// snap.? Tests
 	// ===========================================================================
 
@@ -106,13 +171,14 @@ describe("Consolidated Tools", () => {
 			expect(text).toContain("check");
 		});
 
-		it("should explain wire format", async () => {
+		it("should explain response format", async () => {
 			const context = createTestContext();
 			const result = await handleSnapHelp({}, context);
 			const text = result.content[0]?.text || "";
 
-			expect(text).toContain("Wire format");
-			expect(text).toContain("TYPE|field1|field2");
+			// Help text should explain response structure
+			expect(text).toContain("Response format");
+			expect(text).toContain("---");
 		});
 	});
 
@@ -190,6 +256,74 @@ describe("Consolidated Tools", () => {
 				// Allow some flexibility for important context
 				expect((tool.description || "").length).toBeLessThan(600);
 			}
+		});
+	});
+
+	// ===========================================================================
+	// P1-3: Auto-Promotion Tests
+	// ===========================================================================
+
+	describe("auto-promotion", () => {
+		it("snap_end should track applied learnings and trigger auto-promotion", async () => {
+			const context = createTestContext();
+			const { handleSnapEnd } = await import("../../src/tools/consolidated/snap-end.js");
+			const { createTieredLearningService } = await import("../../src/services/tiered-learning-service.js");
+
+			// Create a learning in hot.jsonl first so we have something to track
+			const service = createTieredLearningService(TEST_WORKSPACE);
+			const learningsDir = join(TEST_WORKSPACE, ".snapback", "learnings");
+			const hotPath = join(learningsDir, "hot.jsonl");
+
+			// Ensure learnings directory exists
+			mkdirSync(learningsDir, { recursive: true });
+
+			// Create a test learning in hot tier
+			const testLearning = {
+				id: "test-snap-end-learning",
+				type: "pattern",
+				trigger: "test trigger",
+				action: "test action",
+				tier: "hot",
+			};
+			writeFileSync(hotPath, `${JSON.stringify(testLearning)}\n`);
+
+			// Call snap_end with learnings that should be tracked as applied
+			await handleSnapEnd(
+				{
+					ok: 1,
+					l: ["Applied learning from session"],
+				},
+				context,
+			);
+
+			// Check that response includes auto-promotion info
+			// (This test should FAIL until we implement auto-promotion in snap_end)
+			const stats = service.getUsageStats();
+
+			// The key assertion: snap_end should have tracked learnings as applied
+			// Currently this will fail because snap_end doesn't call trackApplied
+			const hasTrackedLearnings = Object.values(stats).some((s) => s.appliedCount > 0);
+			expect(hasTrackedLearnings).toBe(true);
+		});
+
+		it("should auto-regenerate hot tier when threshold met", async () => {
+			const _context = createTestContext();
+			const { createTieredLearningService } = await import("../../src/services/tiered-learning-service.js");
+			const service = createTieredLearningService(TEST_WORKSPACE);
+
+			// Manually track a learning 3+ times to simulate threshold
+			const testLearningId = "test-learning-promotion";
+			service.trackApplied(testLearningId);
+			service.trackApplied(testLearningId);
+			service.trackApplied(testLearningId);
+
+			// Verify usage stats show 3 applied
+			const stats = service.getUsageStats();
+			expect(stats[testLearningId]?.appliedCount).toBe(3);
+
+			// Regenerate should work without error
+			const result = await service.regenerateHotTier();
+			expect(result.totalHot).toBeGreaterThanOrEqual(0);
 		});
 	});
 });

@@ -13,6 +13,11 @@ packages:
 catalogs:
   default:
     '@ai-sdk/react': 2.0.44
+    '@babel/parser': 7.28.5
+    '@babel/traverse': 7.28.5
+    '@babel/types': 7.28.5
+    '@types/babel__traverse': 7.20.5
+    '@types/ws': 8.18.1
     '@anthropic-ai/sdk': 0.71.2
     '@arcjet/next': 1.0.0-beta.15
     '@asteasolutions/zod-to-openapi': 7.3.4
@@ -282,5 +287,6 @@ catalogs:
     vitest: 3.2.4
     web-vitals: 5.1.0
     webpack: 5.96.1
+    ws: 8.18.3
     yargs: 17.7.2
     zod: 3.25.76

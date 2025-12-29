@@ -190,7 +190,9 @@ export function clearIdeContext(): void {
  * Get human-readable IDE name for display
  */
 export function getIdeName(ide: string | null): string {
-	if (!ide) return "your IDE";
+	if (!ide) {
+		return "your IDE";
+	}
 
 	const ideNames: Record<string, string> = {
 		vscode: "VS Code",

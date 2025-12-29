@@ -24,7 +24,7 @@
 		"@snapback/platform": "workspace:*",
 		"@snapback/intelligence": "workspace:*",
 		"@snapback/sdk": "workspace:*",
-		"@types/ws": "^8.18.1",
+		"@types/ws": "catalog:",
 		"better-auth": "catalog:",
 		"hono": "catalog:",
 		"jose": "catalog:",
@@ -35,7 +35,7 @@
 		"redis": "catalog:",
 		"resend": "catalog:",
 		"semver": "catalog:",
-		"ws": "^8.18.3",
+		"ws": "catalog:",
 		"zod": "catalog:"
 	},
 	"optionalDependencies": {

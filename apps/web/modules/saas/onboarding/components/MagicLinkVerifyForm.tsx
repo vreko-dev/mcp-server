@@ -1,6 +1,7 @@
 "use client";
 
 import { authConfig } from "@saas/auth/config";
+import { authClient } from "@snapback/auth/client";
 import { Alert, AlertDescription, AlertTitle } from "@ui/components/alert";
 import { Button } from "@ui/components/button";
 import { Progress } from "@ui/components/progress";
@@ -8,6 +9,7 @@ import { AlertTriangleIcon, CheckCircle2Icon, Loader2Icon, MailIcon, RefreshCwIc
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { registerIdeContext, useIdeContext } from "../hooks/useIdeContext";
+import { signalAuthSuccess } from "../lib/authSync";
 import { IdeStatusIndicator } from "./BackToIdeButton";
 
 /**
@@ -44,6 +46,7 @@ export function MagicLinkVerifyForm({ redirectPath }: MagicLinkVerifyFormProps) 
 	const [state, setState] = useState<VerificationState>("loading");
 	const [progress, setProgress] = useState(0);
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
+	// userEmail is used for resend functionality when we have context
 	const [userEmail, setUserEmail] = useState<string | null>(null);
 
 	// Get URL parameters
@@ -51,6 +54,8 @@ export function MagicLinkVerifyForm({ redirectPath }: MagicLinkVerifyFormProps) 
 	const extensionId = searchParams.get("extension_id");
 	const ideContextParam = searchParams.get("ide_context");
 	const customRedirect = searchParams.get("redirectTo") || redirectPath;
+	// Email may be passed in URL for resend functionality
+	const emailParam = searchParams.get("email");
 
 	/**
 	 * Determine the appropriate redirect path based on context
@@ -72,7 +77,8 @@ export function MagicLinkVerifyForm({ redirectPath }: MagicLinkVerifyFormProps) 
 	}, [extensionId, ideContext.isDetected, customRedirect]);
 
 	/**
-	 * Verify the magic link token
+	 * Verify the magic link token using Better Auth client
+	 * Per Context7 docs: authClient.magicLink.verify({ token, callbackURL })
 	 */
 	const verifyToken = useCallback(async () => {
 		if (!token) {
@@ -85,50 +91,44 @@ export function MagicLinkVerifyForm({ redirectPath }: MagicLinkVerifyFormProps) 
 			setState("loading");
 			setProgress(20);
 
-			// Call the Better Auth verification endpoint
-			const response = await fetch("/api/auth/sign-in/magic-link/verify", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
+			// Use Better Auth client for verification (GET /api/auth/magic-link/verify)
+			const { data, error } = await authClient.magicLink.verify({
+				query: {
+					token,
+					// Don't pass callbackURL - we handle redirect ourselves for IDE context
 				},
-				credentials: "include",
-				body: JSON.stringify({ token }),
 			});
 
 			setProgress(60);
 
-			if (!response.ok) {
-				const data = await response.json().catch(() => ({}));
+			if (error) {
+				// Handle Better Auth error codes
+				const errorCode = error.code || (error as any).message || "";
 
-				// Handle specific error cases per implementation.md
-				if (response.status === 410 || data.code === "EXPIRED") {
+				if (errorCode.includes("EXPIRED") || errorCode.includes("TOKEN_EXPIRED")) {
 					setState("expired");
 					setErrorMessage("This link has expired. Links are valid for 24 hours.");
-					setUserEmail(data.email || null);
 					return;
 				}
 
-				if (response.status === 400 || data.code === "INVALID") {
+				if (errorCode.includes("INVALID") || errorCode.includes("INVALID_TOKEN")) {
 					setState("invalid");
 					setErrorMessage("This link is invalid or malformed.");
 					return;
 				}
 
-				if (data.code === "ALREADY_USED") {
+				if (errorCode.includes("ALREADY_USED") || errorCode.includes("USED")) {
 					setState("already_used");
 					setErrorMessage("This link has already been used. Each link can only be used once.");
-					setUserEmail(data.email || null);
 					return;
 				}
 
 				setState("error");
-				setErrorMessage(data.message || "Verification failed. Please try again.");
+				setErrorMessage(error.message || "Verification failed. Please try again.");
 				return;
 			}
 
 			setProgress(80);
-
-			const data = await response.json();
 
 			// Store IDE context if provided in URL (for extension sync)
 			if (ideContextParam) {
@@ -140,17 +140,12 @@ export function MagicLinkVerifyForm({ redirectPath }: MagicLinkVerifyFormProps) 
 				}
 			}
 
-			// Set localStorage flag for extension to detect auth success
-			if (typeof window !== "undefined") {
-				localStorage.setItem(
-					"snapback_auth_success",
-					JSON.stringify({
-						timestamp: Date.now(),
-						userId: data.user?.id,
-						extensionId,
-					}),
-				);
-			}
+			// Signal auth success for extension sync using proper utility
+			signalAuthSuccess({
+				timestamp: Date.now(),
+				userId: data?.user?.id || "",
+				extensionId: extensionId || undefined,
+			});
 
 			setProgress(100);
 			setState("success");
@@ -166,12 +161,19 @@ export function MagicLinkVerifyForm({ redirectPath }: MagicLinkVerifyFormProps) 
 		}
 	}, [token, extensionId, ideContextParam, router, getRedirectPath]);
 
+	// Initialize email from URL param if available (for resend functionality)
+	useEffect(() => {
+		if (emailParam) {
+			setUserEmail(emailParam);
+		}
+	}, [emailParam]);
+
 	// Start verification on mount
 	useEffect(() => {
 		verifyToken();
 	}, [verifyToken]);
 
-	// Resend magic link handler
+	// Resend magic link handler using Better Auth client
 	const handleResend = async () => {
 		if (!userEmail) {
 			router.push("/auth/login");
@@ -179,16 +181,15 @@ export function MagicLinkVerifyForm({ redirectPath }: MagicLinkVerifyFormProps) 
 		}
 
 		try {
-			const response = await fetch("/api/auth/sign-in/magic-link", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({
-					email: userEmail,
-					callbackURL: customRedirect || authConfig.redirectAfterSignIn,
-				}),
+			// Use Better Auth client for resending magic link
+			const { error } = await authClient.signIn.magicLink({
+				email: userEmail,
+				callbackURL: customRedirect || authConfig.redirectAfterSignIn,
+				// For new users, redirect to onboarding
+				newUserCallbackURL: "/onboarding",
 			});
 
-			if (response.ok) {
+			if (!error) {
 				// Redirect to check email page
 				router.push(`/auth/login?email=${encodeURIComponent(userEmail)}&magicLinkSent=true`);
 			} else {
@@ -236,7 +237,7 @@ export function MagicLinkVerifyForm({ redirectPath }: MagicLinkVerifyFormProps) 
 	if (state === "expired") {
 		return (
 			<div className="flex flex-col items-center py-8">
-				<Alert variant="warning" className="mb-6">
+				<Alert variant="default" className="mb-6 border-yellow-500">
 					<AlertTriangleIcon className="h-5 w-5" />
 					<AlertTitle>That link has expired</AlertTitle>
 					<AlertDescription>Links only last 24 hours for security.</AlertDescription>
@@ -348,6 +349,7 @@ export function MagicLinkSentConfirmation({
 					Didn't receive it?{" "}
 					{onResend ? (
 						<button
+							type="button"
 							onClick={onResend}
 							disabled={isResending}
 							className="text-primary underline hover:no-underline disabled:opacity-50"

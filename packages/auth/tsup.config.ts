@@ -1,8 +1,9 @@
-import { browserLibraryPreset } from "../../tooling/tsup-config";
+import { clientLibraryPreset } from "../../tooling/tsup-config";
 
-// Browser library with multiple entry points
+// Client library with multiple entry points
+// Uses clientLibraryPreset to preserve "use client" directive in client.ts
 // DTS disabled due to complex Session export issues
-export default browserLibraryPreset({
+export default clientLibraryPreset({
 	entry: [
 		"src/index.ts",
 		"src/client.ts",

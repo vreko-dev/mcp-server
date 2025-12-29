@@ -2,7 +2,15 @@ name: Turborepo CI
 
 on:
   push:
-    branches: [main, develop, feat/**]
+    branches:
+      - main
+      - develop
+      - 'feat/**'
+      - 'fix/**'
+      - 'refactor/**'
+      - 'chore/**'
+      - 'engine-**'
+      - 'release/**'
   pull_request:
     branches: [main, develop]
   workflow_dispatch:
@@ -300,7 +308,25 @@ jobs:
             ${{ runner.os }}-turbo-
 
       - name: Build packages
-        run: pnpm turbo run build --filter='@snapback/*'
+        run: pnpm turbo run build --filter='@snapback/*' 2>&1 | tee build.log
+
+      - name: Check for Module Level Directive warnings
+        run: |
+          echo "🔍 Checking for RSC directive warnings..."
+          if grep -q "Module level directives" build.log; then
+            echo "⚠️ Found 'Module level directives' warnings in build output:"
+            grep -A 2 "Module level directives" build.log || true
+            echo ""
+            echo "Note: These warnings indicate 'use client'/'use server' directives may be stripped."
+            echo "Ensure affected packages use clientLibraryPreset in tsup.config.ts"
+          else
+            echo "✅ No module level directive warnings found"
+          fi
+
+      - name: Verify cache efficiency
+        run: |
+          echo "📊 Turbo Cache Summary:"
+          grep -E "cache (hit|miss)" build.log | sort | uniq -c || echo "No cache info found"
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4

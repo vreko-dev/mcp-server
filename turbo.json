@@ -283,6 +283,11 @@
 			"outputs": ["../dist/webview/**"],
 			"dependsOn": ["^build"],
 			"cache": true
+		},
+		"@snapback/contracts#type-check": {
+			"dependsOn": ["^type-check"],
+			"inputs": ["src/**/*.ts", "test/**/*.ts", "tsconfig.json", "tsconfig.*.json", "package.json"],
+			"cache": true
 		}
 	},
 	"remoteCache": {

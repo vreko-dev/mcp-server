@@ -38,6 +38,41 @@ export const browserLibraryPreset = (options: Partial<Options> = {}): ReturnType
 	});
 
 /**
+ * Client-only library preset
+ * Used for packages that MUST run on client (React hooks, browser APIs)
+ * - Adds "use client" banner to preserve RSC directive
+ * - Prevents accidental server-side usage
+ */
+export const clientLibraryPreset = (options: Partial<Options> = {}): ReturnType<typeof defineConfig> =>
+	defineConfig({
+		entry: ["src/index.ts"],
+		format: ["esm"],
+		dts: {
+			resolve: true,
+			compilerOptions: {
+				composite: false,
+				incremental: false,
+			},
+		},
+		clean: true,
+		sourcemap: true,
+		outDir: "dist",
+		splitting: true,
+		treeshake: true,
+		target: "es2022",
+		skipNodeModulesBundle: true,
+		external: ["@snapback/infrastructure", "next", "next/*", "react", "react-dom"],
+		// Preserve RSC directive - esbuild strips "use client" by default
+		// See: https://github.com/egoist/tsup/issues/835
+		esbuildOptions(opts) {
+			opts.banner = {
+				js: '"use client";',
+			};
+		},
+		...options,
+	});
+
+/**
  * Server library preset
  * Used for backend packages (Node.js only)
  * - ESM format

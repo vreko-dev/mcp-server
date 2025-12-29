@@ -14,4 +14,10 @@ export default defineConfig({
 	treeshake: true,
 	splitting: false,
 	skipNodeModulesBundle: true,
+	// Preserve RSC directive - motion utils require "use client"
+	esbuildOptions(opts) {
+		opts.banner = {
+			js: '"use client";',
+		};
+	},
 });

@@ -4,7 +4,7 @@
  */
 
 import { logger } from "@snapback/infrastructure";
-import { WorkspaceVitals } from "@snapback/intelligence/vitals";
+import { OXYGEN_THRESHOLDS, URGENCY_THRESHOLDS, WorkspaceVitals } from "@snapback/intelligence/vitals";
 import { z } from "zod";
 import { protectedProcedure } from "@/orpc/procedures";
 
@@ -65,13 +65,15 @@ const handler = async ({
 			urgency += Math.min(s.pressure.value / 2.5, 40);
 			if (s.temperature.level === "burning") urgency += 20;
 			else if (s.temperature.level === "hot") urgency += 10;
-			if (s.oxygen.value < 50) urgency += Math.min((50 - s.oxygen.value) / 2, 25);
+			if (s.oxygen.value < OXYGEN_THRESHOLDS.low)
+				urgency += Math.min((OXYGEN_THRESHOLDS.low - s.oxygen.value) / 2, 25);
 			urgency += Math.min(s.pressure.criticalFilesTouched.length * 3, 15);
 			return Math.min(urgency, 100);
 		};
 
 		const urgency = calculateUrgency(snapshot);
-		const recommendation: "now" | "soon" | "monitor" = urgency >= 75 ? "now" : urgency >= 50 ? "soon" : "monitor";
+		const recommendation: "now" | "soon" | "monitor" =
+			urgency >= URGENCY_THRESHOLDS.critical ? "now" : urgency >= URGENCY_THRESHOLDS.medium ? "soon" : "monitor";
 
 		const reasonMap = {
 			now: `Create snapshot immediately - ${snapshot.trajectory === "critical" ? "critical state" : "high risk detected"}`,

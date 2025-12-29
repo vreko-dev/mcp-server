@@ -15,14 +15,14 @@ import {
 
 // Types (defined locally to avoid circular deps with contracts)
 export type SessionId = `sess-${string}`;
-export type SnapshotId = `snapshot-${string}`;
+export type SnapshotId = `snap-${string}`;
 
 /**
  * ID prefixes for different entity types
  */
 export const ID_PREFIX = {
 	SESSION: "sess",
-	SNAPSHOT: "snapshot", // Aligned with contracts
+	SNAPSHOT: "snap", // Short form, aligned with contracts
 	AUDIT: "audit",
 	CHECKPOINT: "cp",
 } as const;
@@ -106,11 +106,27 @@ export function randomId(length = 6): string {
 /**
  * Parse timestamp from a generated ID
  *
+ * Handles all ID formats:
+ * - sess-<timestamp>-<random>
+ * - audit-<timestamp>-<random>
+ * - cp-<timestamp>-<random>
+ * - snap-<timestamp>-<random>
+ * - snap-<slug>-<timestamp>-<random>
+ * - snapshot-<timestamp>-<random> (legacy)
+ * - snapshot-<slug>-<timestamp>-<random> (legacy)
+ *
  * @param id - ID string to parse
  * @returns Timestamp in milliseconds, or null if invalid format
  */
 export function parseIdTimestamp(id: string): number | null {
-	const match = id.match(/^(?:sess|snap|audit|cp)-(\d+)-/);
+	// Validate known prefix (includes legacy "snapshot" for backward compatibility)
+	if (!id.match(/^(?:sess|snap|snapshot|audit|cp)-/)) {
+		return null;
+	}
+
+	// Match 13-digit timestamp before the final random suffix
+	// Works for both `prefix-<timestamp>-<random>` and `prefix-<slug>-<timestamp>-<random>`
+	const match = id.match(/-(\d{13})-[a-zA-Z0-9_-]+$/);
 	if (!match) {
 		return null;
 	}
@@ -125,21 +141,39 @@ export function parseIdTimestamp(id: string): number | null {
  * @returns ID prefix or null if invalid format
  */
 export function parseIdPrefix(id: string): IdPrefix | null {
-	const match = id.match(/^(sess|snap|audit|cp)-\d+-/);
+	// Handle legacy "snapshot" prefix as "snap"
+	if (id.startsWith("snapshot-")) {
+		return "snap" as IdPrefix;
+	}
+	const match = id.match(/^(sess|snap|audit|cp)-/);
 	return match ? (match[1] as IdPrefix) : null;
 }
 
 /**
  * Validate that an ID matches the expected format
  *
+ * Handles formats:
+ * - sess/audit/cp-<timestamp>-<6 random chars>
+ * - snap-<timestamp>-<9 random chars>
+ * - snap-<slug>-<timestamp>-<9 random chars>
+ * - snapshot-* (legacy format, also valid)
+ *
  * @param id - ID string to validate
  * @param expectedPrefix - Expected prefix (optional, validates any if not specified)
  * @returns True if valid, false otherwise
  */
 export function isValidId(id: string, expectedPrefix?: IdPrefix): boolean {
+	// Snapshot IDs can have optional slug and use 9-char suffix
+	// Also handle legacy "snapshot-" prefix
+	const isSnapshotId = id.startsWith("snap-") || id.startsWith("snapshot-");
+	if (expectedPrefix === "snap" || (!expectedPrefix && isSnapshotId)) {
+		return /^(?:snap|snapshot)-(?:[a-z0-9]+-)?(\d{13})-[a-zA-Z0-9_-]{9}$/.test(id);
+	}
+
+	// Non-snapshot IDs use 6-char suffix
 	if (expectedPrefix) {
-		const regex = new RegExp(`^${expectedPrefix}-\\d+-[a-z0-9]{6}$`);
+		const regex = new RegExp(`^${expectedPrefix}-\\d{13}-[a-z0-9]{6}$`);
 		return regex.test(id);
 	}
-	return /^(?:sess|snap|audit|cp)-\d+-[a-z0-9]{6}$/.test(id);
+	return /^(?:sess|audit|cp)-\d{13}-[a-z0-9]{6}$/.test(id);
 }

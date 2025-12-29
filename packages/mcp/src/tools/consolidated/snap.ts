@@ -22,6 +22,7 @@ import { compress, INTERNAL_SEPARATOR, messages } from "../../branding/index.js"
 import { handleBeginTask } from "../../facades/begin-task.js";
 import { handleQuickCheck } from "../../facades/quick-check.js";
 import type { SnapBackTool, ToolContext, ToolHandler, ToolResult } from "../../registry.js";
+import { getSessionFileTracker } from "../../services/session-file-tracker.js";
 
 // =============================================================================
 // Types
@@ -169,6 +170,12 @@ async function handleStart(params: SnapParams, context: ToolContext): Promise<To
 		compact: true, // Always compact for consolidated tool
 		goal: params.goal, // Pass through goal for tracking
 	};
+
+	// Initialize session file tracker for MCP-only mode
+	// This ensures what_changed works even without daemon/extension
+	const tracker = getSessionFileTracker(context.workspaceRoot);
+	const taskId = `task_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+	tracker.startTask(taskId, params.f || []);
 
 	const result = await handleBeginTask(beginArgs, context);
 
@@ -401,11 +408,10 @@ export const snapTool: SnapBackTool = {
 	name: "snap",
 	description: `🧢 SnapBack: ALWAYS start here. Universal entry point for all tasks.
 
-**REQUIRED** before any implementation work. Provides:
+**REQUIRED** before implementation. Provides:
 - 🎯 Context + learnings loaded automatically
 - 🛡️ Risk assessment and protection status
 - 📸 Snapshot creation for safe rollback
-- 📚 Past learnings matched to current task
 
 **Modes:**
 - m:"s" - Start task (FIRST call for any new work)
@@ -413,9 +419,6 @@ export const snapTool: SnapBackTool = {
 - m:"x" - Get context (quick status check)
 
 **Wire Format:** 🧢|TYPE|field1|field2|...
-- 🧢|S|task_id|snapshot_id|risk|protection|dirty|snapshot|learnings...
-- 🧢|C|OK|0E|0W|ts✓|lint✓|tests⏭️|issues...
-- 🧢|X|risk|protection|dirty|learnings...
 
 **Token savings:** ~100 tokens vs ~1300 tokens (92% reduction)`,
 	inputSchema: {

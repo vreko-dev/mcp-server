@@ -102,6 +102,7 @@ export * from "./tiers";
 export * from "./session";
 // Session subdirectory (file modification tracking)
 export * from "./session/index";
+export * from "./types/analysis";
 export * from "./types/branded";
 export * from "./types/config";
 export * from "./types/protection";

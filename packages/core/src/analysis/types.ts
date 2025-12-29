@@ -7,36 +7,31 @@
  * @module analysis/types
  */
 
-/**
- * Issue severity levels
- */
-export type Severity = "critical" | "high" | "medium" | "low" | "info";
+// Import for local use
+import type { AnalysisIssue, Severity } from "@snapback/contracts";
 
-/**
- * Issue detected during analysis
- */
-export interface AnalysisIssue {
-	/** Unique identifier for deduplication: analyzer/type/file/line */
-	id: string;
-	/** Severity level */
-	severity: Severity;
-	/** Issue type code (e.g., UNSAFE_EVAL, PATH_TRAVERSAL) */
-	type: string;
-	/** Human-readable message */
-	message: string;
-	/** File path where issue was found */
-	file?: string;
-	/** Line number (1-indexed) */
-	line?: number;
-	/** Column number (1-indexed) */
-	column?: number;
-	/** Suggested fix */
-	fix?: string;
-	/** Code snippet showing the issue */
-	snippet?: string;
-	/** Rule ID if from a lint tool */
-	rule?: string;
-}
+// Re-export common types and schemas from contracts
+export {
+	type AnalysisIssue,
+	AnalysisIssueSchema,
+	type BaseIssue,
+	BaseIssueSchema,
+	type CircuitBreakerState,
+	CircuitBreakerStateEnumSchema,
+	CircuitBreakerStateSchema,
+	type RiskSeverity,
+	RiskSeveritySchema,
+	type Severity,
+	SeveritySchema,
+	toSeverity,
+	toValidationSeverity,
+	type ValidationIssue,
+	ValidationIssueSchema,
+	type ValidationResult,
+	ValidationResultSchema,
+	type ValidationSeverity,
+	ValidationSeveritySchema,
+} from "@snapback/contracts";
 
 /**
  * Result from a single analyzer

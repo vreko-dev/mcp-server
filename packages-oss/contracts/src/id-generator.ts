@@ -27,8 +27,8 @@ function slugify(description: string, maxLength = 30): string {
 
 /**
  * Generate a snapshot ID in the standard format
- * Format with description: snapshot-<slug>-<timestamp>-<random>
- * Format without: snapshot-<timestamp>-<random>
+ * Format with description: snap-<slug>-<timestamp>-<random>
+ * Format without: snap-<timestamp>-<random>
  * @param description Optional human-readable description
  * @returns Snapshot ID string
  */
@@ -36,8 +36,8 @@ export function generateSnapshotId(description?: string): string {
 	if (description && description.length > 0) {
 		const slug = slugify(description);
 		if (slug.length > 0) {
-			return `snapshot-${slug}-${Date.now()}-${nanoid(9)}`;
+			return `snap-${slug}-${Date.now()}-${nanoid(9)}`;
 		}
 	}
-	return `snapshot-${Date.now()}-${nanoid(9)}`;
+	return `snap-${Date.now()}-${nanoid(9)}`;
 }

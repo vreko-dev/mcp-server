@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { RiskSeveritySchema } from "./types/analysis.js";
 
 export const DiffChangeSchema = z.object({
 	added: z.boolean().optional().default(false),
@@ -30,7 +31,7 @@ export type DiffChange = z.infer<typeof DiffChangeSchema>;
 export const RiskScoreSchema = z.object({
 	score: z.number().min(0).max(10),
 	factors: z.array(z.string()),
-	severity: z.enum(["low", "medium", "high", "critical"]),
+	severity: RiskSeveritySchema,
 });
 export type RiskScore = z.infer<typeof RiskScoreSchema>;
 
@@ -74,7 +75,7 @@ export const AnalyticsResponseSchema = z.object({
 		.object({
 			shouldCreateSnapshot: z.boolean(),
 			reason: z.string(),
-			urgency: z.enum(["low", "medium", "high", "critical"]),
+			urgency: RiskSeveritySchema,
 			suggestedTiming: z.string(),
 		})
 		.optional(),

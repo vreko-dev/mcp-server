@@ -1,6 +1,7 @@
 // Extend Zod with OpenAPI functionality
 import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
 import { z } from "zod";
+import { RiskSeveritySchema } from "../types/analysis.js";
 
 extendZodWithOpenApi(z);
 
@@ -115,7 +116,7 @@ export const IssueCreatedSchema = BaseEventSchema.extend({
 			.string()
 			.openapi({ description: "Type of file where the issue was detected", example: "typescript" }),
 		type: z.enum(["secret", "mock", "phantom"]).openapi({ description: "Type of issue detected" }),
-		severity: z.enum(["low", "medium", "high", "critical"]).openapi({ description: "Severity of the issue" }),
+		severity: RiskSeveritySchema.openapi({ description: "Severity of the issue" }),
 		recommendation: z.string().openapi({
 			description: "Recommendation for resolving the issue",
 			example: "Remove the secret from the file",

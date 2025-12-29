@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { RiskScoreSchema } from "../schemas.js";
+import { RiskSeveritySchema } from "./analysis.js";
 
 /**
  * Base Snapshot interface
@@ -243,7 +244,7 @@ export const AnalyticsResponseSchema = z.object({
 	snapshotRecommendations: z.object({
 		shouldCreateSnapshot: z.boolean(),
 		reason: z.string(),
-		urgency: z.enum(["low", "medium", "high", "critical"]),
+		urgency: RiskSeveritySchema,
 		suggestedTiming: z.string(),
 	}),
 	trends: z.object({

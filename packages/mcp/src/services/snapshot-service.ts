@@ -13,6 +13,7 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { createStorage, type SnapshotManifest } from "@snapback/engine";
+import { notifySnapshotCreatedViaDaemon } from "../daemon/client-facade.js";
 import { validateFilePaths } from "../validation.js";
 
 // =============================================================================
@@ -191,6 +192,17 @@ export class SnapshotService {
 				description: options.description,
 				trigger: options.trigger,
 			});
+
+			// CRITICAL: Notify daemon so Extension vitals can reset pressure
+			// Without this, MCP-created snapshots don't reset the vitals pressure gauge,
+			// causing the "snapshot recommended" popup to persist even after snapshots.
+			// The daemon forwards this as SNAPSHOT_CREATED event to the EventBus.
+			void notifySnapshotCreatedViaDaemon(
+				this.workspaceRoot,
+				snapshot.id,
+				files[0], // Primary file path for vitals
+				options.trigger,
+			);
 
 			return {
 				success: true,

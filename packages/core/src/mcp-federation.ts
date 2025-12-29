@@ -1,5 +1,6 @@
 import { AnalyzeRiskArgsSchema } from "@snapback/contracts";
 import { z } from "zod";
+import { SimpleCircuitBreaker } from "./circuit-breaker";
 import { getLibraryDocsCached } from "./utils/cache";
 import { logger } from "./utils/logger";
 
@@ -43,32 +44,6 @@ interface ServiceCapability {
 type ServiceType = "docs" | "search" | "git" | "fs" | "registry" | "ci" | "sec" | "issue";
 
 type Capabilities = Partial<Record<ServiceType, ServiceCapability>>;
-
-// Simple circuit breaker implementation
-class SimpleCircuitBreaker {
-	failureCount = 0;
-	threshold = 3;
-
-	async execute<T>(fn: () => Promise<T>): Promise<T> {
-		// Check circuit breaker state first
-		if (this.failureCount >= this.threshold) {
-			throw new Error("Circuit breaker open");
-		}
-
-		try {
-			const result = await fn();
-			this.failureCount = 0; // Reset on success
-			return result;
-		} catch (error) {
-			this.failureCount++;
-			// Check if we should open the circuit breaker now
-			if (this.failureCount >= this.threshold) {
-				throw new Error("Circuit breaker open");
-			}
-			throw error;
-		}
-	}
-}
 
 // Store circuit breakers by service type
 const circuitBreakers = new Map<ServiceType, SimpleCircuitBreaker>();

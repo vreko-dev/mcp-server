@@ -9,6 +9,7 @@
 
 import { orchestrator } from "../runtime/orchestrator.js";
 import type { FileChange, SessionHealth } from "../types.js";
+import { getExitCode, isHighRisk, scoreToRiskLevel, type RiskLevel } from "./shared.js";
 
 // ── CLI Input Types ───────────────────────────────────────────────────────
 
@@ -32,29 +33,8 @@ export interface CLIOutput {
 	exitCode: number;
 	output: string;
 	riskScore: number;
-	riskLevel: string;
+	riskLevel: RiskLevel;
 	error?: string;
-}
-
-// ── Risk Level Thresholds ─────────────────────────────────────────────────
-
-const RISK_THRESHOLDS = { safe: 1, low: 3, medium: 5, high: 7 } as const;
-const HIGH_RISK_EXIT_THRESHOLD = 5;
-
-function scoreToRiskLevel(score: number): string {
-	if (score <= RISK_THRESHOLDS.safe) {
-		return "safe";
-	}
-	if (score <= RISK_THRESHOLDS.low) {
-		return "low";
-	}
-	if (score <= RISK_THRESHOLDS.medium) {
-		return "medium";
-	}
-	if (score <= RISK_THRESHOLDS.high) {
-		return "high";
-	}
-	return "critical";
 }
 
 // ── CLI Engine Adapter ────────────────────────────────────────────────────
@@ -90,7 +70,7 @@ export class CLIEngineAdapter {
 			const threatScore = result.signals.find((s) => s.signal === "threats")?.value || 0;
 			const effectiveScore = Math.max(result.riskScore, threatScore);
 			const riskLevel = scoreToRiskLevel(effectiveScore);
-			const exitCode = effectiveScore > HIGH_RISK_EXIT_THRESHOLD ? 1 : 0;
+			const exitCode = getExitCode(effectiveScore);
 
 			return {
 				exitCode,
@@ -130,7 +110,7 @@ export class CLIEngineAdapter {
 		result: { signals: Array<{ signal: string; value: number }>; health: SessionHealth },
 		input: CLIInput,
 	): string {
-		if (input.quiet && score <= HIGH_RISK_EXIT_THRESHOLD) {
+		if (input.quiet && !isHighRisk(score)) {
 			return "";
 		}
 

@@ -8,7 +8,7 @@
  */
 
 import { createStorage } from "@snapback/engine";
-import { WorkspaceVitals } from "@snapback/intelligence/vitals";
+import { PRESSURE_THRESHOLDS, WorkspaceVitals } from "@snapback/intelligence/vitals";
 import type { ToolContext, ToolResult } from "../registry.js";
 import { getIntelligence } from "./intelligence.js";
 
@@ -63,7 +63,7 @@ export async function getSessionHealth(context: ToolContext): Promise<SessionHea
 	// Build warnings list
 	const activeWarnings: string[] = [];
 
-	if (currentVitals.pressure.value > 70) {
+	if (currentVitals.pressure.value >= PRESSURE_THRESHOLDS.high) {
 		activeWarnings.push("High pressure - consider creating a snapshot");
 	}
 	if (currentVitals.temperature.level === "hot") {

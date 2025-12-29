@@ -506,3 +506,46 @@ export async function recordFileModificationViaDaemon(
 		return false;
 	}
 }
+
+/**
+ * Notify daemon that a snapshot was created (for vitals pressure reset)
+ *
+ * This is critical for MCP→Extension coordination:
+ * When MCP tools create snapshots, the Extension's vitals system needs to know
+ * so it can reset pressure and update the UI. Without this notification,
+ * pressure keeps building even after MCP snapshots are created.
+ *
+ * The daemon forwards this to the EventBus as SNAPSHOT_CREATED event,
+ * which AutoDecisionIntegration listens to for calling vitals.onSnapshot().
+ */
+export async function notifySnapshotCreatedViaDaemon(
+	workspaceRoot: string,
+	snapshotId: string,
+	filePath?: string,
+	trigger?: "manual" | "auto" | "ai-detection",
+): Promise<boolean> {
+	const conn = await getDaemonConnection(workspaceRoot);
+	if (!conn) {
+		// Daemon not available - this is OK, snapshot was still created
+		// Just means vitals won't be notified (Extension-only flow still works)
+		return false;
+	}
+
+	try {
+		await conn.request("snapshot.created", {
+			workspace: workspaceRoot,
+			id: snapshotId,
+			filePath: filePath || "unknown",
+			trigger: trigger || "ai-detection",
+			source: "mcp", // Identify source for debugging
+		});
+		return true;
+	} catch (err) {
+		// Log but don't throw - daemon unavailability is recoverable
+		// The snapshot was still created, just vitals won't be notified
+		console.warn(
+			`[MCP] Failed to notify daemon of snapshot creation: ${err instanceof Error ? err.message : String(err)}`,
+		);
+		return false;
+	}
+}

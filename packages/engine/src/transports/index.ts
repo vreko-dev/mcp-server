@@ -7,6 +7,16 @@
  * - CLI: Command-line interface for local development
  */
 
+// Shared utilities (risk thresholds, score classification)
+export {
+	getExitCode,
+	HIGH_RISK_EXIT_THRESHOLD,
+	isHighRisk,
+	RISK_THRESHOLDS,
+	type RiskLevel,
+	scoreToRiskLevel,
+} from "./shared.js";
+
 // MCP Transport
 export {
 	type MCPChange,
@@ -16,8 +26,18 @@ export {
 	type MCPRiskResult,
 } from "./mcp.js";
 
-// HTTP Transport (TODO: Week 5)
-// export { HTTPEngineAdapter } from './http.js';
+// HTTP Transport
+export {
+	HTTPEngineAdapter,
+	type HTTPFileInput,
+	type HTTPRiskFactor,
+	type HTTPRiskResponse,
+} from "./http.js";
 
-// CLI Transport (TODO: Week 5)
-// export { CLIEngineAdapter } from './cli.js';
+// CLI Transport
+export {
+	CLIEngineAdapter,
+	type CLIFileInput,
+	type CLIInput,
+	type CLIOutput,
+} from "./cli.js";

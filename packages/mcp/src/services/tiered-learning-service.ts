@@ -352,7 +352,6 @@ export class TieredLearningService {
 	private learningsDir: string;
 
 	constructor(workspaceRoot: string) {
-		this.workspaceRoot = workspaceRoot;
 		this.learningsDir = join(workspaceRoot, ".snapback", "learnings");
 	}
 

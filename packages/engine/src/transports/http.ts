@@ -9,6 +9,7 @@
 
 import { orchestrator } from "../runtime/orchestrator.js";
 import type { FileChange, SessionHealth } from "../types.js";
+import { scoreToRiskLevel, type RiskLevel } from "./shared.js";
 
 // ── HTTP Input Types (from apps/api) ──────────────────────────────────────
 
@@ -36,33 +37,13 @@ export interface HTTPRiskFactor {
 export interface HTTPRiskResponse {
 	analysisId: string;
 	riskScore: number;
-	riskLevel: "safe" | "low" | "medium" | "high" | "critical";
+	riskLevel: RiskLevel;
 	riskFactors: HTTPRiskFactor[];
 	summary: string;
 	recommendations: string[];
 	timestamp: string;
 	session: SessionHealth;
 	error?: string;
-}
-
-// ── Risk Level Thresholds ────────────────────────────────────────────────
-
-const RISK_THRESHOLDS = { safe: 1, low: 3, medium: 5, high: 7 } as const;
-
-function scoreToRiskLevel(score: number): HTTPRiskResponse["riskLevel"] {
-	if (score <= RISK_THRESHOLDS.safe) {
-		return "safe";
-	}
-	if (score <= RISK_THRESHOLDS.low) {
-		return "low";
-	}
-	if (score <= RISK_THRESHOLDS.medium) {
-		return "medium";
-	}
-	if (score <= RISK_THRESHOLDS.high) {
-		return "high";
-	}
-	return "critical";
 }
 
 // ── HTTP Engine Adapter ───────────────────────────────────────────────────

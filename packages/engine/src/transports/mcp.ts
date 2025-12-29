@@ -9,6 +9,7 @@
 
 import { orchestrator } from "../runtime/orchestrator.js";
 import type { FileChange, OrchestratorResult, SessionHealth } from "../types.js";
+import { scoreToRiskLevel, type RiskLevel } from "./shared.js";
 
 // ── MCP Input Types ─────────────────────────────────────────────────────────
 
@@ -23,7 +24,7 @@ export interface MCPChange {
 // ── MCP Output Types ────────────────────────────────────────────────────────
 
 export interface MCPRiskResult {
-	riskLevel: "safe" | "low" | "medium" | "high" | "critical";
+	riskLevel: RiskLevel;
 	score: number;
 	factors: string[];
 	analysisTimeMs: number;
@@ -45,27 +46,6 @@ export interface MCPDependencyResult {
 	changed: Array<{ name: string; from: string; to: string }>;
 	vulnerabilities: string[];
 	session: SessionHealth;
-}
-
-// ── Risk Level Thresholds ───────────────────────────────────────────────────
-
-/** Score thresholds for risk classification */
-const RISK_THRESHOLDS = { safe: 1, low: 3, medium: 5, high: 7 } as const;
-
-function scoreToRiskLevel(score: number): MCPRiskResult["riskLevel"] {
-	if (score <= RISK_THRESHOLDS.safe) {
-		return "safe";
-	}
-	if (score <= RISK_THRESHOLDS.low) {
-		return "low";
-	}
-	if (score <= RISK_THRESHOLDS.medium) {
-		return "medium";
-	}
-	if (score <= RISK_THRESHOLDS.high) {
-		return "high";
-	}
-	return "critical";
 }
 
 // ── MCP Engine Adapter ──────────────────────────────────────────────────────

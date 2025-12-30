@@ -13,6 +13,7 @@ import type { SnapBackAPIClient } from "./client/api-client.js";
 import { CommonErrors, createRequestContext, log, logError, logSuccess } from "./errors.js";
 import { getIntelligence } from "./facades/intelligence.js";
 import { getHandler, registerHandler, type ToolContext, type ToolResult } from "./registry.js";
+import { McpEventTracker } from "./telemetry/mcp-event-tracker.js";
 import {
 	CONSOLIDATED_HANDLERS,
 	CONSOLIDATED_TOOLS,
@@ -156,6 +157,9 @@ export function createMcpServer(options: McpServerOptions): Server {
 		userId: options.auth?.userId,
 	};
 
+	// Initialize MCP event tracker for telemetry (if telemetry sink provided)
+	const eventTracker = new McpEventTracker(options.telemetry ?? null);
+
 	// Register consolidated handlers (7 tools)
 	for (const [name, handler] of Object.entries(CONSOLIDATED_HANDLERS)) {
 		registerHandler(name, handler);
@@ -187,6 +191,7 @@ export function createMcpServer(options: McpServerOptions): Server {
 	// Handle CallTool - route to appropriate handler
 	server.setRequestHandler(CallToolRequestSchema, async (request) => {
 		const { name, arguments: args } = request.params;
+		const startTime = Date.now();
 
 		// P1-003: Create request context for structured logging
 		const reqCtx = createRequestContext(name, { userId: context.userId, tier: context.tier });
@@ -276,6 +281,15 @@ export function createMcpServer(options: McpServerOptions): Server {
 			const result = await handler(args || {}, context);
 			logSuccess(reqCtx, "Tool call completed", { isError: result.isError });
 
+			// Track mcp_tool_called event (fire-and-forget)
+			eventTracker.trackToolCalled({
+				tool_name: name,
+				client_type: "cli", // MCP server typically invoked via CLI/stdio
+				parameters: args || {},
+				execution_time_ms: Date.now() - startTime,
+				was_successful: !result.isError,
+			});
+
 			// Enhance successful responses with SessionHealth (skip for 'meta' tool)
 			const enhanced = name === "meta" ? result : enhanceWithSessionHealth(result, workspaceRoot);
 
@@ -286,6 +300,17 @@ export function createMcpServer(options: McpServerOptions): Server {
 		} catch (error) {
 			const message = error instanceof Error ? error.message : String(error);
 			logError(reqCtx, "E502_HANDLER_ERROR", message);
+
+			// Track failed tool call
+			eventTracker.trackToolCalled({
+				tool_name: name,
+				client_type: "cli",
+				parameters: args || {},
+				execution_time_ms: Date.now() - startTime,
+				was_successful: false,
+				error_code: error instanceof Error ? error.name : "UNKNOWN_ERROR",
+			});
+
 			return {
 				content: [
 					{

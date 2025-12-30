@@ -29,8 +29,8 @@ import { createTieredLearningService } from "../../services/tiered-learning-serv
  * Check tool parameters
  */
 export interface CheckParams {
-	/** Mode: q=quick, f=full, p=patterns, b=build, i=impact, c=circular, d=docs, l=learnings */
-	m?: "q" | "f" | "p" | "b" | "i" | "c" | "d" | "l";
+	/** Mode: q=quick, f=full, p=patterns, b=build, i=impact, c=circular, d=docs, l=learnings, a=architecture */
+	m?: "q" | "f" | "p" | "b" | "i" | "c" | "d" | "l" | "a";
 	/** File(s) to check */
 	f?: string | string[];
 	/** Code to validate (for patterns/validate mode) */
@@ -133,12 +133,18 @@ export const handleCheck: ToolHandler = async (args, context) => {
 			return formatCheckResult(result, "L");
 		}
 
+		case "a": {
+			// Architecture mode - validate import rules and layer dependencies
+			const result = await handleArchitectureCheck(context);
+			return formatCheckResult(result, "A");
+		}
+
 		default:
 			return {
 				content: [
 					{
 						type: "text",
-						text: `!|Invalid mode "${mode}". Use q=quick, f=full, p=patterns, b=build, i=impact, l=learnings`,
+						text: `!|Invalid mode "${mode}". Use q=quick, f=full, p=patterns, b=build, i=impact, c=circular, d=docs, l=learnings, a=architecture`,
 					},
 				],
 				isError: true,
@@ -612,6 +618,79 @@ async function handleLearningsMaintenance(context: { workspaceRoot: string }): P
 }
 
 /**
+ * Handle architecture validation mode
+ * Validates layer dependencies and import rules using SDK arch module
+ */
+async function handleArchitectureCheck(context: { workspaceRoot: string }): Promise<ToolResult> {
+	try {
+		// Dynamic import to avoid circular dependencies
+		const { runArchCheck, SNAPBACK_LAYER_RULES } = await import("@snapback/sdk");
+
+		const result = await runArchCheck({
+			workspaceRoot: context.workspaceRoot,
+			globalExclude: ["node_modules", "dist", ".next", "__tests__", "__mocks__"],
+		});
+
+		const errorViolations = result.violations.filter((v) => v.severity === "error");
+		const warningViolations = result.violations.filter((v) => v.severity === "warning");
+
+		const passed = errorViolations.length === 0;
+
+		// Format violations for wire format
+		const errors = errorViolations.slice(0, 5).map((v) => ({
+			file: v.sourceFile,
+			message: `[${v.ruleId}] ${v.importPath || v.ruleDescription}`.slice(0, 60),
+		}));
+
+		const warnings = warningViolations.slice(0, 3).map((v) => ({
+			file: v.sourceFile,
+			message: `[${v.ruleId}] ${v.importPath || v.ruleDescription}`.slice(0, 60),
+		}));
+
+		return {
+			content: [
+				{
+					type: "text",
+					text: JSON.stringify({
+						passed,
+						rulesChecked: result.rulesChecked,
+						rulesPassed: result.rulesPassed,
+						violations: result.violations.length,
+						errors: passed ? [] : errors,
+						warnings,
+						durationMs: result.durationMs,
+						message: passed
+							? `Architecture OK: ${result.rulesChecked} rules passed`
+							: `${errorViolations.length} violations in ${result.rulesChecked} rules`,
+						details: {
+							layerRules: SNAPBACK_LAYER_RULES.length,
+							errorCount: errorViolations.length,
+							warningCount: warningViolations.length,
+						},
+					}),
+				},
+			],
+			isError: !passed,
+		};
+	} catch (error) {
+		return {
+			content: [
+				{
+					type: "text",
+					text: JSON.stringify({
+						passed: false,
+						errors: [{ message: error instanceof Error ? error.message : String(error) }],
+						warnings: [],
+						message: "Architecture check failed",
+					}),
+				},
+			],
+			isError: true,
+		};
+	}
+}
+
+/**
  * Format check result as compact wire format with branding
  */
 function formatCheckResult(
@@ -655,7 +734,7 @@ function formatCheckResult(
 
 export const checkTool: SnapBackTool = {
 	name: "check",
-	description: `Validate code. m:q|f|p|b|i|c|d|l f:files code:str
+	description: `Validate code. m:q|f|p|b|i|c|d|l|a f:files code:str
 
 **Modes:**
 - q (default): Quick parallel check (TypeScript + lint)
@@ -666,6 +745,7 @@ export const checkTool: SnapBackTool = {
 - c: Circular dependency check (uses madge)
 - d: Doc freshness check (detects stale documentation)
 - l: Learning maintenance (regenerate hot tier, show usage stats)
+- a: Architecture check (validates layer dependencies and import rules)
 
 **Wire Format:** MODE|OK|0E|0W or MODE|ERR|3E|1W|issues...`,
 	inputSchema: {
@@ -673,8 +753,9 @@ export const checkTool: SnapBackTool = {
 		properties: {
 			m: {
 				type: "string",
-				enum: ["q", "f", "p", "b", "i", "c", "d", "l"],
-				description: "Mode: q=quick, f=full, p=patterns, b=build, i=impact, c=circular, d=docs, l=learnings",
+				enum: ["q", "f", "p", "b", "i", "c", "d", "l", "a"],
+				description:
+					"Mode: q=quick, f=full, p=patterns, b=build, i=impact, c=circular, d=docs, l=learnings, a=architecture",
 			},
 			f: {
 				oneOf: [{ type: "string" }, { type: "array", items: { type: "string" } }],

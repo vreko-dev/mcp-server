@@ -1,16 +1,5 @@
 // Auth exports
-export {
-	type AuthResult,
-	createDeviceAuthClient,
-	DeviceAuthClient,
-	type DeviceAuthCallbacks,
-	type DeviceAuthClientConfig,
-	type DeviceAuthError,
-	type DeviceAuthErrorResponse,
-	type DeviceCodeResponse,
-	type FlowState,
-	type TokenResponse,
-} from "./auth/DeviceAuthClient";
+
 // Analysis exports
 export {
 	createChangeSummary,
@@ -26,6 +15,20 @@ export {
 	type RiskFactor,
 	type RiskSeverity,
 } from "./analysis/RiskAnalyzer";
+// Architecture validation and invariants
+export * from "./arch/index";
+export {
+	type AuthResult,
+	createDeviceAuthClient,
+	type DeviceAuthCallbacks,
+	DeviceAuthClient,
+	type DeviceAuthClientConfig,
+	type DeviceAuthError,
+	type DeviceAuthErrorResponse,
+	type DeviceCodeResponse,
+	type FlowState,
+	type TokenResponse,
+} from "./auth/DeviceAuthClient";
 export * from "./cache/lru-cache";
 export { type Envelope, SnapbackAnalyticsClient, SnapbackClient } from "./client";
 export { ProtectionClient } from "./client/ProtectionClient";
@@ -187,6 +190,14 @@ export { ProtectionManager } from "./protection/ProtectionManager";
 export { Snapback } from "./Snapback";
 // Session Layer exports (new SessionManager)
 export * from "./session/index";
+// File conflict resolution (atomic writes, permission checks, rename detection)
+export {
+	type ConflictResult,
+	FileConflictResolver,
+	type FileConflictResolverOptions,
+	type IFileSearchProvider,
+	type RestoreMetadata,
+} from "./snapshot/FileConflictResolver";
 // Snapshot retry hook with auto-fix
 export {
 	applyAutomaticFix,
@@ -200,28 +211,6 @@ export {
 	type SnapshotParams,
 	type SnapshotRetryResult,
 } from "./snapshot/retry-hook";
-export { SnapshotManager } from "./snapshot/SnapshotManager";
-// Snapshot naming strategy (multi-tier intelligent naming)
-export {
-	type FileChange as SnapshotFileChange,
-	type SnapshotInfo,
-	SnapshotNamingStrategy,
-	type SnapshotNamingStrategyOptions,
-} from "./snapshot/SnapshotNamingStrategy";
-// File conflict resolution (atomic writes, permission checks, rename detection)
-export {
-	type ConflictResult,
-	FileConflictResolver,
-	type FileConflictResolverOptions,
-	type IFileSearchProvider,
-	type RestoreMetadata,
-} from "./snapshot/FileConflictResolver";
-// Snapshot icon classification (visual icons based on operation type)
-export {
-	type IconResult,
-	type SnapshotMetadata,
-	SnapshotIconStrategy,
-} from "./snapshot/SnapshotIconStrategy";
 // Snapshot deletion service (safe deletion with auto-cleanup)
 export {
 	type AutoCleanupConfig,
@@ -233,6 +222,20 @@ export {
 	SnapshotDeletionService,
 	type SnapshotDeletionServiceOptions,
 } from "./snapshot/SnapshotDeletionService";
+// Snapshot icon classification (visual icons based on operation type)
+export {
+	type IconResult,
+	SnapshotIconStrategy,
+	type SnapshotMetadata,
+} from "./snapshot/SnapshotIconStrategy";
+export { SnapshotManager } from "./snapshot/SnapshotManager";
+// Snapshot naming strategy (multi-tier intelligent naming)
+export {
+	type FileChange as SnapshotFileChange,
+	type SnapshotInfo,
+	SnapshotNamingStrategy,
+	type SnapshotNamingStrategyOptions,
+} from "./snapshot/SnapshotNamingStrategy";
 export { LocalStorage } from "./storage/LocalStorage";
 export { MemoryStorage } from "./storage/MemoryStorage";
 export type { StorageAdapter } from "./storage/StorageAdapter";

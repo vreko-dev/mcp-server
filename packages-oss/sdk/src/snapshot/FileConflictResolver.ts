@@ -32,8 +32,8 @@
  */
 
 import * as crypto from "node:crypto";
-import * as fs from "node:fs/promises";
 import * as fsSync from "node:fs";
+import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import type { ILogger } from "../core/session/interfaces";
 import { NoOpLogger } from "../core/session/interfaces";
@@ -88,7 +88,12 @@ export interface IFileSearchProvider {
 	 * @param maxResults - Maximum number of results to return
 	 * @returns Array of file paths matching the pattern
 	 */
-	findFiles(workspaceRoot: string, extension: string, excludePattern?: string, maxResults?: number): Promise<string[]>;
+	findFiles(
+		workspaceRoot: string,
+		extension: string,
+		excludePattern?: string,
+		maxResults?: number,
+	): Promise<string[]>;
 
 	/**
 	 * Read file content for hash comparison
@@ -345,10 +350,14 @@ export class FileConflictResolver {
 		const base2 = path.basename(name2, path.extname(name2)).toLowerCase();
 
 		// Same base name
-		if (base1 === base2) return true;
+		if (base1 === base2) {
+			return true;
+		}
 
 		// One contains the other
-		if (base1.includes(base2) || base2.includes(base1)) return true;
+		if (base1.includes(base2) || base2.includes(base1)) {
+			return true;
+		}
 
 		// Edit distance check (Levenshtein)
 		const distance = this.levenshteinDistance(base1, base2);
@@ -368,8 +377,12 @@ export class FileConflictResolver {
 		const n = str2.length;
 		const dp: number[][] = Array.from({ length: m + 1 }, () => Array(n + 1).fill(0));
 
-		for (let i = 0; i <= m; i++) dp[i][0] = i;
-		for (let j = 0; j <= n; j++) dp[0][j] = j;
+		for (let i = 0; i <= m; i++) {
+			dp[i][0] = i;
+		}
+		for (let j = 0; j <= n; j++) {
+			dp[0][j] = j;
+		}
 
 		for (let i = 1; i <= m; i++) {
 			for (let j = 1; j <= n; j++) {

@@ -12,7 +12,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { type IconResult, type SnapshotMetadata, SnapshotIconStrategy } from "../../src/snapshot/SnapshotIconStrategy";
+import { SnapshotIconStrategy, type SnapshotMetadata } from "../../src/snapshot/SnapshotIconStrategy";
 
 describe("SnapshotIconStrategy", () => {
 	const strategy = new SnapshotIconStrategy();

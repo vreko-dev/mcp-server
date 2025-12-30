@@ -16,14 +16,9 @@
 import { promises as fs } from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { ILogger } from "../../src/core/session/interfaces";
-import {
-	type FileChange,
-	type SnapshotInfo,
-	SnapshotNamingStrategy,
-	type SnapshotNamingStrategyOptions,
-} from "../../src/snapshot/SnapshotNamingStrategy";
+import { type FileChange, type SnapshotInfo, SnapshotNamingStrategy } from "../../src/snapshot/SnapshotNamingStrategy";
 
 // Test logger that captures log calls
 class TestLogger implements ILogger {
@@ -156,12 +151,42 @@ describe("SnapshotNamingStrategy - Multi-Tier Intelligent Naming", () => {
 				const info: SnapshotInfo = {
 					workspaceRoot: tempDir,
 					files: [
-						{ path: path.join(tempDir, "src/auth/login.ts"), status: "added", linesAdded: 50, linesDeleted: 0 },
-						{ path: path.join(tempDir, "src/auth/register.ts"), status: "added", linesAdded: 60, linesDeleted: 0 },
-						{ path: path.join(tempDir, "src/auth/password.ts"), status: "added", linesAdded: 40, linesDeleted: 0 },
-						{ path: path.join(tempDir, "src/auth/utils.ts"), status: "modified", linesAdded: 10, linesDeleted: 5 },
-						{ path: path.join(tempDir, "src/auth/types.ts"), status: "modified", linesAdded: 5, linesDeleted: 2 },
-						{ path: path.join(tempDir, "src/auth/legacy.ts"), status: "deleted", linesAdded: 0, linesDeleted: 100 },
+						{
+							path: path.join(tempDir, "src/auth/login.ts"),
+							status: "added",
+							linesAdded: 50,
+							linesDeleted: 0,
+						},
+						{
+							path: path.join(tempDir, "src/auth/register.ts"),
+							status: "added",
+							linesAdded: 60,
+							linesDeleted: 0,
+						},
+						{
+							path: path.join(tempDir, "src/auth/password.ts"),
+							status: "added",
+							linesAdded: 40,
+							linesDeleted: 0,
+						},
+						{
+							path: path.join(tempDir, "src/auth/utils.ts"),
+							status: "modified",
+							linesAdded: 10,
+							linesDeleted: 5,
+						},
+						{
+							path: path.join(tempDir, "src/auth/types.ts"),
+							status: "modified",
+							linesAdded: 5,
+							linesDeleted: 2,
+						},
+						{
+							path: path.join(tempDir, "src/auth/legacy.ts"),
+							status: "deleted",
+							linesAdded: 0,
+							linesDeleted: 100,
+						},
 					],
 				};
 
@@ -173,9 +198,24 @@ describe("SnapshotNamingStrategy - Multi-Tier Intelligent Naming", () => {
 				const info: SnapshotInfo = {
 					workspaceRoot: tempDir,
 					files: [
-						{ path: path.join(tempDir, "src/auth/login.ts"), status: "added", linesAdded: 50, linesDeleted: 0 },
-						{ path: path.join(tempDir, "src/users/profile.ts"), status: "added", linesAdded: 40, linesDeleted: 0 },
-						{ path: path.join(tempDir, "src/utils/helpers.ts"), status: "modified", linesAdded: 10, linesDeleted: 5 },
+						{
+							path: path.join(tempDir, "src/auth/login.ts"),
+							status: "added",
+							linesAdded: 50,
+							linesDeleted: 0,
+						},
+						{
+							path: path.join(tempDir, "src/users/profile.ts"),
+							status: "added",
+							linesAdded: 40,
+							linesDeleted: 0,
+						},
+						{
+							path: path.join(tempDir, "src/utils/helpers.ts"),
+							status: "modified",
+							linesAdded: 10,
+							linesDeleted: 5,
+						},
 					],
 				};
 
@@ -203,9 +243,24 @@ describe("SnapshotNamingStrategy - Multi-Tier Intelligent Naming", () => {
 				const info: SnapshotInfo = {
 					workspaceRoot: tempDir,
 					files: [
-						{ path: path.join(tempDir, "api/users.ts"), status: "modified", linesAdded: 10, linesDeleted: 5 },
-						{ path: path.join(tempDir, "api/auth.ts"), status: "modified", linesAdded: 15, linesDeleted: 8 },
-						{ path: path.join(tempDir, "api/posts.ts"), status: "modified", linesAdded: 20, linesDeleted: 10 },
+						{
+							path: path.join(tempDir, "api/users.ts"),
+							status: "modified",
+							linesAdded: 10,
+							linesDeleted: 5,
+						},
+						{
+							path: path.join(tempDir, "api/auth.ts"),
+							status: "modified",
+							linesAdded: 15,
+							linesDeleted: 8,
+						},
+						{
+							path: path.join(tempDir, "api/posts.ts"),
+							status: "modified",
+							linesAdded: 20,
+							linesDeleted: 10,
+						},
 					],
 				};
 
@@ -238,9 +293,24 @@ describe("SnapshotNamingStrategy - Multi-Tier Intelligent Naming", () => {
 				const info: SnapshotInfo = {
 					workspaceRoot: tempDir,
 					files: [
-						{ path: path.join(tempDir, "src/auth.test.ts"), status: "modified", linesAdded: 20, linesDeleted: 5 },
-						{ path: path.join(tempDir, "src/login.spec.ts"), status: "modified", linesAdded: 15, linesDeleted: 3 },
-						{ path: path.join(tempDir, "__tests__/user.test.ts"), status: "added", linesAdded: 50, linesDeleted: 0 },
+						{
+							path: path.join(tempDir, "src/auth.test.ts"),
+							status: "modified",
+							linesAdded: 20,
+							linesDeleted: 5,
+						},
+						{
+							path: path.join(tempDir, "src/login.spec.ts"),
+							status: "modified",
+							linesAdded: 15,
+							linesDeleted: 3,
+						},
+						{
+							path: path.join(tempDir, "__tests__/user.test.ts"),
+							status: "added",
+							linesAdded: 50,
+							linesDeleted: 0,
+						},
 					],
 				};
 
@@ -307,9 +377,19 @@ describe("SnapshotNamingStrategy - Multi-Tier Intelligent Naming", () => {
 				const info: SnapshotInfo = {
 					workspaceRoot: tempDir,
 					files: [
-						{ path: path.join(tempDir, "tsconfig.json"), status: "modified", linesAdded: 3, linesDeleted: 1 },
+						{
+							path: path.join(tempDir, "tsconfig.json"),
+							status: "modified",
+							linesAdded: 3,
+							linesDeleted: 1,
+						},
 						{ path: path.join(tempDir, ".eslintrc"), status: "modified", linesAdded: 5, linesDeleted: 2 },
-						{ path: path.join(tempDir, "vitest.config.ts"), status: "added", linesAdded: 20, linesDeleted: 0 },
+						{
+							path: path.join(tempDir, "vitest.config.ts"),
+							status: "added",
+							linesAdded: 20,
+							linesDeleted: 0,
+						},
 					],
 				};
 
@@ -560,7 +640,7 @@ const handleRegister = () => {};`,
 		});
 
 		it("should handle very long file names", async () => {
-			const longName = "a".repeat(100) + ".ts";
+			const longName = `${"a".repeat(100)}.ts`;
 			const info: SnapshotInfo = {
 				workspaceRoot: tempDir,
 				files: [

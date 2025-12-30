@@ -12,12 +12,11 @@
  * @module tests/snapshot/SnapshotDeletionService.test
  */
 
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { ILogger } from "../../src/core/session/interfaces";
 import {
 	type AutoCleanupConfig,
 	type DeletableSnapshot,
-	type DeletionOptions,
 	type IConfirmationService,
 	type ISnapshotManagerForDeletion,
 	SnapshotDeletionService,
@@ -402,11 +401,11 @@ describe("SnapshotDeletionService", () => {
 				minimumSnapshots: 5,
 			};
 
-			const result = await service.autoCleanup(config);
+			const _result = await service.autoCleanup(config);
 
 			// Protected snapshots should not be in unprotect calls if keepProtected is true
 			const deletedProtected = mockManager.deleteCalls.filter((id) => {
-				const num = parseInt(id.split("-")[1]);
+				const num = Number.parseInt(id.split("-")[1], 10);
 				return num % 5 === 0;
 			});
 			expect(deletedProtected.length).toBe(0);

@@ -15,10 +15,9 @@
 import * as fs from "node:fs/promises";
 import * as os from "node:os";
 import * as path from "node:path";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { ILogger } from "../../src/core/session/interfaces";
 import {
-	type ConflictResult,
 	FileConflictResolver,
 	type IFileSearchProvider,
 	type RestoreMetadata,
@@ -283,7 +282,7 @@ describe("FileConflictResolver", () => {
 		it("should find file by exact content hash match", async () => {
 			const originalPath = "/workspace/old-name.ts";
 			const newPath = path.join(tempDir, "new-name.ts");
-			const content = 'export const x = 1;';
+			const content = "export const x = 1;";
 			const hash = resolver.hashContent(content);
 
 			mockSearchProvider.addFile(newPath, content);

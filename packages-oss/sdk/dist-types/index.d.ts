@@ -50,4 +50,5 @@ export { generateAuditId, generateCheckpointId, generateId, generateSessionId, g
 export { areEqual, getDepth, isWithin, normalize } from "./utils/PathNormalizer";
 export { all, allOrErrors, andThen, err, fromPromise, fromPromiseWith, isErr, isOk, map, mapErr, match, ok, type Result, sequence, tap, tapErr, toPromise, tryAll, tryCatch, tryCatchAsync, unwrap, unwrapOr, unwrapOrElse, } from "./utils/result";
 export { calculateBackoff, type RetryOptions, RetryPresets, withRetry } from "./utils/retry";
+export * from "./arch/index";
 //# sourceMappingURL=index.d.ts.map

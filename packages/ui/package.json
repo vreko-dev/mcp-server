@@ -11,6 +11,10 @@
 			"types": "./dist/index.d.ts",
 			"import": "./dist/index.js"
 		},
+		"./components": {
+			"types": "./dist/components/index.d.ts",
+			"import": "./dist/components/index.js"
+		},
 		"./vitals": {
 			"types": "./dist/vitals/index.d.ts",
 			"import": "./dist/vitals/index.js"
@@ -28,7 +32,9 @@
 		"test:watch": "vitest"
 	},
 	"dependencies": {
+		"@radix-ui/react-slot": "^1.1.0",
 		"@snapback/contracts": "workspace:*",
+		"class-variance-authority": "catalog:",
 		"clsx": "catalog:",
 		"motion": "catalog:",
 		"react": "catalog:",

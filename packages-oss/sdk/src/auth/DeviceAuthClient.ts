@@ -143,7 +143,7 @@ export class DeviceAuthClient {
 	private config: DeviceAuthClientConfig;
 	private state: FlowState = "idle";
 	private abortController: AbortController | null = null;
-	private currentInterval: number = 5000; // Default 5 seconds
+	private currentInterval = 5000; // Default 5 seconds
 
 	constructor(config: DeviceAuthClientConfig) {
 		this.config = config;
@@ -394,8 +394,12 @@ export class DeviceAuthClient {
 			signals.push(this.config.signal);
 		}
 
-		if (signals.length === 0) return undefined;
-		if (signals.length === 1) return signals[0];
+		if (signals.length === 0) {
+			return undefined;
+		}
+		if (signals.length === 1) {
+			return signals[0];
+		}
 
 		// For multiple signals, create a combined controller
 		const combined = new AbortController();

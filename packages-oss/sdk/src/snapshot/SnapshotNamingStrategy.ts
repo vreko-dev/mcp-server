@@ -313,9 +313,15 @@ export class SnapshotNamingStrategy {
 		const deleted = files.filter((f) => f.status === "deleted").length;
 
 		const parts: string[] = [];
-		if (added > 0) parts.push(`${added}A`);
-		if (modified > 0) parts.push(`${modified}M`);
-		if (deleted > 0) parts.push(`${deleted}D`);
+		if (added > 0) {
+			parts.push(`${added}A`);
+		}
+		if (modified > 0) {
+			parts.push(`${modified}M`);
+		}
+		if (deleted > 0) {
+			parts.push(`${deleted}D`);
+		}
 
 		const statusSummary = parts.join(" ");
 		const commonDir = this.findCommonDirectory(files);
@@ -328,8 +334,12 @@ export class SnapshotNamingStrategy {
 	 * Find common directory path for multiple files
 	 */
 	private findCommonDirectory(files: FileChange[]): string {
-		if (files.length === 0) return "";
-		if (files.length === 1) return path.dirname(files[0].path);
+		if (files.length === 0) {
+			return "";
+		}
+		if (files.length === 1) {
+			return path.dirname(files[0].path);
+		}
 
 		const dirPaths = files.map((f) => path.dirname(f.path));
 		const segmentArrays = dirPaths.map((dir) => dir.split(path.sep));
@@ -357,8 +367,12 @@ export class SnapshotNamingStrategy {
 
 		if (relative) {
 			relative = relative.split(path.sep).join("/");
-			if (relative.startsWith("./")) relative = relative.substring(2);
-			if (relative && relative !== "." && !relative.startsWith("..")) return relative;
+			if (relative.startsWith("./")) {
+				relative = relative.substring(2);
+			}
+			if (relative && relative !== "." && !relative.startsWith("..")) {
+				return relative;
+			}
 		}
 
 		return ".";
@@ -368,7 +382,9 @@ export class SnapshotNamingStrategy {
 	 * Extract meaningful module name from directory path
 	 */
 	private extractModuleName(dirPath: string, files: FileChange[]): string {
-		if (!dirPath) return "module";
+		if (!dirPath) {
+			return "module";
+		}
 
 		const basename = path.basename(dirPath);
 
@@ -414,10 +430,35 @@ export class SnapshotNamingStrategy {
 	 */
 	private isKnownCodeExtension(ext: string): boolean {
 		const codeExtensions = [
-			".ts", ".js", ".tsx", ".jsx", ".py", ".java", ".c", ".cpp", ".h", ".hpp",
-			".go", ".rs", ".rb", ".php", ".cs", ".swift", ".kt", ".scala",
-			".html", ".css", ".scss", ".sass", ".less",
-			".json", ".xml", ".yaml", ".yml", ".md", ".config",
+			".ts",
+			".js",
+			".tsx",
+			".jsx",
+			".py",
+			".java",
+			".c",
+			".cpp",
+			".h",
+			".hpp",
+			".go",
+			".rs",
+			".rb",
+			".php",
+			".cs",
+			".swift",
+			".kt",
+			".scala",
+			".html",
+			".css",
+			".scss",
+			".sass",
+			".less",
+			".json",
+			".xml",
+			".yaml",
+			".yml",
+			".md",
+			".config",
 		];
 		return codeExtensions.includes(ext);
 	}
@@ -429,9 +470,15 @@ export class SnapshotNamingStrategy {
 		const basename = path.basename(filePath);
 		const dirname = path.dirname(filePath);
 
-		if (basename.endsWith(".test.ts") || basename.endsWith(".test.js")) return true;
-		if (basename.endsWith(".spec.ts") || basename.endsWith(".spec.js")) return true;
-		if (dirname.includes("__tests__")) return true;
+		if (basename.endsWith(".test.ts") || basename.endsWith(".test.js")) {
+			return true;
+		}
+		if (basename.endsWith(".spec.ts") || basename.endsWith(".spec.js")) {
+			return true;
+		}
+		if (dirname.includes("__tests__")) {
+			return true;
+		}
 
 		return false;
 	}
@@ -455,9 +502,15 @@ export class SnapshotNamingStrategy {
 	private isConfigFile(filePath: string): boolean {
 		const basename = path.basename(filePath);
 
-		if (basename.includes(".config.")) return true;
-		if (basename.includes("rc")) return true;
-		if (basename.startsWith(".env")) return true;
+		if (basename.includes(".config.")) {
+			return true;
+		}
+		if (basename.includes("rc")) {
+			return true;
+		}
+		if (basename.startsWith(".env")) {
+			return true;
+		}
 
 		const configFiles = ["tsconfig.json", "jsconfig.json"];
 		return configFiles.includes(basename);
@@ -474,7 +527,9 @@ export class SnapshotNamingStrategy {
 			try {
 				const content = await fs.readFile(file.path, "utf-8");
 				const matches = content.match(importRegex);
-				if (matches) importCount += matches.length;
+				if (matches) {
+					importCount += matches.length;
+				}
 			} catch (error) {
 				this.logger.debug("Failed to read file for import analysis", {
 					path: file.path,
@@ -497,7 +552,9 @@ export class SnapshotNamingStrategy {
 			try {
 				const content = await fs.readFile(file.path, "utf-8");
 				const matches = content.match(structureRegex);
-				if (matches) structureCount += matches.length;
+				if (matches) {
+					structureCount += matches.length;
+				}
 			} catch (error) {
 				this.logger.debug("Failed to read file for structure analysis", {
 					path: file.path,
@@ -513,7 +570,9 @@ export class SnapshotNamingStrategy {
 	 * Truncate long file paths for display
 	 */
 	private truncatePath(filePath: string, maxLength: number): string {
-		if (filePath.length <= maxLength) return filePath;
+		if (filePath.length <= maxLength) {
+			return filePath;
+		}
 		const ellipsis = "...";
 		return filePath.substring(0, maxLength - ellipsis.length) + ellipsis;
 	}
@@ -522,7 +581,10 @@ export class SnapshotNamingStrategy {
 	 * Sanitize filenames with special characters
 	 */
 	private sanitizeFilename(filename: string): string {
-		return filename.replace(/[@#$]+/g, " ").replace(/\s+/g, " ").trim();
+		return filename
+			.replace(/[@#$]+/g, " ")
+			.replace(/\s+/g, " ")
+			.trim();
 	}
 
 	/**
@@ -536,7 +598,9 @@ export class SnapshotNamingStrategy {
 			testing: "test",
 		};
 
-		if (presetMap[context]) return presetMap[context];
+		if (presetMap[context]) {
+			return presetMap[context];
+		}
 
 		const cleaned = context
 			.toLowerCase()
@@ -545,7 +609,9 @@ export class SnapshotNamingStrategy {
 			.trim();
 
 		const maxLength = 20;
-		if (cleaned.length > maxLength) return cleaned.substring(0, maxLength);
+		if (cleaned.length > maxLength) {
+			return cleaned.substring(0, maxLength);
+		}
 
 		return cleaned || "update";
 	}

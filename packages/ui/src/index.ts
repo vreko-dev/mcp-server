@@ -1,3 +1,10 @@
+// Core UI Components
+export { Alert, AlertDescription, AlertTitle } from "./components/alert";
+export { Badge, type BadgeProps, badge } from "./components/badge";
+export { Button, type ButtonProps, buttonVariants } from "./components/button";
+export { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./components/card";
+export { Spinner, type SpinnerProps } from "./components/spinner";
+
 // Design tokens
 
 // Motion components

@@ -5,8 +5,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
 	createDeviceAuthClient,
-	DeviceAuthClient,
 	type DeviceAuthCallbacks,
+	DeviceAuthClient,
 	type DeviceCodeResponse,
 } from "../../src/auth/DeviceAuthClient";
 

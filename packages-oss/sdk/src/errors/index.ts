@@ -67,11 +67,7 @@ export class SnapBackError extends Error {
 /**
  * Base class for snapshot-related errors
  */
-export class SnapshotError extends SnapBackError {
-	constructor(message: string, code: string, context?: Record<string, unknown>, cause?: Error) {
-		super(message, code, context, cause);
-	}
-}
+export class SnapshotError extends SnapBackError {}
 
 /**
  * Snapshot not found in storage
@@ -173,11 +169,7 @@ export class SnapshotVerificationError extends SnapshotError {
 /**
  * Base class for storage-related errors
  */
-export class StorageError extends SnapBackError {
-	constructor(message: string, code: string, context?: Record<string, unknown>, cause?: Error) {
-		super(message, code, context, cause);
-	}
-}
+export class StorageError extends SnapBackError {}
 
 /**
  * Storage is full

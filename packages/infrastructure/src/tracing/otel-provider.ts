@@ -16,8 +16,13 @@ import {
 	trace,
 } from "@opentelemetry/api";
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
-import { Resource } from "@opentelemetry/resources";
-import { BatchSpanProcessor, ConsoleSpanExporter, TraceIdRatioBasedSampler } from "@opentelemetry/sdk-trace-base";
+import { resourceFromAttributes } from "@opentelemetry/resources";
+import {
+	BatchSpanProcessor,
+	ConsoleSpanExporter,
+	type SpanProcessor,
+	TraceIdRatioBasedSampler,
+} from "@opentelemetry/sdk-trace-base";
 import { NodeTracerProvider } from "@opentelemetry/sdk-trace-node";
 import { ATTR_SERVICE_NAME, ATTR_SERVICE_VERSION } from "@opentelemetry/semantic-conventions";
 import type {
@@ -93,7 +98,7 @@ export class OTelInstrumentationProvider implements InstrumentationProvider {
 
 	constructor(config: OTelConfig) {
 		// Create resource with service metadata
-		const resource = new Resource({
+		const resource = resourceFromAttributes({
 			[ATTR_SERVICE_NAME]: config.serviceName,
 			[ATTR_SERVICE_VERSION]: config.serviceVersion || "unknown",
 			"deployment.environment": config.environment || "development",
@@ -102,6 +107,23 @@ export class OTelInstrumentationProvider implements InstrumentationProvider {
 			"process.pid": process.pid,
 		});
 
+		// Build span processors array (SDK 2.0 uses constructor option instead of addSpanProcessor)
+		const spanProcessors: SpanProcessor[] = [];
+
+		if (config.collectorUrl) {
+			// OTLP exporter for Jaeger/Grafana
+			const otlpExporter = new OTLPTraceExporter({
+				url: config.collectorUrl,
+			});
+			spanProcessors.push(new BatchSpanProcessor(otlpExporter));
+		}
+
+		if (config.enableConsole) {
+			// Console exporter for debugging
+			const consoleExporter = new ConsoleSpanExporter();
+			spanProcessors.push(new BatchSpanProcessor(consoleExporter));
+		}
+
 		// Initialize tracer provider with optional sampling
 		const samplingRate = config.sampleRate ?? 1.0;
 		const sampler = new TraceIdRatioBasedSampler(samplingRate);
@@ -109,22 +131,8 @@ export class OTelInstrumentationProvider implements InstrumentationProvider {
 		this.provider = new NodeTracerProvider({
 			resource,
 			sampler,
+			spanProcessors,
 		});
-
-		// Add span processors
-		if (config.collectorUrl) {
-			// OTLP exporter for Jaeger/Grafana
-			const otlpExporter = new OTLPTraceExporter({
-				url: config.collectorUrl,
-			});
-			this.provider.addSpanProcessor(new BatchSpanProcessor(otlpExporter));
-		}
-
-		if (config.enableConsole) {
-			// Console exporter for debugging
-			const consoleExporter = new ConsoleSpanExporter();
-			this.provider.addSpanProcessor(new BatchSpanProcessor(consoleExporter));
-		}
 
 		// Register provider globally
 		this.provider.register();

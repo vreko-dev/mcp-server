@@ -4,11 +4,11 @@ Remote HTTP endpoint for SnapBack MCP (Model Context Protocol) server, designed 
 
 ## Security Features (P0 Fixes Implemented)
 
-✅ **P0-1: Error Logging with Context** - All errors logged with request ID and full context for debugging  
-✅ **P0-4: API Key Validation** - Strict validation of `sb_live_*` and `sb_test_*` prefixes, prevents injection  
-✅ **P0-7: Path Injection Prevention** - Validates workspace paths, blocks traversal attacks (`../`)  
-✅ **P0-8: CORS Security** - Multi-origin support, wildcard blocked in production  
-✅ **P1-3: Request Size Limits** - 10MB max payload, protects against DoS attacks  
+✅ **P0-1: Error Logging with Context** - All errors logged with request ID and full context for debugging
+✅ **P0-4: API Key Validation** - Strict validation of `sb_live_*` and `sb_test_*` prefixes, prevents injection
+✅ **P0-7: Path Injection Prevention** - Validates workspace paths, blocks traversal attacks (`../`)
+✅ **P0-8: CORS Security** - Multi-origin support, wildcard blocked in production
+✅ **P1-3: Request Size Limits** - 10MB max payload, protects against DoS attacks
 
 **Test Coverage**: 16/16 tests passing, 100% branch coverage on validation logic
 

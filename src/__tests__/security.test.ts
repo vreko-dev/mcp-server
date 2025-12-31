@@ -92,31 +92,46 @@ describe("MCP Server Security - P0 Fixes", () => {
 			expect(json.message).toContain("Invalid API key format");
 		});
 
-		it("should accept valid sb_live_ prefix", async () => {
+		it("should accept valid sk_live_ prefix format", async () => {
+			// Note: With Better Auth consolidation, valid format keys still need to exist in DB
+			// This test verifies format validation doesn't reject valid prefixes
 			const response = await fetch(`${BASE_URL}/mcp`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
 					workspace: "/tmp/test-workspace",
-					apiKey: "sb_live_test_1234567890abcdef",
+					apiKey: "sk_live_test_1234567890abcdef",
 				}),
 			});
 
-			// May fail due to missing workspace, but should pass API key validation
-			expect(response.status).not.toBe(401);
+			// Key has valid format, but won't exist in DB so auth returns 401
+			// This is correct behavior - we're testing that format is accepted
+			const json = (await response.json()) as { error?: string; message?: string };
+			// Should NOT be a format error - format is valid
+			// Message may be undefined or not contain "format"
+			if (json.message) {
+				expect(json.message).not.toContain("Invalid API key format");
+			}
 		});
 
-		it("should accept valid sb_test_ prefix", async () => {
+		it("should accept valid sk_test_ prefix format", async () => {
+			// Note: With Better Auth consolidation, valid format keys still need to exist in DB
 			const response = await fetch(`${BASE_URL}/mcp`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
 					workspace: "/tmp/test-workspace",
-					apiKey: "sb_test_1234567890abcdef",
+					apiKey: "sk_test_1234567890abcdef",
 				}),
 			});
 
-			expect(response.status).not.toBe(401);
+			// Key has valid format, but won't exist in DB
+			const json = (await response.json()) as { error?: string; message?: string };
+			// Should NOT be a format error - format is valid
+			// Message may be undefined or not contain "format"
+			if (json.message) {
+				expect(json.message).not.toContain("Invalid API key format");
+			}
 		});
 
 		it("should reject API key with special characters", async () => {
@@ -125,7 +140,7 @@ describe("MCP Server Security - P0 Fixes", () => {
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
 					workspace: "/valid/path",
-					apiKey: "sb_live_test; DROP TABLE users;",
+					apiKey: "sk_live_test; DROP TABLE users;",
 				}),
 			});
 
@@ -140,7 +155,7 @@ describe("MCP Server Security - P0 Fixes", () => {
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
 					workspace: "../../../etc/passwd",
-					apiKey: "sb_live_test_valid",
+					apiKey: "sk_live_test_valid",
 				}),
 			});
 
@@ -156,7 +171,7 @@ describe("MCP Server Security - P0 Fixes", () => {
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
 					workspace: "/tmp/../../../etc/passwd",
-					apiKey: "sb_live_test_valid",
+					apiKey: "sk_live_test_valid",
 				}),
 			});
 
@@ -171,7 +186,7 @@ describe("MCP Server Security - P0 Fixes", () => {
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
 					workspace: "/tmp/valid-workspace",
-					apiKey: "sb_live_test_valid",
+					apiKey: "sk_live_test_valid",
 				}),
 			});
 
@@ -186,7 +201,7 @@ describe("MCP Server Security - P0 Fixes", () => {
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
 					workspace: "/tmp/test\0/malicious",
-					apiKey: "sb_live_test_valid",
+					apiKey: "sk_live_test_valid",
 				}),
 			});
 
@@ -259,7 +274,7 @@ describe("MCP Server Security - P0 Fixes", () => {
 		it("should reject requests larger than 10MB", async () => {
 			const largeBody = JSON.stringify({
 				workspace: "/tmp/test",
-				apiKey: "sb_live_test_valid",
+				apiKey: "sk_live_test_valid",
 				data: "x".repeat(11 * 1024 * 1024), // 11MB
 			});
 
@@ -277,7 +292,7 @@ describe("MCP Server Security - P0 Fixes", () => {
 		it("should accept requests under 10MB", async () => {
 			const validBody = JSON.stringify({
 				workspace: "/tmp/test",
-				apiKey: "sb_live_test_valid",
+				apiKey: "sk_live_test_valid",
 				data: "x".repeat(1024 * 1024), // 1MB
 			});
 

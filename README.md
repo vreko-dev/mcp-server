@@ -1,529 +1,331 @@
-# SnapBack 🧢 - AI-Aware Code Protection System
+# SnapBack MCP Remote Server
 
-[![E2E Tests](https://github.com/snapback-dev/snapback.dev/actions/workflows/e2e.yml/badge.svg)](https://github.com/snapback-dev/snapback.dev/actions/workflows/e2e.yml)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-[![VS Code Extension](https://img.shields.io/visual-studio-marketplace/v/MarcelleLabs.snapback-vscode)](https://marketplace.visualstudio.com/items?itemName=MarcelleLabs.snapback-vscode)
+Remote HTTP endpoint for SnapBack MCP (Model Context Protocol) server, designed for deployment on Fly.io to protect your IP while providing AI assistant integration.
 
-SnapBack is an AI-aware code protection system that automatically creates intelligent snapshots before AI assistants make changes to your codebase. It provides comprehensive file protection with privacy-first design and supports multiple platforms including VS Code, CLI, and web applications.
+## Security Features (P0 Fixes Implemented)
 
-With the powerful [SnapBack VS Code Extension](https://marketplace.visualstudio.com/items?itemName=MarcelleLabs.snapback-vscode), developers can protect their code with a three-level protection system, automatically detect AI-generated changes, and maintain a complete history of file modifications. The extension seamlessly integrates with VS Code's UI, providing intuitive controls and rich visual feedback.
+✅ **P0-1: Error Logging with Context** - All errors logged with request ID and full context for debugging  
+✅ **P0-4: API Key Validation** - Strict validation of `sb_live_*` and `sb_test_*` prefixes, prevents injection  
+✅ **P0-7: Path Injection Prevention** - Validates workspace paths, blocks traversal attacks (`../`)  
+✅ **P0-8: CORS Security** - Multi-origin support, wildcard blocked in production  
+✅ **P1-3: Request Size Limits** - 10MB max payload, protects against DoS attacks  
 
-## 🚀 VS Code Extension Capabilities
+**Test Coverage**: 16/16 tests passing, 100% branch coverage on validation logic
 
-### 🛡️ Three-Level Protection System
+## What This Does
 
-Protect your files with precision using three distinct protection levels:
-
--   **🟢 Watch (Silent)**: Automatic snapshots with no interruptions - perfect for files you edit frequently
--   **🟡 Warn (Notify)**: Confirmation dialog before saving - ideal for important files that affect multiple systems
--   **🔴 Block (Required)**: Required snapshot note before saving - maximum protection for critical files like `.env`, `package.json`, and authentication code
-
-### 📸 Advanced Snapshot Intelligence
-
--   **Smart Deduplication**: Content-based deduplication saves disk space by storing only unique file states
--   **Git-Aware Naming**: Snapshots automatically use Git context for meaningful names (branch, commit message, etc.)
--   **Session-Based Snapshots**: Group related file changes into atomic sessions for comprehensive rollback
--   **Timeline Integration**: View snapshots directly in VS Code's built-in Timeline view
--   **Snapshot Comparison**: Visual diff views to compare file changes over time
--   **Bulk Operations**: Delete older snapshots, rename snapshots, and protect/unprotect in bulk
-
-### 🤖 AI-Powered Risk Detection
-
--   **Secret Detection**: Automatically identifies and alerts on secrets (API keys, passwords, tokens) in your code
--   **Mock Detection**: Prevents test mocks from accidentally entering production code
--   **Phantom Dependency Detection**: Identifies missing dependencies that could break your application
--   **AI Change Tracking**: Detects AI-generated code and tracks changes for security auditing
-
-### 👥 Team Collaboration Features
-
--   **Shared Policies**: Use `.snapbackrc` configuration files to share protection policies across your team
--   **Policy Overrides**: Create temporary overrides for special circumstances
--   **Workspace Awareness**: Multi-root workspace support for complex project structures
--   **Offline Mode**: Work disconnected from the internet with full local functionality
-
-### 🎯 Advanced IDE Integration
-
--   **File Health Indicators**: Visual indicators (🛡️/⚠️/🚨) show the health status of your files
--   **Contextual Menus**: Right-click any file for instant access to protection and snapshot actions
--   **Keyboard Shortcuts**: Quick access with customizable shortcuts:
-    -   `Ctrl+Alt+S` / `Cmd+Alt+S` - Create Snapshot
-    -   `Ctrl+Alt+Z` / `Cmd+Alt+Z` - Snap Back (Restore)
-    -   `Ctrl+Alt+P` / `Cmd+Alt+P` - Protect Current File
--   **Status Bar Integration**: Quick access to protection status and AI detection results
--   **Customizable Views**: Dedicated sidebar panels for snapshots, protected files, and sessions
-
-### 🔧 Powerful Command Palette
-
-Access over 50 commands through VS Code's Command Palette:
-
--   **Protection Management**: Protect files, change protection levels, unprotect files
--   **Snapshot Operations**: Create, restore, delete, rename, and compare snapshots
--   **Session Control**: Preview and restore entire sessions of related changes
--   **Team Configuration**: Update and synchronize team protection policies
--   **AI Analysis**: Review security issues and risk assessments
-
-### 🔒 Privacy-First Design
-
--   **Metadata-only Transmission**: Never sends file contents to the cloud, only metadata for optional sync
--   **Path Hashing**: File paths are hashed before transmission to protect directory structure
--   **Content Validation**: Prevents accidental content leakage with built-in safeguards
--   **Size Limits**: Enforces maximum payload sizes to prevent oversized transmissions
--   **Local-First Storage**: All snapshots stored locally in encrypted SQLite database within VS Code's storage
--   **Workspace Trust Integration**: Respects VS Code's workspace trust model for secure operation
-
-## Key Features
-
-### 🛡️ Intelligent File Protection
-
--   **Three-Level Protection System**: Watch (silent), Warn (notification), Block (require snapshot) with visual indicators (🟢🟡🔴)
--   **Pattern-based Rules**: Glob patterns for flexible file matching with team-shared `.snapbackrc` configurations
--   **Real-time Monitoring**: Automatic protection during file operations with workspace-aware context
--   **AI-Powered Detection**: Automatically identifies AI-generated code, secrets, mocks, and phantom dependencies
-
-### 📸 Smart Snapshots
-
--   **Content Deduplication**: Content-based deduplication to save storage space
--   **Intelligent Naming**: Git-aware, semantic, and timestamp-based naming strategies
--   **Local-first Storage**: SQLite-based local storage with offline support
--   **Session Support**: Atomic multi-file snapshot groups for complex changes
--   **Timeline Integration**: View snapshots directly in VS Code's built-in Timeline view
--   **Visual Comparison**: Side-by-side diff views for comparing file changes over time
-
-### 🔒 Privacy-First Design
-
--   **Metadata-only Transmission**: Never sends file contents to the cloud
--   **Path Hashing**: File paths are hashed before transmission
--   **Content Validation**: Prevents accidental content leakage
--   **Size Limits**: Enforces maximum payload sizes
-
-### 🌐 Platform Features
-
--   **VS Code Extension**: Native IDE integration with file decorators, timeline integration, rich UI, and over 50 commands accessible through the Command Palette
--   **CLI Tool**: Command-line interface for automation and scripting
--   **Web SDK**: JavaScript/TypeScript SDK for web applications
--   **MCP Server**: Model Context Protocol integration for AI assistant interoperability
-
-### ⚡ Performance & Reliability
-
--   **Fast Operations**: Sub-100ms snapshot creation optimized for VS Code's responsive UI
--   **Built-in Caching**: HTTP and query result caching for smooth IDE experience
--   **Robust Error Handling**: Comprehensive error recovery with retry logic and user-friendly notifications
--   **Rate Limit Management**: Automatic handling of API rate limits to prevent disruption
--   **Resource Efficient**: Lightweight design that minimizes impact on VS Code performance
-
-### 🧪 Quality Assurance
-
--   **Comprehensive Testing**: 1,204 lines of critical integration tests including VS Code extension E2E tests
--   **CI/CD Pipeline**: Automated testing with database integration and VS Code-specific test suites
--   **Coverage Enforcement**: 70%+ code coverage requirements across all packages including the VS Code extension
--   **Pre-commit Hooks**: Local quality checks before commits with VS Code extension validation
-
-## Helpful links
-
--   [📘 Documentation](https://snapback.dev/docs)
--   [🚀 Demo](https://snapback.dev)
--   [🧢 VS Code Extension](https://marketplace.visualstudio.com/items?itemName=MarcelleLabs.snapback-vscode)
-
-## Open Source Packages
-
-The following packages are available as open-source under Apache-2.0 license:
-
-- [`@snapback-oss/sdk`](./packages-oss/sdk) - TypeScript/JavaScript SDK
-- [`@snapback-oss/infrastructure`](./packages-oss/infrastructure) - Generic logging, metrics, and tracing utilities
-- [`@snapback-oss/contracts`](./packages-oss/contracts) - TypeScript types and schemas
-- [`@snapback-oss/config`](./packages-oss/config) - Configuration utilities
-- [`@snapback-oss/events`](./packages-oss/events) - Event bus implementation
-
-See [`packages-oss/README.md`](./packages-oss/README.md) for more information.
-
-## Architecture Overview
-
-The SnapBack platform consists of several key components organized into 10 consolidated packages:
-
-### Core Packages
-
-1.  **@snapback/config** - Configuration and utilities
-
-    -   Contains all configuration files and utility functions
-
-2.  **@snapback/contracts** - Shared types and interfaces
-
-    -   Contains shared TypeScript types and interfaces used across packages
-
-3.  **@snapback/core** - Core functionality
-
-    -   Contains AI detection, dependency analysis, feature management, and other core features
-
-4.  **@snapback/events** - Event system
-
-    -   Contains event handling and messaging functionality
-
-5.  **@snapback/infrastructure** - Infrastructure components
-
-    -   Contains logging, metrics, tracing, and other infrastructure-related functionality
-
-6.  **@snapback/integrations** - Third-party integrations
-
-    -   Contains integrations with external services like payments, email, and feature flags
-
-7.  **@snapback/platform** - Platform services
-
-    -   Contains database schemas, queries, and Supabase client
-
-8.  **@snapback/sdk** - Client SDK
-
-    -   Platform-agnostic TypeScript SDK for SnapBack functionality
-
-9.  **@snapback/api** - API Service (Standalone)
-
-    -   Standalone Hono.js-based API service with Docker containerization
-    -   Ready for Fly.io deployment
-    -   Provides all backend functionality via REST and RPC endpoints
-
-10. **@snapback/web** - Web application
-
-    -   Next.js web application for the SnapBack dashboard
-
-11. **snapback-vscode** - VS Code extension
-
-    -   Native VS Code extension for IDE integration with comprehensive file protection
-    -   Implements three-level protection system (Watch, Warn, Block) with visual indicators
-    -   Features AI-powered risk detection including secret, mock, and phantom dependency detection
-    -   Provides rich UI with dedicated sidebar panels, timeline integration, and status bar indicators
-    -   Supports team collaboration through shared `.snapbackrc` configuration files
-    -   Offers offline mode for disconnected work
-    -   Includes session-based snapshots for atomic multi-file operations
-    -   Integrates with VS Code's Command Palette for over 50 available commands
-    -   Features keyboard shortcuts for quick access to common operations
-
-For detailed information about the package consolidation and architecture, see [ARCHITECTURE.md](./ARCHITECTURE.md).
-
-For information about feature flags and runtime configuration, see [Feature Manager Documentation](./docs/development/feature-manager.md).
-
-## 🧢 Detailed VS Code Extension Features
-
-The SnapBack VS Code extension provides comprehensive file protection with an intuitive interface and powerful features:
-
-### Three Protection Levels
-
--   **🟢 Watch (Silent)**: Automatic snapshots with no interruptions - perfect for files you edit frequently
--   **🟡 Warn (Notify)**: Confirmation dialog before saving - ideal for important files that affect multiple systems
--   **🔴 Block (Required)**: Required snapshot note before saving - maximum protection for critical files like `.env`, `package.json`, and authentication code
-
-### Advanced Snapshot Management
-
--   **Smart Deduplication**: Content-based deduplication saves disk space by storing only unique file states
--   **Git-Aware Naming**: Snapshots automatically use Git context for meaningful names (branch, commit message, etc.)
--   **Session-Based Snapshots**: Group related file changes into atomic sessions for comprehensive rollback
--   **Timeline Integration**: View snapshots directly in VS Code's built-in Timeline view
--   **Snapshot Comparison**: Visual diff views to compare file changes over time
--   **Bulk Operations**: Delete older snapshots, rename snapshots, and protect/unprotect in bulk
-
-### AI-Powered Risk Detection
-
--   **Secret Detection**: Automatically identifies and alerts on secrets (API keys, passwords, tokens) in your code
--   **Mock Detection**: Prevents test mocks from accidentally entering production code
--   **Phantom Dependency Detection**: Identifies missing dependencies that could break your application
--   **AI Change Tracking**: Detects AI-generated code and tracks changes for security auditing
-
-### Team Collaboration
-
--   **Shared Policies**: Use `.snapbackrc` configuration files to share protection policies across your team
--   **Policy Overrides**: Create temporary overrides for special circumstances
--   **Workspace Awareness**: Multi-root workspace support for complex project structures
-
-### IDE Integration
-
--   **File Health Indicators**: Visual indicators (🛡️/⚠️/🚨) show the health status of your files
--   **Contextual Menus**: Right-click any file for instant access to protection and snapshot actions
--   **Keyboard Shortcuts**: Quick access with customizable shortcuts:
-    -   `Ctrl+Alt+S` / `Cmd+Alt+S` - Create Snapshot
-    -   `Ctrl+Alt+Z` / `Cmd+Alt+Z` - Snap Back (Restore)
-    -   `Ctrl+Alt+P` / `Cmd+Alt+P` - Protect Current File
--   **Status Bar Integration**: Quick access to protection status and AI detection results
--   **Customizable Views**: Dedicated sidebar panels for snapshots, protected files, and sessions
-
-## AI Assistant Integration
-
-### Qoder Configuration
-
-This project includes enhanced configuration for Qoder, an AI coding assistant that works with the SnapBack system. The configuration is optimized for use with Context7, providing intelligent code assistance, documentation retrieval, and risk analysis.
-
-For details about the Qoder configuration and Context7 integration, see [QODER_CONTEXT7_INTEGRATION.md](./QODER_CONTEXT7_INTEGRATION.md).
-
-## Versioning
-
-This project uses automated versioning with Changesets. For more information, see [Autoversioning Documentation](./claudedocs/technical/autoversioning.md).
-
-## Local Development
-
-### Development Environment Setup
-
-SnapBack uses **Node.js v22.19.0** with **better-sqlite3** as the local snapshot storage engine. We provide Docker-based development environments to ensure consistent builds across platforms.
-
-#### Option 1: Local Development (native, recommended for active development)
-
-Requires Node.js v22.19.0 and native build tools:
-
-```bash
-# Use nvm to switch to the correct Node version
-nvm install
-nvm use
-
-# Install dependencies
-pnpm install
-
-# Verify better-sqlite3 is working
-pnpm snapback:check-sqlite
-
-# Start development
-pnpm dev
-```
-
-#### Option 2: Docker-based Development (recommended for setup/CI)
-
-No local Node.js required. Docker handles all dependencies:
-
-```bash
-# Start the dev container
-pnpm dev:docker
-
-# Or using make
-make dev:docker
-
-# Inside the container:
-pnpm install
-pnpm snapback:check-sqlite
-pnpm test
-pnpm type-check
-```
-
-The dev container includes:
-- Node.js v22.19.0 with pnpm v10.14.0
-- Native build tools (python3, g++, make, etc.)
-- SQLite development headers
-- Git and curl for utilities
-
-### Supported Development Matrix
-
-| Component | Version | Notes |
-|-----------|---------|-------|
-| **Node.js** | v22.19.0 | Required for native module compatibility. Use `.nvmrc` with `nvm use` |
-| **pnpm** | v10.14.0 | Enforced via `packageManager` field in package.json |
-| **better-sqlite3** | 9.6.0 | Local snapshot storage engine (native module) |
-| **OS Support** | macOS, Linux, Windows (WSL2) | Native modules work best on macOS/Linux. Windows users should use Docker or WSL2 |
-
-**⚠️ Important:** If you're on Windows, use WSL2 or the Docker environment. Windows native development requires additional setup for native modules.
-
-### Health Check: SQLite
-
-Before committing code, verify that better-sqlite3 is working:
-
-```bash
-pnpm snapback:check-sqlite
-```
-
-This script verifies:
-- ✅ better-sqlite3 can be loaded
-- ✅ Database files can be created
-- ✅ Basic SQL operations (CREATE, INSERT, SELECT, DELETE) work
-
-If this fails, your environment is not ready for SnapBack development.
-
-### Full-Stack Development (all services)
-
-**🎯 For comprehensive platform debugging and end-to-end testing**, use the holistic Docker setup that runs all services together:
-
-```bash
-# Setup environment (one-time)
-cp .env.docker.example .env.docker.local
-# Edit .env.docker.local with your settings
-
-# Start ALL services with debugging tools
-make dev-holistic
-
-# Wait 30-60 seconds, then access:
-# 🌐 Marketing:   http://snapback.dev:3000
-# 🎛️  Console:     http://console.snapback.dev:3000
-# 📚 Docs:        http://docs.snapback.dev:3001
-# 🔌 API:         http://api.snapback.dev:8080
-# 🤖 MCP:         http://mcp.snapback.dev:8081
-# 📊 Monitoring:  http://localhost:3002 (Grafana)
-```
-
-**What's included in holistic setup:**
-- ✅ Web, API, MCP Server, CLI Tool, Docs (all containerized)
-- ✅ PostgreSQL + Redis + Mailhog (email testing)
-- ✅ Prometheus + Grafana + Jaeger (monitoring & tracing)
-- ✅ Node.js debuggers on ports 9229-9233
-- ✅ Redis Insight GUI at http://localhost:8001
-
-**Perfect for:**
-- 🐛 Debugging across multiple services simultaneously
-- 🧪 Testing the entire platform end-to-end
-- 📊 Monitoring performance & collecting metrics
-- 👥 Working on the complete system holistically
-
-See:
-- [**Quick Reference Card**](./DOCKER_QUICK_REFERENCE.md) - Fast command lookup
-- [**Complete Holistic Setup Guide**](./docs/HOLISTIC_DOCKER_SETUP.md) - Detailed documentation
-
----
-
-For comprehensive setup and development guides, see:
-- [Local Development Guide](./docs/local-development.md) - Complete setup instructions
-- [DNS Configuration](./docs/setup/dns-configuration.md) - Configure subdomain routing
-- [Docker Architecture](./docs/architecture/docker.md) - Understand the container setup
-
-## Secret Management
-
-SnapBack uses [Infisical](https://infisical.com) for centralized secret management across all packages and applications.
-
-### Infisical Folder Structure
-
-```
-/                     (root secrets - 57 variables)
-├── /apps
-│   ├── /api          (41 secrets)
-│   ├── /cli          (16 secrets)
-│   ├── /mcp-server   (11 secrets)
-│   ├── /vscode       (17 secrets)
-│   └── /web          (21 secrets)
-└── /packages
-    ├── /auth         (39 secrets)
-    ├── /core         (61 secrets)
-    └── /platform     (9 secrets)
-```
-
-### Quick Start
-
-```bash
-# Install Infisical CLI
-brew install infisical/get-cli/infisical
-
-# Login to Infisical
-infisical login
-
-# Initialize project (links to workspace)
-infisical init
-
-# Run commands with secrets injected
-infisical run --env=dev -- pnpm dev
-
-# Export secrets to .env file
-infisical export --env=dev --path="/apps/web" > apps/web/.env.local
-```
-
-### Environment-Specific Usage
-
-| Environment | Command |
-|-------------|---------|
-| Development | `infisical run --env=dev -- <command>` |
-| Staging | `infisical run --env=staging -- <command>` |
-| Production | `infisical run --env=prod -- <command>` |
-
-### CI/CD Integration
-
-Add `INFISICAL_TOKEN` to your CI environment variables (GitHub Secrets, etc.):
-
-```yaml
-# GitHub Actions example
-- name: Run tests with secrets
-  env:
-    INFISICAL_TOKEN: ${{ secrets.INFISICAL_TOKEN }}
-  run: infisical run --env=dev -- pnpm test
-```
-
-### Shared Variables
-
-44 environment variables are shared across multiple packages. Key shared variables:
-
-| Variable | Used By |
-|----------|---------|
-| `DATABASE_URL` | api, web, auth, platform |
-| `BETTER_AUTH_SECRET` | api, web, auth |
-| `RESEND_API_KEY` | api, web, auth |
-| `STRIPE_SECRET_KEY` | api, web |
-| `NEXT_PUBLIC_API_URL` | web, cli, vscode |
-
-### Secret Rotation
-
-Recommended rotation schedule:
-- **OAuth credentials**: 90 days
-- **API keys**: 90 days
-- **Database passwords**: 180 days
-- **JWT secrets**: 180 days
-
-### Export Script
-
-Generate secret exports for migration or backup:
-
-```bash
-pnpm tsx scripts/export-env-to-secrets-manager.ts --format=infisical --output=./secrets.json
-```
-
-Supported formats: `json`, `infisical`, `doppler`, `1password`"}, "old_text": "## Local Development
-
-To set up and run the SnapBack platform locally, follow our comprehensive development guide:
-
-- [Local Development Guide](./docs/local-development.md) - Complete setup instructions
-- [DNS Configuration](./docs/setup/dns-configuration.md) - Configure subdomain routing
-- [Docker Architecture](./docs/architecture/docker.md) - Understand the container setup
-
-### Quick Start
-
-```bash
-# Clone the repository
-git clone <repository-url>
-cd snapback
-
-# Set up environment
-cp .env.docker.example .env.docker
-# Edit .env.docker with your configuration
-
-# Start development environment
-make dev
-```
-
-Access the services at:
-- Marketing site: http://snapback.dev
-- Console: http://console.snapback.dev
-- Documentation: http://docs.snapback.dev
-- API: http://api.snapback.dev
-- MCP: http://mcp.snapback.dev
-
-## Testing
-
-### Unit Tests
-
-Run unit tests with:
-```bash
-pnpm test
-```
-
-### E2E Tests
-
-Run end-to-end tests with:
-```bash
-pnpm test:e2e
-```
-
-For detailed information about testing, see:
-- [E2E Testing Guide](./docs/testing/e2e-guide.md) - Comprehensive testing documentation
-- [Test Implementation Details](./TESTING_REPORT.md) - Technical test coverage information
+Wraps the CLI-based MCP server (`packages/mcp`) in an Express HTTP server that can be deployed to Fly.io or other cloud providers. This allows Claude Desktop, Cursor, and other AI tools to connect to SnapBack over HTTPS instead of requiring local installation.
 
 ## Architecture
 
-The SnapBack platform follows a monorepo architecture with 10 core packages and 5 applications. For detailed architectural information, see:
+```
+Claude Desktop / Cursor
+        ↓ HTTPS
+    Fly.io App
+        ↓
+    apps/mcp-server (Express)
+        ↓ Stdio
+    packages/mcp (CLI)
+        ↓
+    SnapBack Logic
+```
 
-- [Architecture Overview](./ARCHITECTURE.md) - Complete system architecture
-- [Docker Architecture](./docs/architecture/docker.md) - Container orchestration
-- [Package Consolidation Report](./PACKAGE-ARCHITECTURE-ANALYSIS.md) - Package structure analysis
+## Local Development
 
-## Developer Documentation
+### Build
 
-For developers working on the SnapBack codebase, see our comprehensive development guidelines:
+```bash
+pnpm build
+```
 
-- [Canonical Developer Guide](./docs/development/canonical-developer-guide.md) - Complete guide to the current architecture using industry-standard libraries
-- [Linting & Code Quality Standards](./LINTING_STANDARDS.md) - Code formatting, type safety, and pre-commit checks
-- [Framework-Specific Patterns & Best Practices](./FRAMEWORK_PATTERNS.md) - Framework implementation patterns for oRPC, Drizzle ORM, Next.js, and more
+### Run
+
+```bash
+# Development
+PORT=8080 NODE_ENV=development node dist/index.js
+
+# With API key
+SNAPBACK_API_KEY=sb_live_test_key PORT=8080 node dist/index.js
+```
+
+### Test Health
+
+```bash
+curl http://localhost:8080/health
+```
+
+### Test MCP Call
+
+```bash
+curl -X POST http://localhost:8080/mcp \
+  -H "Content-Type: application/json" \
+  -d '{
+    "workspace": "/path/to/your/workspace",
+    "apiKey": "sb_live_test_key",
+    "args": {
+      "method": "tools/list",
+      "params": {}
+    }
+  }'
+```
+
+## Deployment to Fly.io
+
+### Prerequisites
+
+- Fly.io account (`fly auth login`)
+- API key for authentication
+
+### Setup
+
+```bash
+# 1. Create Fly app
+cd apps/mcp-server
+fly launch --name snapback-mcp --config fly.toml
+
+# 2. Set secrets
+fly secrets set SNAPBACK_API_KEY=sb_live_your_key
+fly secrets set CORS_ORIGIN=https://your-domain.com
+
+# 3. Deploy
+fly deploy
+```
+
+### Verify Deployment
+
+```bash
+fly open /health
+```
+
+Should return:
+```json
+{
+  "status": "healthy",
+  "uptime": 123.456,
+  "timestamp": "2024-12-30T...",
+  "version": "1.0.0"
+}
+```
+
+## Configuration
+
+### Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `PORT` | 8080 | Server port |
+| `NODE_ENV` | development | Environment (production/development) |
+| `SNAPBACK_API_KEY` | (required) | API key for authentication |
+| `CORS_ORIGIN` | * | Allowed CORS origins (comma-separated) |
+| `LOG_LEVEL` | info | Logging level |
+
+### Fly.io Secrets
+
+Set via `fly secrets set KEY=value`:
+
+```bash
+fly secrets set SNAPBACK_API_KEY=sb_live_xxx
+fly secrets set CORS_ORIGIN=https://your-app.com
+```
+
+View secrets:
+```bash
+fly secrets list
+```
+
+## API Endpoints
+
+### `GET /health`
+
+Health check endpoint.
+
+**Response:**
+```json
+{
+  "status": "healthy",
+  "uptime": 123.456,
+  "timestamp": "2024-12-30T...",
+  "version": "1.0.0"
+}
+```
+
+### `POST /mcp`
+
+Main MCP endpoint - handles JSON-RPC requests.
+
+**Request:**
+```json
+{
+  "workspace": "/path/to/workspace",
+  "apiKey": "sb_live_xxx",
+  "args": {
+    "method": "tools/list",
+    "params": {}
+  }
+}
+```
+
+**Response:** JSON-RPC response from MCP server
+
+### `GET /tools`
+
+List available tools.
+
+**Response:**
+```json
+{
+  "tools": [
+    {
+      "name": "snapback.analyze",
+      "tier": "free",
+      "description": "..."
+    },
+    ...
+  ],
+  "count": 11
+}
+```
+
+## Security
+
+- **Authentication**: Required `apiKey` parameter (validated against `SNAPBACK_API_KEY`)
+- **HTTPS Only**: Fly.io auto-configures HTTPS on port 443
+- **CORS**: Configurable via `CORS_ORIGIN` environment variable
+- **Non-root user**: Container runs as unprivileged user
+- **Request timeouts**: 30-second timeout on MCP calls
+- **Rate limiting**: Consider adding in production (not yet implemented)
+
+## Monitoring
+
+### Logs
+
+```bash
+fly logs
+```
+
+### Metrics
+
+```bash
+# CPU/Memory usage
+fly scale show
+
+# App status
+fly status
+```
+
+### Scaling
+
+Edit `fly.toml`:
+```toml
+[scaling]
+min_count = 1
+max_count = 5
+```
+
+Then deploy:
+```bash
+fly deploy
+```
+
+## Troubleshooting
+
+### "Connection refused"
+
+Ensure Fly.io app is running:
+```bash
+fly status
+```
+
+### "Unauthorized"
+
+Check that API key is set:
+```bash
+fly secrets list
+```
+
+Should show `SNAPBACK_API_KEY`.
+
+### "MCP server timeout"
+
+Default timeout is 30 seconds. Check workspace size and API key validity.
+
+### Logs show errors
+
+View detailed logs:
+```bash
+fly logs --follow
+```
+
+## Integration with VS Code Extension
+
+### Quick Setup (2 steps)
+
+1. **Get your API key** from deployment output (look for `sb_live_...`)
+2. **Configure VS Code settings**:
+
+```json
+{
+  "snapback.mcp.enabled": true,
+  "snapback.mcp.serverUrl": "https://snapback-mcp.fly.dev",
+  "snapback.mcp.authType": "apikey"
+}
+```
+
+3. **Store your API key securely** using VS Code command palette:
+   - Press `Cmd+Shift+P` / `Ctrl+Shift+P`
+   - Run: `SnapBack: Set MCP Auth Token (Secure)`
+   - Paste your API key: `sb_live_...`
+
+### Configuration Options
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `snapback.mcp.enabled` | `true` | Enable MCP integration |
+| `snapback.mcp.serverUrl` | `https://mcp.snapback.dev` | Remote MCP server URL |
+| `snapback.mcp.authType` | `bearer` | Authentication type (`bearer` or `apikey`) |
+| `snapback.mcp.timeout` | `5000` | Request timeout in milliseconds |
+
+### Programmatic Usage
+
+The VS Code extension automatically uses `RemoteMCPClient` when `serverUrl` is configured:
+
+```typescript
+const client = new RemoteMCPClient({
+  serverUrl: 'https://snapback-mcp.fly.dev',
+  apiKey: 'sb_live_...',
+  authType: 'apikey',
+  timeout: 5000,
+  maxRetries: 3,
+});
+
+await client.connect();
+```
+
+See [`apps/vscode/src/services/RemoteMCPClient.ts`](../vscode/src/services/RemoteMCPClient.ts) for implementation details.
+
+### Health Check
+
+Verify the server is accessible:
+
+```bash
+curl https://snapback-mcp.fly.dev/health
+```
+
+Expected response:
+```json
+{"status":"healthy","uptime":123.45,"timestamp":"2025-12-31T...","version":"1.0.0"}
+```
+
+## Cost
+
+Fly.io free tier includes:
+- 3 shared-cpu-1x VMs (256MB each)
+- 160GB bandwidth/month
+
+This MCP server easily fits within free tier for individual/small team use.
+
+## References
+
+- [Fly.io Docs](https://fly.io/docs/)
+- [MCP Protocol Spec](https://modelcontextprotocol.io/)
+- [SnapBack Docs](../../docs/integration/README.md)

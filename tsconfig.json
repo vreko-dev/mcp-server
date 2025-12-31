@@ -1,23 +1,24 @@
 {
-	"$schema": "https://json.schemastore.org/tsconfig",
-	"files": [],
-	"references": [
-		{ "path": "./apps/cli" },
-		{ "path": "./apps/vscode" },
-		{ "path": "./apps/web" },
-		{ "path": "./config" },
-		{ "path": "./apps/api" },
-		{ "path": "./packages/auth" },
-		{ "path": "./packages/config" },
-		{ "path": "./packages/contracts" },
-		{ "path": "./packages/core" },
-		{ "path": "./packages/github-action" },
-		{ "path": "./packages/infrastructure" },
-		{ "path": "./packages/integrations" },
-		{ "path": "./packages/platform" },
-		{ "path": "./packages/intelligence" },
-		{ "path": "./packages/sdk" },
-		{ "path": "./tooling/scripts" },
-		{ "path": "./tooling/tailwind" }
-	]
+	"compilerOptions": {
+		"module": "ESNext",
+		"target": "ES2022",
+		"lib": ["ES2022"],
+		"outDir": "./dist",
+		"rootDir": "./src",
+		"declaration": true,
+		"declarationMap": true,
+		"sourceMap": true,
+		"moduleResolution": "bundler",
+		"resolveJsonModule": true,
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true,
+		"strict": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": true
+	},
+	"include": ["src/**/*"],
+	"exclude": ["node_modules", "dist"]
 }

@@ -1,7 +1,0 @@
-{
-	"root": false,
-	"extends": "//",
-	"files": {
-		"includes": ["**", "!**/*.test.ts", "!**/*.test.tsx", "!__tests__", "!emails"]
-	}
-}

@@ -1,1 +1,0 @@
-ALTER TABLE "user" ADD COLUMN "subscription_tier" "plan_type" DEFAULT 'free';

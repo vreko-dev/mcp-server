@@ -1,127 +1,80 @@
-# Production Multi-stage Dockerfile for Turborepo monorepo
-# Optimized for layer caching, security, and minimal image size
+# Production Dockerfile for SnapBack MCP Server
+# Uses turbo prune for minimal build context (like apps/web/Dockerfile.prod)
+#
+# Build from monorepo root:
+# fly deploy . --config apps/mcp-server/fly.toml --dockerfile apps/mcp-server/Dockerfile
 
-# Base image with specific version for reproducibility
+# ================================
+# Base Stage
+# ================================
 FROM node:20.11.0-alpine AS base
 
-# Install system dependencies and security updates
-RUN apk update && apk upgrade
-RUN apk add --no-cache \
-    libc6-compat \
-    openssl \
-    ca-certificates \
-    dumb-init
+RUN apk update && apk upgrade && \
+    apk add --no-cache libc6-compat openssl ca-certificates dumb-init
 
-# Enable corepack for pnpm
 RUN corepack enable && corepack prepare pnpm@10.14.0 --activate
 
-# Set work directory
 WORKDIR /app
 
-# Create non-root user for security
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs --ingroup nodejs
-
 # ================================
-# Dependencies stage
-# ================================
-FROM base AS deps
-
-# Copy package.json files for dependency installation
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY turbo.json ./
-COPY apps/web/package.json ./apps/web/
-COPY apps/api/package.json ./apps/api/
-COPY packages ./packages
-COPY packages-oss ./packages-oss
-COPY config/package.json ./config/
-COPY tooling ./tooling
-
-# Install dependencies
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
-    pnpm install --no-frozen-lockfile --ignore-scripts
-
-# ================================
-# Pruner stage - Extract only needed files
+# Pruner Stage - Use turbo prune
 # ================================
 FROM base AS pruner
 
-# Copy entire source code
+RUN npm install -g turbo@2.6.3
+
+# Copy entire monorepo for pruning
 COPY . .
 
-# Copy node_modules from deps stage
-COPY --from=deps /app/node_modules ./node_modules
-
-# Install turbo globally and prune the monorepo for the web app
-RUN pnpm add -g turbo@latest
-RUN turbo prune web --docker
+# Prune to only what snapback-mcp-server needs
+RUN turbo prune snapback-mcp-server --docker
 
 # ================================
-# Builder stage
+# Deps Stage - Install dependencies
 # ================================
-FROM base AS builder
+FROM base AS deps
 
-# Copy pruned source and package files
+# Copy pruned lockfile and package files
 COPY --from=pruner /app/out/json/ .
 COPY --from=pruner /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
 
-# Install dependencies for pruned workspace
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
-    pnpm install --no-frozen-lockfile --ignore-scripts
-
-# Copy pruned source code
-COPY --from=pruner /app/out/full/ .
-
-# Generate Drizzle schema files (must run before build)
-RUN pnpm --filter @snapback/platform run db:generate
-
-# Set production environment
-ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
-ENV SKIP_ENV_VALIDATION=1
-
-# Build the application
-RUN pnpm turbo build --filter=web
+# Install deps (pruned workspace) - use no-frozen-lockfile due to turbo prune
+RUN pnpm install --ignore-scripts
 
 # ================================
-# Runner stage - Final production image
+# Builder Stage - Build the app
+# ================================
+FROM base AS builder
+
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=pruner /app/out/full/ .
+
+# Build with turbo (respects dependency order)
+RUN cd apps/mcp-server && pnpm build
+
+# ================================
+# Runner Stage - Minimal runtime
 # ================================
 FROM base AS runner
 
-# Set production environment
-ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
-ENV PORT=3000
+# Create non-root user for security
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 mcp --ingroup nodejs
 
-# Create app directory and set ownership
-WORKDIR /app
-RUN chown -R nextjs:nodejs /app
+# Copy only what's needed to run
+COPY --from=builder --chown=mcp:nodejs /app/apps/mcp-server/dist ./dist
+COPY --from=builder --chown=mcp:nodejs /app/apps/mcp-server/package.json ./
+COPY --from=builder --chown=mcp:nodejs /app/node_modules ./node_modules
 
-# Switch to non-root user
-USER nextjs
-
-# Copy built application from builder stage
-COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/static ./apps/web/.next/static
-COPY --from=builder --chown=nextjs:nodejs /app/apps/web/public ./apps/web/public
-
-# Copy package.json for runtime dependencies
-COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
-
-# Expose the port
-EXPOSE 3000
-
-# Add health check endpoint
-RUN echo 'const http = require("http"); \
-const options = { hostname: "localhost", port: 3000, path: "/api/health", timeout: 2000 }; \
-const req = http.request(options, (res) => process.exit(res.statusCode === 200 ? 0 : 1)); \
-req.on("error", () => process.exit(1)); \
-req.on("timeout", () => process.exit(1)); \
-req.end();' > /app/healthcheck.js
+USER mcp
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD node /app/healthcheck.js || exit 1
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:8080/health', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
 
-# Start the application with dumb-init for proper signal handling
-CMD ["dumb-init", "node", "apps/web/server.js"]
+EXPOSE 8080
+
+ENV NODE_ENV=production
+
+# Use dumb-init for proper signal handling
+CMD ["dumb-init", "node", "dist/index.js"]

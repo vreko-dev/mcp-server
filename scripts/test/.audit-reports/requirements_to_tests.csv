@@ -1,5 +1,0 @@
-Requirement,TestFile,TestMethod,Status
-auth,/apps/vscode/test/unit/auth.spec.ts,test_auth_function,PENDING
-snapshot restore,/apps/vscode/test/unit/snapshot-algo.spec.ts,test_restore_snapshot,PENDING
-git dangerous ops,/apps/vscode/test/unit/git-parsing.spec.ts,test_git_rebase_handling,PENDING
-encryption/key handling,/packages/core/test/unit/crypto.spec.ts,test_encryption,PENDING

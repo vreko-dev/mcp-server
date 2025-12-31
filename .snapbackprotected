@@ -1,8 +1,0 @@
-package.json
-tsconfig.json
-.env
-.env.*
-apps/vscode/SNAPBACK_CONSOLIDATED_DOCUMENTATION.md
-apps/vscode/README_MARKETPLACE.md
-pnpm-workspace.yaml
-apps/vscode/MODULAR_PACKAGE_JSON.md

@@ -1,15 +1,30 @@
-import { spawn } from "node:child_process";
+/**
+ * SnapBack MCP Server - Streamable HTTP Transport
+ *
+ * Remote MCP server using the MCP 2025-03-26 Streamable HTTP transport.
+ * Directly integrates with @snapback/mcp instead of spawning CLI subprocess.
+ *
+ * @module apps/mcp-server
+ */
+
 import { randomUUID } from "node:crypto";
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
-import path from "node:path";
-import { fileURLToPath, URL } from "node:url";
-import { getAllowedCorsOrigin, getMaxBodySize, validateApiKey, validateWorkspace } from "./validation.js";
+import { URL } from "node:url";
+import { createHttpTransport, type HttpTransportManager } from "@snapback/mcp";
+import { linkWorkspace, resolveTierByWorkspaceId } from "@snapback/platform/db/queries";
+import {
+	getAllowedCorsOrigin,
+	getMaxBodySize,
+	validateApiKey,
+	validateWorkspace,
+	validateWorkspaceId,
+} from "./validation.js";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number.parseInt(process.env.PORT || "8080", 10);
 const NODE_ENV = process.env.NODE_ENV || "development";
+const MCP_VERSION = process.env.MCP_VERSION || "2.0.0";
 
-// Simple logger for deployment (no external dependencies)
+// Simple logger (no external dependencies)
 const logger = {
 	info: (msg: string, context?: Record<string, unknown>) => {
 		if (process.env.LOG_LEVEL !== "silent") {
@@ -24,250 +39,308 @@ const logger = {
 	},
 };
 
-// Handler functions
+// Transport manager cache keyed by workspace
+const transportManagers: Map<string, HttpTransportManager> = new Map();
+
+/**
+ * Get or create transport manager for a workspace
+ */
+function getTransportManager(workspace: string, tier: "free" | "pro" | "enterprise"): HttpTransportManager {
+	const key = `${workspace}:${tier}`;
+
+	if (!transportManagers.has(key)) {
+		const manager = createHttpTransport({
+			workspaceRoot: workspace,
+			tier,
+			enableJsonResponse: true,
+			sessionTimeoutMs: 30 * 60 * 1000, // 30 minutes
+			maxSessions: 100,
+		});
+		transportManagers.set(key, manager);
+		logger.info("Created transport manager", { workspace, tier });
+	}
+
+	return transportManagers.get(key)!;
+}
+
+/**
+ * Handle health check requests
+ */
 function handleHealth(res: ServerResponse): void {
+	const activeSessions = Array.from(transportManagers.values()).reduce(
+		(sum, manager) => sum + manager.getSessionCount(),
+		0,
+	);
+
 	res.writeHead(200, { "Content-Type": "application/json" });
 	res.end(
 		JSON.stringify({
 			status: "healthy",
 			uptime: process.uptime(),
 			timestamp: new Date().toISOString(),
-			version: "1.0.0",
+			version: MCP_VERSION,
+			transport: "streamable-http",
+			activeSessions,
 		}),
 	);
 }
 
-function handleTools(res: ServerResponse): void {
-	const tools = [
-		{
-			name: "snapback.analyze",
-			tier: "free",
-			description: "Analyze code changes for risks or validate packages",
-		},
-		{
-			name: "snapback.prepare_workspace",
-			tier: "free",
-			description: "Pre-flight workspace check",
-		},
-		{
-			name: "snapback.validate",
-			tier: "free",
-			description: "Validate code against patterns",
-		},
-		{
-			name: "snapback.context",
-			tier: "free",
-			description: "Context operations",
-		},
-		{
-			name: "snapback.session",
-			tier: "free",
-			description: "Session management",
-		},
-		{
-			name: "snapback.learn",
-			tier: "free",
-			description: "Record learnings",
-		},
-		{
-			name: "snapback.acknowledge_risk",
-			tier: "free",
-			description: "Acknowledge risk and proceed",
-		},
-		{
-			name: "snapback.meta",
-			tier: "free",
-			description: "Get tool metadata",
-		},
-		{
-			name: "snapback.snapshot_create",
-			tier: "pro",
-			description: "Create code snapshots",
-		},
-		{
-			name: "snapback.snapshot_list",
-			tier: "pro",
-			description: "List snapshots",
-		},
-		{
-			name: "snapback.snapshot_restore",
-			tier: "pro",
-			description: "Restore from snapshot",
-		},
-	];
+/**
+ * Handle MCP requests via Streamable HTTP transport
+ */
+async function handleMcp(
+	req: IncomingMessage,
+	res: ServerResponse,
+	body: string,
+	requestId: string,
+	url: URL,
+): Promise<void> {
+	// For initialization requests, we need workspace and apiKey from the body
+	// For subsequent requests, session ID routes to existing transport
+	const sessionId = req.headers["mcp-session-id"] as string | undefined;
 
-	res.writeHead(200, { "Content-Type": "application/json" });
-	res.end(JSON.stringify({ tools, count: tools.length }));
-}
-
-async function handleMcp(res: ServerResponse, body: string, requestId: string): Promise<void> {
-	let parsedBody: any;
-	try {
-		parsedBody = JSON.parse(body);
-	} catch (parseError) {
-		const errorMsg = parseError instanceof Error ? parseError.message : String(parseError);
-		logger.error("JSON parse failed", {
-			requestId,
-			error: errorMsg,
-			bodyPreview: body.substring(0, 100),
-		});
-		res.writeHead(400, { "Content-Type": "application/json" });
-		res.end(
-			JSON.stringify({
-				error: "BAD_REQUEST",
-				message: "Invalid JSON body",
-			}),
-		);
-		return;
-	}
-
-	const { workspace, apiKey, command = "mcp", args } = parsedBody;
-
-	// P0-7: Validate workspace path FIRST (before auth)
-	const workspaceValidation = validateWorkspace(workspace);
-	if (!workspaceValidation.valid) {
-		logger.warn("Workspace validation failed", {
-			requestId,
-			error: workspaceValidation.error,
-			workspace,
-		});
-		res.writeHead(400, { "Content-Type": "application/json" });
-		res.end(
-			JSON.stringify({
-				error: "BAD_REQUEST",
-				message: workspaceValidation.error,
-			}),
-		);
-		return;
-	}
-
-	// P0-4: Validate API key format
-	const apiKeyValidation = validateApiKey(apiKey);
-	if (!apiKeyValidation.valid) {
-		logger.warn("API key validation failed", {
-			requestId,
-			error: apiKeyValidation.error,
-		});
-		res.writeHead(401, { "Content-Type": "application/json" });
-		res.end(
-			JSON.stringify({
-				error: "UNAUTHORIZED",
-				message: apiKeyValidation.error,
-			}),
-		);
-		return;
-	}
-
-	try {
-		logger.info("Starting MCP server", {
-			requestId,
-			workspace,
-			command,
-		});
-
-		// Spawn CLI MCP server as subprocess
-		const mcpProcess = spawn(
-			"node",
-			[path.join(__dirname, "../../cli/dist/index.js"), command, "--stdio", "--workspace", workspace],
-			{
-				env: {
-					...process.env,
-					SNAPBACK_API_KEY: apiKey,
-					SNAPBACK_WORKSPACE_ROOT: workspace,
-					NODE_ENV,
-					MCP_QUIET: "1",
-				},
-				stdio: ["pipe", "pipe", "pipe"],
-			},
-		);
-
-		let outputBuffer = "";
-
-		mcpProcess.stdout?.on("data", (data: Buffer) => {
-			outputBuffer += data.toString();
-		});
-
-		mcpProcess.stderr?.on("data", (data: Buffer) => {
-			logger.error("MCP process stderr", {
-				requestId,
-				error: data.toString(),
-			});
-		});
-
-		const jsonRpcRequest = JSON.stringify({
-			jsonrpc: "2.0",
-			id: 1,
-			method: args?.method || "tools/list",
-			params: args?.params || {},
-		});
-
-		mcpProcess.stdin?.write(`${jsonRpcRequest}\n`);
-		mcpProcess.stdin?.end();
-
-		await new Promise<void>((resolve, reject) => {
-			const timeout = setTimeout(() => {
-				mcpProcess.kill();
-				reject(new Error("MCP server timeout (30s)"));
-			}, 30000);
-
-			mcpProcess.on("close", (code: number) => {
-				clearTimeout(timeout);
-				if (code !== 0 && !outputBuffer) {
-					reject(new Error(`MCP process exited with code ${code}`));
-				}
-				resolve();
-			});
-
-			mcpProcess.on("error", (err: Error) => {
-				clearTimeout(timeout);
-				reject(err);
-			});
-		});
-
-		if (!outputBuffer) {
-			throw new Error("No response from MCP server");
+	// If we have a session ID, find the transport and handle directly
+	if (sessionId) {
+		// Find the transport manager that has this session
+		for (const manager of transportManagers.values()) {
+			// Try to handle - the manager will validate session internally
+			try {
+				const parsedBody = body ? JSON.parse(body) : undefined;
+				await manager.handleRequest(req, res, parsedBody);
+				return;
+			} catch {
+				// Not found in this manager, continue searching
+			}
 		}
 
-		const response = JSON.parse(outputBuffer);
-		logger.info("MCP request completed", {
-			requestId,
-			hasError: response.error !== undefined,
-		});
-
-		res.writeHead(200, { "Content-Type": "application/json" });
-		res.end(JSON.stringify(response));
-	} catch (error) {
-		const message = error instanceof Error ? error.message : String(error);
-		logger.error("MCP request failed", {
-			requestId,
-			error: message,
-		});
-
-		res.writeHead(500, { "Content-Type": "application/json" });
+		// Session not found
+		res.writeHead(400, { "Content-Type": "application/json" });
 		res.end(
 			JSON.stringify({
 				jsonrpc: "2.0",
-				error: {
-					code: -32603,
-					message: `Internal MCP error: ${message}`,
-				},
+				error: { code: -32000, message: "Session not found or expired" },
+				id: null,
+			}),
+		);
+		return;
+	}
+
+	// No session ID - this must be an initialize request with workspace info
+	let parsedBody: { workspace?: string; apiKey?: string; workspaceId?: string; tier?: string } & Record<
+		string,
+		unknown
+	>;
+	try {
+		parsedBody = JSON.parse(body);
+	} catch (parseError) {
+		logger.error("JSON parse failed", { requestId, error: String(parseError) });
+		res.writeHead(400, { "Content-Type": "application/json" });
+		res.end(JSON.stringify({ error: "BAD_REQUEST", message: "Invalid JSON body" }));
+		return;
+	}
+
+	// Extract workspace from (in priority order):
+	// 1. Request body or initialize params
+	// 2. Query parameter (?workspace=/path/to/project)
+	// 3. X-Workspace-Path header
+	const workspace =
+		parsedBody.workspace ||
+		((parsedBody.params as Record<string, unknown>)?.workspace as string) ||
+		url.searchParams.get("workspace") ||
+		(req.headers["x-workspace-path"] as string);
+
+	// Validate workspace path
+	const workspaceValidation = validateWorkspace(workspace);
+	if (!workspaceValidation.valid) {
+		logger.warn("Workspace validation failed", { requestId, error: workspaceValidation.error });
+		res.writeHead(400, { "Content-Type": "application/json" });
+		res.end(JSON.stringify({ error: "BAD_REQUEST", message: workspaceValidation.error }));
+		return;
+	}
+
+	// Authentication: Workspace ID (preferred) or API key (legacy)
+	// Workspace ID enables tier resolution without storing API keys in MCP config
+	const workspaceId =
+		parsedBody.workspaceId ||
+		(req.headers["x-workspace-id"] as string) ||
+		((parsedBody.params as Record<string, unknown>)?.workspaceId as string);
+	const apiKey = parsedBody.apiKey || (req.headers["x-api-key"] as string);
+
+	let tier: "free" | "pro" | "enterprise" = "free";
+
+	// Priority 1: Workspace ID authentication (preferred)
+	if (workspaceId) {
+		const workspaceIdValidation = validateWorkspaceId(workspaceId);
+		if (!workspaceIdValidation.valid) {
+			logger.warn("Workspace ID validation failed", { requestId, error: workspaceIdValidation.error });
+			res.writeHead(401, { "Content-Type": "application/json" });
+			res.end(JSON.stringify({ error: "UNAUTHORIZED", message: workspaceIdValidation.error }));
+			return;
+		}
+
+		// Resolve tier from database
+		try {
+			const tierResult = await resolveTierByWorkspaceId(workspaceId);
+			tier = tierResult.tier;
+			logger.info("Tier resolved via workspace ID", {
+				requestId,
+				workspaceId: `${workspaceId.slice(0, 10)}...`,
+				tier,
+				linked: tierResult.found,
+			});
+		} catch (error) {
+			// Database error - fallback to free tier
+			logger.warn("Tier resolution failed, using free tier", { requestId, error: String(error) });
+			tier = "free";
+		}
+	}
+	// Priority 2: API key authentication (legacy)
+	else if (apiKey) {
+		const apiKeyValidation = validateApiKey(apiKey);
+		if (!apiKeyValidation.valid) {
+			logger.warn("API key validation failed", { requestId, error: apiKeyValidation.error });
+			res.writeHead(401, { "Content-Type": "application/json" });
+			res.end(JSON.stringify({ error: "UNAUTHORIZED", message: apiKeyValidation.error }));
+			return;
+		}
+		// For now, API key presence implies pro tier (Phase 2 will verify with database)
+		tier = "pro";
+	}
+	// No authentication provided - use free tier (default)
+	else {
+		logger.info("No authentication provided, using free tier", { requestId });
+		tier = "free";
+	}
+
+	// Get or create transport manager for this workspace
+	const manager = getTransportManager(workspace, tier);
+
+	logger.info("Handling MCP request", { requestId, workspace, tier, method: req.method });
+
+	// Handle the request
+	await manager.handleRequest(req, res, parsedBody);
+}
+
+/**
+ * Handle workspace linking requests
+ *
+ * Called after successful OAuth in VS Code extension to link workspace to user.
+ * Requires API key authentication via Authorization header.
+ */
+async function handleLinkWorkspace(
+	req: IncomingMessage,
+	res: ServerResponse,
+	body: string,
+	requestId: string,
+): Promise<void> {
+	// Only accept POST
+	if (req.method !== "POST") {
+		res.writeHead(405, { "Content-Type": "application/json" });
+		res.end(JSON.stringify({ error: "METHOD_NOT_ALLOWED", message: "Only POST is allowed" }));
+		return;
+	}
+
+	// Require API key authentication
+	const authHeader = req.headers.authorization;
+	if (!authHeader?.startsWith("Bearer ")) {
+		res.writeHead(401, { "Content-Type": "application/json" });
+		res.end(JSON.stringify({ error: "UNAUTHORIZED", message: "Missing or invalid Authorization header" }));
+		return;
+	}
+
+	const apiKey = authHeader.slice(7); // Remove "Bearer "
+	const apiKeyValidation = validateApiKey(apiKey);
+	if (!apiKeyValidation.valid) {
+		logger.warn("Link workspace: API key validation failed", { requestId, error: apiKeyValidation.error });
+		res.writeHead(401, { "Content-Type": "application/json" });
+		res.end(JSON.stringify({ error: "UNAUTHORIZED", message: apiKeyValidation.error }));
+		return;
+	}
+
+	// Parse body
+	let parsedBody: { workspace_id?: string; user_id?: string; tier?: string; display_name?: string };
+	try {
+		parsedBody = JSON.parse(body);
+	} catch {
+		res.writeHead(400, { "Content-Type": "application/json" });
+		res.end(JSON.stringify({ error: "BAD_REQUEST", message: "Invalid JSON body" }));
+		return;
+	}
+
+	// Validate workspace ID
+	const workspaceId = parsedBody.workspace_id;
+	const workspaceIdValidation = validateWorkspaceId(workspaceId);
+	if (!workspaceIdValidation.valid) {
+		res.writeHead(400, { "Content-Type": "application/json" });
+		res.end(JSON.stringify({ error: "BAD_REQUEST", message: workspaceIdValidation.error }));
+		return;
+	}
+
+	// User ID and tier come from the authenticated request
+	// In Phase 2, we'd verify these against the API key's associated user
+	// For now, trust the client-provided values
+	const userId = parsedBody.user_id;
+	if (!userId) {
+		res.writeHead(400, { "Content-Type": "application/json" });
+		res.end(JSON.stringify({ error: "BAD_REQUEST", message: "Missing user_id" }));
+		return;
+	}
+
+	const tier = (parsedBody.tier || "free") as "free" | "pro" | "enterprise";
+
+	try {
+		await linkWorkspace({
+			workspaceId: workspaceId!,
+			userId,
+			tier,
+			displayName: parsedBody.display_name,
+		});
+
+		logger.info("Workspace linked successfully", {
+			requestId,
+			workspaceId: `${workspaceId?.slice(0, 10)}...`,
+			tier,
+		});
+
+		res.writeHead(200, { "Content-Type": "application/json" });
+		res.end(JSON.stringify({ linked: true, tier }));
+	} catch (error) {
+		const message = error instanceof Error ? error.message : String(error);
+		logger.error("Failed to link workspace", { requestId, error: message });
+		res.writeHead(500, { "Content-Type": "application/json" });
+		res.end(
+			JSON.stringify({
+				error: "INTERNAL_ERROR",
+				message: NODE_ENV === "production" ? "Failed to link workspace" : message,
 			}),
 		);
 	}
 }
 
-// Create HTTP server
-const app = createServer(async (req: IncomingMessage, res: ServerResponse) => {
+/**
+ * Set CORS headers on response
+ */
+function setCorsHeaders(req: IncomingMessage, res: ServerResponse): void {
 	const corsOrigin = process.env.CORS_ORIGIN || "*";
 	const requestOrigin = req.headers.origin;
-
-	// P0-8: Handle CORS with multiple origin support
 	const allowedOrigin = getAllowedCorsOrigin(requestOrigin, corsOrigin);
 
 	res.setHeader("Access-Control-Allow-Origin", allowedOrigin || corsOrigin);
-	res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-	res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+	res.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS");
+	res.setHeader(
+		"Access-Control-Allow-Headers",
+		"Content-Type, Authorization, mcp-session-id, x-api-key, x-workspace-id",
+	);
+	res.setHeader("Access-Control-Expose-Headers", "mcp-session-id");
+}
 
+/**
+ * Create and start HTTP server
+ */
+const server = createServer(async (req: IncomingMessage, res: ServerResponse) => {
+	setCorsHeaders(req, res);
+
+	// Handle preflight
 	if (req.method === "OPTIONS") {
 		res.writeHead(200);
 		res.end();
@@ -276,20 +349,27 @@ const app = createServer(async (req: IncomingMessage, res: ServerResponse) => {
 
 	const requestId = randomUUID();
 	const url = new URL(req.url || "", `http://${req.headers.host}`);
+
 	logger.info("Incoming request", {
 		requestId,
 		method: req.method,
 		path: url.pathname,
+		sessionId: req.headers["mcp-session-id"],
 	});
 
-	// P1-3: Collect body with size limit
+	// Collect body with size limit
 	const maxSize = getMaxBodySize();
 	let body = "";
 	let bodySize = 0;
+	let aborted = false;
 
 	req.on("data", (chunk) => {
+		if (aborted) {
+			return;
+		}
 		bodySize += chunk.length;
 		if (bodySize > maxSize) {
+			aborted = true;
 			res.writeHead(413, { "Content-Type": "application/json" });
 			res.end(
 				JSON.stringify({
@@ -304,25 +384,25 @@ const app = createServer(async (req: IncomingMessage, res: ServerResponse) => {
 	});
 
 	req.on("end", async () => {
+		if (aborted) {
+			return;
+		}
+
 		try {
-			if (req.method === "GET" && url.pathname === "/health") {
+			// Route based on path
+			if (url.pathname === "/health") {
 				handleHealth(res);
-			} else if (req.method === "GET" && url.pathname === "/tools") {
-				handleTools(res);
-			} else if (req.method === "POST" && url.pathname === "/mcp") {
-				await handleMcp(res, body, requestId);
+			} else if (url.pathname === "/mcp") {
+				await handleMcp(req, res, body, requestId, url);
+			} else if (url.pathname === "/auth/link-workspace") {
+				await handleLinkWorkspace(req, res, body, requestId);
 			} else {
 				res.writeHead(404, { "Content-Type": "application/json" });
-				res.end(
-					JSON.stringify({
-						error: "NOT_FOUND",
-						message: "Endpoint not found",
-					}),
-				);
+				res.end(JSON.stringify({ error: "NOT_FOUND", message: "Endpoint not found" }));
 			}
 		} catch (error) {
 			const message = error instanceof Error ? error.message : String(error);
-			logger.error("Unhandled error", { error: message });
+			logger.error("Unhandled error", { requestId, error: message });
 			res.writeHead(500, { "Content-Type": "application/json" });
 			res.end(
 				JSON.stringify({
@@ -335,29 +415,40 @@ const app = createServer(async (req: IncomingMessage, res: ServerResponse) => {
 });
 
 // Start server
-const server = app.listen(PORT, () => {
+server.listen(PORT, () => {
 	logger.info("SnapBack MCP Server started", {
 		port: PORT,
 		env: NODE_ENV,
+		version: MCP_VERSION,
+		transport: "streamable-http",
 		timestamp: new Date().toISOString(),
 	});
 });
 
 // Graceful shutdown
-process.on("SIGTERM", () => {
-	logger.info("SIGTERM received, shutting down gracefully");
+async function shutdown(signal: string): Promise<void> {
+	logger.info(`${signal} received, shutting down gracefully`);
+
+	// Close all transport managers
+	for (const [key, manager] of transportManagers) {
+		await manager.close();
+		logger.info("Closed transport manager", { key });
+	}
+	transportManagers.clear();
+
 	server.close(() => {
 		logger.info("Server closed");
 		process.exit(0);
 	});
-});
 
-process.on("SIGINT", () => {
-	logger.info("SIGINT received, shutting down gracefully");
-	server.close(() => {
-		logger.info("Server closed");
-		process.exit(0);
-	});
-});
+	// Force exit after 10 seconds
+	setTimeout(() => {
+		logger.error("Forced shutdown after timeout");
+		process.exit(1);
+	}, 10000);
+}
 
-export default app;
+process.on("SIGTERM", () => shutdown("SIGTERM"));
+process.on("SIGINT", () => shutdown("SIGINT"));
+
+export default server;

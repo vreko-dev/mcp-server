@@ -1,15 +1,15 @@
 /**
- * Security validation utilities for MCP server
- * Implements P0 security fixes:
- * - P0-1: Error logging with context
- * - P0-4: API key format validation
+ * Security validation utilities for MCP server (Phase 1)
+ *
+ * Implements security validations:
+ * - P0-4: API key format validation (format-only, no database)
  * - P0-7: Workspace path injection prevention
  * - P0-8: CORS origin validation
  * - P1-3: Request body size limits
  *
- * Unified Auth Integration:
- * - Validates API keys against Better Auth
- * - Checks mcp:tools scope permission
+ * Phase 2 will add:
+ * - Database-backed API key verification via Better Auth
+ * - mcp:tools scope permission checks
  */
 
 // Security constants
@@ -17,6 +17,9 @@ const MAX_BODY_SIZE = 10 * 1024 * 1024; // 10MB - P1-3
 // ✅ CONSOLIDATED: Use sk_live_/sk_test_ prefix (aligned with Better Auth)
 // Better Auth generates 64-char keys, but accept 32+ for backwards compatibility
 const API_KEY_PATTERN = /^sk_(live|test)_[a-zA-Z0-9]{32,}$/; // P0-4
+// Workspace ID: ws_ prefix + 32 lowercase hex chars (128 bits entropy)
+const WORKSPACE_ID_PATTERN = /^ws_[a-f0-9]{32}$/;
+const WORKSPACE_ID_LENGTH = 35; // ws_ (3) + 32 hex chars = 35
 const DANGEROUS_CHARS = /[;<>|&$`\\]/; // Command injection protection
 const PATH_DANGEROUS_CHARS = /[<>|&;$`\\]/; // Path injection protection
 
@@ -57,73 +60,47 @@ export function validateApiKey(apiKey: string | undefined): ValidationResult {
 	return { valid: true };
 }
 
+// NOTE: Database-backed API key validation (validateApiKeyWithDatabase) moved to Phase 2
+// Phase 1 uses format-only validation for pre-production
+
 /**
- * Validates API key against Better Auth
- * Uses Better Auth's verifyApiKey with mcp:tools permission requirement
- *
- * @param apiKey - The raw API key from request
- * @returns Validation result with user ID if valid
+ * Validates workspace ID format (P0-4 equivalent for workspace auth)
+ * @param workspaceId - The workspace ID to validate
+ * @returns Validation result
  */
-export async function validateApiKeyWithDatabase(apiKey: string): Promise<ValidationResult & { userId?: string }> {
-	// First check format
-	const formatCheck = validateApiKey(apiKey);
-	if (!formatCheck.valid) {
-		return formatCheck;
-	}
-
-	try {
-		// Lazy import to avoid circular dependencies and allow testing
-		const { auth } = await import("@snapback/auth");
-
-		// Use Better Auth's verifyApiKey with MCP permission check
-		const result = await auth.api.verifyApiKey({
-			body: {
-				key: apiKey,
-				permissions: { mcp: ["tools"] }, // Require mcp:tools permission
-			},
-		});
-
-		if (!result.valid) {
-			// Map Better Auth error codes to user-friendly messages
-			const errorCode = result.error?.code;
-			let errorMessage = "Invalid API key";
-
-			switch (errorCode) {
-				case "KEY_REVOKED":
-					errorMessage = "API key has been revoked";
-					break;
-				case "KEY_EXPIRED":
-					errorMessage = "API key has expired";
-					break;
-				case "INSUFFICIENT_PERMISSIONS":
-					errorMessage = "API key does not have mcp:tools permission";
-					break;
-				case "RATE_LIMITED":
-					errorMessage = "API key rate limit exceeded";
-					break;
-				default:
-					errorMessage = result.error?.message || "Invalid API key";
-			}
-
-			return {
-				valid: false,
-				error: errorMessage,
-			};
-		}
-
-		return {
-			valid: true,
-			userId: result.key?.userId,
-		};
-	} catch (error) {
-		console.error("[MCP Auth] Better Auth validation error:", error);
-		// ⚠️ SECURITY: Never allow fallback to format-only validation
-		// This would bypass authentication entirely
+export function validateWorkspaceId(workspaceId: string | undefined): ValidationResult {
+	if (!workspaceId || workspaceId.trim() === "") {
 		return {
 			valid: false,
-			error: "Authentication service unavailable. Please try again later.",
+			error: "Missing workspace ID",
 		};
 	}
+
+	// Check for valid prefix and format (ws_ + 32 lowercase hex chars)
+	if (!WORKSPACE_ID_PATTERN.test(workspaceId)) {
+		return {
+			valid: false,
+			error: "Invalid workspace ID format. Must be ws_ followed by exactly 32 lowercase hex characters",
+		};
+	}
+
+	// Length validation (redundant with regex but explicit for security)
+	if (workspaceId.length !== WORKSPACE_ID_LENGTH) {
+		return {
+			valid: false,
+			error: "Invalid workspace ID length",
+		};
+	}
+
+	// Check for dangerous characters (injection prevention)
+	if (DANGEROUS_CHARS.test(workspaceId)) {
+		return {
+			valid: false,
+			error: "Invalid workspace ID format. Contains illegal characters",
+		};
+	}
+
+	return { valid: true };
 }
 
 /**

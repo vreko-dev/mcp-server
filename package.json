@@ -1,13 +1,20 @@
 {
   "name": "snapback-mcp-server",
-  "version": "1.0.0",
-  "description": "SnapBack MCP Server - Remote HTTP endpoint for AI assistant integration",
+  "version": "2.0.0",
+  "description": "SnapBack MCP Server - Streamable HTTP transport for AI assistant integration",
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
     "dev": "node --loader ts-node/esm src/index.ts",
-    "build": "tsc",
+    "build": "tsup",
     "start": "node dist/index.js",
+    "validate": "node scripts/validate-bundle.js",
+    "validate:fix": "node scripts/validate-bundle.js --fix",
+    "docker:test": "./scripts/docker-test.sh",
+    "docker:shell": "./scripts/docker-test.sh --shell",
+    "predeploy": "pnpm build && pnpm validate",
+    "deploy": "fly deploy . --config apps/mcp-server/fly.toml --dockerfile apps/mcp-server/Dockerfile --remote-only",
+    "deploy:force": "fly deploy . --config apps/mcp-server/fly.toml --dockerfile apps/mcp-server/Dockerfile --remote-only --strategy immediate",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
@@ -16,15 +23,14 @@
     "format": "biome format ."
   },
   "dependencies": {
-    "@node-rs/argon2": "catalog:",
-    "@snapback/auth": "workspace:*",
-    "@snapback/platform": "workspace:*",
-    "drizzle-orm": "catalog:"
+    "@snapback/mcp": "workspace:*",
+    "@snapback/platform": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "catalog:",
     "typescript": "catalog:",
     "ts-node": "catalog:",
+    "tsup": "catalog:",
     "vitest": "catalog:",
     "@vitest/coverage-v8": "catalog:"
   },

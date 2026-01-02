@@ -1,7 +1,8 @@
-# fly.toml app configuration file generated for snapback-mcp on 2025-12-30T11:43:54-05:00
-#
+# fly.toml app configuration file for snapback-mcp
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
+# Deploy from monorepo root with:
+# fly deploy . --config apps/mcp-server/fly.toml --dockerfile apps/mcp-server/Dockerfile
 
 app = 'snapback-mcp'
 primary_region = 'ord'
@@ -9,49 +10,36 @@ kill_signal = 'SIGINT'
 kill_timeout = '5s'
 
 [build]
-  ignorefile = '.dockerignore'
-
+  # NOTE: Dockerfile path must be specified via --dockerfile flag when deploying from monorepo root
+  # This avoids path resolution issues with relative paths in fly.toml
   [build.args]
     NODE_ENV = 'production'
 
 [env]
-  MCP_VERSION = '1.0.0'
+  MCP_VERSION = '2.0.0'
   NODE_ENV = 'production'
   PORT = '8080'
 
-[[services]]
-  protocol = 'tcp'
+# HTTP service configuration (replaces deprecated [[services]] syntax)
+[http_service]
   internal_port = 8080
+  force_https = true
   auto_stop_machines = 'stop'
   auto_start_machines = true
   min_machines_running = 1
 
-  [[services.ports]]
-    port = 80
-    handlers = ['http']
-    force_https = true
-
-  [[services.ports]]
-    port = 443
-    handlers = ['tls', 'http']
-
-  [services.concurrency]
+  [http_service.concurrency]
     type = 'connections'
     hard_limit = 500
     soft_limit = 250
 
-  [[services.tcp_checks]]
+  # Health check configuration
+  [[http_service.checks]]
+    grace_period = '10s'
     interval = '15s'
-    timeout = '2s'
-    grace_period = '5s'
-
-  [[services.http_checks]]
-    interval = '10s'
-    timeout = '2s'
-    grace_period = '5s'
-    method = 'get'
+    timeout = '3s'
+    method = 'GET'
     path = '/health'
-    protocol = 'http'
 
 [[vm]]
   size = 'shared-cpu-1x'

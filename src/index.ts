@@ -42,6 +42,156 @@ const logger = {
 // Transport manager cache keyed by workspace
 const transportManagers: Map<string, HttpTransportManager> = new Map();
 
+// =============================================================================
+// WORKSPACE CONTEXT STORAGE (In-memory with TTL)
+// =============================================================================
+
+/**
+ * Observation from VS Code extension
+ */
+interface Observation {
+	type: "risk" | "pattern" | "suggestion" | "warning" | "progress";
+	message: string;
+	timestamp: number;
+	context?: Record<string, unknown>;
+}
+
+/**
+ * File change from VS Code extension
+ */
+interface FileChange {
+	file: string;
+	type: "created" | "modified" | "deleted";
+	timestamp: number;
+	aiAttributed: boolean;
+	linesChanged: number;
+}
+
+/**
+ * Bridge push payload from VS Code extension
+ */
+interface BridgePushPayload {
+	workspaceId: string;
+	observations?: Observation[];
+	changes?: FileChange[];
+}
+
+/**
+ * Stored workspace context with TTL
+ */
+interface WorkspaceContext {
+	workspaceId: string;
+	observations: Observation[];
+	changes: FileChange[];
+	lastUpdated: number;
+	expiresAt: number;
+}
+
+// Context TTL: 24 hours
+const CONTEXT_TTL_MS = 24 * 60 * 60 * 1000;
+// Max observations per workspace
+const MAX_OBSERVATIONS = 100;
+// Max changes per workspace
+const MAX_CHANGES = 500;
+
+// In-memory workspace context store
+const workspaceContexts: Map<string, WorkspaceContext> = new Map();
+
+/**
+ * Store workspace context from bridge push
+ */
+function storeWorkspaceContext(payload: BridgePushPayload): {
+	stored: boolean;
+	observationsCount: number;
+	changesCount: number;
+} {
+	const { workspaceId, observations = [], changes = [] } = payload;
+	const now = Date.now();
+
+	let context = workspaceContexts.get(workspaceId);
+	if (!context) {
+		context = {
+			workspaceId,
+			observations: [],
+			changes: [],
+			lastUpdated: now,
+			expiresAt: now + CONTEXT_TTL_MS,
+		};
+	}
+
+	// Append observations (with max limit)
+	context.observations.push(...observations);
+	if (context.observations.length > MAX_OBSERVATIONS) {
+		context.observations = context.observations.slice(-MAX_OBSERVATIONS);
+	}
+
+	// Append changes (with max limit)
+	context.changes.push(...changes);
+	if (context.changes.length > MAX_CHANGES) {
+		context.changes = context.changes.slice(-MAX_CHANGES);
+	}
+
+	context.lastUpdated = now;
+	context.expiresAt = now + CONTEXT_TTL_MS;
+
+	workspaceContexts.set(workspaceId, context);
+
+	return {
+		stored: true,
+		observationsCount: observations.length,
+		changesCount: changes.length,
+	};
+}
+
+/**
+ * Get workspace context (for MCP tools to consume)
+ */
+export function getWorkspaceContext(workspaceId: string): WorkspaceContext | null {
+	const context = workspaceContexts.get(workspaceId);
+	if (!context) {
+		return null;
+	}
+
+	// Check expiration
+	if (Date.now() > context.expiresAt) {
+		workspaceContexts.delete(workspaceId);
+		return null;
+	}
+
+	return context;
+}
+
+/**
+ * Drain observations from workspace context (returns and clears)
+ */
+export function drainWorkspaceObservations(workspaceId: string): Observation[] {
+	const context = workspaceContexts.get(workspaceId);
+	if (!context) {
+		return [];
+	}
+
+	const observations = [...context.observations];
+	context.observations = [];
+	context.lastUpdated = Date.now();
+	return observations;
+}
+
+/**
+ * Clean up expired workspace contexts
+ */
+function cleanupExpiredContexts(): void {
+	const now = Date.now();
+	for (const [workspaceId, context] of workspaceContexts) {
+		if (now > context.expiresAt) {
+			workspaceContexts.delete(workspaceId);
+			logger.info("Cleaned up expired workspace context", { workspaceId: `${workspaceId.slice(0, 10)}...` });
+		}
+	}
+}
+
+// Run cleanup every hour
+setInterval(cleanupExpiredContexts, 60 * 60 * 1000);
+
 /**
  * Get or create transport manager for a workspace
  */
@@ -60,6 +210,7 @@ function getTransportManager(workspace: string, tier: "free" | "pro" | "enterpri
 		logger.info("Created transport manager", { workspace, tier });
 	}
 
+	// biome-ignore lint/style/noNonNullAssertion: We just set the value above
 	return transportManagers.get(key)!;
 }
 
@@ -290,6 +441,7 @@ async function handleLinkWorkspace(
 
 	try {
 		await linkWorkspace({
+			// biome-ignore lint/style/noNonNullAssertion: Validated above
 			workspaceId: workspaceId!,
 			userId,
 			tier,
@@ -314,6 +466,126 @@ async function handleLinkWorkspace(
 				message: NODE_ENV === "production" ? "Failed to link workspace" : message,
 			}),
 		);
+	}
+}
+
+/**
+ * Handle bridge push requests from VS Code extension
+ *
+ * Receives observations and file changes from the extension and stores
+ * them in the workspace context for MCP tools to consume.
+ */
+async function handleBridgePush(
+	req: IncomingMessage,
+	res: ServerResponse,
+	body: string,
+	requestId: string,
+): Promise<void> {
+	// Only accept POST
+	if (req.method !== "POST") {
+		res.writeHead(405, { "Content-Type": "application/json" });
+		res.end(JSON.stringify({ error: "METHOD_NOT_ALLOWED", message: "Only POST is allowed" }));
+		return;
+	}
+
+	// Parse body
+	let payload: BridgePushPayload;
+	try {
+		payload = JSON.parse(body);
+	} catch {
+		res.writeHead(400, { "Content-Type": "application/json" });
+		res.end(JSON.stringify({ error: "BAD_REQUEST", message: "Invalid JSON body" }));
+		return;
+	}
+
+	// Validate workspace ID is present
+	if (!payload.workspaceId) {
+		res.writeHead(400, { "Content-Type": "application/json" });
+		res.end(JSON.stringify({ error: "BAD_REQUEST", message: "Missing workspaceId" }));
+		return;
+	}
+
+	// Validate workspace ID format
+	const workspaceIdValidation = validateWorkspaceId(payload.workspaceId);
+	if (!workspaceIdValidation.valid) {
+		res.writeHead(400, { "Content-Type": "application/json" });
+		res.end(JSON.stringify({ error: "BAD_REQUEST", message: workspaceIdValidation.error }));
+		return;
+	}
+
+	// Store the context
+	const result = storeWorkspaceContext(payload);
+
+	logger.info("Bridge push received", {
+		requestId,
+		workspaceId: `${payload.workspaceId.slice(0, 10)}...`,
+		observations: result.observationsCount,
+		changes: result.changesCount,
+	});
+
+	res.writeHead(200, { "Content-Type": "application/json" });
+	res.end(
+		JSON.stringify({
+			received: true,
+			observationsCount: result.observationsCount,
+			changesCount: result.changesCount,
+		}),
+	);
+}
+
+/**
+ * Handle bridge status requests
+ *
+ * Returns workspace context status for debugging and monitoring.
+ */
+async function handleBridgeStatus(
+	req: IncomingMessage,
+	res: ServerResponse,
+	_requestId: string,
+	url: URL,
+): Promise<void> {
+	// Only accept GET
+	if (req.method !== "GET") {
+		res.writeHead(405, { "Content-Type": "application/json" });
+		res.end(JSON.stringify({ error: "METHOD_NOT_ALLOWED", message: "Only GET is allowed" }));
+		return;
+	}
+
+	const workspaceId = url.searchParams.get("workspaceId");
+
+	if (workspaceId) {
+		// Return specific workspace status
+		const context = getWorkspaceContext(workspaceId);
+		if (!context) {
+			res.writeHead(404, { "Content-Type": "application/json" });
+			res.end(JSON.stringify({ error: "NOT_FOUND", message: "Workspace context not found" }));
+			return;
+		}
+
+		res.writeHead(200, { "Content-Type": "application/json" });
+		res.end(
+			JSON.stringify({
+				workspaceId: `${workspaceId.slice(0, 10)}...`,
+				observationsCount: context.observations.length,
+				changesCount: context.changes.length,
+				lastUpdated: context.lastUpdated,
+				expiresAt: context.expiresAt,
+			}),
+		);
+	} else {
+		// Return summary of all workspaces
+		const summary = {
+			totalWorkspaces: workspaceContexts.size,
+			workspaces: Array.from(workspaceContexts.entries()).map(([id, ctx]) => ({
+				workspaceId: `${id.slice(0, 10)}...`,
+				observations: ctx.observations.length,
+				changes: ctx.changes.length,
+				lastUpdated: ctx.lastUpdated,
+			})),
+		};
+
+		res.writeHead(200, { "Content-Type": "application/json" });
+		res.end(JSON.stringify(summary));
 	}
 }
 
@@ -396,6 +668,10 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
 				await handleMcp(req, res, body, requestId, url);
 			} else if (url.pathname === "/auth/link-workspace") {
 				await handleLinkWorkspace(req, res, body, requestId);
+			} else if (url.pathname === "/bridge/push") {
+				await handleBridgePush(req, res, body, requestId);
+			} else if (url.pathname === "/bridge/status") {
+				await handleBridgeStatus(req, res, requestId, url);
 			} else {
 				res.writeHead(404, { "Content-Type": "application/json" });
 				res.end(JSON.stringify({ error: "NOT_FOUND", message: "Endpoint not found" }));

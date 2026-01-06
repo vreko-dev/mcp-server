@@ -71,40 +71,101 @@ curl -X POST http://localhost:8080/mcp \
 
 ## Deployment to Fly.io
 
-### Prerequisites
+### Quick Deploy (Recommended)
 
-- Fly.io account (`fly auth login`)
-- API key for authentication
-
-### Setup
+From the monorepo root:
 
 ```bash
-# 1. Create Fly app
-cd apps/mcp-server
-fly launch --name snapback-mcp --config fly.toml
+# Full deployment with pre-flight checks and verification
+pnpm --filter=snapback-mcp-server deploy
 
-# 2. Set secrets
-fly secrets set SNAPBACK_API_KEY=sb_live_your_key
-fly secrets set CORS_ORIGIN=https://your-domain.com
-
-# 3. Deploy
-fly deploy
+# Dry run (validates without deploying)
+pnpm --filter=snapback-mcp-server deploy:dry-run
 ```
+
+The deploy script automatically:
+- ✅ Validates Fly CLI is installed and authenticated
+- ✅ Checks for uncommitted changes
+- ✅ Builds and validates the bundle
+- ✅ Deploys to Fly.io
+- ✅ Verifies health and `/bridge/push` endpoints after deployment
+
+### Alternative Deploy Methods
+
+```bash
+# Quick deploy (skips pre-flight checks)
+pnpm --filter=snapback-mcp-server deploy:quick
+
+# Force immediate deployment (no rolling update)
+pnpm --filter=snapback-mcp-server deploy:force
+
+# Check deployment status
+pnpm --filter=snapback-mcp-server deploy:status
+
+# View live logs
+pnpm --filter=snapback-mcp-server deploy:logs
+
+# View releases for rollback
+pnpm --filter=snapback-mcp-server deploy:rollback
+```
+
+### First-Time Setup
+
+If deploying for the first time:
+
+```bash
+# 1. Login to Fly.io
+fly auth login
+
+# 2. Create the app (only once)
+fly apps create snapback-mcp
+
+# 3. Set secrets
+fly secrets set SNAPBACK_API_KEY=sb_live_your_key -a snapback-mcp
+fly secrets set CORS_ORIGIN=https://your-domain.com -a snapback-mcp
+
+# 4. Deploy
+pnpm --filter=snapback-mcp-server deploy
+```
+
+### CI/CD Deployment
+
+Automatic deployments are triggered on push to `main` when changes are detected in:
+- `apps/mcp-server/**`
+- `packages/mcp/**`, `packages/core/**`, `packages/intelligence/**`
+
+**Required GitHub Secret**: `FLY_API_TOKEN`
+
+Generate a token: `fly tokens create deploy -x 999999h`
 
 ### Verify Deployment
 
 ```bash
-fly open /health
+# Health check
+curl https://snapback-mcp.fly.dev/health
+
+# Bridge endpoint test
+curl -X POST https://snapback-mcp.fly.dev/bridge/push \
+  -H "Content-Type: application/json" \
+  -d '{"workspaceId":"ws_00000000000000000000000000000000","observations":[]}'
 ```
 
-Should return:
+Expected responses:
 ```json
-{
-  "status": "healthy",
-  "uptime": 123.456,
-  "timestamp": "2024-12-30T...",
-  "version": "1.0.0"
-}
+{"status":"healthy","uptime":123.456,"timestamp":"2025-01-06T...","version":"2.0.0"}
+{"received":true,"observationsCount":0,"changesCount":0}
+```
+
+### Rollback
+
+If something goes wrong:
+
+```bash
+# List recent releases
+fly releases -a snapback-mcp
+
+# Rollback to a previous version
+fly releases rollback v123 -a snapback-mcp
 ```
 
 ## Configuration

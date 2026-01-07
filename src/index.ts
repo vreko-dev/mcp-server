@@ -202,12 +202,13 @@ function getTransportManager(workspace: string, tier: "free" | "pro" | "enterpri
 		const manager = createHttpTransport({
 			workspaceRoot: workspace,
 			tier,
+			storageMode: "remote", // 🧢 Remote server uses backend storage, no local filesystem writes
 			enableJsonResponse: true,
 			sessionTimeoutMs: 30 * 60 * 1000, // 30 minutes
 			maxSessions: 100,
 		});
 		transportManagers.set(key, manager);
-		logger.info("Created transport manager", { workspace, tier });
+		logger.info("Created transport manager", { workspace, tier, storageMode: "remote" });
 	}
 
 	// biome-ignore lint/style/noNonNullAssertion: We just set the value above

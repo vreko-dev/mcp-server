@@ -1,16 +1,18 @@
 /**
- * Security validation utilities for MCP server (Phase 1)
+ * Security validation utilities for MCP server
  *
  * Implements security validations:
- * - P0-4: API key format validation (format-only, no database)
+ * - P0-4: API key format validation (format-only quick check)
  * - P0-7: Workspace path injection prevention
  * - P0-8: CORS origin validation
  * - P1-3: Request body size limits
- *
- * Phase 2 will add:
  * - Database-backed API key verification via Better Auth
- * - mcp:tools scope permission checks
+ *
+ * @see packages/auth/src/auth.ts - Better Auth configuration
  */
+
+// API URL for database-backed verification
+const API_URL = process.env.SNAPBACK_API_URL || "https://api.snapback.dev";
 
 // Security constants
 const MAX_BODY_SIZE = 10 * 1024 * 1024; // 10MB - P1-3
@@ -60,8 +62,91 @@ export function validateApiKey(apiKey: string | undefined): ValidationResult {
 	return { valid: true };
 }
 
-// NOTE: Database-backed API key validation (validateApiKeyWithDatabase) moved to Phase 2
-// Phase 1 uses format-only validation for pre-production
+/**
+ * Database-backed API key validation via Better Auth
+ *
+ * Calls the API's verifyApiKey endpoint to:
+ * - Verify key against database (Argon2 hash)
+ * - Check expiration and revocation status
+ * - Apply rate limiting
+ * - Return user info and tier
+ *
+ * @param apiKey - The API key to validate
+ * @returns Validation result with user info
+ */
+export async function validateApiKeyWithDatabase(apiKey: string): Promise<{
+	valid: boolean;
+	userId?: string;
+	tier?: "free" | "pro" | "enterprise";
+	error?: string;
+}> {
+	// Quick format check before making HTTP call
+	const formatResult = validateApiKey(apiKey);
+	if (!formatResult.valid) {
+		return { valid: false, error: formatResult.error };
+	}
+
+	try {
+		// Call API's auth.verifyApiKey oRPC endpoint
+		const response = await fetch(`${API_URL}/orpc/auth.verifyApiKey`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				apiKey,
+				// Request MCP tools permission
+				requiredPermissions: {
+					mcp: ["tools"],
+				},
+			}),
+		});
+
+		if (!response.ok) {
+			if (response.status === 401) {
+				return { valid: false, error: "Invalid or expired API key" };
+			}
+			return { valid: false, error: `API verification failed: ${response.status}` };
+		}
+
+		const result = (await response.json()) as {
+			valid: boolean;
+			userId?: string;
+			permissions?: Record<string, string[]>;
+			rateLimit?: {
+				enabled: boolean;
+				remaining: number;
+				max: number;
+				resetAt?: string;
+			};
+		};
+
+		if (!result.valid) {
+			return { valid: false, error: "Invalid API key" };
+		}
+
+		// Determine tier based on permissions (pro has more permissions)
+		const permissions = result.permissions || {};
+		const hasPro = permissions.api?.includes("write") || permissions["snapback:snapshot"]?.includes("write");
+
+		return {
+			valid: true,
+			userId: result.userId,
+			tier: hasPro ? "pro" : "free",
+		};
+	} catch (error) {
+		// Network error or API unavailable - fallback to format validation only
+		// This ensures MCP works even if API is temporarily down
+		console.error("[MCP] API key verification failed, using format validation:", error);
+		return {
+			valid: true, // Allow request if format is valid
+			tier: "free", // Default to free tier as safety
+		};
+	}
+}
+
+// NOTE: Format-only validation (validateApiKey) is kept for quick pre-checks
+// Database-backed validation (validateApiKeyWithDatabase) should be used for full verification
 
 /**
  * Validates workspace ID format (P0-4 equivalent for workspace auth)

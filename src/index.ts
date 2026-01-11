@@ -16,6 +16,7 @@ import {
 	getAllowedCorsOrigin,
 	getMaxBodySize,
 	validateApiKey,
+	validateApiKeyWithDatabase,
 	validateWorkspace,
 	validateWorkspaceId,
 } from "./validation.js";
@@ -348,6 +349,7 @@ async function handleMcp(
 	}
 	// Priority 2: API key authentication (legacy)
 	else if (apiKey) {
+		// Quick format validation first
 		const apiKeyValidation = validateApiKey(apiKey);
 		if (!apiKeyValidation.valid) {
 			logger.warn("API key validation failed", { requestId, error: apiKeyValidation.error });
@@ -355,8 +357,31 @@ async function handleMcp(
 			res.end(JSON.stringify({ error: "UNAUTHORIZED", message: apiKeyValidation.error }));
 			return;
 		}
-		// For now, API key presence implies pro tier (Phase 2 will verify with database)
-		tier = "pro";
+
+		// Database-backed verification via Better Auth
+		try {
+			const apiKeyResult = await validateApiKeyWithDatabase(apiKey);
+			if (!apiKeyResult.valid) {
+				logger.warn("API key database validation failed", { requestId, error: apiKeyResult.error });
+				res.writeHead(401, { "Content-Type": "application/json" });
+				res.end(JSON.stringify({ error: "UNAUTHORIZED", message: apiKeyResult.error }));
+				return;
+			}
+
+			tier = apiKeyResult.tier || "pro";
+			logger.info("Tier resolved via API key", {
+				requestId,
+				userId: apiKeyResult.userId,
+				tier,
+			});
+		} catch (error) {
+			// API unavailable - fallback to format validation (tier = pro for backwards compat)
+			logger.warn("API key verification service unavailable, using format validation", {
+				requestId,
+				error: String(error),
+			});
+			tier = "pro";
+		}
 	}
 	// No authentication provided - use free tier (default)
 	else {
@@ -401,11 +426,13 @@ async function handleLinkWorkspace(
 	}
 
 	const apiKey = authHeader.slice(7); // Remove "Bearer "
-	const apiKeyValidation = validateApiKey(apiKey);
-	if (!apiKeyValidation.valid) {
-		logger.warn("Link workspace: API key validation failed", { requestId, error: apiKeyValidation.error });
+
+	// Database-backed API key verification
+	const apiKeyResult = await validateApiKeyWithDatabase(apiKey);
+	if (!apiKeyResult.valid) {
+		logger.warn("Link workspace: API key validation failed", { requestId, error: apiKeyResult.error });
 		res.writeHead(401, { "Content-Type": "application/json" });
-		res.end(JSON.stringify({ error: "UNAUTHORIZED", message: apiKeyValidation.error }));
+		res.end(JSON.stringify({ error: "UNAUTHORIZED", message: apiKeyResult.error }));
 		return;
 	}
 

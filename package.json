@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "node --loader ts-node/esm src/index.ts",
     "build": "tsup",
+    "docker-build": "docker build -t snapback-mcp:${GIT_SHA:-latest} -f apps/mcp-server/Dockerfile .",
     "start": "node dist/index.js",
     "validate": "node scripts/validate-bundle.js",
     "validate:fix": "node scripts/validate-bundle.js --fix",

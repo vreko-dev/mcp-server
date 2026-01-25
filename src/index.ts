@@ -13,6 +13,17 @@ import { URL } from "node:url";
 import { createHttpTransport, type HttpTransportManager } from "@snapback/mcp";
 import { linkWorkspace, resolveTierByWorkspaceId } from "@snapback/platform/db/queries";
 import {
+	type FalsePositiveSignal,
+	getCapabilities,
+	recordFalsePositiveSignal,
+} from "@snapback/platform/db/queries/capabilities";
+import { initializePostHog, shutdownPostHog } from "./analytics/posthog.js";
+import {
+	flushCapabilityMetrics,
+	startCapabilityMetricsReporting,
+	stopCapabilityMetricsReporting,
+} from "./metrics/capability-metrics.js";
+import {
 	getAllowedCorsOrigin,
 	getMaxBodySize,
 	validateApiKey,
@@ -562,6 +573,161 @@ async function handleBridgePush(
 }
 
 /**
+ * Handle false positive signal from VS Code extension
+ *
+ * Records when a user proceeds after an AI detection warning,
+ * which signals a potential false positive for capability learning.
+ */
+async function handleFalsePositiveSignal(
+	req: IncomingMessage,
+	res: ServerResponse,
+	body: string,
+	requestId: string,
+): Promise<void> {
+	// Only accept POST
+	if (req.method !== "POST") {
+		res.writeHead(405, { "Content-Type": "application/json" });
+		res.end(JSON.stringify({ error: "METHOD_NOT_ALLOWED", message: "Only POST is allowed" }));
+		return;
+	}
+
+	// Parse body
+	let payload: {
+		userId: string;
+		patternKey: string;
+		aiTool: string;
+		confidence: number;
+		filePattern?: string;
+		workspaceId?: string;
+		sessionId?: string;
+	};
+	try {
+		payload = JSON.parse(body);
+	} catch {
+		res.writeHead(400, { "Content-Type": "application/json" });
+		res.end(JSON.stringify({ error: "BAD_REQUEST", message: "Invalid JSON body" }));
+		return;
+	}
+
+	// Validate required fields
+	if (!payload.userId || !payload.patternKey || !payload.aiTool) {
+		res.writeHead(400, { "Content-Type": "application/json" });
+		res.end(
+			JSON.stringify({ error: "BAD_REQUEST", message: "Missing required fields: userId, patternKey, aiTool" }),
+		);
+		return;
+	}
+
+	// Validate aiTool is a known value
+	const validAiTools = ["cursor", "copilot", "claude", "windsurf", "aider", "unknown"] as const;
+	const aiTool = validAiTools.includes(payload.aiTool as (typeof validAiTools)[number])
+		? (payload.aiTool as FalsePositiveSignal["aiTool"])
+		: "unknown"; // Fallback to "unknown" for unrecognized tools
+
+	// Build false positive signal
+	const signal: FalsePositiveSignal = {
+		type: "implicit", // User proceeded = implicit signal
+		patternKey: payload.patternKey,
+		aiTool,
+		confidence: payload.confidence ?? 0.5,
+		filePattern: payload.filePattern,
+		timestamp: Date.now(),
+	};
+
+	try {
+		const result = await recordFalsePositiveSignal(payload.userId, signal, {
+			reason: "User proceeded after AI detection warning",
+			sessionId: payload.sessionId,
+			workspaceId: payload.workspaceId,
+			clientType: "mcp-server",
+		});
+
+		if (result) {
+			logger.info("False positive signal recorded", {
+				requestId,
+				userId: `${payload.userId.slice(0, 8)}...`,
+				patternKey: payload.patternKey,
+				aiTool: payload.aiTool,
+			});
+
+			res.writeHead(200, { "Content-Type": "application/json" });
+			res.end(JSON.stringify({ recorded: true, patternKey: payload.patternKey }));
+		} else {
+			// Version conflict or other issue - still return success but note it
+			logger.warn("False positive signal not recorded (version conflict)", {
+				requestId,
+				userId: `${payload.userId.slice(0, 8)}...`,
+			});
+
+			res.writeHead(200, { "Content-Type": "application/json" });
+			res.end(JSON.stringify({ recorded: false, reason: "version_conflict" }));
+		}
+	} catch (error) {
+		const message = error instanceof Error ? error.message : String(error);
+		logger.error("Failed to record false positive signal", { requestId, error: message });
+		res.writeHead(500, { "Content-Type": "application/json" });
+		res.end(
+			JSON.stringify({
+				error: "INTERNAL_ERROR",
+				message: NODE_ENV === "production" ? "Failed to record signal" : message,
+			}),
+		);
+	}
+}
+
+/**
+ * Handle user capabilities request
+ *
+ * Returns detection capabilities for a user (with caching).
+ */
+async function handleGetCapabilities(
+	req: IncomingMessage,
+	res: ServerResponse,
+	_requestId: string,
+	url: URL,
+): Promise<void> {
+	// Only accept GET
+	if (req.method !== "GET") {
+		res.writeHead(405, { "Content-Type": "application/json" });
+		res.end(JSON.stringify({ error: "METHOD_NOT_ALLOWED", message: "Only GET is allowed" }));
+		return;
+	}
+
+	const userId = url.searchParams.get("userId");
+	if (!userId) {
+		res.writeHead(400, { "Content-Type": "application/json" });
+		res.end(JSON.stringify({ error: "BAD_REQUEST", message: "Missing userId query parameter" }));
+		return;
+	}
+
+	try {
+		const capabilities = await getCapabilities(userId);
+
+		res.writeHead(200, { "Content-Type": "application/json" });
+		res.end(
+			JSON.stringify({
+				tier: capabilities.tier,
+				accuracyScore: capabilities.accuracyScore,
+				totalDetectionsAnalyzed: capabilities.totalDetectionsAnalyzed,
+				falsePositivePatternCount: capabilities.falsePositivePatterns?.length ?? 0,
+				customRiskIndicatorCount: capabilities.customRiskIndicators?.length ?? 0,
+				hasThresholdOverrides: Object.keys(capabilities.thresholdOverrides ?? {}).length > 0,
+			}),
+		);
+	} catch (error) {
+		const message = error instanceof Error ? error.message : String(error);
+		logger.error("Failed to get capabilities", { error: message });
+		res.writeHead(500, { "Content-Type": "application/json" });
+		res.end(
+			JSON.stringify({
+				error: "INTERNAL_ERROR",
+				message: NODE_ENV === "production" ? "Failed to get capabilities" : message,
+			}),
+		);
+	}
+}
+
+/**
  * Handle bridge status requests
  *
  * Returns workspace context status for debugging and monitoring.
@@ -700,6 +866,10 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
 				await handleBridgePush(req, res, body, requestId);
 			} else if (url.pathname === "/bridge/status") {
 				await handleBridgeStatus(req, res, requestId, url);
+			} else if (url.pathname === "/capabilities/false-positive") {
+				await handleFalsePositiveSignal(req, res, body, requestId);
+			} else if (url.pathname === "/capabilities") {
+				await handleGetCapabilities(req, res, requestId, url);
 			} else {
 				res.writeHead(404, { "Content-Type": "application/json" });
 				res.end(JSON.stringify({ error: "NOT_FOUND", message: "Endpoint not found" }));
@@ -719,19 +889,35 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
 });
 
 // Start server
-server.listen(PORT, () => {
+server.listen(PORT, async () => {
+	// Initialize PostHog analytics
+	await initializePostHog();
+
+	// Start capability cache metrics reporting (every 5 minutes)
+	startCapabilityMetricsReporting();
+
 	logger.info("SnapBack MCP Server started", {
 		port: PORT,
 		env: NODE_ENV,
 		version: MCP_VERSION,
 		transport: "streamable-http",
 		timestamp: new Date().toISOString(),
+		features: ["capability-metrics", "false-positive-signals"],
 	});
 });
 
 // Graceful shutdown
 async function shutdown(signal: string): Promise<void> {
 	logger.info(`${signal} received, shutting down gracefully`);
+
+	// Stop capability metrics reporting
+	stopCapabilityMetricsReporting();
+
+	// Flush final metrics before shutdown
+	await flushCapabilityMetrics();
+
+	// Shutdown PostHog (flush pending events)
+	await shutdownPostHog();
 
 	// Close all transport managers
 	for (const [key, manager] of transportManagers) {

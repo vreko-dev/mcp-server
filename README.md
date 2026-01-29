@@ -1,6 +1,6 @@
-# SnapBack MCP Remote Server
-
-Remote HTTP endpoint for SnapBack MCP (Model Context Protocol) server, designed for deployment on Fly.io to protect your IP while providing AI assistant integration.
+<p align="center">
+  <img src="../../brand/github/github-mcp.png" alt="SnapBack MCP Server - AI-powered context server for Claude Desktop" />
+</p>
 
 ## Security Features (P0 Fixes Implemented)
 

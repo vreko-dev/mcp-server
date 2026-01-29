@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="../../brand/github/github-mcp.png" alt="SnapBack MCP Server - AI-powered context server for Claude Desktop" />
+  <img src="./assets/github-mcp.png" alt="SnapBack MCP Server - AI-powered context server for Claude Desktop" />
 </p>
 
 ## Security Features (P0 Fixes Implemented)

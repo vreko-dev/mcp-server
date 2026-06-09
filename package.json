@@ -1,26 +1,33 @@
 {
-  "name": "snapback-mcp-server",
-  "version": "2.0.0",
-  "description": "SnapBack MCP Server - Streamable HTTP transport for AI assistant integration",
+  "name": "vreko-mcp-server",
+  "version": "3.1.0",
+  "description": "Vreko MCP Proxy - HTTP reverse proxy forwarding MCP requests to the API server",
   "type": "module",
   "main": "dist/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
-    "dev": "node --loader ts-node/esm src/index.ts",
-    "build": "tsup",
-    "docker-build": "docker build -t snapback-mcp:${GIT_SHA:-latest} -f apps/mcp-server/Dockerfile .",
+    "dev": "SERVICE_NAME=mcp-server tsx src/index.ts",
+    "build": "doppler run --config dev -- tsup",
+    "build:docker": "tsup",
+    "docker-build": "docker build -t vreko-mcp:${GIT_SHA:-latest} -f apps/mcp-server/Dockerfile .",
     "start": "node dist/index.js",
     "validate": "node scripts/validate-bundle.js",
     "validate:fix": "node scripts/validate-bundle.js --fix",
     "docker:test": "./scripts/docker-test.sh",
     "docker:shell": "./scripts/docker-test.sh --shell",
-    "predeploy": "pnpm build && pnpm validate",
     "deploy": "./scripts/deploy-fly.sh",
     "deploy:dry-run": "./scripts/deploy-fly.sh --dry-run",
-    "deploy:quick": "fly deploy . --config fly.toml --dockerfile Dockerfile --remote-only",
-    "deploy:force": "fly deploy . --config fly.toml --dockerfile Dockerfile --remote-only --strategy immediate",
-    "deploy:status": "fly status -a snapback-mcp",
-    "deploy:logs": "fly logs -a snapback-mcp",
-    "deploy:rollback": "fly releases -a snapback-mcp",
+    "deploy:skip-build": "./scripts/deploy-fly.sh --skip-build",
+    "deploy:status": "fly status -a vreko-mcp",
+    "deploy:logs": "fly logs -a vreko-mcp",
+    "deploy:rollback": "fly releases -a vreko-mcp",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
@@ -29,19 +36,23 @@
     "format": "biome format ."
   },
   "dependencies": {
-    "@snapback/mcp": "workspace:*",
-    "@snapback/platform": "workspace:*",
-    "posthog-node": "catalog:"
+    "@vreko/mcp": "workspace:*",
+    "@vreko/sentry-privacy": "workspace:*",
+    "execa": "catalog:",
+    "ky": "catalog:",
+    "llm-guard": "^0.1.8",
+    "opossum": "catalog:",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@types/node": "catalog:",
+    "@vreko/platform": "workspace:*",
     "typescript": "catalog:",
-    "ts-node": "catalog:",
     "tsup": "catalog:",
     "vitest": "catalog:",
     "@vitest/coverage-v8": "catalog:"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=20.9.0"
   }
 }

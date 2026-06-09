@@ -11,17 +11,20 @@
  * @see packages/auth/src/auth.ts - Better Auth configuration
  */
 
+import { fetchWithPooling } from "./http-client.js";
+
 // API URL for database-backed verification
-const API_URL = process.env.SNAPBACK_API_URL || "https://api.snapback.dev";
+const API_URL = process.env.VREKO_API_URL || "https://api.vreko.dev";
 
 // Security constants
 const MAX_BODY_SIZE = 10 * 1024 * 1024; // 10MB - P1-3
 // ✅ CONSOLIDATED: Use sk_live_/sk_test_ prefix (aligned with Better Auth)
 // Better Auth generates 64-char keys, but accept 32+ for backwards compatibility
-const API_KEY_PATTERN = /^sk_(live|test)_[a-zA-Z0-9]{32,}$/; // P0-4
-// Workspace ID: ws_ prefix + 32 lowercase hex chars (128 bits entropy)
-const WORKSPACE_ID_PATTERN = /^ws_[a-f0-9]{32}$/;
-const WORKSPACE_ID_LENGTH = 35; // ws_ (3) + 32 hex chars = 35
+const API_KEY_PATTERN = /^sk_(live|test)_[a-zA-Z0-9_-]{32,}$/; // P0-4
+// Workspace ID: unified 12-char hex format (48 bits entropy)
+// Supports both: 12-char hex (new unified format) and ws_ + 32-char hex (legacy)
+const WORKSPACE_ID_PATTERN = /^([a-f0-9]{12}|ws_[a-f0-9]{32})$/;
+const WORKSPACE_ID_LENGTHS = [12, 35]; // 12 (unified) or 35 (legacy: ws_ + 32)
 const DANGEROUS_CHARS = /[;<>|&$`\\]/; // Command injection protection
 const PATH_DANGEROUS_CHARS = /[<>|&;$`\\]/; // Path injection protection
 
@@ -76,6 +79,7 @@ export function validateApiKey(apiKey: string | undefined): ValidationResult {
  */
 export async function validateApiKeyWithDatabase(apiKey: string): Promise<{
 	valid: boolean;
+	transient?: boolean;
 	userId?: string;
 	tier?: "free" | "pro" | "enterprise";
 	error?: string;
@@ -87,8 +91,8 @@ export async function validateApiKeyWithDatabase(apiKey: string): Promise<{
 	}
 
 	try {
-		// Call API's auth.verifyApiKey oRPC endpoint
-		const response = await fetch(`${API_URL}/orpc/auth.verifyApiKey`, {
+		// Call API's auth.verifyApiKey oRPC endpoint with connection pooling
+		const response = await fetchWithPooling(`${API_URL}/orpc/auth.verifyApiKey`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
@@ -127,20 +131,18 @@ export async function validateApiKeyWithDatabase(apiKey: string): Promise<{
 
 		// Determine tier based on permissions (pro has more permissions)
 		const permissions = result.permissions || {};
-		const hasPro = permissions.api?.includes("write") || permissions["snapback:snapshot"]?.includes("write");
+		const hasPro = permissions.api?.includes("write") || permissions["vreko:snapshot"]?.includes("write");
 
 		return {
 			valid: true,
 			userId: result.userId,
 			tier: hasPro ? "pro" : "free",
 		};
-	} catch (error) {
-		// Network error or API unavailable - fallback to format validation only
-		// This ensures MCP works even if API is temporarily down
-		console.error("[MCP] API key verification failed, using format validation:", error);
+	} catch (_error) {
 		return {
-			valid: true, // Allow request if format is valid
-			tier: "free", // Default to free tier as safety
+			valid: false,
+			transient: true,
+			error: "auth_service_unavailable",
 		};
 	}
 }
@@ -161,16 +163,16 @@ export function validateWorkspaceId(workspaceId: string | undefined): Validation
 		};
 	}
 
-	// Check for valid prefix and format (ws_ + 32 lowercase hex chars)
+	// Check for valid format: 12-char hex (unified) or ws_ + 32-char hex (legacy)
 	if (!WORKSPACE_ID_PATTERN.test(workspaceId)) {
 		return {
 			valid: false,
-			error: "Invalid workspace ID format. Must be ws_ followed by exactly 32 lowercase hex characters",
+			error: "Invalid workspace ID format. Must be 12 lowercase hex characters (unified) or ws_ followed by 32 lowercase hex characters (legacy)",
 		};
 	}
 
 	// Length validation (redundant with regex but explicit for security)
-	if (workspaceId.length !== WORKSPACE_ID_LENGTH) {
+	if (!WORKSPACE_ID_LENGTHS.includes(workspaceId.length)) {
 		return {
 			valid: false,
 			error: "Invalid workspace ID length",
@@ -189,11 +191,32 @@ export function validateWorkspaceId(workspaceId: string | undefined): Validation
 }
 
 /**
+ * Quick boolean check for workspace ID validity
+ * Exported for use in other modules (e.g., packages/platform/src/lib/workspace-id.ts)
+ *
+ * @param workspaceId - The workspace ID to validate
+ * @returns true if valid, false otherwise
+ */
+export function isValidWorkspaceId(workspaceId: string): boolean {
+	return validateWorkspaceId(workspaceId).valid;
+}
+
+/**
  * Validates workspace path for security
+ *
+ * Accepts:
+ * - "default" - Zero-config mode (server will use anonymous/default workspace)
+ * - Absolute paths - Traditional workspace path (e.g., "/Users/user/project")
+ *
  * @param workspace - The workspace path to validate
  * @returns Validation result
  */
 export function validateWorkspace(workspace: string | undefined): ValidationResult {
+	// Allow "default" for zero-config mode
+	if (workspace === "default") {
+		return { valid: true };
+	}
+
 	if (!workspace || workspace.trim() === "") {
 		return {
 			valid: false,
@@ -209,11 +232,11 @@ export function validateWorkspace(workspace: string | undefined): ValidationResu
 		};
 	}
 
-	// Must be absolute path
+	// Must be absolute path (unless it's "default")
 	if (!workspace.startsWith("/")) {
 		return {
 			valid: false,
-			error: "Invalid workspace path. Must be an absolute path",
+			error: "Invalid workspace path. Must be an absolute path or 'default'",
 		};
 	}
 

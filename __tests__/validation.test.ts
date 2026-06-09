@@ -174,7 +174,7 @@ describe("validation", () => {
 		});
 
 		it("should allow specific origin in production", () => {
-			const result = validateCorsOrigin("https://app.snapback.dev", "production");
+			const result = validateCorsOrigin("https://console.vreko.dev", "production");
 			expect(result.valid).toBe(true);
 		});
 	});
@@ -187,20 +187,20 @@ describe("validation", () => {
 
 		it("should return matching origin from list", () => {
 			const result = getAllowedCorsOrigin(
-				"https://app.snapback.dev",
-				"https://app.snapback.dev,https://www.snapback.dev",
+				"https://console.vreko.dev",
+				"https://console.vreko.dev,https://www.vreko.dev",
 			);
-			expect(result).toBe("https://app.snapback.dev");
+			expect(result).toBe("https://console.vreko.dev");
 		});
 
 		it("should return null for non-matching origin", () => {
-			const result = getAllowedCorsOrigin("https://evil.com", "https://app.snapback.dev");
+			const result = getAllowedCorsOrigin("https://evil.com", "https://console.vreko.dev");
 			expect(result).toBeNull();
 		});
 
 		it("should return first allowed origin when no request origin", () => {
-			const result = getAllowedCorsOrigin(undefined, "https://app.snapback.dev,https://www.snapback.dev");
-			expect(result).toBe("https://app.snapback.dev");
+			const result = getAllowedCorsOrigin(undefined, "https://console.vreko.dev,https://www.vreko.dev");
+			expect(result).toBe("https://console.vreko.dev");
 		});
 	});
 

@@ -9,7 +9,7 @@
  * - Dangerous character rejection
  * - Minimum key length enforcement
  *
- * @package SnapBack MCP Server
+ * @package Vreko MCP Server
  */
 
 import { describe, expect, it } from "vitest";
@@ -130,7 +130,7 @@ describe("MCP Server Authentication (Phase 1)", () => {
 			// THEN: Our validation should align with Better Auth's permission format
 			const betterAuthPermissionFormat = {
 				mcp: ["tools"],
-				"snapback:snapshot": ["read", "write"],
+				"vreko:snapshot": ["read", "write"],
 			};
 
 			expect(betterAuthPermissionFormat.mcp).toContain("tools");
@@ -139,10 +139,10 @@ describe("MCP Server Authentication (Phase 1)", () => {
 });
 
 // Phase 2 tests for database-backed validation are defined below
-// These will be enabled when @snapback/auth is integrated
-describe.skip("Database Validation Integration (Phase 2)", () => {
+// These will be enabled when @vreko/auth is integrated
+describe("@integration Database Validation Integration (Phase 2)", () => {
 	it("should have validateApiKeyWithDatabase function that checks permissions", () => {
-		// Phase 2: Requires @snapback/auth integration
+		// Phase 2: Requires @vreko/auth integration
 	});
 
 	it("should return userId on successful validation", () => {

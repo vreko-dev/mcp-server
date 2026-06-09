@@ -8,30 +8,11 @@
  */
 
 import type { PostHog } from "posthog-node";
+import { logger } from "../utils/logger.js";
 
 // Lazy-loaded PostHog client
 let posthogClient: PostHog | null = null;
 let initialized = false;
-
-// Simple logger (matches existing pattern in index.ts)
-const logger = {
-	info: (msg: string, context?: Record<string, unknown>) => {
-		if (process.env.LOG_LEVEL !== "silent") {
-			console.log(`[INFO] ${msg}`, context ? JSON.stringify(context) : "");
-		}
-	},
-	warn: (msg: string, context?: Record<string, unknown>) => {
-		console.warn(`[WARN] ${msg}`, context ? JSON.stringify(context) : "");
-	},
-	error: (msg: string, context?: Record<string, unknown>) => {
-		console.error(`[ERROR] ${msg}`, context ? JSON.stringify(context) : "");
-	},
-	debug: (msg: string, context?: Record<string, unknown>) => {
-		if (process.env.LOG_LEVEL === "debug") {
-			console.log(`[DEBUG] ${msg}`, context ? JSON.stringify(context) : "");
-		}
-	},
-};
 
 /**
  * Initialize PostHog client (lazy, call once on first use)

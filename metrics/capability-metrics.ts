@@ -4,11 +4,15 @@
  * Reports capability cache hit/miss rates to PostHog every 5 minutes.
  * Part of Phase 2: MCP Server Integration + Metrics.
  *
+ * Metrics are collected by the API server (which owns the capability cache).
+ * The MCP server fetches them via HTTP to preserve the zero-DB-import boundary.
+ *
  * @packageDocumentation
  */
 
-import { getCacheMetrics, resetCacheMetrics } from "@snapback/platform/db/queries/capabilities";
 import { captureEvent } from "../analytics/posthog.js";
+import { fetchWithPooling } from "../http-client.js";
+import { logger } from "../utils/logger.js";
 
 // Metrics reporting interval: 5 minutes
 const METRICS_INTERVAL_MS = 5 * 60 * 1000;
@@ -16,19 +20,58 @@ const METRICS_INTERVAL_MS = 5 * 60 * 1000;
 // Interval handle for cleanup
 let metricsInterval: NodeJS.Timeout | null = null;
 
-// Simple logger
-const logger = {
-	info: (msg: string, context?: Record<string, unknown>) => {
-		if (process.env.LOG_LEVEL !== "silent") {
-			console.log(`[INFO] ${msg}`, context ? JSON.stringify(context) : "");
+// API base URL  -  same source of truth as index.ts
+const API_URL = process.env.VREKO_API_URL || "https://api.vreko.dev";
+// Internal service token for server-to-server calls (injected via env in production).
+// Hard-fail on startup if missing  -  unauthenticated server-to-server calls are not allowed.
+// Cast to string: TypeScript cannot narrow module-level const into function bodies;
+// the guard below handles the undefined case at runtime.
+const INTERNAL_API_KEY = process.env.VREKO_INTERNAL_API_KEY as string;
+if (!INTERNAL_API_KEY) {
+	throw new Error(
+		"VREKO_INTERNAL_API_KEY is required. Set this environment variable before starting the MCP server.",
+	);
+}
+
+/** Shape returned by GET /api/v1/capabilities/metrics */
+interface CapabilityMetricsResponse {
+	hits: number;
+	misses: number;
+	hitRate: number;
+}
+
+/**
+ * Fetch capability cache metrics from the API server.
+ *
+ * The API endpoint snapshots the counters AND resets them atomically,
+ * so each call covers exactly the period since the last call.
+ * Returns null when the API is unavailable (soft failure  -  metrics are best-effort).
+ */
+async function fetchCacheMetrics(): Promise<CapabilityMetricsResponse | null> {
+	try {
+		const headers: Record<string, string> = {
+			Accept: "application/json",
+			"x-api-key": INTERNAL_API_KEY,
+		};
+
+		const res = await fetchWithPooling(`${API_URL}/api/v1/capabilities/metrics`, {
+			method: "GET",
+			headers,
+		});
+
+		if (!res.ok) {
+			logger.debug("Capability metrics fetch returned non-OK status", { status: res.status });
+			return null;
 		}
-	},
-	debug: (msg: string, context?: Record<string, unknown>) => {
-		if (process.env.LOG_LEVEL === "debug") {
-			console.log(`[DEBUG] ${msg}`, context ? JSON.stringify(context) : "");
-		}
-	},
-};
+
+		return (await res.json()) as CapabilityMetricsResponse;
+	} catch (error) {
+		logger.debug("Failed to fetch capability metrics from API", {
+			error: error instanceof Error ? error.message : String(error),
+		});
+		return null;
+	}
+}
 
 /**
  * Report capability cache metrics to PostHog
@@ -37,7 +80,13 @@ const logger = {
  * Only reports if there were any cache operations in the period.
  */
 async function reportCacheMetrics(): Promise<void> {
-	const metrics = getCacheMetrics();
+	const metrics = await fetchCacheMetrics();
+
+	// API unreachable  -  skip silently (metrics are best-effort)
+	if (!metrics) {
+		return;
+	}
+
 	const total = metrics.hits + metrics.misses;
 
 	// Only report if there were cache operations
@@ -59,9 +108,6 @@ async function reportCacheMetrics(): Promise<void> {
 		misses: metrics.misses,
 		hitRate: `${(metrics.hitRate * 100).toFixed(1)}%`,
 	});
-
-	// Reset counters for next period
-	resetCacheMetrics();
 }
 
 /**
@@ -77,8 +123,8 @@ export function startCapabilityMetricsReporting(): void {
 	}
 
 	metricsInterval = setInterval(() => {
-		reportCacheMetrics().catch((error) => {
-			console.error("[ERROR] Failed to report capability metrics:", error);
+		reportCacheMetrics().catch((_error) => {
+			/* interval errors are non-fatal */
 		});
 	}, METRICS_INTERVAL_MS);
 

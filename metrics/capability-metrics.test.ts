@@ -16,7 +16,7 @@
 import { afterEach, beforeEach, describe, expect, it, type Mock, vi } from "vitest";
 
 // Mock dependencies before imports
-vi.mock("@snapback/platform/db/queries/capabilities", () => ({
+vi.mock("@vreko/platform/db/queries/capabilities", () => ({
 	getCacheMetrics: vi.fn(),
 	resetCacheMetrics: vi.fn(),
 }));
@@ -25,7 +25,7 @@ vi.mock("../analytics/posthog.js", () => ({
 	captureEvent: vi.fn(),
 }));
 
-import { getCacheMetrics, resetCacheMetrics } from "@snapback/platform/db/queries/capabilities";
+import { getCacheMetrics, resetCacheMetrics } from "@vreko/platform/db/queries/capabilities";
 import { captureEvent } from "../analytics/posthog.js";
 import {
 	flushCapabilityMetrics,
@@ -51,8 +51,12 @@ describe("capability-metrics", () => {
 		vi.clearAllMocks();
 
 		// Capture console output
-		consoleLogSpy = vi.spyOn(console, "log").mockImplementation(() => {});
-		consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+		consoleLogSpy = vi.spyOn(console, "log").mockImplementation(() => {
+			/* no-op mock */
+		});
+		consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {
+			/* no-op mock */
+		});
 
 		// Save and reset LOG_LEVEL
 		originalLogLevel = process.env.LOG_LEVEL;

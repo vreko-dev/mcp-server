@@ -1,10 +1,13 @@
 <p align="center">
-  <img src="./assets/banner.png" alt="Vreko" width="600" />
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="./assets/lockup-white.png" width="400">
+    <img alt="Vreko" src="./assets/lockup-dark.png" width="400">
+  </picture>
 </p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/@vreko/mcp-server"><img src="https://img.shields.io/npm/v/@vreko/mcp-server?style=flat-square&color=4ADE80" alt="Version" /></a>
-  <a href="https://github.com/vreko-dev/vreko/blob/main/apps/mcp-server/LICENSE"><img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg?style=flat-square" alt="License" /></a>
+  <a href="https://www.npmjs.com/package/vreko-mcp-server"><img src="https://img.shields.io/npm/v/vreko-mcp-server?style=flat-square&color=4ADE80" alt="Version" /></a>
+  <a href="https://github.com/vreko-dev/mcp-server/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg?style=flat-square" alt="License" /></a>
   <a href="https://discord.gg/B4BXeYkE2F"><img src="https://img.shields.io/badge/Discord-Join%20Community-5865F2?style=flat-square&logo=discord&logoColor=white" alt="Discord" /></a>
 </p>
 
@@ -49,12 +52,12 @@ Vreko MCP Server is a **Model Context Protocol (MCP) server** that gives AI codi
 
 **Option A: npx (No Installation)**
 ```bash
-npx @vreko/mcp-server
+npx vreko-mcp-server
 ```
 
 **Option B: Global Install**
 ```bash
-npm install -g @vreko/mcp-server
+npm install -g vreko-mcp-server
 vreko-mcp-server
 ```
 
@@ -71,7 +74,7 @@ docker run -p 8080:8080 -e VREKO_API_KEY=your_key vreko/mcp-server
   "mcpServers": {
     "vreko": {
       "command": "npx",
-      "args": ["@vreko/mcp-server"],
+      "args": ["vreko-mcp-server"],
       "env": {
         "VREKO_API_KEY": "YOUR_VREKO_API_KEY"
       }
@@ -86,7 +89,7 @@ docker run -p 8080:8080 -e VREKO_API_KEY=your_key vreko/mcp-server
   "mcpServers": {
     "vreko": {
       "command": "npx",
-      "args": ["@vreko/mcp-server"],
+      "args": ["vreko-mcp-server"],
       "env": {
         "VREKO_API_KEY": "YOUR_VREKO_API_KEY"
       }
@@ -519,7 +522,7 @@ This MCP server easily fits within free tier for individual/small team use.
 
 | Metric | Value |
 |--------|-------|
-| **Version** | 2.1.0 |
+| **Version** | 3.1.0 |
 | **License** | Apache-2.0 |
 | **Status** | Production Ready |
 | **Node.js** | >= 20.0.0 |
@@ -541,5 +544,5 @@ This MCP server easily fits within free tier for individual/small team use.
   <a href="https://vreko.dev">Website</a> •
   <a href="https://docs.vreko.dev">Docs</a> •
   <a href="https://discord.gg/B4BXeYkE2F">Discord</a> •
-  <a href="https://github.com/vreko-dev/vreko/issues">Issues</a>
+  <a href="https://github.com/vreko-dev/mcp-server/issues">Issues</a>
 </p>

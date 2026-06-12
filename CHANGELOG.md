@@ -1,5 +1,11 @@
 # vreko-mcp-server
 
+## 3.1.1
+
+### Patch Changes
+
+- @vreko/mcp@0.1.2
+
 ## 3.1.0
 
 ### Minor Changes

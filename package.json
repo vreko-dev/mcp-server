@@ -1,6 +1,6 @@
 {
   "name": "vreko-mcp-server",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "description": "Vreko MCP Proxy - HTTP reverse proxy forwarding MCP requests to the API server",
   "type": "module",
   "main": "dist/index.js",

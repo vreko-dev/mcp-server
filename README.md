@@ -26,6 +26,12 @@
 
 ---
 
+> **What this repository is.** The public distribution and documentation surface for
+> the `vreko-mcp-server` npm package. The server is built from the proprietary Vreko
+> core, so paths such as `apps/mcp-server` and `packages/mcp` below refer to that
+> private monorepo, not to files in this repository. Installable artifacts are on npm:
+> [`vreko-mcp-server`](https://www.npmjs.com/package/vreko-mcp-server).
+
 ## What is Vreko MCP Server?
 
 Vreko MCP Server is a **Model Context Protocol (MCP) server** that gives AI coding agents a session memory and intelligence layer. It enables Claude, Cursor, Windsurf, and any MCP-compatible assistant to:
@@ -264,10 +270,10 @@ Generate a token: `fly tokens create deploy -x 999999h`
 
 ```bash
 # Health check
-curl https://vreko-mcp.fly.dev/health
+curl https://<your-app>.fly.dev/health
 
 # Bridge endpoint test
-curl -X POST https://vreko-mcp.fly.dev/bridge/push \
+curl -X POST https://<your-app>.fly.dev/bridge/push \
   -H "Content-Type: application/json" \
   -d '{"workspaceId":"ws_00000000000000000000000000000000","observations":[]}'
 ```
@@ -460,7 +466,7 @@ fly logs --follow
 ```json
 {
   "vreko.mcp.enabled": true,
-  "vreko.mcp.serverUrl": "https://vreko-mcp.fly.dev",
+  "vreko.mcp.serverUrl": "https://<your-app>.fly.dev",
   "vreko.mcp.authType": "apikey"
 }
 ```
@@ -475,7 +481,7 @@ fly logs --follow
 | Setting | Default | Description |
 |---------|---------|-------------|
 | `vreko.mcp.enabled` | `true` | Enable MCP integration |
-| `vreko.mcp.serverUrl` | `https://mcp.vreko.dev` | Remote MCP server URL |
+| `vreko.mcp.serverUrl` | `https://mcp.vreko.dev` | Remote MCP server URL. **Not currently serving a public endpoint** — deploy your own, or leave MCP in local mode. |
 | `vreko.mcp.authType` | `bearer` | Authentication type (`bearer` or `apikey`) |
 | `vreko.mcp.timeout` | `5000` | Request timeout in milliseconds |
 
@@ -485,7 +491,7 @@ The VS Code extension automatically uses `RemoteMCPClient` when `serverUrl` is c
 
 ```typescript
 const client = new RemoteMCPClient({
-  serverUrl: 'https://vreko-mcp.fly.dev',
+  serverUrl: 'https://<your-app>.fly.dev',
   apiKey: 'YOUR_VREKO_API_KEY',
   authType: 'apikey',
   timeout: 5000,
@@ -495,14 +501,14 @@ const client = new RemoteMCPClient({
 await client.connect();
 ```
 
-See [`apps/vscode/src/services/RemoteMCPClient.ts`](../vscode/src/services/RemoteMCPClient.ts) for implementation details.
+`RemoteMCPClient` ships inside the VS Code extension ([`vreko-dev/vscode`](https://github.com/vreko-dev/vscode)). It is built from the proprietary Vreko core, so its source is not published.
 
 ### Health Check
 
 Verify the server is accessible:
 
 ```bash
-curl https://vreko-mcp.fly.dev/health
+curl https://<your-app>.fly.dev/health
 ```
 
 Expected response:

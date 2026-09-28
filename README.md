@@ -12,8 +12,8 @@
 </p>
 
 <p align="center">
-  <strong>AI-powered context server for the Vreko platform.</strong><br />
-  Enables Claude, Cursor, and other AI assistants to coordinate with your code intelligence system.
+  <strong>Legacy developer-tooling MCP distribution surface.</strong><br />
+  Preserved for the earlier Vreko code-intelligence implementation.
 </p>
 
 <p align="center">
@@ -26,6 +26,8 @@
 
 ---
 
+> **Current product boundary · 2026-09-28:** Vreko's current private Alpha tests proposition-specific professional evidence, Operator Passport, bounded disclosure, and recipient reliance. This MCP package belongs to the earlier developer-intelligence iteration. It is not the current Alpha query surface and should not be used as evidence that generic MCP/context plumbing is Vreko's moat.
+>
 > **What this repository is.** The public distribution and documentation surface for
 > the `vreko-mcp-server` npm package. The server is built from the proprietary Vreko
 > core, so paths such as `apps/mcp-server` and `packages/mcp` below refer to that
@@ -34,7 +36,7 @@
 
 ## What is Vreko MCP Server?
 
-Vreko MCP Server is a **Model Context Protocol (MCP) server** that gives AI coding agents a session memory and intelligence layer. It enables Claude, Cursor, Windsurf, and any MCP-compatible assistant to:
+Vreko MCP Server is a **legacy Model Context Protocol (MCP) server** from Vreko's earlier developer-intelligence implementation that gives AI coding agents a session memory and intelligence layer. It enables Claude, Cursor, Windsurf, and any MCP-compatible assistant to:
 
 - **Brief themselves** before every task  -  past learnings, active warnings, risk context
 - **Check vitals mid-session**  -  activity level, risk pressure, trajectory

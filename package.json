@@ -1,7 +1,7 @@
 {
   "name": "vreko-mcp-server",
   "version": "3.1.1",
-  "description": "Vreko MCP Proxy - HTTP reverse proxy forwarding MCP requests to the API server",
+  "description": "Legacy Vreko MCP distribution surface for the earlier developer-intelligence implementation.",
   "homepage": "https://vreko.dev",
   "repository": {
     "type": "git",
@@ -17,12 +17,10 @@
   },
   "keywords": [
     "vreko",
+    "legacy-developer-tooling",
     "mcp",
     "model-context-protocol",
-    "codebase-intelligence",
     "ai-agent-context",
-    "claude",
-    "cursor",
     "mcp-server"
   ],
   "type": "module",
